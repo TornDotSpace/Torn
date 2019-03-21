@@ -1,0 +1,78 @@
+a:link {color: #009cff; font-weight: bold; text-decoration: none;}
+a:active {color: #99e3ff; font-weight: bold; text-decoration: none;}
+a:visited {color: #009cff; font-weight: bold; text-decoration: none;}
+a:hover {color: #99e3ff; text-decoration: underline;}
+
+hr {color: #142E80; size: 1;}
+body {scrollbar-face-color: #004699; scrollbar-shadow-color: #000088; scrollbar-highlight-color: #000044; scrollbar-3dlight-color: #000088; scrollbar-darkshadow-color: #000044; scrollbar-track-color: #222222; scrollbar-arrow-color: #009cff;}
+
+p {font-family: arial,helvetica; font-size: 10pt; color: #ffcc33; text-decoration: none;}
+td {font-family: arial,helvetica; font-size: 10pt; color: #ffcc33; text-decoration: none;}
+ul {font-family: arial,helvetica; font-size: 10pt; color: #ffcc33; text-decoration: none;}
+
+.std {font-family: arial,helvetica; font-size: 10pt; color: #ffcc33; text-decoration: none;}
+.stdb {font-family: arial,helvetica; font-size: 10pt; font-weight: bold; color: #ffcc33; text-decoration: none;}
+.stdi {font-family: arial,helvetica; font-size: 10pt; color: #ffcc33; text-decoration: none; font-style: italic;}
+.stdbi {font-family: arial,helvetica; font-size: 10pt; font-weight: bold; color: #ffcc33; text-decoration: none; font-style: italic;}
+.stdt {font-family: times new roman; font-size: 10pt; color: #ffcc33; text-decoration: none;}
+.stdc {font-family: courier new,courier; font-size: 10pt; color: #ffcc33; text-decoration: none;}
+.stdcb {font-family: courier new,courier; font-size: 10pt; font-weight: bold; color: #ffcc33; text-decoration: none;}
+.stdci {font-family: courier new,courier; font-size: 10pt; color: #ffcc33; text-decoration: none; font-style: italic;}
+.stdred {font-family: arial,helvetica; font-size: 10pt; color: #ff0000; text-decoration: none;}
+.stdlg {font-family: arial,helvetica; font-size: 12pt; color: #ffcc33; text-decoration: none;}
+.head {font-family: arial,helvetica; font-size: 14pt; font-weight: bold; color: #ffcc33; text-decoration: none; font-style: italic;}
+.hcoro {font-family: arial,helvetica; font-size: 14pt; font-weight: bold; color: #ffcc33; text-decoration: none;}
+.hcorow {font-family: arial,helvetica; font-size: 14pt; font-weight: bold; color: #ffffff; text-decoration: none;}
+.title {font-family: arial,helvetica; font-size: 12pt; font-weight: bold; color: #ffcc33; text-decoration: none; font-style: italic;}
+.tcoro {font-family: arial,helvetica; font-size: 12pt; font-weight: bold; color: #ffcc33; text-decoration: none;}
+.tcorow {font-family: arial,helvetica; font-size: 12pt; font-weight: bold; color: #ffffff; text-decoration: none;}
+.shigh {font-family: courier new,courier; font-size: 10pt; font-weight: bold; color: #ffffff; text-decoration: none;}
+.stitle {font-family: courier new,courier; font-size: 14pt; font-weight: bold; color: #ffcc33; text-decoration: none;}
+.sbtitle {font-family: arial,helvetica; font-size: 10pt; font-weight: bold; color: #ffffff; text-decoration: none; font-style: italic;}
+.stdtiny {font-family: arial,helvetica; font-size: 8pt; color: #ffcc33; text-decoration: none;}
+.p {font-family: arial,helvetica; font-size: 8pt; color: #ffcc33; text-decoration: none;}
+.tg {font-family: trek generation 1,arial,helvetica; font-size: 16pt; font-weight: bold; color: #ffcc33; text-decoration: none; font-style: italic;}
+.tgw {font-family: trek generation 1,arial,helvetica; font-size: 16pt; font-weight: bold; color: #ffffff; text-decoration: none; font-style: italic;}
+
+input.inpstyle {
+	background-color: #000047;
+	font-family: arial,helvetica;
+	color: #009cff;
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: none;
+	border-color: #000060;
+	border-style: solid;
+}
+
+select {
+	background-color: #000047;
+	font-family: arial,helvetica;
+	color: #009cff;
+	font-size: 9pt;
+	font-weight: bold;
+	text-transform: none;
+	border-color: #000060;
+	border-style: solid;
+	width: 100px;
+        scrollbar-face-color: #004699;
+        scrollbar-shadow-color: #000088;
+        scrollbar-highlight-color: #000044;
+        scrollbar-3dlight-color: #000088;
+        scrollbar-darkshadow-color: #000044;
+        scrollbar-track-color: #222222;
+        scrollbar-arrow-color: #009cff;
+}
+
+textarea {
+	background-color: #000047;
+	font-family: arial,helvetica;
+	color: #009cff;
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: none;
+	border-color: #000060;
+	border-style: solid;
+	width: 370px;
+        height: 75px;
+}

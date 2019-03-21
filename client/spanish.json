@@ -1,0 +1,546 @@
+{
+	"messages":[
+		"Vacío",
+		"Carga Lleno!",
+		"Mueve la rueda del ratón para Cambiar Armas",
+		"Sector: ",
+		"Nivel de Amenaza: ",
+		"Dinero: ",
+		"Asesinatos: ",
+		"Hierro: ",
+		"Plata: ",
+		"Platino: ",
+		"Aluminio: ",
+		"Guardar Progreso",
+		"[Vende Todo]",
+		"Vidas Restantes: ",
+		"[COMPRAR]",
+		"Armas",
+		"Minerales",
+		"Mejoras",
+		"[Ver Todo]",
+		"[VENDER]",
+		"Velocidad: ",
+		"Radar: ",
+		"Carga: ",
+		"Salud: ",
+		"Mejorar Astronave",
+		"Rango",
+		"¿¿??",
+		"Velocidad : ",
+		"Agilidad  : ",
+		"Salud     : ",
+		"Armas     : ",
+		"Carga     : ",
+		"¿Estas seguro de que quiere vender su ",
+		" por $",
+		"?",
+		"Presiona Y para confirmar o N para regresar.",
+		"¡Misión Aceptada!",
+		"Trae ",
+		" unidades de ",
+		" al sector ",
+		".",
+		"Eliminar base enemiga en el sector ",
+		"Obtener paquete del planeta ",
+		" y entregarlo al planeta ",
+		"Misión Secreta.",
+		"[CANCELAR Misión]",
+		"¡Misión Bloqueada!",
+		"Recompensa: $",
+		" y ",
+		" exp",
+		"Descripción: ",
+		" Jugadores eliminados",
+		" Torretas destruidas",
+		" Vidas Restantes",
+		"Minerales: ",
+		"Valor de Astronave: $",
+		"Valor Neto: $",
+		" Experiencia",
+		"Rango ",
+		" Logros",
+		"¡Característica de Amigos Próximamente!",
+		"¡Característica de Logros Próximamente!",
+		"Ayuda",
+		"Almacén",
+		"Podium",
+		"Contacto/Informar de un error",
+		"Youtube",
+		"Discord",
+		"Créditos",
+		"[INFO] ",
+		"Energía   : ",
+		"Distancia : ",
+		"Daño      : ",
+		"Velocidad : ",
+		"Coste     : ",
+		" Segundos",
+		"¡No tienes suficiente dinero!",
+		"Presiona B para Comprar",
+		"PRESIONA X PARA DESATRACAR DE ESTACIÓN",
+		"¡Actualizaciones Semanales!",
+		"¡Hacer clic para jugar!",
+		"Parece que no estas usando Chrome.",
+		"Es mas rápido.",
+		"LAG del Cliente: ",
+		"LAG del Servidor: ",
+		"Latencia bidireccional: ",
+		"FPS: ",
+		"UPS: ",
+		"Parece que está sufriendo LAG debido a un sistema o navegador anterior.",
+		"Recomendamos jugar en un sistema más nuevo si está disponible.",
+		"Parece que está lagueando debido a una conexión lenta.",
+		"Pronto haremos nuevos servidores en otros lugares que no sean el Este de los EE.UU.",
+		"Disculpen las molestias.",
+		"Total de jugadores en línea:",
+		"Total de jugadores en el Sector:",
+		"Nuestros servidores están lagueados debido al intenso tráfico en este momento.",
+		"¡Efecto del PEM por ",
+		"!",
+		"¡Poder Perdido debido a PEM!",
+		"¡Efecto de la Girodinamita por ",
+		"¡Estabilización perdida debido a Girodinamita!",
+		"Vas a quedar AFK pronto",
+		"Vas a estar AFK en ",
+		"Borde del Sector",
+		"Flota Enemiga en el sector",
+		"Podium",
+		"Nombre",
+		"Exp",
+		"Rango",
+		"¡Desconectado: AFK!",
+		"¡Has muerto!",
+		"Presione E para reaparecer.",
+		"¡Inicio de Sesión inválido!",
+		"¡El nombre de usuario debe ser alfanumérico, con 4-16 caracteres, y sin tildes!",
+		"¡La contraseña debe tener entre 1 y 32 caracteres!",
+		"¡Ese nombre de usuario ya está cogido!",
+		"¡Cuenta ya en uso!",
+		"¡Presiona W para acelerar!",
+		"¡Presiona A y D para rotar!",
+		"¡Sigue la flecha marrón!",
+		"¡Dispara a los asteroides con la barra espaciadora!",
+		"¡Sige la flecha blanca y presiona X!",
+		"¡Vende tus minerales en la Tienda!",
+		"¡Guarda tu progreso en la estación espacial!",
+		"¡Siga la flecha blanca o viaje a un sector con una base!",
+		"Alerta: ",
+		"¡Progreso Guardado!",
+		"Planeta ",
+		"¡Agujero de Gusano cercano!",
+		"¡Agujero Negro cercano!",
+		"X PARA ATRACAR EN LA ESTACIÓN",
+		"¡Torreta Enemiga en el Sector!",
+		"¡Ataque de Misiles!",
+		"[VENDER] Hierro: ",
+		"[VENDER] Plata: ",
+		"[VENDER] Platino: ",
+		"[VENDER] Aluminio: ",
+		"       Hierro: ",
+		"       Plata: ",
+		"       Platino: ",
+		"       Aluminio: ",
+		"Inicio",
+		"Tienda",
+		"Misiones",
+		"Estadísticas",
+		"Logros",
+		"Más",
+		"Mineral: ",
+		"Rango:",
+		"Experiencia:",
+		"¡Baja salud!",
+		"Munición",
+		"Arma",
+		"Inf.",
+		"Solo una",
+		"ea.",
+		"Procede al sector ",
+		" para recibir más instrucciones.",
+		"Elimina toda nave y torreta enemiga en ",
+		" y visita el planeta ",
+		"Lleva un paquete al sector D4.",
+		"Para combiar tu contraseña, escribe en el chat /password nueva_contraseña. Para más información, visita torn.space/help",
+		"Generadores activos: ",
+		"x",
+		"Energía: ",
+		"[Rastro predeterminado]",
+		"[Rastro de Sangre]",
+		"[Rastro de Dinero]",
+		"[Rastro del Panda]",
+		"[Rastro del Azar]",
+		"[Rastro Arcoíris]",
+		"MAX",
+		"¿¿??",
+		"Munición   : ",
+		"Nave   : ",
+		"+",
+		" EXP",
+		" Experiencia",
+		" vidas",
+		" vida",
+		"K",
+		"M",
+		"Fondo",
+		"Estrellas",
+		"Planetas/Bases",
+		"Asteroides/paquetes",
+		"Jugadores/rastros",
+		"Armas",
+		"Gui",
+		"Chat",
+		"Mapa",
+		"Radar",
+		"Gui2",
+		" ticks",
+		"(Significa: ",
+		": ",
+		"(jugadores/invitados/bots/sector)",
+		"Chat Global",
+		"Chat del equipo",
+		"Ocultar Chat",
+		"Aceifa en progreso: ",
+		"Puntos: ",
+		"Siguiente aceifa en: ",
+		"¡Nuevo logro!",
+		"Piloto automático activado",
+		"Presiona P para desactivar.",
+		"N/A"
+	],
+	"achNames":[
+		"Primera sangre:Mata 1 nave",
+		"De seguidilla:Mata a 10 jugadores",
+		"Sed de Sangre:Mata a 100 jugadores",
+		"General:Mata a 1,000 jugadores",
+		"Señor de la Guerra:Mata a 4,000 jugadores",
+		"Reaper:Mata a 10,000 jugadores",
+		"Envidioso:Mata una nave con rastro personalizado",
+		"Invasor:Destuoye unaa torreta",
+		"Conquistador:Destruye 100 torretas",
+		"Fuego Amigo:Mata a un jugador de tu equipo",
+		"Ir Postal:Mata a un repartidor",
+		"Emo:Suicídate con GravBomb",
+		"Shiva:Rastro de Sangre",
+		"Miero:Mina un asteroide",
+		"Colector:Mina uno de cada mineral",
+		"Cantero:Obtén 3,000 Minerales",
+		"Veta Madre:Obtén 15,000 Minerales",
+		"Hombre Rico:Obtén 10,000 créditos",
+		"Hombre Aún Más Rico:Obtén 100,000 créditos",
+		"Millonario:Obtén 1 millÓn de créditos",
+		"Continuando en ello:Obtén 10 millones de créditos",
+		"Ladrón:Roba un paquete",
+		"Misionero:Servicios a la comunidad",
+		"Aventurero:Completa cada tipo de misión una vez",
+		"Afluencia:Rastro del Dinero",
+		"Shift para derrapar:¡Derrapa!",
+		"Derrapador:Derrapa 1 minuto en total",
+		"Trampero:Derrapa 10 minutos en total",
+		"Mareado:Derrapa 1 hora en total",
+		"Giro Dios:Derrapa 10 horas en total",
+		"Takumi:Inducción Forzada por turbo",
+		"Bunta:Hyper-derrapado",
+		"Reversa:¿¡Puedo ir marcha atrás!?",
+		"Derrapado por Inercia:Derrapa en un Agujero Negro",
+		"Peligroso:Mata mientras derrapas",
+		"Stickshift:TurboDerrapado reverso",
+		"Copa de Papel:Rastro Panda",
+		"Aquí para quedarme:Crea una cuenta",
+		"¡Au!:Muere",
+		"Trabajo Peligroso:Acepta una misión en D4",
+		"Demasiado Lento:Cae en un Agujero de Gusano",
+		"Oops...:Cae en un Agujero Negro",
+		"¡Boing!:Rebota en el borde",
+		"Viajero:Visita cada sector",
+		"Esquizoide:Visita las cuatro esquinas",
+		"Astronauta:Toma un planeta",
+		"Imperialista:Toma todos los planetas de una vez",
+		"Excéntrico:Rastro Aleatorio",
+		"Pro:Llega a la clasificación"
+	],
+	"weapons":[
+		{
+			"name":"Cañón Básico",
+			"desc":"Un arma básica de medio alcance."
+		},
+		{
+			"name":"Cañón de Plasma",
+			"desc":"Solo es útil para combates a muy corta distancia contra objetivos más grandes y lentos. De recarga y disparos lentos, esta arma lleva un poderoso golpe."
+		},
+		{
+			"name":"Cañón de Popa",
+			"desc":"¡Quítate de mi cola! Igual que el Cañón Básico pero dispara hacia detrás y es un 50% más potente, y por consiguiente, más caro."
+		},
+		{
+			"name":"Rifle",
+			"desc":"Potente arma de larga distancia con balas rápidas y más potentes. Ideal para disparar desde una distancia de seguridad a un montón de enemigos."
+		},
+		{
+			"name":"Escopeta",
+			"desc":"Viene muy útil para una emboscada. Dispara en spray muchos tiros a la vez desde dónde disparas, con la desventaja de ser ligeramente difícil de controlar."
+		},
+		{
+			"name":"Amertalladora",
+			"desc":"¡Disparo rápido! La munición es algo débil, ¡pero eso no importa si disparas 13 veces por segundo!"
+		},
+		{
+			"name":"Minigun",
+			"desc":"Una ametralladora con dos cañones activos simultáneos con balas más lentas. Muy buena arma si la apuntas con rapidez."
+		},
+		{
+			"name":"Rayo de Plasma",
+			"desc":"Arma de corto alcance que apunta automáticamente al objetivo más cercano con un rayo de Plasma."
+		},
+		{
+			"name":"Rayo Láser",
+			"desc":"Rayo de medio alcance que apunta automáticamente al objetivo más cercano y dispara pequeñas ráfagas láser. Cada rayo es más lento y necesita más energía que el rayo de Plasma, por lo que es inefectivo contra las bases, pero hace más daño, compensándolo."
+		},
+		{
+			"name":"Rayo de Hadrones",
+			"desc":"Rayo acelerador de partículas de medio-largo alcance. Hace mucho daño, pero tarda en recargarse. Puede usarse como as en la manga para situaciones delicadas."
+		},
+		{
+			"name":"Misil Standard",
+			"desc":"Este misil seguirá al objetivo más cercano y explotará en contacto, a mesnos que no haya objetivo, en cuyo caso irá de frente. Sin embargo, ten cuidado: este misil es algo lento y puede ser adelantado por enemigos rápidos."
+		},
+		{
+			"name":"Misil Pesado",
+			"desc":"Un misil más poderoso y lento, bueno contra nave más lentas y poderosas."
+		},
+		{
+			"name":"Misil PEM",
+			"desc":"Misil de corto alcance que daña y genera un Pulso Electro-Magnético que paraliza al enemigo por 2 segundos. úsalo principalmente para aturdir un objetivo rápido antes de disparar armas guiadas. Efectivo contra las torretas."
+		},
+		{
+			"name":"Misil de Enjambre",
+			"desc":"Dispara un misil que se divide a su vez en 6 misiles que pueden atacar una horda de enemigos. Excelente para defenderse de una emboscada de naves más lentas."
+		},
+		{
+			"name":"Torpedo",
+			"desc":"Misil ultra-rápido de muy Largo Alcance."
+		},
+		{
+			"name":"Mina",
+			"desc":"Una simple mina que explota al impactar contra una astronave enemiga. Es difícil que un enemigo te siga con éstas."
+		},
+		{
+			"name":"Mina Láser",
+			"desc":"Dispara un potente rayo Láser a los enemigos que se acercan demasiado."
+		},
+		{
+			"name":"Mina PEM",
+			"desc":"Idéntica a la mina estándar pero con menos daño y capacidad de generar un Pulso ElctroMagnético que paraliza al enemigo por 3 segundos. Muy útil cuando estás siendo perseguido."
+		},
+		{
+			"name":"Nanobots de reparación del casco",
+			"desc":"Reparan tu nave rápidamente, pero a un gran coste energético y de nanorobots."
+		},
+		{
+			"name":"Ocultación Fotónica",
+			"desc":"Vuélvete invisible por 8 segundos para una huida rápida."
+		},
+		{
+			"name":"Generador",
+			"desc":"Incrementan tu recarga energética y de armas en un 6% por generador, a la vez que te vuelven un 10% menos ágil."
+		},
+		{
+			"name":"Turbo",
+			"desc":"Herramienta de inducción forzada que suplementa tu motor para una mayor velocidad y aceleración, aumentando cuándo derrapas. Uso infinito."
+		},
+		{
+			"name":"Motor de Hiperespacio",
+			"desc":"Herramienta de un solo uso que al desplazarte parcialmente a otra dimensión te permite obtener un gran extra de velocidad y aceleración, siendo perfecto para huir de Vórtices y Agujeros Negros o simplemente ir de A a B en un tris."
+		},
+		{
+			"name":"Onda Repulsora",
+			"desc":"Empuja todas las naves enemigas en una gran explosión. Uso múltiple, aunque con solo una munición."
+		},
+		{
+			"name":"Campo tractor Electromagnético",
+			"desc":"Acelera asteroides y naves hacia ti. Con práctica, se pueden empujar asteroides a los enemigos, dañándolos, siendo especialmente efectivo contra las torretas, aunque no obtendrás ni experiencia ni recompensa de ellas si las destruyes con asteroides."
+		},
+		{
+			"name":"Onda PEM",
+			"desc":"Arma de un solo uso en la que todas las naves del sector menos la tuya son paralizadas por 4 segundos, aunque necesitarás 6 segundos con energía 1.0 para poder volver a disparar."
+		},
+		{
+			"name":"Láser minero",
+			"desc":"Idéntico al Rayo Láser pero tiene más daño y solo está programado para atacar asteroides."
+		},
+		{
+			"name":"Torreta",
+			"desc":"Despliega una torreta como las de las bases, pero sólo puedes tener una activa y en un sector que no contuviera ya una base o torreta. Para reclamar el dinero y experiencia de los que ha destruido, aproxímate a menos de 20 unidades de ella."
+		},
+		{
+			"name":"Bomba de Gravedad",
+			"desc":"Arma muy cara de un solo uso que crea una pequeña singularidad infinita tras 3 segundos de ser disparada, que se disipa por la radiación de Hawking en 20 segundos. Se extremadamente cauteloso, por si acaso compra Turbo para huir rápidamente de la futura implosión. Por razones de seguridad, el vórtice se formará cuándo se encuentre a más de 500 unidades de la base."
+		},
+		{
+			"name":"Motor de Curvatura",
+			"desc":"Aceleración instantánea para un viaje rápido, a costa de un gran coste energético y una recarga lenta. Aunque de uso infinito, tendrás que repostar tras tres usos."
+		},
+		{
+			"name":"Rayo Iónico Minero",
+			"desc":"¡Láser Minero con el doble de potencia y un 150% de rango!"
+		},
+		{
+			"name":"Girodinamita",
+			"desc":"Provoca una disrupción en el sistema de estabilización giroscópica, desestabilizando la nave enemiga más próxima por 10 segundos."
+		},
+		{
+			"name":"Mina Impulsora",
+			"desc":"Esta mina inocua explotará 1 segundo tras ser lanzada, ofreciendo un empujón a todas las naves cercanas. Muy útil para desplazarse rápido, especialmente si colocas una tras de ti y surfeas la onda repulsora."
+		},
+		{
+			"name":"Granadas",
+			"desc":"Tira ésto a un enemigo y explotará tras un segundo o por impacto, ¡dañandolo y empujandolo!"
+		},
+		{
+			"name":"Haz concentrado de Muones",
+			"desc":"Esta arma utiliza leptones de segunda generación extremadamente cargados para generar un poderosísimo rayo de Ultra Largo Alcance que puede atravesar múltiples objetivos, dañándolos gravemente. Por desgracia, al arma debe ser perfectamente apuntada hacia el objetivo que tengas de frente para poder acertar."
+		},
+		{
+			"name":"Extractor energético",
+			"desc":"Este rayo de ultra corto alcance robará la energía del oponente más cercano, dándote parte a ti."
+		},
+		{
+			"name":"Supercargador",
+			"desc":"Dispositivo de un solo uso que duplicará tu regeneración energética, velocidad y agilidad, aunque también el daño a tu nave."
+		},
+		{
+			"name":"Disco de energía",
+			"desc":"Un lanzador de Orbes que perseguirán a tu oponente más cercano"
+		},
+		{
+			"name":"Misil de Proximidad",
+			"desc":"Misil sin seguimiento que explotará en proximidad a un enemigo, dañándolo."
+		},
+		{
+			"name":"Spreadshot",
+			"desc":"Tres cañones activos! Los tiros salen an un angulo determinado."
+		},
+		{
+			"name":"Submachinegun",
+			"desc":"Fires like Minigun, but in 5-round bursts"
+		},
+		{
+			"name":"Brainwashing Laser",
+			"desc":"Fire this beam at a bot and it will follow you around until it dies. Single-use."
+		}
+	],
+	"splashes":[
+		"Cargando"
+	],
+	"lore":[
+		"Los humanos carecen de autoconsciencia. Tras destruir su mundo natal en un conflicto armado, se extendieron de un Sistema a otro como una plaga, contaminando mundos y extinguiendo la vida. Al principio les avisamos de su conducta autodestructiva, pero se negaron a escucharnos. Continuaron migrando de manera insostenible en la Galaxia, así que nos los enfrentamos por la fuerza. Decidimos atacar colonias recientes cercanas a nuestras fronteras para mantener nuestra influencia en nuestro sector de la Galaxia, pero los humanos reaccionaron violentamente, atacando inmediatamente sin misericordia. Hemos pedido recursos de las galaxias cercanas pero sus refuerzos no leegarán hasta dentro de muchas décadas, así que hasta entonces debemos suprimir la Cruzada Galáctica por nuestra propia supervivencia, y por el destino de esta Galaxia.",
+		"Desde que perdimos el Planeta Tierra, la raza humana, hemos decidido dejar nuestro Sistema en busca de otros mundos habitables con la única esperanza de sobrevivir, pero muy pocos han prometido ser bases permanentes. Planetas totalmente desérticos fueron terraformados en planetas industriales para generar recursos desesperadamente necesarios para nuestra vida en mundos alienígenas. Tras siglos de equilibrio demográfico, nuestra pobleción comenzó finalmente a crecer y extenderse. Por una década vivimos en paz y prosperidad, hasta que una fuerza hostil nos atacó. Mantener nuestros planetas era vital para nuestra supervivencia, así que no tuvimos otra opción que contraatacar. Desde entonces, hemos estado en conflicto con esa raza alienígena, y es improbable que esta guerra no termine con la extinción de ambos. Por favor, ayúdanos a salir de este conflicto vivo."
+	],
+	"ships":[
+		{
+			"nameA":"Explorador",
+			"nameH":"Pececillo",
+			"desc":""
+		},
+		{
+			"nameA":"Caza",
+			"nameH":"Piraña",
+			"desc":""
+		},
+		{
+			"nameA":"Mastodonte",
+			"nameH":"Carguero",
+			"desc":""
+		},
+		{
+			"nameA":"Ninfa",
+			"nameH":"Montaraz",
+			"desc":""
+		},
+		{
+			"nameA":"Bombardero",
+			"nameH":"Lancero",
+			"desc":""
+		},
+		{
+			"nameA":"Sicario",
+			"nameH":"Cabezamartillo",
+			"desc":""
+		},
+		{
+			"nameA":"Libélula",
+			"nameH":"Pez Espada",
+			"desc":""
+		},
+		{
+			"nameA":"Centinela",
+			"nameH":"Acorazado",
+			"desc":""
+		},
+		{
+			"nameA":"Águila",
+			"nameH":"Mantarraya",
+			"desc":""
+		},
+		{
+			"nameA":"Fénix",
+			"nameH":"Orca",
+			"desc":""
+		},
+		{
+			"nameA":"Avispa",
+			"nameH":"Manta",
+			"desc":""
+		},
+		{
+			"nameA":"Invasor",
+			"nameH":"Pez Vela",
+			"desc":""
+		},
+		{
+			"nameA":"Cantero",
+			"nameH":"Beluga",
+			"desc":""
+		},
+		{
+			"nameA":"Destructor",
+			"nameH":"Atlas",
+			"desc":""
+		},
+		{
+			"nameA":"Hidra",
+			"nameH":"Wyvern",
+			"desc":""
+		},
+		{
+			"nameA":"Conquistador",
+			"nameH":"Leviatán",
+			"desc":""
+		},
+		{
+			"nameA":"Invasor de élite",
+			"nameH":"Pez Vela de élite",
+			"desc":""
+		},
+		{
+			"nameA":"Cantero de élite",
+			"nameH":"Beluga de élite",
+			"desc":""
+		},
+		{
+			"nameA":"Destructor de élite",
+			"nameH":"Atlas de élite",
+			"desc":""
+		},
+		{
+			"nameA":"Hydra de élite",
+			"nameH":"Wyvern de élite",
+			"desc":""
+		},
+		{
+			"nameA":"Conquistador de élite",
+			"nameH":"Leviatán de élite",
+			"desc":""
+		}
+	]
+}

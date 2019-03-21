@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <title>Minescape</title>
+    <script type="text/javascript">
+        function resize_canvas(){
+            canvas = document.getElementById("canvas");
+            if (canvas.width  < window.innerWidth)
+            {
+                canvas.width  = window.innerWidth;
+            }
+
+            if (canvas.height < window.innerHeight)
+            {
+                canvas.height = window.innerHeight;
+            }
+        }
+    </script>
+	
+</head>
+<body onresize="resize_canvas()" oncontextmenu="return false">
+
+	<script src="script.js"></script>
+	<canvas id="canvas">Your browser doesn't support HTML5's canvas :/</canvas>
+
+</body>
+</html>

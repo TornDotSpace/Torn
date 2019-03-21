@@ -1,0 +1,274 @@
+@font-face {
+	font-family: 'Telegrama';
+	src: url('img/telegrama2.otf');
+}
+
+body, #a {
+	font-family: 'Telegrama';
+	margin: 0;
+	padding: 0;
+	overflow:hidden;
+	top: 0;
+	left: 0;
+	top: 0;
+	bottom: 0;
+}
+
+.overlay-menu , .register-menu{
+    margin: auto;
+	position:absolute;
+	padding:0px;
+	top: 10%;
+	right: 0;
+	left: 0;
+	width:780px;
+	height:200px;
+	animation: a-overlay .3s;
+	background-color: rgba(0,0,0,0);
+	color: white;
+}
+
+.register-menu{
+	margin-top: -100px;
+	top:50%;
+}
+
+.container{
+	margin: 0 auto;
+	width:780px;
+	float:center;
+}
+
+.container{
+	margin: 0 auto;
+	width:780px;
+	float:center;
+}
+
+.guests, .login{
+	opacity:0.5;
+	float:left;
+	width:200px;
+	margin-top: 10px;
+}
+
+.video{
+	opacity:0.5;
+	float:left;
+	width:380px;
+	margin-top: 10px;
+}
+
+.guests:hover, .login:hover, .video:hover{
+	opacity:1;
+}
+
+.overlay-input{
+	font-family: 'Telegrama';
+	width:176px;
+	font-size: 16px;
+	padding: 5px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	float: center;
+}
+
+.register{
+	font-family: 'Telegrama';
+	width:190px;
+	font-size: 16px;
+	padding: 5px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	background-color: black;
+	color: white;
+	cursor: pointer;
+	border:2px solid green;
+}
+
+#registerA, #registerH, .overlay-button{
+	font-family: 'Telegrama';
+	width:190px;
+	font-size: 16px;
+	padding: 5px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	float: center;
+}
+
+#registerA, #registerH, .overlay-button{
+	background-color: rgb(80, 80, 80);
+	color: white;
+	cursor: pointer;
+	border:2px solid #404040;
+}
+
+#registerA{
+	border:2px solid red;
+}
+
+#registerH{
+	border:2px solid blue;
+}
+
+.overlay-input {
+	border:2px solid #404040;
+	color: black;
+}
+
+.center{
+	display:inline;
+}
+
+.discord{
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	margin:8px;
+}
+
+.changelog{
+	position:absolute;
+	float:right;
+	top: 0px;
+	right: 0px;
+	margin:8px;
+}
+
+a{
+	color:#808080;
+	text-decoration: none;
+}
+
+a:hover{
+	color:#a0a0a0;
+}
+
+
+
+
+
+
+
+
+
+.overlay-input:hover {
+	background-color:#FFB;
+}
+
+.overlay-input:focus {
+	background-color:black;
+	color:white;
+}
+
+#registerA:hover, #registerH:hover,.overlay-button:hover{
+	background-color: rgb(120, 120, 120);
+}
+
+.chat {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	padding: 10px;
+	padding: 10px;
+}
+
+.chat-input {
+	background-color: rgba(0, 0, 0, 0);
+	font-family: 'Telegrama';
+	border:0;
+	width: 384px;
+	color: white;
+}
+
+.chat-input:focus {
+	border:8;
+	background-color: rgba(0, 0, 0, 255);
+}
+
+.chat-msg {
+	transition: opacity 2s;
+	font-size: 13px;
+	font-family: 'Telegrama';
+}
+
+.chat-msg-fadeout {
+	opacity: 0;
+}
+
+@keyframes a-overlay {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes a-overlay-menu1 {
+	0% {
+		transform: rotateY(90deg);
+		color: rgba(0, 0, 0, 0)
+	}
+	32% {
+		transform: rotateY(90deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	33% {
+		transform: rotateY(66deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	65% {
+		transform: rotateY(66deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	66% {
+		transform: rotateY(33deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	99% {
+		transform: rotateY(33deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	100% {
+		transform: rotateY(0deg);
+	}
+}
+
+@keyframes a-overlay-menu2 {
+	from {
+		transform: translateY(10px);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+
+.mute-button, .music-button {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	margin: 10px;
+	cursor: pointer;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+.music-button {
+	bottom: 40px;
+}
+
+input:-webkit-autofill { /* Get rid of Google's ugly autofill colors */
+    -webkit-box-shadow: 0 0 0 30px white inset;
+}
+
+input:-webkit-autofill:hover { /* Get rid of Google's ugly autofill colors */
+    -webkit-box-shadow: 0 0 0 30px #FFB inset;
+}
+
+input:-webkit-autofill:focus { /* Get rid of Google's ugly autofill colors */
+    -webkit-box-shadow: 0 0 0 30px black inset;
+	-webkit-text-fill-color:white;
+}
