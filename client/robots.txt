@@ -1,0 +1,6 @@
+User-agent: * 
+Disallow: 
+/changelog/
+/fun/
+
+Crawl-delay: 300

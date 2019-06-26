@@ -1,30 +1,21 @@
-var domain = false;
 var fs = require('fs');
 var http = require('http');
 var express = require('express');
 var app = express();
-if(domain){
-	var https = require('https');
-	var privateKey  = fs.readFileSync('ssl/private.key', 'utf8');
-	var certificate = fs.readFileSync('ssl/crt.crt', 'utf8');
-	var p7b = fs.readFileSync('ssl/torn_space.p7b', 'utf8');
-	var bundle = fs.readFileSync('ssl/bundle.ca-bundle', 'utf8');
-	var credentials = {key: privateKey, cert: certificate, };
-	var httpsServer = https.createServer(credentials, app);
-	httpsServer.listen(8881);//normal is 8881
-}
 console.log('Server started');
 console.log('Enabling express...');
 app.use('/',express.static(__dirname + '/client'));
-var httpServer = http.createServer(app);
-httpServer.listen(8887);//normal is 8887, dev 7300
+var httpServer = http.Server(app);
+httpServer.listen(parseInt(process.argv[2]));//normal is 8887, dev 7300
 console.log("Express started");
 var io = require('socket.io')(httpServer);
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
 var wepns = jsn.weapons, ships = jsn.ships, planets = jsn.planets;
 var mapSz = 7;
-var sectorWidth = 16384;
-var botFrequency = 1.8;//higher: more bots
+var trainingMode = false;
+var sectorWidth = 14336;//must be divisible by 2048, no need to be binary
+var botFrequency = trainingMode?.7:1.6;//higher: more bots. Standard: 1.6
+var neuralFiles = 1500;
 var guestsCantChat = false;
 var lbExp = new Array(1000);
 var ranks = [0,5,10,20,50,100,200,500,1000,2000,4000,8000,14000,20000,40000,70000,100000,140000,200000,300000,500000,800000,1000000,1500000,2000000,3000000,5000000,8000000,12000000,16000000,32000000,64000000,100000000];
@@ -49,8 +40,7 @@ var asteroids = new Array(mapSz);
 for(var i = 0; i < mapSz; i++){
 	MINE_LIST[i] = new Array(mapSz);
 	bases[i] = new Array(mapSz);
-	for(var j = 0; j < mapSz; j++)
-		MINE_LIST[i][j] = {};
+	for(var j = 0; j < mapSz; j++) MINE_LIST[i][j] = {};
 	PLANET_LIST[i] = new Array(mapSz);
 	asteroids[i] = [0,0,0,0,0,0,0];//mapsz sensitive
 	bases[i] = [0,0,0,0,0,0,0];//mapsz sensitive
@@ -62,70 +52,87 @@ var atans = [];
 var tick = 0, lag = 0, ops = 0;
 var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0;
 var raidTimer = 50000, raidRed = 0, raidBlue = 0;
-var net = 0;
+var IPSpam = {};
 
 
 
 var NeuralNet = function(){
 	var self = {
-		w1: new Array(90),
-		w2: new Array(90),
-		w3: new Array(90),
-		w4: new Array(90),
-		w5: new Array(60)
+		genes: {},
+		id:-1
 	};
 	self.randomWeights = function(){
-		for(var i = 0; i < self.w1.length; i++) self.w1[i] = Math.random() - .5;
-		for(var i = 0; i < self.w2.length; i++) self.w2[i] = Math.random() - .5;
-		for(var i = 0; i < self.w3.length; i++) self.w3[i] = Math.random() - .5;
-		for(var i = 0; i < self.w4.length; i++) self.w4[i] = Math.random() - .5;
-		for(var i = 0; i < self.w5.length; i++) self.w5[i] = Math.random() - .5;
+		for(var i = 0; i < 300; i++) self.genes[i] = mutate();
 	};
 	self.passThrough = function(input){
-		//nodes
-		layer1 = new Array(10);
-		layer2 = new Array(10);
-		layer3 = new Array(10);
-		layer4 = new Array(10);
-		out = new Array(6);
 		
 		//biases
-		input = [0,0,0,0,0,0,0,0,0,1];
-		layer1 = [0,0,0,0,0,0,0,0,0,1];
-		layer2 = [0,0,0,0,0,0,0,0,0,1];
+		layer1 = [0,0,0,0,0,0,0,0,0,0,0,0,1];
+		layer2 = [0,0,0,0,0,0,0,0,0,0,1];
 		layer3 = [0,0,0,0,0,0,0,0,0,1];
-		layer4 = [0,0,0,0,0,0,0,0,0,1];
+		out = [0,0,0,0,0,0];
 		
+		var counter = 0;
+
 		for(var a = 0; a < input.length; a++)
-			for(var b = 0; b < 9; b++)
-				layer1[b] += input[a] * self.w1[b*input.length + a];
+			for(var b = 0; b < layer1.length - 1; b++)
+				layer1[b] += input[a] * self.genes[counter++];
+
+		for(var i = 0; i < layer1.length; i++) layer1[i] = activate(layer1[i]);
 		
 		for(var a = 0; a < layer1.length; a++)
-			for(var b = 0; b < 9; b++)
-				layer2[b] += layer1[a] * self.w2[b*layer1.length + a];
+			for(var b = 0; b < layer2.length - 1; b++)
+				layer2[b] += layer1[a] * self.genes[counter++];
+
+		for(var i = 0; i < layer2.length; i++) layer2[i] = activate(layer2[i]);
 		
 		for(var a = 0; a < layer2.length; a++)
-			for(var b = 0; b < 9; b++)
-				layer3[b] += layer2[a] * self.w3[b*layer2.length + a];
+			for(var b = 0; b < layer3.length - 1; b++)
+				layer3[b] += layer2[a] * self.genes[counter++];
+
+		for(var i = 0; i < layer3.length; i++) layer3[i] = activate(layer3[i]);
 		
 		for(var a = 0; a < layer3.length; a++)
-			for(var b = 0; b < 9; b++)
-				layer4[b] += layer3[a] * self.w4[b*layer3.length + a];
-		
-		for(var a = 0; a < layer4.length; a++)
-			for(var b = 0; b < 6; b++)
-				out[b] += layer4[a] * self.w5[b*layer4.length + a];
-		
-		for(var i = 0; i < out.length; i++)
-			out[i]=out[i]>0;
+			for(var b = 0; b < out.length; b++)
+				out[b] += layer3[a] * self.genes[counter++];
+
+		for(var i = 0; i < out.length; i++) out[i]=out[i]>0;
 		
 		return out;
 	};
+	self.save = function(k){
+		var source = 'server/neuralnets/' + k + '.bot';
+		if (fs.existsSync(source)) fs.unlinkSync(source);
+		var str = "";
+		for(var i = 0; i < 300; i++) str += self.genes[i] + "\n";
+		fs.writeFileSync(source, str, {"encoding":'utf8'});
+	};
+	self.load = function(){
+		self.id = Math.floor(Math.random()*neuralFiles);
+		self.randomWeights();
+
+		var parentCount = Math.floor(Math.random()*3+1);
+		for(var p = 0; p < parentCount; p++){
+			var source = 'server/neuralnets/' + Math.floor(Math.random()*neuralFiles) + '.bot';
+			if (fs.existsSync(source)) {
+				var fileData = fs.readFileSync(source, "utf8").split('\n');
+				for(var i = 0; i < 300; i++) self.genes[i] += parseFloat(fileData[i])/parentCount;
+			}
+		}
+	};
 	return self;
 }
+var mutate = function(){
+	return Math.tan(Math.random()*Math.PI*2)/100;
+}
+var activate = function(x){
+	return x/(1+Math.abs(x));
+}
+
 
 var Player = function(i){
 	var self = {
+		net:0,
 		cookie:0,
 		bulletQueue:0,
 		isBot:false,
@@ -150,6 +157,7 @@ var Player = function(i){
 		killStreakTimer:-1,
 		killStreak:0,
 		baseKills:0,
+		borderJumpTimer:0,
 		iron:0,
 		silver:0,
 		platinum:0,
@@ -162,7 +170,9 @@ var Player = function(i){
 		leaveBaseShield:0,
 		globalChat:0,
 		hyperdriveTimer:-1,
+		deleteRate:.0005,
 		
+		/*
 		nearestEnemyDist: 0,//for nnBots
 		nearestFriendDist: 0,
 		nearestBulletDist: 0,
@@ -175,7 +185,8 @@ var Player = function(i){
 		nearestEnemyAngleV: 0,
 		nearestFriendAngleV: 0,
 		nearestBulletAngleV: 0,
-		
+		*/
+
 		thrust:1, // Read from ships, same for other variables
 		va:1,
 		capacity:1,
@@ -183,6 +194,7 @@ var Player = function(i){
 		
 		thrust2:1,
 		radar2:1,
+		agility2:1,
 		capacity2:1,
 		maxHealth2:1,
 		energy2:1,
@@ -195,6 +207,8 @@ var Player = function(i){
 		quest:0,
 		cva:0,
 		chatTimer: 100,
+		muteTimer: -1,
+		muteCap: 250,
 		health:1,
 		x:sectorWidth/2,
 		y:sectorWidth/2,
@@ -222,6 +236,9 @@ var Player = function(i){
 		gyroTimer:0,
 		trail:0,
 		points:0,
+
+
+		reply:"nobody",
 		
 		
 		kill1:false,//First Blood
@@ -286,7 +303,9 @@ var Player = function(i){
 		
 	}
 	self.tick = function(){
+
 		if(self.killStreakTimer--<0) self.killStreak = 0;
+		if(self.borderJumpTimer>0) self.borderJumpTimer--;
 		var amDrifting = self.e || self.gyroTimer > 0;
 		self.shield = (self.s && !amDrifting && self.energy > 5 && self.gyroTimer < 1) || self.leaveBaseShield > 0;
 		if(self.shield && !(self.leaveBaseShield-- > 0)){
@@ -301,7 +320,7 @@ var Player = function(i){
 				var text = "~`"+self.color+"~`"+self.name + "~`yellow~` disconnected!";
 				LEFT_LIST[self.id] = 0;
 				console.log(text);
-				sendAll("chat", {msg:text});
+				chatAll(text);
 				return;
 			}
 		}
@@ -347,9 +366,10 @@ var Player = function(i){
 				ASTEROID_LIST[r] = a;
 				self.reload = 50;
 			}
+			if(self.ship == 18 && self.energy > 0) self.shootBullet(39);
 		}
 		
-		if(self.bulletQueue > 0)self.shootBullet();
+		if(self.bulletQueue > 0)self.shootBullet(40);
 		
 		var wepId = self.weapons[self.equipped];
 		var wep = wepns[wepId];
@@ -374,7 +394,7 @@ var Player = function(i){
 				return;
 			}
 			
-			if(wepId <= 6 || wepId == 28 || wepId == 39) self.shootBullet();
+			if(wepId <= 6 || wepId == 28 || wepId == 39) self.shootBullet(self.weapons[self.equipped]);
 			else if(wepId == 29){
 				self.reload = wep.Charge;
 				self.speed = self.thrust * (self.ship == 16?700:500);
@@ -386,8 +406,7 @@ var Player = function(i){
 					var p = PLAYER_LIST[i];
 					if(p.sx == self.sx && p.sy == self.sy && p.color !== self.color){
 						var d2 = (self.x - p.x) * (self.x - p.x) + (self.y - p.y) * (self.y - p.y);
-						if(d2 > wep.Range * wep.Range * 100)
-							continue;
+						if(d2 > wep.Range * wep.Range * 100) continue;
 						var vel = -10000 / Math.log(d2);
 						var ang = Math.atan2(self.y - p.y, self.x - p.x);
 						p.vx += Math.cos(ang) * vel;
@@ -458,7 +477,7 @@ var Player = function(i){
 				self.energy-=wep.energy;
 			}
 			else if(wepId == 19){//cloak
-				self.disguise = 320;//8s
+				self.disguise = 150;//6s
 				self.energy-=wep.energy;
 				self.reload = wep.Charge;
 			}
@@ -527,16 +546,11 @@ var Player = function(i){
 		self.updatePolars();
 		if(!amDrifting){
 			self.noDrift++;
-			if(self.noDrift > 18)
-				self.driftAngle = self.angle;
-			else if(self.noDrift > 12)
-				self.driftAngle = findBisector(self.driftAngle, self.angle);
-			else if(self.noDrift > 7)
-				self.driftAngle = findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle);
-			else if(self.noDrift > 3)
-				self.driftAngle = findBisector(findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle), self.driftAngle);
-			else
-				self.driftAngle = findBisector(findBisector(findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle), self.driftAngle), self.driftAngle);
+			if(self.noDrift > 18) self.driftAngle = self.angle;
+			else if(self.noDrift > 12) self.driftAngle = findBisector(self.driftAngle, self.angle);
+			else if(self.noDrift > 7) self.driftAngle = findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle);
+			else if(self.noDrift > 3) self.driftAngle = findBisector(findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle), self.driftAngle);
+			else self.driftAngle = findBisector(findBisector(findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle), self.driftAngle), self.driftAngle);
 		}
 		else {
 			self.gyroTimer--;
@@ -568,76 +582,15 @@ var Player = function(i){
 		self.driftAngle %= Math.PI * 2;
 		self.angle %= Math.PI * 2;
 		
-		var callOnChangeSectors = true;
-		if(self.x > sectorWidth){
-			self.x = 1;
-			self.sx++;
-			if(self.sx > mapSz - 1){
-				if(!self.ms5){
-					self.ms5 = true;
-					self.sendAchievementsMisc(true);
-				}
-				self.sx = mapSz - 1;
-				self.x = (sectorWidth-5);
-				self.driftAngle = self.angle = 3.1415 - self.angle;
-				self.vx *= -1;
-			}
-			else self.health = (self.health-1)*.9+1;
-		}
-		else if(self.y > sectorWidth){
-			self.y = 1;
-			self.sy++;
-			if(self.sy > mapSz - 1){
-				if(!self.ms5){
-					self.ms5 = true;
-					self.sendAchievementsMisc(true);
-				}
-				self.sy = mapSz - 1;
-				self.y = (sectorWidth-5);
-				self.driftAngle = self.angle = -self.angle;
-				self.vy *= -1;
-			}
-			else self.health = (self.health-1)*.9+1;
-		}
-		else if(self.x < 0){
-			self.x = (sectorWidth-1);
-			self.sx--;
-			if(self.sx < 0){
-				if(!self.ms5){
-					self.ms5 = true;
-					self.sendAchievementsMisc(true);
-				}
-				self.sx = 0;
-				self.x = 5;
-				self.driftAngle = self.angle = 3.1415 - self.angle;
-				self.vx *= -1;
-			}
-			else self.health = (self.health-1)*.9+1;
-		}
-		else if(self.y < 0){
-			self.y = (sectorWidth-1);
-			self.sy--;
-			if(self.sy < 0){
-				if(!self.ms5){
-					self.ms5 = true;
-					self.sendAchievementsMisc(true);
-				}
-				self.sy = 0;
-				self.y = 5;
-				self.driftAngle = self.angle = -self.angle;
-				self.vy *= -1;
-			}
-			else self.health = (self.health-1)*.9+1;
-		}
-		else callOnChangeSectors = false;
-		if(callOnChangeSectors) self.onChangeSectors();
+		self.testSectorChange();
+
 		if(tick % 15 == 0) self.checkQuestStatus(false);
 		if(tick % 2 == 0) return;
 		for(var i in MINE_LIST[self.sy][self.sx]){ // Checking for mine collision
 			var m = MINE_LIST[self.sy][self.sx][i];
 			if(m.wepnID != 16 && m.color!=self.color && m.wepnID != 32 && square(m.x - self.x) + square(m.y - self.y) < square(16 + ships[self.ship].width)){
 				self.dmg(m.dmg, m);
-				if(m.wepnID == 17) self.EMP(3 * 25);
+				if(m.wepnID == 17) self.EMP(50);
 				m.die();
 				break;
 			}
@@ -650,23 +603,85 @@ var Player = function(i){
 			}
 		}
 	}
+	self.testSectorChange = function(){
+		var callOnChangeSectors = true;
+		var giveBounce = false;
+		if(self.x > sectorWidth){
+			self.x = 1;
+			self.sx++;
+			if(self.sx >= mapSz || self.name === "GUEST" || (trainingMode && self.isNNBot)){
+				giveBounce = true;
+				self.sx--;
+				self.x = (sectorWidth-5);
+				self.driftAngle = self.angle = 3.1415 - self.angle;
+				self.vx *= -1;
+			}
+			else self.borderJumpTimer += 100;
+		}
+		else if(self.y > sectorWidth){
+			self.y = 1;
+			self.sy++;
+			if(self.sy >= mapSz || self.name === "GUEST" || (trainingMode && self.isNNBot)){
+				giveBounce = true;
+				self.sy--;
+				self.y = (sectorWidth-5);
+				self.driftAngle = self.angle = -self.angle;
+				self.vy *= -1;
+			}
+			else self.borderJumpTimer += 100;
+		}
+		else if(self.x < 0){
+			self.x = (sectorWidth-1);
+			self.sx--;
+			if(self.sx < 0 || self.name === "GUEST" || (trainingMode && self.isNNBot)){
+				giveBounce = true;
+				self.sx++;
+				self.x = 5;
+				self.driftAngle = self.angle = 3.1415 - self.angle;
+				self.vx *= -1;
+			}
+			else self.borderJumpTimer += 100;
+		}
+		else if(self.y < 0){
+			self.y = (sectorWidth-1);
+			self.sy--;
+			if(self.sy < 0 || self.name === "GUEST" || (trainingMode && self.isNNBot)){
+				giveBounce = true;
+				self.sy++;
+				self.y = 5;
+				self.driftAngle = self.angle = -self.angle;
+				self.vy *= -1;
+			}
+			else self.borderJumpTimer += 100;
+		}
+		else callOnChangeSectors = false;
+		if(giveBounce && !self.ms5){
+			if(self.name === "GUEST") send(self.id, "chat", {msg:"~`orange~`You must create an account to explore the universe!"});
+			else{
+				self.ms5 = true;
+				self.sendAchievementsMisc(true);
+			}
+		}
+		if(self.borderJumpTimer > 100){
+			self.health = (self.health-1)*.9+1;
+			self.borderJumpTimer = 50;
+		}
+		if(callOnChangeSectors) self.onChangeSectors();
+	}
 	self.juke = function(left){
 		if(self.energy < 7.5)
 			return;
-		self.jukeTimer = left?50:-50;
+		self.jukeTimer = (self.trail % 16 == 4?1.25:1)*(left?50:-50);
 		self.energy -= 7.5;
 	}
 	self.onChangeSectors = function(){
+		send(self.id, "clrBullets", {});
 		if(self.sx==0){
-			if(self.sy==0 && (self.cornersTouched & 1) != 1)
-				self.cornersTouched++;
-			else if(self.sy==mapSz-1 && (self.cornersTouched & 2) != 2)
-				self.cornersTouched+=2;
+			if(self.sy==0 && (self.cornersTouched & 1) != 1) self.cornersTouched++;
+			else if(self.sy==mapSz-1 && (self.cornersTouched & 2) != 2) self.cornersTouched+=2;
 		}else if(self.sx==mapSz-1){
-			if(self.sy==0 && (self.cornersTouched & 4) != 4)
-				self.cornersTouched+=4;
-			else if(self.sy==mapSz-1 && (self.cornersTouched & 8) != 8)
-				self.cornersTouched+=8;
+			if(self.sy==0 && (self.cornersTouched & 4) != 4) self.cornersTouched+=4;
+			else if(self.sy==mapSz-1 && (self.cornersTouched & 8) != 8) self.cornersTouched+=8;
 		}
 		if(self.cornersTouched == 15){
 			self.ms7 = true;
@@ -683,8 +698,7 @@ var Player = function(i){
 				self.sendAchievementsCash(true);
 			}
 			send(self.id, 'quest', {quest: self.quest});
-			if((self.questsDone & 8) == 0)
-				self.questsDone+=8;
+			if((self.questsDone & 8) == 0) self.questsDone+=8;
 			if(self.questsDone == 15 && !self.allQuests){
 				self.allQuests = true;
 				self.sendAchievementsCash(true);
@@ -701,8 +715,7 @@ var Player = function(i){
 		var prevStr = self.planetsClaimed.substring(0,index);
 		var checkStr = self.planetsClaimed.substring(index, index+1);
 		var postStr = self.planetsClaimed.substring(index+1,mapSz*mapSz);
-		if(checkStr !== "2")
-			self.planetsClaimed = prevStr + "1" + postStr;
+		if(checkStr !== "2") self.planetsClaimed = prevStr + "1" + postStr;
 		if(!self.planetsClaimed.includes("0") && !self.ms6){
 			self.ms6 = true;
 			self.sendAchievementsMisc(true);
@@ -739,6 +752,7 @@ var Player = function(i){
 		}
 		
 		if(enemies == 0 && Math.random() < .001) self.refillAllAmmo();
+		if(enemies == 0 && Math.random() < self.deleteRate) self.die();
 		
 		if(target == 0) target = anyFriend;
 		
@@ -777,6 +791,14 @@ var Player = function(i){
 		}
 	}
 	self.nnBotPlay = function(){
+
+		if(tick % 5 != Math.floor(self.id * 5)) return;
+
+		if(self.net === 1){
+			self.net = new NeuralNet();
+			self.net.load();
+		}
+
 		if(self.empTimer > 0) return;//cant move if i'm emp'd
 		
 		self.equipped = 0;
@@ -788,34 +810,48 @@ var Player = function(i){
 		var sumFriendRank = 0;
 		var sumEnemyRank = 0;
 		
-		if(tick % 5 != Math.floor(self.id * 5)) return;
-		
-		var target = 0, close = 100000000;
+		var target = 0, friend = 0, closeE = 100000000, closeF = 100000000;
 		for(var p in PLAYER_LIST){
 			var player = PLAYER_LIST[p];
 			if(player.sx != self.sx || player.sy != self.sy || self.id == player.id || player.disguise > 0) continue;
-			if(player.color === self.color) {totalFriends++; continue;}
-			totalEnemies++;
-			var dist2 = hypot2(player.x, self.x, player.y, self.y);
-			if(dist2 < close){target = player;close = dist2;}
+			if(player.color === self.color) {
+				totalFriends++;
+				var dist2 = hypot2(player.x, self.x, player.y, self.y);
+				if(dist2 < closeF){friend = player;closeF = dist2;}
+			}else{
+				totalEnemies++;
+				var dist2 = hypot2(player.x, self.x, player.y, self.y);
+				if(dist2 < closeE){target = player;closeE = dist2;}
+			}
 		}
 		
 		if(totalEnemies == 0 && Math.random() < .005) self.refillAllAmmo();
+		if(totalEnemies == 0 && Math.random() < self.deleteRate) self.die();
 		
 		//make input array
 		var input = {};
-		input[0] = self.rank;
-		input[1] = self.ammos[self.equipped];
-		input[2] = self.health;
-		input[3] = self.energy;
-		input[4] = self.reload;
-		input[5] = self.speed;
+		input[0] = self.rank / 8.;
+		input[1] = self.ammos[self.equipped] / 50;
+		input[2] = self.health / self.maxHealth;
+		input[3] = self.energy / 100.;
+		input[4] = self.reload / 50;
+		input[5] = self.speed / 100;
 		input[6] = self.cva;
-		input[7] = target == 0? 0:Math.atan2(target.y - self.y, target.x - self.x) - self.angle;
-		input[8] = close;
+
+		input[7] = target == 0? 0:1;
+		input[8] = target == 0? 0:Math.atan2(target.y - self.y, target.x - self.x) - self.angle;
+		input[9] = Math.sqrt(closeE) / 100;
+
+		input[10] = friend == 0? 0:1;
+		input[11] = friend == 0? 0:Math.atan2(friend.y - self.y, friend.x - self.x) - self.angle;
+		input[12] = Math.sqrt(closeF) / 100;
+
+		input[13] = target == 0? 0:target.angle;
+		input[14] = target == 0? 0:target.speed;
+		input[15] = target == 0? 0:target.ship;
 		
 		//forward NN
-		var out = net.passThrough(input);
+		var out = self.net.passThrough(input);
 		
 		//Set controls to output array
 		self.space = out[0];
@@ -826,15 +862,16 @@ var Player = function(i){
 		self.d = out[5];
 	}
 	self.checkPlanetCollision = function(){
-		if(self.isBot)
-			return;
+		if(self.isBot) return;
 		var p = PLANET_LIST[self.sy][self.sx];
 		if(tick % 25 == 0 && hypot2(p.x,self.x,p.y,self.y) < sectorWidth/2 * 4){
 			var cool = p.cooldown;
 			if(cool < 0){self.refillAllAmmo();p.cooldown = 150;}
 			self.checkQuestStatus(true);
-			if(self.name === "GUEST")
+			if(self.name === "GUEST") {
 				SOCKET_LIST[self.id].emit("chat",{msg:'You must create an account in the base before you can claim planets!', color:'yellow'});
+				return;
+			}
 			if(typeof self.quest !== "undefined" && self.quest != 0 && self.quest.type === "Secret2" && self.quest.sx == self.sx && self.quest.sy == self.sy){
 				var cleared = true;
 				for(var b in PLAYER_LIST){
@@ -844,8 +881,7 @@ var Player = function(i){
 						break;
 					}
 				}
-				if(cleared && bases[self.sx][self.sy] != 0 && bases[self.sx][self.sy].turretLive)
-					cleared = false;
+				if(cleared && bases[self.sx][self.sy] != 0 && bases[self.sx][self.sy].turretLive) cleared = false;
 				if(cleared){ // 2 ifs needed
 					self.hasPackage = true;
 					self.quest = {type:"Secret3", exp:self.quest.exp};
@@ -858,8 +894,7 @@ var Player = function(i){
 			sendAll('chat', {msg:'Planet ' + p.name + ' claimed by ~`' + self.color + '~`' + self.name + "~`yellow~`!"});
 			for(var i in PLAYER_LIST){
 				var player = PLAYER_LIST[i];
-				if(player.sx == self.sx && player.sy == self.sy)
-					player.getAllPlanets();//send them new planet data
+				if(player.sx == self.sx && player.sy == self.sy) player.getAllPlanets();//send them new planet data
 			}
 			if(!self.ms8){
 				self.ms8 = true;
@@ -873,28 +908,19 @@ var Player = function(i){
 		}
 	}
 	self.checkQuestStatus = function(touchingPlanet){
-		if(self.quest == 0 || self.isBot)
-			return;
+		if(self.quest == 0 || self.isBot) return;
 		if(self.quest.type === 'Mining')
 			if(self.sx == self.quest.sx && self.sy == self.quest.sy){
-				if(self.quest.metal == 'aluminium' && self.aluminium < self.quest.amt)
-					return;
-				if(self.quest.metal == 'iron' && self.iron < self.quest.amt)
-					return;
-				if(self.quest.metal == 'silver' && self.silver < self.quest.amt)
-					return;
-				if(self.quest.metal == 'platinum' && self.platinum < self.quest.amt)
-					return;
-				if(self.quest.metal == 'aluminium')
-					self.aluminium -= self.quest.amt;
-				if(self.quest.metal == 'iron')
-					self.iron -= self.quest.amt;
-				if(self.quest.metal == 'silver')
-					self.silver -= self.quest.amt;
-				if(self.quest.metal == 'platinum')
-					self.platinum -= self.quest.amt;
+				if(self.quest.metal == 'aluminium' && self.aluminium < self.quest.amt) return;
+				if(self.quest.metal == 'iron' && self.iron < self.quest.amt) return;
+				if(self.quest.metal == 'silver' && self.silver < self.quest.amt) return;
+				if(self.quest.metal == 'platinum' && self.platinum < self.quest.amt) return;
+				if(self.quest.metal == 'aluminium') self.aluminium -= self.quest.amt;
+				if(self.quest.metal == 'iron') self.iron -= self.quest.amt;
+				if(self.quest.metal == 'silver') self.silver -= self.quest.amt;
+				if(self.quest.metal == 'platinum') self.platinum -= self.quest.amt;
 				self.spoils("money",self.quest.exp);
-				self.spoils("experience",Math.floor(self.quest.exp / 4000));
+				self.spoils("experience",Math.floor(self.quest.exp / 1500));
 				noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
 				self.quest = 0;
 				if(!self.quested){
@@ -902,8 +928,7 @@ var Player = function(i){
 					self.sendAchievementsCash(true);
 				}
 				send(self.id, 'quest', {quest: self.quest});
-				if((self.questsDone & 1) == 0)
-					self.questsDone+=1;
+				if((self.questsDone & 1) == 0) self.questsDone+=1;
 			}
 		if(self.quest.type === 'Delivery' && touchingPlanet){
 			if(self.sx == self.quest.sx && self.sy == self.quest.sy && !self.hasPackage){
@@ -912,7 +937,7 @@ var Player = function(i){
 			}
 			if(self.hasPackage && self.sx == self.quest.dsx && self.sy == self.quest.dsy){
 				self.spoils("money",self.quest.exp);
-				self.spoils("experience",Math.floor(self.quest.exp / 4000));
+				self.spoils("experience",Math.floor(self.quest.exp / 1500));
 				noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
 				self.hasPackage = false;
 				self.quest = 0;
@@ -921,8 +946,7 @@ var Player = function(i){
 					self.sendAchievementsCash(true);
 				}
 				send(self.id, 'quest', {quest: self.quest});
-				if((self.questsDone & 2) == 0)
-					self.questsDone+=2;
+				if((self.questsDone & 2) == 0) self.questsDone+=2;
 			}
 		}
 		if(self.questsDone == 15 && !self.allQuests){
@@ -931,8 +955,7 @@ var Player = function(i){
 		}
 	}
 	self.baseKilled = function(){
-		if(self.isBot)
-			return;
+		if(self.isBot) return;
 		if(self.quest != 0 && self.quest.type == 'Base'){
 			if(self.sx == self.quest.sx && self.sy == self.quest.sy){
 				self.spoils("money",self.quest.exp);
@@ -944,8 +967,7 @@ var Player = function(i){
 					self.sendAchievementsCash(true);
 				}
 				send(self.id, 'quest', {quest: self.quest});
-				if((self.questsDone & 4) == 0)
-					self.questsDone+=4;
+				if((self.questsDone & 4) == 0) self.questsDone+=4;
 			}
 		}
 		if(self.questsDone == 15 && !self.allQuests){
@@ -960,8 +982,7 @@ var Player = function(i){
 		if(self.rank != prerank) strongLocal('Rank Up!', self.x, self.y - 64, self.id);
 	}
 	self.dock = function(){
-		if(self.isBot)
-			return;
+		if(self.isBot) return;
 		if(self.docked){
 			self.getAllBullets();
 			self.getAllPlanets();
@@ -971,17 +992,14 @@ var Player = function(i){
 			self.leaveBaseShield = 25;
 			self.health = self.maxHealth;
 			self.energy = 100;
-			self.reload = 0;
 			return;
 		}
 		self.checkTrailAchs();
 		
 		var base = 0;
 		var b = bases[self.sx][self.sy];
-		if(b.isBase && b.color == self.color && square(self.x - b.x)+square(self.y - b.y) < square(512))
-			base = b;
-		if(base == 0)
-			return;
+		if(b.isBase && b.color == self.color && square(self.x - b.x)+square(self.y - b.y) < square(512)) base = b;
+		if(base == 0) return;
 		
 		self.refillAllAmmo();
 		self.x = self.y = sectorWidth/2;
@@ -991,13 +1009,12 @@ var Player = function(i){
 		delete PLAYER_LIST[self.id];
 		self.sendStatus();
 	}
-	self.shootBullet = function(){
+	self.shootBullet = function(currWep){
 	
-		//figure out what weapon we're using
-		var currWep = self.weapons[self.equipped];
 		if(self.bulletQueue > 0){
-			currWep = 40;
+			if(self.ammos[self.equipped] <= 0) return;
 			self.bulletQueue--;
+			currWep = 40;
 		}
 		
 		self.energy-=wepns[currWep].energy;
@@ -1043,6 +1060,12 @@ var Player = function(i){
 			self.ammos[self.equipped]++;
 			self.reload = 5;
 			send(self.id, "chat", {msg: "This sector has reached its limit of 20 mines."});
+			return;
+		}
+		if(square(self.sx - sectorWidth/2) + square(self.sy - sectorWidth/2) < square(500)){
+			self.ammos[self.equipped]++;
+			self.reload = 5;
+			send(self.id, "chat", {msg: "You may not place a mine here."});
 			return;
 		}
 		self.reload = wepns[self.weapons[self.equipped]].Charge;
@@ -1093,8 +1116,7 @@ var Player = function(i){
 		}
 		if(self.ship == 17 && nearP != 0 && nearP.type === "Asteroid"){
 			nearP.hit = true;
-			for(var i = 0; i < 3; i++)
-				self.shootBeam(nearP, true);
+			for(var i = 0; i < 3; i++) self.shootBeam(nearP, true);
 		}
 		self.reload = wepns[self.weapons[self.equipped]].Charge;
 		var r = Math.random();
@@ -1115,58 +1137,64 @@ var Player = function(i){
 		self.empTimer = -1;
 		self.killStreak = 0;
 		var diff = .02*self.experience;
-		self.experience-=diff;
 		self.leaveBaseShield = 25;
 		self.refillAllAmmo();
-		if(typeof b == "undefined"){
+		if(typeof b === "undefined"){
 			delete PLAYER_LIST[self.id];
 			return;
 		}
 		sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:Math.cos(self.angle) * self.speed, dy:Math.sin(self.angle)*self.speed}, self.sx, self.sy);
 		
-		if(!self.isBot){
-			self.quest = 0;
-			send(self.id, 'quest', {quest: 0});//reset quest and update client
-			if(typeof b.owner !== "undefined" && b.owner.type === "Player"){
-				sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + (b.owner.name===""?"a drone":b.owner.name) + "~`yellow~`'s `~"+b.wepnID+"`~!")});
-				if(b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.dr9){
-					b.owner.dr9 = true;
-					b.owner.sendAchievementsDrift(true);
+
+		if(b != 0){
+			if(!self.isBot){
+
+				//clear quest
+				self.quest = 0;
+				send(self.id, 'quest', {quest: 0});//reset quest and update client
+				if(typeof b.owner !== "undefined" && b.owner.type === "Player"){
+					sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + (b.owner.name===""?"a drone":b.owner.name) + "~`yellow~`'s `~"+b.wepnID+"`~!")});
+					if(b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.dr9){
+						b.owner.dr9 = true;
+						b.owner.sendAchievementsDrift(true);
+					}
 				}
+
+				//send msg
+				else if(b.type == "Vortex") sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!")});
+				else if(b.type == "Planet" || b.type == "Asteroid") sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!")});
+				else if(b.owner.type == "Base") sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base!")});
+
 			}
-			else if(b.type == "Vortex") sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!")});
-			else if(b.type == "Planet" || b.type == "Asteroid") sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!")});
-			else if(b.owner.type == "Base") sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base!")});
+			var r = Math.random();
+			if(self.hasPackage && !self.isBot) PACKAGE_LIST[r] = Package(self, r, 0);
+			else if(Math.random() < .004 && self.name !== 'GUEST') PACKAGE_LIST[r] = Package(self, r, 2);//life
+			else if(Math.random() < .1 && self.name !== 'GUEST') PACKAGE_LIST[r] = Package(self, r, 3);//ammo
+			else if(self.name !== 'GUEST') PACKAGE_LIST[r] = Package(self, r, 1);//coin
+			
+			if((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Vortex" || b.owner.type === "Player" || b.owner.type === "Base")){
+				b.owner.onKill(self);
+				b.owner.spoils("experience",10+diff*(self.color===b.owner.color?-1:1));
+				if(self.points > 0){
+					b.owner.points++;
+					self.points--;
+				}
+				b.owner.spoils("money",1000*(b.owner.type === "Player"?b.owner.killStreak:1));
+			}//give the killer stuff
+
 		}
-		var r = Math.random();
-		if(self.hasPackage && !self.isBot)
-			PACKAGE_LIST[r] = Package(self, r, 0);
-		else if(Math.random() < .004 && self.name !== 'GUEST')
-			PACKAGE_LIST[r] = Package(self, r, 2);
-		else if(self.name !== 'GUEST')
-			PACKAGE_LIST[r] = Package(self, r, 1);
 		
-		if((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Vortex" || b.owner.type === "Player" || b.owner.type === "Base")){
-			b.owner.onKill(self);
-			b.owner.spoils("experience",10+diff*(self.color===b.owner.color?-1:1));
-			if(self.points > 0){
-				b.owner.points++;
-				self.points--;
-			}
-			b.owner.spoils("money",1000*(b.owner.type === "Player"?b.owner.killStreak:1));
-		}//give the killer stuff
-		
+
 		if(!self.isBot){
 			self.hasPackage = false; // Maintained for onKill above
 			self.health = self.maxHealth;
-			var readSource = 'server/players/'+self.name + "[" + hash(self.password) +'.txt';
+			var readSource = 'server/players/'+(self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) +'.txt';
 			if(self.name === "GUEST"){
 				self.lives--;
 				self.sx = self.sy = (self.color == 'red' ? 2:4);
 				self.x = self.y = sectorWidth/2;
 				self.dead = true;
-				if(self.lives <= 0)
-					LEFT_LIST[self.id] = 0;
+				if(self.lives <= 0) LEFT_LIST[self.id] = 0;
 				self.sendStatus();
 				DEAD_LIST[self.id] = self;
 				delete PLAYER_LIST[self.id];
@@ -1177,7 +1205,6 @@ var Player = function(i){
 			var fileData = fullFile.split(':');
 			self.color = fileData[0];
 			self.ship = parseFloat(fileData[1]);
-			self.trail = parseFloat(fileData[2]);
 			for(var i = 0; i < 9; i++) self.weapons[i] = parseFloat(fileData[3+i]);
 			self.weapons[9] = parseFloat(fileData[83]);
 			self.calculateGenerators();
@@ -1191,6 +1218,7 @@ var Player = function(i){
 				self.sy = 1;
 			}else self.sy=self.sx=(self.color==="blue"?4:2);
 			self.name = fileData[14];
+			self.trail = parseFloat(fileData[2]) % 16 + (self.name.includes(" ")?16:0);
 			self.money = parseFloat(fileData[15]);
 			self.kills = parseFloat(fileData[16]);
 			self.planetsClaimed = fileData[17];
@@ -1198,12 +1226,13 @@ var Player = function(i){
 			self.silver = parseFloat(fileData[19]);
 			self.platinum = parseFloat(fileData[20]);
 			self.aluminium = parseFloat(fileData[21]);
-			self.experience = parseFloat(fileData[22]) - diff;
+			self.experience = parseFloat(fileData[22]) * .98;
 			self.rank = parseFloat(fileData[23]);
 			self.x = parseFloat(fileData[24]);
 			self.y = parseFloat(fileData[25]);
 			self.thrust2 = parseFloat(fileData[26]);
 			self.radar2 = parseFloat(fileData[27]);
+			if(fileData.length > 87)self.agility2 = parseFloat(fileData[87]);
 			self.capacity2 = parseFloat(fileData[28]);
 			self.maxhealth2 = parseFloat(fileData[29]);
 			self.energy2 = parseFloat(fileData[84]);
@@ -1262,12 +1291,11 @@ var Player = function(i){
 			self.lives--;
 			self.dead = true;
 			if(self.lives <= 0){
-				fs.writeFileSync('server/players/dead/' + self.name + "[" + hash(self.password) + '.txt', fullFile, {"encoding":'utf8'});
-				fs.unlinkSync('server/players/' + self.name + "[" + hash(self.password) + '.txt');
+				fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt', fullFile, {"encoding":'utf8'});
+				fs.unlinkSync('server/players/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt');
 				LEFT_LIST[self.id] = 0;
 			}
-			else
-				self.save();
+			else self.save();
 			self.sendStatus();
 			self.sendAchievementsMisc(true);
 			DEAD_LIST[self.id] = self;
@@ -1276,6 +1304,10 @@ var Player = function(i){
 		delete PLAYER_LIST[self.id];
 	}
 	self.dmg = function(d,origin){
+		if(self.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net != 0){
+			origin.owner.net.save(self.isNNBot?self.net.id:Math.floor(Math.random()));
+			self.health -= 10000;
+		}
 		if(self.trail % 16 == 1) d /= 1.05;
 		self.health-=d*(self.shield?.25:1);
 		if(self.health < 0)self.die(origin);
@@ -1284,26 +1316,26 @@ var Player = function(i){
 		return self.health < 0;
 	}
 	self.EMP = function(t){
-		if(self.ship == 16)
-			t *= 1.5;
+		if(self.empTimer > 0) return;
+		if(self.ship == 16) t *= 1.3;
 		self.empTimer = t;
 		self.w = self.e = self.a = self.s = self.d = self.z = self.space = false;
-		if(!self.isBot)
-			send(self.id, 'emp', {t:t});
+		if(!self.isBot) send(self.id, 'emp', {t:t});
 	}
 	self.save = function(){
 		if(self.name === "GUEST" || self.isBot) return;
-		var source = 'server/players/' + self.name + "[" + hash(self.password) + '.txt';
+		var source = 'server/players/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt';
 		if (fs.existsSync(source)) fs.unlinkSync(source);
 		var spawnX = ((self.sx==Math.floor(mapSz/2) && self.sx == self.sy)?(self.color === "blue"?4:2):self.sx);
 		var spawnY = ((self.sx==Math.floor(mapSz/2) && self.sx == self.sy)?(self.color === "blue"?4:2):self.sy);
 		var weapons = "";
 		for(var i = 0; i < 9; i++) weapons += self.weapons[i] + ":";
-		var str = self.color + ':' + self.ship + ':' + self.trail + ':' + weapons + /*no :, see prev line*/ spawnX + ':' + spawnY + ':' + self.name + ':' + self.money + ':' + self.kills + ':' + self.planetsClaimed + ':' + self.iron + ':' + self.silver + ':' + self.platinum + ':' + self.aluminium + ':' + self.experience + ':' + self.rank + ':' + self.x + ':' + self.y + ':' + self.thrust2 + ':' + self.radar2 + ':' + self.capacity2 + ':' + self.maxHealth2 + ":";
+		var str = self.color + ':' + self.ship + ':' + self.trail + ':' + weapons + /*no ":", see prev line*/ spawnX + ':' + spawnY + ':' + self.name + ':' + self.money + ':' + self.kills + ':' + self.planetsClaimed + ':' + self.iron + ':' + self.silver + ':' + self.platinum + ':' + self.aluminium + ':' + self.experience + ':' + self.rank + ':' + self.x + ':' + self.y + ':' + self.thrust2 + ':' + self.radar2 + ':' + self.capacity2 + ':' + self.maxHealth2 + ":";
 		str+=self.kill1+":"+self.kill10+":"+self.kill100+":"+self.kill1k+":"+self.kill10k+":"+self.kill50k+":"+self.kill1m+":"+self.killBase+":"+self.kill100Bases+":"+self.killFriend+":"+self.killCourier+":"+self.suicide+":"+self.baseKills+":";
 		str+=self.oresMined+":"+self.mined+":"+self.allOres+":"+self.mined3k+":"+self.mined15k+":"+self.total100k+":"+self.total1m+":"+self.total100m+":"+self.total1b+":"+self.packageTaken+":"+self.quested+":"+self.allQuests+":"+self.goldTrail+":"+self.questsDone+":";
 		str+=self.driftTimer+":"+self.dr0+":"+self.dr1+":"+self.dr2+":"+self.dr3+":"+self.dr4+":"+self.dr5+":"+self.dr6+":"+self.dr7+":"+self.dr8+":"+self.dr9+":"+self.dr10+":"+self.dr11+":";
-		str+=self.cornersTouched+":true:"/*ms0, acct made.*/+self.ms1+":"+self.ms2+":"+self.ms3+":"+self.ms4+":"+self.ms5+":"+self.ms6+":"+self.ms7+":"+self.ms8+":"+self.ms9+":"+self.ms10+":"+self.lives + ":" + self.weapons[9] + ":" + self.energy2 + ":nodecay";
+		str+=self.cornersTouched+":true:"/*ms0, acct made.*/+self.ms1+":"+self.ms2+":"+self.ms3+":"+self.ms4+":"+self.ms5+":"+self.ms6+":"+self.ms7+":"+self.ms8+":"+self.ms9+":"+self.ms10+":"+self.lives + ":" + self.weapons[9] + ":" + self.energy2 + ":nodecay:";
+		str+=new Date().getTime()+":"+self.agility2; //reset timer
 		fs.writeFileSync(source, str, {"encoding":'utf8'});
 	}
 	self.onKill = function(p){
@@ -1324,86 +1356,60 @@ var Player = function(i){
 		self.sendAchievementsKill(true);
 	}
  	self.onBaseKill = function(p){
-		if(self.isBot)
-			return;
+		if(self.isBot) return;
 		self.baseKills++;
 		self.killBase = self.baseKills >= 1;
 		self.kill100Bases = self.baseKills >= 100;
 		self.sendAchievementsKill(true);
 	}
 	self.onMined = function(a){
-		if(self.isBot)
-			return;
-		if((self.oresMined & (1 << a)) == 0)
-			self.oresMined += 1 << a;
-		if(self.oresMined == 15 && !self.allOres)
-			self.allOres = true;
-		else if(!self.mined)
-			self.mined = true;
-		else if(!self.mined3k && 3000 <= self.iron + self.silver + self.aluminium + self.platinum)
-			self.mined3k = true;
-		else if(!self.mined15k && 15000 <= self.iron + self.silver + self.aluminium + self.platinum)
-			self.mined15k = true;
-		else
-			return;
+		if(self.isBot) return;
+		if((self.oresMined & (1 << a)) == 0) self.oresMined += 1 << a;
+		if(self.oresMined == 15 && !self.allOres) self.allOres = true;
+		else if(!self.mined) self.mined = true;
+		else if(!self.mined3k && 3000 <= self.iron + self.silver + self.aluminium + self.platinum) self.mined3k = true;
+		else if(!self.mined15k && 15000 <= self.iron + self.silver + self.aluminium + self.platinum) self.mined15k = true;
+		else return;
 		self.sendAchievementsCash(true);
 	}
 	self.sendAchievementsKill = function(note){
-		if(self.isBot)
-			return;
+		if(self.isBot) return;
 		send(self.id, "achievementsKill", {note:note,kill1:self.kill1,kill10:self.kill10,kill100:self.kill100,kill1k:self.kill1k,kill10k:self.kill10k,kill50k:self.kill50k,kill1m:self.kill1m,killBase:self.killBase,kill100Bases:self.kill100Bases,killFriend:self.killFriend,killCourier:self.killCourier,suicide:self.suicide,bloodTrail:self.bloodTrail});
 	}
 	self.sendAchievementsCash = function(note){
-		if(self.isBot)
-			return;
+		if(self.isBot) return;
 		send(self.id, "achievementsCash", {note:note,achs:[self.mined, self.allOres, self.mined3k, self.mined15k, self.total100k, self.total1m, self.total100m, self.total1b, self.packageTaken, self.quested, self.allQuests, self.goldTrail]});
 	}
 	self.sendAchievementsDrift = function(note){
-		if(self.isBot)
-			return;
+		if(self.isBot) return;
 		send(self.id, "achievementsDrift", {note:note,achs:[self.dr0, self.dr1, self.dr2, self.dr3, self.dr4, self.dr5, self.dr6, self.dr7, self.dr8, self.dr9, self.dr10, self.dr11]});
 	}
 	self.sendAchievementsMisc = function(note){
 		self.ms9 = !self.planetsClaimed.includes("0") && !self.planetsClaimed.includes("1"); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
-		if(self.isBot)
-			return;
+		if(self.isBot) return;
 		send(self.id, "achievementsMisc", {note:note,achs:[self.ms0, self.ms1, self.ms2, self.ms3, self.ms4, self.ms5, self.ms6, self.ms7, self.ms8, self.ms9, self.ms10]});
 	}
 	self.sendStatus = function(){
-		if(self.isBot)
-			return;
+		if(self.isBot) return;
 		send(self.id, "status", {docked:self.docked, state:self.dead,lives:self.lives});
 	}
 	self.checkMoneyAchievements = function(){
-		if(self.isBot)
-			return;
-		if(self.money >= 10000 && !self.total100k)
-			self.total100k = true;
-		else if(self.money >= 100000 && !self.total1m)
-			self.total1m = true;
-		else if(self.money >= 1000000 && !self.total100m)
-			self.total100m = true;
-		else if(self.money >= 10000000 && !self.total1b)
-			self.total1b = true;
-		else
-			return;
+		if(self.isBot) return;
+		if(self.money >= 10000 && !self.total100k) self.total100k = true;
+		else if(self.money >= 100000 && !self.total1m) self.total1m = true;
+		else if(self.money >= 1000000 && !self.total100m) self.total100m = true;
+		else if(self.money >= 10000000 && !self.total1b) self.total1b = true;
+		else return;
 		self.sendAchievementsCash(true);
 	}
 	self.checkDriftAchs = function(){
-		if(self.isBot)
-			return;
-		if(self.driftTimer >= 25 && !self.dr0)
-			self.dr0 = true;
-		else if(self.driftTimer >= 25 * 60 && !self.dr1)
-			self.dr1 = true;
-		else if(self.driftTimer >= 25 * 60 * 10 && !self.dr2)
-			self.dr2 = true;
-		else if(self.driftTimer >= 25 * 60 * 60 && !self.dr3)
-			self.dr3 = true;
-		else if(self.driftTimer >= 25 * 60 * 60 * 10 && !self.dr4)
-			self.dr4 = true;
-		else
-			return;
+		if(self.isBot) return;
+		if(self.driftTimer >= 25 && !self.dr0) self.dr0 = true;
+		else if(self.driftTimer >= 25 * 60 && !self.dr1) self.dr1 = true;
+		else if(self.driftTimer >= 25 * 60 * 10 && !self.dr2) self.dr2 = true;
+		else if(self.driftTimer >= 25 * 60 * 60 && !self.dr3) self.dr3 = true;
+		else if(self.driftTimer >= 25 * 60 * 60 * 10 && !self.dr4) self.dr4 = true;
+		else return;
 		self.sendAchievementsDrift(true);
 	}
 	self.checkTrailAchs = function(){
@@ -1464,21 +1470,36 @@ var Player = function(i){
 			if(!self.isBot){
 				var text = "~`"+self.color+"~`"+self.name + "~`yellow~` went AFK!";
 				console.log(text);
-				sendAll("chat", {msg:text});
+				chatAll(text);
 			}
 			return true;
 		}
 		return false;
 	}
 	self.changePass = function(pass){
+		if(!self.docked){
+			send(self.id, "chat", {msg:"~`red~`This command is only available when docked at a base."});
+			return;
+		}
 		if(pass.length > 32 || pass.length < 1){
 			send(self.id, "chat", {msg:"~`red~`Password must be 1-32 characters."});
 			return;
 		}
-		var currSource = 'server/players/' + self.name + "[" + hash(self.password) + '.txt';
-		if (fs.existsSync(currSource))
-			fs.unlinkSync(currSource);
-		self.password = pass;
+		self.tentativePassword = pass;
+		send(self.id, "chat", {msg:"~`lime~`Type \"/confirm your_new_password\" to complete the change."});
+	}
+	self.confirmPass = function(pass){
+		if(!self.docked){
+			send(self.id, "chat", {msg:"~`red~`This command is only available when docked at a base."});
+			return;
+		}
+		if(pass !== self.tentativePassword){
+			send(self.id, "chat", {msg:"~`red~`Passwords do not match! Start over from /password."});
+			return;
+		}
+		var currSource = 'server/players/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt';
+		if (fs.existsSync(currSource)) fs.unlinkSync(currSource);
+		self.password = self.tentativePassword;
 		self.save();
 		send(self.id, "chat", {msg:"~`lime~`Password changed successfully."});
 	}
@@ -1498,7 +1519,7 @@ var Player = function(i){
 			var newPosition = lbIndex(self.experience);
 			if(newPosition < oldPosition && newPosition != -1 && self.name !== "GUEST" && !self.isBot){
 				if(newPosition < 501) sendAll('chat', {msg:"~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!"});
-				else send(self.id, {msg:"`yellow~` Your global rank is now #" + newPosition + "!"});
+				else send(self.id, {msg:"~`yellow~` Your global rank is now #" + newPosition + "!"});
 			}
 			self.updateRank();
 		}
@@ -1506,6 +1527,10 @@ var Player = function(i){
 		else if(type === "life" && self.lives < 20) self.lives+=amt;
 		self.experience = Math.max(self.experience, 0);
 		send(self.id,"spoils",{type:type,amt:amt});
+	}
+	self.r = function(msg){
+		if(self.reply.includes(" ")) self.reply = self.reply.split(" ")[1];
+		self.pm("/pm "+self.reply+" "+msg.substring(3));
 	}
 	self.pm = function(msg){ // msg looks like "/pm luunch hey there pal"
 		if(msg.split(" ").length < 3){
@@ -1517,20 +1542,29 @@ var Player = function(i){
 		send(self.id, "chat", {msg:"Sending private message to "+name+"..."});
 		for(var p in PLAYER_LIST){
 			var player = PLAYER_LIST[p];
-			if(player.name === name){
+			if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
 				send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
+				send(self.id, "chat", {msg:"Message sent!"});
+				self.reply = player.name;
+				player.reply = self.name;
 				return;
 			}	
 		}for(var p in DOCKED_LIST){
 			var player = DOCKED_LIST[p];
-			if(player.name === name){
+			if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
 				send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
+				send(self.id, "chat", {msg:"Message sent!"});
+				self.reply = player.name;
+				player.reply = self.name;
 				return;
 			}	
 		}for(var p in DEAD_LIST){
 			var player = DEAD_LIST[p];
-			if(player.name === name){
+			if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
 				send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
+				send(self.id, "chat", {msg:"Message sent!"});
+				self.reply = player.name;
+				player.reply = self.name;
 				return;
 			}	
 		}
@@ -1582,8 +1616,7 @@ var Orb = function(ownr, i, weaponID){
 		goalAngle:0
 	}
 	self.tick = function(){
-		if(self.timer++ > 3 * wepns[weaponID].Range / wepns[weaponID].Speed)
-			self.die();
+		if(self.timer++ > 3 * wepns[weaponID].Range / wepns[weaponID].Speed) self.die();
 		self.move();
 	}
 	self.move = function(){
@@ -1594,8 +1627,7 @@ var Orb = function(ownr, i, weaponID){
 			if(target == 0) target = ASTEROID_LIST[self.locked];
 			if(typeof target === 'undefined') self.locked = 0;
 			else{
-				if(target.type === "Player")
-					target.isLocked = true;
+				if(target.type === "Player") target.isLocked = true;
 				if(target.sx == self.sx && target.sy == self.sy && hypot2(target.x,self.x,target.y,self.y) < square(100) && target.turretLive != false){
 					target.dmg(self.dmg, self);
 					self.die();
@@ -1608,12 +1640,10 @@ var Orb = function(ownr, i, weaponID){
 				self.vy *= .9;
 			}
 		}
-		if(self.locked == 0)
-			self.lockedTimer = 0;
+		if(self.locked == 0) self.lockedTimer = 0;
 		self.x+=self.vx;
 		self.y+=self.vy;
-		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0)
-			self.die();
+		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();
 	}
 	self.die = function(){
 		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:self.vx, dy:self.vy}, self.sx, self.sy);
@@ -1654,18 +1684,15 @@ var Bullet = function(ownr, i, weaponID, angl, info){
 		self.dist+=wepns[weaponID].Speed / 10;
 		if(self.wepnID == 28 && self.time > 25 * 3){
 			var base = bases[self.sx][self.sy];
-			if(square(base.x-self.x)+square(base.y-self.y)<square(5000))
-				return;
+			if(square(base.x-self.x)+square(base.y-self.y)<square(5000)) return;
 			self.dieAndMakeVortex();
 		}
-		else if(self.dist>wepns[weaponID].Range)
-			self.die();
+		else if(self.dist>wepns[weaponID].Range) self.die();
 	}
 	self.move = function(){
 		self.x+=self.vx;
 		self.y+=self.vy;
-		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0)
-			self.die();
+		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();
 			
 		var b = bases[self.sx][self.sy];
 		if(b != 0 && b.turretLive && b.color!=self.color && square(b.x - self.x) + square(b.y - self.y) < square(16 + 32)){
@@ -1737,17 +1764,14 @@ var Mine = function(ownr, i, weaponID){
 	self.tick = function(){
 		self.x += self.vx;
 		self.y += self.vy;
-		if(self.wepnID > 25 && self.time++ > 25)
-			self.die();
-		if(self.time++ > 25 * 3 * 60)
-			self.die();
+		if(self.wepnID > 25 && self.time++ > 25) self.die();
+		if(self.time++ > 25 * 3 * 60) self.die();
 	}
 	self.die = function(){
 		var power = 0;
 		if(self.wepnID == 15 || self.wepnID == 33)//mine, grenade
 			power = 400;
-		else if(self.wepnID == 32)
-			power = 2000;
+		else if(self.wepnID == 32) power = 2000;
 		for(var i in PLAYER_LIST){
 			var p = PLAYER_LIST[i];
 			if(p.sx == self.sx && p.sy == self.sy)
@@ -1780,13 +1804,13 @@ var Package = function(ownr, i, type){
 		time:0,
 	}
 	self.tick = function(){
-		if(self.time++ > 4000){
+		if(self.time++ > 2000){
 			sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
 			delete PACKAGE_LIST[self.id];
 		}
 		for(var i in PLAYER_LIST){
 			var p = PLAYER_LIST[i];
-			if(p.sx == self.sx && p.sy == self.sy && (p.x - self.x) * (p.x - self.x) + (p.y - self.y) * (p.y - self.y) < (16 + ships[p.ship].width) * (16 + ships[p.ship].width)){
+			if(p.sx == self.sx && p.sy == self.sy && square(p.x - self.x) + square(p.y - self.y) < square(16 + ships[p.ship].width)){
 				if(self.type == 0){
 					if(!p.packageTaken){
 						p.packageTaken = true;
@@ -1797,8 +1821,7 @@ var Package = function(ownr, i, type){
 					var amt = Math.floor(Math.random() * 2000) + 2000;
 					if(contents == 'ore'){//second bit is a fix for kristens hull exploit
 						amt = Math.min(amt, p.capacity - p.iron - p.aluminium - p.silver - p.platinum);
-						if(amt == p.capacity - p.iron - p.aluminium - p.silver - p.platinum)
-							strongLocal("Cargo Bay Full", p.x, p.y + 256, p.id);
+						if(amt == p.capacity - p.iron - p.aluminium - p.silver - p.platinum) strongLocal("Cargo Bay Full", p.x, p.y + 256, p.id);
 					}
 					var title = "Package collected: ";
 					if(contents == 'money'){
@@ -1819,6 +1842,10 @@ var Package = function(ownr, i, type){
 					break;
 				} else if(self.type == 1) {
 					p.spoils("money",1000);
+					delete PACKAGE_LIST[self.id];
+					break;
+				} else if(self.type == 3) {
+					p.refillAllAmmo();
 					delete PACKAGE_LIST[self.id];
 					break;
 				} else {
@@ -1880,13 +1907,14 @@ var Asteroid = function(i, h, sxx, syy, metal){
 		va:(Math.random() - .5) / 10,
 	}
 	self.tick = function(){
+		if(Math.random() < .0001) self.die(0);
 		self.move();
 		if(Math.abs(self.vx) + Math.abs(self.vy) > 1.5){
 			for(var i in PLAYER_LIST){
 				var p = PLAYER_LIST[i];
 				if(p.sx == self.sx && p.sy == self.sy)
 					if(square(p.x - self.x) + square(p.y - self.y) < square(32 + ships[p.ship].width) / 10){
-						p.dmg(5*Math.hypot(p.vx-self.vx,p.vy-self.vy));
+						p.dmg(5*Math.hypot(p.vx-self.vx,p.vy-self.vy), self);
 						sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
 						p.vx = 200*(Math.cbrt(p.x - self.x))/Math.max(1,.001+Math.hypot(p.x - self.x,p.y - self.y));
 						p.vy = 200*(Math.cbrt(p.y - self.y))/Math.max(1,.001+Math.hypot(p.x - self.x,p.y - self.y));
@@ -2018,17 +2046,13 @@ var Base = function(i, b, sxx, syy, col, x, y){
 		speed:0,//vs unused but there for bullets
 	}
 	self.tick = function(rbNow,bbNow){
-		if(self.isBase && Math.random()<botFrequency/square(rbNow+bbNow+5))
-			spawnBot(self.sx,self.sy,self.color,rbNow,bbNow);
-		if(!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25*150) == 0)))
-			self.turretLive = true;
+		if(self.isBase && Math.random()<botFrequency/square(rbNow+bbNow+5)) spawnBot(self.sx,self.sy,self.color,rbNow,bbNow);
+		if(!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25*150) == 0))) self.turretLive = true;
 		self.move();
 		self.empTimer--;
 		self.reload--;
-		if(self.health < self.maxHealth)
-			self.health+=self.heal;
-		if(tick % 25 == 0)
-			self.giveToOwner();
+		if(self.health < self.maxHealth) self.health+=self.heal;
+		if(tick % 25 == 0) self.giveToOwner();
 	}
 	self.giveToOwner = function(){
 		if(self.owner == 0) return;
@@ -2047,8 +2071,7 @@ var Base = function(i, b, sxx, syy, col, x, y){
 		self.experience = self.money = self.kills = 0;
 	}
 	self.move = function(){
-		if(self.empTimer > 0)
-			return;
+		if(self.empTimer > 0) return;
 		var c = 0;
 		var cDist2 = 1000000000;
 		for(var i in PLAYER_LIST){
@@ -2101,18 +2124,15 @@ var Base = function(i, b, sxx, syy, col, x, y){
 		var nearP = 0;
 		for(var i in PLAYER_LIST){
 			var p = PLAYER_LIST[i];
-			if(p.color == self.color || p.sx != self.sx || p.sy != self.sy)
-				continue;
+			if(p.color == self.color || p.sx != self.sx || p.sy != self.sy) continue;
 			if(nearP == 0){
 				nearP = p;
 				continue;
 			}
 			var dx = p.x - self.x, dy = p.y - self.y;
-			if(dx * dx + dy * dy < square(nearP.x - self.x)+square(nearP.y - self.y))
-				nearP = p;
+			if(dx * dx + dy * dy < square(nearP.x - self.x)+square(nearP.y - self.y)) nearP = p;
 		}
-		if(nearP == 0)
-			return;
+		if(nearP == 0) return;
 		var r = Math.random();
 		var beam = Beam(self, r, 8, nearP, self);
 		BEAM_LIST[r] = beam;
@@ -2123,22 +2143,17 @@ var Base = function(i, b, sxx, syy, col, x, y){
 		self.giveToOwner();
 		self.turretLive = false;
 		sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
-		if(b.type == 'Asteroid')
-			return;
-		if(typeof b.owner !== "undefined" && b.owner.type === "Player")
-			sendAll('chat', {msg:("The base at sector ~`" + col + "~`" + String.fromCharCode(97 + sxx).toUpperCase() + (syy + 1) + "~`yellow~` was destroyed by ~`" + b.color + "~`" + (b.owner.name===""?"a drone":b.owner.name) + "~`yellow~`'s `~"+b.wepnID+"`~.")});
-		if(b.owner.type === "Player")
-			b.owner.baseKilled();
-		else
-			console.log("IMPORTANT:"+b.type + b.owner.type)
+		if(b.type == 'Asteroid') return;
+		if(typeof b.owner !== "undefined" && b.owner.type === "Player") sendAll('chat', {msg:("The base at sector ~`" + col + "~`" + String.fromCharCode(97 + sxx).toUpperCase() + (syy + 1) + "~`yellow~` was destroyed by ~`" + b.color + "~`" + (b.owner.name===""?"a drone":b.owner.name) + "~`yellow~`'s `~"+b.wepnID+"`~.")});
+		if(b.owner.type === "Player") b.owner.baseKilled();
+		else 	console.log("IMPORTANT:"+b.type + b.owner.type)
 		b.owner.onBaseKill();
 		self.health = self.maxHealth;
 		if(raidTimer < 15000){
 			b.owner.points++;
 			for(var i in PLAYER_LIST){
 				var p = PLAYER_LIST[i];
-				if(p.sx == self.sx && p.sy == self.sy && p.color !== self.color)
-					p.points++;
+				if(p.sx == self.sx && p.sy == self.sy && p.color !== self.color) p.points++;
 			}
 		}
 		var expGained = 50;
@@ -2163,14 +2178,11 @@ var Base = function(i, b, sxx, syy, col, x, y){
 		self.health-=d;
 		if(self.health < 0)self.die(origin);
 		note('-'+d, self.x, self.y - 64, self.sx, self.sy);
-		send(self.id, 'dmg', {});
 		return self.health < 0;
 	}
 	self.spoils = function(type,amt){
-		if(type === "experience")
-			self.experience+=amt;
-		if(type === "money")
-			self.money+=amt;
+		if(type === "experience") self.experience+=amt;
+		if(type === "money") self.money+=amt;
 	}
 	self.onBaseKill = function(){
 		//nothing.
@@ -2197,11 +2209,9 @@ var Vortex = function(i, x, y, sxx, syy, size, ownr, isWorm){
 		self.move();
 		if(self.owner != 0){
 			self.size -= 6;
-			if(self.size < 0)
-				self.die();
+			if(self.size < 0) self.die();
 		}
-		else
-			self.size = 2500;
+		else self.size = 2500;
 	}
 	self.move = function(){
 		if(self.isWorm){
@@ -2218,8 +2228,7 @@ var Vortex = function(i, x, y, sxx, syy, size, ownr, isWorm){
 			self.syo = Math.floor(byo * mapSz);
 			self.xo = ((bxo * mapSz) % 1) * sectorWidth;
 			self.yo = ((byo * mapSz) % 1) * sectorWidth;
-			if(tick % 50 == 0)
-				sendAll('worm', {bx: bx, by: by, bxo: bxo, byo: byo});
+			if(tick % 50 == 0) sendAll('worm', {bx: bx, by: by, bxo: bxo, byo: byo});
 		}
 		for(var i in PLAYER_LIST){
 			var p = PLAYER_LIST[i];
@@ -2228,8 +2237,9 @@ var Vortex = function(i, x, y, sxx, syy, size, ownr, isWorm){
 				var dx = p.x - self.x;
 				var dist = Math.pow(dy * dy + dx * dx, .25);
 				var a = Math.atan2(dy, dx);
-				p.x -= .25 * self.size / dist * Math.cos(a);
-				p.y -= .25 * self.size / dist * Math.sin(a);
+				var guestMult = (p.name === "GUEST" || p.isNNBot) ? -1 : 1; 
+				p.x -= guestMult * .25 * self.size / dist * Math.cos(a);
+				p.y -= guestMult * .25 * self.size / dist * Math.sin(a);
 				if(dist < 15 && !self.isWorm){
 					p.die(self);
 					if(p.e){
@@ -2314,9 +2324,8 @@ var Blast = function(ownr, i, weaponID){
 		}
 	}
 	self.hit = function(b){
-		console.log("blast hit");
-		if(self.wepnID == 25 && self.color === b.color) b.EMP(wepns[25].Charge);
-		else if(self.wepnID == 34 && self.color === b.color) b.dmg(self.dmg, self);
+		if(self.wepnID == 25 && self.owner.color !== b.color) b.EMP(wepns[25].Charge*.6);
+		else if(self.wepnID == 34 && self.owner.color !== b.color) b.dmg(self.dmg, self);
 		else if(self.wepnID == 41) b.brainwashedBy = self.owner.id;
 	}
 	return self;
@@ -2369,7 +2378,7 @@ var Missile = function(ownr, i, weaponID, angl){
 				if(target.sx == self.sx && target.sy == self.sy && hypot2(target.x,self.x,target.y,self.y) < 10000*(self.wepnID == 38?5:1) && target.turretLive != false){
 					target.dmg(self.dmg, self);
 					self.die();
-					if(self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(2 * 25);
+					if(self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(40);
 					return;
 				}
 				if(self.wepnID != 38){
@@ -2419,35 +2428,35 @@ io.sockets.on('connection', function(socket){
 	var instance = false;
 	socket.id = Math.random();
 	SOCKET_LIST[socket.id]=socket;
-	var ip = socket.request.connection.remoteAddress;
+
+	var ip = socket.handshake.headers['x-real-ip'] || socket.handshake.address.address;
+	console.log(ip + " Connected!");
+	flood(ip);
+
 	var sockcol = 0;
 	socket.on('lore',function(data){
 		sockcol = data.alien;
 		socket.emit("lored",{pc:sockcol});
 	});
 	socket.on('guest',function(data){
-		if(instance)
-			return;
+		flood(ip);
+		if(instance) return;
 		var player = Player(socket.id);
 		PLAYER_LIST[socket.id]=player;
 		instance = true;
 		player.ip = ip;
 		player.name = "GUEST";
 		player.color = sockcol?"red":"blue";
-		if(mapSz % 2 == 0)
-			player.sx = player.sy = (sockcol?(mapSz / 2 - 1):(mapSz / 2));
-		else
-			player.sx = player.sy = (sockcol?(mapSz / 2 - 1.5):(mapSz / 2 + .5));
-		for(var i = 0; i < ships[player.ship].weapons; i++)
-			player.weapons[i] = -1;
-		for(var i = ships[player.ship].weapons; i < 10; i++)
-			player.weapons[i] = -2;
+		if(mapSz % 2 == 0) player.sx = player.sy = (sockcol?(mapSz / 2 - 1):(mapSz / 2));
+		else player.sx = player.sy = (sockcol?(mapSz / 2 - 1.5):(mapSz / 2 + .5));
+		for(var i = 0; i < ships[player.ship].weapons; i++) player.weapons[i] = -1;
+		for(var i = ships[player.ship].weapons; i < 10; i++) player.weapons[i] = -2;
 		player.weapons[0] = 0;
 		socket.emit("guested",{});
 		player.sendStatus();
 		player.getAllBullets();
 		player.getAllPlanets();
-		player.va = ships[player.ship].agility * 1.2;
+		player.va = ships[player.ship].agility * .08 * player.agility2;
 		player.thrust = ships[player.ship].thrust * player.thrust2;
 		player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
 		player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
@@ -2455,11 +2464,13 @@ io.sockets.on('connection', function(socket){
 		sendWeapons(player.id);
 	});
 	socket.on('register',function(data){
-		var user = data.user.toLowerCase(), pass = data.pass;
+		flood(ip);
+		var user = data.user, pass = data.pass;
 		if(typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)){
 			socket.emit("invalidReg", {reason:2});
 			return;
 		}
+		user = user.toLowerCase();
 		if(typeof pass !== "string" || pass.length > 32 || pass.length < 1){
 			socket.emit("invalidReg", {reason:3});
 			return;
@@ -2475,11 +2486,9 @@ io.sockets.on('connection', function(socket){
 					break;
 				}
 			}
-			if(!valid)
-				return;
+			if(!valid) return;
 			var player = DOCKED_LIST[socket.id];
-			if(typeof player === "undefined")
-				return;
+			if(typeof player === "undefined") return;
 			player.name = user;
 			player.password = pass;
 			socket.emit("registered",{user:data.user,pass:data.pass});
@@ -2492,9 +2501,10 @@ io.sockets.on('connection', function(socket){
 		socket.emit("raid", {raidTimer:raidTimer})
 	});
 	socket.on('login',function(data){
+		flood(ip);
 		if(instance) return;
 		//Validate and save IP
-		var name = data.user.toLowerCase(), pass = data.pass;
+		var name = data.user, pass = data.pass;
 		if(typeof name !== "string" || name.length > 16 || name.length < 4 || /[^a-zA-Z0-9_]/.test(name)){
 			socket.emit("invalidCredentials", {});
 			return;
@@ -2503,28 +2513,29 @@ io.sockets.on('connection', function(socket){
 			socket.emit("invalidCredentials", {});
 			return;
 		}
+		name = name.toLowerCase();
 		var readSource = 'server/players/'+name+"["+hash(data.pass)+'.txt';
 		if (!fs.existsSync(readSource)){
 			socket.emit("invalidCredentials", {});
 			return;
 		}
 		for(var i in PLAYER_LIST)
-			if(PLAYER_LIST[i].name === name){// || socket.handshake.headers.cookie == PLAYER_LIST[i].cookie){
+			if(PLAYER_LIST[i].name === name || PLAYER_LIST[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == PLAYER_LIST[i].cookie){
 				socket.emit("accInUse", {});
 				return;
 			}
 		for(var i in DOCKED_LIST)
-			if(DOCKED_LIST[i].name === name){// || socket.handshake.headers.cookie == DOCKED_LIST[i].cookie){
+			if(DOCKED_LIST[i].name === name || DOCKED_LIST[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == DOCKED_LIST[i].cookie){
 				socket.emit("accInUse", {});
 				return;
 			}
 		for(var i in DEAD_LIST)
-			if(DEAD_LIST[i].name === name){// || socket.handshake.headers.cookie == DEAD_LIST[i].cookie){
+			if(DEAD_LIST[i].name === name || DEAD_LIST[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == DEAD_LIST[i].cookie){
 				socket.emit("accInUse", {});
 				return;
 			}
 		for(var i in LEFT_LIST)
-			if(LEFT_LIST[i].name === name){// || socket.handshake.headers.cookie == LEFT_LIST[i].cookie){
+			if(LEFT_LIST[i].name === name){// || LEFT_LIST[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == LEFT_LIST[i].cookie){
 				socket.emit("accInUse", {});
 				return;
 			}
@@ -2535,24 +2546,21 @@ io.sockets.on('connection', function(socket){
 		player.password = pass;
 		socket.emit("loginSuccess",{});
 		
-		console.log("login"+name+ip);
+		console.log(ip + " logged in as " + name + "!");
 	
 		//Load account
 		if (fs.existsSync(readSource)) {
 			var fileData = fs.readFileSync(readSource, "utf8").split(':');
 			player.color = fileData[0];
 			player.ship = parseFloat(fileData[1]);
-			player.trail = parseFloat(fileData[2]);
-			for(var i = 0; i < 9; i++)
-				player.weapons[i] = parseFloat(fileData[3+i]);
+			for(var i = 0; i < 9; i++) player.weapons[i] = parseFloat(fileData[3+i]);
 			player.weapons[9] = parseFloat(fileData[83]);
 			player.sx = Math.floor(parseFloat(fileData[12]));
 			player.sy = Math.floor(parseFloat(fileData[13]));
-			if(player.sx > mapSz - 1)
-				player.sx = mapSz - 1;
-			if(player.sy > mapSz - 1)
-				player.sy = mapSz - 1;
+			if(player.sx > mapSz - 1) player.sx = mapSz - 1;
+			if(player.sy > mapSz - 1) player.sy = mapSz - 1;
 			player.name = fileData[14];
+			player.trail = parseFloat(fileData[2]) % 16 + (player.name.includes(" ")?16:0);
 			player.money = parseFloat(fileData[15]);
 			player.kills = parseFloat(fileData[16]);
 			player.planetsClaimed = fileData[17];
@@ -2566,11 +2574,11 @@ io.sockets.on('connection', function(socket){
 			player.y = parseFloat(fileData[25]);
 			player.thrust2 = Math.max(1,parseFloat(fileData[26]));
 			player.radar2 = Math.max(1,parseFloat(fileData[27]));
+			if(fileData.length > 87) player.agility2 = Math.max(1,parseFloat(fileData[87]));
 			player.capacity2 = Math.max(1,parseFloat(fileData[28]));
 			player.maxHealth2 = Math.max(1,parseFloat(fileData[29]));
 			player.energy2 = parseFloat(fileData[84]);
-			if(!(player.energy2 > 0))//undefined test
-				player.energy2 = 1;
+			if(!(player.energy2 > 0)) player.energy2 = 1; //test undefined
 			player.kill1 = parseBoolean(fileData[30]);
 			player.kill10 = parseBoolean(fileData[31]);
 			player.kill100 = parseBoolean(fileData[32]);
@@ -2637,25 +2645,18 @@ io.sockets.on('connection', function(socket){
 		PLAYER_LIST[socket.id]=player;
 		player.getAllBullets();
 		player.getAllPlanets();
-		if(player.sx >= mapSz)
-			player.sx--;
-		if(player.sy >= mapSz)
-			player.sy--;
+		if(player.sx >= mapSz) player.sx--;
+		if(player.sy >= mapSz) player.sy--;
 			
 		var text = "~`" + player.color + "~`"+player.name+'~`yellow~` logged in!';
 		console.log(text);
-		sendAll("chat", {msg:text});
+		chatAll(text);
 		player.cookie = socket.handshake.headers.cookie;
-		player.va = ships[player.ship].agility * 1.2
+		player.va = ships[player.ship].agility * .08 * player.agility2;
 		player.thrust = ships[player.ship].thrust * player.thrust2;
 		player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
 		player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-		player.maxHealth2 = Math.min(player.maxHealth2, 3.6);
-		player.thrust2 = Math.min(player.thrust2, 3.6);
-		player.radar2 = Math.min(player.radar2, 3.6);
-		player.capacity2 = Math.min(player.capacity2, 3.6);
-		if(!data.amNew)
-			socket.emit('sectors', {sectors:sectors});
+		if(!data.amNew) socket.emit('sectors', {sectors:sectors});
 		sendWeapons(player.id);
 	});
 	socket.on('disconnect',function(data){
@@ -2663,124 +2664,110 @@ io.sockets.on('connection', function(socket){
 		if(typeof player === "undefined"){
 			LEFT_LIST[socket.id] = 0;
 			player = DOCKED_LIST[socket.id];
-			if(typeof player === "undefined")
-				player = DEAD_LIST[socket.id];
-			if(typeof player === "undefined")
-				return;
-		} else
-		LEFT_LIST[socket.id] = 150;
+			if(typeof player === "undefined") player = DEAD_LIST[socket.id];
+			if(typeof player === "undefined") return;
+		} else LEFT_LIST[socket.id] = 150;
 		var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game!";
 		console.log(text);
-		sendAll("chat", {msg:text});
+		chatAll(text);
 	});
 	socket.on('pingmsg',function(data){
 		var player = PLAYER_LIST[socket.id];
 		if(typeof player === "undefined"){
 			player = DOCKED_LIST[socket.id];
-			if(typeof player === "undefined")
-				player = DEAD_LIST[socket.id];
-			if(typeof player === "undefined")
-				return;
+			if(typeof player === "undefined") player = DEAD_LIST[socket.id];
+			if(typeof player === "undefined") return;
 		}
 		socket.emit('reping', {time:data.time});
 		player.pingTimer = 250;
 	});
 	socket.on('key',function(data){
 		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
-		if(typeof player === "undefined")
-			player = DEAD_LIST[socket.id];
-		if(typeof player === "undefined")
-			return;
-		if(typeof data.inputId === 'undefined' || typeof data.state === 'undefined')
-			return;
+		if(typeof player === "undefined") player = DEAD_LIST[socket.id];
+		if(typeof player === "undefined") return;
+		if(typeof data.inputId === 'undefined' || typeof data.state === 'undefined') return;
 		player.afkTimer = 30 * 25 * 60;
-		if(player.empTimer > 0)
-			return;
-		if(data.inputId==='w')
-			player.w = data.state;
+		if(player.dead && data.inputId==='e'){
+			player.dead = false;
+			PLAYER_LIST[player.id] = player;
+			delete DEAD_LIST[player.id];
+			player.sendStatus();
+		}
+		if(player.empTimer > 0) return;
+		if(!player.docked && data.inputId==='e') player.juke(false);
+		if(data.inputId==='w') player.w = data.state;
 		if(data.inputId==='shift'){
 			player.e = data.state;
-			if(!data.state)
-				player.checkDriftAchs();
+			if(!data.state) player.checkDriftAchs();
 		}
-		if(data.inputId==='s')
-			player.s = data.state;
-		if(data.inputId==='a')
-			player.a = data.state;
-		if(data.inputId==='d')
-			player.d = data.state;
-		if(data.inputId==='q' && !player.docked)
-			player.juke(true);
-		if(data.inputId==='x')
-			player.dock();
-		if(data.inputId==='z')
-			player.z = data.state;
-		if(data.inputId==='e'){
-			if(!player.docked)
-				player.juke(false);
-			if(player.dead){
-				player.dead = false;
-				PLAYER_LIST[player.id] = player;
-				delete DEAD_LIST[player.id];
-				player.sendStatus();
-			}
-		}if(data.inputId===' '){
-			player.space = data.state;
+		if(data.inputId==='s') player.s = data.state;
+		if(data.inputId==='a') player.a = data.state;
+		if(data.inputId==='d') player.d = data.state;
+		if(data.inputId==='q' && !player.docked) player.juke(true);
+		if(data.inputId==='x') player.dock();
+		if(data.inputId==='z') player.z = data.state;
+		if(data.inputId===' '){ player.space = data.state;
 		}
 	});
 	socket.on('chat',function(data){
 		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
 		if(typeof player === "undefined") player = DEAD_LIST[socket.id];
-		if(typeof player === "undefined") return;
-		if(typeof data.msg !== "string") return;
+		if(typeof player === "undefined" || typeof data.msg !== "string") return;
 		if(guestsCantChat && player.name === "GUEST"){
 			socket.emit("chat",{msg:'You must create an account in the base before you can chat!', color:'yellow'});
 			return;
 		}
+		if(typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128) return;
 		data.msg = data.msg.trim();
+		if(!player.name.includes(" ")) data.msg = data.msg.replace(/~`/ig, '');
+		data.msg = (" "+data.msg+" ").replace(/fuck/ig, '****').replace(/fuk/ig, '****').replace(/vagina/ig, '******').replace(/fvck/ig, '****').replace(/penis/ig, '*****').replace(/slut/ig, '****').replace(/ tit /ig, ' *** ').replace(/ tits /ig, ' **** ').replace(/whore/ig, '****').replace(/shit/ig, '****').replace(/cunt/ig, '****').replace(/bitch/ig, '*****').replace(/faggot/ig, '******').replace(/ fag /ig, ' *** ').replace(/nigger/ig, '******').replace(/nigga/ig, '******').replace(/dick/ig, '****').replace(/ ass /ig, ' *** ').replace(/pussy/ig, '*****').replace(/ cock /ig, ' **** ').trim();
+		
+		if(player.muteTimer > 0) return;
+		player.chatTimer += 100;
+		console.log(player.name + ": " + data.msg);
+		var spaces = "";
+		for(var i = player.name.length; i < 16; i++) spaces += " ";
+		if(player.chatTimer > 600){
+			socket.emit('chat', {msg:("~`red~`You have been muted for " +Math.floor(player.muteCap/25) + " seconds!")});
+			player.muteTimer = player.muteCap;
+			player.muteCap *= 2;
+		}
+
 		if(player.name !== "GUEST" && data.msg.startsWith("/")){
 			if(data.msg.startsWith("/password ")) player.changePass(data.msg.substring(10));
+			else if(data.msg.startsWith("/me ")) chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + data.msg.substring(4));
+			else if(data.msg.startsWith("/confirm ")) player.confirmPass(data.msg.substring(9));
+			else if(data.msg === "/changeteam") send(player.id, "chat", {msg:"Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type /confirmteam to continue."});
+			else if(data.msg === "/confirmteam" && player.experience > 10000) {player.color = (player.color === "red"?"blue":"red"); player.money *= .9; player.experience *= .9; player.save();}
 			else if(data.msg.toLowerCase().startsWith("/pm ")) player.pm(data.msg);
+			else if(data.msg.toLowerCase().startsWith("/r ")) player.r(data.msg);
 			else if(data.msg.toLowerCase().startsWith("/swap ")) player.swap(data.msg);
-			else if(data.msg.startsWith("/broadcast ") && player.name.startsWith("_")) sendAll('chat', {msg:"~`#f66~`       BROADCAST: ~`lime~`"+data.msg.substring(11)});
-			else if(data.msg === "/reboot" && player.name.startsWith("_")) initReboot();
-			else if(data.msg === "/undecayPlayers" && player.name.startsWith("_")) decayPlayers(undecay);
-			else if(data.msg === "/decayPlayers" && player.name.startsWith("_")) decayPlayers(decay);
-			else if(data.msg === "/saveTurrets" && player.name.startsWith("_")) saveTurrets();
+			else if(player.name.includes(" ") && data.msg.startsWith("/broadcast ")) sendAll('chat', {msg:"~`#f66~`       BROADCAST: ~`lime~`"+data.msg.substring(11)});
+			else if(player.name.includes(" ") && data.msg.startsWith("/mute ")) mute(data.msg);
+			else if(player.name.includes("[O]")){
+				if(data.msg === "/reboot") initReboot();
+				else if(data.msg.startsWith("/smite ")) smite(data.msg);
+				else if(data.msg === "/undecayPlayers") decayPlayers(undecay);
+				else if(data.msg === "/spawnNN") spawnNNBot(player.sx, player.sy, Math.random()>.5?"red":"blue");
+				else if(data.msg === "/decayPlayers") decayPlayers(decay);
+				else if(data.msg === "/saveTurrets") saveTurrets();
+			}
 			else send(player.id, "chat", {msg:"~`red~`Unknown Command."});
 			return;
 		}
-		if(typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128)
-			return;
-		if(player.chatTimer > 1000) return;
-		if(player.name !== "_haze_") data.msg = data.msg.replace(/~`/ig, '');
-		data.msg = (" "+data.msg+" ").replace(/fuck/ig, '****').replace(/fuk/ig, '****').replace(/vagina/ig, '******').replace(/fvck/ig, '****').replace(/penis/ig, '*****').replace(/slut/ig, '****').replace(/ tit /ig, ' *** ').replace(/ tits /ig, ' **** ').replace(/whore/ig, '****').replace(/shit/ig, '****').replace(/cunt/ig, '****').replace(/bitch/ig, '*****').replace(/faggot/ig, '******').replace(/ fag /ig, ' *** ').replace(/nigger/ig, '******').replace(/nigga/ig, '******').replace(/dick/ig, '****').replace(/ ass /ig, ' *** ').replace(/pussy/ig, '*****').replace(/ cock /ig, ' **** ').trim();
-		player.chatTimer *= 2;
-		console.log(player.name + ": " + data.msg);
-		var spaces = "";
-		for(var i = player.name.length; i < 16; i++)
-			spaces += " ";
 			
-		const finalMsg = ("~`" + player.color + "~`" + spaces + player.name + "~`yellow~`: " + data.msg);
-		if(player.globalChat == 0)
-			sendAll('chat', {msg:finalMsg});//sendTeam(player.color, 'chat', {msg:finalMsg});
-		if(player.chatTimer > 1000)
-			socket.emit('chat', {msg:("~`red~`You have been muted for " +Math.floor((player.chatTimer-950) / 25)+ " seconds!")});
+		const finalMsg = "~`" + player.color + "~`" + spaces + player.name + "~`yellow~`: " + data.msg;
+		if(player.globalChat == 0) sendAll('chat', {msg:finalMsg});//sendTeam(player.color, 'chat', {msg:finalMsg});
 	});
 	socket.on('toggleGlobal',function(data){
 		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
-		if(typeof player === "undefined")
-			player = DEAD_LIST[socket.id];
-		if(typeof player === "undefined")
-			return;
+		if(typeof player === "undefined") player = DEAD_LIST[socket.id];
+		if(typeof player === "undefined") return;
 		player.globalChat = (player.globalChat+1)%2;
 	});
 	socket.on('sell',function(data){
 		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined")
-			return;
-		if(typeof data.item !== 'string' || !player.docked)
-			return;
+		if(typeof player === "undefined" || typeof data.item !== 'string' || !player.docked) return;
 		if(data.item == 'iron'){
 			player.money += player.iron * 1.5;
 			player.iron = 0;
@@ -2805,16 +2792,13 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('buyShip',function(data){
 		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || typeof data.ship !== 'number')
-			return;
+		if(typeof player === "undefined" || typeof data.ship !== 'number') return;
 		data.ship = Math.floor(data.ship);
-		if(data.ship > player.rank || data.ship < 0 || data.ship > ships.length || data.ship == player.ship)
-			return;
+		if(data.ship > player.rank || data.ship < 0 || data.ship > ships.length || data.ship == player.ship) return;
 		var price = -ships[player.ship].price;
 		price*=3/4;
 		price += ships[data.ship].price;
-		if(player.money < price)
-			return;
+		if(player.money < price) return;
 			
 		//sell all ore
 		player.money += (player.aluminium+player.platinum+player.silver+player.iron) * 1.5;
@@ -2822,14 +2806,12 @@ io.sockets.on('connection', function(socket){
 			
 		player.money -= price;
 		player.ship = data.ship;
-		player.va = ships[data.ship].agility * 1.2;
+		player.va = ships[data.ship].agility * .08 * player.agility2;
 		player.thrust = ships[data.ship].thrust * player.thrust2;
 		player.maxHealth = Math.round(player.health = ships[data.ship].health * player.maxHealth2);
 		player.capacity = Math.round(ships[data.ship].capacity * player.capacity2);
 		player.equipped = 0;
-		for(var i = 0; i < 10; i++)
-			if(player.weapons[i]==-2 && i < ships[player.ship].weapons)
-				player.weapons[i] = -1;
+		for(var i = 0; i < 10; i++) if(player.weapons[i]==-2 && i < ships[player.ship].weapons) player.weapons[i] = -1;
 		player.calculateGenerators();
 		socket.emit('equip', {scroll:player.equipped});
 		sendWeapons(socket.id);
@@ -2850,11 +2832,9 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('buyLife',function(data){
 		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || player.lives >= 20)
-			return;
+		if(typeof player === "undefined" || player.lives >= 20) return;
 		var price = expToLife(player.experience,player.name === "GUEST");
-		if(player.money < price)
-			return;
+		if(player.money < price) return;
 		player.money -= price;
 		player.lives++;
 		player.sendStatus();
@@ -2862,17 +2842,13 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('upgrade',function(data){
 		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined")
-			return;
-		if(typeof data.item !== 'number' || data.item > 4 || data.item < 0)
-			return;
+		if(typeof player === "undefined" || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
 		var item = Math.floor(data.item);
 		switch(item){
 			case 1:
 				if(player.money>=Math.round(Math.pow(1024,player.radar2)/1000)*1000){
 					player.money-=Math.round(Math.pow(1024,player.radar2)/1000)*1000;
 					player.radar2+=.2;
-					player.va = ships[player.ship].agility * 1.2;
 				}
 				break;
 			case 2:
@@ -2899,7 +2875,14 @@ io.sockets.on('connection', function(socket){
 					player.energy2+=.2;
 				}
 				break;
-			default:
+			case 5:
+				if(player.money>=Math.round(Math.pow(1024,player.agility2)/1000)*1000){
+					player.money-=Math.round(Math.pow(1024,player.agility2)/1000)*1000;
+					player.agility2+=.2;
+					player.va = ships[player.ship].agility * .08 * player.agility2;
+				}
+				break;
+			default://0
 				if(player.money>=Math.round(Math.pow(1024,player.thrust2)/1000)*1000){
 					player.money-=Math.round(Math.pow(1024,player.thrust2)/1000)*1000;
 					player.thrust2+=.2;
@@ -2911,13 +2894,9 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('sellW',function(data){
 		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined")
-			return;
-		if(typeof data.slot !== 'number' || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1)
-			return;
+		if(typeof player === "undefined" || typeof data.slot !== 'number' || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
 		data.slot = Math.floor(data.slot);
-		if(!player.docked || player.weapons[data.slot] < 0)
-			return;
+		if(!player.docked || player.weapons[data.slot] < 0) return;
 		player.money += wepns[player.weapons[data.slot]].price * .75;
 		player.calculateGenerators();
 		player.weapons[data.slot] = -1;
@@ -2927,17 +2906,13 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('quest',function(data){
 		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || player.quest!=0 || typeof data.quest !== 'number' || data.quest < 0 || data.quest > 9)
-			return;
+		if(typeof player === "undefined" || player.quest!=0 || typeof data.quest !== 'number' || data.quest < 0 || data.quest > 9) return;
 		var qid = Math.floor(data.quest);
 		var quest = (player.color === "red"?rQuests:bQuests)[qid];
-		if(quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank < 14))
-			return;
+		if(quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;
 		player.quest = quest;
-		if(player.color === "red")
-			rQuests[qid] = 0;
-		else
-			bQuests[qid] = 0;
+		if(player.color === "red") rQuests[qid] = 0;
+		else bQuests[qid] = 0;
 		if(((quest.dsx == 3 && quest.dsy == 3) || (quest.sx == 3 && quest.sy == 3)) && !player.ms2){
 			player.ms2 = true;
 			player.sendAchievementsMisc(true);
@@ -2953,29 +2928,21 @@ io.sockets.on('connection', function(socket){
 	});*/
 	socket.on('equip',function(data){
 		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
-		if(typeof player === "undefined")
-			return;
-		if(typeof data.scroll !== 'number')
-			return;
-		if(data.scroll >= ships[player.ship].weapons)
-			return;
+		if(typeof player === "undefined" || typeof data.scroll !== 'number' || data.scroll >= ships[player.ship].weapons) return;
 		player.equipped = Math.floor(data.scroll);
-		if(player.equipped < 0)
-			player.equipped = 0;
-		else if(player.equipped > 9)
-			player.equipped = 9;
+		if(player.equipped < 0) player.equipped = 0;
+		else if(player.equipped > 9) player.equipped = 9;
 		socket.emit('equip', {scroll:player.equipped});
 	});
 	socket.on('trail',function(data){
 		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined") return;
-		if(typeof data.trail !== 'number') return;
+		if(typeof player === "undefined" || typeof data.trail !== 'number') return;
 		if(data.trail == 0) player.trail = 0;
 		if(data.trail == 1 && player.bloodTrail) player.trail = 1;
 		if(data.trail == 2 && player.goldTrail) player.trail = 2;
 		if(data.trail == 3 && player.dr11) player.trail = 3;
 		if(data.trail == 4 && player.ms10) player.trail = 4;
-		if(player.name === "_haze_") player.trail += 16;
+		if(player.name.includes(" ")) player.trail += 16;
 	});
 });
 function parseBoolean(s){
@@ -3079,28 +3046,22 @@ function isOutOfBounds(obj){
 	return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 }
 function getDanger() {
-	if (sx == Math.floor(mapSz/2) && sy == Math.floor(mapSz/2))
-		return 1;
+	if (sx == Math.floor(mapSz/2) && sy == Math.floor(mapSz/2)) return 1;
 	var secRed = ((sx + sy) / 12);
 	var enemiesRed = Math.atan(bs-rs)/Math.PI + .5;
 	var totalRed = Math.floor((secRed + enemiesRed)*16/2) / 16;
 	return (pc == 'red' ? totalRed : (1-totalRed));
 }
 function lbIndex(exp){
-	if(exp < lbExp[999])
-		return -1;
-	if(exp > lbExp[0])
-		return 1;
+	if(exp < lbExp[999]) return -1;
+	if(exp > lbExp[0]) return 1;
 	var ub = 999, lb = 0;
 	while(ub > lb){
-		if(exp >= lbExp[ub] && exp < lbExp[ub-1])
-			return ub+1;
+		if(exp >= lbExp[ub] && exp < lbExp[ub-1]) return ub+1;
 		ub--;
 		var index = Math.floor((ub + lb) / 2);
-		if(exp<lbExp[index])
-			lb = index;
-		else
-			ub = index;
+		if(exp<lbExp[index]) lb = index;
+		else ub = index;
 	}
 	return ub+1;//1-indexed
 }
@@ -3126,25 +3087,23 @@ function sendAll(out, data){
 	for(var i in SOCKET_LIST)
 		SOCKET_LIST[i].emit(out, data);
 }
+function chatAll(msg){
+	sendAll("chat", {msg:msg});
+}
 function sendTeam(color, out, data){
 	for(var i in SOCKET_LIST){
 		var player = PLAYER_LIST[i];
-		if(typeof player === "undefined")
-			player = DOCKED_LIST[i];
-		if(typeof player === "undefined")
-			player = DEAD_LIST[i];
-		if(typeof player !== "undefined" && player.color === color)
-			SOCKET_LIST[i].emit(out, data);
+		if(typeof player === "undefined") player = DOCKED_LIST[i];
+		if(typeof player === "undefined") player = DEAD_LIST[i];
+		if(typeof player !== "undefined" && player.color === color) SOCKET_LIST[i].emit(out, data);
 	}
 }
 function updateQuestsR(){
 	var baseMap = [0,1,0,4,2,2,3,0,5,1];
 	var i = 0;
 	for(i = 0; i < 10; i++){
-		if(rQuests[i] == 0)
-			break;
-		if(i == 9)
-			return;
+		if(rQuests[i] == 0) break;
+		if(i == 9) return;
 	}
 	var r = Math.random();
 	var r2 = Math.random();
@@ -3153,26 +3112,20 @@ function updateQuestsR(){
 	if(i < 4){
 		var dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
 		var sxv = Math.floor(r2 * mapSz), syv = Math.floor(r2 * 10 % 1 * mapSz);
-		if(dsxv == sxv && dsyv == syv)
-			return;
-		nm = {type:"Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1+Math.sqrt((sxv - dsxv)*(sxv - dsxv) + (syv - dsyv)*(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv};
+		if(dsxv == sxv && dsyv == syv) return;
+		nm = {type:"Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1+Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv};
 	}
-	else if(i < 7)
-		nm = {type:"Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1]};
-	else if(i < 9)
-		nm = {type:"Base", exp: 75000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1]};
-	else
-		nm = {type:"Secret", exp: 300000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1]};
+	else if(i < 7) nm = {type:"Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1]};
+	else if(i < 9) nm = {type:"Base", exp: 75000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1]};
+	else nm = {type:"Secret", exp: 300000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1]};
 	rQuests[i] = nm;
 }
 function updateQuestsB(){
 	var baseMap = [0,1,0,4,2,2,3,0,5,1];
 	var i = 0;
 	for(i = 0; i < 10; i++){
-		if(bQuests[i] == 0)
-			break;
-		if(i == 9)
-			return;
+		if(bQuests[i] == 0) break;
+		if(i == 9) return;
 	}
 	var r = Math.random();
 	var r2 = Math.random();
@@ -3181,16 +3134,58 @@ function updateQuestsB(){
 	if(i < 4){
 		var dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
 		var sxv = Math.floor(r2 * mapSz), syv = Math.floor(r2 * 10 % 1 * mapSz);
-		if(dsxv == sxv && dsyv == syv)
-			return;
+		if(dsxv == sxv && dsyv == syv) return;
 		nm = {type:"Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1+Math.sqrt((sxv - dsxv)*(sxv - dsxv) + (syv - dsyv)*(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv};
-	}else if(i < 7)
-		nm = {type:"Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1]};
-	else if(i < 9)
-		nm = {type:"Base", exp: 75000, sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1]};
-	else
-		nm = {type:"Secret", exp: 300000, sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1]};
+	}else if(i < 7) nm = {type:"Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1]};
+	else if(i < 9) nm = {type:"Base", exp: 75000, sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1]};
+	else nm = {type:"Secret", exp: 300000, sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1]};
 	bQuests[i] = nm;
+}
+
+
+
+
+
+
+function mute(msg){
+	if(msg.split(" ").length != 3) return;
+	var name = msg.split(" ")[1];
+	var time = parseFloat(msg.split(" ")[2]);
+	if(typeof time !== "number") return;
+	for(var p in PLAYER_LIST){
+		var player = PLAYER_LIST[p];
+		if(player.name === name){
+			player.muteCap = player.muteTimer = 25*60*time;
+			chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
+			return;
+		}
+	}for(var p in DOCKED_LIST){
+		var player = DOCKED_LIST[p];
+		if(player.name === name){
+			player.muteCap = player.muteTimer = 25*60*time;
+			chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
+			return;
+		}
+	}for(var p in DEAD_LIST){
+		var player = DEAD_LIST[p];
+		if(player.name === name){
+			player.muteCap = player.muteTimer = 25*60*time;
+			chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
+			return;
+		}
+	}
+}
+function smite(msg){
+	if(msg.split(" ").length != 2) return;
+	var name = msg.split(" ")[1];
+	for(var p in PLAYER_LIST){
+		var player = PLAYER_LIST[p];
+		if(player.name === name){
+			player.die(0);
+			chatAll("~`violet~`" + player.name + "~`yellow~` has been Smitten!");
+			return;
+		}
+	}
 }
 
 
@@ -3217,8 +3212,7 @@ function init(){
 		bases[mapSz - 1-baseMap[i]][mapSz - 1-baseMap[i+1]] = baase2;
 	}
 	
-	for(var i = 0; i < mapSz*mapSz*10; i++)
-		createAsteroid();
+	for(var i = 0; i < mapSz*mapSz*10; i++) createAsteroid();
 	for(var s = 0; s < mapSz * mapSz; s++){
 		var x = s % mapSz;
 		var y = Math.floor(s / mapSz);
@@ -3227,8 +3221,7 @@ function init(){
 	var astPack = new Array(mapSz);
 	for(var i = 0; i < mapSz; i++){
 		astPack[i] = new Array(mapSz);
-		for(var j = 0; j < mapSz; j++)
-			astPack[i][j] = [];
+		for(var j = 0; j < mapSz; j++) astPack[i][j] = [];
 	}
 	for(var i in ASTEROID_LIST){
 		var ast = ASTEROID_LIST[i];
@@ -3256,8 +3249,6 @@ function init(){
 	
 	net = NeuralNet();
 	net.randomWeights();
-	spawnNNBot(6,6,"blue");
-	spawnNNBot(0,0,"red");
 	
 	//start ticking
 	setTimeout(update, 40);
@@ -3266,6 +3257,10 @@ function init(){
 function spawnBot(sx,sy,col,rbNow,bbNow){
 	if(sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 	if((rbNow > bbNow + 5 && col == "red")||(rbNow + 5 < bbNow && col == "blue")) return;
+	if(Math.random() > trainingMode?0:1){
+		spawnNNBot(sx,sy,col);
+		return;
+	}
 	id = Math.random();
 	var bot = new Player(id);
 	bot.isBot = true;
@@ -3275,20 +3270,12 @@ function spawnBot(sx,sy,col,rbNow,bbNow){
 	bot.experience = Math.floor(Math.pow(2,Math.pow(2,rand)))/4 + 3*rand;
 	bot.updateRank();
 	bot.ship = bot.rank;
-	var side = Math.floor(Math.random()*4);
-	var lineint = Math.random()*sectorWidth;
-	if(side%2==0){
-		bot.x = side == 2 ? 1000:31768;
-		bot.y = lineint;
-	}else{
-		bot.y = side == 3 ? 1000:31768;
-		bot.x = lineint;
-	}
+	bot.x = bot.y = sectorWidth/2;
 	bot.color = col;
 	bot.name = "";
-	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = Math.max(1, (Math.floor(rand*2) * .2) + .6);
+	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand*2) * .2) + .6);
 	bot.energy2 = Math.floor((bot.thrust2-1)*5/2)/5+1;
-	bot.va = ships[bot.ship].agility * 1.2;
+	bot.va = ships[bot.ship].agility * .08 * bot.agility2;
 	bot.thrust = ships[bot.ship].thrust * bot.thrust2;
 	bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
 	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
@@ -3300,6 +3287,7 @@ function spawnBot(sx,sy,col,rbNow,bbNow){
 	PLAYER_LIST[id] = bot;
 }
 function spawnNNBot(sx,sy,col){
+	if(trainingMode){sx = 2; sy = 4;}
 	if(sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 	id = Math.random();
 	var bot = new Player(id);
@@ -3307,29 +3295,25 @@ function spawnNNBot(sx,sy,col){
 	bot.sx = sx;
 	bot.sy = sy;
 	var rand = .33 + 3.67*Math.random();
-	bot.experience = Math.floor(Math.pow(2,Math.pow(2,rand)))/4 + 3*rand;
+	bot.experience = trainingMode?150:(Math.floor(Math.pow(2,Math.pow(2,rand)))/8 + 3*rand);//TODO change /8 to /4
 	bot.updateRank();
 	bot.ship = bot.rank;
-	var side = Math.floor(Math.random()*4);
-	var lineint = Math.random()*sectorWidth;
-	if(side%2==0){
-		bot.x = side == 2 ? 1000:31768;
-		bot.y = lineint;
-	}else{
-		bot.y = side == 3 ? 1000:31768;
-		bot.x = lineint;
-	}
+	bot.x = trainingMode?sectorWidth * Math.random():(sectorWidth/2);
+	bot.y = trainingMode?sectorWidth * Math.random():(sectorWidth/2);
 	bot.color = col;
-	bot.name = "EXPERIMENTAL";
-	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = Math.max(1, (Math.floor(rand*2) * .2) + .6);
+	bot.net = 1;
+	bot.name = "Drone";
+	bot.angle = Math.random() * Math.PI * 2;
+	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand*2) * .2) + .6);
 	bot.energy2 = Math.floor((bot.thrust2-1)*5/2)/5+1;
-	bot.va = ships[bot.ship].agility * 1.2;
+	bot.va = ships[bot.ship].agility * .08 * bot.agility2;
 	bot.thrust = ships[bot.ship].thrust * bot.thrust2;
 	bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
 	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
 	for(var i = 0; i < 10; i++){
 		do bot.weapons[i] = Math.floor(Math.random()*wepns.length);
 		while(wepns[bot.weapons[i]].Level>bot.rank || !wepns[bot.weapons[i]].bot)
+		if(trainingMode) bot.weapons[i] = 1;
 	}
 	bot.refillAllAmmo();
 	PLAYER_LIST[id] = bot;
@@ -3367,10 +3351,8 @@ function createAsteroid(){
 	if(Object.keys(ASTEROID_LIST).length > mapSz*mapSz*10)return;
 	var sx = Math.floor(Math.random()*mapSz);
 	var sy = Math.floor(Math.random()*mapSz);
-	if(asteroids[2][2]<2)
-		sx = sy = 2;
-	else if(asteroids[4][4]<2)
-		sx = sy = 4;
+	if(asteroids[2][2]<2) sx = sy = 2;
+	else if(asteroids[4][4]<2) sx = sy = 4;
 	asteroids[sx][sy]++;
 	var vert = (sy + 1) / (mapSz + 1);
 	var hor = (sx + 1) / (mapSz + 1);
@@ -3391,12 +3373,9 @@ function createPlanet(name, sx, sy){
 }
 function getPlayer(i){
 	var p = PLAYER_LIST[i];
-	if(typeof p === "undefined")
-		p = DOCKED_LIST[i];
-	if(typeof p === "undefined")
-		p = DEAD_LIST[i];
-	if(typeof p !== "undefined")
-		return p;
+	if(typeof p === "undefined") p = DOCKED_LIST[i];
+	if(typeof p === "undefined") p = DEAD_LIST[i];
+	if(typeof p !== "undefined") return p;
 	return 0;
 }
 function sendRaidData(){
@@ -3404,15 +3383,12 @@ function sendRaidData(){
 }
 function endRaid(){
 	var winners = "yellow";
-	if(raidRed > raidBlue)
-		winners = "red";
-	else if(raidBlue > raidRed)
-		winners = "blue";
+	if(raidRed > raidBlue) winners = "red";
+	else if(raidBlue > raidRed) winners = "blue";
 	raidTimer = 360000;
 	for(var i in SOCKET_LIST){
 		var p = getPlayer(i);
-		if(p == 0 || p.color !== winners)
-			continue;
+		if(p == 0 || p.color !== winners) continue;
 		p.spoils("money",p.points * 40000);
 		p.points = 0;
 	}
@@ -3422,6 +3398,7 @@ function update(){
 	ops++;
 	if(ops < 2) setTimeout(update, 40);
 	tick++;
+	if(Math.random() < 0.0001) IPSpam[Math.floor(Math.random())] = 0;
 	var d = new Date();
 	var lagTimer = d.getTime();
 	updateQuestsR();
@@ -3468,62 +3445,51 @@ function update(){
 	}
 	for(var i in PLAYER_LIST){
 		var player = PLAYER_LIST[i];
-		if(!player.isBot && player.chatTimer > 50)
-			player.chatTimer--;
-		if(player.testAfk())
-			continue;
+		if(!player.isBot && player.chatTimer > 0) player.chatTimer--;
+		player.muteTimer--;
+		if(player.testAfk()) continue;
 		player.isLocked = false;
 		player.tick();
-		if(player.disguise > 0)
-			continue;
+		if(player.disguise > 0) continue;
 		pack[player.sx][player.sy].push({trail:player.trail,shield:player.shield,empTimer:player.empTimer,hasPackage:player.hasPackage,id:player.id,ship:player.ship,speed:player.speed,maxHealth:player.maxHealth,color:player.color, x:player.x,y:player.y, name:player.name, health: player.health, angle:player.angle, driftAngle: player.driftAngle});
 	}
 	for(var i in DOCKED_LIST){
 		var player = DOCKED_LIST[i];
-		if(player.dead)
-			continue;
-		if(player.testAfk())
-			continue;
-		if(tick % 30 == 0)
-			player.checkMoneyAchievements();
-		if(player.chatTimer > 50)
-			player.chatTimer--;
+		if(player.dead) continue;
+		if(player.testAfk()) continue;
+		if(tick % 30 == 0) player.checkMoneyAchievements();
+		if(player.chatTimer > 0) player.chatTimer--;
+		player.muteTimer--;
 	}
-	for(var i in BULLET_LIST)
-		BULLET_LIST[i].tick();
+	for(var i in BULLET_LIST) BULLET_LIST[i].tick();
 	for(var i in VORTEX_LIST){
 		var vort = VORTEX_LIST[i];
 		vort.tick();
-		if(typeof vortPack[vort.sx][vort.sy] !== "undefined")
-			vortPack[vort.sx][vort.sy].push({x:vort.x,y:vort.y,size:vort.size, isWorm:vort.isWorm});
+		if(typeof vortPack[vort.sx][vort.sy] !== "undefined") vortPack[vort.sx][vort.sy].push({x:vort.x,y:vort.y,size:vort.size, isWorm:vort.isWorm});
 	}
-	for(var x = 0; x < mapSz; x++)
-		for(var y = 0; y < mapSz; y++){
-			for(var i in MINE_LIST[y][x]){
-				var mine = MINE_LIST[y][x][i];
-				mine.tick();
-				minePack[x][y].push({wepnID:mine.wepnID,color:mine.color,x:mine.x,y:mine.y, angle:mine.angle});
-			}
-			PLANET_LIST[x][y].tick();
+	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++){
+		for(var i in MINE_LIST[y][x]){
+			var mine = MINE_LIST[y][x][i];
+			mine.tick();
+			minePack[x][y].push({wepnID:mine.wepnID,color:mine.color,x:mine.x,y:mine.y, angle:mine.angle});
 		}
+		PLANET_LIST[x][y].tick();
+	}
 	for(var i in PACKAGE_LIST){
 		var boon = PACKAGE_LIST[i];
-		if(tick % 5 == 0)
-			boon.tick();
+		if(tick % 5 == 0) boon.tick();
 		packPack[boon.sx][boon.sy].push({x:boon.x, y:boon.y, type:boon.type});
 	}
 	for(var i in BEAM_LIST){
 		var beam = BEAM_LIST[i];
 		beam.tick();
-		if(beam.time == 0)
-			continue;
+		if(beam.time == 0) continue;
 		beamPack[beam.sx][beam.sy].push({time:beam.time,wepnID:beam.wepnID,bx:beam.origin.x,by:beam.origin.y,ex:beam.enemy.x,ey:beam.enemy.y});
 	}
 	for(var i in BLAST_LIST){
 		var blast = BLAST_LIST[i];
 		blast.tick();
-		if(blast.time == 0)
-			continue;
+		if(blast.time == 0) continue;
 		blastPack[blast.sx][blast.sy].push({time:blast.time,wepnID:blast.wepnID,bx:blast.bx,by:blast.by,angle:blast.angle});
 	}
 	var rbNow = rb;//important to calculate here, otherwise bots weighted on left.
@@ -3532,10 +3498,9 @@ function update(){
 	for(var i = 0; i < mapSz; i++)
 		for(var j = 0; j < mapSz; j++){
 			var base = bases[i][j];
-			if(base == 0)
-				continue;
+			if(base == 0) continue;
 			base.tick(rbNow,bbNow);
-			basePack[i][j] = {id:base.id,live:base.turretLive, isBase: base.isBase,maxHealth:base.maxHealth,health:base.health,color:base.color,x:base.x,y:base.y, angle:base.angle, spinAngle:base.spinAngle};
+			basePack[i][j] = {id:base.id,live:base.turretLive, isBase: base.isBase,maxHealth:base.maxHealth,health:base.health,color:base.color,x:base.x,y:base.y, angle:base.angle, spinAngle:base.spinAngle,owner:base.owner};
 		}
 
 	for(var i in ASTEROID_LIST){
@@ -3546,8 +3511,7 @@ function update(){
 	for(var j in ORB_LIST){
 		var orb = ORB_LIST[j];
 		orb.tick();
-		if(typeof orb === 'undefined')
-			return;
+		if(typeof orb === 'undefined') return;
 		orbPack[orb.sx][orb.sy].push({wepnID:orb.wepnID,x:orb.x,y:orb.y});
 		if(tick % 5 == 0 && orb.locked == 0){
 			var locked = 0;
@@ -3555,30 +3519,21 @@ function update(){
 				var player = pack[orb.sx][orb.sy][i];
 				var dist = (player.x - orb.x)*(player.x - orb.x)+(player.y - orb.y)*(player.y - orb.y);
 				if(player.empTimer <= 0 && player.color != orb.color && dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
-					if(locked == 0)
-						locked = player.id;
-					else if(typeof PLAYER_LIST[locked] !== 'undefined' && dist < square(PLAYER_LIST[locked].x - orb.x)+square(PLAYER_LIST[locked].y - orb.y))
-						locked = player.id;
+					if(locked == 0) locked = player.id;
+					else if(typeof PLAYER_LIST[locked] !== 'undefined' && dist < square(PLAYER_LIST[locked].x - orb.x)+square(PLAYER_LIST[locked].y - orb.y)) locked = player.id;
 				}
 			}
 			orb.locked = locked;
-			if(locked != 0)
-				continue;
-				
-			if(basePack[orb.sx][orb.sy] != 0 && basePack[orb.sx][orb.sy].color != orb.color && basePack[orb.sx][orb.sy].turretLive && locked == 0)
-				locked = base.id;
-			
+			if(locked != 0) continue;
+			if(basePack[orb.sx][orb.sy] != 0 && basePack[orb.sx][orb.sy].color != orb.color && basePack[orb.sx][orb.sy].turretLive && locked == 0) locked = base.id;
 			orb.locked = locked;
-			if(locked != 0)
-				continue;
+			if(locked != 0) continue;
 			for(var i in astPack[orb.sx][orb.sy]){
 				var player = astPack[orb.sx][orb.sy][i];
 				var dist = (player.x - orb.x)*(player.x - orb.x)+(player.y - orb.y)*(player.y - orb.y);
 				if(dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
-					if(locked == 0)
-						locked = player.id;
-					else if(typeof ASTEROID_LIST[locked] != "undefined" && dist < square(ASTEROID_LIST[locked].x - orb.x)+square(ASTEROID_LIST[locked].y - orb.y))
-						locked = player.id;
+					if(locked == 0) locked = player.id;
+					else if(typeof ASTEROID_LIST[locked] != "undefined" && dist < square(ASTEROID_LIST[locked].x - orb.x)+square(ASTEROID_LIST[locked].y - orb.y)) locked = player.id;
 				}
 			}
 			orb.locked = locked;
@@ -3587,8 +3542,7 @@ function update(){
 	for(var j in MISSILE_LIST){
 		var missile = MISSILE_LIST[j];
 		missile.tick();
-		if(typeof missile === 'undefined')
-			return;
+		if(typeof missile === 'undefined') return;
 		missilePack[missile.sx][missile.sy].push({wepnID:missile.wepnID,x:missile.x,y:missile.y,angle:missile.angle});
 		if(tick % 5 == 0 && missile.locked == 0){
 			var locked = 0;
@@ -3596,30 +3550,22 @@ function update(){
 				var player = pack[missile.sx][missile.sy][i];
 				var dist = (player.x - missile.x)*(player.x - missile.x)+(player.y - missile.y)*(player.y - missile.y);
 				if(player.empTimer <= 0 && player.color != missile.color && dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
-					if(locked == 0)
-						locked = player.id;
-					else if(typeof PLAYER_LIST[locked] !== 'undefined' && dist < (PLAYER_LIST[locked].x - missile.x)*(PLAYER_LIST[locked].x - missile.x)+(PLAYER_LIST[locked].y - missile.y)*(PLAYER_LIST[locked].y - missile.y))
-						locked = player.id;
+					if(locked == 0) locked = player.id;
+					else if(typeof PLAYER_LIST[locked] !== 'undefined' && dist < (PLAYER_LIST[locked].x - missile.x)*(PLAYER_LIST[locked].x - missile.x)+(PLAYER_LIST[locked].y - missile.y)*(PLAYER_LIST[locked].y - missile.y))locked = player.id;
 				}
 			}
 			missile.locked = locked;
-			if(locked != 0)
-				continue;
-				
-			if(basePack[missile.sx][missile.sy] != 0 && basePack[missile.sx][missile.sy].turretLive && locked == 0)
-				locked = base.id;
+			if(locked != 0) continue;
+			if(basePack[missile.sx][missile.sy] != 0 && basePack[missile.sx][missile.sy].turretLive && locked == 0) locked = base.id;
 			
 			missile.locked = locked;
-			if(locked != 0)
-				continue;
+			if(locked != 0) continue;
 			for(var i in astPack[missile.sx][missile.sy]){
 				var player = astPack[missile.sx][missile.sy][i];
 				var dist = (player.x - missile.x)*(player.x - missile.x)+(player.y - missile.y)*(player.y - missile.y);
 				if(dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
-					if(locked == 0)
-						locked = player.id;
-					else if(typeof ASTEROID_LIST[locked] != "undefined" && dist < (ASTEROID_LIST[locked].x - missile.x)*(ASTEROID_LIST[locked].x - missile.x)+(ASTEROID_LIST[locked].y - missile.y)*(ASTEROID_LIST[locked].y - missile.y))
-						locked = player.id;
+					if(locked == 0) locked = player.id;
+					else if(typeof ASTEROID_LIST[locked] != "undefined" && dist < (ASTEROID_LIST[locked].x - missile.x)*(ASTEROID_LIST[locked].x - missile.x)+(ASTEROID_LIST[locked].y - missile.y)*(ASTEROID_LIST[locked].y - missile.y)) locked = player.id;
 				}
 			}
 			missile.locked = locked;
@@ -3631,7 +3577,7 @@ function update(){
 			continue;
 		if(tick % 12 == 0){ // LAG CONTROL
 			send(i, 'online', {lag:lag, bp:bp, rp:rp, bg:bg, rg:rg, bb:bb, rb:rb});
-			send(i, 'you', {killStreak:player.killStreak, killStreakTimer:player.killStreakTimer, name: player.name, points:player.points, t2: player.thrust2, va2:player.radar2, c2: player.capacity2, e2:player.energy2, mh2: player.maxHealth2, experience: player.experience, rank:player.rank, ship:player.ship, docked: player.docked,color:player.color, money: player.money, kills:player.kills, baseKills:player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium});
+			send(i, 'you', {killStreak:player.killStreak, killStreakTimer:player.killStreakTimer, name: player.name, points:player.points, va2:player.radar2, experience: player.experience, rank:player.rank, ship:player.ship, docked: player.docked,color:player.color, money: player.money, kills:player.kills, baseKills:player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium});
 		}
 		send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sx][player.sy],vorts:vortPack[player.sx][player.sy],mines:minePack[player.sx][player.sy],missiles:missilePack[player.sx][player.sy],orbs:orbPack[player.sx][player.sy],blasts:blastPack[player.sx][player.sy],beams:beamPack[player.sx][player.sy],planets:planetPack[player.sx][player.sy], asteroids:astPack[player.sx][player.sy],players:pack[player.sx][player.sy], projectiles:bPack[player.sx][player.sy],bases:basePack[player.sx][player.sy]});
 	}
@@ -3644,7 +3590,7 @@ function update(){
 	for(var i in DOCKED_LIST){
 		var player = DOCKED_LIST[i];
 		if(tick % 10 == 0){ // LAG CONTROL
-			send(i, 'you', {killStreak:player.killStreak, killStreakTimer:player.killStreakTimer, name: player.name, t2: player.thrust2, va2:player.radar2, c2: player.capacity2, e2:player.energy2, mh2: player.maxHealth2, experience: player.experience, rank:player.rank, ship:player.ship,charge:player.reload, sx: player.sx, sy: player.sy,docked: player.docked,color:player.color,baseKills:player.baseKills,x:player.x,y:player.y, money: player.money, kills:player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium});
+			send(i, 'you', {killStreak:player.killStreak, killStreakTimer:player.killStreakTimer, name: player.name, t2: player.thrust2, va2:player.radar2, ag2:player.agility2, c2: player.capacity2, e2:player.energy2, mh2: player.maxHealth2, experience: player.experience, rank:player.rank, ship:player.ship,charge:player.reload, sx: player.sx, sy: player.sy,docked: player.docked,color:player.color,baseKills:player.baseKills,x:player.x,y:player.y, money: player.money, kills:player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium});
 			send(i, 'quests', {quests:player.color=='red'?rQuests:bQuests});
 		}
 	}
@@ -3657,8 +3603,7 @@ function update(){
 }
 function deletePlayers(){
 	for(var i in LEFT_LIST){
-		if(LEFT_LIST[i]-- > 1)
-			continue;
+		if(LEFT_LIST[i]-- > 1) continue;
 		delete SOCKET_LIST[i];
 		delete DOCKED_LIST[i];
 		delete PLAYER_LIST[i];
@@ -3682,45 +3627,33 @@ function updateHeatmap(){
 		var p = PLAYER_LIST[i];
 		if(p.color === "red"){
 			raidRed += p.points;
-			if(p.isBot)
-				rb++;
-			else if(p.name === "GUEST")
-				rg++;
-			else
-				rp++;
+			if(p.isBot) rb++;
+			else if(p.name === "GUEST") rg++;
+			else rp++;
 		}else{
 			raidBlue += p.points;
-			if(p.isBot)
-				bb++;
-			else if(p.name === "GUEST")
-				bg++;
-			else
-				bp++;
+			if(p.isBot) bb++;
+			else if(p.name === "GUEST") bg++;
+			else bp++;
 		}
-		if(p.name !== ""){
+		if(p.name !== "" && p.name !== "Drone"){
 			lb[j] = p;
 			j++;
 		}
-		hmap[p.sx][p.sy]+=p.color == 'blue'?-1:1;
+		hmap[p.sx][p.sy]+=p.color === 'blue'?-1:1;
 	}
 	for(var i in DOCKED_LIST){
 		var p = DOCKED_LIST[i];
 		if(p.color === "red"){
 			raidRed += p.points;
-			if(p.isBot)
-				rb++;
-			else if(p.name === "GUEST")
-				rg++;
-			else
-				rp++;
+			if(p.isBot) rb++;
+			else if(p.name === "GUEST") rg++;
+			else rp++;
 		}else{
 			raidBlue += p.points;
-			if(p.isBot)
-				bb++;
-			else if(p.name === "GUEST")
-				bg++;
-			else
-				bp++;
+			if(p.isBot) bb++;
+			else if(p.name === "GUEST") bg++;
+			else bp++;
 		}
 		lb[j] = p;
 		j++;
@@ -3729,20 +3662,14 @@ function updateHeatmap(){
 		var p = DEAD_LIST[i];
 		if(p.color === "red"){
 			raidRed += p.points;
-			if(p.isBot)
-				rb++;
-			else if(p.name === "GUEST")
-				rg++;
-			else
-				rp++;
+			if(p.isBot) rb++;
+			else if(p.name === "GUEST") rg++;
+			else rp++;
 		}else{
 			raidBlue += p.points;
-			if(p.isBot)
-				bb++;
-			else if(p.name === "GUEST")
-				bg++;
-			else
-				bp++;
+			if(p.isBot) bb++;
+			else if(p.name === "GUEST") bg++;
+			else bp++;
 		}
 		lb[j] = p;
 		j++;
@@ -3758,19 +3685,15 @@ function updateHeatmap(){
 			}
 		}
 	var lbSend = [];
-	for(var i = 0; i < Math.min(16,j); i++)
-		lbSend[i] = {name:lb[i].name,exp:Math.round(lb[i].experience),color:lb[i].color,rank:lb[i].rank};
+	for(var i = 0; i < Math.min(16,j); i++) lbSend[i] = {name:lb[i].name,exp:Math.round(lb[i].experience),color:lb[i].color,rank:lb[i].rank};
 	for(var i = 0; i < mapSz; i++)
 		for(var j = 0; j < mapSz; j++)
-			if(asteroids[i][j] >= 15)
-				hmap[i][j] += 1500;
-			else
-				hmap[i][j] += 500;
-	for(var i in lb)
-		send(lb[i].id, 'heatmap', {hmap:hmap, lb:lbSend, youi:i, raidBlue:raidBlue, raidRed:raidRed});
+			if(asteroids[i][j] >= 15) hmap[i][j] += 1500;
+			else hmap[i][j] += 500;
+	for(var i in lb) send(lb[i].id, 'heatmap', {hmap:hmap, lb:lbSend, youi:i, raidBlue:raidBlue, raidRed:raidRed});
 }
 function updateLB(){
-	sendAll("chat",{msg:"Updating torn.space/leaderboard..."});
+	chatAll("Updating torn.space/leaderboard...");
 	fs.readdir('server/players/', function(err, items) {
 		var top1000names = [];
 		var top1000kills = [];
@@ -3787,13 +3710,13 @@ function updateLB(){
 		for (var i=0; i<items.length; i++) {//insertion sort cause lazy
 			if(fs.lstatSync("server/players/"+items[i]).isDirectory())
 				continue;
-			var data = fs.readFileSync("server/players/"+items[i], 'utf8');
-			var exp = Math.round(parseFloat(data.split(":")[22]));
+			var data = fs.readFileSync("server/players/"+items[i], 'utf8').split(":");
+			var exp = Math.round(parseFloat(data[22]));
 			if(exp > top1000exp[999]){
-				var name = data.split(":")[14];
-				var kills = parseFloat(data.split(":")[16]);
-				var rank = parseFloat(data.split(":")[23]);
-				var color = ((name === "_haze_")?"lime":(data.split(":")[0] === "red"?"pink":"cyan"));
+				var name = data[14];
+				var kills = parseFloat(data[16]);
+				var rank = parseFloat(data[23]);
+				var color = ((name.includes(" "))?"lime":(data[0] === "red"?"pink":"cyan"));
 				for(var j = 999; j >= 1; j--){
 					if(exp > top1000exp[j - 1]){
 						top1000kills[j] = top1000kills[j-1];
@@ -3807,8 +3730,7 @@ function updateLB(){
 						top1000colors[j - 1] = color;
 						top1000exp[j - 1] = exp;
 					}
-					else
-						break;
+					else break;
 				}
 			}
 		}
@@ -3834,21 +3756,21 @@ function updateLB(){
 
 
 //meta
-setTimeout(initReboot,86350000-5*60*1000);
+setTimeout(initReboot,86400*1000*10-6*60*1000);
 function initReboot(){
-	sendAll("chat", {msg: "Server is restarting in 5 minutes. Please save your progress as soon as possible."});
-	setTimeout(function(){sendAll("chat", {msg: "Server is restarting in 4 minutes. Please save your progress as soon as possible."});}, 1*60*1000);
-	setTimeout(function(){sendAll("chat", {msg: "Server is restarting in 3 minutes. Please save your progress as soon as possible."});}, 2*60*1000);
-	setTimeout(function(){sendAll("chat", {msg: "Server is restarting in 2 minutes. Please save your progress as soon as possible."});}, 3*60*1000);
-	setTimeout(function(){sendAll("chat", {msg: "Server is restarting in 1 minute. Please save your progress as soon as possible."});}, 4*60*1000);
-	setTimeout(function(){sendAll("chat", {msg: "Server is restarting in 30 seconds. Please save your progress as soon as possible."});}, (4*60+30)*1000);
-	setTimeout(function(){sendAll("chat", {msg: "Server is restarting in 10 seconds. Please save your progress as soon as possible."});}, (4*60+50)*1000);
-	setTimeout(function(){sendAll("chat", {msg: "Server restarting..."});}, (4*60+57)*1000);
+	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
+	setTimeout(function(){chatAll("Server is restarting in 4 minutes. Please save your progress as soon as possible.");}, 1*60*1000);
+	setTimeout(function(){chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible.");}, 2*60*1000);
+	setTimeout(function(){chatAll("Server is restarting in 2 minutes. Please save your progress as soon as possible.");}, 3*60*1000);
+	setTimeout(function(){chatAll("Server is restarting in 1 minute. Please save your progress as soon as possible.");}, 4*60*1000);
+	setTimeout(function(){chatAll("Server is restarting in 30 seconds. Please save your progress as soon as possible.");}, (4*60+30)*1000);
+	setTimeout(function(){chatAll("Server is restarting in 10 seconds. Please save your progress as soon as possible.");}, (4*60+50)*1000);
+	setTimeout(function(){chatAll("Server restarting...");}, (4*60+57)*1000);
 	setTimeout(shutdown, 5*60*1000);
 }
 function shutdown(){
 	saveTurrets();
-	decayPlayers();
+	//decayPlayers();
 	process.exit();
 }
 function saveTurrets(){
@@ -3860,12 +3782,12 @@ function saveTurrets(){
 		fs.unlinkSync('server/turrets/' + items[i]);
 		count++;
 	}
-	sendAll("chat", {msg:count + " Turrets Currently Saved"});
+	chatAll(count + " Turrets Currently Saved");
 
 	//save em
 	setTimeout(function(){
 		count = 0;
-		sendAll("chat", {msg:"Saving Turrets..."});
+		chatAll("Saving Turrets...");
 		for(var i = 0; i < mapSz; i++)
 			for(var j = 0; j < mapSz; j++){
 				var base = bases[i][j];
@@ -3874,12 +3796,13 @@ function saveTurrets(){
 					count++;
 				}
 			}
-		sendAll("chat", {msg:count + " Turrets Saved!"});
+		chatAll(count + " Turrets Saved!");
 	},1000);
 }
-function decayPlayers(func){
+function decayPlayers(){
 	sendAll("chat",{msg:"Decaying Players..."});
 	var items = fs.readdirSync('server/players/');
+	
 	
 	sendAll("chat",{msg:"Files identified: " + items.length});
 	for (var i=0; i<items.length; i++) {
@@ -3887,7 +3810,7 @@ function decayPlayers(func){
 		if(fs.lstatSync(source).isDirectory()) continue;
 		var data = fs.readFileSync(source, 'utf8');
 		var split = data.split(":");
-		if(split.length != 86 && split.length != 85){
+		if(split.length < 85){
 			if(split.length < 15) sendAll("chat",{msg:"File " + source + " unreadable. " + split.length + " entries."});
 			else{
 				sendAll("chat",{msg:"Player " + split[14] + " failed to decay due to an unformatted save file with " + split.length + " entries. Cleaning file."});
@@ -3896,17 +3819,18 @@ function decayPlayers(func){
 			continue;
 		}
 		data = "";
-		var decayRate = (split.length == 85 || split[85] !== "nodecay")?.995:.9995
+		var decayRate = (split[85] === "decay"?.98:.9995);
 
-		split[22] = func(parseFloat(split[22]),decayRate);//xp
-		split[15] = func(parseFloat(split[15]),decayRate);//money
-		split[84] = func(parseFloat(split[84]),decayRate);//energy
-		split[26] = func(parseFloat(split[26]),decayRate);//thrust
-		split[27] = func(parseFloat(split[27]),decayRate);//radar
-		split[28] = func(parseFloat(split[28]),decayRate);//cargo
-		split[29] = func(parseFloat(split[29]),decayRate);//hull
+		split[22] = decay(parseFloat(split[22]),decayRate);//xp
+		split[15] = decay(parseFloat(split[15]),decayRate);//money
+		split[84] = decay(parseFloat(split[84]),decayRate);//energy
+		split[26] = decay(parseFloat(split[26]),decayRate);//thrust
+		split[27] = decay(parseFloat(split[27]),decayRate);//radar
+		split[28] = decay(parseFloat(split[28]),decayRate);//cargo
+		split[29] = decay(parseFloat(split[29]),decayRate);//hull
+
 		split[23] = 0;
-		split[85] = "decay";//reset decaymachine
+		split[85] = "decay"; //reset decaymachine
 		while(split[22] > ranks[split[23]]) split[23]++;
 		
 		if (fs.existsSync("server/players/"+items[i])) fs.unlinkSync("server/players/"+items[i]);
@@ -3931,4 +3855,14 @@ var decay = function(x, decayRate){
 var undecay = function(x, decayRate){
 	if(x<1) return 1;
 	return (x-1)/decayRate+1;
+}
+
+function flood(ip){
+	var safe = false;
+	for(var i = 0; i < 20; i++) if(ip !== IPSpam[i]) {
+		IPSpam[i] = ip;
+		safe = true;
+		break;
+	}
+	if(!safe) return;
 }

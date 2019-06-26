@@ -1,10 +1,10 @@
 @font-face {
-	font-family: 'Telegrama';
-	src: url('img/telegrama2.otf');
+	font-family: 'Nasa';
+	src: url('fonts/nasa.ttf');
 }
 
 body, #a {
-	font-family: 'Telegrama';
+	font-family: 'Nasa';
 	margin: 0;
 	padding: 0;
 	overflow:hidden;
@@ -64,7 +64,7 @@ body, #a {
 }
 
 .overlay-input{
-	font-family: 'Telegrama';
+	font-family: 'Nasa';
 	width:176px;
 	font-size: 16px;
 	padding: 5px;
@@ -74,7 +74,7 @@ body, #a {
 }
 
 .register{
-	font-family: 'Telegrama';
+	font-family: 'Nasa';
 	width:190px;
 	font-size: 16px;
 	padding: 5px;
@@ -87,7 +87,7 @@ body, #a {
 }
 
 #registerA, #registerH, .overlay-button{
-	font-family: 'Telegrama';
+	font-family: 'Nasa';
 	width:190px;
 	font-size: 16px;
 	padding: 5px;
@@ -175,7 +175,7 @@ a:hover{
 
 .chat-input {
 	background-color: rgba(0, 0, 0, 0);
-	font-family: 'Telegrama';
+	font-family: 'Nasa';
 	border:0;
 	width: 384px;
 	color: white;
@@ -189,7 +189,7 @@ a:hover{
 .chat-msg {
 	transition: opacity 2s;
 	font-size: 13px;
-	font-family: 'Telegrama';
+	font-family: 'Nasa';
 }
 
 .chat-msg-fadeout {

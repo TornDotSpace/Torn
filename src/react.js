@@ -138,8 +138,9 @@ class Register extends Component {
 					<br/><button className="register" onClick={this.register}>Register!</button>
 					<br/>
 					<br/>
-					<br/>
 					By registering, you agree to our terms of service, available at torn.space/tos.
+					<br/>
+					Remember, never give your password to anyone!!
 				</center>
 			</div>
 			):null
@@ -173,8 +174,8 @@ class LoginOverlay extends Component {
 	}
 	render () {
 		const video = (this.state.seed * 2 % 1 < 0.25)?
-			(<iframe width="368" height="207" src="https://www.youtube.com/embed/Tdw0PTtDBvc?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>)
-			:(<iframe width="368" height="207" src="https://www.youtube.com/embed/b3W_UcgTJ7M" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>);
+			(<iframe width="368" height="207" src="https://www.youtube.com/embed/iLlFIS1PLOo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>)
+			:(<iframe width="368" height="207" src="https://www.youtube.com/embed/44MIPle7pwQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>);
 		
 		
 		const buttonOrder = (this.state.seed < 0.5)?(
