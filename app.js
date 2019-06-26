@@ -56,6 +56,7 @@ var raidTimer = 50000, raidRed = 0, raidBlue = 0;
 var IPSpam = {};
 
 
+var guestCount = 0;
 
 var NeuralNet = function(){
 	var self = {
@@ -301,8 +302,9 @@ var Player = function(i){
 		ms8:false,//Claim a planet
 		ms9:false,//Claim every planet XXX
 		ms10:false,//Random Trail XXX
-		
+		guest:false,
 	}
+
 	self.tick = function(){
 
 		if(self.killStreakTimer--<0) self.killStreak = 0;
@@ -316,7 +318,7 @@ var Player = function(i){
 		
 		if(!self.isBot){
 			self.checkPlanetCollision();
-			if(self.name !== "GUEST" && tick % 48 == 0 && PLANET_LIST[self.sy][self.sx].color === self.color) self.money++;
+			if(!self.guest && tick % 48 == 0 && PLANET_LIST[self.sy][self.sx].color === self.color) self.money++;
 			if(self.pingTimer-- < 0){
 				var text = "~`"+self.color+"~`"+self.name + "~`yellow~` disconnected!";
 				LEFT_LIST[self.id] = 0;
@@ -610,7 +612,7 @@ var Player = function(i){
 		if(self.x > sectorWidth){
 			self.x = 1;
 			self.sx++;
-			if(self.sx >= mapSz || self.name === "GUEST" || (trainingMode && self.isNNBot)){
+			if(self.sx >= mapSz || self.guest || (trainingMode && self.isNNBot)){
 				giveBounce = true;
 				self.sx--;
 				self.x = (sectorWidth-5);
@@ -622,7 +624,7 @@ var Player = function(i){
 		else if(self.y > sectorWidth){
 			self.y = 1;
 			self.sy++;
-			if(self.sy >= mapSz || self.name === "GUEST" || (trainingMode && self.isNNBot)){
+			if(self.sy >= mapSz || self.guest || (trainingMode && self.isNNBot)){
 				giveBounce = true;
 				self.sy--;
 				self.y = (sectorWidth-5);
@@ -634,7 +636,7 @@ var Player = function(i){
 		else if(self.x < 0){
 			self.x = (sectorWidth-1);
 			self.sx--;
-			if(self.sx < 0 || self.name === "GUEST" || (trainingMode && self.isNNBot)){
+			if(self.sx < 0 || self.guest || (trainingMode && self.isNNBot)){
 				giveBounce = true;
 				self.sx++;
 				self.x = 5;
@@ -646,7 +648,7 @@ var Player = function(i){
 		else if(self.y < 0){
 			self.y = (sectorWidth-1);
 			self.sy--;
-			if(self.sy < 0 || self.name === "GUEST" || (trainingMode && self.isNNBot)){
+			if(self.sy < 0 || (self.guest) || (trainingMode && self.isNNBot)){
 				giveBounce = true;
 				self.sy++;
 				self.y = 5;
@@ -657,7 +659,7 @@ var Player = function(i){
 		}
 		else callOnChangeSectors = false;
 		if(giveBounce && !self.ms5){
-			if(self.name === "GUEST") send(self.id, "chat", {msg:"~`orange~`You must create an account to explore the universe!"});
+			if(self.guest) send(self.id, "chat", {msg:"~`orange~`You must create an account to explore the universe!"});
 			else{
 				self.ms5 = true;
 				self.sendAchievementsMisc(true);
@@ -869,7 +871,7 @@ var Player = function(i){
 			var cool = p.cooldown;
 			if(cool < 0){self.refillAllAmmo();p.cooldown = 150;}
 			self.checkQuestStatus(true);
-			if(self.name === "GUEST") {
+			if(self.guest) {
 				SOCKET_LIST[self.id].emit("chat",{msg:'You must create an account in the base before you can claim planets!', color:'yellow'});
 				return;
 			}
@@ -1169,9 +1171,9 @@ var Player = function(i){
 			}
 			var r = Math.random();
 			if(self.hasPackage && !self.isBot) PACKAGE_LIST[r] = Package(self, r, 0);
-			else if(Math.random() < .004 && self.name !== 'GUEST') PACKAGE_LIST[r] = Package(self, r, 2);//life
-			else if(Math.random() < .1 && self.name !== 'GUEST') PACKAGE_LIST[r] = Package(self, r, 3);//ammo
-			else if(self.name !== 'GUEST') PACKAGE_LIST[r] = Package(self, r, 1);//coin
+			else if(Math.random() < .004 && !self.guest) PACKAGE_LIST[r] = Package(self, r, 2);//life
+			else if(Math.random() < .1 && !self.guest) PACKAGE_LIST[r] = Package(self, r, 3);//ammo
+			else if(!self.guest) PACKAGE_LIST[r] = Package(self, r, 1);//coin
 			
 			if((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Vortex" || b.owner.type === "Player" || b.owner.type === "Base")){
 				b.owner.onKill(self);
@@ -1190,7 +1192,7 @@ var Player = function(i){
 			self.hasPackage = false; // Maintained for onKill above
 			self.health = self.maxHealth;
 			var readSource = 'server/players/'+(self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) +'.txt';
-			if(self.name === "GUEST"){
+			if(self.guest){
 				self.lives--;
 				self.sx = self.sy = (self.color == 'red' ? 2:4);
 				self.x = self.y = sectorWidth/2;
@@ -1324,7 +1326,7 @@ var Player = function(i){
 		if(!self.isBot) send(self.id, 'emp', {t:t});
 	}
 	self.save = function(){
-		if(self.name === "GUEST" || self.isBot) return;
+		if(self.guest || self.isBot) return;
 		var source = 'server/players/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt';
 		if (fs.existsSync(source)) fs.unlinkSync(source);
 		var spawnX = ((self.sx==Math.floor(mapSz/2) && self.sx == self.sy)?(self.color === "blue"?4:2):self.sx);
@@ -1340,7 +1342,7 @@ var Player = function(i){
 		fs.writeFileSync(source, str, {"encoding":'utf8'});
 	}
 	self.onKill = function(p){
-		if(p.name !== "GUEST" && p.color !== self.color) self.killStreak++;
+		if(!p.guest && p.color !== self.color) self.killStreak++;
 		self.killStreakTimer = 750;//30s
 		if(self.isBot) return;
 		self.kills++;
@@ -1518,7 +1520,7 @@ var Player = function(i){
 			var oldPosition = lbIndex(self.experience);
 			self.experience+=amt;
 			var newPosition = lbIndex(self.experience);
-			if(newPosition < oldPosition && newPosition != -1 && self.name !== "GUEST" && !self.isBot){
+			if(newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot){
 				if(newPosition < 501) sendAll('chat', {msg:"~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!"});
 				else send(self.id, {msg:"~`yellow~` Your global rank is now #" + newPosition + "!"});
 			}
@@ -2238,7 +2240,7 @@ var Vortex = function(i, x, y, sxx, syy, size, ownr, isWorm){
 				var dx = p.x - self.x;
 				var dist = Math.pow(dy * dy + dx * dx, .25);
 				var a = Math.atan2(dy, dx);
-				var guestMult = (p.name === "GUEST" || p.isNNBot) ? -1 : 1; 
+				var guestMult = (p.guest || p.isNNBot) ? -1 : 1; 
 				p.x -= guestMult * .25 * self.size / dist * Math.cos(a);
 				p.y -= guestMult * .25 * self.size / dist * Math.sin(a);
 				if(dist < 15 && !self.isWorm){
@@ -2443,10 +2445,13 @@ io.sockets.on('connection', function(socket){
 		flood(ip);
 		if(instance) return;
 		var player = Player(socket.id);
+		player.guest = true;
 		PLAYER_LIST[socket.id]=player;
 		instance = true;
 		player.ip = ip;
-		player.name = "GUEST";
+		player.name = "GUEST " + guestCount;
+		guestCount++;
+		
 		player.color = sockcol?"red":"blue";
 		if(mapSz % 2 == 0) player.sx = player.sy = (sockcol?(mapSz / 2 - 1):(mapSz / 2));
 		else player.sx = player.sy = (sockcol?(mapSz / 2 - 1.5):(mapSz / 2 + .5));
@@ -2500,6 +2505,7 @@ io.sockets.on('connection', function(socket){
 			if(typeof player === "undefined") return;
 			player.name = user;
 			player.password = pass;
+			player.guest = false;
 			socket.emit("registered",{user:data.user,pass:data.pass});
 			var text = user+' registered!';
 			console.log(text);
@@ -2722,7 +2728,7 @@ io.sockets.on('connection', function(socket){
 		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
 		if(typeof player === "undefined") player = DEAD_LIST[socket.id];
 		if(typeof player === "undefined" || typeof data.msg !== "string") return;
-		if(guestsCantChat && player.name === "GUEST"){
+		if(guestsCantChat && player.guest) {
 			socket.emit("chat",{msg:'You must create an account in the base before you can chat!', color:'yellow'});
 			return;
 		}
@@ -2742,7 +2748,7 @@ io.sockets.on('connection', function(socket){
 			player.muteCap *= 2;
 		}
 
-		if(player.name !== "GUEST" && data.msg.startsWith("/")){
+		if(!player.guest && data.msg.startsWith("/")){
 			if(data.msg.startsWith("/password ")) player.changePass(data.msg.substring(10));
 			else if(data.msg.startsWith("/me ")) chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + data.msg.substring(4));
 			else if(data.msg.startsWith("/confirm ")) player.confirmPass(data.msg.substring(9));
@@ -2842,7 +2848,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('buyLife',function(data){
 		var player = DOCKED_LIST[socket.id];
 		if(typeof player === "undefined" || player.lives >= 20) return;
-		var price = expToLife(player.experience,player.name === "GUEST");
+		var price = expToLife(player.experience,player.guest);
 		if(player.money < price) return;
 		player.money -= price;
 		player.lives++;
@@ -3637,12 +3643,12 @@ function updateHeatmap(){
 		if(p.color === "red"){
 			raidRed += p.points;
 			if(p.isBot) rb++;
-			else if(p.name === "GUEST") rg++;
+			else if(p.guest) rg++;
 			else rp++;
 		}else{
 			raidBlue += p.points;
 			if(p.isBot) bb++;
-			else if(p.name === "GUEST") bg++;
+			else if(p.guest) bg++;
 			else bp++;
 		}
 		if(p.name !== "" && p.name !== "Drone"){
@@ -3656,12 +3662,12 @@ function updateHeatmap(){
 		if(p.color === "red"){
 			raidRed += p.points;
 			if(p.isBot) rb++;
-			else if(p.name === "GUEST") rg++;
+			else if(p.guest) rg++;
 			else rp++;
 		}else{
 			raidBlue += p.points;
 			if(p.isBot) bb++;
-			else if(p.name === "GUEST") bg++;
+			else if(p.guest) bg++;
 			else bp++;
 		}
 		lb[j] = p;
@@ -3672,12 +3678,12 @@ function updateHeatmap(){
 		if(p.color === "red"){
 			raidRed += p.points;
 			if(p.isBot) rb++;
-			else if(p.name === "GUEST") rg++;
+			else if(p.guest) rg++;
 			else rp++;
 		}else{
 			raidBlue += p.points;
 			if(p.isBot) bb++;
-			else if(p.name === "GUEST") bg++;
+			else if(p.guest) bg++;
 			else bp++;
 		}
 		lb[j] = p;
