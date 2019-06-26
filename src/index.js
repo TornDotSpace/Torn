@@ -335,7 +335,6 @@ function loadAllImages(){
 	loadImage("grad", '/img/grad.png');
 	loadImage("shockwave", "/img/shockwave.png");
 	loadImage("ebullet", '/img/blue/bb.png');
-	loadImage("spiral", '/img/spiral.png');
 	loadImage("bigBullet", '/img/bigBullet.png');
 	loadImage("base", '/img/red/rss.png');
 	loadImage("bss", '/img/blue/bss.png');
@@ -2857,6 +2856,7 @@ function rCreds(){
 	if(credentialState == 2) str = mEng[113];
 	if(credentialState == 3) str = mEng[114];
 	if(credentialState == 4) str = mEng[115];
+	if(credentialState == 5) str = "Username is profane!";
 	if(credentialState == 10) str = mEng[116];
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';

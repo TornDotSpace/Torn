@@ -39,6 +39,7 @@
     ]
   },
   "dependencies": {
+    "bad-words": "^3.0.2",
     "express": "^4.15.3",
     "socket.io": "^2.0.2"
   }

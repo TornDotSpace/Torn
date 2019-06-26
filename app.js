@@ -1,6 +1,8 @@
 var fs = require('fs');
 var http = require('http');
 var express = require('express');
+var Filter = require('bad-words');
+
 var app = express();
 console.log('Server started');
 console.log('Enabling express...');
@@ -37,6 +39,9 @@ var VORTEX_LIST = {};
 var ASTEROID_LIST = {};
 var PLANET_LIST = new Array(mapSz);
 var asteroids = new Array(mapSz);
+
+filter = new Filter();
+
 for(var i = 0; i < mapSz; i++){
 	MINE_LIST[i] = new Array(mapSz);
 	bases[i] = new Array(mapSz);
@@ -2466,6 +2471,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('register',function(data){
 		flood(ip);
 		var user = data.user, pass = data.pass;
+
 		if(typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)){
 			socket.emit("invalidReg", {reason:2});
 			return;
@@ -2475,6 +2481,13 @@ io.sockets.on('connection', function(socket){
 			socket.emit("invalidReg", {reason:3});
 			return;
 		}
+
+		// Test for profanity
+		if(filter.isProfane(user)){ 
+			socket.emit("invalidReg", {reason:5});
+			return;
+		}
+
 		var readSource = 'server/players/'+user+"["+hash(pass)+'.txt';
 		var valid = true;
 		fs.readdir('server/players/', function(err, items) {
@@ -2720,7 +2733,7 @@ io.sockets.on('connection', function(socket){
 		if(typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128) return;
 		data.msg = data.msg.trim();
 		if(!player.name.includes(" ")) data.msg = data.msg.replace(/~`/ig, '');
-		data.msg = (" "+data.msg+" ").replace(/fuck/ig, '****').replace(/fuk/ig, '****').replace(/vagina/ig, '******').replace(/fvck/ig, '****').replace(/penis/ig, '*****').replace(/slut/ig, '****').replace(/ tit /ig, ' *** ').replace(/ tits /ig, ' **** ').replace(/whore/ig, '****').replace(/shit/ig, '****').replace(/cunt/ig, '****').replace(/bitch/ig, '*****').replace(/faggot/ig, '******').replace(/ fag /ig, ' *** ').replace(/nigger/ig, '******').replace(/nigga/ig, '******').replace(/dick/ig, '****').replace(/ ass /ig, ' *** ').replace(/pussy/ig, '*****').replace(/ cock /ig, ' **** ').trim();
+		data.msg = filter.clean(data.msg);
 		
 		if(player.muteTimer > 0) return;
 		player.chatTimer += 100;
