@@ -3,14 +3,10 @@ var http = require('http');
 var express = require('express');
 var Filter = require('bad-words');
 
-var app = express();
 console.log('Server started');
-console.log('Enabling express...');
-app.use('/',express.static(__dirname + '/client'));
-var httpServer = http.Server(app);
-httpServer.listen(parseInt(process.argv[2]));//normal is 8887, dev 7300
-console.log("Express started");
-var io = require('socket.io')(httpServer);
+var io = require('socket.io')();
+io.listen(parseInt(process.argv[2])); // normal is 8887, dev 7300
+
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
 var wepns = jsn.weapons, ships = jsn.ships, planets = jsn.planets;
 var mapSz = 7;
