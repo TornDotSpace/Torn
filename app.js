@@ -2437,7 +2437,7 @@ io.sockets.on('connection', function(socket){
 
 	var sockcol = 0;
 	socket.on('lore',function(data){
-		if (typeof data === "undefined" || typeof data.alien !== "number") {
+		if (typeof data === "undefined" || typeof data.alien !== "boolean") {
 			return;
 		}
 		sockcol = data.alien;
