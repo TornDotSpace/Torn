@@ -220,11 +220,11 @@ class LoginOverlay extends Component {
 				</div>
 				<div className="discord">
 					<center>
-						<a href="https://torn.space/">Eng|</a>
-						<a href="https://torn.space/#esp">Esp|</a>
-						<a href="https://torn.space/#frn">Frn|</a>
-						<a href="https://torn.space/#deu">Deu|</a>
-						<a href="https://torn.space/#pyc">Pyc</a>
+						<a href="https://torn.space/" onClick={this.refresh} >Eng|</a>
+						<a href="https://torn.space/#esp" onClick={this.refresh} >Esp|</a>
+						<a href="https://torn.space/#frn" onClick={this.refresh} >Frn|</a>
+						<a href="https://torn.space/#deu" onClick={this.refresh} >Deu|</a>
+						<a href="https://torn.space/#pyc" onClick={this.refresh} >Pyc</a>
 					</center>
 					<br/>
 					<a target="_blank" href="https://discord.gg/wFsdUcY">
@@ -253,6 +253,12 @@ class LoginOverlay extends Component {
 		if(typeof ReactRoot.socket !== "undefined")
 			ReactRoot.socket.emit('lore', {alien:true});
 	}
+
+	refresh = () => {
+		window.location.reload();
+	}
+
+	languag
 }
 
 class Chat extends Component {

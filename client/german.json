@@ -273,563 +273,171 @@
 	"weapons":[
 		{
 			"name":"Stock Gun",
-			"desc":"A basic, medium range gun.",
-			"Range":250,
-			"Damage":20,
-			"Speed":50,
-			"Charge":8,
-			"price":0,
-			"energy":3,
-			"ammo":-1,
-			"Level":0,
-			"order":0,
-			"color":"red"
+			"desc":"A basic, medium range gun."
 		},
 		{
 			"name":"Plasma Gun",
-			"desc":"Only useful for up-close combat against larger, slower ships. Short in range, slow to shoot and slow to recharge, but packs one hell of a punch.",
-			"Range":150,
-			"Damage":45,
-			"Speed":40,
-			"Charge":10,
-			"price":2000,
-			"energy":8,
-			"ammo":100,
-			"Level":2,
-			"order":2,
-			"color":"red"
+			"desc":"Only useful for up-close combat against larger, slower ships. Short in range, slow to shoot and slow to recharge, but packs one hell of a punch."
 		},
 		{
 			"name":"Reverse Gun",
-			"desc":"Get off my tail! Same specs as the stock gun, but shoots behind you and is 50% more powerful. A tad more pricey.",
-			"Range":250,
-			"Damage":30,
-			"Speed":50,
-			"Charge":8,
-			"price":1000,
-			"energy":5,
-			"ammo":-1,
-			"Level":1,
-			"order":1,
-			"color":"red"
+			"desc":"Get off my tail! Same specs as the stock gun, but shoots behind you and is 50% more powerful. A tad more pricey."
 		},
 		{
 			"name":"Rifle",
-			"desc":"Powerful, long-range, fast bullets. Does a lot of damage. Perfect for shooting at a large swarm of distant enemies.",
-			"Range":750,
-			"Damage":30,
-			"Speed":80,
-			"Charge":10,
-			"price":5000,
-			"energy":6,
-			"ammo":40,
-			"Level":5,
-			"order":4,
-			"color":"red"
+			"desc":"Powerful, long-range, fast bullets. Does a lot of damage. Perfect for shooting at a large swarm of distant enemies."
 		},
 		{
 			"name":"Shotgun",
-			"desc":"This will come in handy in an ambush. Sprays a lot of bullets around where you shoot. Slightly hard to control.",
-			"Range":100,
-			"Damage":20,
-			"Speed":50,
-			"Charge":15,
-			"price":5000,
-			"energy":12,
-			"ammo":40,
-			"Level":3,
-			"order":3,
-			"color":"red"
+			"desc":"This will come in handy in an ambush. Sprays a lot of bullets around where you shoot. Slightly hard to control."
 		},
 		{
 			"name":"Machine Gun",
-			"desc":"Rapid-fire! Ammunition is a bit weak, but that's no matter if you're shooting 13 rounds per second!",
-			"Range":250,
-			"Damage":10,
-			"Speed":80,
-			"Charge":4,
-			"price":6000,
-			"energy":2,
-			"ammo":500,
-			"Level":4,
-			"order":5,
-			"color":"red"
+			"desc":"Rapid-fire! Ammunition is a bit weak, but that's no matter if you're shooting 13 rounds per second!"
 		},
 		{
 			"name":"Minigun",
-			"desc":"Same as the machine gun, with two active barrels instead of one, but slower bullets. Great weapon if you can aim it quickly.",
-			"Range":250,
-			"Damage":8,
-			"Speed":60,
-			"Charge":4,
-			"price":30000,
-			"energy":3,
-			"ammo":500,
-			"Level":6,
-			"order":6,
-			"color":"red"
+			"desc":"Same as the machine gun, with two active barrels instead of one, but slower bullets. Great weapon if you can aim it quickly."
 		},
 		{
 			"name":"Plasma Beam",
-			"desc":"Automatically aims at the nearest enemy within a small range and fires a beam of plasma.",
-			"Range":60,
-			"Damage":5,
-			"Speed":-1,
-			"Charge":3,
-			"price":6000,
-			"energy":4,
-			"ammo":-1,
-			"Level":1,
-			"order":11,
-			"color":"lime"
+			"desc":"Automatically aims at the nearest enemy within a small range and fires a beam of plasma."
 		},
 		{
 			"name":"Laser Beam",
-			"desc":"Automatically aims at the nearest enemy within a medium range and fires quick laser bursts. Each ray doesn't do as much damage as the plasma cannon, but it recharges much faster so more damage is done overall. Poor against bases due to high energy consumption.",
-			"Range":60,
-			"Damage":22,
-			"Speed":-1,
-			"Charge":10,
-			"price":12000,
-			"energy":15,
-			"ammo":-1,
-			"Level":4,
-			"order":12,
-			"color":"lime"
+			"desc":"Automatically aims at the nearest enemy within a medium range. Poor against bases due to high energy consumption."
 		},
 		{
 			"name":"Hadron Beam",
-			"desc":"Short-range particle beam accelerator. Does a lot of damage, but takes a while to recharge. Can be used as a quick trump card for close calls.",
-			"Range":125,
-			"Damage":80,
-			"Speed":-1,
-			"Charge":50,
-			"price":30000,
-			"energy":65,
-			"ammo":-1,
-			"Level":8,
-			"order":13,
-			"color":"lime"
+			"desc":"Short-range particle beam accelerator. Does a lot of damage, but takes a while to recharge. Can be used as a quick trump card for close calls."
 		},
 		{
 			"name":"Missile",
-			"desc":"This missile will follow the nearest enemy and explode on impact. If there is no enemy in range, it will simply go straight. Be careful, though: the missile is relatively slow and can be outrun by quick enemies.",
-			"Range":1000,
-			"Damage":20,
-			"Speed":100,
-			"Charge":12,
-			"price":4000,
-			"energy":12,
-			"ammo":20,
-			"Level":0,
-			"order":16,
-			"color":"orange"
+			"desc":"This missile will follow the nearest enemy and explode on impact. If there is no enemy in range, it will simply go straight. Be careful, though: the missile is relatively slow and can be outrun by quick enemies."
 		},
 		{
 			"name":"Heavy Missile",
-			"desc":"A slower missile that does more damage. Good tool against slower, stronger ships.",
-			"Range":750,
-			"Damage":40,
-			"Speed":60,
-			"Charge":20,
-			"price":10000,
-			"energy":20,
-			"ammo":20,
-			"Level":3,
-			"order":17,
-			"color":"orange"
+			"desc":"A slower missile that does more damage. Good tool against slower, stronger ships."
 		},
 		{
 			"name":"EMP Missile",
-			"desc":"Short-range missile that both damages the enemy and paralyzes them for 2 seconds. Use one when attacking a fast enemy head-on to stun them before they can dodge any guided projectiles. Effective against bases.",
-			"Range":750,
-			"Damage":25,
-			"Speed":100,
-			"Charge":50,
-			"price":40000,
-			"energy":55,
-			"ammo":10,
-			"Level":7,
-			"order":19,
-			"color":"orange"
+			"desc":"Short-range missile that both damages the enemy and paralyzes them for 1.6 seconds. Use one when attacking a fast enemy head-on to stun them before they can dodge any guided projectiles. Effective against bases."
 		},
 		{
 			"name":"Missile Swarm",
-			"desc":"Fires a single missile which splits into a swarm of 6 missiles which will attack a large horde of enemies. Great tool to use against a large ambush of slower ships.",
-			"Range":750,
-			"Damage":-1,
-			"Speed":50,
-			"Charge":100,
-			"price":60000,
-			"energy":45,
-			"ammo":5,
-			"Level":9,
-			"order":20,
-			"color":"orange"
+			"desc":"Fires a single missile which splits into a swarm of 6 missiles which will attack a large horde of enemies. Great tool to use against a large ambush of slower ships."
 		},
 		{
 			"name":"Torpedo",
-			"desc":"Ultra long-range fast missile.",
-			"Range":3000,
-			"Damage":12,
-			"Speed":120,
-			"Charge":30,
-			"price":18000,
-			"energy":20,
-			"ammo":15,
-			"Level":5,
-			"order":18,
-			"color":"orange"
+			"desc":"Ultra long-range fast missile."
 		},
 		{
 			"name":"Mine",
-			"desc":"A simple mine. It's hard for an enemy to follow you with these. Explodes on impact with an enemy ship.",
-			"Range":16,
-			"Damage":45,
-			"Speed":-1,
-			"Charge":25,
-			"price":1000,
-			"energy":6,
-			"ammo":15,
-			"Level":0,
-			"order":23,
-			"color":"blue"
+			"desc":"A simple mine. It's hard for an enemy to follow you with these. Explodes on impact with an enemy ship."
 		},
 		{
 			"name":"Laser Mine",
-			"desc":"Fires high-power laser at enemies that get too close.",
-			"Range":64,
-			"Damage":50,
-			"Speed":-1,
-			"Charge":100,
-			"price":6000,
-			"energy":15,
-			"ammo":10,
-			"Level":3,
-			"order":26,
-			"color":"blue"
+			"desc":"Fires high-power laser at enemies that get too close."
 		},
 		{
 			"name":"EMP Mine",
-			"desc":"Identical to the standard mine other than a little less damage. Paralyzes enemies for 3 seconds as well. Useful when you are being chased.",
-			"Range":24,
-			"Damage":30,
-			"Speed":-1,
-			"Charge":100,
-			"price":10000,
-			"energy":15,
-			"ammo":4,
-			"Level":6,
-			"order":27,
-			"color":"blue"
+			"desc":"Identical to the standard mine other than a little less damage. Paralyzes enemies for 2 seconds as well. Useful when you are being chased."
 		},
 		{
 			"name":"Hull Nanobots",
-			"desc":"Repairs you nice and quick on the go, but depletes your energy significantly.",
-			"Range":-1,
-			"Damage":-150,
-			"Speed":-1,
-			"Charge":175,
-			"price":50000,
-			"energy":40,
-			"ammo":3,
-			"Level":8,
-			"order":31,
-			"color":"white"
+			"desc":"Repairs you nice and quick on the go, but depletes your energy significantly."
 		},
 		{
 			"name":"Photon Cloak",
-			"desc":"Disguise yourself for 8 seconds for a quick getaway.",
-			"Range":-1,
-			"Damage":-1,
-			"Speed":-1,
-			"Charge":600,
-			"price":30000,
-			"energy":80,
-			"ammo":2,
-			"Level":4,
-			"order":32,
-			"color":"white"
+			"desc":"Disguise yourself for 7 seconds for a quick getaway."
 		},
 		{
 			"name":"Generator",
-			"desc":"For each generator you carry, your weapons and energy charge 6% faster, but you turn a tenth slower.",
-			"Range":-1,
-			"Damage":-1,
-			"Speed":-1,
-			"Charge":0,
-			"price":60000,
-			"energy":0,
-			"ammo":-1,
-			"Level":9,
-			"order":34,
-			"color":"white"
+			"desc":"For each generator you carry, your weapons and energy charge 6% faster, but you turn a tenth slower."
 		},
 		{
 			"name":"Turbo",
-			"desc":"Forced induction tool which supplements your engine for greater acceleration. Power output increases while drifting. Multiple-use.",
-			"Range":-1,
-			"Damage":-1,
-			"Speed":1.44,
-			"Charge":0,
-			"price":15000,
-			"energy":0.75,
-			"ammo":-1,
-			"Level":2,
-			"order":28,
-			"color":"white"
+			"desc":"Forced induction tool which supplements your engine for greater acceleration. Power output increases while drifting. Multiple-use."
 		},
 		{
 			"name":"Hyperdrive",
-			"desc":"Single-use getaway tool. Perfect for escaping vortices and black holes. Extremely fast speed boost.",
-			"Range":-1,
-			"Damage":-1,
-			"Speed":10000,
-			"Charge":0,
-			"price":3500,
-			"energy":70,
-			"ammo":-2,
-			"Level":5,
-			"order":29,
-			"color":"white"
+			"desc":"Single-use getaway tool. Perfect for escaping vortices and black holes. Extremely fast speed boost."
 		},
 		{
 			"name":"Pulse Wave",
-			"desc":"Pushes all nearby enemy ships away in an enormous explosion.",
-			"Range":10000,
-			"Damage":0,
-			"Speed":40,
-			"Charge":100,
-			"price":25000,
-			"energy":20,
-			"ammo":1,
-			"Level":7,
-			"order":33,
-			"color":"white"
+			"desc":"Pushes all nearby enemy ships away in an enormous explosion."
 		},
 		{
 			"name":"Electromagnet",
-			"desc":"Accelerates asteroids towards you. With practice, you can fling them at enemies, causing damage. Very effective against bases, but you do not recieve exp/bounty for killing a base with an asteroid.",
-			"Range":512,
-			"Damage":0.1666,
-			"Speed":-1,
-			"Charge":0,
-			"price":40000,
-			"energy":2,
-			"ammo":-1,
-			"Level":8,
-			"order":35,
-			"color":"white"
+			"desc":"Accelerates asteroids towards you. With practice, you can fling them at enemies, causing damage. Very effective against bases, but you do not recieve exp/bounty for killing a base with an asteroid."
 		},
 		{
 			"name":"EMP Blast",
-			"desc":"Everyone in the sector besides yourself is disabled for 4 seconds. Inconveniently, it takes 6 seconds to recharge. Single-use.",
-			"Range":100000,
-			"Damage":-1,
-			"Speed":-1,
-			"Charge":180,
-			"price":50000,
-			"energy":100,
-			"ammo":-2,
-			"Level":9,
-			"order":36,
-			"color":"white"
+			"desc":"Fires a beam which disables all ships it hits for about 4 seconds. Inconveniently, it takes 6 seconds to recharge. Single-use."
 		},
 		{
 			"name":"Mining Laser",
-			"desc":"Identical to the Laser Beam but only attacks asteroids and does more damage.",
-			"Range":100,
-			"Damage":30,
-			"Speed":-1,
-			"Charge":5,
-			"price":5000,
-			"energy":2,
-			"ammo":-1,
-			"Level":1,
-			"order":8,
-			"color":"lime"
+			"desc":"Identical to the Laser Beam but only attacks asteroids and does more damage."
 		},
 		{
 			"name":"Turret",
-			"desc":"Place a base turret. You may only own one active turret at a time. To claim its kills and money that it earns from killing other players, fly within a 20 unit radius of it. Single-use. Cannot be placed in a sector with an enemy turret or base.",
-			"Range":1000,
-			"Damage":-1,
-			"Speed":50,
-			"Charge":8,
-			"price":750000,
-			"energy":0,
-			"ammo":-2,
-			"Level":10,
-			"order":38,
-			"color":"white"
+			"desc":"Place a base turret. You may only own one active turret at a time. To claim its kills and money that it earns from killing other players, fly within a 20 unit radius of it. Single-use. Cannot be placed in a sector with an enemy turret or base."
 		},
 		{
 			"name":"Gravity Bomb",
-			"desc":"Creates a small black hole upon explosion which dissipates in about 20 seconds. Be extremely cautious with this weapon- you have 3 seconds to run after deployment before implosion. It is recommended that you have a turbo on hand just incase. The vortex will wait until it is at least 500 units from a base before deploying. Single-use.",
-			"Range":2500,
-			"Damage":300,
-			"Speed":10,
-			"Charge":0,
-			"price":2000000,
-			"energy":99,
-			"ammo":-2,
-			"Level":10,
-			"order":39,
-			"color":"white"
+			"desc":"Creates a small black hole upon explosion which dissipates in about 20 seconds. Be extremely cautious with this weapon- you have 3 seconds to run after deployment before implosion. It is recommended that you have a turbo on hand just incase. The vortex will wait until it is at least 500 units from a base before deploying. Single-use."
 		},
 		{
 			"name":"Warp Drive",
-			"desc":"Instant speed boost for fast travel, at the expense of energy and charge.",
-			"Range":-1,
-			"Damage":-1,
-			"Speed":500,
-			"Charge":250,
-			"price":200000,
-			"energy":99,
-			"ammo":3,
-			"Level":7,
-			"order":30,
-			"color":"white"
+			"desc":"Instant speed boost for fast travel, at the expense of energy and charge."
 		},
 		{
 			"name":"Ion Mine Beam",
-			"desc":"Mining laser, with twice the power and 150% range!",
-			"Range":150,
-			"Damage":60,
-			"Speed":-1,
-			"Charge":5,
-			"price":20000,
-			"energy":3.5,
-			"ammo":-1,
-			"Level":2,
-			"order":9,
-			"color":"lime"
+			"desc":"Mining laser, with twice the power and 150% range!"
 		},
 		{
 			"name":"Gyrodynamite",
-			"desc":"Destabilizes nearest enemy ship for 10 seconds by disrupting gyroscopic stabilization.",
-			"Range":1000000,
-			"Damage":-1,
-			"Speed":-1,
-			"Charge":100,
-			"price":4000,
-			"energy":20,
-			"ammo":3,
-			"Level":6,
-			"order":14,
-			"color":"lime"
+			"desc":"Destabilizes nearest enemy ship for 10 seconds by disrupting gyroscopic stabilization."
 		},
 		{
 			"name":"Impulse Mine",
-			"desc":"1 second after deployed, this mine will explode and push every nearby player away without doing damage. Useful for moving quickly, just place one behind you and ride the shockwave.",
-			"Range":16,
-			"Damage":0,
-			"Speed":-1,
-			"Charge":25,
-			"price":6000,
-			"energy":15,
-			"ammo":10,
-			"Level":4,
-			"order":24,
-			"color":"blue"
+			"desc":"1 second after deployed, this mine will explode and push every nearby player away without doing damage. Useful for moving quickly, just place one behind you and ride the shockwave."
 		},
 		{
 			"name":"Grenades",
-			"desc":"Throw this at an enemy and it will explode on contact or 1 second after thrown, damaging their ship and knocking them back!",
-			"Range":16,
-			"Damage":45,
-			"Speed":30,
-			"Charge":25,
-			"price":8000,
-			"energy":15,
-			"ammo":10,
-			"Level":3,
-			"order":25,
-			"color":"blue"
+			"desc":"Throw this at an enemy and it will explode on contact or 1 second after thrown, damaging their ship and knocking them back!"
 		},
 		{
 			"name":"Muon Ray",
-			"desc":"An extremely powerful beam weapon that must be aimed. Fires a high energy particle beam in the direction that your ship is facing which will do extremely heavy damage to anything it contacts. Can pass through multiple ships.",
-			"Range":10000,
-			"Damage":300,
-			"Speed":-1,
-			"Charge":200,
-			"price":1000000,
-			"energy":80,
-			"ammo":1,
-			"Level":10,
-			"order":15,
-			"color":"green"
+			"desc":"An extremely powerful beam weapon that must be aimed. Fires a high energy particle beam in the direction that your ship is facing which will do extremely heavy damage to anything it contacts. Can pass through multiple ships."
 		},
 		{
 			"name":"Energy Leech",
-			"desc":"This beam weapon will harvest the energy of nearby opponent ships and give their energy to you.",
-			"Range":16,
-			"Damage":0,
-			"Speed":-1,
-			"Charge":3,
-			"price":40000,
-			"energy":-3,
-			"ammo":-1,
-			"Level":10,
-			"order":10,
-			"color":"lime"
+			"desc":"This beam weapon will harvest the energy of nearby opponent ships and give their energy to you."
 		},
 		{
 			"name":"Supercharger",
-			"desc":"For one minute, all damage inflicted on your ship will double, but you will also double in energy regeneration, thrust, and agility. Single-use.",
-			"Range":-1,
-			"Damage":-1,
-			"Speed":-1,
-			"Charge":0,
-			"price":100000,
-			"energy":0,
-			"ammo":-2,
-			"Level":11,
-			"order":37,
-			"color":"white"
+			"desc":"For one minute, all damage inflicted on your ship will double, but you will also double in energy regeneration, thrust, and agility. Single-use."
 		},
 		{
 			"name":"Energy Disk",
-			"desc":"Fires a homing orb which tracks your nearest opponent!",
-			"Range":125,
-			"Damage":25,
-			"Speed":8,
-			"Charge":25,
-			"price":5000,
-			"energy":8,
-			"ammo":15,
-			"Level":0,
-			"order":22,
-			"color":"purple"
+			"desc":"Fires a homing orb which tracks your nearest opponent!"
 		},
 		{
 			"name":"Proximity Fuze",
-			"desc":"Non-tracking missile that explodes when nearby an enemy.",
-			"Range":125,
-			"Damage":15,
-			"Speed":8,
-			"Charge":25,
-			"price":5000,
-			"energy":8,
-			"ammo":15,
-			"Level":5,
-			"order":21,
-			"color":"orange"
+			"desc":"Non-tracking missile that explodes when nearby an enemy."
 		},
 		{
-			"desc":"Three active barrels! The bullets come out at consistent angles, unlike shotgun.",
 			"name":"Spreadshot",
-			"Range":250,
-			"Damage":7,
-			"Speed":60,
-			"Charge":5,
-			"price":30000,
-			"energy":4,
-			"ammo":500,
-			"Level":6,
-			"order":7,
-			"color":"red"
+			"desc":"Three active barrels! The bullets come out at consistent angles, unlike shotgun."
+		},
+		{
+			"name":"Submachinegun",
+			"desc":"Fires like Minigun, but in 5-round bursts."
+		},
+		{
+			"name":"Hypno Ray",
+			"desc":"Fire this beam at a bot and it will follow you around until it dies. Single-use."
 		}
 	],
 	"splashes":[

@@ -434,6 +434,10 @@
 		{
 			"name":"Submachinegun",
 			"desc":"Fires like Minigun, but in 5-round bursts"
+		},
+		{
+			"name":"Hypno Ray",
+			"desc":"Fire this beam at a bot and it will follow you around until it dies. Single-use."
 		}
 	],
 	"splashes":[
