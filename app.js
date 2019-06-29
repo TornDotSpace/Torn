@@ -55,7 +55,6 @@ var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0;
 var raidTimer = 50000, raidRed = 0, raidBlue = 0;
 var IPSpam = {};
 
-
 var guestCount = 0;
 
 var NeuralNet = function(){

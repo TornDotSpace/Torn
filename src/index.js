@@ -1,10 +1,3 @@
-var jsn = require("../client/weapons.json");
-var eng = require("../client/english.json");
-var esp = require("../client/spanish.json");
-var pyc = require("../client/russian.json");
-var deu = require("../client/german.json");
-var frn = require("../client/french.json");
-
 var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 var isIE = /*@cc_on!@*/false || !!document.documentMode;
 var isEdge = !isIE && !!window.StyleMedia;
@@ -17,7 +10,7 @@ var socket = io('torn.space:443');//normally 443
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-var ctx = canvas.getContext("2d");
+global.ctx = canvas.getContext("2d");
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -39,28 +32,10 @@ var sins = [];
 for(var i = 0; i < 1571; i++)//500pi
 	sins[i] = Math.sin(i / 1000.);
 
-var languagejson = eng;
-if(location.href.includes("frn")) languagejson = frn
-if(location.href.includes("esp")) languagejson = esp;
-if(location.href.includes("pyc")) languagejson = pyc;
-if(location.href.includes("deu")) languagejson = deu;
-jsn.messages = languagejson.messages;
-jsn.achNames = languagejson.achNames;
-jsn.splashes = languagejson.splashes;
-jsn.lore = languagejson.lore;
-for(var i = 0; i < jsn.weapons.length; i++){
-	jsn.weapons[i].name = languagejson.weapons[i].name;
-	jsn.weapons[i].desc = languagejson.weapons[i].desc;
-}
-for(var i = 0; i < jsn.ships.length; i++){
-	jsn.ships[i].nameA = languagejson.ships[i].nameA;
-	jsn.ships[i].nameH = languagejson.ships[i].nameH;
-	jsn.ships[i].desc = languagejson.ships[i].desc;
-}
-var mEng = jsn.messages;
-var achNames = jsn.achNames;
-var splash = jsn.splashes[Math.floor(Math.random()*jsn.splashes.length)];
-if(!splash.endsWith("!")&&!splash.endsWith("?"))splash+="...";
+
+	
+var localizer = require("./localizer.js");
+setLang();
 
 var sectorWidth = 14336;
 var mx = 0, my = 0, mb = 0;
@@ -194,7 +169,7 @@ var equipped = {}, ammos = {};
 var musicAudio = 0;
 
 var Aud = {};
-var Aud_prgs = [0,0];
+global.Aud_prgs = [0,0];
 var Aud_loaded = false;
 
 function loadAudio (name, src) {
@@ -277,7 +252,7 @@ var redShips = [];
 var blueShips = [];
 var planetImgs = [];
 var Img = {};
-var Img_prgs = [0 /* Count of loaded images */, 0 /* Count of all images */]
+global.Img_prgs = [0 /* Count of loaded images */, 0 /* Count of all images */]
 var Img_loaded = false;
 loadAllImages();
 loadAllAudio();
@@ -2105,19 +2080,6 @@ function getTimeAngle(){
 
 
 //misc rendering
-function rLoadingBar(){
-	ctx.fillStyle = 'black';
-	ctx.fillRect(0,0,w,h);
-	ctx.fillStyle = "white";
-	ctx.fillRect(w/2 - 128,h/2 - 32,256,64);
-	ctx.fillStyle = 'black';
-	ctx.fillRect(w/2 - 128 + 8,h/2 - 32 + 8,256 - 16,64 - 16);
-	ctx.fillStyle = 'white';
-	ctx.fillRect(w/2 - 128 + 16,h/2 - 32 + 16,(256 - 32) * ((Aud_prgs[0] + Img_prgs[0])/(Aud_prgs[1] + Img_prgs[1])),64 - 32);
-	ctx.textAlign = "center";
-	ctx.font = "30px Nasa";
-	ctx.fillText(splash,w/2,h/2-96);
-}
 function updateNotes(){
 	for(var i in notes){
 		var note = notes[i];

@@ -1,4 +1,5 @@
 import React, {Component} from "react"
+var localizer = require("./localizer.js");
 
 export default class ReactRoot extends Component {
 	constructor (props) {
@@ -220,11 +221,11 @@ class LoginOverlay extends Component {
 				</div>
 				<div className="discord">
 					<center>
-						<a href="https://torn.space/" onClick={this.refresh} >Eng|</a>
-						<a href="https://torn.space/#esp" onClick={this.refresh} >Esp|</a>
-						<a href="https://torn.space/#frn" onClick={this.refresh} >Frn|</a>
-						<a href="https://torn.space/#deu" onClick={this.refresh} >Deu|</a>
-						<a href="https://torn.space/#pyc" onClick={this.refresh} >Pyc</a>
+						<a onClick={this.langEng} >Eng|</a>
+						<a onClick={this.langEsp} >Esp|</a>
+						<a onClick={this.langFrn} >Frn|</a>
+						<a onClick={this.langDeu} >Deu|</a>
+						<a onClick={this.langPyc} >Pyc</a>
 					</center>
 					<br/>
 					<a target="_blank" href="https://discord.gg/wFsdUcY">
@@ -254,11 +255,35 @@ class LoginOverlay extends Component {
 			ReactRoot.socket.emit('lore', {alien:true});
 	}
 
-	refresh = () => {
-		window.location.reload();
+	langEng = ()  => {
+		languagejson = eng;
+		setLang();
+		resplash();
 	}
 
-	languag
+	langEsp = () => {
+		languagejson = esp; 
+		setLang();
+		resplash();
+	}
+
+	langFrn = () => {
+		languagejson = frn;
+		setLang();
+		resplash();
+	}
+
+	langPyc = () => {
+		languagejson = pyc;
+		setLang();
+		resplash();
+	}
+
+	langDeu = () => {
+		languagejson = deu;
+		setLang();
+		resplash();
+	}
 }
 
 class Chat extends Component {
