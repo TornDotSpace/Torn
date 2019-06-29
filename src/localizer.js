@@ -4,18 +4,49 @@ global.pyc = require("../client/russian.json");
 global.deu = require("../client/german.json");
 global.frn = require("../client/french.json");
 
-global.jsn = require("../client/weapons.json");
-
-global.languagejson = eng;
+global.languagejson = null;
 
 import ReactRoot from "./react.js";
 
-global.setLang = function () {
-    if (location.href.includes("frn")) languagejson = frn;
-    if (location.href.includes("esp")) languagejson = esp;
-    if (location.href.includes("pyc")) languagejson = pyc;
-    if (location.href.includes("deu")) languagejson = deu;
+global.jsn = require("../client/weapons.json");
 
+global.setLang = function (name) {
+    document.cookie = ("lang=" + name);
+    loadLang(name);
+}
+
+
+global.loadLang = function(name) {
+    var assigned = null;
+    if (location.href.includes("eng") || name == "eng") assigned = languagejson = eng;
+    if (location.href.includes("frn") || name === "frn") assigned = languagejson = frn;
+    if (location.href.includes("esp") || name === "esp") assigned = languagejson = esp;
+    if (location.href.includes("pyc") || name === "pyc") assigned = languagejson = pyc;
+    if (location.href.includes("deu") || name === "deu") assigned = languagejson = deu;
+
+    if (!assigned) {
+        var lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");   
+
+        console.log(lang);
+        if (lang == null) {
+            languagejson = eng;
+        }
+        if (lang === "frn") {
+            languagejson = frn; 
+        } else if (lang === "esp") {
+            languagejson = esp;
+        } else if (lang === "pyc") {
+            languagejson = pyc;
+        } else if (lang === "eng") {
+            languagejson = eng;
+        } else if (lang == "deu") {
+            languagejson = deu;
+        }
+    }
+
+    if (languagejson == null) {
+        languagejson = eng;
+    }
     jsn.messages = languagejson.messages;
 
     jsn.achNames = languagejson.achNames;
@@ -35,32 +66,4 @@ global.setLang = function () {
     global.achNames = jsn.achNames;
     global.splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
     if (!splash.endsWith("!") && !splash.endsWith("?")) splash += "...";
-}
-
-global.rLoadingBar = function () {
-    var w = window.innerWidth;
-    var h = window.innerHeight; // Canvas width and height
-
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, w, h);
-    ctx.fillStyle = "white";
-    ctx.fillRect(w / 2 - 128, h / 2 - 32, 256, 64);
-    ctx.fillStyle = 'black';
-    ctx.fillRect(w / 2 - 128 + 8, h / 2 - 32 + 8, 256 - 16, 64 - 16);
-    ctx.fillStyle = 'white';
-    ctx.fillRect(w / 2 - 128 + 16, h / 2 - 32 + 16, (256 - 32) * ((Aud_prgs[0] + Img_prgs[0]) / (Aud_prgs[1] + Img_prgs[1])), 64 - 32);
-    ctx.textAlign = "center";
-    ctx.font = "30px Nasa";
-    ctx.fillText(splash, w / 2, h / 2 - 96);
-}
-
-global.endsplash = function () {
-    ReactRoot.turnOnDisplay("LoginOverlay");
-}
-
-global.resplash = function () {
-    ReactRoot.turnOffDisplay("LoginOverlay");
-    rLoadingBar();
-    this.setTimeout(endsplash, 15);
-    return;
 }

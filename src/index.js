@@ -5,12 +5,12 @@ var isFirefox = typeof InstallTrigger !== 'undefined';
 
 //Normal, on server: torn.space:443
 //dev: localhost:7300
-var socket = io('torn.space:443');//normally 443
+var socket = io('localhost:8080');//normally 443
 
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-global.ctx = canvas.getContext("2d");
+var ctx = canvas.getContext("2d");
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -35,7 +35,7 @@ for(var i = 0; i < 1571; i++)//500pi
 
 	
 var localizer = require("./localizer.js");
-setLang();
+loadLang();
 
 var sectorWidth = 14336;
 var mx = 0, my = 0, mb = 0;
@@ -169,7 +169,7 @@ var equipped = {}, ammos = {};
 var musicAudio = 0;
 
 var Aud = {};
-global.Aud_prgs = [0,0];
+var Aud_prgs = [0,0];
 var Aud_loaded = false;
 
 function loadAudio (name, src) {
@@ -252,7 +252,7 @@ var redShips = [];
 var blueShips = [];
 var planetImgs = [];
 var Img = {};
-global.Img_prgs = [0 /* Count of loaded images */, 0 /* Count of all images */]
+var Img_prgs = [0 /* Count of loaded images */, 0 /* Count of all images */]
 var Img_loaded = false;
 loadAllImages();
 loadAllAudio();
@@ -2080,6 +2080,20 @@ function getTimeAngle(){
 
 
 //misc rendering
+function rLoadingBar() {
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "white";
+    ctx.fillRect(w / 2 - 128, h / 2 - 32, 256, 64);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(w / 2 - 128 + 8, h / 2 - 32 + 8, 256 - 16, 64 - 16);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(w / 2 - 128 + 16, h / 2 - 32 + 16, (256 - 32) * ((Aud_prgs[0] + Img_prgs[0]) / (Aud_prgs[1] + Img_prgs[1])), 64 - 32);
+    ctx.textAlign = "center";
+    ctx.font = "30px Nasa";
+    ctx.fillText(splash, w / 2, h / 2 - 96);
+}
+
 function updateNotes(){
 	for(var i in notes){
 		var note = notes[i];

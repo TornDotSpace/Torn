@@ -256,33 +256,23 @@ class LoginOverlay extends Component {
 	}
 
 	langEng = ()  => {
-		languagejson = eng;
-		setLang();
-		resplash();
+		setLang("eng");
 	}
 
 	langEsp = () => {
-		languagejson = esp; 
-		setLang();
-		resplash();
+		setLang("esp");
 	}
 
 	langFrn = () => {
-		languagejson = frn;
-		setLang();
-		resplash();
+		setLang("frn");
 	}
 
 	langPyc = () => {
-		languagejson = pyc;
-		setLang();
-		resplash();
+		setLang("pyc");
 	}
 
 	langDeu = () => {
-		languagejson = deu;
-		setLang();
-		resplash();
+		setLang("deu");
 	}
 }
 
