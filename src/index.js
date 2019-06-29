@@ -115,6 +115,8 @@ var basesInfo = 0, playersInfo = 0, planetsInfo = 0, minesInfo = 0, orbsInfo = 0
 // for initial loading screen
 var EVERYTHING_LOADED = false;
 
+var guest = false;
+
 import urlParam from "./urlParam.js"
 
 // Just to make socket accessible in react.js
@@ -688,7 +690,7 @@ function rHome() {
 	ctx.rotate(d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50);
 	ctx.drawImage(pc == 'red' ? Img.base : Img.bss, -128, -128, 256, 256);
 	ctx.restore();
-	if(myName === "GUEST"){
+	if(guest){
 		ctx.font = (4 * sinLow(baseTick / 16) + 28) + "px Nasa";
 		ctx.fillStyle = (seller == 600)?"lime":"yellow";
 		ctx.textAlign = 'center';
@@ -1117,7 +1119,7 @@ function rBaseGui() {
 	info[0] = mEng[3] + getSectorName(sx, sy);
 	info[1] = mEng[4] + getDanger();
 	info[2] = mEng[5] + Math.floor(money);
-	for (var i = 0; i < 3; i++) write(info[i], w - (myName === "GUEST"?16:278), 16 + i * 16);
+	for (var i = 0; i < 3; i++) write(info[i], w - (guest ?16:278), 16 + i * 16);
 
 	ctx.font = '11px Nasa';
 	ctx.lineWidth = 2;
@@ -1250,7 +1252,7 @@ function rInBase() {
 		default:
 			break;
 	}
-	if(savedNote-- > 0 && myName !== "GUEST")
+	if(savedNote-- > 0 && !guest)
 		rSavedNote();
 	if(tab == -1)rCreds();
 	if(afk)rAfk();
@@ -1321,6 +1323,7 @@ socket.on('registered', function (data) {
 	credentialState = 0;
 	socket.emit("login",{user:data.user, pass:data.pass, amNew: true});
 	ReactRoot.turnOffRegister("LoginOverlay");
+	guest = false;
 	textIn = 0;
 	autopilot = false;
 	tab = 0;
@@ -1335,7 +1338,9 @@ socket.on('guested', function (data) {
 	credentialState = 0;
 	ReactRoot.turnOffDisplay("LoginOverlay");
 	login = true;
+	guest = true;
 });
+
 socket.on('you', function (data) {
 	killStreak = data.killStreak;
 	killStreakTimer = data.killStreakTimer
@@ -1822,7 +1827,7 @@ document.addEventListener('mousemove', function (evt) {
 	if(mb == 1 && mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
 	if(mx > w - 32 - 20 - 128 && my > h - 52) volTransparency = 1;
 	var preSeller = seller;
-	if (myName === "GUEST" && tab == 0 && docked && mx > rx + 768 - 256 && mx < rx + 768 && my > ry + 512 - 80 && my < ry + 512) seller = 600;
+	if (guest && tab == 0 && docked && mx > rx + 768 - 256 && mx < rx + 768 && my > ry + 512 - 80 && my < ry + 512) seller = 600;
 	else if (tab == 1 && docked && mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
 	else if (tab == 1 && docked && mx > rx + 768 - 16 - ctx.measureText(mEng[14]).width && mx < rx + 768 - 16 && my > ry + 512 - 32 && my < ry + 512 - 16) seller = 611;
 	else if (mb == 1 && docked && tab == 1 && mx > rx + 128 * 4 - 16 && mx < rx + 128 * 6 - 16 && my < ry + 128 * 4 - 16 && my > ry + 128 * 2 - 16){
@@ -1908,7 +1913,7 @@ document.addEventListener('mousedown', function (evt) {
 	if(i == 504) window.open('https://www.youtube.com/channel/UCKsbC4GfoPOcyifiwW1GA4w','_blank');
 	if(i == 505) window.open('https://discord.gg/wFsdUcY','_blank');
 	if(i == 506) window.open('/credits','_blank');
-	if(i == 600 && myName === "GUEST"){
+	if(i == 600 && guest){
 		ReactRoot.turnOnRegister("");
 		textIn = 0;
 		tab = -1;
@@ -2055,7 +2060,7 @@ function lerp(a,b,w){
 	return a * (1 - w) + b * w;
 }
 function expToLife(){
-	return  Math.floor(myName === "GUEST"?0:200000*(1/(1+Math.exp(-experience/15000.))+Math.atan(experience/150000.)-.5))+500;
+	return  Math.floor(guest ?0:200000*(1/(1+Math.exp(-experience/15000.))+Math.atan(experience/150000.)-.5))+500;
 }
 function abbrevInt(x){
 	if(x < 10000)
@@ -2231,7 +2236,7 @@ function rLore(){
 function rEnergyBar(){
 	ctx.save();
 	ctx.strokeStyle = "red";
-	ctx.translate(myName === "GUEST"?16:248, 324 + 16 - 5)
+	ctx.translate(guest ?16:248, 324 + 16 - 5)
 	ctx.rotate(-Math.PI / 2);
 	ctx.beginPath();
 	var wepEnergy = wepns[equipped[scroll]].energy;
@@ -2248,7 +2253,7 @@ function rEnergyBar(){
 	ctx.globalAlpha = 1;
 	ctx.restore();
 	ctx.save();
-	ctx.translate((myName === "GUEST"?16:248) - 5, 324 + 16)
+	ctx.translate((guest ?16:248) - 5, 324 + 16)
 	ctx.rotate(-Math.PI / 2);
 	ctx.drawImage(Img.energyBar, 0,0);
 	ctx.restore();
@@ -2390,7 +2395,7 @@ function rTexts(lag, arr) {
 	ctx.fillStyle = 'yellow';
 	var lagNames = [mEng[182], mEng[183], mEng[184], mEng[185], mEng[186], mEng[187], mEng[188], mEng[189], mEng[190], mEng[191], mEng[192]];
 	var info = {};
-	var lbShift = myName !== "GUEST"?240:0;
+	var lbShift = !guest ?240:0;
 	meanNLag*=nLagCt;
 	meanNLag+=nLag;
 	nLagCt++;
@@ -2509,7 +2514,8 @@ function rStars() {
 		starSz = starSz * starSz * starSz;
 		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (starSz * starSz + .1) * .25) % w;
 		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (starSz * starSz + .1) * .25) % h;
-		ctx.drawImage(spr, x, y);
+		//ctx.drawImage(spr, Math.floor(x), Math.floor(y));
+		ctx.drawImage(spr, x,y);
 	}
 }
 function rSectorEdge() {
@@ -2643,7 +2649,7 @@ function renderBG() {
 	ctx.globalAlpha = 1;
 }
 function rMap(){
-	if(myName === "GUEST") return;
+	if(guest) return;
 	if(hmap != 0){
 		if(typeof hmap[sx]==="undefined")
 			return;
@@ -2692,7 +2698,7 @@ function rMap(){
     ctx.fill();
 }
 function rLB(){
-	if(myName === "GUEST") return;
+	if(guest) return;
 	ctx.save();
 	ctx.globalAlpha = .5;
 	infoBox(w - 260, -2, 262, (lb.length+4)*16+2, "black", "white");
@@ -2877,7 +2883,7 @@ function rTut(){
 	ctx.save();
 	ctx.textAlign = "center";
 	ctx.fillStyle = 'yellow';
-	if(myName === "GUEST"){
+	if(guest){
 		if(money != 8000) text = mEng[123];
 		else if(!didW) text = mEng[117];
 		else if(!didSteer) text = mEng[118];
