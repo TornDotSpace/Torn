@@ -2470,6 +2470,18 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('register',function(data){
 		flood(ip);
+		// Block registrations being triggered from non-guests or unconnected accounts
+		// Fixes some registration spam and crash exploits
+		var player = (typeof (PLAYER_LIST[socket.id]) !== "undefined") ? PLAYER_LIST[socket.id] : DOCKED_LIST[socket.id];
+
+		if (typeof (player) === "undefined") {
+			return;
+		}
+
+		if (!player.guest) {
+			return;
+		}
+
 		var user = data.user, pass = data.pass;
 
 		if(typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)){
