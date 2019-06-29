@@ -2437,7 +2437,7 @@ io.sockets.on('connection', function(socket){
 
 	var sockcol = 0;
 	socket.on('lore',function(data){
-		if (typeof data === "undefined" || typeof data.alien == "undefined") {
+		if (typeof data === "undefined" || typeof data.alien !== "number") {
 			return;
 		}
 		sockcol = data.alien;
@@ -2533,7 +2533,7 @@ io.sockets.on('connection', function(socket){
 		socket.emit("raid", {raidTimer:raidTimer})
 	});
 	socket.on('login',function(data){
-		if (typeof data === "undefined" || typeof data.amNew === "undefined") {
+		if (typeof data === "undefined" || typeof data.amNew !== "boolean") {
 			return;
 		}
 		flood(ip);
@@ -2707,7 +2707,7 @@ io.sockets.on('connection', function(socket){
 		chatAll(text);
 	});
 	socket.on('pingmsg',function(data){
-		if (typeof data === "undefined" || typeof data.time == "undefined") {
+		if (typeof data === "undefined" || typeof data.time === "undefined") {
 			return;
 		}
 
