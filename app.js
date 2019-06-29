@@ -2437,6 +2437,9 @@ io.sockets.on('connection', function(socket){
 
 	var sockcol = 0;
 	socket.on('lore',function(data){
+		if (typeof data === "undefined" || typeof data.alien == "undefined") {
+			return;
+		}
 		sockcol = data.alien;
 		socket.emit("lored",{pc:sockcol});
 	});
@@ -2469,6 +2472,9 @@ io.sockets.on('connection', function(socket){
 		sendWeapons(player.id);
 	});
 	socket.on('register',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
 		flood(ip);
 		// Block registrations being triggered from non-guests or unconnected accounts
 		// Fixes some registration spam and crash exploits
@@ -2527,6 +2533,9 @@ io.sockets.on('connection', function(socket){
 		socket.emit("raid", {raidTimer:raidTimer})
 	});
 	socket.on('login',function(data){
+		if (typeof data === "undefined" || typeof data.amNew === "undefined") {
+			return;
+		}
 		flood(ip);
 		if(instance) return;
 		//Validate and save IP
@@ -2698,6 +2707,10 @@ io.sockets.on('connection', function(socket){
 		chatAll(text);
 	});
 	socket.on('pingmsg',function(data){
+		if (typeof data === "undefined" || typeof data.time == "undefined") {
+			return;
+		}
+
 		var player = PLAYER_LIST[socket.id];
 		if(typeof player === "undefined"){
 			player = DOCKED_LIST[socket.id];
@@ -2708,6 +2721,9 @@ io.sockets.on('connection', function(socket){
 		player.pingTimer = 250;
 	});
 	socket.on('key',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
 		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
 		if(typeof player === "undefined") player = DEAD_LIST[socket.id];
 		if(typeof player === "undefined") return;
@@ -2736,6 +2752,10 @@ io.sockets.on('connection', function(socket){
 		}
 	});
 	socket.on('chat',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
+
 		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
 		if(typeof player === "undefined") player = DEAD_LIST[socket.id];
 		if(typeof player === "undefined" || typeof data.msg !== "string") return;
@@ -2792,6 +2812,10 @@ io.sockets.on('connection', function(socket){
 		player.globalChat = (player.globalChat+1)%2;
 	});
 	socket.on('sell',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
+
 		var player = DOCKED_LIST[socket.id];
 		if(typeof player === "undefined" || typeof data.item !== 'string' || !player.docked) return;
 		if(data.item == 'iron'){
@@ -2817,6 +2841,9 @@ io.sockets.on('connection', function(socket){
 		player.save();
 	});
 	socket.on('buyShip',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
 		var player = DOCKED_LIST[socket.id];
 		if(typeof player === "undefined" || typeof data.ship !== 'number') return;
 		data.ship = Math.floor(data.ship);
@@ -2844,6 +2871,9 @@ io.sockets.on('connection', function(socket){
 		player.save();
 	});
 	socket.on('buyW',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
 		var player = DOCKED_LIST[socket.id];
 		if(typeof player === "undefined" || typeof data.slot !== 'number' || typeof data.weapon !== 'number') return;
 		data.slot = Math.floor(data.slot);
@@ -2867,6 +2897,9 @@ io.sockets.on('connection', function(socket){
 		player.save();
 	});
 	socket.on('upgrade',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
 		var player = DOCKED_LIST[socket.id];
 		if(typeof player === "undefined" || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
 		var item = Math.floor(data.item);
@@ -2919,6 +2952,9 @@ io.sockets.on('connection', function(socket){
 		player.save();
 	});
 	socket.on('sellW',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
 		var player = DOCKED_LIST[socket.id];
 		if(typeof player === "undefined" || typeof data.slot !== 'number' || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
 		data.slot = Math.floor(data.slot);
@@ -2931,6 +2967,9 @@ io.sockets.on('connection', function(socket){
 		player.save();
 	});
 	socket.on('quest',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
 		var player = DOCKED_LIST[socket.id];
 		if(typeof player === "undefined" || player.quest!=0 || typeof data.quest !== 'number' || data.quest < 0 || data.quest > 9) return;
 		var qid = Math.floor(data.quest);
@@ -2953,6 +2992,9 @@ io.sockets.on('connection', function(socket){
 		socket.emit('quest', {quest: player.quest});
 	});*/
 	socket.on('equip',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
 		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
 		if(typeof player === "undefined" || typeof data.scroll !== 'number' || data.scroll >= ships[player.ship].weapons) return;
 		player.equipped = Math.floor(data.scroll);
@@ -2961,6 +3003,9 @@ io.sockets.on('connection', function(socket){
 		socket.emit('equip', {scroll:player.equipped});
 	});
 	socket.on('trail',function(data){
+		if (typeof data === "undefined") {
+			return;
+		}
 		var player = DOCKED_LIST[socket.id];
 		if(typeof player === "undefined" || typeof data.trail !== 'number') return;
 		if(data.trail == 0) player.trail = 0;
