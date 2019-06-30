@@ -5,7 +5,7 @@ var isFirefox = typeof InstallTrigger !== 'undefined';
 
 //Normal, on server: torn.space:443
 //dev: localhost:7300
-var socket = io('localhost:8080');//normally 443
+var socket = io(GAMESERVER_URL);//normally 443
 
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
