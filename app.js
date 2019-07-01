@@ -2738,6 +2738,8 @@ io.sockets.on('connection', function(socket){
 		player.x = item.spawnX;
 		player.y = item.spawnY;
 
+		player.guest = false;
+
 		for (var i in PLAYER_LIST)
 			if (PLAYER_LIST[i].name === name || PLAYER_LIST[i].name.includes(" " + name)) {// || socket.handshake.headers.cookie == PLAYER_LIST[i].cookie){
 				socket.emit("accInUse", {});
