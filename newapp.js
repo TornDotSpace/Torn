@@ -2154,7 +2154,6 @@ var Asteroid = function(i, h, sxx, syy, metal){
 		if(isOutOfBounds(self)) self.die(0);
 	}
 	self.die = function(b){
-		asteroids[self.sx][self.sy]--;
 		createAsteroid();
 		delete asts[self.id];
 		if(b == 0) return;
@@ -3607,9 +3606,6 @@ function kill(){
 function createAsteroid(){
 	var sx = Math.floor(Math.random()*mapSz);
 	var sy = Math.floor(Math.random()*mapSz);
-	if(asteroids[2][2]<2) sx = sy = 2;
-	else if(asteroids[4][4]<2) sx = sy = 4;
-	asteroids[sx][sy]++;
 	var vert = (sy + 1) / (mapSz + 1);
 	var hor = (sx + 1) / (mapSz + 1);
 	var metal = (Math.random()<hor?1:0) + (Math.random()<vert?2:0);
