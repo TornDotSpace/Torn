@@ -12,6 +12,17 @@ var wepns = jsn.weapons, ships = jsn.ships, planets = jsn.planets;
 
 filter = new Filter(); // bad-words node package
 
+function buildFileSystem(){ // create the server files/folders
+	var dir = './server';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	dir = './server/neuralnets';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	dir = './server/players';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	dir = './server/turrets';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+}
+
 
 
 
@@ -83,6 +94,22 @@ for(var i = 0; i < mapSz; i++){ // it's 2d
 	vorts[i] = new Array(mapSz);
 	asts[i] = new Array(mapSz);
 	planets[i] = new Array(mapSz);
+	for(var j = 0; j < mapSz; j++){ // it's 2d
+		players[i][j] = {};
+		
+		bullets[i][j] = {};
+		missiles[i][j] = {};
+		orbs[i][j] = {};
+		mines[i][j] = {};
+		beams[i][j] = {};
+		blasts[i][j] = {};
+		
+		bases[i][j] = 0; // only one base per sector
+		packs[i][j] = {};
+		vorts[i][j] = {};
+		asts[i][j] = {};
+		planets[i][j] = 0;
+	}
 }
 
 
@@ -658,7 +685,7 @@ var Player = function(i){
 		
 		self.checkMineCollision();
 	}
-	self.checkMineCollision(){
+	self.checkMineCollision = function(){
 		for(var i in mines[self.sy][self.sx]){
 			var m = mines[self.sy][self.sx][i];
 			if(m.color!=self.color && m.wepnID != 32){ // enemy mine and not 
@@ -667,7 +694,7 @@ var Player = function(i){
 					if(m.wepnID == 17) self.EMP(50); // emp mine
 					m.die();
 					break;
-				}else if(m.wepnID == 16 && squaredDist(m,self) < square(wepns[m.wepnID].Range) + ships[self.ship].width)){ // TODO range * 10?
+				}else if(m.wepnID == 16 && squaredDist(m,self) < square(wepns[m.wepnID].Range + ships[self.ship].width)){ // TODO range * 10?
 					var r = Math.random(); // Laser Mine
 					var beam = Beam(m.owner, r, 400, self, m); // shoot a laser. TODO is this m supposed to be m.owner?
 					beams[r] = beam;
@@ -3455,6 +3482,7 @@ function smite(msg){
 var sectors = new Array(9);
 init();
 function init(){ // start the server!
+	buildFileSystem();
 	for(var i = 0; i < 10; i++){
 		bQuests[i] = 0;
 		rQuests[i] = 0;
@@ -3482,8 +3510,8 @@ function init(){ // start the server!
 		astPack[i] = new Array(mapSz);
 		for(var j = 0; j < mapSz; j++) astPack[i][j] = [];
 	}
-	for(var i in asts){
-		var ast = asts[i];
+	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++) for(var i in asts[y][x]){
+		var ast = asts[y][x][i];
 		astPack[ast.sx][ast.sy].push({metal:ast.metal,id:ast.id,x:ast.x,y:ast.y, angle:ast.angle,health:ast.health,maxHealth:ast.maxHealth});
 	}
 	for(var i = 0; i < mapSz; i++)
@@ -3718,7 +3746,7 @@ function update(){
 			pack[player.sx][player.sy].push({trail:player.trail,shield:player.shield,empTimer:player.empTimer,hasPackage:player.hasPackage,id:player.id,ship:player.ship,speed:player.speed,maxHealth:player.maxHealth,color:player.color, x:player.x,y:player.y, name:player.name, health: player.health, angle:player.angle, driftAngle: player.driftAngle});
 		}
 		
-		for(var i in bullets) bullets[y][x][i].tick();
+		for(var i in bullets[y][x]) bullets[y][x][i].tick();
 		
 		for(var i in vorts[y][x]){
 			var vort = vorts[y][x][i];
@@ -3755,9 +3783,10 @@ function update(){
 		}
 		
 		var base = bases[y][x];
-		if(base == 0) continue;
-		base.tick(rbNow,bbNow);
-		basePack[base.sx][base.sy] = {id:base.id,live:base.turretLive, isBase: base.isBase,maxHealth:base.maxHealth,health:base.health,color:base.color,x:base.x,y:base.y, angle:base.angle, spinAngle:base.spinAngle,owner:base.owner};
+		if(base != 0){
+			base.tick(rbNow,bbNow);
+			basePack[base.sx][base.sy] = {id:base.id,live:base.turretLive, isBase: base.isBase,maxHealth:base.maxHealth,health:base.health,color:base.color,x:base.x,y:base.y, angle:base.angle, spinAngle:base.spinAngle,owner:base.owner};
+		}
 		
 		for(var i in asts[y][x]){
 			var ast = asts[y][x][i];
@@ -3952,8 +3981,8 @@ function updateHeatmap(){
 	var lbSend = [];
 	for(var i = 0; i < Math.min(16,j); i++) lbSend[i] = {name:lb[i].name,exp:Math.round(lb[i].experience),color:lb[i].color,rank:lb[i].rank};
 	for(var i = 0; i < mapSz; i++) for(var j = 0; j < mapSz; j++){
-		if(asteroids[i][j] >= 15) hmap[i][j] += 1500;
-		else hmap[i][j] += 500;
+		/*if(asteroids[i][j] >= 15) hmap[i][j] += 1500;
+		else */hmap[i][j] += 500;
 	}
 	for(var i in lb) send(lb[i].id, 'heatmap', {hmap:hmap, lb:lbSend, youi:i, raidBlue:raidBlue, raidRed:raidRed});
 }
