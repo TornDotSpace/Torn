@@ -1395,6 +1395,7 @@ var Player = function(i){
 
 			spawnX: spawnX,
 			spawnY: spawnY,
+
 			color:self.color,
 			ship:self.ship,
 			weapons:self.weapons,
@@ -1421,6 +1422,9 @@ var Player = function(i){
 
 			x:self.x,
 			y:self.y,
+
+			sx:self.sx,
+			sy:self.sy,
 
 			trail:self.trail,
 
@@ -1491,23 +1495,8 @@ var Player = function(i){
 		});
 
 
+	};
 
-
-		// var source = 'server/players/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt';
-		// if (fs.existsSync(source)) fs.unlinkSync(source);
-		// var spawnX = ((self.sx==Math.floor(mapSz/2) && self.sx == self.sy)?(self.color === "blue"?4:2):self.sx);
-		// var spawnY = ((self.sx==Math.floor(mapSz/2) && self.sx == self.sy)?(self.color === "blue"?4:2):self.sy);
-		// var weapons = "";
-		// for(var i = 0; i < 9; i++) weapons += self.weapons[i] + ":";
-		// var str = self.color + ':' + self.ship + ':' + self.trail + ':' + weapons + /*no ":", see prev line*/ spawnX + ':' + spawnY + ':' + self.name + ':' + self.money + ':' + self.kills + ':' + self.planetsClaimed + ':' + self.iron + ':' + self.silver + ':' + self.platinum + ':' + self.aluminium + ':' + self.experience + ':' + self.rank + ':' + self.x + ':' + self.y + ':' + self.thrust2 + ':' + self.radar2 + ':' + self.capacity2 + ':' + self.maxHealth2 + ":";
-		// str+=self.kill1+":"+self.kill10+":"+self.kill100+":"+self.kill1k+":"+self.kill10k+":"+self.kill50k+":"+self.kill1m+":"+self.killBase+":"+self.kill100Bases+":"+self.killFriend+":"+self.killCourier+":"+self.suicide+":"+self.baseKills+":";
-		// str+=self.oresMined+":"+self.mined+":"+self.allOres+":"+self.mined3k+":"+self.mined15k+":"+self.total100k+":"+self.total1m+":"+self.total100m+":"+self.total1b+":"+self.packageTaken+":"+self.quested+":"+self.allQuests+":"+self.goldTrail+":"+self.questsDone+":";
-		// str+=self.driftTimer+":"+self.dr0+":"+self.dr1+":"+self.dr2+":"+self.dr3+":"+self.dr4+":"+self.dr5+":"+self.dr6+":"+self.dr7+":"+self.dr8+":"+self.dr9+":"+self.dr10+":"+self.dr11+":";
-		// str+=self.cornersTouched+":true:"/*ms0, acct made.*/+self.ms1+":"+self.ms2+":"+self.ms3+":"+self.ms4+":"+self.ms5+":"+self.ms6+":"+self.ms7+":"+self.ms8+":"+self.ms9+":"+self.ms10+":"+self.lives + ":" + self.weapons[9] + ":" + self.energy2 + ":nodecay:";
-		// str+=new Date().getTime()+":"+self.agility2; //reset timer
-		// fs.writeFileSync(source, str, {"encoding":'utf8'});
-		//
-	}
 	self.onKill = function(p){
 		if(!p.guest && p.color !== self.color) self.killStreak++;
 		self.killStreakTimer = 750;//30s
@@ -2725,18 +2714,14 @@ io.sockets.on('connection', function(socket){
 		console.log(ip + " logged in as " + name + "!");
 		socket.emit("loginSuccess", {});
 
-		if(player.sx > mapSz - 1) player.sx = mapSz - 1;
-		if(player.sy > mapSz - 1) player.sy = mapSz - 1;
-
-
-		console.log(item);
 		for(key in item) {
 			console.log(key);
-			if(key === "weapon9" || key === "updateTime") continue;
+			if(key === "updateTime") continue;
 			player[key] = item[key]
 		}
-		player.x = item.spawnX;
-		player.y = item.spawnY;
+
+		console.log(player.weapons);
+
 
 		player.guest = false;
 
