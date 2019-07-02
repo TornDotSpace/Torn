@@ -2635,7 +2635,7 @@ var Missile = function(ownr, i, weaponID, angl){
 	return self;
 }
 
-//Alex: I rewrote everything up to here thoroughly, and the rest not so thoroughly. 7/1/19
+
 
 function send(id, msg, data){ // send a socketio message to id
 	var s = sockets[id];
@@ -2668,19 +2668,19 @@ function sendAllSector(out, data, sx, sy){
 function sendAll(out, data){
 	for(var i in sockets) sockets[i].emit(out, data);
 }
-function chatAll(msg){
+function chatAll(msg){ // sends msg in the chat
 	sendAll("chat", {msg:msg});
 }
-function sendTeam(color, out, data){
+function sendTeam(color, out, data){ // send a socket.io message to all the members of some team
 	for(var i in sockets){
-		var player = players[i];
-		if(typeof player === "undefined") player = dockers[i];
+		var player = dockers[i];
+		for(var y = 0; y < mapSz; y++) for(var y = 0; y < mapSz; y++) if(typeof player === "undefined") player = players[y][x][i];
 		if(typeof player === "undefined") player = deads[i];
 		if(typeof player !== "undefined" && player.color === color) sockets[i].emit(out, data);
 	}
 }
 
-
+//Alex: I rewrote everything up to here thoroughly, and the rest not so thoroughly. 7/1/19
 
 io.sockets.on('connection', function(socket){
 	var instance = false;
