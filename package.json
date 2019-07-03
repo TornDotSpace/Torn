@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "bad-words": "^3.0.2",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "mongodb": "^3.2.7",
     "socket.io": "^2.2.0"
