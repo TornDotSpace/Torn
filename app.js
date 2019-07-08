@@ -5,58 +5,120 @@ var Filter = require('bad-words');
 
 console.log('Server started');
 var io = require('socket.io')();
-io.listen(parseInt(process.argv[2])); // normal is 8887, dev 7300
+io.listen(parseInt(process.argv[2]));
 
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
 var wepns = jsn.weapons, ships = jsn.ships, planets = jsn.planets;
-var mapSz = 7;
-var trainingMode = false;
-var sectorWidth = 14336;//must be divisible by 2048, no need to be binary
-var botFrequency = trainingMode?.7:1.6;//higher: more bots. Standard: 1.6
-var neuralFiles = 1500;
-var guestsCantChat = false;
-var lbExp = new Array(1000);
-var ranks = [0,5,10,20,50,100,200,500,1000,2000,4000,8000,14000,20000,40000,70000,100000,140000,200000,300000,500000,800000,1000000,1500000,2000000,3000000,5000000,8000000,12000000,16000000,32000000,64000000,100000000];
 
-var SOCKET_LIST = {};
-var PLAYER_LIST = {};
-var DOCKED_LIST = {};
-var LEFT_LIST = {};
-var DEAD_LIST = {};
-var BULLET_LIST = {};
-var MISSILE_LIST = {};
-var ORB_LIST = {};
-var MINE_LIST = new Array(mapSz);
-var BEAM_LIST = {};
-var BLAST_LIST = {};
-var bases = new Array(mapSz);
-var DROP_LIST = {};
-var VORTEX_LIST = {};
-var ASTEROID_LIST = {};
-var PLANET_LIST = new Array(mapSz);
-var asteroids = new Array(mapSz);
+filter = new Filter(); // bad-words node package
 
-filter = new Filter();
-
-for(var i = 0; i < mapSz; i++){
-	MINE_LIST[i] = new Array(mapSz);
-	bases[i] = new Array(mapSz);
-	for(var j = 0; j < mapSz; j++) MINE_LIST[i][j] = {};
-	PLANET_LIST[i] = new Array(mapSz);
-	asteroids[i] = [0,0,0,0,0,0,0];//mapsz sensitive
-	bases[i] = [0,0,0,0,0,0,0];//mapsz sensitive
+function buildFileSystem(){ // create the server files/folders
+	var dir = './server';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	dir = './server/neuralnets';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	dir = './server/players';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	dir = './server/turrets';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 }
-var PACKAGE_LIST = {};
-var bQuests = [];
+
+
+
+
+
+//some global FINAL game mechanics
+var bulletWidth = 16; // collision radius
+var mineLifetime = 3; // mines despawn after 3 minutes
+var baseHealth = 600; // max base health
+var baseKillExp = 50; // Exp reward for killing a base
+var baseKillMoney = 25000; // ditto but money
+var mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
+var sectorWidth = 14336; // must be divisible by 2048.
+var botFrequency = trainingMode?.7:1.6;//higher: more bots spawn. Standard: 1.6
+var playerHeal = .2; // player healing speed
+var baseHeal = 1; // base healing speed
+var guestsCantChat = false;
+var lbExp = new Array(1000); // Stores in memory where people stand on the global leaderboard.
+var ranks = [0,5,10,20,50,100,200,500,1000,2000,4000,8000,14000,20000,40000,70000,100000,140000,200000,300000,500000,800000,1000000,1500000,2000000,3000000,5000000,8000000,12000000,16000000,32000000,64000000,100000000]; // exp to rank conversion.
+
+
+
+
+
+//administrative-y variables
+var tick = 0, lag = 0, ops = 0; // ticks elapsed since boot, lag, count of number of instances of update() running at once
+var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0; // blue/red players/guests/bots
+var raidTimer = 50000, raidRed = 0, raidBlue = 0; // Timer and points
+var IPSpam = {}; // Keeps track of ips flooding server.
+var guestCount = 0; // Enumerate guests since server boot
+var bQuests = [];//A list of the 10 available quests for humans and aliens
 var rQuests = [];
-var atans = [];
-var tick = 0, lag = 0, ops = 0;
-var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0;
-var raidTimer = 50000, raidRed = 0, raidBlue = 0;
-var IPSpam = {};
 
-var guestCount = 0;
 
+
+
+
+//Object lists. All of them are in Y-MAJOR ORDER.
+var sockets = {}; // network
+var players = new Array(mapSz); // in game
+var dockers = {}; // at a base
+var lefts = {}; // Queued for deletion- left the game
+var deads = {}; // Dead
+
+var bullets = new Array(mapSz);
+var missiles = new Array(mapSz);
+var orbs = new Array(mapSz);
+var mines = new Array(mapSz);
+var beams = new Array(mapSz);
+var blasts = new Array(mapSz);
+
+var bases = new Array(mapSz);
+var packs = new Array(mapSz); // Coins, ammo, packages, lives
+var vorts = new Array(mapSz); // Worm/black holes
+var asts = new Array(mapSz); // Asteroids
+var planets = new Array(mapSz);
+
+for(var i = 0; i < mapSz; i++){ // it's 2d
+	players[i] = new Array(mapSz);
+	
+	bullets[i] = new Array(mapSz);
+	missiles[i] = new Array(mapSz);
+	orbs[i] = new Array(mapSz);
+	mines[i] = new Array(mapSz);
+	beams[i] = new Array(mapSz);
+	blasts[i] = new Array(mapSz);
+	
+	bases[i] = new Array(mapSz);
+	packs[i] = new Array(mapSz);
+	vorts[i] = new Array(mapSz);
+	asts[i] = new Array(mapSz);
+	planets[i] = new Array(mapSz);
+	for(var j = 0; j < mapSz; j++){ // it's 2d
+		players[i][j] = {};
+		
+		bullets[i][j] = {};
+		missiles[i][j] = {};
+		orbs[i][j] = {};
+		mines[i][j] = {};
+		beams[i][j] = {};
+		blasts[i][j] = {};
+		
+		bases[i][j] = 0; // only one base per sector
+		packs[i][j] = {};
+		vorts[i][j] = {};
+		asts[i][j] = {};
+		planets[i][j] = 0;
+	}
+}
+
+
+
+
+
+//Machine Learning
+var trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
+var neuralFiles = 1500; // how many files should be in competition
 var NeuralNet = function(){
 	var self = {
 		genes: {},
@@ -123,57 +185,99 @@ var NeuralNet = function(){
 	};
 	return self;
 }
-var mutate = function(){
+var mutate = function(){ // Low change of high variability, high chance of low.
 	return Math.tan(Math.random()*Math.PI*2)/100;
 }
-var activate = function(x){
+var activate = function(x){ // Softsign activation function. See wikipedia.
 	return x/(1+Math.abs(x));
 }
 
 
+
+
+
+//Game Objects
 var Player = function(i){
 	var self = {
-		net:0,
-		cookie:0,
-		bulletQueue:0,
-		isBot:false,
-		isNNBot:false,
-		brainwashedBy:0,
+		
 		type:"Player",
-		shield:false,
+		
+		name:"ERR0",
+		id:i, // unique identifier
+		password:"password",
 		ip:0,
-		afkTimer:25 * 60 * 30,
-		pingTimer:125,
+		trail:0,
 		color:i>.5?'red':'blue',
 		ship:0,
-		generators:0,
-		weapons:{},
+		experience:0,
+		rank:0,
+		
+		guest:false,
+		dead: false,
+		docked:false,
+		
+		//misc timers
+		noDrift:50, // A timer used for decelerating angular momentum
+		afkTimer:25 * 60 * 30, // check for afk
+		pingTimer:125, // check for lag-out
+		jukeTimer: 0,
+		hyperdriveTimer:-1,
+		borderJumpTimer:0, // for deciding whether to hurt the player
+		planetTimer:0,
+		leaveBaseShield:0,
+		empTimer:-1,
+		disguise:-1,
+		timer:0,
+		gyroTimer:0,
+		reload:0,
+		
+		chatTimer: 100,
+		muteTimer: -1,
+		muteCap: 250,
+		globalChat:0,
+		
+		weapons:{}, // my equipped weapons and ammo counts
 		ammos:{},
-		sx:0,
+		bulletQueue:0, // For submachinegun (5 bullet bursts)
+		
+		sx:0, // sector
 		sy:0,
-		name:"ERR0",
-		password:"password",
+		x:sectorWidth/2,
+		y:sectorWidth/2,
+		vx:0,
+		vy:0,
+		cva:0,
+		angle:0,
+		speed:0,
+		driftAngle:0,
+		
 		money:8000,
 		kills:0,
 		killStreakTimer:-1,
 		killStreak:0,
 		baseKills:0,
-		borderJumpTimer:0,
+		
+		shield:false,
+		generators:0,
+		energy:100,
+		isLocked: false,
+		lives: 20,
+		quest:0,
+		health:1,
+		
 		iron:0,
 		silver:0,
 		platinum:0,
 		aluminium:0,
-		experience:0,
-		rank:0,
-		noDrift:50,
-		energy:100,
-		planetTimer:0,
-		leaveBaseShield:0,
-		globalChat:0,
-		hyperdriveTimer:-1,
-		deleteRate:.0005,
 		
-		/*
+		//bot stuff
+		brainwashedBy:0, // for enslaved bots
+		deleteRate:.0005,
+		net:0, // where the neural network is stored
+		isBot:false,
+		isNNBot:false,
+		
+		/* please don't touch these
 		nearestEnemyDist: 0,//for nnBots
 		nearestFriendDist: 0,
 		nearestBulletDist: 0,
@@ -188,126 +292,53 @@ var Player = function(i){
 		nearestBulletAngleV: 0,
 		*/
 
-		thrust:1, // Read from ships, same for other variables
+		thrust:1, // These are techs multiplied by ship stats, used for actual physics
 		va:1,
 		capacity:1,
 		maxHealth:2,
 		
-		thrust2:1,
+		thrust2:1, // these just track the player tech levels
 		radar2:1,
 		agility2:1,
 		capacity2:1,
 		maxHealth2:1,
 		energy2:1,
-		trail:0,
 		
-		jukeTimer: 0,
-		isLocked: false,
-		dead: false,
-		lives: 20,
-		quest:0,
-		cva:0,
-		chatTimer: 100,
-		muteTimer: -1,
-		muteCap: 250,
-		health:1,
-		x:sectorWidth/2,
-		y:sectorWidth/2,
-		reload:0,
-		angle:0,
-		vx:0,
-		vy:0,
-		id:i,
-		speed:0,
-		driftAngle:0,
-		w:false,
+		w:false, // what keys are pressed currently
 		s:false,
 		a:false,
 		d:false,
 		e:false,
-		z:false,
-		hasPackage:false,
+		c:false,
 		space:false,
-		docked:false,
-		heal:.2,
-		empTimer:-1,
-		disguise:-1,
-		timer:0,
-		equipped:0,
-		gyroTimer:0,
-		trail:0,
-		points:0,
 
-
-		reply:"nobody",
+		reply:"nobody", // last person to pm / who pmed me
 		
+		killsAchs:{}, // 13 of em
+		moneyAchs:{}, // 12
+		driftAchs:{}, // 12
+		randmAchs:{}, // 12
 		
-		kill1:false,//First Blood
-		kill10:false,//Private
-		kill100:false,//Specialist
-		kill1k:false,//Corporal
-		kill10k:false,//Sergeant
-		kill50k:false,//General
-		kill1m:false,//Warlord
-		killBase:false,//Invader
-		kill100Bases:false,//conqueror
-		killFriend:false,//Double Agent
-		killCourier:false,//Gone Postal
-		suicide:false,//kms
-		bloodTrail:false,//Shinigami (scythe) XXX
-		
-		oresMined:0,
-		questsDone:0,
-		
-		mined:false,
-		allOres:false,
-		mined3k:false,
-		mined15k:false,
-		total100k:false,//High Rollin
-		total1m:false,//Millionaire
-		total100m:false,//That's a lot of digits
-		total1b:false,//Billionaire
-		packageTaken:false,//Freeloader
-		quested:false,//Community Service
-		allQuests:false,//Adventurer XXX
-		goldTrail:false,//Affluenza XXX
-		
-		driftTimer:0,
-		
-		dr0:false,//Shift To Drift
-		dr1:false,//Tofu Guy (1 min total)
-		dr2:false,//Paper Cup (10 min total)
-		dr3:false,//Takumi (1 hr total)
-		dr4:false,//Bunta (10 hr total)
-		dr5:false,//Turbodrift
-		dr6:false,//Hyperdrift
-		dr7:false,//Oversteer (Reverse drift)
-		dr8:false,//Inertia Drift (BH drift)
-		dr9:false,//Driftkill
-		dr10:false,//Spinout (Reverse Drift + turbo)
-		dr11:false,//Panda AE86 XXXxxxxxxxxxxxxxxxxxxxxxx
-		
-		cornersTouched:0,
-		planetsClaimed:"0000000000000000000000000000000000000000000000000",
-		
-		ms0:false,//Go AFK
-		ms1:false,//Die
-		ms2:false,//Risky Business
-		ms3:false,//Sucked In
-		ms4:false,//Oops...
-		ms5:false,//Boing!
-		ms6:false,//Corner XXX
-		ms7:false,//4 Corners XXX
-		ms8:false,//Claim a planet
-		ms9:false,//Claim every planet XXX
-		ms10:false,//Random Trail XXX
-		guest:false,
+		//various achievement stuff
+		driftTimer:0, // How many ticks this account has been drifting.
+		cornersTouched:0, // bitmask
+		oresMined:0, // bitmask
+		questsDone:0, // bitmask
+		planetsClaimed:"0000000000000000000000000000000000000000000000000"
 	}
 
 	self.tick = function(){
-
-		if(self.killStreakTimer--<0) self.killStreak = 0;
+		
+		//timer business
+		if(self.killStreakTimer--<0) self.killStreak = 0; // EDIT AT YOUR PERIL. Sensitive to off-by-ones.
 		if(self.borderJumpTimer>0) self.borderJumpTimer--;
+		self.superchargerTimer--;
+		self.empTimer--;
+		self.disguise--;
+		var reloadVal = self.energy2/2+.5; //reload speed scales with energy tech
+		for(var i = 0; i < self.generators; i++) reloadVal *= 1.06;
+		self.reload -= reloadVal;
+		
 		var amDrifting = self.e || self.gyroTimer > 0;
 		self.shield = (self.s && !amDrifting && self.energy > 5 && self.gyroTimer < 1) || self.leaveBaseShield > 0;
 		if(self.shield && !(self.leaveBaseShield-- > 0)){
@@ -317,74 +348,27 @@ var Player = function(i){
 		
 		if(!self.isBot){
 			self.checkPlanetCollision();
-			if(!self.guest && tick % 48 == 0 && PLANET_LIST[self.sy][self.sx].color === self.color) self.money++;
-			if(self.pingTimer-- < 0){
-				var text = "~`"+self.color+"~`"+self.name + "~`yellow~` disconnected!";
-				LEFT_LIST[self.id] = 0;
-				console.log(text);
-				chatAll(text);
-				return;
-			}
+			if(tick % 50 == 0 && planets[self.sy][self.sx].color === self.color) self.money++; // Earn $.5/sec for being in a sector w/ your color planet
+			self.checkDisconnect(); // Did we lose communications?
 		}
 		
 		self.move();
-		self.superchargerTimer--;
-		self.empTimer--;
-		var reloadVal = self.energy2/2+.5;
-		for(var i = 0; i < self.generators; i++) reloadVal *= 1.06;
-		self.reload -= reloadVal;
-		self.disguise--;
 		self.energy+=reloadVal * .35*(self.superchargerTimer>0?2:1);
 		if(self.energy > 100) self.energy = 100;
-		if(self.health < self.maxHealth) self.health+=self.heal;
+		if(self.health < self.maxHealth) self.health+=playerHeal;
 		
+		self.fire();
+	}
+	self.fire = function(){
 		
-		//elite ships
-		if(self.z){
-			if(self.ship == 16){
-				self.reload -= wepns[21].Charge;
-				var mult = ((self.e || self.gyroTimer > 0) && self.w && (self.a!=self.d))?1.025:1.017;
-				var energyTake = wepns[21].energy;
-				if(self.energy < wepns[21].energy * 2){
-					mult = 1 + (mult - 1) * 5 / 8;
-					energyTake = .35;
-				}
-				self.speed*=mult;
-				self.vx *= mult;
-				self.vy *= mult;
-				self.energy-=energyTake;
-			}
-			if(self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250){
-				self.iron -= 250;
-				self.silver -= 250;
-				self.aluminium -= 250;
-				self.platinum -= 250;
-				var r = Math.random();
-				var a = new Asteroid(r,1000,self.sx,self.sy, Math.floor(Math.random()*4));
-				a.x = self.x+Math.cos(self.angle) * 256;
-				a.y = self.y+Math.sin(self.angle) * 256;
-				a.vx = Math.cos(self.angle) * 15;
-				a.vy = Math.sin(self.angle) * 15;
-				ASTEROID_LIST[r] = a;
-				self.reload = 50;
-			}
-			if(self.ship == 18 && self.energy > 0) self.shootBullet(39);
-		}
-		
-		if(self.bulletQueue > 0)self.shootBullet(40);
-		
+		if(self.c) self.shootEliteWeapon();
+		if(self.bulletQueue > 0)self.shootBullet(40); // SMG
 		var wepId = self.weapons[self.equipped];
 		var wep = wepns[wepId];
+		
 		if(self.space && wepId >= 0 && self.reload < -.01 && self.energy > wep.energy){
 		
-			if(wepId == 40 && self.bulletQueue == 0 && self.energy > wep.energy * 5 && self.ammos[self.equipped] > 0){
-				self.bulletQueue += 5;
-				self.ammos[self.equipped]-=5;
-				sendWeapons(self.id);
-				return;
-			}
-		
-			//ammo shenanigans
+			//In case of insufficient ammo
 			if(self.ammos[self.equipped] == 0){
 				self.reload = Math.min(wep.Charge,10);
 				send(self.id,"sound", {file:"noammo", x:self.x, y:self.y});
@@ -396,61 +380,119 @@ var Player = function(i){
 				return;
 			}
 			
-			if(wepId <= 6 || wepId == 28 || wepId == 39) self.shootBullet(self.weapons[self.equipped]);
-			else if(wepId == 29){
-				self.reload = wep.Charge;
-				self.speed = self.thrust * (self.ship == 16?700:500);
-				self.energy-=wep.energy;
+			if(wepId == 40 && self.bulletQueue == 0 && self.energy > wep.energy * 5){ // Submachinegun physics
+				self.bulletQueue += 5;
+				self.ammos[self.equipped]-=4; // 4 not 5 because the previous if did 1.
+				sendWeapons(self.id);
+				return;
 			}
+			
+			
+			
+			
+			//Traditional Weapons
+			
+			// <= 6 are traditional guns. 28 = Grav Bomb, 39 = Spreadshot
+			if(wepId <= 6 || wepId == 28 || wepId == 39) self.shootBullet(wepId);
+			
+			// <= 9 are plasma, laser, hadron beams. 35: Energy Leech, 26: Mining Laser, 30: Ion Mine Beam, 31: Gyrodynamite
+			else if(wepId <= 9 || wepId == 35 || wepId == 26 || wepId == 30 || wepId == 31) self.shootBeam(self, false);
+			
+			//Traditional missiles. 38: Proximity Fuze
+			else if(wepId <= 14||wepId == 38) self.shootMissile();
+			
+			// <= 17: Traditional Mines, 32: Impulse Mine, 33: Grenades
+			else if(wepId <= 17 || wepId == 32 || wepId == 33) self.shootMine();
+			
+			//Energy Disk
+			else if(wepId == 37) self.shootOrb();
+			
+			// 34: Muon Ray, 25: EMP Blast, 41: Hypno Ray
+			else if(wepId == 34 || wepId == 25 || wepId == 41) self.shootBlast();
+			
+			
+			
+			//Timery Weapons
+			
+			else if(wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29){
+				self.energy-=wep.energy;
+				self.reload = wep.Charge;
+				
+				//Supercharger
+				if(wepId == 36) self.superchargerTimer = 1500;//1 min
+				
+				//Hull Nanobots
+				else if(wepId == 18) self.health += Math.min(80, self.maxHealth - self.health); // min prevents overflow
+				
+				//Photon Cloak
+				else if(wepId == 19) self.disguise = 150;//6s
+				
+				//Warp Drive
+				else if(wepId == 29) self.speed = self.thrust * (self.ship == 16?700:500);
+			
+			}
+			
+			
+			
+			//Movey Weapons
+			
+			//Pulse Wave
 			else if(wepId == 23){
 				sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:Math.cos(self.angle) * self.speed, dy:Math.sin(self.angle)*self.speed}, self.sx, self.sy);
-				for(var i in PLAYER_LIST){
-					var p = PLAYER_LIST[i];
-					if(p.sx == self.sx && p.sy == self.sy && p.color !== self.color){
-						var d2 = (self.x - p.x) * (self.x - p.x) + (self.y - p.y) * (self.y - p.y);
-						if(d2 > wep.Range * wep.Range * 100) continue;
-						var vel = -10000 / Math.log(d2);
-						var ang = Math.atan2(self.y - p.y, self.x - p.x);
-						p.vx += Math.cos(ang) * vel;
+				for(var i in players[self.sy][self.sx]){
+					var p = players[self.sy][self.sx][i];
+					if(p.color !== self.color){ // only enemies
+						var d2 = squaredDist(self,p); // distance squared between me and them
+						if(d2 > square(10*wep.Range)) continue; // if out of range, then don't bother.
+						var ang = angleBetween(self,p); // angle from the horizontal
+						var vel = -10000 / Math.log(d2); // compute how fast to accelerate by
+						p.vx += Math.cos(ang) * vel; // actually accelerate them
 						p.vy += Math.sin(ang) * vel;
-						p.updatePolars();
-					}
-				}
-				self.reload = wep.Charge;
-			}
-			else if(wepId <= 9 || wepId == 35 || wepId == 26 || wepId == 30 || wepId == 31) self.shootBeam(self, false);
-			else if(wepId == 34 || wepId == 25 || wepId == 41) self.shootBlast();
-			else if(wepId == 24){//EM
-				for(var i in ASTEROID_LIST){
-					var a = ASTEROID_LIST[i];
-					if(a.sx == self.sx && a.sy == self.sy){
-						var d2 = square(self.x - a.x) + square(self.y - a.y);
-						if(d2 > wep.Range * wep.Range * 100) continue;
-						var ang = Math.atan2(self.y - a.y, self.x - a.x);
-						var vel = 500000/Math.max(d2,200000);
-						a.vx += Math.cos(ang) * vel;
-						a.vy += Math.sin(ang) * vel;
-					}
-				}
-				for(var i in PLAYER_LIST){
-					var a = PLAYER_LIST[i];
-					if(a.sx == self.sx && a.sy == self.sy && a.id != self.id){
-						var d2 = square(self.x - a.x) + square(self.y - a.y);
-						if(d2 > wep.Range * wep.Range * 100) continue;
-						var ang = Math.atan2(self.y - a.y, self.x - a.x);
-						var vel = 3000000/Math.max(d2,1000000);
-						a.vx += Math.cos(ang) * vel;
-						a.vy += Math.sin(ang) * vel;
-						a.gyroTimer = 25;
-						a.updatePolars();
+						p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
+						p.updatePolars(); // We changed their rectangular velocity.
 					}
 				}
 				self.energy -= wep.energy;
+				self.reload = wep.Charge;
 			}
-			else if(wepId == 27){//turret
-				var r = Math.random();
+			
+			//Electromagnet
+			else if(wepId == 24){ // identical structurally to pulse wave, see above for comments.
+				for(var i in asts[self.sy][self.sx]){
+					var a = asts[self.sy][self.sx][i];
+					var d2 = squaredDist(self,a);
+					if(d2 > square(10*wep.Range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
+					var ang = angleBetween(self,a);
+					var vel = 500000/Math.max(d2,200000);
+					a.vx += Math.cos(ang) * vel;
+					a.vy += Math.sin(ang) * vel;
+				}
+				for(var i in players[self.sy][self.sx]){
+					var p = players[self.sy][self.sx][i];
+					if(p.id != self.id){ // Not the user
+						var d2 = squaredDist(self,p);
+						if(d2 > square(10*wep.Range)) continue;
+						var ang = angleBetween(self,p);
+						var vel = 3000000/Math.max(d2,1000000);
+						p.vx += Math.cos(ang) * vel;
+						p.vy += Math.sin(ang) * vel;
+						p.gyroTimer = 25;
+						p.updatePolars();
+					}
+				}
+				self.energy -= wep.energy;
+				self.reload = wep.Charge;
+			}
+			
+			
+			
+			//Misc
+			
+			//Turret
+			else if(wepId == 27){
 				if(self.x < sectorWidth / 4 || self.x > 3*sectorWidth/4 || self.y < sectorWidth / 4 || self.y > 3*sectorWidth/4){
 					send(self.id, "chat",{msg:'Your turret must be closer to the center of the sector!', color:'yellow'});
+					self.space = false;
 					return;
 				}
 				if(bases[self.sx][self.sy] != 0){
@@ -458,127 +500,179 @@ var Player = function(i){
 					self.space = false;
 					return;
 				}
-				
+				var r = Math.random();
 				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y);
 				b.owner = self.name;
 				bases[self.sx][self.sy] = b;
+				send(self.id, "chat",{msg:'You placed a turret! Coming soon, you will be able to name it.', color:'yellow'});
 				self.reload =wep.Charge;
 				self.energy-=wep.energy;
 			}
-			else if(wepId <= 14||wepId == 38) self.shootMissile();
-			else if(wepId == 37) self.shootOrb();
-			else if(wepId == 36){//supercharger
-				self.superchargerTimer = 1500;//1 min
-				self.energy-=wep.energy;
-				self.reload = wep.Charge;//currently, supe doesn't take any energy or charge
-			}
-			else if(wepId <= 17 || wepId == 32 || wepId == 33) self.shootMine();
-			else if(wepId == 18){//hull bots
-				self.health += Math.min(80, self.maxHealth - self.health);
-				self.reload = wep.Charge;
-				self.energy-=wep.energy;
-			}
-			else if(wepId == 19){//cloak
-				self.disguise = 150;//6s
-				self.energy-=wep.energy;
-				self.reload = wep.Charge;
-			}
+			
+			//Turbo
 			else if(wepId == 21){
-				self.reload = wep.Charge;
-				var mult = ((self.e || self.gyroTimer > 0) && self.w && (self.a!=self.d))?1.025:1.017;
-				var energyTake = wep.energy;
+				var isDrifting = (self.e || self.gyroTimer > 0) && (self.a!=self.d);
+				var mult = isDrifting?1.025:1.017; // Faster when drifting.
+				
+				var energyTake = wep.energy; // this structure lets the user still use turbo at limited capacity when they're out of energy.
 				if(self.energy < wep.energy * 2){
 					mult = 1 + (mult - 1) * 3.5 / 8;
 					energyTake = .35;
 				}
+				
 				self.speed*=mult;
 				self.vx *= mult;
 				self.vy *= mult;
-				if((self.e || self.gyroTimer > 0) && self.w && (self.a!=self.d) && !self.dr5){
-					self.dr5 = true;
+				//no need to updatePolars, since force is parallel with the player... i think? is that the case when drifting?
+				
+				if(isDrifting && !self.driftAchs[5] && self.w){ // Forced Induction
+					self.driftAchs[5] = true;
 					self.sendAchievementsDrift(true);
 				}
-				else if((self.e || self.gyroTimer > 0) && self.s && !self.dr10 && (self.a!=self.d)){
-					self.dr10 = true;
+				else if(isDrifting && self.s && !self.driftAchs[10]){ // Reverse Turbo Drift
+					self.driftAchs[10] = true;
 					self.sendAchievementsDrift(true);
 				}
 				self.energy-=energyTake;
+				self.reload = wep.Charge;// TODO can we put these all at the bottom of fire()?
 			}
-			else if(wepId == 22){//hyperspace
+			
+			//Hyperdrive
+			else if(wepId == 22){
+				var isDrifting = (self.e || self.gyroTimer > 0) && (self.a!=self.d);
 				send(self.id,"sound", {file:"hyperspace", x:self.x, y:self.y});
 				self.hyperdriveTimer = 200;
-				self.energy-=wep.energy;
-				self.reload = wep.Charge;
-				if((self.e || self.gyroTimer > 0) && self.w && (self.a!=self.d) && !self.dr6){
-					self.dr6 = true;
+				if(isDrifting && self.w && !self.driftAchs[6]){ // Hyper-drift
+					self.driftAchs[6] = true;
 					self.sendAchievementsDrift(true);
 				}
+				self.energy-=wep.energy;
+				self.reload = wep.Charge;
 			}
+			
+			//If we run out of ammo on a one-use weapon, delete that weapon.
 			if(self.ammos[self.equipped] == -2){
 				self.weapons[self.equipped] = -1;
-				self.save();
+				self.save(); // And save, to prevent people from shooting then logging out if they don't succeed with it.
 			}
+			
 			sendWeapons(self.id);
 		}
 	}
+	self.shootEliteWeapon = function(){
+		if(self.ship == 16){ // Elite Raider
+			//This effectively just shoots turbo.
+			self.reload -= wepns[21].Charge; // Turbo
+			var mult = ((self.e || self.gyroTimer > 0) && self.w && (self.a!=self.d))?1.025:1.017;
+			var energyTake = wepns[21].energy;
+			if(self.energy < wepns[21].energy * 2){
+				mult = 1 + (mult - 1) * 5 / 8;
+				energyTake = .35;
+			}
+			self.speed*=mult;
+			self.vx *= mult;
+			self.vy *= mult;
+			self.energy-=energyTake;
+		}
+		if(self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250 && self.reload <= 0){ // Quarrier
+			self.iron -= 250; // This just shoots an asteroid out of the dhip as if it were a bullet.
+			self.silver -= 250;
+			self.aluminium -= 250;
+			self.platinum -= 250;
+			var r = Math.random();
+			var a = new Asteroid(r,1000,self.sx,self.sy, Math.floor(Math.random()*4));
+			a.x = self.x+Math.cos(self.angle) * 256;
+			a.y = self.y+Math.sin(self.angle) * 256;
+			a.vx = Math.cos(self.angle) * 15;
+			a.vy = Math.sin(self.angle) * 15;
+			asts[r] = a;
+			self.reload = 50;
+		}
+		if(self.ship == 18 && self.energy > 0) self.shootBullet(39); // Built in spreadshot
+	}
+	self.checkDisconnect = function(){
+		if(self.pingTimer-- < 0){
+			var text = "~`"+self.color+"~`"+self.name + "~`yellow~` disconnected!";
+			lefts[self.id] = 0; // note me for deletion
+			console.log(text);
+			chatAll(text);
+			return;
+		}
+	}
 	self.move = function(){
+		
 		if(self.hyperdriveTimer>0){
 			self.hyperdriveTimer--;
 			self.speed = (10000-square(100-self.hyperdriveTimer))/(self.ship == 16?7:10);
 		}
+		
 		if(self.isNNBot) self.nnBotPlay();
-		else if(self.isBot) self.botPlay();
+		else if(self.isBot) self.botPlay(); // simulates a player and presses keys.
+		
 		var amDrifting = self.e || self.gyroTimer > 0;
 		var ore = self.iron + self.silver + self.platinum + self.aluminium;
-		var newThrust = (self.superchargerTimer>0?2:1) * .9 * self.thrust / ((ore / self.capacity + 3)/3.5) * 2 * ((amDrifting && self.w && (self.a!=self.d))?(self.ship == 16?1.6:1.45):1);
+
+		//In english, your thrust is (self.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
+		var newThrust = self.thrust * (self.superchargerTimer>0?2:1) * 1.8 / ((ore / self.capacity + 3)/3.5) * ((amDrifting && self.w && (self.a!=self.d))?(self.ship == 16?1.6:1.45):1);
+		
+		//Reusable Trig
 		var ssa = Math.sin(self.angle), ssd = Math.sin(self.driftAngle), csa = Math.cos(self.angle), csd = Math.cos(self.driftAngle);
-		var dcva = 0;
-		self.vx = csd * self.speed;
+		
+		self.vx = csd * self.speed; // convert polars to rectangulars
 		self.vy = ssd * self.speed;
 		self.vx*=(amDrifting && self.w && (Math.abs(self.cva) > self.va * .999))?.94:.92;
-		self.vy*=(amDrifting && self.w && (Math.abs(self.cva) > self.va * .999))?.94:.92;
-		if(self.w){
+		self.vy*=(amDrifting && self.w && (Math.abs(self.cva) > self.va * .999))?.94:.92; //Air resistance
+		
+		if(self.w){ // Accelerate!
 			self.vx += csa * newThrust;
 			self.vy += ssa * newThrust;
 		}
-		if(self.s && amDrifting){
+		if(self.s && amDrifting){ // Accelerate backwards, at half speed!
 			self.vx -= csa * newThrust/2;
 			self.vy -= ssa * newThrust/2;
 		}
-		self.updatePolars();
-		if(!amDrifting){
+		
+		self.updatePolars();//convert back to polars
+		
+		
+		if(!amDrifting){ // Terraced angular decelerationy stuff to continuously match driftAngle (angle of motion) to the actual angle the ship is pointing
 			self.noDrift++;
 			if(self.noDrift > 18) self.driftAngle = self.angle;
 			else if(self.noDrift > 12) self.driftAngle = findBisector(self.driftAngle, self.angle);
 			else if(self.noDrift > 7) self.driftAngle = findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle);
 			else if(self.noDrift > 3) self.driftAngle = findBisector(findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle), self.driftAngle);
-			else self.driftAngle = findBisector(findBisector(findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle), self.driftAngle), self.driftAngle);
-		}
-		else {
+			else self.driftAngle = findBisector(findBisector(findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle), self.driftAngle), self.driftAngle);//This happens immediately after shift released, noDrift increases with time.
+		} else { // In drift.
 			self.gyroTimer--;
 			if(self.a!=self.d){
 				if(self.w) self.driftTimer++;
-				else if(self.s && !self.dr7){
-					self.dr7 = true;
+				else if(self.s && !self.driftAchs[7]){ // I can go backwards!?!
+					self.driftAchs[7] = true;
 					self.sendAchievementsDrift(true);
 				}
 			}
-			self.noDrift = 0;
+			self.noDrift = 0; // Time elapsed since last drift
 		}
-		self.x+=self.vx;
+		
+		self.x+=self.vx; // Update position from velocity
 		self.y+=self.vy;
-		if(self.jukeTimer > 1 || self.jukeTimer < -1){
+		if(self.jukeTimer > 1 || self.jukeTimer < -1){ // Q or E keys. Juke mechanics.
 			self.x += self.jukeTimer * Math.sin(self.angle);
 			self.y -= self.jukeTimer * Math.cos(self.angle);
 			self.jukeTimer*=.8;
 		}
 		
-		if(self.a) dcva -= (self.va + self.cva / (amDrifting?1.5:1)) / 3;
-		if(self.d) dcva += (self.va - self.cva / (amDrifting?1.5:1)) / 3; // ternary reduces angular air resistance while drifting
-		if(self.superchargerTimer > 0) dcva *= 2;
-		self.cva += dcva;
-		if(!self.d && !self.a && !amDrifting) self.cva /= 2;
+		var angAccel = 0; // angular acceleration
+		if(self.a) angAccel -= (self.va + self.cva / (amDrifting?1.5:1)) / 3;
+		if(self.d) angAccel += (self.va - self.cva / (amDrifting?1.5:1)) / 3; // ternary reduces angular air resistance while drifting
+		if(self.superchargerTimer > 0) angAccel *= 2;
+		self.cva += angAccel; // update angular velofity from thrust
+		if(!self.d && !self.a && !amDrifting) self.cva /= 2; // When not drifting, apply air resistance to angular velocity.
+		
+		//If we have a drift trail, we turn faster. Generators reduce turning speed.
 		self.angle += self.cva*(1-self.generators/10)*(self.trail % 16 == 3?1.05:1) / 1.5;
+		
+		//Make sure everything is in the range 0-2pi
 		self.driftAngle += Math.PI * 4;
 		self.angle += Math.PI * 4;
 		self.driftAngle %= Math.PI * 2;
@@ -588,30 +682,36 @@ var Player = function(i){
 
 		if(tick % 15 == 0) self.checkQuestStatus(false);
 		if(tick % 2 == 0) return;
-		for(var i in MINE_LIST[self.sy][self.sx]){ // Checking for mine collision
-			var m = MINE_LIST[self.sy][self.sx][i];
-			if(m.wepnID != 16 && m.color!=self.color && m.wepnID != 32 && square(m.x - self.x) + square(m.y - self.y) < square(16 + ships[self.ship].width)){
-				self.dmg(m.dmg, m);
-				if(m.wepnID == 17) self.EMP(50);
-				m.die();
-				break;
-			}
-			else if(m.wepnID == 16 && self.color!=m.color && (self.x - m.x) * (self.x - m.x) + (self.y - m.y) * (self.y - m.y) < (wepns[m.wepnID].Range + ships[self.ship].width) * (wepns[m.wepnID].Range + ships[self.ship].width)){
-				var r = Math.random();
-				var beam = Beam(m.owner, r, 400, self, m);
-				BEAM_LIST[r] = beam;
-				sendAllSector('sound', {file:"beam",x: m.x, y: m.y}, m.sx, m.sy);
-				m.die();
+		
+		self.checkMineCollision();
+	}
+	self.checkMineCollision = function(){
+		for(var i in mines[self.sy][self.sx]){
+			var m = mines[self.sy][self.sx][i];
+			if(m.color!=self.color && m.wepnID != 32){ // enemy mine and not 
+				if(m.wepnID != 16 && squaredDist(m,self) < square(16 + ships[self.ship].width)){
+					self.dmg(m.dmg, m); // damage me
+					if(m.wepnID == 17) self.EMP(50); // emp mine
+					m.die();
+					break;
+				}else if(m.wepnID == 16 && squaredDist(m,self) < square(wepns[m.wepnID].Range + ships[self.ship].width)){ // TODO range * 10?
+					var r = Math.random(); // Laser Mine
+					var beam = Beam(m.owner, r, 400, self, m); // shoot a laser. TODO is this m supposed to be m.owner?
+					beams[r] = beam;
+					sendAllSector('sound', {file:"beam",x: m.x, y: m.y}, m.sx, m.sy);
+					m.die();
+				}
 			}
 		}
 	}
 	self.testSectorChange = function(){
-		var callOnChangeSectors = true;
-		var giveBounce = false;
-		if(self.x > sectorWidth){
+		
+		var callOnChangeSectors = true; // track whether we did change sectors.
+		var giveBounce = false; // did they bounce on a galaxy edge?
+		if(self.x > sectorWidth){//check each edge of the 4 they could bounce on
 			self.x = 1;
 			self.sx++;
-			if(self.sx >= mapSz || self.guest || (trainingMode && self.isNNBot)){
+			if(self.sx >= mapSz || self.guest || (trainingMode && self.isNNBot)){ // guests cant cross borders, nobody can go outside the galaxy
 				giveBounce = true;
 				self.sx--;
 				self.x = (sectorWidth-5);
@@ -657,27 +757,31 @@ var Player = function(i){
 			else self.borderJumpTimer += 100;
 		}
 		else callOnChangeSectors = false;
-		if(giveBounce && !self.ms5){
+		if(giveBounce && !self.randmAchs[5]){
 			if(self.guest) send(self.id, "chat", {msg:"~`orange~`You must create an account to explore the universe!"});
 			else{
-				self.ms5 = true;
+				self.randmAchs[5] = true;
 				self.sendAchievementsMisc(true);
 			}
 		}
-		if(self.borderJumpTimer > 100){
+		
+		if(self.borderJumpTimer > 100){ // damage for running away from fights
 			self.health = (self.health-1)*.9+1;
 			self.borderJumpTimer = 50;
 		}
+		
 		if(callOnChangeSectors) self.onChangeSectors();
+		
 	}
 	self.juke = function(left){
-		if(self.energy < 7.5)
-			return;
-		self.jukeTimer = (self.trail % 16 == 4?1.25:1)*(left?50:-50);
+		if(self.energy < 7.5) return;
 		self.energy -= 7.5;
+		self.jukeTimer = (self.trail % 16 == 4?1.25:1)*(left?50:-50); // misc trail makes you juke further.
 	}
 	self.onChangeSectors = function(){
 		send(self.id, "clrBullets", {});
+		
+		//track my touched corners
 		if(self.sx==0){
 			if(self.sy==0 && (self.cornersTouched & 1) != 1) self.cornersTouched++;
 			else if(self.sy==mapSz-1 && (self.cornersTouched & 2) != 2) self.cornersTouched+=2;
@@ -686,63 +790,76 @@ var Player = function(i){
 			else if(self.sy==mapSz-1 && (self.cornersTouched & 8) != 8) self.cornersTouched+=8;
 		}
 		if(self.cornersTouched == 15){
-			self.ms7 = true;
+			self.randmAchs[7] = true;
 			self.sendAchievementsMisc(true);
 		}
+		
 		if(self.sx == 3 && self.sy == 3 && self.quest.type === "Secret3"){
-			self.spoils("money",self.quest.exp);
+			self.spoils("money",self.quest.exp); // reward the player
 			self.spoils("experience", Math.floor(self.quest.exp / 4000));
+			
 			noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
-			self.quest = 0;
 			self.hasPackage = false;
-			if(!self.quested){
-				self.quested = true;
+			if((self.questsDone & 8) == 0) self.questsDone+=8;
+			
+			self.quest = 0; // reset quest and tell the client
+			send(self.id, 'quest', {quest: self.quest});
+			
+			if(!self.moneyAchs[9]){ // Questor
+				self.moneyAchs[9] = true;
 				self.sendAchievementsCash(true);
 			}
-			send(self.id, 'quest', {quest: self.quest});
-			if((self.questsDone & 8) == 0) self.questsDone+=8;
-			if(self.questsDone == 15 && !self.allQuests){
-				self.allQuests = true;
+			if(self.questsDone == 15 && !self.moneyAchs[10]){ // Adventurer
+				self.moneyAchs[10] = true;
 				self.sendAchievementsCash(true);
 			}
 		}
-		if(self.quest != 0 && self.quest.type === "Secret")
-			if(self.sx == self.quest.sx && self.sy == self.quest.sy){
-				self.quest = {type:"Secret2", exp:self.quest.exp, sx:self.quest.sx, sy:self.quest.sy};
-				send(self.id, 'quest', {quest: self.quest});
-			}
+		
+		if(self.quest != 0 && self.quest.type === "Secret" && self.sx == self.quest.sx && self.sy == self.quest.sy){ // advance in secret quest to phase 2
+			self.quest = {type:"Secret2", exp:self.quest.exp, sx:self.quest.sx, sy:self.quest.sy};
+			send(self.id, 'quest', {quest: self.quest});
+		}
+		
+		//tell client what's in this sector
 		self.getAllBullets();
 		self.getAllPlanets();
+		
+		//update list of visited sectors.
 		var index = self.sx + self.sy * mapSz;
 		var prevStr = self.planetsClaimed.substring(0,index);
 		var checkStr = self.planetsClaimed.substring(index, index+1);
 		var postStr = self.planetsClaimed.substring(index+1,mapSz*mapSz);
 		if(checkStr !== "2") self.planetsClaimed = prevStr + "1" + postStr;
-		if(!self.planetsClaimed.includes("0") && !self.ms6){
-			self.ms6 = true;
+		
+		if(!self.planetsClaimed.includes("0") && !self.randmAchs[6]){
+			self.randmAchs[6] = true;
 			self.sendAchievementsMisc(true);
 		}
+		
 	}
-	self.botPlay = function(){
+	self.botPlay = function(){ // don't mess with this pls
 		if(self.empTimer > 0) return;//cant move if i'm emp'd
 		
 		self.equipped = 0;
-		while(self.ammos[self.equipped] == 0) self.equipped++;
+		while(self.ammos[self.equipped] == 0) self.equipped++; // select the first available weapon with ammo
 		var range = square(wepns[self.equipped].Range * 10);
 		
-		self.w = self.e = self.s = self.z = self.space = false;
+		self.w = self.e = self.s = self.c = self.space = false; // release all keys
 		
+		//Find closest enemy and any friendly in the sector
 		var target = 0, close = 100000000;
 		var anyFriend = 0;
 		var friendlies = 0, enemies = 0;//keep track of the player counts in the sector
-		for(var p in PLAYER_LIST){
-			var player = PLAYER_LIST[p];
-			if(player.sx != self.sx || player.sy != self.sy || self.id == player.id || player.disguise > 0) continue;
+		for(var p in players[self.sy][self.sx]){
+			var player = players[self.sy][self.sx][p];
+			if(self.id == player.id || player.disguise > 0) continue;
 			if(player.color === self.color) {if(friendlies++>3)anyFriend=player; continue;}
 			enemies++;
 			var dist2 = hypot2(player.x, self.x, player.y, self.y);
 			if(dist2 < close){target = player;close = dist2;}
 		}
+		
+		//Move towards the enemy
 		var movex = 0, movey = 0;
 		if(target != 0) {movex = target.x - self.x; movey = target.y - self.y;}
 		
@@ -753,6 +870,7 @@ var Player = function(i){
 			else if(dist2 < square(10*sectorWidth/2)) {movex = self.x - base.x; movey = self.y - base.y;}
 		}
 		
+		//at random, fill my ammo or die if there are no enemies to fight
 		if(enemies == 0 && Math.random() < .001) self.refillAllAmmo();
 		if(enemies == 0 && Math.random() < self.deleteRate) self.die();
 		
@@ -763,7 +881,7 @@ var Player = function(i){
 			self.a = Math.random() < .1;
 			self.w = true;
 			if(self.brainwashedBy != 0){
-				var player = PLAYER_LIST[self.brainwashedBy];
+				var player = players[self.brainwashedBy];
 				if(typeof player === "undefined")return;
 				var myX = self.x + self.sx * sectorWidth;
 				var myY = self.y + self.sy * sectorWidth;
@@ -793,44 +911,46 @@ var Player = function(i){
 		}
 	}
 	self.nnBotPlay = function(){
+		//Play for a neural network bot
+		if(tick % 5 != Math.floor(self.id * 5)) return; //Don't go too crazy running the whole network each tick. Lag prevention.
 
-		if(tick % 5 != Math.floor(self.id * 5)) return;
-
-		if(self.net === 1){
+		if(self.net === 1){ // If we haven't yet initialized a neural net
 			self.net = new NeuralNet();
 			self.net.load();
 		}
 
 		if(self.empTimer > 0) return;//cant move if i'm emp'd
 		
-		self.equipped = 0;
+		self.equipped = 0; // select first weapon with ammo
 		while(self.ammos[self.equipped] == 0) self.equipped++;
 		var range = square(wepns[self.equipped].Range * 10);
 		
-		var totalFriends = 0;
+		var totalFriends = 0; // in sector
 		var totalEnemies = 0;
-		var sumFriendRank = 0;
+		var sumFriendRank = 0; // sum of ranks of all friends in this sector. Not using yet.
 		var sumEnemyRank = 0;
 		
+		//Find the closest friend and enemy
 		var target = 0, friend = 0, closeE = 100000000, closeF = 100000000;
-		for(var p in PLAYER_LIST){
-			var player = PLAYER_LIST[p];
-			if(player.sx != self.sx || player.sy != self.sy || self.id == player.id || player.disguise > 0) continue;
+		for(var p in players[self.sy][self.sx]){
+			var player = players[self.sy][self.sx][p];
+			if(self.id == player.id || player.disguise > 0) continue;
 			if(player.color === self.color) {
 				totalFriends++;
-				var dist2 = hypot2(player.x, self.x, player.y, self.y);
+				var dist2 = squaredDist(player, self);
 				if(dist2 < closeF){friend = player;closeF = dist2;}
 			}else{
 				totalEnemies++;
-				var dist2 = hypot2(player.x, self.x, player.y, self.y);
+				var dist2 = squaredDist(player, self);
 				if(dist2 < closeE){target = player;closeE = dist2;}
 			}
 		}
 		
+		//same as in botPlay
 		if(totalEnemies == 0 && Math.random() < .005) self.refillAllAmmo();
 		if(totalEnemies == 0 && Math.random() < self.deleteRate) self.die();
 		
-		//make input array
+		//make input array (into neural net). Normalize the variables to prevent overflow
 		var input = {};
 		input[0] = self.rank / 8.;
 		input[1] = self.ammos[self.equipped] / 50;
@@ -864,156 +984,218 @@ var Player = function(i){
 		self.d = out[5];
 	}
 	self.checkPlanetCollision = function(){
-		if(self.isBot) return;
-		var p = PLANET_LIST[self.sy][self.sx];
-		if(tick % 25 == 0 && hypot2(p.x,self.x,p.y,self.y) < sectorWidth/2 * 4){
-			var cool = p.cooldown;
-			if(cool < 0){self.refillAllAmmo();p.cooldown = 150;}
-			self.checkQuestStatus(true);
-			if(self.guest) {
-				SOCKET_LIST[self.id].emit("chat",{msg:'You must create an account in the base before you can claim planets!', color:'yellow'});
-				return;
-			}
-			if(typeof self.quest !== "undefined" && self.quest != 0 && self.quest.type === "Secret2" && self.quest.sx == self.sx && self.quest.sy == self.sy){
-				var cleared = true;
-				for(var b in PLAYER_LIST){
-					var player = PLAYER_LIST[b];
-					if(player.sx == self.sx && player.sy == self.sy && player.color !== self.color){
-						cleared = false;
-						break;
-					}
-				}
-				if(cleared && bases[self.sx][self.sy] != 0 && bases[self.sx][self.sy].turretLive) cleared = false;
-				if(cleared){ // 2 ifs needed
-					self.hasPackage = true;
-					self.quest = {type:"Secret3", exp:self.quest.exp};
-					send(self.id, 'quest', {quest: self.quest});
-				}
-			}
-			if(p.color === self.color || cool > 0) return;
-			p.color = self.color;
-			p.owner = self.name;
-			sendAll('chat', {msg:'Planet ' + p.name + ' claimed by ~`' + self.color + '~`' + self.name + "~`yellow~`!"});
-			for(var i in PLAYER_LIST){
-				var player = PLAYER_LIST[i];
-				if(player.sx == self.sx && player.sy == self.sy) player.getAllPlanets();//send them new planet data
-			}
-			if(!self.ms8){
-				self.ms8 = true;
-				self.sendAchievementsMisc(true);
-			}
-			var index = self.sx + self.sy * mapSz;
-			var prevStr = self.planetsClaimed.substring(0,index);
-			var postStr = self.planetsClaimed.substring(index+1,mapSz*mapSz);
-			self.planetsClaimed = prevStr + "2" + postStr;
+		
+		var p = planets[self.sy][self.sx];
+		
+		//if out of range, return. Only try this once a second.
+		if(tick % 25 != 0 || squaredDist(p,self) > square(512)) return;
+			
+		//cooldown to prevent chat spam when 2 people are on the planet
+		var cool = p.cooldown;
+		if(cool < 0){self.refillAllAmmo();p.cooldown = 150;}
+		
+		self.checkQuestStatus(true); // lots of quests are planet based
+		
+		if(self.guest) {
+			sockets[self.id].emit("chat",{msg:'You must create an account in the base before you can claim planets!', color:'yellow'});
 			return;
 		}
+		
+		if(typeof self.quest !== "undefined" && self.quest != 0 && self.quest.type === "Secret2" && self.quest.sx == self.sx && self.quest.sy == self.sy){ // move on to last secret stage
+			
+			//compute whether there are any unkilled enemies in this sector
+			var cleared = true;
+			for(var b in players){
+				var player = players[b];
+				if(player.sx == self.sx && player.sy == self.sy && player.color !== self.color){
+					cleared = false;
+					break;
+				}
+			}
+			if(cleared && bases[self.sx][self.sy] != 0 && bases[self.sx][self.sy].turretLive) cleared = false;//also check base is dead
+			
+			if(cleared){ // 2 ifs needed, don't merge this one with the last one
+				self.hasPackage = true;
+				self.quest = {type:"Secret3", exp:self.quest.exp};
+				send(self.id, 'quest', {quest: self.quest}); //notify client
+			}
+		}
+		
+		if(p.color === self.color || cool > 0) return;
+		
+		p.color = self.color; // claim
+		p.owner = self.name;
+		sendAll('chat', {msg:'Planet ' + p.name + ' claimed by ~`' + self.color + '~`' + self.name + "~`yellow~`!"});
+		
+		for(var i in players[self.sy][self.sx]) players[self.sy][self.sx][i].getAllPlanets();//send them new planet data
+		
+		if(!self.randmAchs[8]){ // Astronaut
+			self.randmAchs[8] = true;
+			self.sendAchievementsMisc(true);
+		}
+		
+		//Update list of claimed planets.
+		var index = self.sx + self.sy * mapSz;
+		var prevStr = self.planetsClaimed.substring(0,index);
+		var postStr = self.planetsClaimed.substring(index+1,mapSz*mapSz);
+		self.planetsClaimed = prevStr + "2" + postStr;
+		
 	}
 	self.checkQuestStatus = function(touchingPlanet){
-		if(self.quest == 0 || self.isBot) return;
-		if(self.quest.type === 'Mining')
-			if(self.sx == self.quest.sx && self.sy == self.quest.sy){
-				if(self.quest.metal == 'aluminium' && self.aluminium < self.quest.amt) return;
-				if(self.quest.metal == 'iron' && self.iron < self.quest.amt) return;
-				if(self.quest.metal == 'silver' && self.silver < self.quest.amt) return;
-				if(self.quest.metal == 'platinum' && self.platinum < self.quest.amt) return;
-				if(self.quest.metal == 'aluminium') self.aluminium -= self.quest.amt;
-				if(self.quest.metal == 'iron') self.iron -= self.quest.amt;
-				if(self.quest.metal == 'silver') self.silver -= self.quest.amt;
-				if(self.quest.metal == 'platinum') self.platinum -= self.quest.amt;
-				self.spoils("money",self.quest.exp);
-				self.spoils("experience",Math.floor(self.quest.exp / 1500));
-				noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
-				self.quest = 0;
-				if(!self.quested){
-					self.quested = true;
-					self.sendAchievementsCash(true);
-				}
-				send(self.id, 'quest', {quest: self.quest});
-				if((self.questsDone & 1) == 0) self.questsDone+=1;
+		
+		if(self.quest == 0 || self.isBot) return;// no point if the person hasn't got a quest rn.
+		
+		if(self.quest.type === 'Mining' && self.sx == self.quest.sx && self.sy == self.quest.sy){
+				
+			//check the player has sufficient metal according to quest
+			if(self.quest.metal == 'aluminium' && self.aluminium < self.quest.amt) return;
+			if(self.quest.metal == 'iron' && self.iron < self.quest.amt) return;
+			if(self.quest.metal == 'silver' && self.silver < self.quest.amt) return;
+			if(self.quest.metal == 'platinum' && self.platinum < self.quest.amt) return;
+			
+			//take the amount from them
+			if(self.quest.metal == 'aluminium') self.aluminium -= self.quest.amt;
+			if(self.quest.metal == 'iron') self.iron -= self.quest.amt;
+			if(self.quest.metal == 'silver') self.silver -= self.quest.amt;
+			if(self.quest.metal == 'platinum') self.platinum -= self.quest.amt;
+			
+			//reward them
+			self.spoils("money",self.quest.exp);
+			self.spoils("experience",Math.floor(self.quest.exp / 1500));
+			noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
+			
+			self.quest = 0;
+			send(self.id, 'quest', {quest: self.quest}); // tell client quest is over
+			
+			if(!self.moneyAchs[9]){ // Questor
+				self.moneyAchs[9] = true;
+				self.sendAchievementsCash(true);
 			}
-		if(self.quest.type === 'Delivery' && touchingPlanet){
+			
+			if((self.questsDone & 1) == 0) self.questsDone+=1;
+			
+		}else if(self.quest.type === 'Delivery' && touchingPlanet){
+			
+			//pickup
 			if(self.sx == self.quest.sx && self.sy == self.quest.sy && !self.hasPackage){
 				self.hasPackage = true;
 				strongLocal("Package obtained!", self.x, self.y - 192, self.id)
 			}
+			
+			//dropoff
 			if(self.hasPackage && self.sx == self.quest.dsx && self.sy == self.quest.dsy){
-				self.spoils("money",self.quest.exp);
+				
+				self.spoils("money",self.quest.exp);//reward
 				self.spoils("experience",Math.floor(self.quest.exp / 1500));
 				noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
+				
 				self.hasPackage = false;
 				self.quest = 0;
-				if(!self.quested){
-					self.quested = true;
+				send(self.id, 'quest', {quest: self.quest}); // tell client it's over
+				if((self.questsDone & 2) == 0) self.questsDone+=2;
+				
+				if(!self.moneyAchs[9]){ // Questor
+					self.moneyAchs[9] = true;
 					self.sendAchievementsCash(true);
 				}
-				send(self.id, 'quest', {quest: self.quest});
-				if((self.questsDone & 2) == 0) self.questsDone+=2;
+				
 			}
+			
 		}
-		if(self.questsDone == 15 && !self.allQuests){
-			self.allQuests = true;
+		
+		if(self.questsDone == 15 && !self.moneyAchs[10]){ // Adventurer
+			self.moneyAchs[10] = true;
 			self.sendAchievementsCash(true);
 		}
+		
 	}
 	self.baseKilled = function(){
+		
 		if(self.isBot) return;
+		
+		self.baseKills++;
+		
+		//achievementy stuff
+		self.killsAchs[7] = self.baseKills >= 1;
+		self.killsAchs[8] = self.baseKills >= 100;
+		self.sendAchievementsKill(true);
+		
+		//base quest checking
 		if(self.quest != 0 && self.quest.type == 'Base'){
 			if(self.sx == self.quest.sx && self.sy == self.quest.sy){
+				
+				// reward player
 				self.spoils("money",self.quest.exp);
 				self.spoils("experience",Math.floor(self.quest.exp / 4000));
 				strongLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
-				self.quest = 0;
-				if(!self.quested){
-					self.quested = true;
-					self.sendAchievementsCash(true);
-				}
+				
+				self.quest = 0; //tell client it's done
 				send(self.id, 'quest', {quest: self.quest});
 				if((self.questsDone & 4) == 0) self.questsDone+=4;
+				
+				if(!self.moneyAchs[9]){ // Questor
+					self.moneyAchs[9] = true;
+					self.sendAchievementsCash(true);
+				}
+				
 			}
 		}
-		if(self.questsDone == 15 && !self.allQuests){
-			self.allQuests = true;
+		
+		if(self.questsDone == 15 && !self.moneyAchs[10]){ // Adventurer
+			self.moneyAchs[10] = true;
 			self.sendAchievementsCash(true);
 		}
+		
 	}
 	self.updateRank = function(){
+		
 		var prerank = self.rank;
 		self.rank = 0;
-		while(self.experience > ranks[self.rank]) self.rank++;
+		while(self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
+		
+		//congratulations!
 		if(self.rank != prerank) strongLocal('Rank Up!', self.x, self.y - 64, self.id);
 	}
 	self.dock = function(){
-		if(self.isBot) return;
-		if(self.docked){
+		
+		if(self.isBot) return; // can bots even get to this point in code?
+		
+		if(self.docked){ // undock if already docked. This toggles the player's dock status
+		
 			self.getAllBullets();
-			self.getAllPlanets();
+			self.getAllPlanets(); // tell client what's out in the sector
+			
 			self.docked = false;
-			PLAYER_LIST[self.id] = self;
-			delete DOCKED_LIST[self.id];
+			
+			players[self.id] = self;
+			delete dockers[self.id];
+			
 			self.leaveBaseShield = 25;
 			self.health = self.maxHealth;
 			self.energy = 100;
 			return;
 		}
+		
 		self.checkTrailAchs();
 		
 		var base = 0;
 		var b = bases[self.sx][self.sy];
-		if(b.isBase && b.color == self.color && square(self.x - b.x)+square(self.y - b.y) < square(512)) base = b;
+		if(b.isBase && b.color == self.color && square(self.x - b.x)+square(self.y - b.y) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
 		if(base == 0) return;
 		
 		self.refillAllAmmo();
 		self.x = self.y = sectorWidth/2;
 		self.save();
 		self.docked = true;
-		DOCKED_LIST[self.id] = self;
-		delete PLAYER_LIST[self.id];
+		
+		dockers[self.id] = self;
+		delete players[self.id];
+		
 		self.sendStatus();
 	}
 	self.shootBullet = function(currWep){
 	
-		if(self.bulletQueue > 0){
+		if(self.bulletQueue > 0){ // Submachinegun
 			if(self.ammos[self.equipped] <= 0) return;
 			self.bulletQueue--;
 			currWep = 40;
@@ -1022,64 +1204,69 @@ var Player = function(i){
 		self.energy-=wepns[currWep].energy;
 		self.reload = wepns[currWep].Charge;
 		
+		//how many bullets are we firing?
 		var n = 1;
-		if(currWep == 4)  n = 4;
-		if(currWep == 39) n = 3;
-		if(currWep == 6)  n = 2;
+		if(currWep == 4)  n = 4; // shotgun
+		if(currWep == 39) n = 3; // spreadshot
+		if(currWep == 6)  n = 2; // minigun
 		
 		for(var i = 0; i < n; i++){
 			var r = Math.random();
 			
+			//find the angle of the bullets. Manipulate if one of the multi-bullet weapons.
 			var bAngle = self.angle;
-			if(currWep == 2) bAngle-=3.1415;
-			if(currWep == 39)bAngle+=(i-1)/4.;
-			if(currWep == 4) bAngle += Math.random() - .5;
+			if(currWep == 2) bAngle-=3.1415; // reverse gun
+			if(currWep == 39)bAngle+=(i-1)/4.; // spreadshot
+			if(currWep == 4) bAngle += Math.random() - .5; // shotgun
 			
 			var bullet = Bullet(self, r, currWep, bAngle, i * 2 - 1);
-			BULLET_LIST[r] = bullet;
+			bullets[r] = bullet;
 			sendAllSector('sound', {file:(currWep == 5 || currWep == 6 || currWep == 39)?"minigun":"shot",x: self.x, y: self.y}, self.sx, self.sy);
 		}
 	}
 	self.shootMissile = function(){
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
 		var r = Math.random();
 		var bAngle = self.angle;
 		var missile = Missile(self, r, self.weapons[self.equipped], bAngle);
-		MISSILE_LIST[r] = missile;
+		missiles[r] = missile;
 		sendAllSector('sound', {file:"missile",x: self.x, y: self.y}, self.sx, self.sy);
+		
+		self.reload = wepns[self.weapons[self.equipped]].Charge;
 		self.energy-=wepns[self.weapons[self.equipped]].energy;
 	}
 	self.shootOrb = function(){
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
 		var r = Math.random();
 		var orb = Orb(self, r, self.weapons[self.equipped]);
-		ORB_LIST[r] = orb;
+		orbs[r] = orb;
 		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
+		
+		self.reload = wepns[self.weapons[self.equipped]].Charge;
 		self.energy-=wepns[self.weapons[self.equipped]].energy;
 	}
 	self.shootMine = function(){
-		if(Object.keys(MINE_LIST[self.sy][self.sx]).length >= 20 && self.weapons[self.equipped] < 30){
+		if(Object.keys(mines[self.sy][self.sx]).length >= 20 && self.weapons[self.equipped] < 30){
 			self.ammos[self.equipped]++;
 			self.reload = 5;
 			send(self.id, "chat", {msg: "This sector has reached its limit of 20 mines."});
 			return;
 		}
-		if(square(self.sx - sectorWidth/2) + square(self.sy - sectorWidth/2) < square(500)){
+		if(square(self.sx - sectorWidth/2) + square(self.sy - sectorWidth/2) < square(600 * 10)){
 			self.ammos[self.equipped]++;
 			self.reload = 5;
 			send(self.id, "chat", {msg: "You may not place a mine here."});
 			return;
 		}
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
 		var r = Math.random();
 		var mine = Mine(self, r, self.weapons[self.equipped]);
-		MINE_LIST[self.sy][self.sx][r] = mine;
+		mines[self.sy][self.sx][r] = mine;
 		sendAllSector('mine', {x: self.x, y: self.y}, self.sx, self.sy);
+		
+		self.reload = wepns[self.weapons[self.equipped]].Charge;
 		self.energy-=wepns[self.weapons[self.equipped]].energy;
 	}
-	self.shootBeam = function(origin, restricted){
+	self.shootBeam = function(origin, restricted){// restricted is for recursive calls from quarriers
 		var ox = origin.x, oy = origin.y;
-		var nearP = 0;
+		var nearP = 0; // target, which we will compute
 		var range2 = square(wepns[self.weapons[self.equipped]].Range * 10);
 		
 		//base
@@ -1091,10 +1278,10 @@ var Player = function(i){
 		
 		//search players
 		if(!restricted)
-			for(var i in PLAYER_LIST){
-				var p = PLAYER_LIST[i];
+			for(var i in players[self.sy][self.sx]){
+				var p = players[self.sy][self.sx][i];
 				if(p.ship != 17 && (self.weapons[self.equipped] == 26 || self.weapons[self.equipped] == 30)) continue; // elite quarrier is affected
-				if(p.color == self.color || p.sx != self.sx || p.sy != self.sy || p.disguise > 0) continue;
+				if(p.color == self.color || p.disguise > 0) continue;
 				var dx = p.x - ox, dy = p.y - oy;
 				var dist2 = dx*dx+dy*dy;
 				if(dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox)+square(nearP.y - oy))) nearP = p;
@@ -1102,8 +1289,8 @@ var Player = function(i){
 		
 		//search asteroids
 		if(nearP == 0 && self.weapons[self.equipped] != 35 && self.weapons[self.equipped] != 31)
-			for(var i in ASTEROID_LIST){
-				var a = ASTEROID_LIST[i];
+			for(var i in asts[self.sy][self.sx]){
+				var a = asts[self.sy][self.sx][i];
 				if(a.sx != self.sx || a.sy != self.sy || a.hit) continue;
 				var dx = a.x - ox, dy = a.y - oy;
 				var dist2 = dx*dx+dy*dy;
@@ -1112,52 +1299,60 @@ var Player = function(i){
 		
 		
 		if(nearP == 0) return;
+		
+		//gyrodynamite
 		if(self.weapons[self.equipped] == 31 && nearP.sx == self.sx && nearP.sy == self.sy && nearP.color != self.color){
 			nearP.gyroTimer = 250;
 			send(nearP.id, "gyro", {t:250});
 		}
+		
+		//elite quarrier
 		if(self.ship == 17 && nearP != 0 && nearP.type === "Asteroid"){
 			nearP.hit = true;
 			for(var i = 0; i < 3; i++) self.shootBeam(nearP, true);
 		}
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
+		
 		var r = Math.random();
 		var beam = Beam(self, r, self.weapons[self.equipped], nearP, origin);
-		BEAM_LIST[r] = beam;
+		beams[r] = beam;
 		sendAllSector('sound', {file:"beam",x: ox, y: oy}, self.sx, self.sy);
-		if(!restricted) self.energy-=wepns[self.weapons[self.equipped]].energy;
+		
+		self.reload = wepns[self.weapons[self.equipped]].Charge;
+		if(!restricted) self.energy-=wepns[self.weapons[self.equipped]].energy; // don't take energy if it was a recursive shot from an asteroid
 	}
 	self.shootBlast = function(){
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
 		var r = Math.random();
 		var blast = Blast(self, r, self.weapons[self.equipped]);
-		BLAST_LIST[r] = blast;
+		blasts[r] = blast;
 		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
+		
+		self.reload = wepns[self.weapons[self.equipped]].Charge;
 		self.energy-=wepns[self.weapons[self.equipped]].energy;
 	}
-	self.die = function(b){
+	self.die = function(b){ // b: bullet object or other object which killed us
 		self.empTimer = -1;
 		self.killStreak = 0;
 		var diff = .02*self.experience;
 		self.leaveBaseShield = 25;
 		self.refillAllAmmo();
 		if(typeof b === "undefined"){
-			delete PLAYER_LIST[self.id];
+			delete players[self.id];
 			return;
 		}
 		sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:Math.cos(self.angle) * self.speed, dy:Math.sin(self.angle)*self.speed}, self.sx, self.sy);
 		
-
 		if(b != 0){
 			if(!self.isBot){
 
 				//clear quest
 				self.quest = 0;
 				send(self.id, 'quest', {quest: 0});//reset quest and update client
+				
 				if(typeof b.owner !== "undefined" && b.owner.type === "Player"){
 					sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + (b.owner.name===""?"a drone":b.owner.name) + "~`yellow~`'s `~"+b.wepnID+"`~!")});
-					if(b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.dr9){
-						b.owner.dr9 = true;
+					
+					if(b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]){ // driftkill
+						b.owner.driftAchs[9] = true;
 						b.owner.sendAchievementsDrift(true);
 					}
 				}
@@ -1168,27 +1363,33 @@ var Player = function(i){
 				else if(b.owner.type == "Base") sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base!")});
 
 			}
-			var r = Math.random();
-			if(self.hasPackage && !self.isBot) PACKAGE_LIST[r] = Package(self, r, 0);
-			else if(Math.random() < .004 && !self.guest) PACKAGE_LIST[r] = Package(self, r, 2);//life
-			else if(Math.random() < .1 && !self.guest) PACKAGE_LIST[r] = Package(self, r, 3);//ammo
-			else if(!self.guest) PACKAGE_LIST[r] = Package(self, r, 1);//coin
 			
+			//drop a package
+			var r = Math.random();
+			if(self.hasPackage && !self.isBot) packs[r] = Package(self, r, 0); // an actual package (courier)
+			else if(Math.random() < .004 && !self.guest) packs[r] = Package(self, r, 2);//life
+			else if(Math.random() < .1 && !self.guest) packs[r] = Package(self, r, 3);//ammo
+			else if(!self.guest) packs[r] = Package(self, r, 1);//coin
+			
+			//give the killer stuff
 			if((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Vortex" || b.owner.type === "Player" || b.owner.type === "Base")){
 				b.owner.onKill(self);
 				b.owner.spoils("experience",10+diff*(self.color===b.owner.color?-1:1));
-				if(self.points > 0){
+				b.owner.spoils("money",1000*(b.owner.type === "Player"?b.owner.killStreak:1));
+				
+				if(self.points > 0){ // raid points
 					b.owner.points++;
 					self.points--;
 				}
-				b.owner.spoils("money",1000*(b.owner.type === "Player"?b.owner.killStreak:1));
-			}//give the killer stuff
+				
+			}
 
 		}
 		
-
+		self.hasPackage = false; // Maintained for onKill above
+		
+		//TODO Chris
 		if(!self.isBot){
-			self.hasPackage = false; // Maintained for onKill above
 			self.health = self.maxHealth;
 			var readSource = 'server/players/'+(self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) +'.txt';
 			if(self.guest){
@@ -1196,10 +1397,10 @@ var Player = function(i){
 				self.sx = self.sy = (self.color == 'red' ? 2:4);
 				self.x = self.y = sectorWidth/2;
 				self.dead = true;
-				if(self.lives <= 0) LEFT_LIST[self.id] = 0;
+				if(self.lives <= 0) lefts[self.id] = 0;
 				self.sendStatus();
-				DEAD_LIST[self.id] = self;
-				delete PLAYER_LIST[self.id];
+				deads[self.id] = self;
+				delete players[self.id];
 				sendWeapons(self.id);
 				return;
 			}
@@ -1295,36 +1496,48 @@ var Player = function(i){
 			if(self.lives <= 0){
 				fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt', fullFile, {"encoding":'utf8'});
 				fs.unlinkSync('server/players/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt');
-				LEFT_LIST[self.id] = 0;
+				lefts[self.id] = 0;
 			}
 			else self.save();
 			self.sendStatus();
 			self.sendAchievementsMisc(true);
-			DEAD_LIST[self.id] = self;
+			
+			//put this player in the dead list
+			deads[self.id] = self;
+			
 			sendWeapons(self.id);
 		}
-		delete PLAYER_LIST[self.id];
+		delete players[self.id];
 	}
 	self.dmg = function(d,origin){
+		
+		//reward nn bots for hurting other players
 		if(self.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net != 0){
 			origin.owner.net.save(self.isNNBot?self.net.id:Math.floor(Math.random()));
 			self.health -= 10000;
 		}
+		
+		//blood trail: less damage
 		if(self.trail % 16 == 1) d /= 1.05;
-		self.health-=d*(self.shield?.25:1);
+		
+		self.health-=d*(self.shield?.25:1); // Shield- 1/4th damage
 		if(self.health < 0)self.die(origin);
-		note('-'+Math.floor(d), self.x, self.y - 64, self.sx, self.sy);
+		
+		note('-'+Math.floor(d), self.x, self.y - 64, self.sx, self.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
 		send(self.id, 'dmg', {});
 		return self.health < 0;
 	}
 	self.EMP = function(t){
-		if(self.empTimer > 0) return;
-		if(self.ship == 16) t *= 1.3;
+		if(self.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
+		if(self.ship >= 16) t *= 1.3; // Emp works better on elites
 		self.empTimer = t;
-		self.w = self.e = self.a = self.s = self.d = self.z = self.space = false;
+		
+		//turn off all keys
+		self.w = self.e = self.a = self.s = self.d = self.c = self.space = false;
 		if(!self.isBot) send(self.id, 'emp', {t:t});
 	}
 	self.save = function(){
+		// TODO chris
 		if(self.guest || self.isBot) return;
 		var source = 'server/players/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt';
 		if (fs.existsSync(source)) fs.unlinkSync(source);
@@ -1341,134 +1554,144 @@ var Player = function(i){
 		fs.writeFileSync(source, str, {"encoding":'utf8'});
 	}
 	self.onKill = function(p){
+		
+		//kill streaks
 		if(!p.guest && p.color !== self.color) self.killStreak++;
 		self.killStreakTimer = 750;//30s
-		if(self.isBot) return;
 		self.kills++;
-		self.kill1 = self.kills >= 1;
-		self.kill10 = self.kills >= 10;
-		self.kill100 = self.kills >= 100;
-		self.kill1k = self.kills >= 1000;
-		self.kill10k = self.kills >= 4000;
-		self.kill50k = self.kills >= 10000;
-		if(p.trail != 0) self.kill1m = true;
-		if(p.hasPackage) self.killCourier = true;
-		if(p.name === self.name) self.suicide = true;
-		else if(p.color === self.color) self.killFriend = true;
-		self.sendAchievementsKill(true);
-	}
- 	self.onBaseKill = function(p){
+		
 		if(self.isBot) return;
-		self.baseKills++;
-		self.killBase = self.baseKills >= 1;
-		self.kill100Bases = self.baseKills >= 100;
+		
+		//achievementy stuff
+		self.killsAchs[0] = self.kills >= 1;
+		self.killsAchs[1] = self.kills >= 10;
+		self.killsAchs[2] = self.kills >= 100;
+		self.killsAchs[3] = self.kills >= 1000;
+		self.killsAchs[4] = self.kills >= 4000;
+		self.killsAchs[5] = self.kills >= 10000;
+		if(p.trail != 0) self.killsAchs[6] = true;
+		if(p.hasPackage) self.killsAchs[10] = true;
+		if(p.name === self.name) self.killsAchs[11] = true;
+		else if(p.color === self.color) self.killsAchs[9] = true;
 		self.sendAchievementsKill(true);
 	}
 	self.onMined = function(a){
 		if(self.isBot) return;
+		
+		//bitmask of what types of ores this player has mined
 		if((self.oresMined & (1 << a)) == 0) self.oresMined += 1 << a;
-		if(self.oresMined == 15 && !self.allOres) self.allOres = true;
-		else if(!self.mined) self.mined = true;
-		else if(!self.mined3k && 3000 <= self.iron + self.silver + self.aluminium + self.platinum) self.mined3k = true;
-		else if(!self.mined15k && 15000 <= self.iron + self.silver + self.aluminium + self.platinum) self.mined15k = true;
+		
+		//achievementy stuff
+		if(self.oresMined == 15 && !self.moneyAchs[1]) self.moneyAchs[1] = true;
+		else if(!self.moneyAchs[0]) self.moneyAchs[0] = true;
+		else if(!self.moneyAchs[2] && 3000 <= self.iron + self.silver + self.aluminium + self.platinum) self.moneyAchs[2] = true;
+		else if(!self.moneyAchs[3] && 15000 <= self.iron + self.silver + self.aluminium + self.platinum) self.moneyAchs[3] = true;
 		else return;
 		self.sendAchievementsCash(true);
 	}
 	self.sendAchievementsKill = function(note){
 		if(self.isBot) return;
-		send(self.id, "achievementsKill", {note:note,kill1:self.kill1,kill10:self.kill10,kill100:self.kill100,kill1k:self.kill1k,kill10k:self.kill10k,kill50k:self.kill50k,kill1m:self.kill1m,killBase:self.killBase,kill100Bases:self.kill100Bases,killFriend:self.killFriend,killCourier:self.killCourier,suicide:self.suicide,bloodTrail:self.bloodTrail});
+		send(self.id, "achievementsKill", {note:note,achs:self.killsAchs});
 	}
 	self.sendAchievementsCash = function(note){
 		if(self.isBot) return;
-		send(self.id, "achievementsCash", {note:note,achs:[self.mined, self.allOres, self.mined3k, self.mined15k, self.total100k, self.total1m, self.total100m, self.total1b, self.packageTaken, self.quested, self.allQuests, self.goldTrail]});
+		send(self.id, "achievementsCash", {note:note,achs:self.moneyAchs});
 	}
 	self.sendAchievementsDrift = function(note){
 		if(self.isBot) return;
-		send(self.id, "achievementsDrift", {note:note,achs:[self.dr0, self.dr1, self.dr2, self.dr3, self.dr4, self.dr5, self.dr6, self.dr7, self.dr8, self.dr9, self.dr10, self.dr11]});
+		send(self.id, "achievementsDrift", {note:note,achs:self.driftAchs});
 	}
 	self.sendAchievementsMisc = function(note){
-		self.ms9 = !self.planetsClaimed.includes("0") && !self.planetsClaimed.includes("1"); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
+		self.randmAchs[9] = !self.planetsClaimed.includes("0") && !self.planetsClaimed.includes("1"); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
 		if(self.isBot) return;
-		send(self.id, "achievementsMisc", {note:note,achs:[self.ms0, self.ms1, self.ms2, self.ms3, self.ms4, self.ms5, self.ms6, self.ms7, self.ms8, self.ms9, self.ms10]});
+		send(self.id, "achievementsMisc", {note:note,achs:self.randmAchs});
 	}
 	self.sendStatus = function(){
-		if(self.isBot) return;
-		send(self.id, "status", {docked:self.docked, state:self.dead,lives:self.lives});
+		if(!self.isBot) send(self.id, "status", {docked:self.docked, state:self.dead,lives:self.lives});
 	}
 	self.checkMoneyAchievements = function(){
 		if(self.isBot) return;
-		if(self.money >= 10000 && !self.total100k) self.total100k = true;
-		else if(self.money >= 100000 && !self.total1m) self.total1m = true;
-		else if(self.money >= 1000000 && !self.total100m) self.total100m = true;
-		else if(self.money >= 10000000 && !self.total1b) self.total1b = true;
+		if(self.money >= 10000 && !self.moneyAchs[4]) self.moneyAchs[4] = true;
+		else if(self.money >= 100000 && !self.moneyAchs[5]) self.moneyAchs[5] = true;
+		else if(self.money >= 1000000 && !self.moneyAchs[6]) self.moneyAchs[6] = true;
+		else if(self.money >= 10000000 && !self.moneyAchs[7]) self.moneyAchs[7] = true;
 		else return;
 		self.sendAchievementsCash(true);
 	}
 	self.checkDriftAchs = function(){
 		if(self.isBot) return;
-		if(self.driftTimer >= 25 && !self.dr0) self.dr0 = true;
-		else if(self.driftTimer >= 25 * 60 && !self.dr1) self.dr1 = true;
-		else if(self.driftTimer >= 25 * 60 * 10 && !self.dr2) self.dr2 = true;
-		else if(self.driftTimer >= 25 * 60 * 60 && !self.dr3) self.dr3 = true;
-		else if(self.driftTimer >= 25 * 60 * 60 * 10 && !self.dr4) self.dr4 = true;
+		if(self.driftTimer >= 25 && !self.driftAchs[0]) self.driftAchs[0] = true; // drift 1sex
+		else if(self.driftTimer >= 25 * 60 && !self.driftAchs[1]) self.driftAchs[1] = true; // 1min
+		else if(self.driftTimer >= 25 * 60 * 10 && !self.driftAchs[2]) self.driftAchs[2] = true; // 10mins
+		else if(self.driftTimer >= 25 * 60 * 60 && !self.driftAchs[3]) self.driftAchs[3] = true; // 1hr
+		else if(self.driftTimer >= 25 * 60 * 60 * 10 && !self.driftAchs[4]) self.driftAchs[4] = true; // 10hrs
 		else return;
 		self.sendAchievementsDrift(true);
 	}
 	self.checkTrailAchs = function(){
-		if(!self.ms10 && self.ms0 && self.ms1 && self.ms2 && self.ms3 && self.ms4 && self.ms5 && self.ms6 && self.ms7 && self.ms8 && self.ms9){
-			self.ms10 = true;
+		
+		//Check if they have all achievements of a type. If so, give them the corresponding trail achievement of that type
+		
+		var rAll = true;
+		for(var i = 0; i < 11; i++) if(!randmAchs[i]) rAll = false;
+		if(!self.randmAchs[11] && rAll){
+			self.randmAchs[11] = true;
 			self.sendAchievementsMisc(true);
 		}
-		if(!self.dr11 && self.dr0 && self.dr1 && self.dr2 && self.dr3 && self.dr4 && self.dr5 && self.dr6 && self.dr7 && self.dr8 && self.dr9 && self.dr10){
-			self.dr11 = true;
-			self.sendAchievementsDrift(true);
-		}
-		if(!self.bloodTrail && self.kill1 && self.kill10 && self.kill100 && self.kill1k && self.kill10k && self.kill50k && self.kill1m && self.killBase && self.kill100Bases && self.killFriend && self.killCourier && self.suicide){
-			self.bloodTrail = true;
+		
+		rAll = true;
+		for(var i = 0; i < 12; i++) if(!killsAchs[i]) rAll = false;
+		if(!self.killsAchs[12] && rAll){
+			self.killsAchs[12] = true;
 			self.sendAchievementsKill(true);
 		}
-		if(!self.goldTrail && self.mined && self.allOres && self.mined3k && self.mined15k && self.total100k && self.total1m && self.total100m && self.total1b && self.packageTaken && self.quested && self.allQuests){
-			self.goldTrail = true;
+		
+		rAll = true;
+		for(var i = 0; i < 11; i++) if(!driftAchs[i]) rAll = false;
+		if(!self.driftAchs[11] && rAll){
+			self.driftAchs[11] = true;
+			self.sendAchievementsDrift(true);
+		}
+		
+		rAll = true;
+		for(var i = 0; i < 11; i++) if(!moneyAchs[i]) rAll = false;
+		if(!self.moneyAchs[11] && rAll){
+			self.moneyAchs[11] = true;
 			self.sendAchievementsCash(true);
 		}
 	}
-	self.getAllBullets = function(){
-		if(self.isBot)
-			return;
+	self.getAllBullets = function(){ // sends to client all the bullets in this sector.
+		if(self.isBot) return;
 		var packHere = [];
-		for(var i in BULLET_LIST){
-			var bullet = BULLET_LIST[i];
-			if(bullet.sx == self.sx && bullet.sy == self.sy)
-				packHere.push({wepnID:bullet.wepnID,color:bullet.color,x:bullet.x,vx:self.vx,vy:self.vy,y:bullet.y,angle:bullet.angle,id:self.id});
+		for(var i in bullets[self.sy][self.sx]){
+			var bullet = bullets[i];
+			packHere.push({wepnID:bullet.wepnID,color:bullet.color,x:bullet.x,vx:self.vx,vy:self.vy,y:bullet.y,angle:bullet.angle,id:self.id});
 		}
 		send(self.id, 'clrBullets', {pack:packHere});
 	}
-	self.getAllPlanets = function(){
-		if(self.isBot)
-			return;
+	self.getAllPlanets = function(){ // same, but with planets
+		if(self.isBot) return;
 		var packHere = 0;
-		var planet = PLANET_LIST[self.sy][self.sx];
+		var planet = planets[self.sy][self.sx];
 		packHere = {id:planet.id, name:planet.name, x:planet.x, y:planet.y, color:planet.color};
 		send(self.id, 'planets', {pack:packHere});
 	}
-	self.updatePolars = function(){
+	self.updatePolars = function(){ // Convert my rectangular motion/position data to polar
 		self.driftAngle = Math.atan2(self.vy, self.vx);
-		self.speed = Math.sqrt(self.vy * self.vy + self.vx * self.vx);
+		self.speed = Math.sqrt(square(self.vy) + square(self.vx));
 	}
 	self.refillAmmo = function(i){
-		if(typeof wepns[self.weapons[i]] !== "undefined")
-			self.ammos[i] = wepns[self.weapons[i]].ammo;
+		if(typeof wepns[self.weapons[i]] !== "undefined") self.ammos[i] = wepns[self.weapons[i]].ammo;
 	}
 	self.refillAllAmmo = function(){
-		for(var i = 0; i < 10; i++)
-			self.refillAmmo(i);
+		for(var i = 0; i < 10; i++) self.refillAmmo(i);
 		sendWeapons(self.id);
 		strongLocal("Ammo Replenished!", self.x, self.y+256, self.id);
 	}
 	self.testAfk = function(){
 		if(self.afkTimer-- < 0){
 			send(self.id, "AFK",{t:0});
-			LEFT_LIST[self.id] = 0;
+			lefts[self.id] = 0;
 			if(!self.isBot){
 				var text = "~`"+self.color+"~`"+self.name + "~`yellow~` went AFK!";
 				console.log(text);
@@ -1478,7 +1701,8 @@ var Player = function(i){
 		}
 		return false;
 	}
-	self.changePass = function(pass){
+	self.changePass = function(pass){ // /password
+	// TODO chris
 		if(!self.docked){
 			send(self.id, "chat", {msg:"~`red~`This command is only available when docked at a base."});
 			return;
@@ -1490,7 +1714,8 @@ var Player = function(i){
 		self.tentativePassword = pass;
 		send(self.id, "chat", {msg:"~`lime~`Type \"/confirm your_new_password\" to complete the change."});
 	}
-	self.confirmPass = function(pass){
+	self.confirmPass = function(pass){ // /confirm
+	// TODO chris
 		if(!self.docked){
 			send(self.id, "chat", {msg:"~`red~`This command is only available when docked at a base."});
 			return;
@@ -1505,17 +1730,16 @@ var Player = function(i){
 		self.save();
 		send(self.id, "chat", {msg:"~`lime~`Password changed successfully."});
 	}
-	self.calculateGenerators = function(){
+	self.calculateGenerators = function(){ // count how many gens I have
 		self.generators = 0;
 		for(var slot = 0; slot<ships[self.ship].weapons;slot++)
-			if(self.weapons[slot]==20)
-				self.generators++;
-		if(self.rank <= wepns[20].Level)
-			self.generators = 0;
+			if(self.weapons[slot]==20) self.generators++;
+		if(self.ship <= wepns[20].Level) self.generators = 0; // gotta have sufficiently high ship
 	}
-	self.spoils = function(type,amt){
+	self.spoils = function(type,amt){ // gives you something. Called wenever you earn money / exp / w/e
 		if(typeof amt === "undefined") return;
 		if(type === "experience"){
+			// TODO This is broken- it announces your rank always whenever you log in
 			var oldPosition = lbIndex(self.experience);
 			self.experience+=amt;
 			var newPosition = lbIndex(self.experience);
@@ -1530,20 +1754,30 @@ var Player = function(i){
 		self.experience = Math.max(self.experience, 0);
 		send(self.id,"spoils",{type:type,amt:amt});
 	}
-	self.r = function(msg){
+	self.r = function(msg){ // pm reply
 		if(self.reply.includes(" ")) self.reply = self.reply.split(" ")[1];
 		self.pm("/pm "+self.reply+" "+msg.substring(3));
 	}
-	self.pm = function(msg){ // msg looks like "/pm luunch hey there pal"
-		if(msg.split(" ").length < 3){
+	self.pm = function(msg){ // msg looks like "/pm luunch hey there pal". If a moderator, you use "2swap" not "[O] 2swap".
+		if(msg.split(" ").length < 3){ // gotta have pm, name, then message
 			send(self.id, "chat", {msg:"Invalid Syntax!"});
 			return;
 		}
 		var name = msg.split(" ")[1];
 		var raw = msg.substring(name.length+5);
 		send(self.id, "chat", {msg:"Sending private message to "+name+"..."});
-		for(var p in PLAYER_LIST){
-			var player = PLAYER_LIST[p];
+		for(var i = 0; i < mapSz; i++) for(var j = 0; j < mapSz; j++)
+			for(var p in players[j][i]){
+				var player = players[j][i][p];
+				if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
+					send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
+					send(self.id, "chat", {msg:"Message sent!"});
+					self.reply = player.name;
+					player.reply = self.name;
+					return;
+				}	
+		}for(var p in dockers){
+			var player = dockers[p];
 			if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
 				send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
 				send(self.id, "chat", {msg:"Message sent!"});
@@ -1551,17 +1785,8 @@ var Player = function(i){
 				player.reply = self.name;
 				return;
 			}	
-		}for(var p in DOCKED_LIST){
-			var player = DOCKED_LIST[p];
-			if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
-				send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
-				send(self.id, "chat", {msg:"Message sent!"});
-				self.reply = player.name;
-				player.reply = self.name;
-				return;
-			}	
-		}for(var p in DEAD_LIST){
-			var player = DEAD_LIST[p];
+		}for(var p in deads){
+			var player = deads[p];
 			if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
 				send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
 				send(self.id, "chat", {msg:"Message sent!"});
@@ -1572,9 +1797,9 @@ var Player = function(i){
 		}
 		send(self.id, "chat", {msg:"Player not found!"});
 	}
-	self.swap = function(msg){ // msg looks like "/swap 2 5"
+	self.swap = function(msg){ // msg looks like "/swap 2 5". Swaps two weapons.
 		var spl = msg.split(" ");
-		if(spl.length != 3){
+		if(spl.length != 3){ // not enough arguments
 			send(self.id, "chat", {msg:"Invalid Syntax!"});
 			return;
 		}
@@ -1598,304 +1823,313 @@ var Player = function(i){
 	}
 	return self;
 }
-var Orb = function(ownr, i, weaponID){
+
+var Planet = function(i, name){
 	var self = {
-		type:"Orb",
-		id:i,
-		color:ownr.color,
-		dmg:wepns[weaponID].Damage,
-		x:ownr.x,
-		y:ownr.y,
-		sx:ownr.sx,
-		sy:ownr.sy,
-		owner:ownr,
-		locked:0,
-		timer: 0,
-		vx:2*ownr.vx+wepns[weaponID].Speed*Math.cos(ownr.angle),
-		vy:2*ownr.vy+wepns[weaponID].Speed*Math.sin(ownr.angle),
-		lockedTimer: 0,
-		wepnID:weaponID,
-		goalAngle:0
+		type:"Planet",
+		name:name,
+		color:"yellow",
+		owner:0, // string name of the player who owns it.
+		id:i, // unique identifier
+		x:sectorWidth/2, // this is updated by the createPlanet function to a random location
+		y:sectorWidth/2,
+		cooldown:0 // to prevent chat "planet claimed" spam
 	}
 	self.tick = function(){
-		if(self.timer++ > 3 * wepns[weaponID].Range / wepns[weaponID].Speed) self.die();
-		self.move();
-	}
-	self.move = function(){
-		if(self.locked != 0 && typeof self.locked === 'number'){
-			if(self.lockedTimer++ > 2.5 * 25) self.die();
-			var target = PLAYER_LIST[self.locked];
-			if(typeof target === 'undefined' && bases[self.sx][self.sy].color != self.color) target = bases[self.sx][self.sy];
-			if(target == 0) target = ASTEROID_LIST[self.locked];
-			if(typeof target === 'undefined') self.locked = 0;
-			else{
-				if(target.type === "Player") target.isLocked = true;
-				if(target.sx == self.sx && target.sy == self.sy && hypot2(target.x,self.x,target.y,self.y) < square(100) && target.turretLive != false){
-					target.dmg(self.dmg, self);
-					self.die();
-					return;
-				}
-				var dist = Math.hypot(target.x - self.x,target.y - self.y);
-				self.vx += wepns[weaponID].Speed*(target.x - self.x)/dist;
-				self.vy += wepns[weaponID].Speed*(target.y - self.y)/dist;
-				self.vx *= .9;
-				self.vy *= .9;
-			}
+		self.cooldown--;
+		if(tick % 12 == 6 && self.owner != 0) for(var i in players[self.sy][self.sx]) {
+			var p = players[self.sy][self.sx][i];
+			if(self.owner === p.name) p.money++; // give money to owner
 		}
-		if(self.locked == 0) self.lockedTimer = 0;
-		self.x+=self.vx;
-		self.y+=self.vy;
-		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();
-	}
-	self.die = function(){
-		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:self.vx, dy:self.vy}, self.sx, self.sy);
-		delete ORB_LIST[self.id];
 	}
 	return self;
 }
-var Bullet = function(ownr, i, weaponID, angl, info){
+var Base = function(i, b, sxx, syy, col, x, y){
 	var self = {
-		type:"Bullet",
-		id:i,
-		time:0,
-		color:ownr.color,
-		dist:0, // TRACKS distance. Doesn't control it.
-		dmg:wepns[weaponID].Damage,
-		x:ownr.x,
-		y:ownr.y,
-		sx:ownr.sx,
-		sy:ownr.sy,
-		owner:ownr,
-		angle:angl,
-		info:info,
-		vx:Math.cos(angl) * wepns[weaponID].Speed,
-		vy:Math.sin(angl) * wepns[weaponID].Speed,
-		wepnID:weaponID,
-	}
-	self.tick = function(){
-		if(weaponID == 6 && self.dist == 0){
-			self.x += Math.sin(self.angle) * 16 * self.info;
-			self.y -= Math.cos(self.angle) * 16 * self.info;
-		}
-		if(self.time++ == 0){
-			sendAllSector("newBullet", {x:self.x, y:self.y, vx:self.vx,vy:self.vy,id:self.id,angle:self.angle,wepnID:self.wepnID, color:self.color}, self.sx, self.sy);
-			self.x -= self.vx;
-			self.y -= self.vy;
-		}
-		self.move();
-		self.dist+=wepns[weaponID].Speed / 10;
-		if(self.wepnID == 28 && self.time > 25 * 3){
-			var base = bases[self.sx][self.sy];
-			if(square(base.x-self.x)+square(base.y-self.y)<square(5000)) return;
-			self.dieAndMakeVortex();
-		}
-		else if(self.dist>wepns[weaponID].Range) self.die();
-	}
-	self.move = function(){
-		self.x+=self.vx;
-		self.y+=self.vy;
-		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();
-			
-		var b = bases[self.sx][self.sy];
-		if(b != 0 && b.turretLive && b.color!=self.color && square(b.x - self.x) + square(b.y - self.y) < square(16 + 32)){
-			b.dmg(self.dmg, self);
-			self.die();
-		}
+		type:"Base",
+		kills:0,
+		experience:0,
+		money:0,
+		id:i, // unique identifier
+		color:col,
+		owner:0,
+		isBase:b, // This differentiates between turrets and turrets connected to bases
+		turretLive:true, // When killed, this becomes false and turret vanishes
+		angle:0, // angle of the turret
 		
-		for(var i in PLAYER_LIST){
-			var p = PLAYER_LIST[i];
-			if(p.sx == self.sx && p.sy == self.sy && p.color!=self.color && (p.x - self.x) * (p.x - self.x) + (p.y - self.y) * (p.y - self.y) < (16 + ships[p.ship].width) * (16 + ships[p.ship].width)){
-				if(self.wepnId == 28){
-					self.dieAndMakeVortex();
-					return;
-				}
-				p.dmg(self.dmg, self);
-				self.die();
+		x:x,
+		y:y,
+		sx:sxx,
+		sy:syy,
+		
+		reload:0, // timer for shooting
+		health:baseHealth,
+		maxHealth:baseHealth,
+		heal:1,
+		empTimer:-1,
+		speed:0,//vs unused but there for bullets
+	}
+	self.tick = function(rbNow,bbNow){
+		
+		//spawn a bot if we need more bots
+		if(self.isBase && Math.random()<botFrequency/square(rbNow+bbNow+5)) spawnBot(self.sx,self.sy,self.color,rbNow,bbNow);
+		
+		if(!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25*150) == 0))) self.turretLive = true; // revive. TODO: add a timer
+		
+		self.move(); // aim and fire
+		
+		self.empTimer--;
+		self.reload--;
+		
+		if(self.health < self.maxHealth) self.health+=self.heal;
+		if(tick % 50 == 0 && !self.isBase) self.tryGiveToOwner();
+	}
+	self.tryGiveToOwner = function(){ // if a base's owner stands over it, they get the stuff it's earned from killing people
+	
+		var player = 0; // find owner
+		for(var i in players[self.sy][self.sx])
+			if(players[self.sy][self.sx][i].name === self.owner){
+				player = players[self.sy][self.sx][i];
 				break;
 			}
+		if(player == 0) return;//if we couldn't find them (they aren't in the sector)
+		
+		if(squareDist(player,self) > 40000) return;
+		
+		player.kills += self.kills;//reward them with my earnings
+		player.spoils("experience",self.experience);
+		if(self.money > 0) player.spoils("money",self.money);
+		
+		self.experience = self.money = self.kills = 0; // and delete my earnings
+	}
+	self.move = function(){ // aim and fire
+		
+		if(self.empTimer > 0) return; // can't do anything if emp'd
+		
+		var c = 0; // nearest player
+		var cDist2 = 1000000000; // min dist to player
+		for(var i in players[self.sy][self.sx]){
+			var player = players[self.sy][self.sx][i];
+			if(player.color==self.color) continue; // don't shoot at friendlies
+			var dist2 = squaredDist(player,self);
+			if(dist2<cDist2){ c = player; cDist2 = dist2; } // update nearest player
 		}
-		var astCount = 0;
-		if(self.time % 2 == 0){
-			for(var i in ASTEROID_LIST){
-				var a = ASTEROID_LIST[i];
-				if(a.sx == self.sx && a.sy == self.sy){
-					if(hypot2(a.x,self.x,a.y,self.y) < square(16 + 64)){
-						a.dmg(self.dmg * (self.weaponID == 0?2:1), self);
-						a.vx += self.vx / 256;
-						a.vy += self.vy / 256;
-						self.die();
-						break;
-					}
-					astCount++;
-					if(astCount > 26) delete ASTEROID_LIST[i];
-				}
-			}
+		
+		self.angle = calculateInterceptionAngle(c.x,c.y,c.vx,c.vy,self.x,self.y); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
+		
+		if(self.turretLive && self.reload < 0){
+				 if(cDist2 < square(wepns[8].Range*10))  self.shootLaser();//range:60
+			else if(cDist2 < square(wepns[37].Range*10)) self.shootOrb();//range:125
+			else if(cDist2 < square(175*10))             self.shootMissile();//range:175
+			else if(cDist2 < square(wepns[3].Range*10))  self.shootRifle();//range:750
 		}
 	}
-	self.die = function(){
-		sendAllSector("delBullet", {id:self.id},self.sx,self.sy);
-		var reverse = weaponID == 2? -1:1;
-		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:reverse * self.vx, dy:reverse * self.vy}, self.sx, self.sy);
-		delete BULLET_LIST[self.id];
-	}
-	self.dieAndMakeVortex = function(){
+	self.shootOrb = function(){
+		self.reload = wepns[37].Charge/2;
 		var r = Math.random();
-		var vort = Vortex(r, self.x, self.y, self.sx, self.sy, 3000, self.owner, false);
-		VORTEX_LIST[r] = vort;
-		self.die();
+		var orb = Orb(self, r, 37);
+		orbs[r] = orb;
+		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
 	}
-	return self;
-}
-var Mine = function(ownr, i, weaponID){
-	var self = {
-		type:"Mine",
-		id:i,
-		time:0,
-		color:ownr.color,
-		dmg:wepns[weaponID].Damage,
-		x:ownr.x,
-		y:ownr.y,
-		vx:weaponID != 33?0:Math.cos(ownr.angle)*30,
-		vy:weaponID != 33?0:Math.sin(ownr.angle)*30,
-		sx:ownr.sx,
-		sy:ownr.sy,
-		owner:ownr,
-		angle:Math.random()*6.28,
-		wepnID:weaponID,
+	self.shootRifle = function(){
+		self.reload = wepns[3].Charge/2;
+		var r = Math.random();
+		var bullet = Bullet(self, r, 3, self.angle, 0);
+		bullets[r] = bullet;
+		sendAllSector('sound', {file:"shot",x: self.x, y: self.y}, self.sx, self.sy);
 	}
-	self.tick = function(){
-		self.x += self.vx;
-		self.y += self.vy;
-		if(self.wepnID > 25 && self.time++ > 25) self.die();
-		if(self.time++ > 25 * 3 * 60) self.die();
+	self.shootMissile = function(){
+		self.reload = wepns[10].Charge;
+		var r = Math.random();
+		var bAngle = self.angle;
+		var missile = Missile(self, r, 10, bAngle);
+		missiles[r] = missile;
+		sendAllSector('sound', {file:"missile",x: self.x, y: self.y}, self.sx, self.sy);
 	}
-	self.die = function(){
-		var power = 0;
-		if(self.wepnID == 15 || self.wepnID == 33)//mine, grenade
-			power = 400;
-		else if(self.wepnID == 32) power = 2000;
-		for(var i in PLAYER_LIST){
-			var p = PLAYER_LIST[i];
-			if(p.sx == self.sx && p.sy == self.sy)
-				if(square(p.x - self.x) + square(p.y - self.y) < square(1024 + ships[p.ship].width)){
-					p.vx = power*(Math.cbrt(p.x - self.x))/Math.max(10,.001+Math.hypot(p.x - self.x,p.y - self.y));
-					p.vy = power*(Math.cbrt(p.y - self.y))/Math.max(10,.001+Math.hypot(p.x - self.x,p.y - self.y));
-					p.updatePolars();
-					p.angle = p.driftAngle;
-				}
-		}
-		if(self.wepnID == 33)
-			for(var i in PLAYER_LIST){
-				var p = PLAYER_LIST[i];
-				if(p.sx == self.sx && p.sy == self.sy && square(p.x - self.x) + square(p.y - self.y) < square(wepns[33].Range*10))
-					p.dmg(self.dmg, self);
+	self.shootLaser = function(){ // TODO merge this into Beam object, along with player.shootBeam()
+		var nearP = 0;
+		for(var i in players){
+			var p = players[i];
+			if(p.color == self.color || p.sx != self.sx || p.sy != self.sy) continue;
+			if(nearP == 0){
+				nearP = p;
+				continue;
 			}
-		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
-		delete MINE_LIST[self.sy][self.sx][self.id];
-	}
-	return self;
-}
-var Package = function(ownr, i, type){
-	var self = {
-		id:i,
-		type: type,
-		x:ownr.x,
-		y:ownr.y,
-		sx:ownr.sx,
-		sy:ownr.sy,
-		time:0,
-	}
-	self.tick = function(){
-		if(self.time++ > 2000){
-			sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
-			delete PACKAGE_LIST[self.id];
+			var dx = p.x - self.x, dy = p.y - self.y;
+			if(dx * dx + dy * dy < square(nearP.x - self.x)+square(nearP.y - self.y)) nearP = p;
 		}
-		for(var i in PLAYER_LIST){
-			var p = PLAYER_LIST[i];
-			if(p.sx == self.sx && p.sy == self.sy && square(p.x - self.x) + square(p.y - self.y) < square(16 + ships[p.ship].width)){
-				if(self.type == 0){
-					if(!p.packageTaken){
-						p.packageTaken = true;
-						p.sendAchievementsCash(true);
-					}
-					var possible = ['money', 'ore', 'upgrade'];
-					var contents = possible[Math.floor(Math.random() * 2.05)];
-					var amt = Math.floor(Math.random() * 2000) + 2000;
-					if(contents == 'ore'){//second bit is a fix for kristens hull exploit
-						amt = Math.min(amt, p.capacity - p.iron - p.aluminium - p.silver - p.platinum);
-						if(amt == p.capacity - p.iron - p.aluminium - p.silver - p.platinum) strongLocal("Cargo Bay Full", p.x, p.y + 256, p.id);
-					}
-					var title = "Package collected: ";
-					if(contents == 'money'){
-						title += '500 money';
-						p.spoils("money",500);
-					}else if(contents == 'upgrade'){
-						title += 'New radar!';
-						p.radar2+=.2;
-					}else{
-						title += amt + ' ore';
-						p.iron += Math.floor(amt/4);
-						p.platinum += Math.floor(amt/4);
-						p.aluminium += Math.floor(amt/4);
-						p.silver += Math.floor(amt/4);
-					}
-					strongLocal(title, p.x, p.y - 192, p.id);
-					delete PACKAGE_LIST[self.id];
-					break;
-				} else if(self.type == 1) {
-					p.spoils("money",1000);
-					delete PACKAGE_LIST[self.id];
-					break;
-				} else if(self.type == 3) {
-					p.refillAllAmmo();
-					delete PACKAGE_LIST[self.id];
-					break;
-				} else {
-					p.spoils("life",1);
-					delete PACKAGE_LIST[self.id];
-					break;
+		if(nearP == 0) return;
+		var r = Math.random();
+		var beam = Beam(self, r, 8, nearP, self);
+		beams[r] = beam;
+		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
+		self.reload = wepns[8].Charge/2;
+	}
+	self.die = function(b){
+		self.health = self.maxHealth;
+		self.turretLive = false;
+		sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
+		
+		//If I was killed by an asteroid...
+		if(b.type == 'Asteroid') {
+			sendAll('chat', {msg:("The base at sector ~`" + col + "~`" + String.fromCharCode(97 + sxx).toUpperCase() + (syy + 1) + "~`yellow~` was destroyed by an asteroid!")});
+			return;
+		}
+		
+		//Or a player...
+		if(typeof b.owner !== "undefined" && b.owner.type === "Player") {
+			sendAll('chat', {msg:("The base at sector ~`" + col + "~`" + String.fromCharCode(97 + sxx).toUpperCase() + (syy + 1) + "~`yellow~` was destroyed by ~`" + b.color + "~`" + (b.owner.name===""?"a drone":b.owner.name) + "~`yellow~`'s `~"+b.wepnID+"`~.")});
+			b.owner.baseKilled();
+			b.owner.spoils("experience",baseKillExp); // reward them
+			b.owner.spoils("money",baseKillMoney);
+			
+			if(raidTimer < 15000){ // during a raid
+				b.owner.points++; // give a point to the killer
+	
+				for(var i in players[self.sy][self.sx]){ // as well as all other players in that sector
+					var p = players[self.sy][self.sx][i];
+					if(p.color !== self.color) p.points++;
 				}
 			}
 		}
+		
+		if(!self.isBase) bases[self.sx][self.sy] = 0;
+	}
+	self.EMP = function(t){
+		self.empTimer = t;
+	}
+	self.save = function(){// TODO Chris
+		if(self.isBase) return;
+		var source = 'server/turrets/' + self.id + '.txt';
+		if (fs.existsSync(source)) fs.unlinkSync(source);
+		var str = self.kills + ':' + self.experience + ':' + self.money + ':' + self.id + ":" + self.color + ":" + self.owner+":"+self.x+":"+self.y+":"+self.sx+":"+self.sy;
+		fs.writeFileSync(source, str, {"encoding":'utf8'});
+	}
+	self.onKill = function(){
+		self.kills++;
+	}
+	self.dmg = function(d, origin){
+		self.health-=d;
+		if(self.health < 0)self.die(origin);
+		note('-'+d, self.x, self.y - 64, self.sx, self.sy);
+		return self.health < 0;
+	}
+	self.spoils = function(type,amt){
+		if(type === "experience") self.experience+=amt;
+		if(type === "money") self.money+=amt;
 	}
 	return self;
 }
-var Beam = function(ownr, i, weaponID, enemy, orign){
+var Vortex = function(i, x, y, sxx, syy, size, ownr, isWorm){
 	var self = {
-		type:"Beam",
-		id:i,
-		dmg:weaponID == 400?wepns[16].Damage:wepns[weaponID].Damage,
-		sx:ownr.sx,
-		sy:ownr.sy,
-		origin:orign,
+		
+		isWorm:isWorm, // am i a wormhole or black hole
+		
+		sxo:Math.floor(Math.random() * mapSz), // output node location for wormhole
+		syo:Math.floor(Math.random() * mapSz),
+		xo:Math.random() * sectorWidth,
+		yo:Math.random() * sectorWidth,
+		
+		type:"Vortex",
 		owner:ownr,
-		enemy:enemy,
-		wepnID:weaponID,
-		time:0,
+		id:i, // unique identifier
+		
+		x:x, //input node or black hole location
+		y:y,
+		sx:sxx,
+		sy:syy,
+		
+		size:size,
 	}
 	self.tick = function(){
-		if(self.time>10){
-			if(enemy.type === "Asteroid") enemy.hit = false;
-			delete BEAM_LIST[self.id];
+		
+		if(tick % 2 == 0) self.move();
+		
+		if(self.owner != 0){ // if I'm a gravity bomb
+			self.size -= 6; // shrink with time
+			if(self.size < 0) self.die();
 		}
-		if(self.time == 0){
-			enemy.hit = false;
-			var divideBy = self.enemy.ship == 17 && (self.wepnID == 30 || self.wepnID == 26)? 2 : 1;
-			var didDie = self.enemy.dmg(self.dmg / divideBy, self.wepnID == 400?self.owner:self);
-			if(self.wepnID == 34){
-				self.enemy.energy += wepns[self.wepnID].energy;
-				self.owner.energy -= wepns[self.wepnID].energy;
+		
+		else self.size = 2500;
+	}
+	self.move = function(){
+		if(self.isWorm){
+			
+			var t = tick / 40000;
+			
+			//the doubles in here are just random numbers for chaotic motion. Don't mind them.
+			
+			//input node
+			var bx = Math.sin(7.197 * t) / 2 + .5;
+			var by = -Math.sin(5.019 * t) / 2 + .5;
+			self.sx = Math.floor(bx * mapSz);
+			self.sy = Math.floor(by * mapSz);
+			self.x = ((bx * mapSz) % 1) * sectorWidth;
+			self.y = ((by * mapSz) % 1) * sectorWidth;
+			
+			//output node
+			var bxo = -Math.sin(9.180 * t) / 2 + .5;
+			var byo = Math.sin(10.3847 * t) / 2 + .5;
+			self.sxo = Math.floor(bxo * mapSz);
+			self.syo = Math.floor(byo * mapSz);
+			self.xo = ((bxo * mapSz) % 1) * sectorWidth;
+			self.yo = ((byo * mapSz) % 1) * sectorWidth;
+			
+			// every 2 seconds, tell the players where I am (for radar only, I think)
+			if(tick % 50 == 0) sendAll('worm', {bx: bx, by: by, bxo: bxo, byo: byo});
+			
+		}
+		for(var i in players[self.sy][self.sx]){
+			var p = players[self.sy][self.sx][i];
+			
+			// compute distance and angle to players
+			var dist = Math.sqrt(Math.sqrt(squaredDist(self,p)));
+			var a = angleBetween(self,p);
+			//then move them.
+			var guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
+			p.x -= guestMult * .25 * self.size / dist * Math.cos(a);
+			p.y -= guestMult * .25 * self.size / dist * Math.sin(a);
+			
+			if(dist < 15 && !self.isWorm){ // collision with black hole
+			
+				p.die(self); // i think it's important that this happens before we give them the achievements
+				
+				if(p.e){
+					p.driftAchs[8] = true; // drift into a black hole
+					p.sendAchievementsDrift(true);
+				}
+				
+				p.randmAchs[4] = true; // fall into a black hole
+				p.sendAchievementsMisc(true);
+					
+			}else if(dist<15 && self.isWorm){ // collision with wormhole
+			
+				p.randmAchs[3] = true; // fall into a wormhole
+				p.sendAchievementsMisc(true);
+				
+				p.sx = self.sxo;
+				p.sy = self.syo;
+				p.y = self.yo;
+				p.x = self.xo; // teleport them to the output node
+				
+				p.planetTimer = 2501; // what is this?
 			}
-			if(didDie) delete BEAM_LIST[self.id];
 		}
-		self.time++;
+	}
+	self.die = function(b){
+		sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
+		delete vorts[self.id];
+	}
+	self.onKill = function(){
+	} // do we need these functions here? :thonk: I think we might be calling em
+	self.spoils = function(type,amt){
 	}
 	return self;
 }
 var Asteroid = function(i, h, sxx, syy, metal){
 	var self = {
 		type:"Asteroid",
-		id:i,
+		id:i, // unique identifier
 		x:Math.floor(Math.random() * sectorWidth),
 		y:Math.floor(Math.random() * sectorWidth),
 		angle:0,
@@ -1911,22 +2145,25 @@ var Asteroid = function(i, h, sxx, syy, metal){
 	self.tick = function(){
 		if(Math.random() < .0001) self.die(0);
 		self.move();
-		if(Math.abs(self.vx) + Math.abs(self.vy) > 1.5){
-			for(var i in PLAYER_LIST){
-				var p = PLAYER_LIST[i];
-				if(p.sx == self.sx && p.sy == self.sy)
-					if(square(p.x - self.x) + square(p.y - self.y) < square(32 + ships[p.ship].width) / 10){
-						p.dmg(5*Math.hypot(p.vx-self.vx,p.vy-self.vy), self);
-						sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
-						p.vx = 200*(Math.cbrt(p.x - self.x))/Math.max(1,.001+Math.hypot(p.x - self.x,p.y - self.y));
-						p.vy = 200*(Math.cbrt(p.y - self.y))/Math.max(1,.001+Math.hypot(p.x - self.x,p.y - self.y));
-						p.updatePolars();
-						p.angle = p.driftAngle;
-					}
+		if(Math.abs(self.vx) + Math.abs(self.vy) > 1.5){ // if we're moving sufficiently fast, check for collisions with players.
+			for(var i in players[self.sy][self.sx]){
+				var p = players[self.sy][self.sx][i];
+				if(squaredDist(p,self) < square(32 + ships[p.ship].width) / 10){ // on collision,
+					p.dmg(5*Math.hypot(p.vx-self.vx,p.vy-self.vy), self); // damage proportional to impact velocity
+					sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
+					
+					//bounce the player off. Same formula as used for mine impulse.
+					var mult = 200 / Math.max(1,.001+Math.hypot(p.x - self.x,p.y - self.y))
+					p.vx = mult*(Math.cbrt(p.x - self.x));
+					p.vy = mult*(Math.cbrt(p.y - self.y));
+					
+					p.updatePolars(); // we just modified their rectangular info.
+					p.angle = p.driftAngle; // make them look in the direction they're moving.
+				}
 			}
 			
 			var b = bases[self.sx][self.sy];
-			if(b != 0 && b.turretLive && square(self.x - b.x) + square(self.y - b.y) < 3686.4){
+			if(b != 0 && b.turretLive && squaredDist(self,b) < 3686.4){ // collision with base
 				b.dmg(10*Math.hypot(self.vx,self.vy), self);
 				sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
 				self.die(b);
@@ -1944,9 +2181,8 @@ var Asteroid = function(i, h, sxx, syy, metal){
 		if(isOutOfBounds(self)) self.die(0);
 	}
 	self.die = function(b){
-		asteroids[self.sx][self.sy]--;
 		createAsteroid();
-		delete ASTEROID_LIST[self.id];
+		delete asts[self.id];
 		if(b == 0) return;
 		switch(metal){
 			case 0:
@@ -2000,287 +2236,297 @@ var Asteroid = function(i, h, sxx, syy, metal){
 	}
 	return self;
 }
-var Planet = function(i, name){
+var Package = function(ownr, i, type){
 	var self = {
-		type:"Planet",
-		name:name,
-		color:"yellow",
-		owner:0,
-		id:i,
-		x:sectorWidth/2,
-		y:sectorWidth/2,
-		cooldown:0
+		id:i, // unique identifier
+		type: type, // ammo? coin? lives? actual courier package?
+		x:ownr.x,
+		y:ownr.y,
+		sx:ownr.sx,
+		sy:ownr.sy,
+		time:0, // since spawn
 	}
 	self.tick = function(){
-		self.cooldown--;
-		if(tick % 12 == 6)
-		for(var p in PLAYER_LIST)
-			if(self.owner === PLAYER_LIST[p].name)
-				PLAYER_LIST[p].money++;
+		if(self.time++ > 25*60){ // 1 minute despawn
+			sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
+			delete packs[self.id];
+		}
+		for(var i in players[self.sy][self.sx]){ // loop for collision
+			var p = players[self.sy][self.sx][i];
+			if(squaredDist(p,self) < square(16 + ships[p.ship].width)){ // someone hit me
+				
+				onCollide(p);
+				
+				delete packs[self.id]; // despawn
+				break; // stop looping thru players
+			}
+		}
+	}
+	self.onCollide = function(p){
+		
+		if(self.type == 0){
+			
+			p.moneyAchs[8] = true; // Thief: steal a package
+			p.sendAchievementsCash(true);
+			
+			var possible = ['money', 'ore', 'upgrade'];
+			var contents = possible[Math.floor(Math.random() * 2.05)]; // figure out what reward to give
+			
+			var amt = Math.floor(Math.random() * 2000) + 2000; // how much ore we're gonna give
+			if(contents == 'ore'){
+				var left = p.capacity - p.iron - p.aluminium - p.silver - p.platinum; // how much more cargo space they have
+				if(amt > left){ // if they don't have enough cargo space for the ore we're about to give
+					amt = left; // give them as much as they can take
+					strongLocal("Cargo Bay Full", p.x, p.y + 256, p.id); //tell them they have no room left
+				}
+				amt /= 4; // give them some of each
+				p.iron += amt
+				p.platinum += amt;
+				p.aluminium += amt;
+				p.silver += amt;
+			}
+				
+			else if(contents == 'money') p.spoils("money",20000);
+			else if(contents == 'upgrade') { p.radar2+=.2; p.recomputeTechs(); }
+			
+			var title = "Package collected: "; // the message we're going to send them
+			if(contents == 'ore')     title += (amt*4) + ' ore!';
+			if(contents == 'upgrade') title += 'New radar!';
+			if(contents == 'money')   title += '20000 money!';
+			strongLocal(title, p.x, p.y - 192, p.id); // send it
+		}
+		
+		else if(self.type == 1) p.spoils("money",1000); // coin
+		else if(self.type == 2) p.spoils("life",1); // floating life
+		else if(self.type == 3) p.refillAllAmmo(); // ammo package
+		
 	}
 	return self;
 }
-var Base = function(i, b, sxx, syy, col, x, y){
+
+//weapon objects
+var Orb = function(ownr, i, weaponID){//currently the only orb is energy disk
 	var self = {
-		type:"Base",
-		name:"Press X to enter Base",
-		kills:0,
-		experience:0,
-		money:0,
-		id:i,
-		color:col,
-		owner:0,
-		isBase:b, // This differentiates between turrets and turrets connected to bases
-		turretLive:true, // When killed, this becomes false and turret vanishes
-		angle:0,
-		x:x,
-		y:y,
-		vx:0,
-		vy:0,
-		sx:sxx,
-		sy:syy,
-		reload:0,
-		spinAngle:0,
-		health:500,
-		maxHealth:500,
-		heal:1,
-		empTimer:-1,
-		speed:0,//vs unused but there for bullets
+		type:"Orb",
+		id:i, // unique identifier
+		color:ownr.color, // owned by which team
+		dmg:wepns[weaponID].Damage,
+		
+		owner:ownr,
+		x:ownr.x,
+		y:ownr.y, // spawn where its owner is
+		sx:ownr.sx,
+		sy:ownr.sy,
+		vx:2*ownr.vx+wepns[weaponID].Speed*Math.cos(ownr.angle), // velocity is 2*owner's velocity plus this weapon's speed
+		vy:2*ownr.vy+wepns[weaponID].Speed*Math.sin(ownr.angle),
+		
+		locked:0, // the player I'm locked on to
+		timer: 0, // how long this orb has existed
+		lockedTimer: 0, // timer of how long it's been locked onto a player
+		wepnID:weaponID
 	}
-	self.tick = function(rbNow,bbNow){
-		if(self.isBase && Math.random()<botFrequency/square(rbNow+bbNow+5)) spawnBot(self.sx,self.sy,self.color,rbNow,bbNow);
-		if(!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25*150) == 0))) self.turretLive = true;
+	self.tick = function(){
+		if(self.timer++ > 3 * wepns[weaponID].Range / wepns[weaponID].Speed) self.die();
 		self.move();
-		self.empTimer--;
-		self.reload--;
-		if(self.health < self.maxHealth) self.health+=self.heal;
-		if(tick % 25 == 0) self.giveToOwner();
 	}
-	self.giveToOwner = function(){
-		if(self.owner == 0) return;
-		var player = 0;
-		for(var i in PLAYER_LIST)
-			if(PLAYER_LIST[i].name === self.owner){
-				player = PLAYER_LIST[i];
+	self.move = function(){
+		if(self.locked != 0 && typeof self.locked === 'number'){
+			if(self.lockedTimer++ > 2.5 * 25) self.die(); // after 2.5 seconds of being locked on -> delete self
+			var target = players[self.locked];
+			if(typeof target === 'undefined' && bases[self.sx][self.sy].color != self.color) target = bases[self.sx][self.sy];
+			if(target == 0) target = asts[self.locked];
+			if(typeof target === 'undefined') self.locked = 0;
+			else{ // if we are locked onto something
+				if(target.type === "Player") target.isLocked = true; // tell the player they're locked onto for an alert message
+				var d2 = squaredDist(target,self);
+				if(target.sx == self.sx && target.sy == self.sy && d2 < square(100) && target.turretLive != false){ // if it's a base we can't attack when it's dead
+					target.dmg(self.dmg, self);
+					self.die();
+					return;
+				}
+				var dist = Math.sqrt(d2);
+				self.vx += wepns[weaponID].Speed*(target.x - self.x)/dist; // accelerate towards target
+				self.vy += wepns[weaponID].Speed*(target.y - self.y)/dist;
+				self.vx *= .9; // air resistance
+				self.vy *= .9;
+			}
+		}
+		if(self.locked == 0) self.lockedTimer = 0;
+		self.x+=self.vx;
+		self.y+=self.vy; // move
+		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die(); // if out of bounds
+	}
+	self.die = function(){
+		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:self.vx, dy:self.vy}, self.sx, self.sy);
+		delete orbs[self.id];
+	}
+	return self;
+}
+var Bullet = function(ownr, i, weaponID, angl, info){
+	var self = {
+		type:"Bullet",
+		id:i, // unique identifier
+		time:0, // time since spawn
+		color:ownr.color, // whose team
+		dist:0, // TRACKS distance. Doesn't control it.
+		dmg:wepns[weaponID].Damage,
+		
+		x:ownr.x + (weaponID == 6?Math.sin(self.angle) * 16 * self.info:0), // spawn where my owner was
+		y:ownr.y - (weaponID == 6?Math.cos(self.angle) * 16 * self.info:0), // if minigun, move left or right based on which bullet I am
+		sx:ownr.sx,
+		sy:ownr.sy,
+		vx:Math.cos(angl) * wepns[weaponID].Speed,
+		vy:Math.sin(angl) * wepns[weaponID].Speed,
+		
+		owner:ownr,
+		angle:angl, // has to be a parameter since not all bullets shoot straight
+		info:info, // used to differentiate left and right minigun bullets
+		wepnID:weaponID,
+	}
+	self.tick = function(){
+		if(self.time++ == 0){ // if this was just spawned
+			sendAllSector("newBullet", {x:self.x, y:self.y, vx:self.vx,vy:self.vy,id:self.id,angle:self.angle,wepnID:self.wepnID, color:self.color}, self.sx, self.sy);
+			//self.x -= self.vx; These were here before Alex's refactor. Not sure if they should exist.
+			//self.y -= self.vy;
+		}
+		self.move();
+		self.dist+=wepns[weaponID].Speed / 10;
+		if(self.wepnID == 28 && self.time > 25 * 3){ // gravity bomb has 3 seconds to explode
+			var base = bases[self.sx][self.sy];
+			if(squaredDist(base,self)<square(1000)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when out of range.
+			self.dieAndMakeVortex(); // collapse into black hole
+		}
+		else if(self.dist>wepns[weaponID].Range) self.die(); // out of range
+	}
+	self.move = function(){
+		self.x+=self.vx;
+		self.y+=self.vy; // move on tick
+		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();
+			
+		var b = bases[self.sx][self.sy];
+		if(b != 0 && b.turretLive && b.color!=self.color && square(b.x - self.x) + square(b.y - self.y) < square(16 + 32)){
+			b.dmg(self.dmg, self);
+			self.die();
+		}
+		
+		for(var i in players[self.sy][self.sx]){
+			var p = players[self.sy][self.sx][i];
+			if(p.color!=self.color && squaredDist(p,self) < square(bulletWidth + ships[p.ship].width)){ // on collision with enemy
+				if(self.wepnId == 28){ // if a grav bomb hits a player, explode into a black hole
+					self.dieAndMakeVortex();
+					return;
+				}
+				p.dmg(self.dmg, self); // damage the enemy
+				self.die();//despawn this bullet
 				break;
 			}
-		if(player == 0 || self.sx != player.sx || player.sy != self.sy || square(player.x - self.x) + square(player.y - self.y) > 40000)
-			return;
-		player.kills += self.kills;
-		player.spoils("experience",self.experience);
-		if(self.money > 0)
-			player.spoils("money",self.money);
-		self.experience = self.money = self.kills = 0;
-	}
-	self.move = function(){
-		if(self.empTimer > 0) return;
-		var c = 0;
-		var cDist2 = 1000000000;
-		for(var i in PLAYER_LIST){
-			var player = PLAYER_LIST[i];
-			if(player.color==self.color || player.sx != self.sx || player.sy != self.sy)
-				continue;
-			var dist2 = square(player.x - self.x)+square(player.y - self.y);
-			if(c == 0){c = player;cDist2 = dist2;continue;}
-			if(dist2<cDist2){
-				c = player;
-				cDist2 = dist2;
-			}
 		}
-		self.angle = calculateInterceptionAngle(c.x,c.y,c.vx,c.vy,self.x,self.y);
-		self.spinAngle+=.001;
-		if(self.turretLive && self.reload < 0){
-			if(cDist2 < square(wepns[8].Range*10))//range:60
-				self.shootLaser();
-			else if(cDist2 < square(wepns[37].Range*10))//range:125
-				self.shootOrb();
-			else if(cDist2 < square(175*10))//range:175
-				self.shootMissile();
-			else if(cDist2 < square(wepns[3].Range*10))//range:750
-				self.shootRifle();
-		}
-	}
-	self.shootOrb = function(){
-		self.reload = wepns[37].Charge/2;
-		var r = Math.random();
-		var orb = Orb(self, r, 37);
-		ORB_LIST[r] = orb;
-		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
-	}
-	self.shootRifle = function(){
-		self.reload = wepns[3].Charge/2;
-		var r = Math.random();
-		var bullet = Bullet(self, r, 3, self.angle, 0);
-		BULLET_LIST[r] = bullet;
-		sendAllSector('sound', {file:"shot",x: self.x, y: self.y}, self.sx, self.sy);
-	}
-	self.shootMissile = function(){
-		self.reload = wepns[10].Charge;
-		var r = Math.random();
-		var bAngle = self.angle;
-		var missile = Missile(self, r, 10, bAngle);
-		MISSILE_LIST[r] = missile;
-		sendAllSector('sound', {file:"missile",x: self.x, y: self.y}, self.sx, self.sy);
-	}
-	self.shootLaser = function(){
-		var nearP = 0;
-		for(var i in PLAYER_LIST){
-			var p = PLAYER_LIST[i];
-			if(p.color == self.color || p.sx != self.sx || p.sy != self.sy) continue;
-			if(nearP == 0){
-				nearP = p;
-				continue;
-			}
-			var dx = p.x - self.x, dy = p.y - self.y;
-			if(dx * dx + dy * dy < square(nearP.x - self.x)+square(nearP.y - self.y)) nearP = p;
-		}
-		if(nearP == 0) return;
-		var r = Math.random();
-		var beam = Beam(self, r, 8, nearP, self);
-		BEAM_LIST[r] = beam;
-		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
-		self.reload = wepns[8].Charge/2;
-	}
-	self.die = function(b){
-		self.giveToOwner();
-		self.turretLive = false;
-		sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
-		if(b.type == 'Asteroid') return;
-		if(typeof b.owner !== "undefined" && b.owner.type === "Player") sendAll('chat', {msg:("The base at sector ~`" + col + "~`" + String.fromCharCode(97 + sxx).toUpperCase() + (syy + 1) + "~`yellow~` was destroyed by ~`" + b.color + "~`" + (b.owner.name===""?"a drone":b.owner.name) + "~`yellow~`'s `~"+b.wepnID+"`~.")});
-		if(b.owner.type === "Player") b.owner.baseKilled();
-		else 	console.log("IMPORTANT:"+b.type + b.owner.type)
-		b.owner.onBaseKill();
-		self.health = self.maxHealth;
-		if(raidTimer < 15000){
-			b.owner.points++;
-			for(var i in PLAYER_LIST){
-				var p = PLAYER_LIST[i];
-				if(p.sx == self.sx && p.sy == self.sy && p.color !== self.color) p.points++;
-			}
-		}
-		var expGained = 50;
-		b.owner.spoils("experience",expGained);
-		b.owner.spoils("money",25000);
-		if(!self.isBase) bases[self.sx][self.sy] = 0;
-	}
-	self.EMP = function(t){
-		self.empTimer = t;
-	}
-	self.save = function(){
-		if(self.isBase) return;
-		var source = 'server/turrets/' + self.id + '.txt';
-		if (fs.existsSync(source)) fs.unlinkSync(source);
-		var str = self.kills + ':' + self.experience + ':' + self.money + ':' + self.id + ":" + self.color + ":" + self.owner+":"+self.x+":"+self.y+":"+self.sx+":"+self.sy;
-		fs.writeFileSync(source, str, {"encoding":'utf8'});
-	}
-	self.onKill = function(){
-		self.kills++;
-	}
-	self.dmg = function(d, origin){
-		self.health-=d;
-		if(self.health < 0)self.die(origin);
-		note('-'+d, self.x, self.y - 64, self.sx, self.sy);
-		return self.health < 0;
-	}
-	self.spoils = function(type,amt){
-		if(type === "experience") self.experience+=amt;
-		if(type === "money") self.money+=amt;
-	}
-	self.onBaseKill = function(){
-		//nothing.
-	}
-	return self;
-}
-var Vortex = function(i, x, y, sxx, syy, size, ownr, isWorm){
-	var self = {
-		isWorm:isWorm,
-		sxo:Math.floor(Math.random() * mapSz),
-		syo:Math.floor(Math.random() * mapSz),
-		xo:Math.random() * sectorWidth,
-		yo:Math.random() * sectorWidth,
-		type:"Vortex",
-		owner:ownr,
-		id:i,
-		x:x,
-		y:y,
-		sx:sxx,
-		sy:syy,
-		size:size,
-	}
-	self.tick = function(){
-		self.move();
-		if(self.owner != 0){
-			self.size -= 6;
-			if(self.size < 0) self.die();
-		}
-		else self.size = 2500;
-	}
-	self.move = function(){
-		if(self.isWorm){
-			var t = tick / 40000;
-			var bx = Math.sin(7.197 * t) / 2 + .5;
-			var by = -Math.sin(5.019 * t) / 2 + .5;
-			self.sx = Math.floor(bx * mapSz);
-			self.sy = Math.floor(by * mapSz);
-			self.x = ((bx * mapSz) % 1) * sectorWidth;
-			self.y = ((by * mapSz) % 1) * sectorWidth;
-			var bxo = -Math.sin(9.180 * t) / 2 + .5;
-			var byo = Math.sin(10.3847 * t) / 2 + .5;
-			self.sxo = Math.floor(bxo * mapSz);
-			self.syo = Math.floor(byo * mapSz);
-			self.xo = ((bxo * mapSz) % 1) * sectorWidth;
-			self.yo = ((byo * mapSz) % 1) * sectorWidth;
-			if(tick % 50 == 0) sendAll('worm', {bx: bx, by: by, bxo: bxo, byo: byo});
-		}
-		for(var i in PLAYER_LIST){
-			var p = PLAYER_LIST[i];
-			if(self.sx == p.sx && self.sy == p.sy){
-				var dy = p.y - self.y;
-				var dx = p.x - self.x;
-				var dist = Math.pow(dy * dy + dx * dx, .25);
-				var a = Math.atan2(dy, dx);
-				var guestMult = (p.guest || p.isNNBot) ? -1 : 1; 
-				p.x -= guestMult * .25 * self.size / dist * Math.cos(a);
-				p.y -= guestMult * .25 * self.size / dist * Math.sin(a);
-				if(dist < 15 && !self.isWorm){
-					p.die(self);
-					if(p.e){
-						p.dr8 = true;
-						p.sendAchievementsDrift(true);
-					}				
-					if(self.sx == 3 && self.sy == 3)
-						if(!p.ms4) {
-							p.ms4 = true;
-							p.sendAchievementsMisc(true);
-						}
-				}else if(dist<15 && self.isWorm){
-					if(!p.ms3){
-						p.ms3 = true;
-						p.sendAchievementsMisc(true);
-					}
-					p.sx = self.sxo;
-					p.sy = self.syo;
-					p.y = self.yo;
-					p.x = self.xo;
-					p.planetTimer = 2501;
+		if(self.time % 2 == 0 || wepns[self.wepnID].Speed > 75){ // Only check for collisions once every 2 ticks, unless this weapon is really fast (in which case the bullet would skip over it)
+			for(var i in asts[self.sy][self.sx]){
+				var a = asts[self.sy][self.sx][i];
+				if(squaredDist(a,self) < square(bulletWidth + 64)){ // if we collide
+					a.dmg(self.dmg * (self.weaponID == 0?2:1), self); // hurt the asteroid. ternary: stock gun does double damage
+					a.vx += self.vx / 256; // push the asteroid
+					a.vy += self.vy / 256;
+					self.die(); // delete this bullet
+					break;
 				}
 			}
 		}
 	}
-	self.die = function(b){
-		sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
-		delete VORTEX_LIST[self.id];
+	self.die = function(){
+		sendAllSector("delBullet", {id:self.id},self.sx,self.sy);
+		var reverse = weaponID == 2? -1:1; // for reverse gun, particles should shoot the other way
+		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:reverse * self.vx, dy:reverse * self.vy}, self.sx, self.sy);
+		delete bullets[self.id];
 	}
-	self.onKill = function(){
+	self.dieAndMakeVortex = function(){
+		var r = Math.random();
+		var vort = Vortex(r, self.x, self.y, self.sx, self.sy, 3000, self.owner, false); // 3000 is the size of a grav bomb vortex
+		vorts[r] = vort;
+		self.die();
 	}
-	self.spoils = function(type,amt){
+	return self;
+}
+var Mine = function(ownr, i, weaponID){
+	var self = {
+		type:"Mine",
+		id:i, // unique identifier
+		time:0, // time since spawned
+		color:ownr.color, // what team owns me
+		dmg:wepns[weaponID].Damage,
+		
+		x:ownr.x,
+		y:ownr.y,
+		vx:weaponID != 33?0:Math.cos(ownr.angle)*30, // grnades are the only mines that move
+		vy:weaponID != 33?0:Math.sin(ownr.angle)*30,
+		sx:ownr.sx,
+		sy:ownr.sy,
+		
+		owner:ownr,
+		wepnID:weaponID,
+	}
+	self.tick = function(){
+		self.x += self.vx; // move
+		self.y += self.vy;
+		if(self.wepnID > 25 && self.time++ > 25) self.die(); // pulse wave and grenade blow up after 1 second
+		if(self.time++ > 25 * 3 * 60) self.die(); // all mines die after 3 minutes
+	}
+	self.die = function(){
+		var power = 0; // how strongly this mine pushes people away on explosion
+		if(self.wepnID == 15 || self.wepnID == 33) power = 400; //mine, grenade
+		else if(self.wepnID == 32) power = 2000;
+		for(var i in players[self.sy][self.sx]){
+			var p = players[self.sy][self.sx][i];
+			if(squaredDist(p,self) < square(1024)){
+				var mult = power/Math.max(10,.001+Math.hypot(p.x - self.x,p.y - self.y)); // not sure what's going on here but it works
+				p.vx = mult*(Math.cbrt(p.x - self.x));
+				p.vy = mult*(Math.cbrt(p.y - self.y)); // push the player
+				p.updatePolars();//we edited rectangulars
+				p.angle = p.driftAngle; // turn them away from the mine
+			}
+		}
+		if(self.wepnID == 33) // if i'm a grenade
+			for(var i in players[self.sy][self.sx]){
+				var p = players[self.sy][self.sx][i];
+				if(squaredDist(p,self) < square(wepns[33].Range*10)) p.dmg(self.dmg, self); // if i'm in range of a player on explosion, damage them
+			}
+		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
+		delete mines[self.sy][self.sx][self.id];
+	}
+	return self;
+}
+var Beam = function(ownr, i, weaponID, enemy, orign){
+	var self = {
+		type:"Beam",
+		id:i, // unique identifier
+		dmg:weaponID == 400?wepns[16].Damage:wepns[weaponID].Damage,
+		sx:ownr.sx,
+		sy:ownr.sy,
+		origin:orign,
+		owner:ownr,
+		enemy:enemy, // person we're hitting
+		wepnID:weaponID,
+		time:0, // since spawn
+	}
+	self.tick = function(){
+		if(self.time++>10){
+			var divideBy = self.enemy.ship == 17 && (self.wepnID == 30 || self.wepnID == 26)? 2 : 1; // i think this is about mining lasers shooting elite quarrier?
+			self.enemy.dmg(self.dmg / divideBy, self.wepnID == 400?self.owner:self);
+			if(enemy.type === "Asteroid") enemy.hit = false; // idk what this is
+			else if(self.wepnID == 34){ // energy leech
+				self.enemy.energy += wepns[self.wepnID].energy;
+				self.owner.energy -= wepns[self.wepnID].energy;
+			}
+			delete beams[self.id];
+		}
 	}
 	return self;
 }
 var Blast = function(ownr, i, weaponID){
 	var self = {
 		type:"Blast",
-		id:i,
+		id:i, // unique identifier
 		dmg:wepns[weaponID].Damage,
 		sx:ownr.sx,
 		sy:ownr.sy,
@@ -2289,33 +2535,31 @@ var Blast = function(ownr, i, weaponID){
 		bx:ownr.x,
 		by:ownr.y,
 		wepnID:weaponID,
-		time:0,
+		time:0, // since spawn
 	}
 	self.tick = function(){
 		self.time++;
-		if(self.time>11)
-			delete BLAST_LIST[self.id];
+		if(self.time>11) delete blasts[self.id];
 		if(self.time == 1){
-			for(var i in PLAYER_LIST){
-				var player = PLAYER_LIST[i];
-				if(player.sx == self.sx && player.sy == self.sy){
-					if((self.bx-player.x) * Math.cos(self.angle) + (self.by-player.y) * Math.sin(self.angle) > 0) continue;
-					var pDist = Math.hypot(player.x - self.bx, player.y - self.by);
-					var fx = player.x - Math.cos(self.angle) * pDist;
-					var fy = player.y - Math.sin(self.angle) * pDist;
-					if(Math.hypot(fx-self.bx,fy-self.by) < ships[player.ship].width*2/3) self.hit(player);
-				}
+			
+			for(var i in players[self.sy][self.sx]){
+				var player = players[self.sy][self.sx][i];
+				if((self.bx-player.x) * Math.cos(self.angle) + (self.by-player.y) * Math.sin(self.angle) > 0) continue;
+				var pDist = Math.hypot(player.x - self.bx, player.y - self.by);
+				var fx = player.x - Math.cos(self.angle) * pDist; // all this ugly math is just to check collision of a player with a ray
+				var fy = player.y - Math.sin(self.angle) * pDist;
+				if(Math.hypot(fx-self.bx,fy-self.by) < ships[player.ship].width*2/3) self.hit(player);
 			}
-			for(var i in ASTEROID_LIST){
-				var ast = ASTEROID_LIST[i];
-				if(ast.sx == self.sx && ast.sy == self.sy){
-					if((self.bx-ast.x) * Math.cos(self.angle) + (self.by-ast.y) * Math.sin(self.angle) > 0) continue;
-					var pDist = Math.hypot(ast.x - self.bx, ast.y - self.by);
-					var fx = ast.x - Math.cos(self.angle) * pDist;
-					var fy = ast.y - Math.sin(self.angle) * pDist;
-					if(Math.hypot(fx-self.bx,fy-self.by) < 64*2/3) self.hit(ast);
-				}
-			}
+			
+			/*for(var i in asts[self.sy][self.sx]){
+				var ast = asts[self.sy][self.sx][i];
+				if((self.bx-ast.x) * Math.cos(self.angle) + (self.by-ast.y) * Math.sin(self.angle) > 0) continue;
+				var pDist = Math.hypot(ast.x - self.bx, ast.y - self.by);
+				var fx = ast.x - Math.cos(self.angle) * pDist;
+				var fy = ast.y - Math.sin(self.angle) * pDist;
+				if(Math.hypot(fx-self.bx,fy-self.by) < 64*2/3) self.hit(ast);
+			} // not using this atm */
+			
 			var base = bases[self.sx][self.sy];
 			if(base.color == self.owner.color || !base.turretLive) return;
 			if((self.bx-base.x) * Math.cos(self.angle) + (self.by-base.y) * Math.sin(self.angle) > 0) return;
@@ -2326,132 +2570,182 @@ var Blast = function(ownr, i, weaponID){
 		}
 	}
 	self.hit = function(b){
-		if(self.wepnID == 25 && self.owner.color !== b.color) b.EMP(wepns[25].Charge*.6);
-		else if(self.wepnID == 34 && self.owner.color !== b.color) b.dmg(self.dmg, self);
-		else if(self.wepnID == 41) b.brainwashedBy = self.owner.id;
+		if(self.wepnID == 25 && self.owner.color !== b.color) b.EMP(wepns[25].Charge*.6); // emp blast
+		else if(self.wepnID == 34 && self.owner.color !== b.color) b.dmg(self.dmg, self); // muon
+		else if(self.wepnID == 41) b.brainwashedBy = self.owner.id; // brainwashing laser
 	}
 	return self;
 }
 var Missile = function(ownr, i, weaponID, angl){
 	var self = {
 		type:"Missile",
-		id:i,
-		color:ownr.color,
+		id:i, // unique identifier
+		color:ownr.color, // whose side i'm on
 		dmg:wepns[weaponID].Damage,
+		
 		x:ownr.x,
 		y:ownr.y,
 		sx:ownr.sx,
 		sy:ownr.sy,
-		owner:ownr,
-		angle:angl,
-		locked:0,
-		timer: 0,
-		lockedTimer: 0,
-		wepnID:weaponID,
 		vx:Math.cos(angl) * wepns[weaponID].Speed,
 		vy:Math.sin(angl) * wepns[weaponID].Speed,
-		goalAngle:0
+		angle:angl,
+		
+		owner:ownr,
+		locked:0, // player I'm locked onto
+		timer: 0, // since spawn
+		lockedTimer: 0, // since locking on to my current target (or is it since first locking onto anyone?)
+		wepnID:weaponID,
+		goalAngle:0 // the angle I'm turning to match
 	}
 	self.tick = function(){
-		if(self.timer++ > 10 * wepns[weaponID].Range / wepns[weaponID].Speed)
-			self.die();
+		
 		self.move();
-		if(self.timer >= 20 && self.wepnID == 13){
-			for(var i = 0; i < 6; i++){
+		if(self.timer++ > 10 * wepns[weaponID].Range / wepns[weaponID].Speed) self.die(); // out of range -> die
+		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();//out of sector
+		
+		if(self.timer >= 20 && self.wepnID == 13){ // missile swarm
+			for(var i = 0; i < 6; i++){ // spawn 6 missiles
 				var r = Math.random();
 				var bAngle = self.angle + r * 2 - 1;
 				var missile = Missile(self.owner, r, 10, bAngle);
 				missile.x = self.x;
 				missile.y = self.y;
-				MISSILE_LIST[r] = missile;
+				missiles[r] = missile;
 			}
-			self.die();
+			self.die(); // and then die
 		}
 	}
 	self.move = function(){
+		
 		if(self.locked != 0 && typeof self.locked === 'number'){
-			if(self.lockedTimer++ > 7 * 25) self.die();
-			var target = PLAYER_LIST[self.locked];
+			if(self.lockedTimer++ > 7 * 25) self.die(); // if locked for >7s, die
+			
+			var target = players[self.locked]; // try 2 find the target object
 			if(typeof target === 'undefined' && bases[self.sx][self.sy].color != self.color) target = bases[self.sx][self.sy];
-			if(target == 0) target = ASTEROID_LIST[self.locked];
+			if(target == 0) target = asts[self.locked];
 			if(typeof target === 'undefined') self.locked = 0;
-			else{
+			
+			else{ // if we found it, then...
+			
 				if(target.type === "Player") target.isLocked = true;
-				if(target.sx == self.sx && target.sy == self.sy && hypot2(target.x,self.x,target.y,self.y) < 10000*(self.wepnID == 38?5:1) && target.turretLive != false){
+				
+				//on impact
+				if(target.sx == self.sx && target.sy == self.sy && squaredDist(target,self) < 10000*(self.wepnID == 38?5:1) && target.turretLive != false /*we don't know it's a base. can't just say ==true.*/ ){
 					target.dmg(self.dmg, self);
 					self.die();
-					if(self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(40);
+					if(self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(40); // emp missile
 					return;
 				}
-				if(self.wepnID != 38){
-					if(self.timer == 1 || tick % 4 == 0) self.goalAngle = atan(target.y - self.y,target.x - self.x);
-					self.angle = findBisector(findBisector(self.goalAngle, self.angle), self.angle);
+				
+				if(self.wepnID != 38){ // 38: proximity fuze
+					if(self.timer == 1 || tick % 4 == 0) self.goalAngle = angleBetween(target,self);
+					self.angle = findBisector(findBisector(self.goalAngle, self.angle), self.angle);// turn towards goal
 				}
-				self.vx = Math.cos(self.angle) * wepns[weaponID].Speed;
+				self.vx = Math.cos(self.angle) * wepns[weaponID].Speed; // update velocity
 				self.vy = Math.sin(self.angle) * wepns[weaponID].Speed;
+				
 			}
 		}
+		
 		if(self.locked == 0) self.lockedTimer = 0;
-		var accelMult = 1-25/(self.timer+25);
+		
+		var accelMult = 1-25/(self.timer+25); // pick up speed w/ time
 		self.x+=self.vx*accelMult;
-		self.y+=self.vy*accelMult;
-		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();
+		self.y+=self.vy*accelMult; // move on tick
+		
 	}
 	self.die = function(){
 		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:self.vx, dy:self.vy}, self.sx, self.sy);
-		delete MISSILE_LIST[self.id];
+		delete missiles[self.id];
 	}
 	return self;
 }
 
 
 
-function send(id, msg, data){
-	var s = SOCKET_LIST[id];
-	if(typeof s !== "undefined")
-		s.emit(msg, data);
+//Miscellaneous Networking
+function send(id, msg, data){ // send a socketio message to id
+	var s = sockets[id];
+	if(typeof s !== "undefined") s.emit(msg, data);
 }
-function note(msg, x, y, sx, sy){
+function note(msg, x, y, sx, sy){ // a popup note in game that everone in the sector can see.
 	sendAllSector('note', {msg: msg, x: x, y: y, local:false}, sx, sy);
 }
-function noteLocal(msg, x, y, id){
+function noteLocal(msg, x, y, id){ // same as above but only id can see it.
 	send(id, 'note', {msg: msg, x: x, y: y, local:true});
 }
-function strong(msg, x, y, sx, sy){
+function strong(msg, x, y, sx, sy){ // a bigger note
 	sendAllSector('strong', {msg: msg, x: x, y: y, local:false}, sx, sy);
 }
-function strongLocal(msg, x, y, id){
+function strongLocal(msg, x, y, id){ // you get the gist
 	send(id, 'strong', {msg: msg, x: x, y: y, local:true});
 }
+function sendWeapons(id){ // tells a client what weapons that player has
+	var player = (typeof dockers[id] !== 'undefined')?dockers[id]:players[id];
+	if(typeof players[id] === 'undefined' && typeof dockers[id] === 'undefined') return;//Could be dead? Check to be safe
+	var worth = ships[player.ship].price*.75;
+	send(id, 'weapons', {weapons: player.weapons, worth:worth, ammos:player.ammos});
+}
+function sendAllSector(out, data, sx, sy){
+	for(var i in sockets){
+		var p = players[i];
+		if(typeof p !== "undefined" && p.sx == sx && p.sy == sy) sockets[i].emit(out, data);
+	}
+}
+function sendAll(out, data){
+	for(var i in sockets) sockets[i].emit(out, data);
+}
+function chatAll(msg){ // sends msg in the chat
+	sendAll("chat", {msg:msg});
+}
+function sendTeam(color, out, data){ // send a socket.io message to all the members of some team
+	for(var i in sockets){
+		var player = dockers[i];
+		for(var y = 0; y < mapSz; y++) for(var y = 0; y < mapSz; y++) if(typeof player === "undefined") player = players[y][x][i];
+		if(typeof player === "undefined") player = deads[i];
+		if(typeof player !== "undefined" && player.color === color) sockets[i].emit(out, data);
+	}
+}
+function sendRaidData(){ // tell everyone when the next raid is happening
+	sendAll("raid",{raidTimer:raidTimer});
+}
 
+function getPlayer(i){ // given a socket id, find the corresponding player object.
+	var p = deads[i];
+	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++) if(typeof p === "undefined") p = players[y][x][i]; // check all sectors
+	if(typeof p === "undefined") p = dockers[i]; // check dock
+	if(typeof p !== "undefined") return p;
+	return 0;
+}
 
+//Alex: I rewrote everything up to here thoroughly, and the rest not so thoroughly. 7/1/19
 
 io.sockets.on('connection', function(socket){
 	var instance = false;
 	socket.id = Math.random();
-	SOCKET_LIST[socket.id]=socket;
+	sockets[socket.id]=socket;
 
 	var ip = socket.handshake.headers['x-real-ip'] || socket.handshake.address.address;
 	console.log(ip + " Connected!");
 	flood(ip);
 
-	var sockcol = 0;
-	socket.on('lore',function(data){
-		if (typeof data === "undefined" || typeof data.alien !== "boolean") {
-			return;
-		}
-		sockcol = data.alien;
+	var sockcol = 0; // the color of this socket, only used for when spawning a guest for the first time.
+	
+	socket.on('lore',function(data){ //player is requesting lore screen.
+		if (typeof data === "undefined" || typeof data.alien !== "boolean") return;
+		sockcol = data.alien; // note whether they want to be alien for when they spawn
 		socket.emit("lored",{pc:sockcol});
 	});
-	socket.on('guest',function(data){
+	socket.on('guest',function(data){ // TODO Chris
 		flood(ip);
 		if(instance) return;
 		var player = Player(socket.id);
 		player.guest = true;
-		PLAYER_LIST[socket.id]=player;
+		players[socket.id]=player;
 		instance = true;
 		player.ip = ip;
-		player.name = "GUEST " + guestCount;
+		player.name = "GUEST" + guestCount;
 		guestCount++;
 		
 		player.color = sockcol?"red":"blue";
@@ -2471,22 +2765,16 @@ io.sockets.on('connection', function(socket){
 		socket.emit('sectors', {sectors:sectors});
 		sendWeapons(player.id);
 	});
-	socket.on('register',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
+	socket.on('register',function(data){ // TODO Chris
+		if (typeof data === "undefined") return;
 		flood(ip);
 		// Block registrations being triggered from non-guests or unconnected accounts
 		// Fixes some registration spam and crash exploits
-		var player = (typeof (PLAYER_LIST[socket.id]) !== "undefined") ? PLAYER_LIST[socket.id] : DOCKED_LIST[socket.id];
+		var player = (typeof (players[socket.id]) !== "undefined") ? players[socket.id] : dockers[socket.id];
 
-		if (typeof (player) === "undefined") {
-			return;
-		}
+		if (typeof (player) === "undefined") return;
 
-		if (!player.guest) {
-			return;
-		}
+		if (!player.guest) return;
 
 		var user = data.user, pass = data.pass;
 
@@ -2518,7 +2806,7 @@ io.sockets.on('connection', function(socket){
 				}
 			}
 			if(!valid) return;
-			var player = DOCKED_LIST[socket.id];
+			var player = dockers[socket.id];
 			if(typeof player === "undefined") return;
 			player.name = user;
 			player.password = pass;
@@ -2527,15 +2815,14 @@ io.sockets.on('connection', function(socket){
 			var text = user+' registered!';
 			console.log(text);
 			player.save();
-			delete DOCKED_LIST[player.id];
+			delete dockers[player.id];
 			instance = false;
 		});
 		socket.emit("raid", {raidTimer:raidTimer})
 	});
-	socket.on('login',function(data){
-		if (typeof data === "undefined" || typeof data.amNew !== "boolean") {
-			return;
-		}
+	socket.on('login',function(data){ // TODO Chris
+		if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
+			
 		flood(ip);
 		if(instance) return;
 		//Validate and save IP
@@ -2554,23 +2841,23 @@ io.sockets.on('connection', function(socket){
 			socket.emit("invalidCredentials", {});
 			return;
 		}
-		for(var i in PLAYER_LIST)
-			if(PLAYER_LIST[i].name === name || PLAYER_LIST[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == PLAYER_LIST[i].cookie){
+		for(var i in players)
+			if(players[i].name === name || players[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == players[i].cookie){
 				socket.emit("accInUse", {});
 				return;
 			}
-		for(var i in DOCKED_LIST)
-			if(DOCKED_LIST[i].name === name || DOCKED_LIST[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == DOCKED_LIST[i].cookie){
+		for(var i in dockers)
+			if(dockers[i].name === name || dockers[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == dockers[i].cookie){
 				socket.emit("accInUse", {});
 				return;
 			}
-		for(var i in DEAD_LIST)
-			if(DEAD_LIST[i].name === name || DEAD_LIST[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == DEAD_LIST[i].cookie){
+		for(var i in deads)
+			if(deads[i].name === name || deads[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == deads[i].cookie){
 				socket.emit("accInUse", {});
 				return;
 			}
-		for(var i in LEFT_LIST)
-			if(LEFT_LIST[i].name === name){// || LEFT_LIST[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == LEFT_LIST[i].cookie){
+		for(var i in lefts)
+			if(lefts[i].name === name){// || lefts[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == lefts[i].cookie){
 				socket.emit("accInUse", {});
 				return;
 			}
@@ -2677,7 +2964,7 @@ io.sockets.on('connection', function(socket){
 		player.sendAchievementsDrift(false);
 		player.sendAchievementsMisc(false);
 		player.sendStatus();
-		PLAYER_LIST[socket.id]=player;
+		players[socket.id]=player;
 		player.getAllBullets();
 		player.getAllPlanets();
 		if(player.sx >= mapSz) player.sx--;
@@ -2686,7 +2973,6 @@ io.sockets.on('connection', function(socket){
 		var text = "~`" + player.color + "~`"+player.name+'~`yellow~` logged in!';
 		console.log(text);
 		chatAll(text);
-		player.cookie = socket.handshake.headers.cookie;
 		player.va = ships[player.ship].agility * .08 * player.agility2;
 		player.thrust = ships[player.ship].thrust * player.thrust2;
 		player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
@@ -2694,223 +2980,201 @@ io.sockets.on('connection', function(socket){
 		if(!data.amNew) socket.emit('sectors', {sectors:sectors});
 		sendWeapons(player.id);
 	});
-	socket.on('disconnect',function(data){
-		var player = PLAYER_LIST[socket.id];
-		if(typeof player === "undefined"){
-			LEFT_LIST[socket.id] = 0;
-			player = DOCKED_LIST[socket.id];
-			if(typeof player === "undefined") player = DEAD_LIST[socket.id];
-			if(typeof player === "undefined") return;
-		} else LEFT_LIST[socket.id] = 150;
-		var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game!";
-		console.log(text);
-		chatAll(text);
+	socket.on('disconnect',function(data){ // graceful disconnect
+	
+		lefts[socket.id] = 150; // note that this player has left and queue it for deletion
+	
+		//try to locate the player object from their ID
+		var player = getPlayer(socket.id);
+		if(player == 0) return;
+		
+		//If the player is indeed found
+		var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game!"; // write a message about the player leaving
+		console.log(text); // print in terminal
+		chatAll(text); // send it to all the players
+		
+		//DO NOT save the player's data.
 	});
-	socket.on('pingmsg',function(data){
-		if (typeof data === "undefined" || typeof data.time === "undefined") {
-			return;
-		}
+	socket.on('pingmsg',function(data){ // when the player pings to tell us that it's still connected
+		if (typeof data === "undefined") return;
+		// We don't need to check that data.time is well-defined.
 
-		var player = PLAYER_LIST[socket.id];
-		if(typeof player === "undefined"){
-			player = DOCKED_LIST[socket.id];
-			if(typeof player === "undefined") player = DEAD_LIST[socket.id];
-			if(typeof player === "undefined") return;
-		}
+		var player = findPlayer(socket.id);
+		if(player == 0) return; // if player can't be found
+		
 		socket.emit('reping', {time:data.time});
-		player.pingTimer = 250;
+		player.pingTimer = 250; // make sure they dont get disconnected.
 	});
-	socket.on('key',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
-		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
-		if(typeof player === "undefined") player = DEAD_LIST[socket.id];
-		if(typeof player === "undefined") return;
-		if(typeof data.inputId === 'undefined' || typeof data.state === 'undefined') return;
-		player.afkTimer = 30 * 25 * 60;
+	socket.on('key',function(data){ // on client keypress or key release
+		if(typeof data === "undefined" || typeof data.inputId === 'undefined' || typeof data.state === 'undefined') return;
+		var player = getPlayer(socket.id);
+		if(player == 0) return;
+		
+		player.afkTimer = 20 * 25 * 60; // 20 minutes till we kick them for being afk
+		
+		//if they want to be revived after dying
 		if(player.dead && data.inputId==='e'){
 			player.dead = false;
-			PLAYER_LIST[player.id] = player;
-			delete DEAD_LIST[player.id];
+			players[player.id] = player;
+			delete deads[player.id];
 			player.sendStatus();
+			return;
 		}
-		if(player.empTimer > 0) return;
-		if(!player.docked && data.inputId==='e') player.juke(false);
-		if(data.inputId==='w') player.w = data.state;
-		if(data.inputId==='shift'){
-			player.e = data.state;
-			if(!data.state) player.checkDriftAchs();
-		}
+		
+		if(player.empTimer > 0) return; // if they're EMPed, don't bother accepting key inputs.
+		
+		if(data.inputId==='e' && !player.docked) player.juke(false); // Q/E are juke keys
+		if(data.inputId==='q' && !player.docked) player.juke(true);
+		
+		if(data.inputId==='w') player.w = data.state; // standard movement keys
 		if(data.inputId==='s') player.s = data.state;
 		if(data.inputId==='a') player.a = data.state;
 		if(data.inputId==='d') player.d = data.state;
-		if(data.inputId==='q' && !player.docked) player.juke(true);
-		if(data.inputId==='x') player.dock();
-		if(data.inputId==='z') player.z = data.state;
-		if(data.inputId===' '){ player.space = data.state;
+		if(data.inputId==='c') player.c = data.state; // elite special slot
+		if(data.inputId===' ') player.space = data.state; // fire
+		if(data.inputId==='x') player.dock(); // x or esc to enter base
+		if(data.inputId==='shift'){ // drift
+			player.e = data.state;
+			if(!data.state) player.checkDriftAchs(); // if they let go of the drift key
 		}
 	});
-	socket.on('chat',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
+	socket.on('chat',function(data){ // when someone sends a chat message
+		if (typeof data === "undefined" || typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128) return;
 
-		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
-		if(typeof player === "undefined") player = DEAD_LIST[socket.id];
-		if(typeof player === "undefined" || typeof data.msg !== "string") return;
+		var player = getPlayer();
+		if(player == 0) return;
+		
 		if(guestsCantChat && player.guest) {
 			socket.emit("chat",{msg:'You must create an account in the base before you can chat!', color:'yellow'});
 			return;
 		}
-		if(typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128) return;
-		data.msg = data.msg.trim();
-		if(!player.name.includes(" ")) data.msg = data.msg.replace(/~`/ig, '');
-		data.msg = filter.clean(data.msg);
 		
-		if(player.muteTimer > 0) return;
-		player.chatTimer += 100;
-		console.log(player.name + ": " + data.msg);
-		var spaces = "";
-		for(var i = player.name.length; i < 16; i++) spaces += " ";
-		if(player.chatTimer > 600){
+		console.log(player.name + ": " + data.msg); // print their raw message
+		
+		data.msg = data.msg.trim(); // "   hi   " => "hi"
+		if(!player.name.includes(" ")) data.msg = data.msg.replace(/~`/ig, ''); // Normies can't triforce
+		data.msg = filter.clean(data.msg); // censor
+		
+		if(player.muteTimer > 0) return; // if they're muted
+		player.chatTimer += 100; // note this as potential spam
+		if(player.chatTimer > 600){ // exceeded spam limit: they are now muted
 			socket.emit('chat', {msg:("~`red~`You have been muted for " +Math.floor(player.muteCap/25) + " seconds!")});
 			player.muteTimer = player.muteCap;
-			player.muteCap *= 2;
+			player.muteCap *= 2; // their next mute will be twice as long
 		}
 
-		if(!player.guest && data.msg.startsWith("/")){
-			if(data.msg.startsWith("/password ")) player.changePass(data.msg.substring(10));
-			else if(data.msg.startsWith("/me ")) chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + data.msg.substring(4));
-			else if(data.msg.startsWith("/confirm ")) player.confirmPass(data.msg.substring(9));
-			else if(data.msg === "/changeteam") send(player.id, "chat", {msg:"Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type /confirmteam to continue."});
-			else if(data.msg === "/confirmteam" && player.experience > 10000) {player.color = (player.color === "red"?"blue":"red"); player.money *= .9; player.experience *= .9; player.save();}
-			else if(data.msg.toLowerCase().startsWith("/pm ")) player.pm(data.msg);
-			else if(data.msg.toLowerCase().startsWith("/r ")) player.r(data.msg);
-			else if(data.msg.toLowerCase().startsWith("/swap ")) player.swap(data.msg);
-			else if(player.name.includes(" ") && data.msg.startsWith("/broadcast ")) sendAll('chat', {msg:"~`#f66~`       BROADCAST: ~`lime~`"+data.msg.substring(11)});
-			else if(player.name.includes(" ") && data.msg.startsWith("/mute ")) mute(data.msg);
-			else if(player.name.includes("[O]")){
-				if(data.msg === "/reboot") initReboot();
-				else if(data.msg.startsWith("/smite ")) smite(data.msg);
-				else if(data.msg === "/undecayPlayers") decayPlayers(undecay);
-				else if(data.msg === "/spawnNN") spawnNNBot(player.sx, player.sy, Math.random()>.5?"red":"blue");
-				else if(data.msg === "/decayPlayers") decayPlayers(decay);
-				else if(data.msg === "/saveTurrets") saveTurrets();
-			}
-			else send(player.id, "chat", {msg:"~`red~`Unknown Command."});
-			return;
+		if(data.msg.startsWith("/")){//handle commands
+			if(player.guest) return;
+			runCommand(player, data.msg);
+		} else { // otherwise send the text
+			var spaces = "";
+			for(var i = player.name.length; i < 16; i++) spaces += " "; // align the message
+			const finalMsg = "~`" + player.color + "~`" + spaces + player.name + "~`yellow~`: " + data.msg;
+			if(player.globalChat == 0) sendAll('chat', {msg:finalMsg});//sendTeam(player.color, 'chat', {msg:finalMsg});
 		}
-			
-		const finalMsg = "~`" + player.color + "~`" + spaces + player.name + "~`yellow~`: " + data.msg;
-		if(player.globalChat == 0) sendAll('chat', {msg:finalMsg});//sendTeam(player.color, 'chat', {msg:finalMsg});
 	});
-	socket.on('toggleGlobal',function(data){
-		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
-		if(typeof player === "undefined") player = DEAD_LIST[socket.id];
-		if(typeof player === "undefined") return;
+	socket.on('toggleGlobal',function(data){ // player wants to switch what chat room they're in
+		var player = getPlayer(socket.id);
 		player.globalChat = (player.globalChat+1)%2;
 	});
-	socket.on('sell',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
-
-		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || typeof data.item !== 'string' || !player.docked) return;
-		if(data.item == 'iron'){
-			player.money += player.iron * 1.5;
+	socket.on('sell',function(data){ // selling ore
+	
+		var player = dockers[socket.id];
+		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.item !== 'string' || !player.docked) return;
+		
+		//pay them appropriately
+		if(data.item == 'iron' || data.item == 'all'){
+			player.money += player.iron * (player.color == "red"?1:2);
 			player.iron = 0;
-		}
-		else if(data.item == 'silver'){
+		} if(data.item == 'silver' || data.item == 'all'){
 			player.money += player.silver * 1.5;
 			player.silver = 0;
-		}
-		else if(data.item == 'platinum'){
-			player.money += player.platinum * 1.5;
+		} if(data.item == 'platinum' || data.item == 'all'){
+			player.money += player.platinum * (player.color == "blue"?1:2);
 			player.platinum = 0;
-		}
-		else if(data.item == 'aluminium'){
+		} if(data.item == 'aluminium' || data.item == 'all'){
 			player.money += player.aluminium * 1.5;
 			player.aluminium = 0;
 		}
-		else if(data.item == 'all'){
-			player.money += (player.aluminium+player.platinum+player.silver+player.iron) * 1.5;
-			player.aluminium = player.iron = player.silver = player.platinum = 0;
-		}
+		
 		player.save();
+		
 	});
-	socket.on('buyShip',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
-		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || typeof data.ship !== 'number') return;
-		data.ship = Math.floor(data.ship);
+	socket.on('buyShip',function(data){ // client wants to buy a new ship
+		
+		var player = dockers[socket.id];
+		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.ship !== 'number') return;
+		
+		data.ship = Math.floor(data.ship); // the ship index must be integer. It must be no higher than your rank, and cannot be your current ship or out of bounds.
 		if(data.ship > player.rank || data.ship < 0 || data.ship > ships.length || data.ship == player.ship) return;
-		var price = -ships[player.ship].price;
-		price*=3/4;
+		
+		var price = -ships[player.ship].price * -.75; // refund them .75x their own ship's price.
 		price += ships[data.ship].price;
-		if(player.money < price) return;
+		if(player.money < price) return; // if it cannot be afforded
 			
 		//sell all ore
-		player.money += (player.aluminium+player.platinum+player.silver+player.iron) * 1.5;
+		player.money += (player.aluminium+player.platinum+player.silver+player.iron) * 1.5; // TODO this is wrong.
 		player.aluminium = player.iron = player.silver = player.platinum = 0;
 			
-		player.money -= price;
-		player.ship = data.ship;
-		player.va = ships[data.ship].agility * .08 * player.agility2;
+		player.money -= price; // charge them money
+		player.ship = data.ship; // Give them the next ship
+		
+		player.va = ships[data.ship].agility * .08 * player.agility2; // TODO this is going to be redone
 		player.thrust = ships[data.ship].thrust * player.thrust2;
 		player.maxHealth = Math.round(player.health = ships[data.ship].health * player.maxHealth2);
 		player.capacity = Math.round(ships[data.ship].capacity * player.capacity2);
-		player.equipped = 0;
-		for(var i = 0; i < 10; i++) if(player.weapons[i]==-2 && i < ships[player.ship].weapons) player.weapons[i] = -1;
-		player.calculateGenerators();
+		
+		player.equipped = 0; // set them as being equipped on their first weapon
 		socket.emit('equip', {scroll:player.equipped});
+		
+		for(var i = 0; i < 10; i++) if(player.weapons[i]==-2 && i < ships[player.ship].weapons) player.weapons[i] = -1; // unlock new possible weapon slots
+		player.calculateGenerators();
 		sendWeapons(socket.id);
 		player.save();
 	});
-	socket.on('buyW',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
-		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || typeof data.slot !== 'number' || typeof data.weapon !== 'number') return;
+	socket.on('buyW',function(data){ // client wants to buy a weapon
+		var player = dockers[socket.id];
+		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.slot !== 'number' || typeof data.weapon !== 'number') return;
+		
 		data.slot = Math.floor(data.slot);
 		data.weapon = Math.floor(data.weapon);
-		if(data.slot < 0 || data.slot > 9 || data.weapon < 0 || data.weapon >= wepns.length || !player.docked || player.weapons[data.slot] != -1 || player.money < wepns[data.weapon].price || wepns[data.weapon].Level > player.ship) return;
-		player.money -= wepns[data.weapon].price;
-		player.weapons[data.slot] = data.weapon;
-		player.refillAllAmmo();
-		sendWeapons(socket.id);
+		if(data.slot < 0 || data.slot > 9 || data.weapon < 0 || data.weapon >= wepns.length) return; // if they sent out of bound variables
+		
+		// they cant buy when not docked. That slot must be unlocked. They need to have enough money. They need to have sufficiently high of a ship.
+		if(!player.docked || player.weapons[data.slot] != -1 || player.money < wepns[data.weapon].price || wepns[data.weapon].Level > player.ship) return;
+		
+		player.money -= wepns[data.weapon].price; // take their money
+		player.weapons[data.slot] = data.weapon; // give them the weapon
+		player.refillAllAmmo(); // give them ammo
+		sendWeapons(socket.id); // tell the client what they've been given
 		player.calculateGenerators();
 		player.save();
 	});
-	socket.on('buyLife',function(data){
-		var player = DOCKED_LIST[socket.id];
+	socket.on('buyLife',function(data){ // client wants to buy a life
+		var player = dockers[socket.id];
 		if(typeof player === "undefined" || player.lives >= 20) return;
-		var price = expToLife(player.experience,player.guest);
-		if(player.money < price) return;
-		player.money -= price;
-		player.lives++;
-		player.sendStatus();
+		var price = expToLife(player.experience,player.guest); // compute how much the life costs them
+		if(player.money < price) return; // cant afford
+		
+		player.money -= price; // take money
+		player.lives++; // give life
+		player.sendStatus(); // tell the client about it
 		player.save();
 	});
-	socket.on('upgrade',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
-		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
+	socket.on('upgrade',function(data){ // client wants to upgrade a tech
+		//TODO im totally redoing this
+		var player = dockers[socket.id];
+		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
 		var item = Math.floor(data.item);
+		
 		switch(item){
-			case 1:
+			case 1: // radar
 				if(player.money>=Math.round(Math.pow(1024,player.radar2)/1000)*1000){
 					player.money-=Math.round(Math.pow(1024,player.radar2)/1000)*1000;
 					player.radar2+=.2;
 				}
 				break;
-			case 2:
+			case 2: // cargo
 				if(player.money>=Math.round(Math.pow(1024,player.capacity2)/1000)*1000){
 					player.money-=Math.round(Math.pow(1024,player.capacity2)/1000)*1000;
 					player.capacity2+=.2;
@@ -2921,27 +3185,27 @@ io.sockets.on('connection', function(socket){
 				if(player.maxHealth2 > 3.99){
 					player.maxHealth2 = 4;
 					break;
-				}
+				} // hull
 				if(player.money>=Math.round(Math.pow(1024,player.maxHealth2)/1000)*1000){
 					player.money-=Math.round(Math.pow(1024,player.maxHealth2)/1000)*1000;
 					player.maxHealth2+=.2
 					player.maxHealth = Math.round(ships[player.ship].health * player.maxHealth2);
 				}
 				break;
-			case 4:
+			case 4: // energy
 				if(player.money>=Math.round(Math.pow(4096,player.energy2)/1000)*1000){
 					player.money-=Math.round(Math.pow(4096,player.energy2)/1000)*1000;
 					player.energy2+=.2;
 				}
 				break;
-			case 5:
+			case 5: // agility
 				if(player.money>=Math.round(Math.pow(1024,player.agility2)/1000)*1000){
 					player.money-=Math.round(Math.pow(1024,player.agility2)/1000)*1000;
 					player.agility2+=.2;
 					player.va = ships[player.ship].agility * .08 * player.agility2;
 				}
 				break;
-			default://0
+			default: //0: thrust
 				if(player.money>=Math.round(Math.pow(1024,player.thrust2)/1000)*1000){
 					player.money-=Math.round(Math.pow(1024,player.thrust2)/1000)*1000;
 					player.thrust2+=.2;
@@ -2951,75 +3215,73 @@ io.sockets.on('connection', function(socket){
 		}
 		player.save();
 	});
-	socket.on('sellW',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
-		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || typeof data.slot !== 'number' || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
+	socket.on('sellW',function(data){ // wants to sell a weapon.
+		
+		var player = dockers[socket.id];
+		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.slot !== 'number' || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
+		
 		data.slot = Math.floor(data.slot);
-		if(!player.docked || player.weapons[data.slot] < 0) return;
-		player.money += wepns[player.weapons[data.slot]].price * .75;
+		if(!player.docked || player.weapons[data.slot] < 0) return; // can't sell what you don't have. or when you're not in base.
+		player.money += wepns[player.weapons[data.slot]].price * .75; // refund them a good bit
 		player.calculateGenerators();
-		player.weapons[data.slot] = -1;
-		player.refillAllAmmo();
-		sendWeapons(socket.id);
+		player.weapons[data.slot] = -1; // no weapon here anymore. TODO should this ever turn into -2?
+		player.refillAllAmmo(); // remove their ammo
+		sendWeapons(socket.id); // alert client of transaction
 		player.save();
 	});
-	socket.on('quest',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
-		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || player.quest!=0 || typeof data.quest !== 'number' || data.quest < 0 || data.quest > 9) return;
-		var qid = Math.floor(data.quest);
+	socket.on('quest',function(data){ // wants to accept a quest
+		
+		var player = dockers[socket.id];
+		if (typeof data === "undefined" || typeof player === "undefined" || player.quest!=0 || typeof data.quest !== 'number' || data.quest < 0 || data.quest > 9) return;
+		
+		var qid = Math.floor(data.quest); // Find the correct quest.
 		var quest = (player.color === "red"?rQuests:bQuests)[qid];
+		
+		//You need to have unlocked this quest type.
 		if(quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;
-		player.quest = quest;
-		if(player.color === "red") rQuests[qid] = 0;
-		else bQuests[qid] = 0;
-		if(((quest.dsx == 3 && quest.dsy == 3) || (quest.sx == 3 && quest.sy == 3)) && !player.ms2){
-			player.ms2 = true;
+		
+		if(((quest.dsx == 3 && quest.dsy == 3) || (quest.sx == 3 && quest.sy == 3)) && !player.randmQuest[2]){ // risky business
+			player.randmQuest[2] = true;
 			player.sendAchievementsMisc(true);
 		}
+		
+		if(player.color === "red") rQuests[qid] = 0; else bQuests[qid] = 0; // note that quest as taken and queue it to be remade. TODO can we just remake it here?
+		player.quest = quest; // give them the quest and tell the client.
 		socket.emit('quest', {quest: quest});
+		
 	});
-	/*socket.on('cancelquest',function(data){
-		var player = DOCKED_LIST[socket.id];
+	/*socket.on('cancelquest',function(data){ // THIS IS NO LONGER ALLOWED.
+		var player = dockers[socket.id];
 		if(typeof player === "undefined")
 			return;
 		player.quest = 0;
 		socket.emit('quest', {quest: player.quest});
-	});*/
+	}); // no longer allowed.*/
 	socket.on('equip',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
-		var player = (typeof PLAYER_LIST[socket.id] !== "undefined")?PLAYER_LIST[socket.id]:DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || typeof data.scroll !== 'number' || data.scroll >= ships[player.ship].weapons) return;
+		var player = (typeof players[socket.id] !== "undefined")?players[socket.id]:dockers[socket.id];
+		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.scroll !== 'number' || data.scroll >= ships[player.ship].weapons) return;
 		player.equipped = Math.floor(data.scroll);
 		if(player.equipped < 0) player.equipped = 0;
 		else if(player.equipped > 9) player.equipped = 9;
 		socket.emit('equip', {scroll:player.equipped});
 	});
 	socket.on('trail',function(data){
-		if (typeof data === "undefined") {
-			return;
-		}
-		var player = DOCKED_LIST[socket.id];
-		if(typeof player === "undefined" || typeof data.trail !== 'number') return;
+		var player = dockers[socket.id];
+		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.trail !== 'number') return;
+		
 		if(data.trail == 0) player.trail = 0;
 		if(data.trail == 1 && player.bloodTrail) player.trail = 1;
 		if(data.trail == 2 && player.goldTrail) player.trail = 2;
 		if(data.trail == 3 && player.dr11) player.trail = 3;
 		if(data.trail == 4 && player.ms10) player.trail = 4;
 		if(player.name.includes(" ")) player.trail += 16;
+		
 	});
 });
 function parseBoolean(s){
 	return (s === 'true');
 }
-function findBisector(a1, a2){
+function findBisector(a1, a2){ // finds their angle bisector
 	a1 = a1 * 180 / Math.PI;
 	a2 = a2 * 180 / Math.PI;
 	a1 = mod(a1, 360);
@@ -3027,26 +3289,22 @@ function findBisector(a1, a2){
 	var small = Math.min(a1, a2);
 	var big = Math.max(a1, a2);
 	var angle = (big - small) / 2 + small;
-	if(big - small > 180)
-		angle += 180;
+	if(big - small > 180) angle += 180;
 	return angle * Math.PI / 180;
 }
-function atan(y, x){
+function atan(y, x){ // arctangent, but fast
 	var a = Math.min(abs(x), abs(y)) / Math.max(abs(x), abs(y));
 	var s = a * a;
 	var r = ((-0.0464964749 * s + 0.15931422) * s - 0.327622764) * s * a + a;
-	if (abs(y) > abs(x))
-		r = 1.57079637 - r;
-	if (x < 0)
-		r = 3.14159274 - r;
-	if (y < 0)
-		r = -r;
+	if (abs(y) > abs(x)) r = 1.57079637 - r;
+	if (x < 0) r = 3.14159274 - r;
+	if (y < 0) r = -r;
 	return r;
 }
-function expToLife(exp, guest){
+function expToLife(exp, guest){ // how much a life costs, given your exp and whether you're logged in
 	return Math.floor(guest?0:200000*(1/(1+Math.exp(-exp/15000.))+Math.atan(exp/150000.)-.5))+500;
 }
-function calculateInterceptionAngle(ax,ay,vx,vy,bx,by) {
+function calculateInterceptionAngle(ax,ay,vx,vy,bx,by) { // for finding where to shoot at a moving object
 	var s = wepns[3].Speed;
 	var ox = ax-bx;
 	var oy = ay-by;
@@ -3084,12 +3342,12 @@ function square(x){
 function abs(x){
 	return x > 0?x:-x;
 }
-function pdist(x, sx, sy){
+function pdist(x, sx, sy){ // used in blast collision algorithm
 	var i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
 	var i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
 	return (Math.cbrt(Math.abs(Math.tan(x))) % i2) * 3500 * i2 + 800 * i1 + 600;
 }
-function hash(str){
+function hash(str){ // ass. TODO chris
 	var hash = 0;
 	if (str.length == 0) return hash;
 	for (var i = 0; i < str.length; i++) {
@@ -3099,31 +3357,14 @@ function hash(str){
 	}
 	return hash;
 }
-function maxPD(sx, sy){
-	var i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
-	var i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
-	return i2 * 3500 * i2 + 800 * i1 + 600;
-}
-function minPD(sx, sy){
-	var i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
-	var i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
-	return 800 * i1 + 600;
-}
-function mod(n, m) {
+function mod(n, m) { // used in findBisector
     var remain = n % m;
     return Math.floor(remain >= 0 ? remain : remain + m);
 }
-function isOutOfBounds(obj){
+function isOutOfBounds(obj){ // TODO this works but I'm not even using it anywhere
 	return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 }
-function getDanger() {
-	if (sx == Math.floor(mapSz/2) && sy == Math.floor(mapSz/2)) return 1;
-	var secRed = ((sx + sy) / 12);
-	var enemiesRed = Math.atan(bs-rs)/Math.PI + .5;
-	var totalRed = Math.floor((secRed + enemiesRed)*16/2) / 16;
-	return (pc == 'red' ? totalRed : (1-totalRed));
-}
-function lbIndex(exp){
+function lbIndex(exp){ // binary search to find where a player is on the leaderboard. TODO there is a bug where this prints stuff when someone gets their first kill of the day
 	if(exp < lbExp[999]) return -1;
 	if(exp > lbExp[0]) return 1;
 	var ub = 999, lb = 0;
@@ -3136,39 +3377,16 @@ function lbIndex(exp){
 	}
 	return ub+1;//1-indexed
 }
-function hypot2(a,b,c,d){
-	return square(a-b)+square(c-d);
+function angleBetween(a, b){
+	return Math.atan2(a.y - b.y, a.x - b.x);
+}
+function squaredDist(a, b){
+	return square(a.y - b.y) + square(a.x - b.x);
 }
 
-function sendWeapons(id){
-	var player = (typeof DOCKED_LIST[id] !== 'undefined')?DOCKED_LIST[id]:PLAYER_LIST[id];
-	if(typeof PLAYER_LIST[id] === 'undefined' && typeof DOCKED_LIST[id] === 'undefined')//Could be dead? Check to be safe
-		return;
-	var worth = ships[player.ship].price*.75;
-	send(id, 'weapons', {weapons: player.weapons, worth:worth, ammos:player.ammos});
-}
-function sendAllSector(out, data, sx, sy){
-	for(var i in SOCKET_LIST){
-		var p = PLAYER_LIST[i];
-		if(typeof p !== "undefined" && p.sx == sx && p.sy == sy)
-			SOCKET_LIST[i].emit(out, data);
-	}
-}
-function sendAll(out, data){
-	for(var i in SOCKET_LIST)
-		SOCKET_LIST[i].emit(out, data);
-}
-function chatAll(msg){
-	sendAll("chat", {msg:msg});
-}
-function sendTeam(color, out, data){
-	for(var i in SOCKET_LIST){
-		var player = PLAYER_LIST[i];
-		if(typeof player === "undefined") player = DOCKED_LIST[i];
-		if(typeof player === "undefined") player = DEAD_LIST[i];
-		if(typeof player !== "undefined" && player.color === color) SOCKET_LIST[i].emit(out, data);
-	}
-}
+
+
+//TODO Merge these
 function updateQuestsR(){
 	var baseMap = [0,1,0,4,2,2,3,0,5,1];
 	var i = 0;
@@ -3217,28 +3435,54 @@ function updateQuestsB(){
 
 
 
-
+function runCommand(player, msg){ // player just sent msg in chat and msg starts with a /
+	if(msg.startsWith("/password ")) player.changePass(msg.substring(10));
+	else if(msg.startsWith("/me ")) chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4));
+	else if(msg.startsWith("/confirm ")) player.confirmPass(msg.substring(9));
+	else if(msg === "/changeteam") send(player.id, "chat", {msg:"Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type /confirmteam to continue."});
+	else if(msg === "/confirmteam" && player.experience > 10000) {player.color = (player.color === "red"?"blue":"red"); player.money *= .9; player.experience *= .9; player.save();}
+	else if(msg.toLowerCase().startsWith("/pm ")) player.pm(msg);
+	else if(msg.toLowerCase().startsWith("/r ")) player.r(msg);
+	else if(msg.toLowerCase().startsWith("/swap ")) player.swap(msg);
+	
+	//moderator commands
+	else if(player.name.includes(" ") && msg.startsWith("/broadcast ")) sendAll('chat', {msg:"~`#f66~`       BROADCAST: ~`lime~`"+msg.substring(11)});
+	else if(player.name.includes(" ") && msg.startsWith("/mute ")) mute(msg);
+	
+	//owner commands
+	else if(player.name.includes("[O]")){
+		if(msg === "/reboot") initReboot();
+		else if(msg.startsWith("/smite ")) smite(msg);
+		else if(msg === "/undecayPlayers") decayPlayers(undecay);
+		else if(msg === "/spawnNN") spawnNNBot(player.sx, player.sy, Math.random()>.5?"red":"blue");
+		else if(msg === "/decayPlayers") decayPlayers(decay);
+		else if(msg === "/saveTurrets") saveTurrets();
+	}
+	else send(player.id, "chat", {msg:"~`red~`Unknown Command."});
+	return;
+}
 function mute(msg){
 	if(msg.split(" ").length != 3) return;
 	var name = msg.split(" ")[1];
 	var time = parseFloat(msg.split(" ")[2]);
 	if(typeof time !== "number") return;
-	for(var p in PLAYER_LIST){
-		var player = PLAYER_LIST[p];
+	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++)
+		for(var p in players[y][x]){
+			var player = players[y][x][p];
+			if(player.name === name){
+				player.muteCap = player.muteTimer = 25*60*time;
+				chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
+				return;
+			}
+	}for(var p in dockers){
+		var player = dockers[p];
 		if(player.name === name){
 			player.muteCap = player.muteTimer = 25*60*time;
 			chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
 			return;
 		}
-	}for(var p in DOCKED_LIST){
-		var player = DOCKED_LIST[p];
-		if(player.name === name){
-			player.muteCap = player.muteTimer = 25*60*time;
-			chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
-			return;
-		}
-	}for(var p in DEAD_LIST){
-		var player = DEAD_LIST[p];
+	}for(var p in deads){
+		var player = deads[p];
 		if(player.name === name){
 			player.muteCap = player.muteTimer = 25*60*time;
 			chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
@@ -3249,14 +3493,15 @@ function mute(msg){
 function smite(msg){
 	if(msg.split(" ").length != 2) return;
 	var name = msg.split(" ")[1];
-	for(var p in PLAYER_LIST){
-		var player = PLAYER_LIST[p];
-		if(player.name === name){
-			player.die(0);
-			chatAll("~`violet~`" + player.name + "~`yellow~` has been Smitten!");
-			return;
+	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++)
+		for(var p in players){
+			var player = players[p];
+			if(player.name === name){
+				player.die(0);
+				chatAll("~`violet~`" + player.name + "~`yellow~` has been Smitten!");
+				return;
+			}
 		}
-	}
 }
 
 
@@ -3266,7 +3511,8 @@ function smite(msg){
 
 var sectors = new Array(9);
 init();
-function init(){
+function init(){ // start the server!
+	buildFileSystem();
 	for(var i = 0; i < 10; i++){
 		bQuests[i] = 0;
 		rQuests[i] = 0;
@@ -3294,8 +3540,8 @@ function init(){
 		astPack[i] = new Array(mapSz);
 		for(var j = 0; j < mapSz; j++) astPack[i][j] = [];
 	}
-	for(var i in ASTEROID_LIST){
-		var ast = ASTEROID_LIST[i];
+	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++) for(var i in asts[y][x]){
+		var ast = asts[y][x][i];
 		astPack[ast.sx][ast.sy].push({metal:ast.metal,id:ast.id,x:ast.x,y:ast.y, angle:ast.angle,health:ast.health,maxHealth:ast.maxHealth});
 	}
 	for(var i = 0; i < mapSz; i++)
@@ -3308,18 +3554,15 @@ function init(){
 	//wormhole
 	var id = Math.random();
 	var v = new Vortex(id, Math.random() * sectorWidth, Math.random() * sectorWidth, Math.floor(Math.random() * mapSz), Math.floor(Math.random() * mapSz), .5, 0, true);
-	VORTEX_LIST[id] = v;
+	vorts[v.sy][v.sx][id] = v;
 	
 	//smbh
 	id = Math.random();
-	var v = new Vortex(id, sectorWidth/2, sectorWidth/2, 3, 3, .15, 0, false);
-	VORTEX_LIST[id] = v;
+	v = new Vortex(id, sectorWidth/2, sectorWidth/2, 3, 3, .15, 0, false);
+	vorts[v.sy][v.sx][id] = v;
 	
 	//load existing turrets
 	loadTurrets();
-	
-	net = NeuralNet();
-	net.randomWeights();
 	
 	//start ticking
 	setTimeout(update, 40);
@@ -3355,7 +3598,7 @@ function spawnBot(sx,sy,col,rbNow,bbNow){
 		while(wepns[bot.weapons[i]].Level>bot.rank || !wepns[bot.weapons[i]].bot)
 	}
 	bot.refillAllAmmo();
-	PLAYER_LIST[id] = bot;
+	players[bot.sy][bot.sx][id] = bot;
 }
 function spawnNNBot(sx,sy,col){
 	if(trainingMode){sx = 2; sy = 4;}
@@ -3387,7 +3630,7 @@ function spawnNNBot(sx,sy,col){
 		if(trainingMode) bot.weapons[i] = 1;
 	}
 	bot.refillAllAmmo();
-	PLAYER_LIST[id] = bot;
+	players[bot.sy][bot.sx][id] = bot;
 }
 function loadTurrets(){
 	var count = 0;
@@ -3419,19 +3662,15 @@ function kill(){
 	process.exit();
 }
 function createAsteroid(){
-	if(Object.keys(ASTEROID_LIST).length > mapSz*mapSz*10)return;
 	var sx = Math.floor(Math.random()*mapSz);
 	var sy = Math.floor(Math.random()*mapSz);
-	if(asteroids[2][2]<2) sx = sy = 2;
-	else if(asteroids[4][4]<2) sx = sy = 4;
-	asteroids[sx][sy]++;
 	var vert = (sy + 1) / (mapSz + 1);
 	var hor = (sx + 1) / (mapSz + 1);
 	var metal = (Math.random()<hor?1:0) + (Math.random()<vert?2:0);
 	var randA = Math.random();
 	var h = Math.ceil(Math.random()*1200+200);
 	var ast = Asteroid(randA, h, sx, sy, metal);
-	ASTEROID_LIST[randA] = ast;
+	asts[ast.sy][ast.sx][randA] = ast;
 }
 function createPlanet(name, sx, sy){
 	var randA = Math.random();
@@ -3440,24 +3679,14 @@ function createPlanet(name, sx, sy){
 		planet.x=Math.floor(Math.random() * sectorWidth*15/16 + sectorWidth/32);
 		planet.y=Math.floor(Math.random() * sectorWidth*15/16 + sectorWidth/32);
 	}
-	PLANET_LIST[sy][sx] = planet;
-}
-function getPlayer(i){
-	var p = PLAYER_LIST[i];
-	if(typeof p === "undefined") p = DOCKED_LIST[i];
-	if(typeof p === "undefined") p = DEAD_LIST[i];
-	if(typeof p !== "undefined") return p;
-	return 0;
-}
-function sendRaidData(){
-	sendAll("raid",{raidTimer:raidTimer});
+	planets[sy][sx] = planet;
 }
 function endRaid(){
 	var winners = "yellow";
 	if(raidRed > raidBlue) winners = "red";
 	else if(raidBlue > raidRed) winners = "blue";
 	raidTimer = 360000;
-	for(var i in SOCKET_LIST){
+	for(var i in sockets){
 		var p = getPlayer(i);
 		if(p == 0 || p.color !== winners) continue;
 		p.spoils("money",p.points * 40000);
@@ -3514,152 +3743,163 @@ function update(){
 			vortPack[i][j] = [];
 		}
 	}
-	for(var i in PLAYER_LIST){
-		var player = PLAYER_LIST[i];
-		if(!player.isBot && player.chatTimer > 0) player.chatTimer--;
-		player.muteTimer--;
-		if(player.testAfk()) continue;
-		player.isLocked = false;
-		player.tick();
-		if(player.disguise > 0) continue;
-		pack[player.sx][player.sy].push({trail:player.trail,shield:player.shield,empTimer:player.empTimer,hasPackage:player.hasPackage,id:player.id,ship:player.ship,speed:player.speed,maxHealth:player.maxHealth,color:player.color, x:player.x,y:player.y, name:player.name, health: player.health, angle:player.angle, driftAngle: player.driftAngle});
-	}
-	for(var i in DOCKED_LIST){
-		var player = DOCKED_LIST[i];
+	
+	for(var i in dockers){
+		var player = dockers[i];
 		if(player.dead) continue;
 		if(player.testAfk()) continue;
 		if(tick % 30 == 0) player.checkMoneyAchievements();
 		if(player.chatTimer > 0) player.chatTimer--;
 		player.muteTimer--;
 	}
-	for(var i in BULLET_LIST) BULLET_LIST[i].tick();
-	for(var i in VORTEX_LIST){
-		var vort = VORTEX_LIST[i];
-		vort.tick();
-		if(typeof vortPack[vort.sx][vort.sy] !== "undefined") vortPack[vort.sx][vort.sy].push({x:vort.x,y:vort.y,size:vort.size, isWorm:vort.isWorm});
-	}
+	
 	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++){
-		for(var i in MINE_LIST[y][x]){
-			var mine = MINE_LIST[y][x][i];
+		for(var i in players[y][x]){
+			var player = players[y][x][i];
+			if(!player.isBot && player.chatTimer > 0) player.chatTimer--;
+			player.muteTimer--;
+			if(player.testAfk()) continue;
+			player.isLocked = false;
+			player.tick();
+			if(player.disguise > 0) continue;
+			pack[player.sx][player.sy].push({trail:player.trail,shield:player.shield,empTimer:player.empTimer,hasPackage:player.hasPackage,id:player.id,ship:player.ship,speed:player.speed,maxHealth:player.maxHealth,color:player.color, x:player.x,y:player.y, name:player.name, health: player.health, angle:player.angle, driftAngle: player.driftAngle});
+		}
+		
+		for(var i in bullets[y][x]) bullets[y][x][i].tick();
+		
+		for(var i in vorts[y][x]){
+			var vort = vorts[y][x][i];
+			vort.tick();
+			if(typeof vortPack[vort.sx][vort.sy] !== "undefined") vortPack[vort.sx][vort.sy].push({x:vort.x,y:vort.y,size:vort.size, isWorm:vort.isWorm});
+		}
+		
+		for(var i in mines[y][x]){
+			var mine = mines[y][x][i];
 			mine.tick();
 			minePack[x][y].push({wepnID:mine.wepnID,color:mine.color,x:mine.x,y:mine.y, angle:mine.angle});
 		}
-		PLANET_LIST[x][y].tick();
+		
+		planets[x][y].tick();
+		
+		for(var i in packs[y][x]){
+			var boon = packs[y][x][i];
+			if(tick % 5 == 0) boon.tick();
+			packPack[boon.sx][boon.sy].push({x:boon.x, y:boon.y, type:boon.type});
+		}
+		
+		for(var i in beams[y][x]){
+			var beam = beams[y][x][i];
+			beam.tick();
+			if(beam.time == 0) continue;
+			beamPack[beam.sx][beam.sy].push({time:beam.time,wepnID:beam.wepnID,bx:beam.origin.x,by:beam.origin.y,ex:beam.enemy.x,ey:beam.enemy.y});
+		}
+		
+		for(var i in blasts[y][x]){
+			var blast = blasts[y][x][i];
+			blast.tick();
+			if(blast.time == 0) continue;
+			blastPack[blast.sx][blast.sy].push({time:blast.time,wepnID:blast.wepnID,bx:blast.bx,by:blast.by,angle:blast.angle});
+		}
+		
+		var base = bases[y][x];
+		if(base != 0){
+			base.tick(rbNow,bbNow);
+			basePack[base.sx][base.sy] = {id:base.id,live:base.turretLive, isBase: base.isBase,maxHealth:base.maxHealth,health:base.health,color:base.color,x:base.x,y:base.y, angle:base.angle, spinAngle:base.spinAngle,owner:base.owner};
+		}
+		
+		for(var i in asts[y][x]){
+			var ast = asts[y][x][i];
+			ast.tick();
+			astPack[ast.sx][ast.sy].push({metal:ast.metal,id:ast.id,x:ast.x,y:ast.y, angle:ast.angle,health:ast.health,maxHealth:ast.maxHealth});
+		}
+		
+		for(var j in orbs[y][x]){
+			var orb = orbs[y][x][j];
+			orb.tick();
+			if(typeof orb === 'undefined') return;
+			orbPack[orb.sx][orb.sy].push({wepnID:orb.wepnID,x:orb.x,y:orb.y});
+			if(tick % 5 == 0 && orb.locked == 0){
+				var locked = 0;
+				for(var i in pack[orb.sx][orb.sy]){
+					var player = pack[orb.sx][orb.sy][i];
+					var dist = (player.x - orb.x)*(player.x - orb.x)+(player.y - orb.y)*(player.y - orb.y);
+					if(player.empTimer <= 0 && player.color != orb.color && dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
+						if(locked == 0) locked = player.id;
+						else if(typeof players[locked] !== 'undefined' && dist < square(players[locked].x - orb.x)+square(players[locked].y - orb.y)) locked = player.id;
+					}
+				}
+				orb.locked = locked;
+				if(locked != 0) continue;
+				if(basePack[orb.sx][orb.sy] != 0 && basePack[orb.sx][orb.sy].color != orb.color && basePack[orb.sx][orb.sy].turretLive && locked == 0) locked = base.id;
+				orb.locked = locked;
+				if(locked != 0) continue;
+				for(var i in astPack[orb.sx][orb.sy]){
+					var player = astPack[orb.sx][orb.sy][i];
+					var dist = (player.x - orb.x)*(player.x - orb.x)+(player.y - orb.y)*(player.y - orb.y);
+					if(dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
+						if(locked == 0) locked = player.id;
+						else if(typeof asts[locked] != "undefined" && dist < square(asts[locked].x - orb.x)+square(asts[locked].y - orb.y)) locked = player.id;
+					}
+				}
+				orb.locked = locked;
+			}
+		}
+		for(var j in missiles[y][x]){
+			var missile = missiles[y][x][j];
+			missile.tick();
+			if(typeof missile === 'undefined') return;
+			missilePack[missile.sx][missile.sy].push({wepnID:missile.wepnID,x:missile.x,y:missile.y,angle:missile.angle});
+			if(tick % 5 == 0 && missile.locked == 0){
+				var locked = 0;
+				for(var i in pack[missile.sx][missile.sy]){
+					var player = pack[missile.sx][missile.sy][i];
+					var dist = (player.x - missile.x)*(player.x - missile.x)+(player.y - missile.y)*(player.y - missile.y);
+					if(player.empTimer <= 0 && player.color != missile.color && dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
+						if(locked == 0) locked = player.id;
+						else if(typeof players[locked] !== 'undefined' && dist < (players[locked].x - missile.x)*(players[locked].x - missile.x)+(players[locked].y - missile.y)*(players[locked].y - missile.y))locked = player.id;
+					}
+				}
+				missile.locked = locked;
+				if(locked != 0) continue;
+				if(basePack[missile.sx][missile.sy] != 0 && basePack[missile.sx][missile.sy].turretLive && locked == 0) locked = base.id;
+				
+				missile.locked = locked;
+				if(locked != 0) continue;
+				for(var i in astPack[missile.sx][missile.sy]){
+					var player = astPack[missile.sx][missile.sy][i];
+					var dist = (player.x - missile.x)*(player.x - missile.x)+(player.y - missile.y)*(player.y - missile.y);
+					if(dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
+						if(locked == 0) locked = player.id;
+						else if(typeof asts[locked] != "undefined" && dist < (asts[locked].x - missile.x)*(asts[locked].x - missile.x)+(asts[locked].y - missile.y)*(asts[locked].y - missile.y)) locked = player.id;
+					}
+				}
+				missile.locked = locked;
+			}
+		}
+		for(var i in players[y][x]){
+			var player = players[y][x][i];
+			if(player.isBot)
+				continue;
+			if(tick % 12 == 0){ // LAG CONTROL
+				send(i, 'online', {lag:lag, bp:bp, rp:rp, bg:bg, rg:rg, bb:bb, rb:rb});
+				send(i, 'you', {killStreak:player.killStreak, killStreakTimer:player.killStreakTimer, name: player.name, points:player.points, va2:player.radar2, experience: player.experience, rank:player.rank, ship:player.ship, docked: player.docked,color:player.color, money: player.money, kills:player.kills, baseKills:player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium});
+			}
+			send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sx][player.sy],vorts:vortPack[player.sx][player.sy],mines:minePack[player.sx][player.sy],missiles:missilePack[player.sx][player.sy],orbs:orbPack[player.sx][player.sy],blasts:blastPack[player.sx][player.sy],beams:beamPack[player.sx][player.sy],planets:planetPack[player.sx][player.sy], asteroids:astPack[player.sx][player.sy],players:pack[player.sx][player.sy], projectiles:bPack[player.sx][player.sy],bases:basePack[player.sx][player.sy]});
+		}
 	}
-	for(var i in PACKAGE_LIST){
-		var boon = PACKAGE_LIST[i];
-		if(tick % 5 == 0) boon.tick();
-		packPack[boon.sx][boon.sy].push({x:boon.x, y:boon.y, type:boon.type});
-	}
-	for(var i in BEAM_LIST){
-		var beam = BEAM_LIST[i];
-		beam.tick();
-		if(beam.time == 0) continue;
-		beamPack[beam.sx][beam.sy].push({time:beam.time,wepnID:beam.wepnID,bx:beam.origin.x,by:beam.origin.y,ex:beam.enemy.x,ey:beam.enemy.y});
-	}
-	for(var i in BLAST_LIST){
-		var blast = BLAST_LIST[i];
-		blast.tick();
-		if(blast.time == 0) continue;
-		blastPack[blast.sx][blast.sy].push({time:blast.time,wepnID:blast.wepnID,bx:blast.bx,by:blast.by,angle:blast.angle});
-	}
+	
 	var rbNow = rb;//important to calculate here, otherwise bots weighted on left.
 	var bbNow = bb;
-	
-	for(var i = 0; i < mapSz; i++)
-		for(var j = 0; j < mapSz; j++){
-			var base = bases[i][j];
-			if(base == 0) continue;
-			base.tick(rbNow,bbNow);
-			basePack[i][j] = {id:base.id,live:base.turretLive, isBase: base.isBase,maxHealth:base.maxHealth,health:base.health,color:base.color,x:base.x,y:base.y, angle:base.angle, spinAngle:base.spinAngle,owner:base.owner};
-		}
 
-	for(var i in ASTEROID_LIST){
-		var ast = ASTEROID_LIST[i];
-		ast.tick();
-		astPack[ast.sx][ast.sy].push({metal:ast.metal,id:ast.id,x:ast.x,y:ast.y, angle:ast.angle,health:ast.health,maxHealth:ast.maxHealth});
-	}
-	for(var j in ORB_LIST){
-		var orb = ORB_LIST[j];
-		orb.tick();
-		if(typeof orb === 'undefined') return;
-		orbPack[orb.sx][orb.sy].push({wepnID:orb.wepnID,x:orb.x,y:orb.y});
-		if(tick % 5 == 0 && orb.locked == 0){
-			var locked = 0;
-			for(var i in pack[orb.sx][orb.sy]){
-				var player = pack[orb.sx][orb.sy][i];
-				var dist = (player.x - orb.x)*(player.x - orb.x)+(player.y - orb.y)*(player.y - orb.y);
-				if(player.empTimer <= 0 && player.color != orb.color && dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
-					if(locked == 0) locked = player.id;
-					else if(typeof PLAYER_LIST[locked] !== 'undefined' && dist < square(PLAYER_LIST[locked].x - orb.x)+square(PLAYER_LIST[locked].y - orb.y)) locked = player.id;
-				}
-			}
-			orb.locked = locked;
-			if(locked != 0) continue;
-			if(basePack[orb.sx][orb.sy] != 0 && basePack[orb.sx][orb.sy].color != orb.color && basePack[orb.sx][orb.sy].turretLive && locked == 0) locked = base.id;
-			orb.locked = locked;
-			if(locked != 0) continue;
-			for(var i in astPack[orb.sx][orb.sy]){
-				var player = astPack[orb.sx][orb.sy][i];
-				var dist = (player.x - orb.x)*(player.x - orb.x)+(player.y - orb.y)*(player.y - orb.y);
-				if(dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
-					if(locked == 0) locked = player.id;
-					else if(typeof ASTEROID_LIST[locked] != "undefined" && dist < square(ASTEROID_LIST[locked].x - orb.x)+square(ASTEROID_LIST[locked].y - orb.y)) locked = player.id;
-				}
-			}
-			orb.locked = locked;
-		}
-	}
-	for(var j in MISSILE_LIST){
-		var missile = MISSILE_LIST[j];
-		missile.tick();
-		if(typeof missile === 'undefined') return;
-		missilePack[missile.sx][missile.sy].push({wepnID:missile.wepnID,x:missile.x,y:missile.y,angle:missile.angle});
-		if(tick % 5 == 0 && missile.locked == 0){
-			var locked = 0;
-			for(var i in pack[missile.sx][missile.sy]){
-				var player = pack[missile.sx][missile.sy][i];
-				var dist = (player.x - missile.x)*(player.x - missile.x)+(player.y - missile.y)*(player.y - missile.y);
-				if(player.empTimer <= 0 && player.color != missile.color && dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
-					if(locked == 0) locked = player.id;
-					else if(typeof PLAYER_LIST[locked] !== 'undefined' && dist < (PLAYER_LIST[locked].x - missile.x)*(PLAYER_LIST[locked].x - missile.x)+(PLAYER_LIST[locked].y - missile.y)*(PLAYER_LIST[locked].y - missile.y))locked = player.id;
-				}
-			}
-			missile.locked = locked;
-			if(locked != 0) continue;
-			if(basePack[missile.sx][missile.sy] != 0 && basePack[missile.sx][missile.sy].turretLive && locked == 0) locked = base.id;
-			
-			missile.locked = locked;
-			if(locked != 0) continue;
-			for(var i in astPack[missile.sx][missile.sy]){
-				var player = astPack[missile.sx][missile.sy][i];
-				var dist = (player.x - missile.x)*(player.x - missile.x)+(player.y - missile.y)*(player.y - missile.y);
-				if(dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
-					if(locked == 0) locked = player.id;
-					else if(typeof ASTEROID_LIST[locked] != "undefined" && dist < (ASTEROID_LIST[locked].x - missile.x)*(ASTEROID_LIST[locked].x - missile.x)+(ASTEROID_LIST[locked].y - missile.y)*(ASTEROID_LIST[locked].y - missile.y)) locked = player.id;
-				}
-			}
-			missile.locked = locked;
-		}
-	}
-	for(var i in PLAYER_LIST){
-		var player = PLAYER_LIST[i];
-		if(player.isBot)
-			continue;
-		if(tick % 12 == 0){ // LAG CONTROL
-			send(i, 'online', {lag:lag, bp:bp, rp:rp, bg:bg, rg:rg, bb:bb, rb:rb});
-			send(i, 'you', {killStreak:player.killStreak, killStreakTimer:player.killStreakTimer, name: player.name, points:player.points, va2:player.radar2, experience: player.experience, rank:player.rank, ship:player.ship, docked: player.docked,color:player.color, money: player.money, kills:player.kills, baseKills:player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium});
-		}
-		send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sx][player.sy],vorts:vortPack[player.sx][player.sy],mines:minePack[player.sx][player.sy],missiles:missilePack[player.sx][player.sy],orbs:orbPack[player.sx][player.sy],blasts:blastPack[player.sx][player.sy],beams:beamPack[player.sx][player.sy],planets:planetPack[player.sx][player.sy], asteroids:astPack[player.sx][player.sy],players:pack[player.sx][player.sy], projectiles:bPack[player.sx][player.sy],bases:basePack[player.sx][player.sy]});
-	}
-	for(var i in DEAD_LIST){
-		var player = DEAD_LIST[i];
+	
+	for(var i in deads){
+		var player = deads[i];
 		if(tick % 12 == 0) // LAG CONTROL
 			send(i, 'online', {lag:lag, bb:bb,rb:rb,bp:bp,rp:rp,rg:rg,bg:bg});
 		send(i, 'posUp', {packs:packPack[player.sx][player.sy],vorts:vortPack[player.sx][player.sy],mines:minePack[player.sx][player.sy],missiles:missilePack[player.sx][player.sy],orbs:orbPack[player.sx][player.sy],beams:beamPack[player.sx][player.sy],blasts:blastPack[player.sx][player.sy],planets:planetPack[player.sx][player.sy], asteroids:astPack[player.sx][player.sy],players:pack[player.sx][player.sy], projectiles:bPack[player.sx][player.sy],bases:basePack[player.sx][player.sy]});
 	}
-	for(var i in DOCKED_LIST){
-		var player = DOCKED_LIST[i];
+	for(var i in dockers){
+		var player = dockers[i];
 		if(tick % 10 == 0){ // LAG CONTROL
 			send(i, 'you', {killStreak:player.killStreak, killStreakTimer:player.killStreakTimer, name: player.name, t2: player.thrust2, va2:player.radar2, ag2:player.agility2, c2: player.capacity2, e2:player.energy2, mh2: player.maxHealth2, experience: player.experience, rank:player.rank, ship:player.ship,charge:player.reload, sx: player.sx, sy: player.sy,docked: player.docked,color:player.color,baseKills:player.baseKills,x:player.x,y:player.y, money: player.money, kills:player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium});
 			send(i, 'quests', {quests:player.color=='red'?rQuests:bQuests});
@@ -3672,14 +3912,14 @@ function update(){
 	lag = d.getTime() - lagTimer;
 	ops--;
 }
-function deletePlayers(){
-	for(var i in LEFT_LIST){
-		if(LEFT_LIST[i]-- > 1) continue;
-		delete SOCKET_LIST[i];
-		delete DOCKED_LIST[i];
-		delete PLAYER_LIST[i];
-		delete DEAD_LIST[i];
-		delete LEFT_LIST[i];
+function deletePlayers(){ // remove pplayers that have left or are afk or whatever else
+	for(var i in lefts){
+		if(lefts[i]-- > 1) continue;
+		for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++) delete players[y][x][i];
+		delete sockets[i];
+		delete dockers[i];
+		delete deads[i];
+		delete lefts[i];
 	}
 }
 setInterval(updateHeatmap, 1000);
@@ -3688,33 +3928,34 @@ function updateHeatmap(){
 	var lb = [];
 	for(var i = 0; i < mapSz; i++){
 		hmap[i] = [];
-		for(var j = 0; j < mapSz; j++)
-			hmap[i][j] = 0;
+		for(var j = 0; j < mapSz; j++) hmap[i][j] = 0;
 	}
 	var j = 0;
 	rb = rg = rp = bp = bg = bb = raidRed = raidBlue = 0;
 	
-	for(var i in PLAYER_LIST){
-		var p = PLAYER_LIST[i];
-		if(p.color === "red"){
-			raidRed += p.points;
-			if(p.isBot) rb++;
-			else if(p.guest) rg++;
-			else rp++;
-		}else{
-			raidBlue += p.points;
-			if(p.isBot) bb++;
-			else if(p.guest) bg++;
-			else bp++;
+	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++){
+		for(var i in players[y][x]){
+			var p = players[y][x][i];
+			if(p.color === "red"){
+				raidRed += p.points;
+				if(p.isBot) rb++;
+				else if(p.guest) rg++;
+				else rp++;
+			}else{
+				raidBlue += p.points;
+				if(p.isBot) bb++;
+				else if(p.guest) bg++;
+				else bp++;
+			}
+			if(p.name !== "" && p.name !== "Drone"){
+				lb[j] = p;
+				j++;
+			}
+			hmap[p.sx][p.sy]+=p.color === 'blue'?-1:1;
 		}
-		if(p.name !== "" && p.name !== "Drone"){
-			lb[j] = p;
-			j++;
-		}
-		hmap[p.sx][p.sy]+=p.color === 'blue'?-1:1;
 	}
-	for(var i in DOCKED_LIST){
-		var p = DOCKED_LIST[i];
+	for(var i in dockers){
+		var p = dockers[i];
 		if(p.color === "red"){
 			raidRed += p.points;
 			if(p.isBot) rb++;
@@ -3729,8 +3970,8 @@ function updateHeatmap(){
 		lb[j] = p;
 		j++;
 	}
-	for(var i in DEAD_LIST){
-		var p = DEAD_LIST[i];
+	for(var i in deads){
+		var p = deads[i];
 		if(p.color === "red"){
 			raidRed += p.points;
 			if(p.isBot) rb++;
@@ -3747,7 +3988,7 @@ function updateHeatmap(){
 	}
 	
 	
-	for(var i = 0; i < lb.length-1; i++)
+	for(var i = 0; i < lb.length-1; i++) // sort it
 		for(var k = 0; k < lb.length - i - 1; k++){
 			if(lb[k + 1].experience > lb[k].experience){
 				var temp = lb[k + 1];
@@ -3755,12 +3996,13 @@ function updateHeatmap(){
 				lb[k] = temp;
 			}
 		}
+		
 	var lbSend = [];
 	for(var i = 0; i < Math.min(16,j); i++) lbSend[i] = {name:lb[i].name,exp:Math.round(lb[i].experience),color:lb[i].color,rank:lb[i].rank};
-	for(var i = 0; i < mapSz; i++)
-		for(var j = 0; j < mapSz; j++)
-			if(asteroids[i][j] >= 15) hmap[i][j] += 1500;
-			else hmap[i][j] += 500;
+	for(var i = 0; i < mapSz; i++) for(var j = 0; j < mapSz; j++){
+		/*if(asteroids[i][j] >= 15) hmap[i][j] += 1500;
+		else */hmap[i][j] += 500;
+	}
 	for(var i in lb) send(lb[i].id, 'heatmap', {hmap:hmap, lb:lbSend, youi:i, raidBlue:raidBlue, raidRed:raidRed});
 }
 function updateLB(){
@@ -3827,7 +4069,7 @@ function updateLB(){
 
 
 //meta
-setTimeout(initReboot,86400*1000*10-6*60*1000);
+setTimeout(initReboot,86400*1000-6*60*1000);
 function initReboot(){
 	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
 	setTimeout(function(){chatAll("Server is restarting in 4 minutes. Please save your progress as soon as possible.");}, 1*60*1000);
@@ -3841,7 +4083,7 @@ function initReboot(){
 }
 function shutdown(){
 	saveTurrets();
-	//decayPlayers();
+	decayPlayers();
 	process.exit();
 }
 function saveTurrets(){
@@ -3890,15 +4132,15 @@ function decayPlayers(){
 			continue;
 		}
 		data = "";
-		var decayRate = (split[85] === "decay"?.98:.9995);
+		var decayRate = (split[85] === "decay"?.985:.995);
 
 		split[22] = decay(parseFloat(split[22]),decayRate);//xp
 		split[15] = decay(parseFloat(split[15]),decayRate);//money
-		split[84] = decay(parseFloat(split[84]),decayRate);//energy
-		split[26] = decay(parseFloat(split[26]),decayRate);//thrust
-		split[27] = decay(parseFloat(split[27]),decayRate);//radar
-		split[28] = decay(parseFloat(split[28]),decayRate);//cargo
-		split[29] = decay(parseFloat(split[29]),decayRate);//hull
+		//split[84] = decay(parseFloat(split[84]),decayRate);//energy
+		//split[26] = decay(parseFloat(split[26]),decayRate);//thrust
+		//split[27] = decay(parseFloat(split[27]),decayRate);//radar
+		//split[28] = decay(parseFloat(split[28]),decayRate);//cargo
+		//split[29] = decay(parseFloat(split[29]),decayRate);//hull
 
 		split[23] = 0;
 		split[85] = "decay"; //reset decaymachine
@@ -3912,11 +4154,9 @@ function decayPlayers(){
 function cleanFile(x){
 	var data = fs.readFileSync(x, 'utf8');
 	var split = data.split(":");
-	if (fs.existsSync(x))
-		fs.unlinkSync(x);
+	if (fs.existsSync(x)) fs.unlinkSync(x);
 	data = "";
-	for(var j = 0; j < 85; j++)
-		data += split[j] + (j==84?"":":");
+	for(var j = 0; j < 85; j++) data += split[j] + (j==84?"":":");
 	fs.writeFileSync(x, data, {"encoding":'utf8'});
 }
 var decay = function(x, decayRate){
