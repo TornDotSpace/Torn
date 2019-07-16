@@ -2742,7 +2742,7 @@ io.sockets.on('connection', function(socket){
 		if(instance) return;
 		var player = Player(socket.id);
 		player.guest = true;
-		players[socket.id]=player;
+		//players[socket.id]=player;
 		instance = true;
 		player.ip = ip;
 		player.name = "GUEST" + guestCount;
@@ -2758,6 +2758,8 @@ io.sockets.on('connection', function(socket){
 		player.sendStatus();
 		player.getAllBullets();
 		player.getAllPlanets();
+		// TODO: FIXME 
+		players[0][0][socket.id] = player;
 		player.va = ships[player.ship].agility * .08 * player.agility2;
 		player.thrust = ships[player.ship].thrust * player.thrust2;
 		player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
@@ -2967,12 +2969,13 @@ io.sockets.on('connection', function(socket){
 		player.sendAchievementsDrift(false);
 		player.sendAchievementsMisc(false);
 		player.sendStatus();
-		players[socket.id]=player;
+		// TODO: FIXME
+		players[0][0][socket.id]=player;
 		player.getAllBullets();
 		player.getAllPlanets();
 		if(player.sx >= mapSz) player.sx--;
 		if(player.sy >= mapSz) player.sy--;
-			
+
 		var text = "~`" + player.color + "~`"+player.name+'~`yellow~` logged in!';
 		console.log(text);
 		chatAll(text);
@@ -3042,10 +3045,14 @@ io.sockets.on('connection', function(socket){
 		}
 	});
 	socket.on('chat',function(data){ // when someone sends a chat message
+		console.log("hi");
 		if (typeof data === "undefined" || typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128) return;
 
-		var player = getPlayer();
+		console.log("hi2.5");
+		var player = getPlayer(socket.id);
 		if(player == 0) return;
+
+		console.log("hi2");
 		
 		if(guestsCantChat && player.guest) {
 			socket.emit("chat",{msg:'You must create an account in the base before you can chat!', color:'yellow'});
