@@ -3085,6 +3085,7 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('toggleGlobal',function(data){ // player wants to switch what chat room they're in
 		var player = getPlayer(socket.id);
+		if(player == 0) return;
 		player.globalChat = (player.globalChat+1)%2;
 	});
 	socket.on('sell',function(data){ // selling ore
@@ -3267,23 +3268,25 @@ io.sockets.on('connection', function(socket){
 		player.quest = 0;
 		socket.emit('quest', {quest: player.quest});
 	}); // no longer allowed.*/
-	socket.on('equip',function(data){
-		var player = (typeof players[socket.id] !== "undefined")?players[socket.id]:dockers[socket.id];
-		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.scroll !== 'number' || data.scroll >= ships[player.ship].weapons) return;
-		player.equipped = Math.floor(data.scroll);
-		if(player.equipped < 0) player.equipped = 0;
+	socket.on('equip',function(data){ // Player wants to select a new weapon to hold
+		var player = getPlayer(socket.id);
+		if (player == 0 || typeof data === "undefined" || typeof player === "undefined" || typeof data.scroll !== 'number' || data.scroll >= ships[player.ship].weapons) return;
+		
+		player.equipped = Math.floor(data.scroll); // Set their equipped weapon
+		if(player.equipped < 0) player.equipped = 0; // Ensure it's in range
 		else if(player.equipped > 9) player.equipped = 9;
-		socket.emit('equip', {scroll:player.equipped});
+		
+		socket.emit('equip', {scroll:player.equipped}); // Alert the client
 	});
-	socket.on('trail',function(data){
+	socket.on('trail',function(data){ // Player requests an update to their trail
 		var player = dockers[socket.id];
 		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.trail !== 'number') return;
 		
 		if(data.trail == 0) player.trail = 0;
-		if(data.trail == 1 && player.bloodTrail) player.trail = 1;
-		if(data.trail == 2 && player.goldTrail) player.trail = 2;
-		if(data.trail == 3 && player.dr11) player.trail = 3;
-		if(data.trail == 4 && player.ms10) player.trail = 4;
+		if(data.trail == 1 && player.killsAchs[12]) player.trail = 1;
+		if(data.trail == 2 && player.moneyAchs[11]) player.trail = 2;
+		if(data.trail == 3 && player.driftAchs[11]) player.trail = 3;
+		if(data.trail == 4 && player.randmAchs[11]) player.trail = 4;
 		if(player.name.includes(" ")) player.trail += 16;
 		
 	});
