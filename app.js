@@ -3281,7 +3281,7 @@ io.sockets.on('connection', function(socket){
 function parseBoolean(s){
 	return (s === 'true');
 }
-function findBisector(a1, a2){ // finds their angle bisector
+function findBisector(a1, a2){ // finds the angle bisector of a1 and a2
 	a1 = a1 * 180 / Math.PI;
 	a2 = a2 * 180 / Math.PI;
 	a1 = mod(a1, 360);
