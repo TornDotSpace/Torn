@@ -1633,28 +1633,28 @@ var Player = function(i){
 		//Check if they have all achievements of a type. If so, give them the corresponding trail achievement of that type
 		
 		var rAll = true;
-		for(var i = 0; i < 11; i++) if(!randmAchs[i]) rAll = false;
+		for(var i = 0; i < 11; i++) if(!self.randmAchs[i]) rAll = false;
 		if(!self.randmAchs[11] && rAll){
 			self.randmAchs[11] = true;
 			self.sendAchievementsMisc(true);
 		}
 		
 		rAll = true;
-		for(var i = 0; i < 12; i++) if(!killsAchs[i]) rAll = false;
+		for(var i = 0; i < 12; i++) if(!self.killsAchs[i]) rAll = false;
 		if(!self.killsAchs[12] && rAll){
 			self.killsAchs[12] = true;
 			self.sendAchievementsKill(true);
 		}
 		
 		rAll = true;
-		for(var i = 0; i < 11; i++) if(!driftAchs[i]) rAll = false;
+		for(var i = 0; i < 11; i++) if(!self.driftAchs[i]) rAll = false;
 		if(!self.driftAchs[11] && rAll){
 			self.driftAchs[11] = true;
 			self.sendAchievementsDrift(true);
 		}
 		
 		rAll = true;
-		for(var i = 0; i < 11; i++) if(!moneyAchs[i]) rAll = false;
+		for(var i = 0; i < 11; i++) if(!self.moneyAchs[i]) rAll = false;
 		if(!self.moneyAchs[11] && rAll){
 			self.moneyAchs[11] = true;
 			self.sendAchievementsCash(true);
@@ -2742,7 +2742,7 @@ io.sockets.on('connection', function(socket){
 		if(instance) return;
 		var player = Player(socket.id);
 		player.guest = true;
-		players[socket.id]=player;
+		//players[socket.id]=player;
 		instance = true;
 		player.ip = ip;
 		player.name = "GUEST" + guestCount;
@@ -2758,6 +2758,8 @@ io.sockets.on('connection', function(socket){
 		player.sendStatus();
 		player.getAllBullets();
 		player.getAllPlanets();
+		// TODO: FIXME 
+		players[0][0][socket.id] = player;
 		player.va = ships[player.ship].agility * .08 * player.agility2;
 		player.thrust = ships[player.ship].thrust * player.thrust2;
 		player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
@@ -2841,7 +2843,9 @@ io.sockets.on('connection', function(socket){
 			socket.emit("invalidCredentials", {});
 			return;
 		}
-		for(var i in players)
+		console.log("login: 2844");
+		/*for(var i in players)
+			console.log(players[i]);
 			if(players[i].name === name || players[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == players[i].cookie){
 				socket.emit("accInUse", {});
 				return;
@@ -2860,7 +2864,8 @@ io.sockets.on('connection', function(socket){
 			if(lefts[i].name === name){// || lefts[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == lefts[i].cookie){
 				socket.emit("accInUse", {});
 				return;
-			}
+			} */
+		console.log("login: 2864");
 		var player = Player(socket.id);
 		instance = true;
 		player.ip = ip;
@@ -2964,12 +2969,13 @@ io.sockets.on('connection', function(socket){
 		player.sendAchievementsDrift(false);
 		player.sendAchievementsMisc(false);
 		player.sendStatus();
-		players[socket.id]=player;
+		// TODO: FIXME
+		players[0][0][socket.id]=player;
 		player.getAllBullets();
 		player.getAllPlanets();
 		if(player.sx >= mapSz) player.sx--;
 		if(player.sy >= mapSz) player.sy--;
-			
+
 		var text = "~`" + player.color + "~`"+player.name+'~`yellow~` logged in!';
 		console.log(text);
 		chatAll(text);
@@ -2999,7 +3005,7 @@ io.sockets.on('connection', function(socket){
 		if (typeof data === "undefined") return;
 		// We don't need to check that data.time is well-defined.
 
-		var player = findPlayer(socket.id);
+		var player = getPlayer(socket.id);
 		if(player == 0) return; // if player can't be found
 		
 		socket.emit('reping', {time:data.time});
@@ -3039,10 +3045,14 @@ io.sockets.on('connection', function(socket){
 		}
 	});
 	socket.on('chat',function(data){ // when someone sends a chat message
+		console.log("hi");
 		if (typeof data === "undefined" || typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128) return;
 
-		var player = getPlayer();
+		console.log("hi2.5");
+		var player = getPlayer(socket.id);
 		if(player == 0) return;
+
+		console.log("hi2");
 		
 		if(guestsCantChat && player.guest) {
 			socket.emit("chat",{msg:'You must create an account in the base before you can chat!', color:'yellow'});
