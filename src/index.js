@@ -3,10 +3,6 @@ var isIE = /*@cc_on!@*/false || !!document.documentMode;
 var isEdge = !isIE && !!window.StyleMedia;
 var isFirefox = typeof InstallTrigger !== 'undefined';
 
-//Normal, on server: torn.space:443
-//dev: localhost:7300
-var socket = io(GAMESERVER_URL);//normally 443
-
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -36,6 +32,21 @@ for(var i = 0; i < 1571; i++)//500pi
 	
 var localizer = require("./localizer.js");
 loadLang();
+
+//Normal, on server: torn.space:443
+//dev: localhost:7300
+var socket = io(GAMESERVER_URL, {autoConnect: false});
+// Just to make socket accessible in react.js
+ReactRoot.socket = socket;
+
+global.connect = function ()
+{
+	if (socket.connected) {
+		return;
+	}
+	
+	socket.open();
+}
 
 var sectorWidth = 14336;
 var mx = 0, my = 0, mb = 0;
@@ -93,9 +104,6 @@ var EVERYTHING_LOADED = false;
 var guest = false;
 
 import urlParam from "./urlParam.js"
-
-// Just to make socket accessible in react.js
-ReactRoot.socket = socket;
 
 var stars = [];
 for (var i = 0; i < 300; i++) stars[i] = {x: Math.random() * w, y: Math.random() * h};
@@ -1847,9 +1855,10 @@ document.addEventListener('mousemove', function (evt) {
 	else seller = 0;
 	if(seller != 0 && seller != preSeller) playAudio("button2", .2);
 }, false);
+
 document.addEventListener('mousedown', function (evt) {
 	mb = 1;
-	if(lore && !login){
+	if(lore && !login) {
 		socket.emit('guest', {alien:pc});
 		return;
 	}
