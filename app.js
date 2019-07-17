@@ -2,24 +2,6 @@ var fs = require('fs');
 var http = require('http');
 var express = require('express');
 var Filter = require('bad-words');
-var mongo = require('mongodb').MongoClient;
-
-var url = "mongodb://localhost:27017/torn";
-
-var dbo = null;
-
-mongo.connect(url, (err, client) => {
-	if (err) {
-		console.error(err);
-		return
-	}
-	const db = client.db('torn');
-	const players_collection = db.collection('players');
-	dbo = players_collection;
-});
-
-
-
 
 console.log('Server started');
 var io = require('socket.io')();
@@ -344,11 +326,6 @@ var Player = function(i){
 		questsDone:0, // bitmask
 		planetsClaimed:"0000000000000000000000000000000000000000000000000"
 	}
-
-	self.achievementGot = function (achievement) {
-		return ACHIEVEMENTS[achievement](self);
-	};
-
 
 	self.tick = function(){
 		
@@ -1414,7 +1391,7 @@ var Player = function(i){
 		//TODO Chris
 		if(!self.isBot){
 			self.health = self.maxHealth;
-
+			var readSource = 'server/players/'+(self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) +'.txt';
 			if(self.guest){
 				self.lives--;
 				self.sx = self.sy = (self.color == 'red' ? 2:4);
@@ -1427,9 +1404,6 @@ var Player = function(i){
 				sendWeapons(self.id);
 				return;
 			}
-
-			var readSource = 'server/players/'+(self.name.startsWith("[")?self.nme.split(" ")[1]:self.name) + "[" + hash(self.password) +'.txt';
-
 			var fullFile = fs.readFileSync(readSource, "utf8");
 			var fileData = fullFile.split(':');
 			self.color = fileData[0];
@@ -1565,117 +1539,20 @@ var Player = function(i){
 	self.save = function(){
 		// TODO chris
 		if(self.guest || self.isBot) return;
+		var source = 'server/players/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt';
+		if (fs.existsSync(source)) fs.unlinkSync(source);
 		var spawnX = ((self.sx==Math.floor(mapSz/2) && self.sx == self.sy)?(self.color === "blue"?4:2):self.sx);
 		var spawnY = ((self.sx==Math.floor(mapSz/2) && self.sx == self.sy)?(self.color === "blue"?4:2):self.sy);
-
-		var record = {
-			updateTime:new Date().getTime(),
-			weapon9:self.weapons[9],
-
-			spawnX: spawnX,
-			spawnY: spawnY,
-
-			color:self.color,
-			ship:self.ship,
-			weapons:self.weapons,
-			name:self.name,
-			passwordhash:self.passwordhash,
-			money:self.money,
-			kills:self.kills,
-
-			iron:self.iron,
-			silver:self.silver,
-			platinum:self.platinum,
-			aluminium:self.aluminium,
-			experience:self.experience,
-			rank:self.rank,
-
-			thrust2:self.thrust2,
-			radar2:self.radar2,
-			agility2:self.agility2,
-			capacity2:self.capacity2,
-			maxHealth2:self.maxHealth2,
-			energy2:"nodecay",
-
-			lives: self.lives,
-
-			x:self.x,
-			y:self.y,
-
-			sx:self.sx,
-			sy:self.sy,
-
-			trail:self.trail,
-
-			kill1:self.kill1,//First Blood
-			kill10:self.kill10,//Private
-			kill100:self.kill100,//Specialist
-			kill1k:self.kill1k,//Corporal
-			kill10k:self.kill10k,//Sergeant
-			kill50k:self.kill50k,//General
-			kill1m:self.kill1m,//Warlord
-			killBase:self.killBase,//Invader
-			kill100Bases:self.kill100Bases,//conqueror
-			killFriend:self.killFriend,//Double Agent
-			killCourier:self.killCourier,//Gone Postal
-			suicide:self.suicide,//kms
-			bloodTrail:self.bloodTrail,//Shinigami (scythe) XXX
-
-			oresMined:self.oresMined,
-			questsDone:self.questsDone,
-
-			mined:self.mined,
-			allOres:self.allOres,
-			mined3k:self.mined3k,
-			mined15k:self.mined15k,
-			total100k:self.total100k,//High Rollin
-			total1m:self.total1m,//Millionaire
-			total100m:self.total100m,//That's a lot of digits
-			total1b:self.total1b,//Billionaire
-			packageTaken:self.packageTaken,//Freeloader
-			quested:self.quested,//Community Service
-			allQuests:self.allQuests,//Adventurer XXX
-			goldTrail:self.goldTrail,//Affluenza XXX
-
-			driftTimer:self.driftTimer,
-
-			dr0:self.dr0,//Shift To Drift
-			dr1:self.dr1,//Tofu Guy (1 min total)
-			dr2:self.dr2,//Paper Cup (10 min total)
-			dr3:self.dr3,//Takumi (1 hr total)
-			dr4:self.dr4,//Bunta (10 hr total)
-			dr5:self.dr5,//Turbodrift
-			dr6:self.dr6,//Hyperdrift
-			dr7:self.dr7,//Oversteer (Reverse drift)
-			dr8:self.dr8,//Inertia Drift (BH drift)
-			dr9:self.dr9,//Driftkill
-			dr10:self.dr10,//Spinout (Reverse Drift + turbo)
-			dr11:self.dr11,//Panda AE86 XXXxxxxxxxxxxxxxxxxxxxxxx
-
-			cornersTouched:self.cornersTouched,
-			planetsClaimed:self.planetsClaimed,
-
-			ms0:self.ms0,//Go AFK
-			ms1:self.ms1,//Die
-			ms2:self.ms2,//Risky Business
-			ms3:self.ms3,//Sucked In
-			ms4:self.ms4,//Oops...
-			ms5:self.ms5,//Boing!
-			ms6:self.ms6,//Corner XXX
-			ms7:self.ms7,//4 Corners XXX
-			ms8:self.ms8,//Claim a planet
-			ms9:self.ms9,//Claim every planet XXX
-			ms10:self.ms10,//Random Trail XXX
-		};
-
-		dbo.insertOne(record, function(err, res) {
-			if (err) throw err;
-			console.log("1 document inserted");
-		});
-
-
-	};
-
+		var weapons = "";
+		for(var i = 0; i < 9; i++) weapons += self.weapons[i] + ":";
+		var str = self.color + ':' + self.ship + ':' + self.trail + ':' + weapons + /*no ":", see prev line*/ spawnX + ':' + spawnY + ':' + self.name + ':' + self.money + ':' + self.kills + ':' + self.planetsClaimed + ':' + self.iron + ':' + self.silver + ':' + self.platinum + ':' + self.aluminium + ':' + self.experience + ':' + self.rank + ':' + self.x + ':' + self.y + ':' + self.thrust2 + ':' + self.radar2 + ':' + self.capacity2 + ':' + self.maxHealth2 + ":";
+		str+=self.kill1+":"+self.kill10+":"+self.kill100+":"+self.kill1k+":"+self.kill10k+":"+self.kill50k+":"+self.kill1m+":"+self.killBase+":"+self.kill100Bases+":"+self.killFriend+":"+self.killCourier+":"+self.suicide+":"+self.baseKills+":";
+		str+=self.oresMined+":"+self.mined+":"+self.allOres+":"+self.mined3k+":"+self.mined15k+":"+self.total100k+":"+self.total1m+":"+self.total100m+":"+self.total1b+":"+self.packageTaken+":"+self.quested+":"+self.allQuests+":"+self.goldTrail+":"+self.questsDone+":";
+		str+=self.driftTimer+":"+self.dr0+":"+self.dr1+":"+self.dr2+":"+self.dr3+":"+self.dr4+":"+self.dr5+":"+self.dr6+":"+self.dr7+":"+self.dr8+":"+self.dr9+":"+self.dr10+":"+self.dr11+":";
+		str+=self.cornersTouched+":true:"/*ms0, acct made.*/+self.ms1+":"+self.ms2+":"+self.ms3+":"+self.ms4+":"+self.ms5+":"+self.ms6+":"+self.ms7+":"+self.ms8+":"+self.ms9+":"+self.ms10+":"+self.lives + ":" + self.weapons[9] + ":" + self.energy2 + ":nodecay:";
+		str+=new Date().getTime()+":"+self.agility2; //reset timer
+		fs.writeFileSync(source, str, {"encoding":'utf8'});
+	}
 	self.onKill = function(p){
 		
 		//kill streaks
@@ -2949,36 +2826,22 @@ io.sockets.on('connection', function(socket){
 		if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
 			
 		flood(ip);
-		if (instance) return;
+		if(instance) return;
 		//Validate and save IP
 		var name = data.user, pass = data.pass;
-		if (typeof name !== "string" || name.length > 16 || name.length < 4 || /[^a-zA-Z0-9_]/.test(name)) {
+		if(typeof name !== "string" || name.length > 16 || name.length < 4 || /[^a-zA-Z0-9_]/.test(name)){
 			socket.emit("invalidCredentials", {});
 			return;
 		}
-		if (typeof pass !== "string" || pass.length > 32 || pass.length < 1) {
+		if(typeof pass !== "string" || pass.length > 32 || pass.length < 1){
 			socket.emit("invalidCredentials", {});
 			return;
 		}
 		name = name.toLowerCase();
-
-		var player = Player(socket.id);
-		instance = true;
-		player.ip = ip;
-		player.name = name;
-		player.password = pass;
-
-		//Load account
-		console.log("searching");
-		var item = await dbo.findOne({name: name});
-		console.log("done searching");
-		console.log(ip + " logged in as " + name + "!");
-		socket.emit("loginSuccess", {});
-
-		for(key in item) {
-			console.log(key);
-			if(key === "updateTime") continue;
-			player[key] = item[key]
+		var readSource = 'server/players/'+name+"["+hash(data.pass)+'.txt';
+		if (!fs.existsSync(readSource)){
+			socket.emit("invalidCredentials", {});
+			return;
 		}
 		console.log("login: 2844");
 		/*for(var i in players)
@@ -3098,7 +2961,7 @@ io.sockets.on('connection', function(socket){
 			player.lives = parseFloat(fileData[82]);
 		}
 		player.calculateGenerators();
-		socket.emit("raid", {raidTimer: raidTimer})
+		socket.emit("raid", {raidTimer:raidTimer})
 		player.refillAllAmmo();
 		player.checkTrailAchs();
 		player.sendAchievementsKill(false);
@@ -3120,7 +2983,7 @@ io.sockets.on('connection', function(socket){
 		player.thrust = ships[player.ship].thrust * player.thrust2;
 		player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
 		player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-		if (!data.amNew) socket.emit('sectors', {sectors: sectors});
+		if(!data.amNew) socket.emit('sectors', {sectors:sectors});
 		sendWeapons(player.id);
 	});
 	socket.on('disconnect',function(data){ // graceful disconnect
