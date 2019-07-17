@@ -44,7 +44,7 @@ global.connect = function ()
 	if (socket.connected) {
 		return;
 	}
-	
+
 	socket.open();
 }
 
@@ -102,8 +102,6 @@ var basesInfo = 0, playersInfo = 0, planetsInfo = 0, minesInfo = 0, orbsInfo = 0
 var EVERYTHING_LOADED = false;
 
 var guest = false;
-
-import urlParam from "./urlParam.js"
 
 var stars = [];
 for (var i = 0; i < 300; i++) stars[i] = {x: Math.random() * w, y: Math.random() * h};
@@ -1523,18 +1521,24 @@ setInterval(function(){
 	}
 	rx = w / 2 - 128 * 3, ry = h / 4 - 128;
 },40);
-setInterval(function(){
+
+window.requestAnimationFrame(loop);
+
+function loop() {
+	console.log("hi");
 	render();
 	textIn++;
 	if(!login){
 		if(lore){
 			rLore();
+			window.requestAnimationFrame(loop);
 			return;
 		}
 		if (!EVERYTHING_LOADED){
 			ReactRoot.turnOffDisplay("LoginOverlay");
 			rLoadingBar();
 			setTimeout(render, 5);
+			window.requestAnimationFrame(loop);
 			return;
 		}else ReactRoot.turnOnDisplay("LoginOverlay");
 		
@@ -1569,6 +1573,7 @@ setInterval(function(){
 		if(typeof img === "undefined" || img == 2){
 			redShips[14] = 2;//so we don't load a million times before its sent
 			if(img != 2) loadShipImg(true,14);
+			window.requestAnimationFrame(loop);
 			return;
 		}
 		var pw = img.width;
@@ -1611,6 +1616,7 @@ setInterval(function(){
 			if(typeof img === "undefined" || img == 2){
 				blueShips[j * 2] = 2;//so we don't load a million times before its sent
 				if(img != 2) loadShipImg(false,j * 2);
+				window.requestAnimationFrame(loop);
 				return;
 			}
 			pw = img.width;
@@ -1643,7 +1649,10 @@ setInterval(function(){
 	else{
 		ReactRoot.activate();
 	}
-},isFirefox?40:20);
+
+	
+	window.requestAnimationFrame(loop);
+}
 
 
 //input
