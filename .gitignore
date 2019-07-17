@@ -1,2 +1,9 @@
 /node_modules/*
 /server/*
+*.wt
+*.lock
+WiredTiger
+*.turtle
+*.data
+*.bson
+client/leaderboard/
