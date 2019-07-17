@@ -131,49 +131,12 @@ for(var i = 0; i < mapSz; i++){ // it's 2d
 }
 
 
-<<<<<<< HEAD
 
 
 
 //Machine Learning
 var trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
 var neuralFiles = 1500; // how many files should be in competition
-=======
-ACHIEVEMENTS = {
-	"First Blood":(player) => player.kills > 1,
-	"Private":(player) => player.kills > 10,
-	"specialist":(player) => player.kills > 100,
-	"Corporal":(player) => player.kills > 1000,
-	"Sergeant":(player) => player.kills > 10000,
-	"General":(player) => player.kills > 50000,
-	"Warlord":(player) => player.kills > 1000000,
-	"Invaded":(player) => player.baseKills > 0,
-	"Conqueror":(player) => player.baseKills > 0,
-	"Double Agent":(player) => player.killFriend,
-	"Gone Postal":(player) => player.killCourier,
-	"KMS":(player) => player.suicide,
-	"Shinigami (scythe) XXX":(player) => player.bloodTrail,
-	"High Rollin":(player) => player.totalMined() > 100000,
-	"Millionaire":(player) => player.totalMined() > 1000000,
-	"That's a lot of digits":(player) =>player.totalMined() > 100000000,
-	"Billionaire":(player) => player.totalMined() > 1000000000,
-	"Freeloader":(player) => player.packageTaken,
-	"Adventurer XXX":(player) => player.quested,
-	"Affluenza XXX":(player) => player.goldTrail,
-	"Go AFK":(player) => player.ms0,
-	"Die":(player) => player.ms1,
-	"Risky Business":(player) => player.ms2,
-	"Sucked In":(player) => player.ms3,
-	"Oops..":(player) => player.ms4,
-	"Boing!":(player) => player.ms5,
-	"Corner XXX":(player) => player.ms6,
-	"4 Corners XXX":(player) => player.ms7,
-	"Claim a planet":(player) => player.ms8,
-	"Claim every planet XXX":(player) => player.ms9,
-	"Random Trail XXX":(player) => player.ms10,
-};
-
->>>>>>> Mongo
 var NeuralNet = function(){
 	var self = {
 		genes: {},
@@ -1719,17 +1682,7 @@ var Player = function(i){
 		if(!p.guest && p.color !== self.color) self.killStreak++;
 		self.killStreakTimer = 750;//30s
 		self.kills++;
-<<<<<<< HEAD
 		
-=======
-		if(p.trail != 0) self.kill1m = true;
-		if(p.hasPackage) self.killCourier = true;
-		if(p.name === self.name) self.suicide = true;
-		else if(p.color === self.color) self.killFriend = true;
-		self.sendAchievementsKill(true);
-	}
- 	self.onBaseKill = function(p){
->>>>>>> Mongo
 		if(self.isBot) return;
 		
 		//achievementy stuff
@@ -1761,11 +1714,7 @@ var Player = function(i){
 	}
 	self.sendAchievementsKill = function(note){
 		if(self.isBot) return;
-<<<<<<< HEAD
 		send(self.id, "achievementsKill", {note:note,achs:self.killsAchs});
-=======
-		send(self.id, "achievementsKill", {note:note,kill1: self.achievementGot("First Blood"), kill10:self.kill10,kill100:self.kill100,kill1k:self.kill1k,kill10k:self.kill10k,kill50k:self.kill50k,kill1m:self.kill1m,killBase:self.killBase,kill100Bases:self.kill100Bases,killFriend:self.killFriend,killCourier:self.killCourier,suicide:self.suicide,bloodTrail:self.bloodTrail});
->>>>>>> Mongo
 	}
 	self.sendAchievementsCash = function(note){
 		if(self.isBot) return;
@@ -2996,16 +2945,9 @@ io.sockets.on('connection', function(socket){
 		});
 		socket.emit("raid", {raidTimer:raidTimer})
 	});
-<<<<<<< HEAD
 	socket.on('login',function(data){ // TODO Chris
 		if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
 			
-=======
-	socket.on('login', async function (data) {
-		if (typeof data === "undefined" || typeof data.amNew !== "boolean") {
-			return;
-		}
->>>>>>> Mongo
 		flood(ip);
 		if (instance) return;
 		//Validate and save IP
@@ -3038,7 +2980,6 @@ io.sockets.on('connection', function(socket){
 			if(key === "updateTime") continue;
 			player[key] = item[key]
 		}
-<<<<<<< HEAD
 		console.log("login: 2844");
 		/*for(var i in players)
 			console.log(players[i]);
@@ -3156,35 +3097,6 @@ io.sockets.on('connection', function(socket){
 			player.ms10 = parseBoolean(fileData[81]);
 			player.lives = parseFloat(fileData[82]);
 		}
-=======
-
-		console.log(player.weapons);
-
-
-		player.guest = false;
-
-		for (var i in PLAYER_LIST)
-			if (PLAYER_LIST[i].name === name || PLAYER_LIST[i].name.includes(" " + name)) {// || socket.handshake.headers.cookie == PLAYER_LIST[i].cookie){
-				socket.emit("accInUse", {});
-				return;
-			}
-		for (var i in DOCKED_LIST)
-			if (DOCKED_LIST[i].name === name || DOCKED_LIST[i].name.includes(" " + name)) {// || socket.handshake.headers.cookie == DOCKED_LIST[i].cookie){
-				socket.emit("accInUse", {});
-				return;
-			}
-		for (var i in DEAD_LIST)
-			if (DEAD_LIST[i].name === name || DEAD_LIST[i].name.includes(" " + name)) {// || socket.handshake.headers.cookie == DEAD_LIST[i].cookie){
-				socket.emit("accInUse", {});
-				return;
-			}
-		for (var i in LEFT_LIST)
-			if (LEFT_LIST[i].name === name) {// || LEFT_LIST[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == LEFT_LIST[i].cookie){
-				socket.emit("accInUse", {});
-				return;
-			}
-
->>>>>>> Mongo
 		player.calculateGenerators();
 		socket.emit("raid", {raidTimer: raidTimer})
 		player.refillAllAmmo();
@@ -3194,7 +3106,6 @@ io.sockets.on('connection', function(socket){
 		player.sendAchievementsDrift(false);
 		player.sendAchievementsMisc(false);
 		player.sendStatus();
-<<<<<<< HEAD
 		// TODO: FIXME
 		players[0][0][socket.id]=player;
 		player.getAllBullets();
@@ -3203,15 +3114,6 @@ io.sockets.on('connection', function(socket){
 		if(player.sy >= mapSz) player.sy--;
 
 		var text = "~`" + player.color + "~`"+player.name+'~`yellow~` logged in!';
-=======
-		PLAYER_LIST[socket.id] = player;
-		player.getAllBullets();
-		player.getAllPlanets();
-		if (player.sx >= mapSz) player.sx--;
-		if (player.sy >= mapSz) player.sy--;
-
-		var text = "~`" + player.color + "~`" + player.name + '~`yellow~` logged in!';
->>>>>>> Mongo
 		console.log(text);
 		chatAll(text);
 		player.va = ships[player.ship].agility * .08 * player.agility2;
