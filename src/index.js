@@ -1525,7 +1525,6 @@ setInterval(function(){
 window.requestAnimationFrame(loop);
 
 function loop() {
-	console.log("hi");
 	render();
 	textIn++;
 	if(!login){
@@ -1657,6 +1656,11 @@ function loop() {
 
 //input
 document.onkeydown = function (event) {
+	// Grab enter on homepage
+	if (!login && !lore && event.keyCode == 13) {
+		document.getElementById("loginButton").click();
+		return;
+	}
 	if(!login || tab == -1)
 		return;
 	if (event.keyCode === 16) {

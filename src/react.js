@@ -243,6 +243,11 @@ class LoginOverlay extends Component {
 	login = () => {
 		var user = this.state.user;
 		var pass = this.state.pass;
+
+		if (user == "" || pass  == "") {
+			return;
+		}
+
 		connect();
 		if(typeof ReactRoot.socket !== "undefined")
 			ReactRoot.socket.emit('login', {user:user, pass:pass, amNew: false});
