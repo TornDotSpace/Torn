@@ -13,6 +13,8 @@ import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
 import ChatInput from "./react.js";
 
+const {Howl, Howler} = require('howler'); // audio
+
 ReactDOM.render(
 	<ReactRoot data={{
 		toggleMusic: toggleMusic,
@@ -178,12 +180,18 @@ var Aud = {};
 var Aud_prgs = [0,0];
 var Aud_loaded = false;
 
-function loadAudio (name, src) {
+function loadAudio (name, _src) {
 	if (Aud[name]) {console.error("Loading image twice: " + name)}
-	Aud[name] = new Audio(src);
-	Aud[name].addEventListener("loadeddata", () => {
-		Aud_prgs[0]++;
-	})
+	Aud[name] = new Howl( {
+		src: _src,
+		autoplay: false,
+		loop:false,
+		preload:true,
+		onload: function() {
+			++Aud_prgs[0];
+		},
+		pool: 15
+	});
 	Aud_prgs[1]++;
 }
 function loadAudioEnd () {
@@ -202,6 +210,8 @@ function loadAudioEnd () {
 			if (loaded())
 				clearInterval(interval)
 		}, 100)
+	} else {
+		musicAudio = Aud["music1"];
 	}
 }
 function loadAllAudio(){
@@ -225,33 +235,34 @@ var muted = false, musicMuted = false;
 // Passed to React Root
 function toggleAudio() {
 	muted^=true;
-	for (let a in Aud)
-		Aud[a].muted = muted
+	Howler.mute(muted);
 	return muted;
 }
 
 // Passed to React Root
 function toggleMusic() {
 	musicMuted^=true;
-	if(musicMuted && login) musicAudio.pause();
-	else musicAudio.play();
+	if(musicMuted && login) Aud["music1"].pause();
+	else Aud["music1"].play();
 	return musicMuted;
 }
 
 // Use this function to play any sound from the Aud object
 function playAudio(name, vol) {
 	if (muted) return;
-	let node = Aud[name];
-	if (!node) {console.error("Unknown sound " + name);}
-	let audio = node.cloneNode();
-	audio.volume = gVol * vol;
-	if(name == "bigboom") audio.volume *= 2;
-	if(name == "noammo") audio.volume *= 5;
+	var audio = Aud[name];
+	if (!audio) {console.error("Unknown sound " + name);}
+	var id = audio.play();
+	
+	audio.volume(gVol * vol, id);
+
+	if(name == "bigboom") audio.volume(gVol * vol * 2, id);
+	if(name == "noammo") audio.volume(gVol * vol & 5, id);
+
 	if(name === "music1"){
-		audio.volume /= 2;
-		musicAudio = audio;
-	}
-	audio.play();
+		audio.volume(gVol * vol / 2, id);
+	//	musicAudio = audio;
+	} 
 }
 
 var redShips = [];
@@ -621,7 +632,7 @@ function render(){
 
 //shop rendering
 function rWeapons(){
-	//return;
+	return;
 	if(equipped[1] == -2) return;
 	ctx.save();
 	ctx.globalAlpha = .5;
@@ -2221,7 +2232,7 @@ function rLore(){
 	}
 }
 function rEnergyBar(){
-	//return;
+	return;
 	ctx.save();
 	ctx.strokeStyle = "red";
 	ctx.translate(guest ?16:248, 324 + 16 - 5)
