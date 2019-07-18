@@ -621,7 +621,7 @@ function render(){
 
 //shop rendering
 function rWeapons(){
-	return;
+	//return;
 	if(equipped[1] == -2) return;
 	ctx.save();
 	ctx.globalAlpha = .5;
@@ -2221,7 +2221,7 @@ function rLore(){
 	}
 }
 function rEnergyBar(){
-	return;
+	//return;
 	ctx.save();
 	ctx.strokeStyle = "red";
 	ctx.translate(guest ?16:248, 324 + 16 - 5)
