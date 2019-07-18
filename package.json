@@ -1,7 +1,7 @@
 {
-  "name": "stk",
+  "name": "Torn.Space",
   "version": "0.0.1",
-  "description": "",
+  "description": "A midly popular space simulator MMO",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ukicu/NewGame.git"
+    "url": "git+https://github.com/2swap/Torn.Space.git"
   },
   "keywords": [
     "react",
     "webpack",
     "babel"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "The Torn.Space Team",
+  "license": "All Rights Reserved",
   "devDependencies": {
     "@babel/core": "^7.5.4",
     "@babel/plugin-proposal-class-properties": "^7.5.0",
