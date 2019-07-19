@@ -11,7 +11,6 @@ var ctx = canvas.getContext("2d");
 import React from "react";
 import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
-import ChatInput from "./react.js";
 
 const {Howl, Howler} = require('howler'); // audio
 
@@ -210,8 +209,6 @@ function loadAudioEnd () {
 			if (loaded())
 				clearInterval(interval)
 		}, 100)
-	} else {
-		musicAudio = Aud["music1"];
 	}
 }
 function loadAllAudio(){
@@ -243,7 +240,7 @@ function toggleAudio() {
 function toggleMusic() {
 	musicMuted^=true;
 	if(musicMuted && login) Aud["music1"].pause();
-	else Aud["music1"].play();
+	else if (musicAudio !=0) Aud["music1"].play();
 	return musicMuted;
 }
 
@@ -261,7 +258,7 @@ function playAudio(name, vol) {
 
 	if(name === "music1"){
 		audio.volume(gVol * vol / 2, id);
-	//	musicAudio = audio;
+		musicAudio = id;
 	} 
 }
 
