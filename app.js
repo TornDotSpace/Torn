@@ -1403,8 +1403,8 @@ var Player = function(i){
 				if(self.lives <= 0) lefts[self.id] = 0;
 				self.sendStatus();
 				deads[self.id] = self;
-				delete players[self.id];
 				sendWeapons(self.id);
+				delete players[self.id];
 				return;
 			}
 			var fullFile = fs.readFileSync(readSource, "utf8");
@@ -2685,8 +2685,8 @@ function strongLocal(msg, x, y, id){ // you get the gist
 	send(id, 'strong', {msg: msg, x: x, y: y, local:true});
 }
 function sendWeapons(id){ // tells a client what weapons that player has
-	var player = (typeof dockers[id] !== 'undefined')?dockers[id]:players[id];
-	if(typeof players[id] === 'undefined' && typeof dockers[id] === 'undefined') return;//Could be dead? Check to be safe
+	var player = getPlayer(id);
+	if(player == 0) return;
 	var worth = ships[player.ship].price*.75;
 	send(id, 'weapons', {weapons: player.weapons, worth:worth, ammos:player.ammos});
 }
@@ -3860,6 +3860,7 @@ function update(){
 		}
 		
 		var base = bases[y][x];
+		console.log(base.id);
 		if(base != 0){
 			base.tick(rbNow,bbNow);
 			basePack[base.sx][base.sy] = {id:base.id,live:base.turretLive, isBase: base.isBase,maxHealth:base.maxHealth,health:base.health,color:base.color,x:base.x,y:base.y, angle:base.angle, spinAngle:base.spinAngle,owner:base.owner};
@@ -3880,7 +3881,7 @@ function update(){
 				var locked = 0;
 				for(var i in pack[orb.sx][orb.sy]){
 					var player = pack[orb.sx][orb.sy][i];
-					var dist = (player.x - orb.x)*(player.x - orb.x)+(player.y - orb.y)*(player.y - orb.y);
+					var dist = squareDist(player,orb);
 					if(player.empTimer <= 0 && player.color != orb.color && dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
 						else if(typeof players[locked] !== 'undefined' && dist < square(players[locked].x - orb.x)+square(players[locked].y - orb.y)) locked = player.id;
@@ -3888,14 +3889,14 @@ function update(){
 				}
 				orb.locked = locked;
 				if(locked != 0) continue;
-				if(basePack[orb.sx][orb.sy] != 0 && basePack[orb.sx][orb.sy].color != orb.color && basePack[orb.sx][orb.sy].turretLive && locked == 0) locked = base.id;
+				if(basePack[orb.sy][orb.sx] != 0 && basePack[orb.sy][orb.sx].color != orb.color && basePack[orb.sy][orb.sx].turretLive && locked == 0) locked = base.id;
 				orb.locked = locked;
 				if(locked != 0) continue;
-				for(var i in astPack[orb.sx][orb.sy]){
-					var player = astPack[orb.sx][orb.sy][i];
-					var dist = (player.x - orb.x)*(player.x - orb.x)+(player.y - orb.y)*(player.y - orb.y);
+				for(var i in astPack[orb.sy][orb.sx]){
+					var ast = astPack[orb.sy][orb.sx][i];
+					var dist = squaredDist(ast,orb);
 					if(dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
-						if(locked == 0) locked = player.id;
+						if(locked == 0) locked = ast.id;
 						else if(typeof asts[locked] != "undefined" && dist < square(asts[locked].x - orb.x)+square(asts[locked].y - orb.y)) locked = player.id;
 					}
 				}
@@ -3909,26 +3910,26 @@ function update(){
 			missilePack[missile.sx][missile.sy].push({wepnID:missile.wepnID,x:missile.x,y:missile.y,angle:missile.angle});
 			if(tick % 5 == 0 && missile.locked == 0){
 				var locked = 0;
-				for(var i in pack[missile.sx][missile.sy]){
-					var player = pack[missile.sx][missile.sy][i];
-					var dist = (player.x - missile.x)*(player.x - missile.x)+(player.y - missile.y)*(player.y - missile.y);
+				for(var i in pack[missile.sy][missile.sx]){
+					var player = pack[missile.sy][missile.sx][i];
+					var dist = squareDist(player,missile);
 					if(player.empTimer <= 0 && player.color != missile.color && dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
-						else if(typeof players[locked] !== 'undefined' && dist < (players[locked].x - missile.x)*(players[locked].x - missile.x)+(players[locked].y - missile.y)*(players[locked].y - missile.y))locked = player.id;
+						else if(typeof players[locked] !== 'undefined' && dist < squareDist(players[locked],missile))locked = player.id;
 					}
 				}
 				missile.locked = locked;
 				if(locked != 0) continue;
-				if(basePack[missile.sx][missile.sy] != 0 && basePack[missile.sx][missile.sy].turretLive && locked == 0) locked = base.id;
+				if(basePack[missile.sy][missile.sx] != 0 && basePack[missile.sy][missile.sx].turretLive && locked == 0) locked = base.id;
 				
 				missile.locked = locked;
 				if(locked != 0) continue;
-				for(var i in astPack[missile.sx][missile.sy]){
-					var player = astPack[missile.sx][missile.sy][i];
-					var dist = (player.x - missile.x)*(player.x - missile.x)+(player.y - missile.y)*(player.y - missile.y);
+				for(var i in astPack[missile.sy][missile.sx]){
+					var player = astPack[missile.sy][missile.sx][i];
+					var dist = squaredDist(player,missile);
 					if(dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
-						else if(typeof asts[locked] != "undefined" && dist < (asts[locked].x - missile.x)*(asts[locked].x - missile.x)+(asts[locked].y - missile.y)*(asts[locked].y - missile.y)) locked = player.id;
+						else if(typeof asts[locked] != "undefined" && dist < squaredDist(asts[locked],missile)) locked = player.id;
 					}
 				}
 				missile.locked = locked;
@@ -3954,7 +3955,7 @@ function update(){
 		var player = deads[i];
 		if(tick % 12 == 0) // LAG CONTROL
 			send(i, 'online', {lag:lag, bb:bb,rb:rb,bp:bp,rp:rp,rg:rg,bg:bg});
-		send(i, 'posUp', {packs:packPack[player.sx][player.sy],vorts:vortPack[player.sx][player.sy],mines:minePack[player.sx][player.sy],missiles:missilePack[player.sx][player.sy],orbs:orbPack[player.sx][player.sy],beams:beamPack[player.sx][player.sy],blasts:blastPack[player.sx][player.sy],planets:planetPack[player.sx][player.sy], asteroids:astPack[player.sx][player.sy],players:pack[player.sx][player.sy], projectiles:bPack[player.sx][player.sy],bases:basePack[player.sx][player.sy]});
+		send(i, 'posUp', {packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:pack[player.sy][player.sx], projectiles:bPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 	}
 	for(var i in dockers){
 		var player = dockers[i];
@@ -3970,7 +3971,7 @@ function update(){
 	lag = d.getTime() - lagTimer;
 	ops--;
 }
-function deletePlayers(){ // remove pplayers that have left or are afk or whatever else
+function deletePlayers(){ // remove players that have left or are afk or whatever else
 	for(var i in lefts){
 		if(lefts[i]-- > 1) continue;
 		for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++) delete players[y][x][i];
@@ -4009,7 +4010,7 @@ function updateHeatmap(){
 				lb[j] = p;
 				j++;
 			}
-			hmap[p.sx][p.sy]+=p.color === 'blue'?-1:1;
+			hmap[p.sx][p.sy]+=p.color === 'blue'?-1:1; // this is supposed to be x-y order. TODO fix
 		}
 	}
 	for(var i in dockers){
