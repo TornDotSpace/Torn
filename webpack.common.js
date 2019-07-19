@@ -8,10 +8,14 @@ module.exports = {
         filename: "client.js"
     },
     module: {
-        loaders: [{
+        rules: [{
             test: /\.jsx?$/,
             exclude: /node_modules/,
-            loader: 'react-hot-loader!babel-loader'
+            loader: 'babel-loader',
+	    query: {
+		presets: ['@babel/react', '@babel/preset-env'],
+		plugins: ['@babel/proposal-class-properties']
+	    }
         }]
     },
     resolve: {

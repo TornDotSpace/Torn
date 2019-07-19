@@ -3,10 +3,6 @@ var isIE = /*@cc_on!@*/false || !!document.documentMode;
 var isEdge = !isIE && !!window.StyleMedia;
 var isFirefox = typeof InstallTrigger !== 'undefined';
 
-//Normal, on server: torn.space:443
-//dev: localhost:7300
-var socket = io(GAMESERVER_URL);//normally 443
-
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -16,6 +12,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
 import ChatInput from "./react.js";
+
+const {Howl, Howler} = require('howler'); // audio
 
 ReactDOM.render(
 	<ReactRoot data={{
@@ -36,6 +34,21 @@ for(var i = 0; i < 1571; i++)//500pi
 	
 var localizer = require("./localizer.js");
 loadLang();
+
+//Normal, on server: torn.space:443
+//dev: localhost:7300
+var socket = io(GAMESERVER_URL, {autoConnect: false});
+// Just to make socket accessible in react.js
+ReactRoot.socket = socket;
+
+global.connect = function ()
+{
+	if (socket.connected) {
+		return;
+	}
+
+	socket.open();
+}
 
 var sectorWidth = 14336;
 var mx = 0, my = 0, mb = 0;
@@ -91,11 +104,6 @@ var basesInfo = 0, playersInfo = 0, planetsInfo = 0, minesInfo = 0, orbsInfo = 0
 var EVERYTHING_LOADED = false;
 
 var guest = false;
-
-import urlParam from "./urlParam.js"
-
-// Just to make socket accessible in react.js
-ReactRoot.socket = socket;
 
 var stars = [];
 for (var i = 0; i < 300; i++) stars[i] = {x: Math.random() * w, y: Math.random() * h};
@@ -172,12 +180,18 @@ var Aud = {};
 var Aud_prgs = [0,0];
 var Aud_loaded = false;
 
-function loadAudio (name, src) {
+function loadAudio (name, _src) {
 	if (Aud[name]) {console.error("Loading image twice: " + name)}
-	Aud[name] = new Audio(src);
-	Aud[name].addEventListener("loadeddata", () => {
-		Aud_prgs[0]++;
-	})
+	Aud[name] = new Howl( {
+		src: _src,
+		autoplay: false,
+		loop:false,
+		preload:true,
+		onload: function() {
+			++Aud_prgs[0];
+		},
+		pool: 15
+	});
 	Aud_prgs[1]++;
 }
 function loadAudioEnd () {
@@ -196,6 +210,8 @@ function loadAudioEnd () {
 			if (loaded())
 				clearInterval(interval)
 		}, 100)
+	} else {
+		musicAudio = Aud["music1"];
 	}
 }
 function loadAllAudio(){
@@ -219,33 +235,34 @@ var muted = false, musicMuted = false;
 // Passed to React Root
 function toggleAudio() {
 	muted^=true;
-	for (let a in Aud)
-		Aud[a].muted = muted
+	Howler.mute(muted);
 	return muted;
 }
 
 // Passed to React Root
 function toggleMusic() {
 	musicMuted^=true;
-	if(musicMuted && login) musicAudio.pause();
-	else musicAudio.play();
+	if(musicMuted && login) Aud["music1"].pause();
+	else Aud["music1"].play();
 	return musicMuted;
 }
 
 // Use this function to play any sound from the Aud object
 function playAudio(name, vol) {
 	if (muted) return;
-	let node = Aud[name];
-	if (!node) {console.error("Unknown sound " + name);}
-	let audio = node.cloneNode();
-	audio.volume = gVol * vol;
-	if(name == "bigboom") audio.volume *= 2;
-	if(name == "noammo") audio.volume *= 5;
+	var audio = Aud[name];
+	if (!audio) {console.error("Unknown sound " + name);}
+	var id = audio.play();
+	
+	audio.volume(gVol * vol, id);
+
+	if(name == "bigboom") audio.volume(gVol * vol * 2, id);
+	if(name == "noammo") audio.volume(gVol * vol * 5, id);
+
 	if(name === "music1"){
-		audio.volume /= 2;
-		musicAudio = audio;
-	}
-	audio.play();
+		audio.volume(gVol * vol / 2, id);
+	//	musicAudio = audio;
+	} 
 }
 
 var redShips = [];
@@ -1515,18 +1532,23 @@ setInterval(function(){
 	}
 	rx = w / 2 - 128 * 3, ry = h / 4 - 128;
 },40);
-setInterval(function(){
+
+window.requestAnimationFrame(loop);
+
+function loop() {
 	render();
 	textIn++;
 	if(!login){
 		if(lore){
 			rLore();
+			window.requestAnimationFrame(loop);
 			return;
 		}
 		if (!EVERYTHING_LOADED){
 			ReactRoot.turnOffDisplay("LoginOverlay");
 			rLoadingBar();
 			setTimeout(render, 5);
+			window.requestAnimationFrame(loop);
 			return;
 		}else ReactRoot.turnOnDisplay("LoginOverlay");
 		
@@ -1561,6 +1583,7 @@ setInterval(function(){
 		if(typeof img === "undefined" || img == 2){
 			redShips[14] = 2;//so we don't load a million times before its sent
 			if(img != 2) loadShipImg(true,14);
+			window.requestAnimationFrame(loop);
 			return;
 		}
 		var pw = img.width;
@@ -1603,6 +1626,7 @@ setInterval(function(){
 			if(typeof img === "undefined" || img == 2){
 				blueShips[j * 2] = 2;//so we don't load a million times before its sent
 				if(img != 2) loadShipImg(false,j * 2);
+				window.requestAnimationFrame(loop);
 				return;
 			}
 			pw = img.width;
@@ -1635,11 +1659,19 @@ setInterval(function(){
 	else{
 		ReactRoot.activate();
 	}
-},isFirefox?40:20);
+
+	
+	window.requestAnimationFrame(loop);
+}
 
 
 //input
 document.onkeydown = function (event) {
+	// Grab enter on homepage
+	if (!login && !lore && event.keyCode == 13) {
+		document.getElementById("loginButton").click();
+		return;
+	}
 	if(!login || tab == -1)
 		return;
 	if (event.keyCode === 16) {
@@ -1847,9 +1879,10 @@ document.addEventListener('mousemove', function (evt) {
 	else seller = 0;
 	if(seller != 0 && seller != preSeller) playAudio("button2", .2);
 }, false);
+
 document.addEventListener('mousedown', function (evt) {
 	mb = 1;
-	if(lore && !login){
+	if(lore && !login) {
 		socket.emit('guest', {alien:pc});
 		return;
 	}
@@ -2008,9 +2041,7 @@ function minPD(sx, sy){
 function square(x){
 	return x * x;
 }
-function cube(x){
-	return x * x * x;
-}
+
 function r2x(x){
 	var ranks = [0,5,10,20,50,100,200,500,1000,2000,4000,8000,14000,20000,40000,70000,100000,140000,200000,300000,500000,800000,1000000,1500000,2000000,3000000,5000000,8000000,12000000,16000000,32000000,64000000,100000000];
 	return x < 0 ? 0 : ranks[x];

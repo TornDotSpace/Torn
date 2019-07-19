@@ -1,7 +1,7 @@
 {
-  "name": "stk",
+  "name": "Torn.Space",
   "version": "0.0.1",
-  "description": "",
+  "description": "A midly popular space simulator MMO",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,38 +10,35 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ukicu/NewGame.git"
+    "url": "git+https://github.com/2swap/Torn.Space.git"
   },
   "keywords": [
     "react",
     "webpack",
     "babel"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "The Torn.Space Team",
+  "license": "All Rights Reserved",
   "devDependencies": {
-    "babel-core": "^6.24.1",
-    "babel-loader": "^7.0.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
-    "react-hot-loader": "^1.3.1",
-    "webpack": "^2.5.1",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-hot-loader": "^4.12.8",
+    "webpack": "^4.36.1",
+    "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2",
     "webpack-merge": "^4.2.1"
   },
-  "babel": {
-    "presets": [
-      "es2015",
-      "react",
-      "stage-2"
-    ]
-  },
   "dependencies": {
     "bad-words": "^3.0.2",
-    "express": "^4.15.3",
-    "socket.io": "^2.0.2"
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "howler": "^2.1.2",
+    "mongodb": "^3.2.7",
+    "socket.io": "^2.2.0"
   }
 }
