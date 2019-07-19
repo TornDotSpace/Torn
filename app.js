@@ -10,17 +10,6 @@ var wepns = jsn.weapons, ships = jsn.ships, planets = jsn.planets;
 
 filter = new Filter(); // bad-words node package
 
-function buildFileSystem(){ // create the server files/folders
-	var dir = './server';
-	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-	dir = './server/neuralnets';
-	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-	dir = './server/players';
-	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-	dir = './server/turrets';
-	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-}
-
 
 
 
@@ -775,6 +764,10 @@ var Player = function(i){
 		if(self.energy < 7.5) return;
 		self.energy -= 7.5;
 		self.jukeTimer = (self.trail % 16 == 4?1.25:1)*(left?50:-50); // misc trail makes you juke further.
+	}
+	self.mute = function(minutes){
+		self.muteCap = self.muteTimer = 25*60*minutes;
+		chatAll("~`violet~`" + self.name + "~`yellow~` has been " + (minutes > 0?"muted for " + minutes + " minutes!" : "unmuted!"));
 	}
 	self.onChangeSectors = function(){
 		send(self.id, "clrBullets", {});
@@ -3368,7 +3361,7 @@ function mod(n, m) { // used in findBisector
     var remain = n % m;
     return Math.floor(remain >= 0 ? remain : remain + m);
 }
-function isOutOfBounds(obj){ // TODO this works but I'm not even using it anywhere
+function isOutOfBounds(obj){ // TODO this works but I'm not even using it anywhere. it would simplify some code if used.
 	return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 }
 function lbIndex(exp){ // binary search to find where a player is on the leaderboard. TODO there is a bug where this prints stuff when someone gets their first kill of the day
@@ -3384,10 +3377,10 @@ function lbIndex(exp){ // binary search to find where a player is on the leaderb
 	}
 	return ub+1;//1-indexed
 }
-function angleBetween(a, b){
+function angleBetween(a, b){ // delimited to [-pi,pi]
 	return Math.atan2(a.y - b.y, a.x - b.x);
 }
-function squaredDist(a, b){
+function squaredDist(a, b){ // distance between two points squared. i.e. c^2
 	return square(a.y - b.y) + square(a.x - b.x);
 }
 
@@ -3443,6 +3436,9 @@ function updateQuestsB(){
 
 
 function runCommand(player, msg){ // player just sent msg in chat and msg starts with a /
+
+	var correct = true
+	
 	if(msg.startsWith("/password ")) player.changePass(msg.substring(10));
 	else if(msg.startsWith("/me ")) chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4));
 	else if(msg.startsWith("/confirm ")) player.confirmPass(msg.substring(9));
@@ -3451,10 +3447,14 @@ function runCommand(player, msg){ // player just sent msg in chat and msg starts
 	else if(msg.toLowerCase().startsWith("/pm ")) player.pm(msg);
 	else if(msg.toLowerCase().startsWith("/r ")) player.r(msg);
 	else if(msg.toLowerCase().startsWith("/swap ")) player.swap(msg);
+	else correct = false;
 	
 	//moderator commands
-	else if(player.name.includes(" ") && msg.startsWith("/broadcast ")) sendAll('chat', {msg:"~`#f66~`       BROADCAST: ~`lime~`"+msg.substring(11)});
-	else if(player.name.includes(" ") && msg.startsWith("/mute ")) mute(msg);
+	if(player.name.includes(" ")){
+		if(msg.startsWith("/broadcast ")) sendAll('chat', {msg:"~`#f66~`       BROADCAST: ~`lime~`"+msg.substring(11)});
+		else if(msg.startsWith("/mute ")) mute(msg);
+		else correct = false;
+	}
 	
 	//owner commands
 	else if(player.name.includes("[O]")){
@@ -3464,45 +3464,40 @@ function runCommand(player, msg){ // player just sent msg in chat and msg starts
 		else if(msg === "/spawnNN") spawnNNBot(player.sx, player.sy, Math.random()>.5?"red":"blue");
 		else if(msg === "/decayPlayers") decayPlayers(decay);
 		else if(msg === "/saveTurrets") saveTurrets();
+		else correct = false;
 	}
-	else send(player.id, "chat", {msg:"~`red~`Unknown Command."});
+	
+	if(!correct) send(player.id, "chat", {msg:"~`red~`Unknown Command."});
+	
 	return;
 }
 function mute(msg){
-	if(msg.split(" ").length != 3) return;
+	
+	if(msg.split(" ").length != 3) return; // split looks like {"/mute", "name", "minutesToMute"}
 	var name = msg.split(" ")[1];
-	var time = parseFloat(msg.split(" ")[2]);
+	var minutes = parseFloat(msg.split(" ")[2]);
 	if(typeof time !== "number") return;
+	
 	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++)
-		for(var p in players[y][x]){
+		for(var p in players[y][x]){ // search all players
 			var player = players[y][x][p];
-			if(player.name === name){
-				player.muteCap = player.muteTimer = 25*60*time;
-				chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
-				return;
-			}
-	}for(var p in dockers){
+			if(player.name === name){player.mute(minutes);return;}
+	}
+	for(var p in dockers){
 		var player = dockers[p];
-		if(player.name === name){
-			player.muteCap = player.muteTimer = 25*60*time;
-			chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
-			return;
-		}
-	}for(var p in deads){
+		if(player.name === name){player.mute(minutes);return;}
+	}
+	for(var p in deads){
 		var player = deads[p];
-		if(player.name === name){
-			player.muteCap = player.muteTimer = 25*60*time;
-			chatAll("~`violet~`" + player.name + "~`yellow~` has been " + (time > 0?"muted for " + time + " minutes!" : "unmuted!"));
-			return;
-		}
+		if(player.name === name){player.mute(minutes);return;}
 	}
 }
 function smite(msg){
 	if(msg.split(" ").length != 2) return;
 	var name = msg.split(" ")[1];
 	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++)
-		for(var p in players){
-			var player = players[p];
+		for(var p in players[y][x]){ // only search players who are in game
+			var player = players[y][x][p];
 			if(player.name === name){
 				player.die(0);
 				chatAll("~`violet~`" + player.name + "~`yellow~` has been Smitten!");
@@ -3519,29 +3514,28 @@ function smite(msg){
 var sectors = new Array(9);
 init();
 function init(){ // start the server!
+
+	// create folders for players, neural nets, and turrets if they dont exist
 	buildFileSystem();
+	
+	//initialize lists of quests
 	for(var i = 0; i < 10; i++){
 		bQuests[i] = 0;
 		rQuests[i] = 0;
 	}
-	var r = Math.random();
 	
-	var baseMap = [0,1,0,4,2,2,3,0,5,1];
-	for(var i = 0; i < baseMap.length; i+=2){
-		var randBase = Math.random();
-		var baase = Base(randBase, true, baseMap[i], baseMap[i+1], 'red', sectorWidth/2, sectorWidth/2);
-		bases[baseMap[i]][baseMap[i+1]] = baase;
-		var randBase2 = Math.random();
-		var baase2 = Base(randBase2, true, mapSz - 1-baseMap[i], mapSz - 1-baseMap[i+1], 'blue', sectorWidth/2, sectorWidth/2);
-		bases[mapSz - 1-baseMap[i]][mapSz - 1-baseMap[i+1]] = baase2;
-	}
+	spawnBases();
 	
+	//make asteroids. Make 10 times the number of sectors.
 	for(var i = 0; i < mapSz*mapSz*10; i++) createAsteroid();
+	
+	//Make exactly one planet in each sector.
 	for(var s = 0; s < mapSz * mapSz; s++){
 		var x = s % mapSz;
 		var y = Math.floor(s / mapSz);
 		createPlanet(planets[s], x, y);
 	}
+	
 	var astPack = new Array(mapSz);
 	for(var i = 0; i < mapSz; i++){
 		astPack[i] = new Array(mapSz);
@@ -3563,7 +3557,7 @@ function init(){ // start the server!
 	var v = new Vortex(id, Math.random() * sectorWidth, Math.random() * sectorWidth, Math.floor(Math.random() * mapSz), Math.floor(Math.random() * mapSz), .5, 0, true);
 	vorts[v.sy][v.sx][id] = v;
 	
-	//smbh
+	//Black Hole in D4
 	id = Math.random();
 	v = new Vortex(id, sectorWidth/2, sectorWidth/2, 3, 3, .15, 0, false);
 	vorts[v.sy][v.sx][id] = v;
@@ -3575,6 +3569,58 @@ function init(){ // start the server!
 	setTimeout(update, 40);
 	setTimeout(updateLB,60000);
 }
+function buildFileSystem(){ // create the server files/folders
+	var dir = './server';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	dir = './server/neuralnets';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	dir = './server/players';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	dir = './server/turrets';
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+}
+function spawnBases(){
+	//spawn bases           (Red)  (Blue)
+	var baseMap = [	0,1,	//A2 / G6
+					0,4,	//A5 / G3
+					2,2,	//C3 / E5
+					3,0,	//D1 / D7
+					5,1];	//F2 / B6
+	for(var i = 0; i < baseMap.length; i+=2){
+		//make a red base at these coords
+		var randBase = Math.random();
+		var redBase = Base(randBase, true, baseMap[i], baseMap[i+1], 'red', sectorWidth/2, sectorWidth/2);
+		bases[baseMap[i]][baseMap[i+1]] = redBase;
+		
+		//mirror coordinates and make a blue base
+		randBase = Math.random();
+		var blueBase = Base(randBase, true, mapSz - 1-baseMap[i], mapSz - 1-baseMap[i+1], 'blue', sectorWidth/2, sectorWidth/2);
+		bases[mapSz - 1-baseMap[i]][mapSz - 1-baseMap[i+1]] = blueBase;
+	}
+}
+function loadTurrets(){
+	var count = 0;
+	console.log("\nLoading Turrets...");
+	var items = fs.readdirSync('server/turrets/');
+	
+	for(var i in items){
+		count++;
+		console.log("Turret found: " + items[i]);
+		var data = fs.readFileSync("server/turrets/"+items[i], 'utf8').split(":");
+		var id = parseFloat(data[3]);
+		var b = new Base(id, false, parseFloat(data[8]), parseFloat(data[9]), data[4], parseFloat(data[6]), parseFloat(data[7]));
+		b.kills = parseFloat(data[0]);
+		b.experience = parseFloat(data[1]);
+		b.money = parseFloat(data[2]);
+		b.owner = data[5];
+		bases[parseFloat(data[8])][parseFloat(data[9])] = b;
+	}
+	
+	console.log(count+" turret(s) loaded.");
+}
+
+
+
 function spawnBot(sx,sy,col,rbNow,bbNow){
 	if(sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 	if((rbNow > bbNow + 5 && col == "red")||(rbNow + 5 < bbNow && col == "blue")) return;
@@ -3638,26 +3684,6 @@ function spawnNNBot(sx,sy,col){
 	}
 	bot.refillAllAmmo();
 	players[bot.sy][bot.sx][id] = bot;
-}
-function loadTurrets(){
-	var count = 0;
-	console.log("\nLoading Turrets...");
-	var items = fs.readdirSync('server/turrets/');
-	
-	for(var i in items){
-		count++;
-		console.log("Turret found: " + items[i]);
-		var data = fs.readFileSync("server/turrets/"+items[i], 'utf8').split(":");
-		var id = parseFloat(data[3]);
-		var b = new Base(id, false, parseFloat(data[8]), parseFloat(data[9]), data[4], parseFloat(data[6]), parseFloat(data[7]));
-		b.kills = parseFloat(data[0]);
-		b.experience = parseFloat(data[1]);
-		b.money = parseFloat(data[2]);
-		b.owner = data[5];
-		bases[parseFloat(data[8])][parseFloat(data[9])] = b;
-	}
-	
-	console.log(count+" turret(s) loaded.");
 }
 
 
