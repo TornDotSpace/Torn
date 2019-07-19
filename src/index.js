@@ -1193,6 +1193,7 @@ socket.on('posUp', function (data) {
 	playersInfo = data.players;
 	planetsInfo = data.planets;
 	basesInfo = data.bases;
+	console.log(data.bases);
 	astsInfo = data.asteroids;
 	beamsInfo = data.beams;
 	blastsInfo = data.blasts;
@@ -1208,8 +1209,7 @@ function rInBase() {
 	rChat();
 	rBaseGui();
 	rAchNotes();
-	if(tab != -1)
-		ReactRoot.turnOffRegister("LoginOverlay");
+	if(tab != -1) ReactRoot.turnOffRegister("LoginOverlay");
 	switch (tab) {
 		case 0:
 			rHome();
@@ -3458,6 +3458,7 @@ function rSelfCloaked() {
 	ctx.stroke();
 }
 function rBases() {
+	console.log(basesInfo);
 	if (basesInfo != 0) { // render bases
 		var image = basesInfo.color == 'red'?Img.base:Img.bss;
 		var pw = image.width;
