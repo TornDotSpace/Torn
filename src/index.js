@@ -1,7 +1,4 @@
 var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
-var isIE = /*@cc_on!@*/false || !!document.documentMode;
-var isEdge = !isIE && !!window.StyleMedia;
-var isFirefox = typeof InstallTrigger !== 'undefined';
 
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;

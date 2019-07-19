@@ -1,6 +1,4 @@
 var fs = require('fs');
-var http = require('http');
-var express = require('express');
 var Filter = require('bad-words');
 
 console.log('Server started');
