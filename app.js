@@ -2733,27 +2733,30 @@ io.sockets.on('connection', function(socket){
 	console.log(ip + " Connected!");
 	flood(ip);
 
-	var sockcol = 0; // the color of this socket, only used for when spawning a guest for the first time.
+	var player = 0;
+
+	var socket_color = 0; // the color of this socket, only used for when spawning a guest for the first time.
+
 	
 	socket.on('lore',function(data){ //player is requesting lore screen.
 		if (typeof data === "undefined" || typeof data.alien !== "boolean") return;
-		sockcol = data.alien; // note whether they want to be alien for when they spawn
-		socket.binary(false).emit("lored",{pc:sockcol});
+		socket_color = data.alien; // note whether they want to be alien for when they spawn
+		socket.binary(false).emit("lored",{pc:socket_color});
 	});
+
 	socket.on('guest',function(data){ // TODO Chris
 		flood(ip);
 		if(instance) return;
-		var player = Player(socket.id);
+		player = Player(socket.id);
 		player.guest = true;
-		//players[socket.id]=player;
 		instance = true;
 		player.ip = ip;
 		player.name = "GUEST" + guestCount;
 		guestCount++;
 		
-		player.color = sockcol?"red":"blue";
-		if(mapSz % 2 == 0) player.sx = player.sy = (sockcol?(mapSz / 2 - 1):(mapSz / 2));
-		else player.sx = player.sy = (sockcol?(mapSz / 2 - 1.5):(mapSz / 2 + .5));
+		player.color = socket_color ?"red":"blue";
+		if(mapSz % 2 == 0) player.sx = player.sy = (socket_color ?(mapSz / 2 - 1):(mapSz / 2));
+		else player.sx = player.sy = (socket_color ?(mapSz / 2 - 1.5):(mapSz / 2 + .5));
 		for(var i = 0; i < ships[player.ship].weapons; i++) player.weapons[i] = -1;
 		for(var i = ships[player.ship].weapons; i < 10; i++) player.weapons[i] = -2;
 		player.weapons[0] = 0;
@@ -2762,7 +2765,7 @@ io.sockets.on('connection', function(socket){
 		player.getAllBullets();
 		player.getAllPlanets();
 		// TODO: FIXME 
-		players[0][0][socket.id] = player;
+		players[player.sy][player.sx][socket.id] = player;
 		player.va = ships[player.ship].agility * .08 * player.agility2;
 		player.thrust = ships[player.ship].thrust * player.thrust2;
 		player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
@@ -2775,10 +2778,8 @@ io.sockets.on('connection', function(socket){
 		flood(ip);
 		// Block registrations being triggered from non-guests or unconnected accounts
 		// Fixes some registration spam and crash exploits
-		var player = (typeof (players[socket.id]) !== "undefined") ? players[socket.id] : dockers[socket.id];
 
-		if (typeof (player) === "undefined") return;
-
+		if (!player) return;
 		if (!player.guest) return;
 
 		var user = data.user, pass = data.pass;
@@ -2868,8 +2869,7 @@ io.sockets.on('connection', function(socket){
 				socket.binary(false).emit("accInUse", {});
 				return;
 			} */
-		console.log("login: 2864");
-		var player = Player(socket.id);
+		player = Player(socket.id);
 		instance = true;
 		player.ip = ip;
 		player.name = name;
@@ -2972,8 +2972,8 @@ io.sockets.on('connection', function(socket){
 		player.sendAchievementsDrift(false);
 		player.sendAchievementsMisc(false);
 		player.sendStatus();
-		// TODO: FIXME
-		players[0][0][socket.id]=player;
+
+		players[player.sy][player.sx][socket.id]=player;
 		player.getAllBullets();
 		player.getAllPlanets();
 		if(player.sx >= mapSz) player.sx--;
@@ -2994,7 +2994,6 @@ io.sockets.on('connection', function(socket){
 		lefts[socket.id] = 150; // note that this player has left and queue it for deletion
 	
 		//try to locate the player object from their ID
-		var player = getPlayer(socket.id);
 		if(player == 0) return;
 		
 		//If the player is indeed found
@@ -3007,8 +3006,6 @@ io.sockets.on('connection', function(socket){
 	socket.on('pingmsg',function(data){ // when the player pings to tell us that it's still connected
 		if (typeof data === "undefined") return;
 		// We don't need to check that data.time is well-defined.
-
-		var player = getPlayer(socket.id);
 		if(player == 0) return; // if player can't be found
 		
 		socket.binary(false).emit('reping', {time:data.time});
@@ -3016,7 +3013,6 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('key',function(data){ // on client keypress or key release
 		if(typeof data === "undefined" || typeof data.inputId === 'undefined' || typeof data.state === 'undefined') return;
-		var player = getPlayer(socket.id);
 		if(player == 0) return;
 		
 		player.afkTimer = 20 * 25 * 60; // 20 minutes till we kick them for being afk
@@ -3050,7 +3046,6 @@ io.sockets.on('connection', function(socket){
 	socket.on('chat',function(data){ // when someone sends a chat message
 		if (typeof data === "undefined" || typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128) return;
 
-		var player = getPlayer(socket.id);
 		if(player == 0) return;
 		
 		if(guestsCantChat && player.guest) {
@@ -3083,14 +3078,11 @@ io.sockets.on('connection', function(socket){
 		}
 	});
 	socket.on('toggleGlobal',function(data){ // player wants to switch what chat room they're in
-		var player = getPlayer(socket.id);
 		if(player == 0) return;
 		player.globalChat = (player.globalChat+1)%2;
 	});
 	socket.on('sell',function(data){ // selling ore
-	
-		var player = dockers[socket.id];
-		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.item !== 'string' || !player.docked) return;
+		if (typeof data === "undefined" || player == 0  || !player.docked || typeof data.item !== 'string' || !player.docked) return;
 		
 		//pay them appropriately
 		if(data.item == 'iron' || data.item == 'all'){
@@ -3111,9 +3103,7 @@ io.sockets.on('connection', function(socket){
 		
 	});
 	socket.on('buyShip',function(data){ // client wants to buy a new ship
-		
-		var player = dockers[socket.id];
-		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.ship !== 'number') return;
+		if (typeof data === "undefined" || player == 0  || !player.docked || typeof data.ship !== 'number') return;
 		
 		data.ship = Math.floor(data.ship); // the ship index must be integer. It must be no higher than your rank, and cannot be your current ship or out of bounds.
 		if(data.ship > player.rank || data.ship < 0 || data.ship > ships.length || data.ship == player.ship) return;
@@ -3143,8 +3133,7 @@ io.sockets.on('connection', function(socket){
 		player.save();
 	});
 	socket.on('buyW',function(data){ // client wants to buy a weapon
-		var player = dockers[socket.id];
-		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.slot !== 'number' || typeof data.weapon !== 'number') return;
+		if (typeof data === "undefined" || player == 0  || !player.docked || typeof data.slot !== 'number' || typeof data.weapon !== 'number') return;
 		
 		data.slot = Math.floor(data.slot);
 		data.weapon = Math.floor(data.weapon);
@@ -3161,8 +3150,7 @@ io.sockets.on('connection', function(socket){
 		player.save();
 	});
 	socket.on('buyLife',function(data){ // client wants to buy a life
-		var player = dockers[socket.id];
-		if(typeof player === "undefined" || player.lives >= 20) return;
+		if(player == 0  || !player.docked|| player.lives >= 20) return;
 		var price = expToLife(player.experience,player.guest); // compute how much the life costs them
 		if(player.money < price) return; // cant afford
 		
@@ -3173,8 +3161,7 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('upgrade',function(data){ // client wants to upgrade a tech
 		//TODO im totally redoing this
-		var player = dockers[socket.id];
-		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
+		if (typeof data === "undefined" || player == 0  || !player.docked || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
 		var item = Math.floor(data.item);
 		
 		switch(item){
@@ -3226,9 +3213,7 @@ io.sockets.on('connection', function(socket){
 		player.save();
 	});
 	socket.on('sellW',function(data){ // wants to sell a weapon.
-		
-		var player = dockers[socket.id];
-		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.slot !== 'number' || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
+		if (typeof data === "undefined" || player == 0  || !player.docked || typeof data.slot !== 'number' || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
 		
 		data.slot = Math.floor(data.slot);
 		if(!player.docked || player.weapons[data.slot] < 0) return; // can't sell what you don't have. or when you're not in base.
@@ -3240,9 +3225,7 @@ io.sockets.on('connection', function(socket){
 		player.save();
 	});
 	socket.on('quest',function(data){ // wants to accept a quest
-		
-		var player = dockers[socket.id];
-		if (typeof data === "undefined" || typeof player === "undefined" || player.quest!=0 || typeof data.quest !== 'number' || data.quest < 0 || data.quest > 9) return;
+		if (typeof data === "undefined" || player == 0  || !player.docked || player.quest!=0 || typeof data.quest !== 'number' || data.quest < 0 || data.quest > 9) return;
 		
 		var qid = Math.floor(data.quest); // Find the correct quest.
 		var quest = (player.color === "red"?rQuests:bQuests)[qid];
@@ -3268,7 +3251,6 @@ io.sockets.on('connection', function(socket){
 		socket.binary(false).emit('quest', {quest: player.quest});
 	}); // no longer allowed.*/
 	socket.on('equip',function(data){ // Player wants to select a new weapon to hold
-		var player = getPlayer(socket.id);
 		if (player == 0 || typeof data === "undefined" || typeof player === "undefined" || typeof data.scroll !== 'number' || data.scroll >= ships[player.ship].weapons) return;
 		
 		player.equipped = Math.floor(data.scroll); // Set their equipped weapon
@@ -3278,8 +3260,7 @@ io.sockets.on('connection', function(socket){
 		socket.binary(false).emit('equip', {scroll:player.equipped}); // Alert the client
 	});
 	socket.on('trail',function(data){ // Player requests an update to their trail
-		var player = dockers[socket.id];
-		if (typeof data === "undefined" || typeof player === "undefined" || typeof data.trail !== 'number') return;
+		if (typeof data === "undefined" || player == 0  || !player.docked || typeof data.trail !== 'number') return;
 		
 		if(data.trail == 0) player.trail = 0;
 		if(data.trail == 1 && player.killsAchs[12]) player.trail = 1;
