@@ -5,12 +5,24 @@ var Filter = require('bad-words');
 
 console.log('Server started');
 var io = require('socket.io')();
-io.listen(parseInt(process.argv[2]));
+var port = process.argv[2];
+io.listen(parseInt(port));
 
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
 var wepns = jsn.weapons, ships = jsn.ships, planets = jsn.planets;
 
 filter = new Filter(); // bad-words node package
+
+
+
+
+
+// bases                   (Red) / (Blue)
+var baseMap = [	0,1,	//A2 / G6
+				0,4,	//A5 / G3
+				2,2,	//C3 / E5
+				3,0,	//D1 / D7
+				5,1];	//F2 / B6
 
 
 
@@ -3394,7 +3406,6 @@ function squaredDist(a, b){ // distance between two points squared. i.e. c^2
 
 //TODO Merge these
 function updateQuestsR(){
-	var baseMap = [0,1,0,4,2,2,3,0,5,1];
 	var i = 0;
 	for(i = 0; i < 10; i++){
 		if(rQuests[i] == 0) break;
@@ -3416,7 +3427,6 @@ function updateQuestsR(){
 	rQuests[i] = nm;
 }
 function updateQuestsB(){
-	var baseMap = [0,1,0,4,2,2,3,0,5,1];
 	var i = 0;
 	for(i = 0; i < 10; i++){
 		if(bQuests[i] == 0) break;
@@ -3443,7 +3453,7 @@ function updateQuestsB(){
 
 function runCommand(player, msg){ // player just sent msg in chat and msg starts with a /
 
-	var correct = true
+	var correct = true;
 	
 	if(msg.startsWith("/password ")) player.changePass(msg.substring(10));
 	else if(msg.startsWith("/me ")) chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4));
@@ -3521,6 +3531,9 @@ var sectors = new Array(9);
 init();
 function init(){ // start the server!
 
+	console.log("");
+	for(var i = 0; i < 5; i++)console.log("=== STARTING SERVER ON PORT "+port+" ===");
+
 	// create folders for players, neural nets, and turrets if they dont exist
 	buildFileSystem();
 	
@@ -3574,24 +3587,36 @@ function init(){ // start the server!
 	//start ticking
 	setTimeout(update, 40);
 	setTimeout(updateLB,60000);
+
+	console.log("Server initialized successfully. Game log below.\n");
 }
 function buildFileSystem(){ // create the server files/folders
+	console.log("\nCreating any potential missing files and folders needed for the server...");
+	var allGood = true;
+
+
+	var dir = './client/leaderboard';
+	if (!fs.existsSync(dir)) {console.log("Creating "+dir+" directory..."); fs.mkdirSync(dir); allGood = false;}
+
+	fs.writeFileSync("client/leaderboard/index.html", "Leaderboard not ready yet...", (err) => {
+		if (err) console.log(err); console.log("Created leaderboard file.");
+	});
+
 	var dir = './server';
-	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	if (!fs.existsSync(dir)) {console.log("Creating "+dir+" directory..."); fs.mkdirSync(dir); allGood = false;}
 	dir = './server/neuralnets';
-	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	if (!fs.existsSync(dir)) {console.log("Creating "+dir+" directory..."); fs.mkdirSync(dir); allGood = false;}
 	dir = './server/players';
-	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	if (!fs.existsSync(dir)) {console.log("Creating "+dir+" directory..."); fs.mkdirSync(dir); allGood = false;}
 	dir = './server/turrets';
-	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	if (!fs.existsSync(dir)) {console.log("Creating "+dir+" directory..."); fs.mkdirSync(dir); allGood = false;}
+
+
+	if(allGood) console.log("All server files were already present!");
 }
 function spawnBases(){
-	//spawn bases           (Red)  (Blue)
-	var baseMap = [	0,1,	//A2 / G6
-					0,4,	//A5 / G3
-					2,2,	//C3 / E5
-					3,0,	//D1 / D7
-					5,1];	//F2 / B6
+	console.log("\nSpawning "+(baseMap.length/2)+" Bases...");
+	//spawn bases
 	for(var i = 0; i < baseMap.length; i+=2){
 		//make a red base at these coords
 		var randBase = Math.random();
@@ -3622,7 +3647,7 @@ function loadTurrets(){
 		bases[parseFloat(data[8])][parseFloat(data[9])] = b;
 	}
 	
-	console.log(count+" turret(s) loaded.");
+	console.log(count+" turret(s) loaded.\n");
 }
 
 
@@ -4045,7 +4070,8 @@ function updateHeatmap(){
 	for(var i in lb) send(lb[i].id, 'heatmap', {hmap:hmap, lb:lbSend, youi:i, raidBlue:raidBlue, raidRed:raidRed});
 }
 function updateLB(){
-	chatAll("Updating torn.space/leaderboard...");
+	chatAll("Updating torn.space/leaderboard...\n");
+	console.log("\nUpdating torn.space/leaderboard...");
 	fs.readdir('server/players/', function(err, items) {
 		var top1000names = [];
 		var top1000kills = [];
@@ -4110,6 +4136,7 @@ function updateLB(){
 //meta
 setTimeout(initReboot,86400*1000-6*60*1000);
 function initReboot(){
+	console.log("\nInitializing server reboot...\n");
 	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
 	setTimeout(function(){chatAll("Server is restarting in 4 minutes. Please save your progress as soon as possible.");}, 1*60*1000);
 	setTimeout(function(){chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible.");}, 2*60*1000);
@@ -4153,6 +4180,7 @@ function saveTurrets(){
 }
 function decayPlayers(){
 	sendAll("chat",{msg:"Decaying Players..."});
+	console.log("\nDecaying players...")
 	var items = fs.readdirSync('server/players/');
 	
 	
@@ -4165,7 +4193,9 @@ function decayPlayers(){
 		if(split.length < 85){
 			if(split.length < 15) sendAll("chat",{msg:"File " + source + " unreadable. " + split.length + " entries."});
 			else{
-				sendAll("chat",{msg:"Player " + split[14] + " failed to decay due to an unformatted save file with " + split.length + " entries. Cleaning file."});
+				var log = "Player " + split[14] + " failed to decay due to an unformatted save file with " + split.length + " entries. Cleaning file.";
+				sendAll("chat",{msg:log});
+				console.log("\n"+log+"\n");
 				cleanFile(source);
 			}
 			continue;
