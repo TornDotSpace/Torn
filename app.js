@@ -2735,7 +2735,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('lore',function(data){ //player is requesting lore screen.
 		if (typeof data === "undefined" || typeof data.alien !== "boolean") return;
 		sockcol = data.alien; // note whether they want to be alien for when they spawn
-		socket.emit("lored",{pc:sockcol});
+		socket.binary(false).emit("lored",{pc:sockcol});
 	});
 	socket.on('guest',function(data){ // TODO Chris
 		flood(ip);
@@ -2754,7 +2754,7 @@ io.sockets.on('connection', function(socket){
 		for(var i = 0; i < ships[player.ship].weapons; i++) player.weapons[i] = -1;
 		for(var i = ships[player.ship].weapons; i < 10; i++) player.weapons[i] = -2;
 		player.weapons[0] = 0;
-		socket.emit("guested",{});
+		socket.binary(false).emit("guested",{});
 		player.sendStatus();
 		player.getAllBullets();
 		player.getAllPlanets();
@@ -2764,7 +2764,7 @@ io.sockets.on('connection', function(socket){
 		player.thrust = ships[player.ship].thrust * player.thrust2;
 		player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
 		player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-		socket.emit('sectors', {sectors:sectors});
+		socket.binary(false).emit('sectors', {sectors:sectors});
 		sendWeapons(player.id);
 	});
 	socket.on('register',function(data){ // TODO Chris
@@ -2781,18 +2781,18 @@ io.sockets.on('connection', function(socket){
 		var user = data.user, pass = data.pass;
 
 		if(typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)){
-			socket.emit("invalidReg", {reason:2});
+			socket.binary(false).emit("invalidReg", {reason:2});
 			return;
 		}
 		user = user.toLowerCase();
 		if(typeof pass !== "string" || pass.length > 32 || pass.length < 1){
-			socket.emit("invalidReg", {reason:3});
+			socket.binary(false).emit("invalidReg", {reason:3});
 			return;
 		}
 
 		// Test for profanity
 		if(filter.isProfane(user)){ 
-			socket.emit("invalidReg", {reason:5});
+			socket.binary(false).emit("invalidReg", {reason:5});
 			return;
 		}
 
@@ -2802,7 +2802,7 @@ io.sockets.on('connection', function(socket){
 			for (var i=0; i<items.length; i++) {
 				if(items[i].startsWith(user+"[")){
 					console.log(items[i] + ":" + (user+"["));
-					socket.emit("invalidReg", {reason:4});
+					socket.binary(false).emit("invalidReg", {reason:4});
 					valid = false;
 					break;
 				}
@@ -2813,14 +2813,14 @@ io.sockets.on('connection', function(socket){
 			player.name = user;
 			player.password = pass;
 			player.guest = false;
-			socket.emit("registered",{user:data.user,pass:data.pass});
+			socket.binary(false).emit("registered",{user:data.user,pass:data.pass});
 			var text = user+' registered!';
 			console.log(text);
 			player.save();
 			delete dockers[player.id];
 			instance = false;
 		});
-		socket.emit("raid", {raidTimer:raidTimer})
+		socket.binary(false).emit("raid", {raidTimer:raidTimer})
 	});
 	socket.on('login',function(data){ // TODO Chris
 		if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
@@ -2830,39 +2830,39 @@ io.sockets.on('connection', function(socket){
 		//Validate and save IP
 		var name = data.user, pass = data.pass;
 		if(typeof name !== "string" || name.length > 16 || name.length < 4 || /[^a-zA-Z0-9_]/.test(name)){
-			socket.emit("invalidCredentials", {});
+			socket.binary(false).emit("invalidCredentials", {});
 			return;
 		}
 		if(typeof pass !== "string" || pass.length > 32 || pass.length < 1){
-			socket.emit("invalidCredentials", {});
+			socket.binary(false).emit("invalidCredentials", {});
 			return;
 		}
 		name = name.toLowerCase();
 		var readSource = 'server/players/'+name+"["+hash(data.pass)+'.txt';
 		if (!fs.existsSync(readSource)){
-			socket.emit("invalidCredentials", {});
+			socket.binary(false).emit("invalidCredentials", {});
 			return;
 		}
 		console.log("login: 2844");
 		/*for(var i in players)
 			console.log(players[i]);
 			if(players[i].name === name || players[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == players[i].cookie){
-				socket.emit("accInUse", {});
+				socket.binary(false).emit("accInUse", {});
 				return;
 			}
 		for(var i in dockers)
 			if(dockers[i].name === name || dockers[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == dockers[i].cookie){
-				socket.emit("accInUse", {});
+				socket.binary(false).emit("accInUse", {});
 				return;
 			}
 		for(var i in deads)
 			if(deads[i].name === name || deads[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == deads[i].cookie){
-				socket.emit("accInUse", {});
+				socket.binary(false).emit("accInUse", {});
 				return;
 			}
 		for(var i in lefts)
 			if(lefts[i].name === name){// || lefts[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == lefts[i].cookie){
-				socket.emit("accInUse", {});
+				socket.binary(false).emit("accInUse", {});
 				return;
 			} */
 		console.log("login: 2864");
@@ -2871,7 +2871,7 @@ io.sockets.on('connection', function(socket){
 		player.ip = ip;
 		player.name = name;
 		player.password = pass;
-		socket.emit("loginSuccess",{});
+		socket.binary(false).emit("loginSuccess",{});
 		
 		console.log(ip + " logged in as " + name + "!");
 	
@@ -2961,7 +2961,7 @@ io.sockets.on('connection', function(socket){
 			player.lives = parseFloat(fileData[82]);
 		}
 		player.calculateGenerators();
-		socket.emit("raid", {raidTimer:raidTimer})
+		socket.binary(false).emit("raid", {raidTimer:raidTimer})
 		player.refillAllAmmo();
 		player.checkTrailAchs();
 		player.sendAchievementsKill(false);
@@ -2983,7 +2983,7 @@ io.sockets.on('connection', function(socket){
 		player.thrust = ships[player.ship].thrust * player.thrust2;
 		player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
 		player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-		if(!data.amNew) socket.emit('sectors', {sectors:sectors});
+		if(!data.amNew) socket.binary(false).emit('sectors', {sectors:sectors});
 		sendWeapons(player.id);
 	});
 	socket.on('disconnect',function(data){ // graceful disconnect
@@ -3008,7 +3008,7 @@ io.sockets.on('connection', function(socket){
 		var player = getPlayer(socket.id);
 		if(player == 0) return; // if player can't be found
 		
-		socket.emit('reping', {time:data.time});
+		socket.binary(false).emit('reping', {time:data.time});
 		player.pingTimer = 250; // make sure they dont get disconnected.
 	});
 	socket.on('key',function(data){ // on client keypress or key release
@@ -3045,17 +3045,13 @@ io.sockets.on('connection', function(socket){
 		}
 	});
 	socket.on('chat',function(data){ // when someone sends a chat message
-		console.log("hi");
 		if (typeof data === "undefined" || typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128) return;
 
-		console.log("hi2.5");
 		var player = getPlayer(socket.id);
 		if(player == 0) return;
-
-		console.log("hi2");
 		
 		if(guestsCantChat && player.guest) {
-			socket.emit("chat",{msg:'You must create an account in the base before you can chat!', color:'yellow'});
+			socket.binary(false).emit("chat",{msg:'You must create an account in the base before you can chat!', color:'yellow'});
 			return;
 		}
 		
@@ -3068,7 +3064,7 @@ io.sockets.on('connection', function(socket){
 		if(player.muteTimer > 0) return; // if they're muted
 		player.chatTimer += 100; // note this as potential spam
 		if(player.chatTimer > 600){ // exceeded spam limit: they are now muted
-			socket.emit('chat', {msg:("~`red~`You have been muted for " +Math.floor(player.muteCap/25) + " seconds!")});
+			socket.binary(false).emit('chat', {msg:("~`red~`You have been muted for " +Math.floor(player.muteCap/25) + " seconds!")});
 			player.muteTimer = player.muteCap;
 			player.muteCap *= 2; // their next mute will be twice as long
 		}
@@ -3136,7 +3132,7 @@ io.sockets.on('connection', function(socket){
 		player.capacity = Math.round(ships[data.ship].capacity * player.capacity2);
 		
 		player.equipped = 0; // set them as being equipped on their first weapon
-		socket.emit('equip', {scroll:player.equipped});
+		socket.binary(false).emit('equip', {scroll:player.equipped});
 		
 		for(var i = 0; i < 10; i++) if(player.weapons[i]==-2 && i < ships[player.ship].weapons) player.weapons[i] = -1; // unlock new possible weapon slots
 		player.calculateGenerators();
@@ -3258,7 +3254,7 @@ io.sockets.on('connection', function(socket){
 		
 		if(player.color === "red") rQuests[qid] = 0; else bQuests[qid] = 0; // note that quest as taken and queue it to be remade. TODO can we just remake it here?
 		player.quest = quest; // give them the quest and tell the client.
-		socket.emit('quest', {quest: quest});
+		socket.binary(false).emit('quest', {quest: quest});
 		
 	});
 	/*socket.on('cancelquest',function(data){ // THIS IS NO LONGER ALLOWED.
@@ -3266,7 +3262,7 @@ io.sockets.on('connection', function(socket){
 		if(typeof player === "undefined")
 			return;
 		player.quest = 0;
-		socket.emit('quest', {quest: player.quest});
+		socket.binary(false).emit('quest', {quest: player.quest});
 	}); // no longer allowed.*/
 	socket.on('equip',function(data){ // Player wants to select a new weapon to hold
 		var player = getPlayer(socket.id);
@@ -3276,7 +3272,7 @@ io.sockets.on('connection', function(socket){
 		if(player.equipped < 0) player.equipped = 0; // Ensure it's in range
 		else if(player.equipped > 9) player.equipped = 9;
 		
-		socket.emit('equip', {scroll:player.equipped}); // Alert the client
+		socket.binary(false).emit('equip', {scroll:player.equipped}); // Alert the client
 	});
 	socket.on('trail',function(data){ // Player requests an update to their trail
 		var player = dockers[socket.id];
