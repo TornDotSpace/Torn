@@ -1170,7 +1170,7 @@ var Player = function(i){
 			
 			self.docked = false;
 			
-			players[self.id] = self;
+			players[self.sy][self.sx][self.id] = self;
 			delete dockers[self.id];
 			
 			self.leaveBaseShield = 25;
@@ -1182,8 +1182,8 @@ var Player = function(i){
 		self.checkTrailAchs();
 		
 		var base = 0;
-		var b = bases[self.sx][self.sy];
-		if(b.isBase && b.color == self.color && square(self.x - b.x)+square(self.y - b.y) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
+		var b = bases[self.sy][self.sx];
+		if(b.isBase && b.color == self.color && squaredDist(self,b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
 		if(base == 0) return;
 		
 		self.refillAllAmmo();
@@ -1192,7 +1192,7 @@ var Player = function(i){
 		self.docked = true;
 		
 		dockers[self.id] = self;
-		delete players[self.id];
+		delete players[self.sy][self.sx][self.id];
 		
 		self.sendStatus();
 	}
@@ -1223,7 +1223,7 @@ var Player = function(i){
 			if(currWep == 4) bAngle += Math.random() - .5; // shotgun
 			
 			var bullet = Bullet(self, r, currWep, bAngle, i * 2 - 1);
-			bullets[r] = bullet;
+			bullets[self.sy][self.sx][r] = bullet;
 			sendAllSector('sound', {file:(currWep == 5 || currWep == 6 || currWep == 39)?"minigun":"shot",x: self.x, y: self.y}, self.sx, self.sy);
 		}
 	}
@@ -1231,7 +1231,7 @@ var Player = function(i){
 		var r = Math.random();
 		var bAngle = self.angle;
 		var missile = Missile(self, r, self.weapons[self.equipped], bAngle);
-		missiles[r] = missile;
+		missiles[self.sy][self.sx][r] = missile;
 		sendAllSector('sound', {file:"missile",x: self.x, y: self.y}, self.sx, self.sy);
 		
 		self.reload = wepns[self.weapons[self.equipped]].Charge;
@@ -1240,7 +1240,7 @@ var Player = function(i){
 	self.shootOrb = function(){
 		var r = Math.random();
 		var orb = Orb(self, r, self.weapons[self.equipped]);
-		orbs[r] = orb;
+		orbs[self.sy][self.sx][r] = orb;
 		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
 		
 		self.reload = wepns[self.weapons[self.equipped]].Charge;
@@ -1317,7 +1317,7 @@ var Player = function(i){
 		
 		var r = Math.random();
 		var beam = Beam(self, r, self.weapons[self.equipped], nearP, origin);
-		beams[r] = beam;
+		beams[self.sy][self.sx][r] = beam;
 		sendAllSector('sound', {file:"beam",x: ox, y: oy}, self.sx, self.sy);
 		
 		self.reload = wepns[self.weapons[self.equipped]].Charge;
@@ -1326,7 +1326,7 @@ var Player = function(i){
 	self.shootBlast = function(){
 		var r = Math.random();
 		var blast = Blast(self, r, self.weapons[self.equipped]);
-		blasts[r] = blast;
+		blasts[self.sy][self.sx][r] = blast;
 		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
 		
 		self.reload = wepns[self.weapons[self.equipped]].Charge;
@@ -1667,7 +1667,7 @@ var Player = function(i){
 		if(self.isBot) return;
 		var packHere = [];
 		for(var i in bullets[self.sy][self.sx]){
-			var bullet = bullets[i];
+			var bullet = bullets[self.sy][self.sx][i];
 			packHere.push({wepnID:bullet.wepnID,color:bullet.color,x:bullet.x,vx:self.vx,vy:self.vy,y:bullet.y,angle:bullet.angle,id:self.id});
 		}
 		send(self.id, 'clrBullets', {pack:packHere});
@@ -1897,7 +1897,7 @@ var Base = function(i, b, sxx, syy, col, x, y){
 			}
 		if(player == 0) return;//if we couldn't find them (they aren't in the sector)
 		
-		if(squareDist(player,self) > 40000) return;
+		if(squaredDist(player,self) > 40000) return;
 		
 		player.kills += self.kills;//reward them with my earnings
 		player.spoils("experience",self.experience);
@@ -2387,9 +2387,10 @@ var Bullet = function(ownr, i, weaponID, angl, info){
 		wepnID:weaponID,
 	}
 	self.tick = function(){
+		console.log("ticking");
 		if(self.time++ == 0){ // if this was just spawned
 			sendAllSector("newBullet", {x:self.x, y:self.y, vx:self.vx,vy:self.vy,id:self.id,angle:self.angle,wepnID:self.wepnID, color:self.color}, self.sx, self.sy);
-			//self.x -= self.vx; These were here before Alex's refactor. Not sure if they should exist.
+			//self.x -= self.vx; //These were here before Alex's refactor. Not sure if they should exist.
 			//self.y -= self.vy;
 		}
 		self.move();
@@ -3861,7 +3862,7 @@ function update(){
 				var locked = 0;
 				for(var i in pack[orb.sy][orb.sx]){
 					var player = pack[orb.sy][orb.sx][i];
-					var dist = squareDist(player,orb);
+					var dist = squaredDist(player,orb);
 					if(player.empTimer <= 0 && player.color != orb.color && dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
 						else if(typeof players[locked] !== 'undefined' && dist < square(players[locked].x - orb.x)+square(players[locked].y - orb.y)) locked = player.id;
@@ -3892,10 +3893,10 @@ function update(){
 				var locked = 0;
 				for(var i in pack[missile.sy][missile.sx]){
 					var player = pack[missile.sy][missile.sx][i];
-					var dist = squareDist(player,missile);
+					var dist = squaredDist(player,missile);
 					if(player.empTimer <= 0 && player.color != missile.color && dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
-						else if(typeof players[locked] !== 'undefined' && dist < squareDist(players[locked],missile))locked = player.id;
+						else if(typeof players[locked] !== 'undefined' && dist < squaredDist(players[locked],missile))locked = player.id;
 					}
 				}
 				missile.locked = locked;

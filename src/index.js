@@ -1193,7 +1193,6 @@ socket.on('posUp', function (data) {
 	playersInfo = data.players;
 	planetsInfo = data.planets;
 	basesInfo = data.bases;
-	console.log(data.bases);
 	astsInfo = data.asteroids;
 	beamsInfo = data.beams;
 	blastsInfo = data.blasts;
@@ -1273,6 +1272,7 @@ socket.on('reping',function(data){
 	nLag = time - data.time;
 });
 socket.on('newBullet', function(data){
+	console.log("Bullet received");
 	bullets[data.id] = data;
 	bullets[data.id].tick = 0;
 });
@@ -3062,6 +3062,7 @@ function updateBullets(){
 function rBullets() {
 	if(!login) updateBullets();
 	for (var i in bullets) {
+		console.log("aaa");
 		var selfo = bullets[i];
 		var img = Img.bullet;
 		var rendX = selfo.x - px + w / 2 + scrx;
@@ -3458,7 +3459,6 @@ function rSelfCloaked() {
 	ctx.stroke();
 }
 function rBases() {
-	console.log(basesInfo);
 	if (basesInfo != 0) { // render bases
 		var image = basesInfo.color == 'red'?Img.base:Img.bss;
 		var pw = image.width;
