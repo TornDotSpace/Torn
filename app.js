@@ -359,10 +359,11 @@ var Player = function(i){
 		self.fire();
 	}
 	self.fire = function(){
-		
 		if(self.c) self.shootEliteWeapon();
 		if(self.bulletQueue > 0)self.shootBullet(40); // SMG
 		var wepId = self.weapons[self.equipped];
+		// HACK: self.equppied is undefined before first base interaction(???). Alex!
+		wepId = (wepId === undefined) ? 0 : wepId;
 		var wep = wepns[wepId];
 		
 		if(self.space && wepId >= 0 && self.reload < -.01 && self.energy > wep.energy){
@@ -494,7 +495,7 @@ var Player = function(i){
 					self.space = false;
 					return;
 				}
-				if(bases[self.sx][self.sy] != 0){
+				if(bases[self.sy][self.sx] != 0){
 					send(self.id, "chat",{msg:'There can only be one turret in any sector!', color:'yellow'});
 					self.space = false;
 					return;
@@ -502,7 +503,7 @@ var Player = function(i){
 				var r = Math.random();
 				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y);
 				b.owner = self.name;
-				bases[self.sx][self.sy] = b;
+				bases[self.sy][self.sx] = b;
 				send(self.id, "chat",{msg:'You placed a turret! Coming soon, you will be able to name it.', color:'yellow'});
 				self.reload =wep.Charge;
 				self.energy-=wep.energy;
@@ -574,7 +575,7 @@ var Player = function(i){
 			self.energy-=energyTake;
 		}
 		if(self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250 && self.reload <= 0){ // Quarrier
-			self.iron -= 250; // This just shoots an asteroid out of the dhip as if it were a bullet.
+			self.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
 			self.silver -= 250;
 			self.aluminium -= 250;
 			self.platinum -= 250;
@@ -584,7 +585,7 @@ var Player = function(i){
 			a.y = self.y+Math.sin(self.angle) * 256;
 			a.vx = Math.cos(self.angle) * 15;
 			a.vy = Math.sin(self.angle) * 15;
-			asts[r] = a;
+			asts[self.sy][self.sx][r] = a;
 			self.reload = 50;
 		}
 		if(self.ship == 18 && self.energy > 0) self.shootBullet(39); // Built in spreadshot
@@ -866,7 +867,7 @@ var Player = function(i){
 		var movex = 0, movey = 0;
 		if(target != 0) {movex = target.x - self.x; movey = target.y - self.y;}
 		
-		var base = bases[self.sx][self.sy];
+		var base = bases[self.sy][self.sx];
 		if(base != 0 && base.color != self.color){
 			var dist2 = hypot2(base.x, self.x, base.y, self.y);
 			if(friendlies > 0 && enemies == 0) target = base;
@@ -1008,14 +1009,13 @@ var Player = function(i){
 			
 			//compute whether there are any unkilled enemies in this sector
 			var cleared = true;
-			for(var b in players){
-				var player = players[b];
-				if(player.sx == self.sx && player.sy == self.sy && player.color !== self.color){
+			for(var player in players[self.sy][self.sx]){
+				if (player.color != self.color) {
 					cleared = false;
 					break;
 				}
 			}
-			if(cleared && bases[self.sx][self.sy] != 0 && bases[self.sx][self.sy].turretLive) cleared = false;//also check base is dead
+			if(cleared && bases[self.sy][self.sx] != 0 && bases[self.sy][self.sx].turretLive) cleared = false;//also check base is dead
 			
 			if(cleared){ // 2 ifs needed, don't merge this one with the last one
 				self.hasPackage = true;
@@ -1197,7 +1197,6 @@ var Player = function(i){
 		self.sendStatus();
 	}
 	self.shootBullet = function(currWep){
-	
 		if(self.bulletQueue > 0){ // Submachinegun
 			if(self.ammos[self.equipped] <= 0) return;
 			self.bulletQueue--;
@@ -1275,7 +1274,7 @@ var Player = function(i){
 		//base
 		if(!restricted)
 			if(self.weapons[self.equipped] == 7||self.weapons[self.equipped] == 8||self.weapons[self.equipped] == 9){
-				var b = bases[self.sx][self.sy];
+				var b = bases[self.sy][self.sx];
 				if(b != 0 && b.color != self.color && b.turretLive && hypot2(b.x,ox,b.y,oy) < range2) nearP = b;
 			}
 		
@@ -1339,7 +1338,7 @@ var Player = function(i){
 		self.leaveBaseShield = 25;
 		self.refillAllAmmo();
 		if(typeof b === "undefined"){
-			delete players[self.id];
+			delete players[self.sy][self.sx][self.id];
 			return;
 		}
 		sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:Math.cos(self.angle) * self.speed, dy:Math.sin(self.angle)*self.speed}, self.sx, self.sy);
@@ -1369,10 +1368,10 @@ var Player = function(i){
 			
 			//drop a package
 			var r = Math.random();
-			if(self.hasPackage && !self.isBot) packs[r] = Package(self, r, 0); // an actual package (courier)
-			else if(Math.random() < .004 && !self.guest) packs[r] = Package(self, r, 2);//life
-			else if(Math.random() < .1 && !self.guest) packs[r] = Package(self, r, 3);//ammo
-			else if(!self.guest) packs[r] = Package(self, r, 1);//coin
+			if(self.hasPackage && !self.isBot) packs[self.sy][self.sx][r] = Package(self, r, 0); // an actual package (courier)
+			else if(Math.random() < .004 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
+			else if(Math.random() < .1 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 3);//ammo
+			else if(!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
 			
 			//give the killer stuff
 			if((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Vortex" || b.owner.type === "Player" || b.owner.type === "Base")){
@@ -1404,7 +1403,7 @@ var Player = function(i){
 				self.sendStatus();
 				deads[self.id] = self;
 				sendWeapons(self.id);
-				delete players[self.id];
+				delete players[self.sy][self.sx][self.id];
 				return;
 			}
 			var fullFile = fs.readFileSync(readSource, "utf8");
@@ -1510,7 +1509,7 @@ var Player = function(i){
 			
 			sendWeapons(self.id);
 		}
-		delete players[self.id];
+		delete players[self.sy][self.sx][self.id];
 	}
 	self.dmg = function(d,origin){
 		
@@ -2121,7 +2120,7 @@ var Vortex = function(i, x, y, sxx, syy, size, ownr, isWorm){
 	}
 	self.die = function(b){
 		sendAllSector('sound', {file:"bigboom",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
-		delete vorts[self.id];
+		delete vorts[self.sy][self.sx][self.id];
 	}
 	self.onKill = function(){
 	} // do we need these functions here? :thonk: I think we might be calling em
@@ -2165,7 +2164,7 @@ var Asteroid = function(i, h, sxx, syy, metal){
 				}
 			}
 			
-			var b = bases[self.sx][self.sy];
+			var b = bases[self.sy][self.sx];
 			if(b != 0 && b.turretLive && squaredDist(self,b) < 3686.4){ // collision with base
 				b.dmg(10*Math.hypot(self.vx,self.vy), self);
 				sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
@@ -2185,7 +2184,7 @@ var Asteroid = function(i, h, sxx, syy, metal){
 	}
 	self.die = function(b){
 		createAsteroid();
-		delete asts[self.id];
+		delete asts[self.sy][self.sx][self.id];
 		if(b == 0) return;
 		switch(metal){
 			case 0:
@@ -2252,7 +2251,7 @@ var Package = function(ownr, i, type){
 	self.tick = function(){
 		if(self.time++ > 25*60){ // 1 minute despawn
 			sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:0, dy:0}, self.sx, self.sy);
-			delete packs[self.id];
+			delete packs[self.sy][self.sx][self.id];
 		}
 		for(var i in players[self.sy][self.sx]){ // loop for collision
 			var p = players[self.sy][self.sx][i];
@@ -2260,7 +2259,7 @@ var Package = function(ownr, i, type){
 				
 				onCollide(p);
 				
-				delete packs[self.id]; // despawn
+				delete packs[self.sy][self.sx][self.id]; // despawn
 				break; // stop looping thru players
 			}
 		}
@@ -2335,7 +2334,7 @@ var Orb = function(ownr, i, weaponID){//currently the only orb is energy disk
 	self.move = function(){
 		if(self.locked != 0 && typeof self.locked === 'number'){
 			if(self.lockedTimer++ > 2.5 * 25) self.die(); // after 2.5 seconds of being locked on -> delete self
-			var target = players[self.locked];
+			var target = players[self.sy][self.sx][self.locked];
 			if(typeof target === 'undefined' && bases[self.sy][self.sx].color != self.color) target = bases[self.sy][self.sx];
 			if(target == 0) target = asts[self.sy][self.sx][self.locked];
 			if(typeof target === 'undefined') self.locked = 0;
@@ -2361,7 +2360,7 @@ var Orb = function(ownr, i, weaponID){//currently the only orb is energy disk
 	}
 	self.die = function(){
 		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:self.vx, dy:self.vy}, self.sx, self.sy);
-		delete orbs[self.id];
+		delete orbs[self.sy][self.sx][self.id];
 	}
 	return self;
 }
@@ -2563,7 +2562,7 @@ var Blast = function(ownr, i, weaponID){
 				if(Math.hypot(fx-self.bx,fy-self.by) < 64*2/3) self.hit(ast);
 			} // not using this atm */
 			
-			var base = bases[self.sx][self.sy];
+			var base = bases[self.sy][self.sx];
 			if(base.color == self.owner.color || !base.turretLive) return;
 			if((self.bx-base.x) * Math.cos(self.angle) + (self.by-base.y) * Math.sin(self.angle) > 0) return;
 			var pDist = Math.hypot(base.x - self.bx, base.y - self.by);
@@ -2624,9 +2623,9 @@ var Missile = function(ownr, i, weaponID, angl){
 		if(self.locked != 0 && typeof self.locked === 'number'){
 			if(self.lockedTimer++ > 7 * 25) self.die(); // if locked for >7s, die
 			
-			var target = players[self.locked]; // try 2 find the target object
-			if(typeof target === 'undefined' && bases[self.sx][self.sy].color != self.color) target = bases[self.sx][self.sy];
-			if(target == 0) target = asts[self.locked];
+			var target = players[self.sy][self.sx][self.locked]; // try 2 find the target object
+			if(typeof target === 'undefined' && bases[self.sy][self.sx].color != self.color) target = bases[self.sy][self.sx];
+			if(target == 0) target = asts[self.sy][self.sx][self.locked];
 			if(typeof target === 'undefined') self.locked = 0;
 			
 			else{ // if we found it, then...
@@ -2751,7 +2750,7 @@ io.sockets.on('connection', function(socket){
 		player.guest = true;
 		instance = true;
 		player.ip = ip;
-		player.name = "GUEST" + guestCount;
+		player.name = "GUEST " + guestCount;
 		guestCount++;
 		
 		player.color = socket_color ?"red":"blue";
@@ -2963,9 +2962,14 @@ io.sockets.on('connection', function(socket){
 			player.ms10 = parseBoolean(fileData[81]);
 			player.lives = parseFloat(fileData[82]);
 		}
+
+		if(player.sx >= mapSz) player.sx--;
+		if(player.sy >= mapSz) player.sy--;
+
+		players[player.sy][player.sx][socket.id]=player;
+
 		player.calculateGenerators();
 		socket.binary(false).emit("raid", {raidTimer:raidTimer})
-		player.refillAllAmmo();
 		player.checkTrailAchs();
 		player.sendAchievementsKill(false);
 		player.sendAchievementsCash(false);
@@ -2973,11 +2977,9 @@ io.sockets.on('connection', function(socket){
 		player.sendAchievementsMisc(false);
 		player.sendStatus();
 
-		players[player.sy][player.sx][socket.id]=player;
 		player.getAllBullets();
 		player.getAllPlanets();
-		if(player.sx >= mapSz) player.sx--;
-		if(player.sy >= mapSz) player.sy--;
+		player.refillAllAmmo();
 
 		var text = "~`" + player.color + "~`"+player.name+'~`yellow~` logged in!';
 		console.log(text);
@@ -3020,7 +3022,13 @@ io.sockets.on('connection', function(socket){
 		//if they want to be revived after dying
 		if(player.dead && data.inputId==='e'){
 			player.dead = false;
-			players[player.id] = player;
+
+			// Compute spawn
+			// TODO: Alex check this
+			if(mapSz % 2 == 0) player.sx = player.sy = (player.color === "red" ?(mapSz / 2 - 1):(mapSz / 2));
+			else player.sx = player.sy = (player.color === "red" ?(mapSz / 2 - 1.5):(mapSz / 2 + .5));
+
+			players[player.sy][player.sx][player.id] = player;
 			delete deads[player.id];
 			player.sendStatus();
 			return;
@@ -3821,7 +3829,7 @@ function update(){
 			minePack[y][x].push({wepnID:mine.wepnID,color:mine.color,x:mine.x,y:mine.y, angle:mine.angle});
 		}
 		
-		planets[x][y].tick();
+		planets[y][x].tick();
 		
 		for(var i in packs[y][x]){
 			var boon = packs[y][x][i];
@@ -3867,7 +3875,7 @@ function update(){
 					var dist = squaredDist(player,orb);
 					if(player.empTimer <= 0 && player.color != orb.color && dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
-						else if(typeof players[locked] !== 'undefined' && dist < square(players[locked].x - orb.x)+square(players[locked].y - orb.y)) locked = player.id;
+						else if(typeof players[orb.sy][orb.sx][locked] !== 'undefined' && dist < square(players[orb.sy][orb.sx][locked].x - orb.x)+square(players[orb.sy][orb.sx][locked].y - orb.y)) locked = player.id;
 					}
 				}
 				orb.locked = locked;
@@ -3880,7 +3888,7 @@ function update(){
 					var dist = squaredDist(ast,orb);
 					if(dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100){
 						if(locked == 0) locked = ast.id;
-						else if(typeof asts[locked] != "undefined" && dist < squaredDist(asts[locked],orb)) locked = player.id;
+						else if(typeof asts[orb.sy][orb.sx][locked] != "undefined" && dist < squaredDist(asts[orb.sy][orb.sx][locked],orb)) locked = player.id;
 					}
 				}
 				orb.locked = locked;
@@ -3898,7 +3906,7 @@ function update(){
 					var dist = squaredDist(player,missile);
 					if(player.empTimer <= 0 && player.color != missile.color && dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
-						else if(typeof players[locked] !== 'undefined' && dist < squaredDist(players[locked],missile))locked = player.id;
+						else if(typeof players[missle.sy][missle.sx][locked] !== 'undefined' && dist < squaredDist(players[missle.sy][missle.sx][locked],missile))locked = player.id;
 					}
 				}
 				missile.locked = locked;
@@ -3912,7 +3920,7 @@ function update(){
 					var dist = squaredDist(player,missile);
 					if(dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
-						else if(typeof asts[locked] != "undefined" && dist < squaredDist(asts[locked],missile)) locked = player.id;
+						else if(typeof asts[missle.sy][missle.sx][locked] != "undefined" && dist < squaredDist(asts[missle.sy][missle.sx][locked],missile)) locked = player.id;
 					}
 				}
 				missile.locked = locked;

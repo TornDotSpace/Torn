@@ -1295,6 +1295,8 @@ socket.on('accInUse', function (data) {
 	credentialState = 10;
 });
 socket.on('loginSuccess', function (data) {
+	// Cleanup bullets from homepage
+	for(var i in bullets) delete bullets[i];
 	playAudio("music1", .5);
 	credentialState = 0;
 	ReactRoot.turnOffDisplay("LoginOverlay");
@@ -1315,6 +1317,8 @@ socket.on('registered', function (data) {
 	tab = 0;
 });
 socket.on('lored', function (data) {
+	// Cleanup bullets from homepage
+	for(var i in bullets) delete bullets[i];
 	credentialState = 0;
 	pc = data.pc;
 	ReactRoot.turnOffDisplay("LoginOverlay");
