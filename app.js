@@ -696,7 +696,7 @@ var Player = function(i){
 				}else if(m.wepnID == 16 && squaredDist(m,self) < square(wepns[m.wepnID].Range + ships[self.ship].width)){ // TODO range * 10?
 					var r = Math.random(); // Laser Mine
 					var beam = Beam(m.owner, r, 400, self, m); // shoot a laser. TODO is this m supposed to be m.owner?
-					beams[r] = beam;
+					beams[self.sy][self.sx][r] = beam;
 					sendAllSector('sound', {file:"beam",x: m.x, y: m.y}, m.sx, m.sy);
 					m.die();
 				}
@@ -1931,14 +1931,14 @@ var Base = function(i, b, sxx, syy, col, x, y){
 		self.reload = wepns[37].Charge/2;
 		var r = Math.random();
 		var orb = Orb(self, r, 37);
-		orbs[r] = orb;
+		orbs[self.sy][self.sx][r] = orb;
 		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
 	}
 	self.shootRifle = function(){
 		self.reload = wepns[3].Charge/2;
 		var r = Math.random();
 		var bullet = Bullet(self, r, 3, self.angle, 0);
-		bullets[r] = bullet;
+		bullets[self.sy][self.sx][r] = bullet;
 		sendAllSector('sound', {file:"shot",x: self.x, y: self.y}, self.sx, self.sy);
 	}
 	self.shootMissile = function(){
@@ -1946,25 +1946,25 @@ var Base = function(i, b, sxx, syy, col, x, y){
 		var r = Math.random();
 		var bAngle = self.angle;
 		var missile = Missile(self, r, 10, bAngle);
-		missiles[r] = missile;
+		missiles[self.sy][self.sx][r] = missile;
 		sendAllSector('sound', {file:"missile",x: self.x, y: self.y}, self.sx, self.sy);
 	}
 	self.shootLaser = function(){ // TODO merge this into Beam object, along with player.shootBeam()
 		var nearP = 0;
-		for(var i in players){
-			var p = players[i];
+		for(var i in players[self.sy][self.sx]){
+			var p = players[self.sy][self.sx][i];
 			if(p.color == self.color || p.sx != self.sx || p.sy != self.sy) continue;
 			if(nearP == 0){
 				nearP = p;
 				continue;
 			}
 			var dx = p.x - self.x, dy = p.y - self.y;
-			if(dx * dx + dy * dy < square(nearP.x - self.x)+square(nearP.y - self.y)) nearP = p;
+			if(dx * dx + dy * dy < squaredDist(nearP, self)) nearP = p;
 		}
 		if(nearP == 0) return;
 		var r = Math.random();
 		var beam = Beam(self, r, 8, nearP, self);
-		beams[r] = beam;
+		beams[self.sy][self.sx][r] = beam;
 		sendAllSector('sound', {file:"beam",x: self.x, y: self.y}, self.sx, self.sy);
 		self.reload = wepns[8].Charge/2;
 	}
@@ -1996,7 +1996,7 @@ var Base = function(i, b, sxx, syy, col, x, y){
 			}
 		}
 		
-		if(!self.isBase) bases[self.sx][self.sy] = 0;
+		if(!self.isBase) bases[self.sy][self.sx] = 0;
 	}
 	self.EMP = function(t){
 		self.empTimer = t;
@@ -2336,13 +2336,13 @@ var Orb = function(ownr, i, weaponID){//currently the only orb is energy disk
 		if(self.locked != 0 && typeof self.locked === 'number'){
 			if(self.lockedTimer++ > 2.5 * 25) self.die(); // after 2.5 seconds of being locked on -> delete self
 			var target = players[self.locked];
-			if(typeof target === 'undefined' && bases[self.sx][self.sy].color != self.color) target = bases[self.sx][self.sy];
-			if(target == 0) target = asts[self.locked];
+			if(typeof target === 'undefined' && bases[self.sy][self.sx].color != self.color) target = bases[self.sy][self.sx];
+			if(target == 0) target = asts[self.sy][self.sx][self.locked];
 			if(typeof target === 'undefined') self.locked = 0;
 			else{ // if we are locked onto something
 				if(target.type === "Player") target.isLocked = true; // tell the player they're locked onto for an alert message
 				var d2 = squaredDist(target,self);
-				if(target.sx == self.sx && target.sy == self.sy && d2 < square(100) && target.turretLive != false){ // if it's a base we can't attack when it's dead
+				if(sameSector(target,self) && d2 < square(100) && target.turretLive != false){ // if it's a base we can't attack when it's dead
 					target.dmg(self.dmg, self);
 					self.die();
 					return;
@@ -2396,7 +2396,7 @@ var Bullet = function(ownr, i, weaponID, angl, info){
 		self.move();
 		self.dist+=wepns[weaponID].Speed / 10;
 		if(self.wepnID == 28 && self.time > 25 * 3){ // gravity bomb has 3 seconds to explode
-			var base = bases[self.sx][self.sy];
+			var base = bases[self.sy][self.sx];
 			if(squaredDist(base,self)<square(1000)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when out of range.
 			self.dieAndMakeVortex(); // collapse into black hole
 		}
@@ -2407,8 +2407,8 @@ var Bullet = function(ownr, i, weaponID, angl, info){
 		self.y+=self.vy; // move on tick
 		if(self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();
 			
-		var b = bases[self.sx][self.sy];
-		if(b != 0 && b.turretLive && b.color!=self.color && square(b.x - self.x) + square(b.y - self.y) < square(16 + 32)){
+		var b = bases[self.sy][self.sx];
+		if(b != 0 && b.turretLive && b.color!=self.color && squaredDist(b,self) < square(16 + 32)){
 			b.dmg(self.dmg, self);
 			self.die();
 		}
@@ -2442,12 +2442,12 @@ var Bullet = function(ownr, i, weaponID, angl, info){
 		sendAllSector("delBullet", {id:self.id},self.sx,self.sy);
 		var reverse = weaponID == 2? -1:1; // for reverse gun, particles should shoot the other way
 		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:reverse * self.vx, dy:reverse * self.vy}, self.sx, self.sy);
-		delete bullets[self.id];
+		delete bullets[self.sy][self.sx][self.id];
 	}
 	self.dieAndMakeVortex = function(){
 		var r = Math.random();
 		var vort = Vortex(r, self.x, self.y, self.sx, self.sy, 3000, self.owner, false); // 3000 is the size of a grav bomb vortex
-		vorts[r] = vort;
+		vorts[self.sy][self.sx][r] = vort;
 		self.die();
 	}
 	return self;
@@ -2522,7 +2522,7 @@ var Beam = function(ownr, i, weaponID, enemy, orign){
 				self.enemy.energy += wepns[self.wepnID].energy;
 				self.owner.energy -= wepns[self.wepnID].energy;
 			}
-			delete beams[self.id];
+			delete beams[self.sy][self.sx][self.id];
 		}
 	}
 	return self;
@@ -2543,7 +2543,7 @@ var Blast = function(ownr, i, weaponID){
 	}
 	self.tick = function(){
 		self.time++;
-		if(self.time>11) delete blasts[self.id];
+		if(self.time>11) delete blasts[self.sy][self.sx][self.id];
 		if(self.time == 1){
 			
 			for(var i in players[self.sy][self.sx]){
@@ -2615,7 +2615,7 @@ var Missile = function(ownr, i, weaponID, angl){
 				var missile = Missile(self.owner, r, 10, bAngle);
 				missile.x = self.x;
 				missile.y = self.y;
-				missiles[r] = missile;
+				missiles[self.sy][self.sx][r] = missile;
 			}
 			self.die(); // and then die
 		}
@@ -2661,7 +2661,7 @@ var Missile = function(ownr, i, weaponID, angl){
 	}
 	self.die = function(){
 		sendAllSector('sound', {file:"boom2",x:self.x, y:self.y, dx:self.vx, dy:self.vy}, self.sx, self.sy);
-		delete missiles[self.id];
+		delete missiles[self.sy][self.sx][self.id];
 	}
 	return self;
 }
@@ -3376,6 +3376,9 @@ function angleBetween(a, b){ // delimited to [-pi,pi]
 }
 function squaredDist(a, b){ // distance between two points squared. i.e. c^2
 	return square(a.y - b.y) + square(a.x - b.x);
+}
+function sameSector(a,b){
+	return a.sx == b.sx && a.sy == b.sy
 }
 
 
