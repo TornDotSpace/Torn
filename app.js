@@ -2374,8 +2374,8 @@ var Bullet = function(ownr, i, weaponID, angl, info){
 		dist:0, // TRACKS distance. Doesn't control it.
 		dmg:wepns[weaponID].Damage,
 		
-		x:ownr.x + (weaponID == 6?Math.sin(self.angle) * 16 * self.info:0), // spawn where my owner was
-		y:ownr.y - (weaponID == 6?Math.cos(self.angle) * 16 * self.info:0), // if minigun, move left or right based on which bullet I am
+		x:ownr.x + (weaponID == 6?Math.sin(angl) * 16 * info:0), // spawn where my owner was
+		y:ownr.y - (weaponID == 6?Math.cos(angl) * 16 * info:0), // if minigun, move left or right based on which bullet I am
 		sx:ownr.sx,
 		sy:ownr.sy,
 		vx:Math.cos(angl) * wepns[weaponID].Speed,
@@ -2387,7 +2387,6 @@ var Bullet = function(ownr, i, weaponID, angl, info){
 		wepnID:weaponID,
 	}
 	self.tick = function(){
-		console.log("ticking");
 		if(self.time++ == 0){ // if this was just spawned
 			sendAllSector("newBullet", {x:self.x, y:self.y, vx:self.vx,vy:self.vy,id:self.id,angle:self.angle,wepnID:self.wepnID, color:self.color}, self.sx, self.sy);
 			//self.x -= self.vx; //These were here before Alex's refactor. Not sure if they should exist.
@@ -2693,7 +2692,7 @@ function sendWeapons(id){ // tells a client what weapons that player has
 }
 function sendAllSector(out, data, sx, sy){
 	for(var i in sockets){
-		var p = players[i];
+		var p = players[sy][sx][i];
 		if(typeof p !== "undefined" && p.sx == sx && p.sy == sy) sockets[i].emit(out, data);
 	}
 }
