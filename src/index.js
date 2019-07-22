@@ -1160,6 +1160,18 @@ function clearBullets(){
 	for(var i in data.pack) bullets[data.pack[i].id] = data.pack[i];
 }
 
+// socket error handling 
+socket.on('connect_error', function(error) {
+	if (!login) {
+		alert("Failed to connect to the Torn servers. This probably either means they are down or your firewall is blocking the request. " + error);
+		socket.close();
+		return;
+	}
+
+	alert("There's been an issue and your connection to Torn has been interrupted. You should be able to reload and get back right into the game. " + error);
+	socket.close();
+});
+
 //packet handling
 socket.on('posUp', function (data) {
 	uframes++;
@@ -3066,7 +3078,6 @@ function updateBullets(){
 function rBullets() {
 	if(!login) updateBullets();
 	for (var i in bullets) {
-		console.log("aaa");
 		var selfo = bullets[i];
 		var img = Img.bullet;
 		var rendX = selfo.x - px + w / 2 + scrx;
