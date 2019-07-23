@@ -16,7 +16,7 @@ function flood(ip){
 	if(!safe) return;
 }
 
-function hash(str){ // ass. TODO chris
+global.hash = function(str){ // ass. TODO chris
 	var hash = 0;
 	if (str.length == 0) return hash;
 	for (var i = 0; i < str.length; i++) {

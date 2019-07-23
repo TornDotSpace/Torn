@@ -73,7 +73,15 @@ global.calculateInterceptionAngle = function(ax,ay,vx,vy,bx,by) { // for finding
 	return Math.atan2(by-iy,bx-ix)+Math.PI;
 }
 
+global.angleBetween = function(a, b){ // delimited to [-pi,pi]
+	return Math.atan2(a.y - b.y, a.x - b.x);
+}
+global.squaredDist = function(a, b){ // distance between two points squared. i.e. c^2
+	return square(a.y - b.y) + square(a.x - b.x);
+}
+
 function mod(n, m) { // used in findBisector
     var remain = n % m;
     return Math.floor(remain >= 0 ? remain : remain + m);
 }
+

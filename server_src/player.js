@@ -1,7 +1,27 @@
 var fs = require('fs');
 var Blast = require('./battle/blast.js');
 var Bullet = require('./battle/bullet.js');
-var NeuralNet = require('./server_src/neuralnet.js');
+var Asteroid = require("./universe/asteroid.js");
+var NeuralNet = require('./neuralnet.js');
+var Base = require('./universe/base.js');
+var Base = require('./universe/package.js');
+var Orb = require('./battle/orb.js');
+var Mine = require('./battle/mine.js');
+var Beam = require('./battle/beam.js');
+
+function lbIndex(exp){ // binary search to find where a player is on the leaderboard. TODO there is a bug where this prints stuff when someone gets their first kill of the day
+	if(exp < lbExp[999]) return -1;
+	if(exp > lbExp[0]) return 1;
+	var ub = 999, lb = 0;
+	while(ub > lb){
+		if(exp >= lbExp[ub] && exp < lbExp[ub-1]) return ub+1;
+		ub--;
+		var index = Math.floor((ub + lb) / 2);
+		if(exp<lbExp[index]) lb = index;
+		else ub = index;
+	}
+	return ub+1;//1-indexed
+}
 
 module.exports = function Player(i){
 	var self = {
