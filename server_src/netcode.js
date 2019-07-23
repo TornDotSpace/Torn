@@ -134,7 +134,7 @@ module.exports = function initNetcode() {
         socket.on('guest',function(data){ // TODO Chris
             flood(ip);
             if(instance) return;
-            player = Player(socket.id);
+            player = new Player(socket.id);
             player.guest = true;
             instance = true;
             player.ip = ip;
@@ -256,7 +256,7 @@ module.exports = function initNetcode() {
                     socket.binary(false).emit("accInUse", {});
                     return;
                 } */
-            player = Player(socket.id);
+            player = new Player(socket.id);
             instance = true;
             player.ip = ip;
             player.name = name;

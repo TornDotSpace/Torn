@@ -17,7 +17,7 @@ module.exports = function Package(ownr, i, type){
 			var p = players[self.sy][self.sx][i];
 			if(squaredDist(p,self) < square(16 + ships[p.ship].width)){ // someone hit me
 				
-				onCollide(p);
+				self.onCollide(p);
 				
 				delete packs[self.sy][self.sx][self.id]; // despawn
 				break; // stop looping thru players
