@@ -79,6 +79,9 @@ global.angleBetween = function(a, b){ // delimited to [-pi,pi]
 global.squaredDist = function(a, b){ // distance between two points squared. i.e. c^2
 	return square(a.y - b.y) + square(a.x - b.x);
 }
+global.hypot2 = function(a,b,c,d){
+	return square(a-b)+square(c-d);
+}
 
 function mod(n, m) { // used in findBisector
     var remain = n % m;

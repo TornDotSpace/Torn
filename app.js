@@ -44,7 +44,11 @@ global.baseKillExp = 50; // Exp reward for killing a base
 global.baseKillMoney = 25000; // ditto but money
 global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
-global.trainingMode = 0;
+
+//Machine Learning
+global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
+global.neuralFiles = 1500; // how many files should be in competition
+
 global.botFrequency = trainingMode?.7:1.6;//higher: more bots spawn. Standard: 1.6
 global.playerHeal = .2; // player healing speed
 global.baseHeal = 1; // base healing speed
@@ -119,14 +123,6 @@ for(var i = 0; i < mapSz; i++){ // it's 2d
 		planets[i][j] = 0;
 	}
 }
-
-
-
-
-
-//Machine Learning
-global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
-global.neuralFiles = 1500; // how many files should be in competition
 
 function sendRaidData(){ // tell everyone when the next raid is happening
 	sendAll("raid",{raidTimer:raidTimer});
@@ -460,6 +456,9 @@ function update(){
 			blastPack[blast.sy][blast.sx].push({time:blast.time,wepnID:blast.wepnID,bx:blast.bx,by:blast.by,angle:blast.angle});
 		}
 		
+		var rbNow = rb;//important to calculate here, otherwise bots weighted on left.
+		var bbNow = bb;
+	
 		var base = bases[y][x];
 		if(base != 0){
 			base.tick(rbNow,bbNow);
@@ -545,9 +544,6 @@ function update(){
 			send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:pack[player.sy][player.sx], projectiles:bPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 		}
 	}
-	
-	var rbNow = rb;//important to calculate here, otherwise bots weighted on left.
-	var bbNow = bb;
 
 	
 	for(var i in deads){

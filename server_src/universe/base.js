@@ -3,72 +3,6 @@ var Missile = require('../battle/missile.js');
 var Orb = require('../battle/orb.js');
 var Beam = require('../battle/beam.js');
 
-function spawnBot(sx,sy,col,rbNow,bbNow){
-	if(sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
-	if((rbNow > bbNow + 5 && col == "red")||(rbNow + 5 < bbNow && col == "blue")) return;
-	if(Math.random() > trainingMode?0:1){
-		spawnNNBot(sx,sy,col);
-		return;
-	}
-	id = Math.random();
-	var bot = new Player(id);
-	bot.isBot = true;
-	bot.sx = sx;
-	bot.sy = sy;
-	var rand = .33 + 3.67*Math.random();
-	bot.experience = Math.floor(Math.pow(2,Math.pow(2,rand)))/4 + 3*rand;
-	bot.updateRank();
-	bot.ship = bot.rank;
-	bot.x = bot.y = sectorWidth/2;
-	bot.color = col;
-	bot.name = "";
-	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand*2) * .2) + .6);
-	bot.energy2 = Math.floor((bot.thrust2-1)*5/2)/5+1;
-	bot.va = ships[bot.ship].agility * .08 * bot.agility2;
-	bot.thrust = ships[bot.ship].thrust * bot.thrust2;
-	bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
-	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
-	for(var i = 0; i < 10; i++){
-		do bot.weapons[i] = Math.floor(Math.random()*wepns.length);
-		while(wepns[bot.weapons[i]].Level>bot.rank || !wepns[bot.weapons[i]].bot)
-	}
-	bot.refillAllAmmo();
-	players[bot.sy][bot.sx][id] = bot;
-}
-
-function spawnNNBot(sx,sy,col){
-	if(trainingMode){sx = 2; sy = 4;}
-	if(sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
-	id = Math.random();
-	var bot = new Player(id);
-	bot.isNNBot = bot.isBot = true;
-	bot.sx = sx;
-	bot.sy = sy;
-	var rand = .33 + 3.67*Math.random();
-	bot.experience = trainingMode?150:(Math.floor(Math.pow(2,Math.pow(2,rand)))/8 + 3*rand);//TODO change /8 to /4
-	bot.updateRank();
-	bot.ship = bot.rank;
-	bot.x = trainingMode?sectorWidth * Math.random():(sectorWidth/2);
-	bot.y = trainingMode?sectorWidth * Math.random():(sectorWidth/2);
-	bot.color = col;
-	bot.net = 1;
-	bot.name = "Drone";
-	bot.angle = Math.random() * Math.PI * 2;
-	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand*2) * .2) + .6);
-	bot.energy2 = Math.floor((bot.thrust2-1)*5/2)/5+1;
-	bot.va = ships[bot.ship].agility * .08 * bot.agility2;
-	bot.thrust = ships[bot.ship].thrust * bot.thrust2;
-	bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
-	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
-	for(var i = 0; i < 10; i++){
-		do bot.weapons[i] = Math.floor(Math.random()*wepns.length);
-		while(wepns[bot.weapons[i]].Level>bot.rank || !wepns[bot.weapons[i]].bot)
-		if(trainingMode) bot.weapons[i] = 1;
-	}
-	bot.refillAllAmmo();
-	players[bot.sy][bot.sx][id] = bot;
-}
-
 
 module.exports = function Base(i, b, sxx, syy, col, x, y){
 	var self = {
@@ -96,9 +30,11 @@ module.exports = function Base(i, b, sxx, syy, col, x, y){
 		speed:0,//vs unused but there for bullets
 	}
 	self.tick = function(rbNow,bbNow){
-		
 		//spawn a bot if we need more bots
-		if(self.isBase && Math.random()<botFrequency/square(rbNow+bbNow+5)) spawnBot(self.sx,self.sy,self.color,rbNow,bbNow);
+		var botSpawn = Math.random();
+		if(self.isBase && botSpawn <botFrequency/square(rbNow+bbNow+5)) {
+			spawnBot(self.sx,self.sy,self.color,rbNow,bbNow);
+		} 
 		
 		if(!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25*150) == 0))) self.turretLive = true; // revive. TODO: add a timer
 		
