@@ -7,3 +7,4 @@ WiredTiger
 *.data
 *.bson
 client/leaderboard/
+client/*.js
