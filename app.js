@@ -64,8 +64,8 @@ var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0; // blue/red players/guests/b
 global.raidTimer = 50000;
 var raidRed = 0, raidBlue = 0; // Timer and points
 global.IPSpam = {}; // Keeps track of ips flooding server.
-var bQuests = [];//A list of the 10 available quests for humans and aliens
-var rQuests = [];
+global.bQuests = [];//A list of the 10 available quests for humans and aliens
+global.rQuests = [];
 
 
 
@@ -514,7 +514,7 @@ function update(){
 					var dist = squaredDist(player,missile);
 					if(player.empTimer <= 0 && player.color != missile.color && dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
-						else if(typeof players[missle.sy][missle.sx][locked] !== 'undefined' && dist < squaredDist(players[missle.sy][missle.sx][locked],missile))locked = player.id;
+						else if(typeof players[missile.sy][missile.sx][locked] !== 'undefined' && dist < squaredDist(players[missile.sy][missile.sx][locked],missile))locked = player.id;
 					}
 				}
 				missile.locked = locked;
@@ -528,7 +528,7 @@ function update(){
 					var dist = squaredDist(player,missile);
 					if(dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100){
 						if(locked == 0) locked = player.id;
-						else if(typeof asts[missle.sy][missle.sx][locked] != "undefined" && dist < squaredDist(asts[missle.sy][missle.sx][locked],missile)) locked = player.id;
+						else if(typeof asts[missile.sy][missile.sx][locked] != "undefined" && dist < squaredDist(asts[missile.sy][missile.sx][locked],missile)) locked = player.id;
 					}
 				}
 				missile.locked = locked;
