@@ -6,7 +6,6 @@ var Package = require("./universe/package.js");
 var Missile = require("./universe/missile.js");
 var NeuralNet = require('./neuralnet.js');
 var Base = require('./universe/base.js');
-var Base = require('./universe/package.js');
 var Orb = require('./battle/orb.js');
 var Mine = require('./battle/mine.js');
 var Beam = require('./battle/beam.js');
