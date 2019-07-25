@@ -67,6 +67,7 @@ global.IPSpam = {}; // Keeps track of ips flooding server.
 global.bQuests = [];//A list of the 10 available quests for humans and aliens
 global.rQuests = [];
 
+var enableDecay = false; // Enable player decay algorithm
 
 
 
@@ -768,6 +769,7 @@ function saveTurrets(){
 	},1000);
 }
 function decayPlayers(){
+	if (!enableDecay) return;
 	sendAll("chat",{msg:"Decaying Players..."});
 	console.log("\nDecaying players...")
 	var items = fs.readdirSync('server/players/');
