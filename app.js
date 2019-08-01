@@ -601,7 +601,7 @@ function updateHeatmap(){
 				else if(p.guest) bg++;
 				else bp++;
 			}
-			if(p.name !== "" && p.name !== "Drone"){
+			if(p.name !== "" && !p.isBot){
 				lb[j] = p;
 				j++;
 			}

@@ -1165,7 +1165,7 @@ function Player(i){
 				send(self.id, 'quest', {quest: 0});//reset quest and update client
 				
 				if(typeof b.owner !== "undefined" && b.owner.type === "Player"){
-					sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + (b.owner.name===""?"a drone":b.owner.name) + "~`yellow~`'s `~"+b.wepnID+"`~!")});
+					sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + b.owner.name + "~`yellow~`'s `~"+b.wepnID+"`~!")});
 					
 					if(b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]){ // driftkill
 						b.owner.driftAchs[9] = true;
@@ -1656,6 +1656,8 @@ function lbIndex(exp){ // binary search to find where a player is on the leaderb
 
 module.exports = Player;
 
+var botNames = fs.readFileSync("././botNames.txt").toString().split("\n");
+
 global.spawnBot = function(sx,sy,col,rbNow,bbNow){
 	if(sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 	if((rbNow > bbNow + 5 && col == "red")||(rbNow + 5 < bbNow && col == "blue")) return;
@@ -1674,7 +1676,7 @@ global.spawnBot = function(sx,sy,col,rbNow,bbNow){
 	bot.ship = bot.rank;
 	bot.x = bot.y = sectorWidth/2;
 	bot.color = col;
-	bot.name = "";
+	bot.name = "BOT " + botNames[Math.floor(Math.random() * (botNames.length))];
 	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand*2) * .2) + .6);
 	bot.energy2 = Math.floor((bot.thrust2-1)*5/2)/5+1;
 	bot.va = ships[bot.ship].agility * .08 * bot.agility2;
@@ -1705,7 +1707,7 @@ global.spawnNNBot = function(sx,sy,col){
 	bot.y = trainingMode?sectorWidth * Math.random():(sectorWidth/2);
 	bot.color = col;
 	bot.net = 1;
-	bot.name = "Drone";
+	bot.name = "BOT " + botNames[Math.floor(Math.random() * (botNames.length))];
 	bot.angle = Math.random() * Math.PI * 2;
 	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand*2) * .2) + .6);
 	bot.energy2 = Math.floor((bot.thrust2-1)*5/2)/5+1;

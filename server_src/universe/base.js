@@ -140,7 +140,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y){
 		
 		//Or a player...
 		if(typeof b.owner !== "undefined" && b.owner.type === "Player") {
-			sendAll('chat', {msg:("The base at sector ~`" + col + "~`" + String.fromCharCode(97 + sxx).toUpperCase() + (syy + 1) + "~`yellow~` was destroyed by ~`" + b.color + "~`" + (b.owner.name===""?"a drone":b.owner.name) + "~`yellow~`'s `~"+b.wepnID+"`~.")});
+			sendAll('chat', {msg:("The base at sector ~`" + col + "~`" + String.fromCharCode(97 + sxx).toUpperCase() + (syy + 1) + "~`yellow~` was destroyed by ~`" + b.color + "~`" + b.owner.name + "~`yellow~`'s `~"+b.wepnID+"`~.")});
 			b.owner.baseKilled();
 			b.owner.spoils("experience",baseKillExp); // reward them
 			b.owner.spoils("money",baseKillMoney);
