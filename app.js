@@ -294,12 +294,12 @@ function spawnBases(){
 		//make a red base at these coords
 		var randBase = Math.random();
 		var redBase = Base(randBase, true, baseMap[i], baseMap[i+1], 'red', sectorWidth/2, sectorWidth/2);
-		bases[baseMap[i]][baseMap[i+1]] = redBase;
+		bases[baseMap[i+1]][baseMap[i]] = redBase;
 		
 		//mirror coordinates and make a blue base
 		randBase = Math.random();
 		var blueBase = Base(randBase, true, mapSz - 1-baseMap[i], mapSz - 1-baseMap[i+1], 'blue', sectorWidth/2, sectorWidth/2);
-		bases[mapSz - 1-baseMap[i]][mapSz - 1-baseMap[i+1]] = blueBase;
+		bases[mapSz - 1-baseMap[i+1]][mapSz - 1-baseMap[i]] = blueBase;
 	}
 }
 function loadTurrets(){
