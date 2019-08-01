@@ -331,6 +331,8 @@ function kill(){
 function createPlanet(name, sx, sy){
 	var randA = Math.random();
 	var planet = Planet(randA, name);
+	planet.sx = sx;
+	planet.sy = sy;
 	while(square(planet.x - sectorWidth/2)+square(planet.y - sectorWidth/2) < 3000000){
 		planet.x=Math.floor(Math.random() * sectorWidth*15/16 + sectorWidth/32);
 		planet.y=Math.floor(Math.random() * sectorWidth*15/16 + sectorWidth/32);
@@ -412,6 +414,7 @@ function update(){
 	for(var y = 0; y < mapSz; y++) for(var x = 0; x < mapSz; x++){
 		for(var i in players[y][x]){
 			var player = players[y][x][i];
+	
 			if(!player.isBot && player.chatTimer > 0) player.chatTimer--;
 			player.muteTimer--;
 			if(player.testAfk()) continue;

@@ -7,7 +7,9 @@ module.exports = function Planet(i, name){
 		id:i, // unique identifier
 		x:sectorWidth/2, // this is updated by the createPlanet function to a random location
 		y:sectorWidth/2,
-		cooldown:0 // to prevent chat "planet claimed" spam
+		cooldown:0, // to prevent chat "planet claimed" spam
+		sx:0,
+		sy:0
 	}
 	self.tick = function(){
 		self.cooldown--;

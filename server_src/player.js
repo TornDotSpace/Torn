@@ -519,8 +519,9 @@ function Player(i){
 		}
 	}
 	self.testSectorChange = function(){
+		var old_sx = self.sx;
+		var old_sy = self.sy;
 		
-		var callOnChangeSectors = true; // track whether we did change sectors.
 		var giveBounce = false; // did they bounce on a galaxy edge?
 		if(self.x > sectorWidth){//check each edge of the 4 they could bounce on
 			self.x = 1;
@@ -570,7 +571,6 @@ function Player(i){
 			}
 			else self.borderJumpTimer += 100;
 		}
-		else callOnChangeSectors = false;
 		if(giveBounce && !self.randmAchs[5]){
 			if(self.guest) send(self.id, "chat", {msg:"~`orange~`You must create an account to explore the universe!"});
 			else{
@@ -584,7 +584,12 @@ function Player(i){
 			self.borderJumpTimer = 50;
 		}
 		
-		if(callOnChangeSectors) self.onChangeSectors();
+		if(old_sx !== self.sx || old_sy !== self.sy) {
+			delete players[old_sy][old_sx][self.id];
+
+			players[self.sy][self.sx][self.id] = self;
+			self.onChangeSectors();
+		} 
 		
 	}
 	self.juke = function(left){
