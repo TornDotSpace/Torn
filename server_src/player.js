@@ -1037,7 +1037,7 @@ function Player(i){
 			//find the angle of the bullets. Manipulate if one of the multi-bullet weapons.
 			var bAngle = self.angle;
 			if(currWep == 2) bAngle-=3.1415; // reverse gun
-			if(currWep == 39)bAngle+=(i-1)/4.; // spreadshot
+			if(currWep == 39) bAngle += ((i-1)/4); // spreadshot
 			if(currWep == 4) bAngle += Math.random() - .5; // shotgun
 			
 			var bullet = Bullet(self, r, currWep, bAngle, i * 2 - 1);
