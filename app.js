@@ -709,8 +709,6 @@ function updateLB(){
 
 
 
-//meta
-setTimeout(initReboot,86400*1000-6*60*1000);
 global.initReboot = function(){
 	console.log("\nInitializing server reboot...\n");
 	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
@@ -723,6 +721,9 @@ global.initReboot = function(){
 	setTimeout(function(){chatAll("Server restarting...");}, (4*60+57)*1000);
 	setTimeout(shutdown, 5*60*1000);
 }
+
+//meta
+setTimeout(initReboot,86400*1000-6*60*1000);
 function shutdown(){
 	saveTurrets();
 	decayPlayers();
