@@ -1208,6 +1208,7 @@ function Player(i){
 		}
 		
 		self.hasPackage = false; // Maintained for onKill above
+		delete players[self.sy][self.sx][self.id];
 		
 		//TODO Chris
 		if(!self.isBot){
@@ -1222,7 +1223,6 @@ function Player(i){
 				self.sendStatus();
 				deads[self.id] = self;
 				sendWeapons(self);
-				delete players[self.sy][self.sx][self.id];
 				return;
 			}
 			var fullFile = fs.readFileSync(readSource, "utf8");
@@ -1328,7 +1328,6 @@ function Player(i){
 			
 			sendWeapons(self);
 		}
-		delete players[self.sy][self.sx][self.id];
 	}
 	self.dmg = function(d,origin){
 		

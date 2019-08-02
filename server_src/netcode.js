@@ -411,11 +411,7 @@ module.exports = function initNetcode() {
             if(player.dead && data.inputId==='e'){
                 player.dead = false;
     
-                // Compute spawn
-                // TODO: Alex check this
-                if(mapSz % 2 == 0) player.sx = player.sy = (player.color === "red" ?(mapSz / 2 - 1):(mapSz / 2));
-                else player.sx = player.sy = (player.color === "red" ?(mapSz / 2 - 1.5):(mapSz / 2 + .5));
-    
+                // Spawn was computed in die()
                 players[player.sy][player.sx][player.id] = player;
                 delete deads[player.id];
                 player.sendStatus();
