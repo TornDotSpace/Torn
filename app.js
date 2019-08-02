@@ -7,6 +7,8 @@ var Asteroid = require("./server_src/universe/asteroid.js");
 var Planet = require("./server_src/universe/planet.js");
 var Vortex = require("./server_src/universe/vortex.js");
 
+var planetNames = fs.readFileSync("./planetNames.txt").toString().split("\n");
+
 global.createAsteroid = function(){
 	var sx = Math.floor(Math.random()*mapSz);
 	var sy = Math.floor(Math.random()*mapSz);
@@ -337,7 +339,7 @@ function kill(){
 
 function createPlanet(name, sx, sy){
 	var randA = Math.random();
-	var planet = Planet(randA, name);
+	var planet = Planet(randA, planetNames[Math.floor(Math.random() * (planetNames.length))]);
 	planet.sx = sx;
 	planet.sy = sy;
 	while(square(planet.x - sectorWidth/2)+square(planet.y - sectorWidth/2) < 3000000){
