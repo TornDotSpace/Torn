@@ -137,7 +137,8 @@ function Player(i){
 		cornersTouched:0, // bitmask
 		oresMined:0, // bitmask
 		questsDone:0, // bitmask
-		planetsClaimed:"0000000000000000000000000000000000000000000000000"
+		planetsClaimed:"0000000000000000000000000000000000000000000000000",
+		lastLogin: "A long, long time ago :("
 	}
 
 	self.tick = function(){
@@ -200,9 +201,6 @@ function Player(i){
 				sendWeapons(self);
 				return;
 			}
-			
-			
-			
 			
 			//Traditional Weapons
 			
@@ -1209,7 +1207,7 @@ function Player(i){
 		
 		self.hasPackage = false; // Maintained for onKill above
 		delete players[self.sy][self.sx][self.id];
-		
+
 		//TODO Chris
 		if(!self.isBot){
 			self.health = self.maxHealth;
@@ -1312,6 +1310,11 @@ function Player(i){
 			self.ms8 = parseBoolean(fileData[79]);
 			self.ms9 = parseBoolean(fileData[80]);
 			self.ms10 = parseBoolean(fileData[81]);
+
+			// Last login support
+			if (fileData.length > 86) {
+				self.lastLogin = new Date(parseInt(fileData[86]));
+			}
 			self.lives--;
 			self.dead = true;
 			if(self.lives <= 0){

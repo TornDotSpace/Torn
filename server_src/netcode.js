@@ -42,7 +42,7 @@ function runCommand(player, msg){ // player just sent msg in chat and msg starts
 	else if(msg === "/confirmteam" && player.experience > 10000) {player.color = (player.color === "red"?"blue":"red"); player.money *= .9; player.experience *= .9; player.save();}
 	else if(msg.toLowerCase().startsWith("/pm ")) player.pm(msg);
 	else if(msg.toLowerCase().startsWith("/r ")) player.r(msg);
-	else if(msg.toLowerCase().startsWith("/swap ")) player.swap(msg);
+    else if(msg.toLowerCase().startsWith("/swap ")) player.swap(msg);
 	else correct = false;
 	
 	//moderator commands
@@ -262,8 +262,6 @@ module.exports = function initNetcode() {
             player.name = name;
             player.password = pass;
             socket.binary(false).emit("loginSuccess",{});
-            
-            console.log(ip + " logged in as " + name + "!");
         
             //Load account
             if (fs.existsSync(readSource)) {
@@ -349,6 +347,11 @@ module.exports = function initNetcode() {
                 player.ms9 = parseBoolean(fileData[80]);
                 player.ms10 = parseBoolean(fileData[81]);
                 player.lives = parseFloat(fileData[82]);
+
+                // Last login support
+			    if (fileData.length > 86) {
+				    player.lastLogin = new Date(parseInt(fileData[86]));
+			    }
             }
     
             if(player.sx >= mapSz) player.sx--;
@@ -368,9 +371,8 @@ module.exports = function initNetcode() {
             player.getAllBullets();
             player.getAllPlanets();
             player.refillAllAmmo();
-    
+            console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
             var text = "~`" + player.color + "~`"+player.name+'~`yellow~` logged in!';
-            console.log(text);
             chatAll(text);
             player.va = ships[player.ship].agility * .08 * player.agility2;
             player.thrust = ships[player.ship].thrust * player.thrust2;
