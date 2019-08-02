@@ -160,7 +160,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y){
 	self.sendDeathMsg = function(killedBy){
 		sendAll('chat', {msg:("The "+(self.isBase?"base":"turret")+" at sector ~`" + col + "~`" + self.getSectorName() + "~`yellow~` was destroyed by" + killedBy + ".")});
 	}
-	self.getSectorName(){
+	self.getSectorName = function() { 
 		return String.fromCharCode(97+sxx).toUpperCase()+""+(syy+1);
 	}
 	self.EMP = function(t){
