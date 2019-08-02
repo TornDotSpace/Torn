@@ -711,7 +711,7 @@ function updateLB(){
 
 //meta
 setTimeout(initReboot,86400*1000-6*60*1000);
-function initReboot(){
+global.initReboot = function(){
 	console.log("\nInitializing server reboot...\n");
 	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
 	setTimeout(function(){chatAll("Server is restarting in 4 minutes. Please save your progress as soon as possible.");}, 1*60*1000);
