@@ -45,7 +45,6 @@ function Player(i){
 		reload:0,
 		
 		chatTimer: 100,
-		muteTimer: -1,
 		muteCap: 250,
 		globalChat:0,
 		
@@ -596,7 +595,6 @@ function Player(i){
 		self.jukeTimer = (self.trail % 16 == 4?1.25:1)*(left?50:-50); // misc trail makes you juke further.
 	}
 	self.mute = function(minutes){
-		self.muteCap = self.muteTimer = 25*60*minutes;
 		chatAll("~`violet~`" + self.name + "~`yellow~` has been " + (minutes > 0?"muted for " + minutes + " minutes!" : "unmuted!"));
 	}
 	self.onChangeSectors = function(){

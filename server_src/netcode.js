@@ -6,6 +6,9 @@ var Player = require('./player.js');
 require('./netutils.js');
 var guestCount = 0; // Enumerate guests since server boot
 
+// Global mute table 
+var muteTable = [ ];
+
 function flood(ip){
 	var safe = false;
 	for(var i = 0; i < 20; i++) if(ip !== IPSpam[i]) {
@@ -73,21 +76,13 @@ function mute(msg){
 	if(msg.split(" ").length != 3) return; // split looks like {"/mute", "name", "minutesToMute"}
 	var name = msg.split(" ")[1];
 	var minutes = parseFloat(msg.split(" ")[2]);
-	if(typeof time !== "number") return;
-	
-	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++)
-		for(var p in players[y][x]){ // search all players
-			var player = players[y][x][p];
-			if(player.name === name){player.mute(minutes);return;}
-	}
-	for(var p in dockers){
-		var player = dockers[p];
-		if(player.name === name){player.mute(minutes);return;}
-	}
-	for(var p in deads){
-		var player = deads[p];
-		if(player.name === name){player.mute(minutes);return;}
-	}
+    if(typeof time !== "number") return;
+    
+    if (minutes < 0) {
+        return;
+    }
+
+    muteTable[name] = (Date.now() + (minutes * 60 * 1000));
 }
 function smite(msg){
 	if(msg.split(" ").length != 2) return;
@@ -237,8 +232,6 @@ module.exports = function initNetcode() {
                 socket.binary(false).emit("invalidCredentials", {});
                 return;
             }
-
-            console.log(onlineNames[name]);
 
             if (onlineNames[name] === 1) {
                 socket.binary(false).emit("accInUse", {});
@@ -437,18 +430,23 @@ module.exports = function initNetcode() {
                 return;
             }
             
-            console.log(player.name + ": " + data.msg); // print their raw message
+            console.log("[CHAT] " + player.name + ": " + data.msg); // print their raw message
             
             data.msg = data.msg.trim(); // "   hi   " => "hi"
             if(!player.name.includes(" ")) data.msg = data.msg.replace(/~`/ig, ''); // Normies can't triforce
             data.msg = filter.clean(data.msg); // censor
             
-            if(player.muteTimer > 0) return; // if they're muted
+            var time = Date.now();
+
+            if(muteTable[player.name] > time) return;
+            delete muteTable[player.name];
+
             player.chatTimer += 100; // note this as potential spam
             if(player.chatTimer > 600){ // exceeded spam limit: they are now muted
                 socket.binary(false).emit('chat', {msg:("~`red~`You have been muted for " +Math.floor(player.muteCap/25) + " seconds!")});
-                player.muteTimer = player.muteCap;
+                muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
                 player.muteCap *= 2; // their next mute will be twice as long
+                return;
             }
     
             if(data.msg.startsWith("/")){//handle commands
