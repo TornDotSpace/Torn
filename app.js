@@ -642,6 +642,7 @@ function updateHeatmap(){
 		/*if(asteroids[i][j] >= 15) hmap[i][j] += 1500;
 		else */hmap[i][j] += 500;
 	}
+	
 	for(var i in lb) send(lb[i].id, 'heatmap', {hmap:hmap, lb:lbSend, youi:i, raidBlue:raidBlue, raidRed:raidRed});
 }
 function updateLB(){

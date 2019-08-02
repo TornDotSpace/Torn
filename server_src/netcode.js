@@ -156,6 +156,7 @@ module.exports = function initNetcode() {
             player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
             socket.binary(false).emit('sectors', {sectors:sectors});
             sendWeapons(player);
+            socket.binary(false).emit("raid", {raidTimer:raidTimer})
         });
         socket.on('register',function(data){ // TODO Chris
             if (typeof data === "undefined") return;
@@ -206,7 +207,7 @@ module.exports = function initNetcode() {
                 console.log(text);
                 player.save();
                 delete dockers[player.id];
-                onlineNames[name] = 1;
+                onlineNames[user] = 1;
                 instance = false;
             });
             socket.binary(false).emit("raid", {raidTimer:raidTimer})

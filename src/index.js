@@ -1299,7 +1299,6 @@ socket.on('reping',function(data){
 	nLag = time - data.time;
 });
 socket.on('newBullet', function(data){
-	console.log("Bullet received");
 	bullets[data.id] = data;
 	bullets[data.id].tick = 0;
 });

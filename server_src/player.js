@@ -137,7 +137,8 @@ function Player(i){
 		oresMined:0, // bitmask
 		questsDone:0, // bitmask
 		planetsClaimed:"0000000000000000000000000000000000000000000000000",
-		lastLogin: "A long, long time ago :("
+		lastLogin: "A long, long time ago :(",
+		points:0
 	}
 
 	self.tick = function(){
