@@ -103,6 +103,8 @@ function smite(msg){
 		}
 }
 
+var onlineNames = [ ];
+
 module.exports = function initNetcode() {
     var port = process.argv[2];
     console.log("");
@@ -209,6 +211,7 @@ module.exports = function initNetcode() {
                 console.log(text);
                 player.save();
                 delete dockers[player.id];
+                onlineNames[name] = 1;
                 instance = false;
             });
             socket.binary(false).emit("raid", {raidTimer:raidTimer})
@@ -234,28 +237,16 @@ module.exports = function initNetcode() {
                 socket.binary(false).emit("invalidCredentials", {});
                 return;
             }
-            console.log("login: 2844");
-            /*for(var i in players)
-                console.log(players[i]);
-                if(players[i].name === name || players[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == players[i].cookie){
-                    socket.binary(false).emit("accInUse", {});
-                    return;
-                }
-            for(var i in dockers)
-                if(dockers[i].name === name || dockers[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == dockers[i].cookie){
-                    socket.binary(false).emit("accInUse", {});
-                    return;
-                }
-            for(var i in deads)
-                if(deads[i].name === name || deads[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == deads[i].cookie){
-                    socket.binary(false).emit("accInUse", {});
-                    return;
-                }
-            for(var i in lefts)
-                if(lefts[i].name === name){// || lefts[i].name.includes(" "+name)){// || socket.handshake.headers.cookie == lefts[i].cookie){
-                    socket.binary(false).emit("accInUse", {});
-                    return;
-                } */
+
+            console.log(onlineNames[name]);
+
+            if (onlineNames[name] === 1) {
+                socket.binary(false).emit("accInUse", {});
+                return;
+            }
+
+            onlineNames[name] = 1;
+
             player = new Player(socket.id);
             instance = true;
             player.ip = ip;
@@ -382,7 +373,6 @@ module.exports = function initNetcode() {
             sendWeapons(player);
         });
         socket.on('disconnect',function(data){ // graceful disconnect
-        
             lefts[socket.id] = 150; // note that this player has left and queue it for deletion
         
             //try to locate the player object from their ID
@@ -392,7 +382,7 @@ module.exports = function initNetcode() {
             var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game!"; // write a message about the player leaving
             console.log(text); // print in terminal
             chatAll(text); // send it to all the players
-            
+            onlineNames[player.name] = 0;
             //DO NOT save the player's data.
         });
         socket.on('pingmsg',function(data){ // when the player pings to tell us that it's still connected
