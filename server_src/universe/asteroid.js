@@ -17,6 +17,7 @@ module.exports = function Asteroid(i, h, sxx, syy, metal){
 		vy: 0,
 		metal:metal,
 		va:(Math.random() - .5) / 10,
+		dead:false
 	}
 	self.tick = function(){
 		if(Math.random() < .0001) self.die(0);
@@ -57,9 +58,13 @@ module.exports = function Asteroid(i, h, sxx, syy, metal){
 		if(isOutOfBounds(self)) self.die(0);
 	}
 	self.die = function(b){
+		// Bugfix for ion beam destroying multiple times
+		if (self.dead) return;
+		self.dead = true;
 		createAsteroid();
 		delete asts[self.sy][self.sx][self.id];
 		if(b == 0) return;
+		
 		switch(metal){
 			case 0:
 				b.owner.iron+=self.maxHealth;
