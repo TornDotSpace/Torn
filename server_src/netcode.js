@@ -184,9 +184,9 @@ module.exports = function initNetcode() {
                 socket.binary(false).emit("invalidReg", {reason:5});
                 return;
             }
-    
-            var readSource = 'server/players/'+user+"["+hash(pass)+'.txt';
+
             var valid = true;
+            // TODO: FIX 
             fs.readdir('server/players/', function(err, items) {
                 for (var i=0; i<items.length; i++) {
                     if(items[i].startsWith(user+"[")){
@@ -196,11 +196,12 @@ module.exports = function initNetcode() {
                         break;
                     }
                 }
+
                 if(!valid) return;
                 var player = dockers[socket.id];
                 if(typeof player === "undefined") return;
                 player.name = user;
-                player.password = pass;
+                player.password = hash(pass);
                 player.guest = false;
                 socket.binary(false).emit("registered",{user:data.user,pass:data.pass});
                 var text = user+' registered!';
@@ -212,7 +213,7 @@ module.exports = function initNetcode() {
             });
             socket.binary(false).emit("raid", {raidTimer:raidTimer})
         });
-        socket.on('login',function(data){ // TODO Chris
+        socket.on('login', async function(data){ // TODO Chris
             if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
                 
             flood(ip);
@@ -228,117 +229,34 @@ module.exports = function initNetcode() {
                 return;
             }
             name = name.toLowerCase();
-            var readSource = 'server/players/'+name+"["+hash(data.pass)+'.txt';
-            if (!fs.existsSync(readSource)){
-                socket.binary(false).emit("invalidCredentials", {});
-                return;
-            }
 
             if (onlineNames[name] === 1) {
                 socket.binary(false).emit("accInUse", {});
                 return;
             }
 
-            onlineNames[name] = 1;
-
             player = new Player(socket.id);
-            instance = true;
             player.ip = ip;
             player.name = name;
-            player.password = pass;
-            socket.binary(false).emit("loginSuccess",{});
-        
+            player.password = hash(data.pass);
+            
             //Load account
-            if (fs.existsSync(readSource)) {
-                var fileData = fs.readFileSync(readSource, "utf8").split(':');
-                player.color = fileData[0];
-                player.ship = parseFloat(fileData[1]);
-                for(var i = 0; i < 9; i++) player.weapons[i] = parseFloat(fileData[3+i]);
-                player.weapons[9] = parseFloat(fileData[83]);
-                player.sx = Math.floor(parseFloat(fileData[12]));
-                player.sy = Math.floor(parseFloat(fileData[13]));
-                if(player.sx > mapSz - 1) player.sx = mapSz - 1;
-                if(player.sy > mapSz - 1) player.sy = mapSz - 1;
-                player.name = fileData[14];
-                player.trail = parseFloat(fileData[2]) % 16 + (player.name.includes(" ")?16:0);
-                player.money = parseFloat(fileData[15]);
-                player.kills = parseFloat(fileData[16]);
-                player.planetsClaimed = fileData[17];
-                player.iron = parseFloat(fileData[18]);
-                player.silver = parseFloat(fileData[19]);
-                player.platinum = parseFloat(fileData[20]);
-                player.aluminium = parseFloat(fileData[21]);
-                player.experience = parseFloat(fileData[22]);
-                player.rank = parseFloat(fileData[23]);
-                player.x = parseFloat(fileData[24]);
-                player.y = parseFloat(fileData[25]);
-                player.thrust2 = Math.max(1,parseFloat(fileData[26]));
-                player.radar2 = Math.max(1,parseFloat(fileData[27]));
-                if(fileData.length > 87) player.agility2 = Math.max(1,parseFloat(fileData[87]));
-                player.capacity2 = Math.max(1,parseFloat(fileData[28]));
-                player.maxHealth2 = Math.max(1,parseFloat(fileData[29]));
-                player.energy2 = parseFloat(fileData[84]);
-                if(!(player.energy2 > 0)) player.energy2 = 1; //test undefined
-                player.kill1 = parseBoolean(fileData[30]);
-                player.kill10 = parseBoolean(fileData[31]);
-                player.kill100 = parseBoolean(fileData[32]);
-                player.kill1k = parseBoolean(fileData[33]);
-                player.kill10k = parseBoolean(fileData[34]);
-                player.kill50k = parseBoolean(fileData[35]);
-                player.kill1m = parseBoolean(fileData[36]);
-                player.killBase = parseBoolean(fileData[37]);
-                player.kill100Bases = parseBoolean(fileData[38]);
-                player.killFriend = parseBoolean(fileData[39]);
-                player.killCourier = parseBoolean(fileData[40]);
-                player.suicide = parseBoolean(fileData[41]);
-                player.baseKills = parseFloat(fileData[42]);
-                player.oresMined = parseFloat(fileData[43]);
-                player.mined = parseBoolean(fileData[44]);
-                player.allOres = parseBoolean(fileData[45]);
-                player.mined3k = parseBoolean(fileData[46]);
-                player.mined15k = parseBoolean(fileData[47]);
-                player.total100k = parseBoolean(fileData[48]);
-                player.total1m = parseBoolean(fileData[49]);
-                player.total100m = parseBoolean(fileData[50]);
-                player.total1b = parseBoolean(fileData[51]);
-                player.packageTaken = parseBoolean(fileData[52]);
-                player.quested = parseBoolean(fileData[53]);
-                player.allQuests = parseBoolean(fileData[54]);
-                player.goldTrail = parseBoolean(fileData[55]);
-                player.questsDone = parseFloat(fileData[56]);
-                player.driftTimer = parseFloat(fileData[57]);
-                player.dr0 = parseBoolean(fileData[58]);
-                player.dr1 = parseBoolean(fileData[59]);
-                player.dr2 = parseBoolean(fileData[60]);
-                player.dr3 = parseBoolean(fileData[61]);
-                player.dr4 = parseBoolean(fileData[62]);
-                player.dr5 = parseBoolean(fileData[63]);
-                player.dr6 = parseBoolean(fileData[64]);
-                player.dr7 = parseBoolean(fileData[65]);
-                player.dr8 = parseBoolean(fileData[66]);
-                player.dr9 = parseBoolean(fileData[67]);
-                player.dr10 = parseBoolean(fileData[68]);
-                player.dr11 = parseBoolean(fileData[69]);
-                player.cornersTouched = parseFloat(fileData[70]);
-                player.ms0 = parseBoolean(fileData[71]);
-                player.ms1 = parseBoolean(fileData[72]);
-                player.ms2 = parseBoolean(fileData[73]);
-                player.ms3 = parseBoolean(fileData[74]);
-                player.ms4 = parseBoolean(fileData[75]);
-                player.ms5 = parseBoolean(fileData[76]);
-                player.ms6 = parseBoolean(fileData[77]);
-                player.ms7 = parseBoolean(fileData[78]);
-                player.ms8 = parseBoolean(fileData[79]);
-                player.ms9 = parseBoolean(fileData[80]);
-                player.ms10 = parseBoolean(fileData[81]);
-                player.lives = parseFloat(fileData[82]);
+            var retCode = await loadPlayerData(player, player.password);
+            console.log("retCode: " + retCode);
+            if (retCode != 0) {
+                if (retCode == -1) {
+                    socket.binary(false).emit("invalidCredentials", {});
+                }
 
-                // Last login support
-			    if (fileData.length > 86) {
-				    player.lastLogin = new Date(parseInt(fileData[86]));
-			    }
+                return;
             }
+
+            instance = true;
+
+            onlineNames[name] = 1;
+            socket.binary(false).emit("loginSuccess",{});
     
+
             if(player.sx >= mapSz) player.sx--;
             if(player.sy >= mapSz) player.sy--;
     

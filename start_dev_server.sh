@@ -11,7 +11,7 @@ echo
 echo
 echo
 echo Starting shard-1 on port 7300
-node app_mongo.js 7300&
+node app.js 7300&
 echo Starting web express on port 7301
 node web.js 7301&
 echo Done. Browse to http://localhost:7301 to acces the Torn dev server!

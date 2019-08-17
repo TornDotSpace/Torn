@@ -1,6 +1,8 @@
 var fs = require('fs');
 require('./server_src/netcode.js');
 require('./server_src/math.js');
+require('./server_src/db.js');
+connectToDB();
 
 var Base = require('./server_src/universe/base.js');
 var Asteroid = require("./server_src/universe/asteroid.js");
