@@ -4,8 +4,7 @@ var express = require('express');
 var app = express();
 var cors = require('cors')
 
-console.log('Web Server started');
-console.log('Enabling express...');
+console.log('\n\nWeb Server started');
 app.use(cors());
 app.use('/',express.static(__dirname + '/client'));
 var httpServer = http.Server(app);

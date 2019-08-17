@@ -1,12 +1,10 @@
-global.eng = require("../client/english.json");
-global.esp = require("../client/spanish.json");
-global.pyc = require("../client/russian.json");
-global.deu = require("../client/german.json");
-global.frn = require("../client/french.json");
+var eng = "english.json";
+var esp = "spanish.json";
+var pyc = "russian.json";
+var deu = "german.json";
+var frn = "french.json";
 
 global.languagejson = null;
-
-import ReactRoot from "./react.js";
 
 global.jsn = require("../client/weapons.json");
 
@@ -14,7 +12,20 @@ global.setLang = function (name) {
     document.cookie = ("lang=" + name);
     loadLang(name);
 }
+function load(lang) {
+    var request = new XMLHttpRequest();
+    request.open("GET", lang, false);
 
+    var data = "";
+    request.onload = function (e) {
+        if (request.readyState === 4) {
+            data = request.responseText;
+        }
+    }
+
+    request.send(null);
+    return JSON.parse(data);
+}
 
 global.loadLang = function(name) {
     var assigned = null;
@@ -27,7 +38,7 @@ global.loadLang = function(name) {
     if (!assigned) {
         var lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");   
 
-        console.log(lang);
+        //console.log(lang);
         if (lang == null) {
             languagejson = eng;
         }
@@ -47,6 +58,9 @@ global.loadLang = function(name) {
     if (languagejson == null) {
         languagejson = eng;
     }
+
+    languagejson = load(languagejson);
+
     jsn.messages = languagejson.messages;
 
     jsn.achNames = languagejson.achNames;
@@ -63,7 +77,6 @@ global.loadLang = function(name) {
         jsn.ships[i].desc = languagejson.ships[i].desc;
     }
     global.mEng = jsn.messages;
-    global.achNames = jsn.achNames;
     global.splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
     if (!splash.endsWith("!") && !splash.endsWith("?")) splash += "...";
 }

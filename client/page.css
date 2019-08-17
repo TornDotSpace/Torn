@@ -1,3 +1,6 @@
+div {
+  word-wrap: break-word;
+}
 @font-face {
 	font-family: 'Nasa';
 	src: url('/fonts/nasa.ttf');

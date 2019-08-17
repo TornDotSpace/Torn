@@ -1,7 +1,19 @@
+console.log("************************************************************************************************************************");
+console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
+console.log("▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
+console.log(" ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌     ▐░▌   ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌    ▐░▌   ▐░▌          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▌   ▐░▌   ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░█▄▄▄▄▄▄▄▄▄ ");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░▌   ▐░▌ ▐░▌    ▀▀▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀▀▀ ");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌    ▐░▌▐░▌             ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌          ");
+console.log("     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░▌     ▐░▐░▌ ▄  ▄▄▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄ ");
+console.log("     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌      ▐░░▌▐░▌▐░░░░░░░░░░░▌▐░▌          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
+console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀        ▀▀  ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ ");
+console.log("                                                                                                                        ");
+console.log("************************************************************************************************************************");
+
 var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
-var isIE = /*@cc_on!@*/false || !!document.documentMode;
-var isEdge = !isIE && !!window.StyleMedia;
-var isFirefox = typeof InstallTrigger !== 'undefined';
 
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
@@ -11,7 +23,8 @@ var ctx = canvas.getContext("2d");
 import React from "react";
 import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
-import ChatInput from "./react.js";
+
+const {Howl, Howler} = require('howler'); // audio
 
 ReactDOM.render(
 	<ReactRoot data={{
@@ -30,7 +43,7 @@ for(var i = 0; i < 1571; i++)//500pi
 
 
 	
-var localizer = require("./localizer.js");
+require("./localizer.js");
 loadLang();
 
 //Normal, on server: torn.space:443
@@ -178,12 +191,18 @@ var Aud = {};
 var Aud_prgs = [0,0];
 var Aud_loaded = false;
 
-function loadAudio (name, src) {
+function loadAudio (name, _src) {
 	if (Aud[name]) {console.error("Loading image twice: " + name)}
-	Aud[name] = new Audio(src);
-	Aud[name].addEventListener("loadeddata", () => {
-		Aud_prgs[0]++;
-	})
+	Aud[name] = new Howl( {
+		src: _src,
+		autoplay: false,
+		loop:false,
+		preload:true,
+		onload: function() {
+			++Aud_prgs[0];
+		},
+		pool: 15
+	});
 	Aud_prgs[1]++;
 }
 function loadAudioEnd () {
@@ -225,33 +244,34 @@ var muted = false, musicMuted = false;
 // Passed to React Root
 function toggleAudio() {
 	muted^=true;
-	for (let a in Aud)
-		Aud[a].muted = muted
+	Howler.mute(muted);
 	return muted;
 }
 
 // Passed to React Root
 function toggleMusic() {
 	musicMuted^=true;
-	if(musicMuted && login) musicAudio.pause();
-	else musicAudio.play();
+	if(musicMuted && login) Aud["music1"].pause();
+	else if (musicAudio !=0) Aud["music1"].play();
 	return musicMuted;
 }
 
 // Use this function to play any sound from the Aud object
 function playAudio(name, vol) {
 	if (muted) return;
-	let node = Aud[name];
-	if (!node) {console.error("Unknown sound " + name);}
-	let audio = node.cloneNode();
-	audio.volume = gVol * vol;
-	if(name == "bigboom") audio.volume *= 2;
-	if(name == "noammo") audio.volume *= 5;
+	var audio = Aud[name];
+	if (!audio) {console.error("Unknown sound " + name);}
+	var id = audio.play();
+	
+	audio.volume(gVol * vol, id);
+
+	if(name == "bigboom") audio.volume(gVol * vol * 2, id);
+	if(name == "noammo") audio.volume(gVol * vol * 5, id);
+
 	if(name === "music1"){
-		audio.volume /= 2;
-		musicAudio = audio;
-	}
-	audio.play();
+		audio.volume(gVol * vol / 2, id);
+		musicAudio = id;
+	} 
 }
 
 var redShips = [];
@@ -621,7 +641,6 @@ function render(){
 
 //shop rendering
 function rWeapons(){
-	return;
 	if(equipped[1] == -2) return;
 	ctx.save();
 	ctx.globalAlpha = .5;
@@ -1013,10 +1032,10 @@ function rAchievements() {
 		else ctx.fillStyle = achs[i]?"cyan":"yellow";
 		if(achs[i]){
 			ctx.font = "9px Telegrama";
-			write(achNames[i].split(":")[1], rx + 768 * (1 + (i%5)*2) / 10, ry + 20 + 40 * Math.floor(i/5) + 60);
+			write(jsn.achNames[i].split(":")[1], rx + 768 * (1 + (i%5)*2) / 10, ry + 20 + 40 * Math.floor(i/5) + 60);
 		}
 		ctx.font = "12px Telegrama";
-		write(achs[i]?achNames[i].split(":")[0]:mEng[172], rx + 768 * (1 + (i%5)*2) / 10, ry + 8 + 40 * Math.floor(i/5) + 60);
+		write(achs[i]?jsn.achNames[i].split(":")[0]:mEng[172], rx + 768 * (1 + (i%5)*2) / 10, ry + 8 + 40 * Math.floor(i/5) + 60);
 	}
 	ctx.restore();
 }
@@ -1156,6 +1175,18 @@ function clearBullets(){
 	for(var i in data.pack) bullets[data.pack[i].id] = data.pack[i];
 }
 
+// socket error handling 
+socket.on('connect_error', function(error) {
+	if (!login) {
+		alert("Failed to connect to the Torn servers. This probably either means they are down or your firewall is blocking the request. " + error);
+		socket.close();
+		return;
+	}
+
+	alert("There's been an issue and your connection to Torn has been interrupted. You should be able to reload and get back right into the game. " + error);
+	socket.close();
+});
+
 //packet handling
 socket.on('posUp', function (data) {
 	uframes++;
@@ -1204,8 +1235,7 @@ function rInBase() {
 	rChat();
 	rBaseGui();
 	rAchNotes();
-	if(tab != -1)
-		ReactRoot.turnOffRegister("LoginOverlay");
+	if(tab != -1) ReactRoot.turnOffRegister("LoginOverlay");
 	switch (tab) {
 		case 0:
 			rHome();
@@ -1291,6 +1321,8 @@ socket.on('accInUse', function (data) {
 	credentialState = 10;
 });
 socket.on('loginSuccess', function (data) {
+	// Cleanup bullets from homepage
+	for(var i in bullets) delete bullets[i];
 	playAudio("music1", .5);
 	credentialState = 0;
 	ReactRoot.turnOffDisplay("LoginOverlay");
@@ -1303,7 +1335,7 @@ socket.on('invalidReg', function (data) {
 });
 socket.on('registered', function (data) {
 	credentialState = 0;
-	socket.emit("login",{user:data.user, pass:data.pass, amNew: true});
+	socket.binary(false).emit("login",{user:data.user, pass:data.pass, amNew: true});
 	ReactRoot.turnOffRegister("LoginOverlay");
 	guest = false;
 	textIn = 0;
@@ -1311,6 +1343,8 @@ socket.on('registered', function (data) {
 	tab = 0;
 });
 socket.on('lored', function (data) {
+	// Cleanup bullets from homepage
+	for(var i in bullets) delete bullets[i];
 	credentialState = 0;
 	pc = data.pc;
 	ReactRoot.turnOffDisplay("LoginOverlay");
@@ -1449,24 +1483,28 @@ socket.on('quest', function(data){
 	quest = data.quest;
 });
 socket.on('achievementsKill',function(data){
-	for(var i = 0; i < data.achs.length; i++)
-		if(achs[i] != data.achs[i])
-			ach(i, data.note);
+	for(var a in data.achs)
+		a = Number(a);
+		if(achs[a] != data.achs[a])
+			ach(a, data.note);
 });
 socket.on('achievementsCash',function(data){
-	for(var i = 0; i < data.achs.length; i++)
-		if(achs[i+13] != data.achs[i])
-			ach(i+13, data.note);
+	for(var a in data.achs)
+		a = Number(a);
+		if(achs[a+13] != data.achs[a])
+			ach(a+13, data.note);
 });
 socket.on('achievementsDrift',function(data){
-	for(var i = 0; i < data.achs.length; i++)
-		if(achs[i+25] != data.achs[i])
-			ach(i+25, data.note);
+	for(var a in data.achs)
+		a = Number(a);
+		if(achs[a+25] != data.achs[a])
+			ach(a+25, data.note);
 });
 socket.on('achievementsMisc',function(data){
-	for(var i = 0; i < data.achs.length; i++)
-		if(achs[i+37] != data.achs[i])
-			ach(i+37, data.note);
+	for(var a in data.achs)
+		a = Number(a)
+		if(achs[a+37] != data.achs[a])
+			ach(a+37, data.note);
 });
 socket.on('status',function(data){
 	shipView = ship;
@@ -1508,7 +1546,7 @@ setInterval(function(){
 	let d = new Date();
 	var time = d.getTime();
 	if(login)
-		socket.emit('pingmsg', {time:time});
+		socket.binary(false).emit('pingmsg', {time:time});
 },1000);
 setInterval(function(){
 	raidTimer--;
@@ -1665,7 +1703,7 @@ document.onkeydown = function (event) {
 		return;
 	if (event.keyCode === 16) {
 		if(keys[0] != true)
-			socket.emit('key', { inputId: 'shift', state: true });
+			socket.binary(false).emit('key', { inputId: 'shift', state: true });
 		keys[0] = true;
 		afkTimer = 45000;
 		shift = true;
@@ -1689,74 +1727,74 @@ document.onkeydown = function (event) {
 			tab = 1;
 		}
 		else if (event.keyCode == 89 && docked && tab == 8){ // y
-			socket.emit('sellW',{slot:confirmer});
+			socket.binary(false).emit('sellW',{slot:confirmer});
 			confirmer = -1;
 			textIn = 0;
 			tab = 1;
 		}
 		else if (event.keyCode == 66 && docked && tab == 7 && seller != 0 && actuallyBuying){ // b
-			socket.emit('buyW',{slot:scroll, weapon:seller - 20});
+			socket.binary(false).emit('buyW',{slot:scroll, weapon:seller - 20});
 			textIn = 0;
 			tab = 1;
 		}
 		else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] != -2)
-			socket.emit('equip', {scroll:event.keyCode - 49});
+			socket.binary(false).emit('equip', {scroll:event.keyCode - 49});
 		else if (event.keyCode == 48 && equipped[event.keyCode - 49] != -2)
-			socket.emit('equip', {scroll:9});
+			socket.binary(false).emit('equip', {scroll:9});
 		else if (event.keyCode === 83 || event.keyCode === 40){//s
-			if(keys[1] != true) socket.emit('key', { inputId: 's', state: true });
+			if(keys[1] != true) socket.binary(false).emit('key', { inputId: 's', state: true });
 			keys[1] = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 192)//`
 			dev = !dev;
 		else if (event.keyCode === 69){//e
-			if(keys[2] != true) socket.emit('key', { inputId: 'e', state: true });
+			if(keys[2] != true) socket.binary(false).emit('key', { inputId: 'e', state: true });
 			keys[2] = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 87 || event.keyCode === 38){//w
-			if(keys[3] != true) socket.emit('key', { inputId: 'w', state: true });
+			if(keys[3] != true) socket.binary(false).emit('key', { inputId: 'w', state: true });
 			keys[3] = true;
 			didW = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 65 || event.keyCode === 37){//a
-			if(keys[4] != true) socket.emit('key', { inputId: 'a', state: true });
+			if(keys[4] != true) socket.binary(false).emit('key', { inputId: 'a', state: true });
 			keys[4] = true;
 			didSteer = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 68 || event.keyCode === 39){//d
-			if(keys[5] != true) socket.emit('key', { inputId: 'd', state: true });
+			if(keys[5] != true) socket.binary(false).emit('key', { inputId: 'd', state: true });
 			keys[5] = true;
 			didSteer = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 32){//space
-			if(keys[6] != true) socket.emit('key', { inputId: ' ', state: true });
+			if(keys[6] != true) socket.binary(false).emit('key', { inputId: ' ', state: true });
 			keys[6] = true;
 			if(equipped[scroll] < 0) badWeapon = 20;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 81){//q
-			if(keys[7] != true) socket.emit('key', { inputId: 'q', state: true });
+			if(keys[7] != true) socket.binary(false).emit('key', { inputId: 'q', state: true });
 			keys[7] = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 88 || event.keyCode === 27){//x
 			if(dead) return;
-			if(keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
+			if(keys[8] != true) socket.binary(false).emit('key', { inputId: 'x', state: true });
 			keys[8] = true;
 			if(textIn > 300) textIn = 0;
 			tab = 0;
 			ReactRoot.turnOffRegister("");
 			afkTimer = 45000;
-			socket.emit('equip', {scroll:scroll});
+			socket.binary(false).emit('equip', {scroll:scroll});
 		}
 		else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)){//c/v
 			if(dead) return;
-			if(keys[9] != true) socket.emit('key', { inputId: 'z', state: true });
+			if(keys[9] != true) socket.binary(false).emit('key', { inputId: 'z', state: true });
 			keys[9] = true;
 			afkTimer = 45000;
 		}
@@ -1773,33 +1811,33 @@ document.onkeyup = function (event) {
 	var resetAfk = true;
 	if (event.keyCode === 83 || event.keyCode === 40){//s
 		keys[1] = false;
-		socket.emit('key', { inputId: 's', state: false });
+		socket.binary(false).emit('key', { inputId: 's', state: false });
 	}else if (event.keyCode === 69)//e
 		keys[2] = false;
 	else if (event.keyCode === 87 || event.keyCode === 38){//w
 		keys[3] = false;
-		socket.emit('key', { inputId: 'w', state: false });
+		socket.binary(false).emit('key', { inputId: 'w', state: false });
 	}else if (event.keyCode === 65 || event.keyCode === 37){//a
 		keys[4] = false;
-		socket.emit('key', { inputId: 'a', state: false });
+		socket.binary(false).emit('key', { inputId: 'a', state: false });
 	}else if (event.keyCode === 68 || event.keyCode === 39){//d
 		keys[5] = false;
-		socket.emit('key', { inputId: 'd', state: false });
+		socket.binary(false).emit('key', { inputId: 'd', state: false });
 	}else if (event.keyCode === 32){//space
 		keys[6] = false;
-		socket.emit('key', { inputId: ' ', state: false });
+		socket.binary(false).emit('key', { inputId: ' ', state: false });
 	}else if (event.keyCode === 81)//q
 		keys[7] = false;
 	else if (event.keyCode === 88 || event.keyCode === 27)//x
 		keys[8] = false;
 	else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)){//c/v
-		if(keys[9] == true) socket.emit('key', { inputId: 'z', state: false });
+		if(keys[9] == true) socket.binary(false).emit('key', { inputId: 'z', state: false });
 		keys[9] = false;
 	}
 	else if (event.keyCode === 16){
 		keys[0] = false;
 		shift = false;
-		socket.emit('key', { inputId: 'shift', state: false });
+		socket.binary(false).emit('key', { inputId: 'shift', state: false });
 	}else
 		resetAfk = false;
 	if(resetAfk)
@@ -1872,7 +1910,7 @@ document.addEventListener('mousemove', function (evt) {
 document.addEventListener('mousedown', function (evt) {
 	mb = 1;
 	if(lore && !login) {
-		socket.emit('guest', {alien:pc});
+		socket.binary(false).emit('guest', {alien:pc});
 		return;
 	}
 	if(mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
@@ -1887,13 +1925,13 @@ document.addEventListener('mousedown', function (evt) {
 	if(i == 0 && !mouseDown){
 		mouseDown = true;
 		if((mx < w - 32 - 20 - 128 - 16 || my < h - 92) && (mx > 512 + 32 || my < h - 216)){//not in vol section or chat section
-			socket.emit('key', { inputId: ' ', state: true });
+			socket.binary(false).emit('key', { inputId: ' ', state: true });
 			afkTimer = 45000;
 		}
 		if(equipped[scroll] < 0) badWeapon = 20;
 	}
 	/*if(i == 350)
-		socket.emit('cancelquest', {});*/
+		socket.binary(false).emit('cancelquest', {});*/
 	if(i == 500) window.open('https://tornspace.wikia.com/wiki/Torn.space_Wiki','_blank');
 	if(i == 501) window.open('/store','_blank');
 	if(i == 502) window.open('/leaderboard','_blank');
@@ -1911,18 +1949,18 @@ document.addEventListener('mousedown', function (evt) {
 		tab = 7;
 		actuallyBuying = false;
 	}
-	if(i == 610) socket.emit('sell', { item: 'all' });
-	if(i == 611) socket.emit('buyLife', {});
-	if(i >= 300 && i < 310 && quest == 0) socket.emit('quest', {quest: i - 300});
-	if (docked && tab == 3 && i > 199 && i < 206) socket.emit('upgrade', {item: i - 200});
+	if(i == 610) socket.binary(false).emit('sell', { item: 'all' });
+	if(i == 611) socket.binary(false).emit('buyLife', {});
+	if(i >= 300 && i < 310 && quest == 0) socket.binary(false).emit('quest', {quest: i - 300});
+	if (docked && tab == 3 && i > 199 && i < 206) socket.binary(false).emit('upgrade', {item: i - 200});
 	if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40){
 		textIn = 0;
 		tab = Math.floor((mx - rx) / 128);
 	}if(i >= 700 && i < 705)
-		socket.emit('trail',{trail:i-700});
+		socket.binary(false).emit('trail',{trail:i-700});
 	if(i == 800){
 		globalChat = (globalChat+1)%2;
-		socket.emit("toggleGlobal", {});
+		socket.binary(false).emit("toggleGlobal", {});
 		preProcessChat();
 	}
 	if (docked && mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
@@ -1931,7 +1969,7 @@ document.addEventListener('mousedown', function (evt) {
 		else if (i == 6) item = 'silver';
 		else if (i == 7) item = 'platinum';
 		else if (i == 8) item = 'aluminium';
-		socket.emit('sell', { item: item });
+		socket.binary(false).emit('sell', { item: item });
 	} else if (docked && tab == 1 && my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) {
 		if (equipped[i - 10] == -1){
 			textIn = 0;
@@ -1945,7 +1983,7 @@ document.addEventListener('mousedown', function (evt) {
 			confirmer = i - 10;
 		}
 	} else if (docked && tab == 1 && my > ry + 256 - 16 && my < ry + 512 - 16 && mx > rx + 16 && mx < rx + 256 + 16) {
-		if(my > ry + 256 + 128 + 32) socket.emit('buyShip', {ship:shipView});
+		if(my > ry + 256 + 128 + 32) socket.binary(false).emit('buyShip', {ship:shipView});
 		else if(mx > rx + 16 + 128 && shipView < ships.length - 1) shipView++;
 		else if(mx < rx + 16 + 128 && shipView > 0) shipView--;
 	}
@@ -1954,7 +1992,7 @@ document.addEventListener('mousedown', function (evt) {
 document.addEventListener('mouseup', function (evt) {
 	mb = 0;
 	if(mouseDown){
-		socket.emit('key', { inputId: ' ', state: false });
+		socket.binary(false).emit('key', { inputId: ' ', state: false });
 		afkTimer = 45000;
 		mouseDown = false;
 	}
@@ -1967,7 +2005,7 @@ document.addEventListener('mousewheel', function (evt) {
 	}
 	if((equipped[scroll] > 0 && (docked || scroll - d < 0 || scroll - d >= equipped.length || equipped[scroll - d] < -1)) || equipped[scroll-d] == -2)
 		return;
-	socket.emit('equip', {scroll:scroll - d});
+	socket.binary(false).emit('equip', {scroll:scroll - d});
 }, false);
 $(document).keydown(function(event) {
 	if (event.ctrlKey==true && (event.which == '61' || event.which == '107' || event.which == '173' || event.which == '109'  || event.which == '187'  || event.which == '189'  ) ) event.preventDefault();
@@ -2221,7 +2259,6 @@ function rLore(){
 	}
 }
 function rEnergyBar(){
-	return;
 	ctx.save();
 	ctx.strokeStyle = "red";
 	ctx.translate(guest ?16:248, 324 + 16 - 5)
@@ -2246,6 +2283,7 @@ function rEnergyBar(){
 	ctx.drawImage(Img.energyBar, 0,0);
 	ctx.restore();
 }
+
 function rVolumeBar(){
 	if(volTransparency <= 0) return;
 	ctx.save();
@@ -3007,9 +3045,9 @@ function rAchNotes(){
 			else ctx.fillStyle = "cyan";
 			ctx.font = "12px Telegrama";
 			write(mEng[203], w - 384, h-96*(i+1)+14);
-			write(achNames[latestAchs[i]].split(":")[0], w - 384, h-96*(i+1)+36);
+			write(jsn.achNames[latestAchs[i]].split(":")[0], w - 384, h-96*(i+1)+36);
 			ctx.font = "9px Telegrama";
-			write(achNames[latestAchs[i]].split(":")[1], w - 384, h-96*(i+1)+54);
+			write(jsn.achNames[latestAchs[i]].split(":")[1], w - 384, h-96*(i+1)+54);
 			ctx.globalAlpha = 1;
 		}
 	}

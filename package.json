@@ -1,42 +1,44 @@
 {
-  "name": "stk",
+  "name": "Torn.Space",
   "version": "0.0.1",
-  "description": "",
+  "description": "A midly popular space simulator MMO",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack -p --progress --colors --hot --config ./webpack.dev.js",
-    "build": "webpack -p --progress --colors --config ./webpack.prod.js"
+    "build": "webpack -p --progress --colors --config ./webpack.prod.js",
+    "test-build": "webpack -p --progress --colors --config ./webpack.test.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ukicu/NewGame.git"
+    "url": "git+https://github.com/2swap/Torn.Space.git"
   },
   "keywords": [
     "react",
     "webpack",
     "babel"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "The Torn.Space Team",
+  "license": "All Rights Reserved",
   "devDependencies": {
-    "@babel/core": "^7.5.4",
-    "@babel/plugin-proposal-class-properties": "^7.5.0",
-    "@babel/preset-env": "^7.5.4",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-hot-loader": "^4.12.7",
-    "webpack": "^4.35.3",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-hot-loader": "^4.12.11",
+    "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6",
-    "webpack-dev-server": "^3.7.2",
+    "webpack-dev-server": "^3.8.0",
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
-    "bad-words": "^3.0.2",
+    "bad-words": "^3.0.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "howler": "^2.1.2",
     "mongodb": "^3.2.7",
     "socket.io": "^2.2.0"
   }

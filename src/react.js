@@ -152,7 +152,7 @@ class Register extends Component {
 		var user = this.state.user;
 		var pass = this.state.pass;
 		if(typeof ReactRoot.socket !== "undefined")
-			ReactRoot.socket.emit('register', {user:user, pass:pass});
+			ReactRoot.socket.binary(false).emit('register', {user:user, pass:pass});
 	}
 }
 
@@ -250,17 +250,17 @@ class LoginOverlay extends Component {
 
 		connect();
 		if(typeof ReactRoot.socket !== "undefined")
-			ReactRoot.socket.emit('login', {user:user, pass:pass, amNew: false});
+			ReactRoot.socket.binary(false).emit('login', {user:user, pass:pass, amNew: false});
 	}
 	registerH = () => {
 		connect();
 		if(typeof ReactRoot.socket !== "undefined")
-			ReactRoot.socket.emit('lore', {alien:false});
+			ReactRoot.socket.binary(false).emit('lore', {alien:false});
 	}
 	registerA = () => {
 		connect();
 		if(typeof ReactRoot.socket !== "undefined")
-			ReactRoot.socket.emit('lore', {alien:true});
+			ReactRoot.socket.binary(false).emit('lore', {alien:true});
 	}
 
 	langEng = ()  => {
@@ -383,7 +383,7 @@ class ChatInput extends Component {
 		if (event.key === "Enter") {
 			ReactRoot.unfocusChat();
 			let val = this.state.value;
-			ReactRoot.socket.emit("chat", {msg: val});
+			ReactRoot.socket.binary(false).emit("chat", {msg: val});
 			this.setState({value: "", activated: this.state.activated});
 			// The keypress events in react and index
 			// fire at the same time but we want the
