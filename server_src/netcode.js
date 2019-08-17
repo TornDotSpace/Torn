@@ -491,7 +491,7 @@ module.exports = function initNetcode() {
             data.ship = Math.floor(data.ship); // the ship index must be integer. It must be no higher than your rank, and cannot be your current ship or out of bounds.
             if(data.ship > player.rank || data.ship < 0 || data.ship > ships.length || data.ship == player.ship) return;
             
-            var price = -ships[player.ship].price * -.75; // refund them .75x their own ship's price.
+            var price = ships[player.ship].price * -.75; // refund them .75x their own ship's price.
             price += ships[data.ship].price;
             if(player.money < price) return; // if it cannot be afforded
                 

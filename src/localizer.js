@@ -77,7 +77,6 @@ global.loadLang = function(name) {
         jsn.ships[i].desc = languagejson.ships[i].desc;
     }
     global.mEng = jsn.messages;
-    global.achNames = jsn.achNames;
     global.splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
     if (!splash.endsWith("!") && !splash.endsWith("?")) splash += "...";
 }

@@ -43,7 +43,7 @@ for(var i = 0; i < 1571; i++)//500pi
 
 
 	
-var localizer = require("./localizer.js");
+require("./localizer.js");
 loadLang();
 
 //Normal, on server: torn.space:443
@@ -1032,10 +1032,10 @@ function rAchievements() {
 		else ctx.fillStyle = achs[i]?"cyan":"yellow";
 		if(achs[i]){
 			ctx.font = "9px Telegrama";
-			write(achNames[i].split(":")[1], rx + 768 * (1 + (i%5)*2) / 10, ry + 20 + 40 * Math.floor(i/5) + 60);
+			write(jsn.achNames[i].split(":")[1], rx + 768 * (1 + (i%5)*2) / 10, ry + 20 + 40 * Math.floor(i/5) + 60);
 		}
 		ctx.font = "12px Telegrama";
-		write(achs[i]?achNames[i].split(":")[0]:mEng[172], rx + 768 * (1 + (i%5)*2) / 10, ry + 8 + 40 * Math.floor(i/5) + 60);
+		write(achs[i]?jsn.achNames[i].split(":")[0]:mEng[172], rx + 768 * (1 + (i%5)*2) / 10, ry + 8 + 40 * Math.floor(i/5) + 60);
 	}
 	ctx.restore();
 }
@@ -1483,24 +1483,28 @@ socket.on('quest', function(data){
 	quest = data.quest;
 });
 socket.on('achievementsKill',function(data){
-	for(var i = 0; i < data.achs.length; i++)
-		if(achs[i] != data.achs[i])
-			ach(i, data.note);
+	for(var a in data.achs)
+		a = Number(a);
+		if(achs[a] != data.achs[a])
+			ach(a, data.note);
 });
 socket.on('achievementsCash',function(data){
-	for(var i = 0; i < data.achs.length; i++)
-		if(achs[i+13] != data.achs[i])
-			ach(i+13, data.note);
+	for(var a in data.achs)
+		a = Number(a);
+		if(achs[a+13] != data.achs[a])
+			ach(a+13, data.note);
 });
 socket.on('achievementsDrift',function(data){
-	for(var i = 0; i < data.achs.length; i++)
-		if(achs[i+25] != data.achs[i])
-			ach(i+25, data.note);
+	for(var a in data.achs)
+		a = Number(a);
+		if(achs[a+25] != data.achs[a])
+			ach(a+25, data.note);
 });
 socket.on('achievementsMisc',function(data){
-	for(var i = 0; i < data.achs.length; i++)
-		if(achs[i+37] != data.achs[i])
-			ach(i+37, data.note);
+	for(var a in data.achs)
+		a = Number(a)
+		if(achs[a+37] != data.achs[a])
+			ach(a+37, data.note);
 });
 socket.on('status',function(data){
 	shipView = ship;
@@ -3041,9 +3045,9 @@ function rAchNotes(){
 			else ctx.fillStyle = "cyan";
 			ctx.font = "12px Telegrama";
 			write(mEng[203], w - 384, h-96*(i+1)+14);
-			write(achNames[latestAchs[i]].split(":")[0], w - 384, h-96*(i+1)+36);
+			write(jsn.achNames[latestAchs[i]].split(":")[0], w - 384, h-96*(i+1)+36);
 			ctx.font = "9px Telegrama";
-			write(achNames[latestAchs[i]].split(":")[1], w - 384, h-96*(i+1)+54);
+			write(jsn.achNames[latestAchs[i]].split(":")[1], w - 384, h-96*(i+1)+54);
 			ctx.globalAlpha = 1;
 		}
 	}
