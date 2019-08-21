@@ -46,6 +46,10 @@ function runCommand(player, msg){ // player just sent msg in chat and msg starts
 	else if(msg.toLowerCase().startsWith("/pm ")) player.pm(msg);
 	else if(msg.toLowerCase().startsWith("/r ")) player.r(msg);
     else if(msg.toLowerCase().startsWith("/swap ")) player.swap(msg);
+    else if(msg.toLowerCase().startsWith("/email ")) {
+        console.log("EMAIL!");
+        player.setEmail(msg);
+    }
 	else correct = false;
 	
 	//moderator commands
@@ -213,7 +217,7 @@ module.exports = function initNetcode() {
             });
             socket.binary(false).emit("raid", {raidTimer:raidTimer})
         });
-        socket.on('login', async function(data){ // TODO Chris
+        socket.on('login', async function(data){
             if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
                 
             flood(ip);

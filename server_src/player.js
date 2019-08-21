@@ -138,7 +138,9 @@ function Player(i){
 		questsDone:0, // bitmask
 		planetsClaimed:"0000000000000000000000000000000000000000000000000",
 		lastLogin: "A long, long time ago :(",
-		points:0
+		points:0,
+
+		email:""
 	}
 
 	self.tick = function(){
@@ -1567,6 +1569,16 @@ function Player(i){
 	self.r = function(msg){ // pm reply
 		if(self.reply.includes(" ")) self.reply = self.reply.split(" ")[1];
 		self.pm("/pm "+self.reply+" "+msg.substring(3));
+	}
+	self.setEmail =function(msg) {
+		var email = msg.substring(7);
+		var regex = new RegExp("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$");
+		if(regex.test(email)) {
+			self.email = email;
+			self.save();
+		} else {
+			send(self.id, "chat", {msg:"Invalid Email!"});
+		}
 	}
 	self.pm = function(msg){ // msg looks like "/pm luunch hey there pal". If a moderator, you use "2swap" not "[O] 2swap".
 		if(msg.split(" ").length < 3){ // gotta have pm, name, then message

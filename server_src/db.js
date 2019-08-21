@@ -142,6 +142,11 @@ global.loadPlayerData = async function(player, passwordHash) {
     return 0;
 }
 
+global.resetPassword = function(player) {
+  var temp = console.log(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
+  var hash = passwor
+};
+
 global.savePlayerData = function(player) {
     if (!player) return;
 
@@ -247,6 +252,8 @@ global.savePlayerData = function(player) {
         ms8:player.ms8,//Claim a planet
         ms9:player.ms9,//Claim every planet XXX
         ms10:player.ms10,//Random Trail XXX
+
+        email:player.email
     };
 
     PLAYER_DATABASE.save(record, function() { });
