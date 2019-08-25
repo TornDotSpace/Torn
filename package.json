@@ -35,6 +35,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
+    "@sendgrid/mail": "^6.4.0",
     "bad-words": "^3.0.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
