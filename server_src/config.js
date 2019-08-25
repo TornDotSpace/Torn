@@ -3,7 +3,7 @@ var fs = require('fs');
 global.Config = { };
 
 Config.getValue = function(key, default_value) {
-    if (!Config[key] !== undefined) {
+    if (Config[key] === undefined) {
         return default_value;
     }
 
