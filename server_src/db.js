@@ -1,6 +1,7 @@
 // TODO: Don't hardcode this
 var MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn";
 var PLAYER_DATABASE = null;
+var USE_MONGO = true;
 
 var Mongo = require('mongodb').MongoClient;
 var fs = require('fs');
@@ -8,6 +9,11 @@ var fs = require('fs');
 // TODO: Implement failover in the event we lose connection
 // to MongoDB
 global.connectToDB = function() {
+    if (!USE_MONGO) {
+        console.log("[DB] Using legacy flat-file based database");
+        return;
+    }
+
     if (PLAYER_DATABASE != null) {
         console.log("[DB] Already connected to MongoDB database...");
         return;
@@ -29,8 +35,8 @@ global.loadPlayerData = async function(player, passwordHash) {
     if (!player) return;
     if (player.isBot || player.guest) return;
 
-    // Check if player exists in MongoDB
-    var record = await PLAYER_DATABASE.findOne({_id: player.name});
+    // Check if player exists in MongoDB (if we're using MongoDB)
+    var record = (USE_MONGO) ? await PLAYER_DATABASE.findOne({_id: player.name}) : null;
 
     if (record != null) {
         if (record["password"] !== passwordHash) {
@@ -153,6 +159,22 @@ global.savePlayerData = function(player) {
     var spawnX = ((player.sx==Math.floor(mapSz/2) && player.sx == player.sy)?(player.color === "blue"?4:2):player.sx);
     var spawnY = ((player.sx==Math.floor(mapSz/2) && player.sx == player.sy)?(player.color === "blue"?4:2):player.sy);
 
+    // Check if we're using legacy flat files
+    if (!USE_MONGO) {
+        var source = 'server/players/' + (player.name.startsWith("[")?player.name.split(" ")[1]:player.name) + "[" + player.password + '.txt';
+		if (fs.existsSync(source)) fs.unlinkSync(source);
+		var weapons = "";
+		for(var i = 0; i < 9; i++) weapons += player.weapons[i] + ":";
+		var str = player.color + ':' + player.ship + ':' + player.trail + ':' + weapons + /*no ":", see prev line*/ spawnX + ':' + spawnY + ':' + player.name + ':' + player.money + ':' + player.kills + ':' + player.planetsClaimed + ':' + player.iron + ':' + player.silver + ':' + player.platinum + ':' + player.aluminium + ':' + player.experience + ':' + player.rank + ':' + player.x + ':' + player.y + ':' + player.thrust2 + ':' + player.radar2 + ':' + player.capacity2 + ':' + player.maxHealth2 + ":";
+		str+=player.kill1+":"+player.kill10+":"+player.kill100+":"+player.kill1k+":"+player.kill10k+":"+player.kill50k+":"+player.kill1m+":"+player.killBase+":"+player.kill100Bases+":"+player.killFriend+":"+player.killCourier+":"+player.suicide+":"+player.baseKills+":";
+		str+=player.oresMined+":"+player.mined+":"+player.allOres+":"+player.mined3k+":"+player.mined15k+":"+player.total100k+":"+player.total1m+":"+player.total100m+":"+player.total1b+":"+player.packageTaken+":"+player.quested+":"+player.allQuests+":"+player.goldTrail+":"+player.questsDone+":";
+		str+=player.driftTimer+":"+player.dr0+":"+player.dr1+":"+player.dr2+":"+player.dr3+":"+player.dr4+":"+player.dr5+":"+player.dr6+":"+player.dr7+":"+player.dr8+":"+player.dr9+":"+player.dr10+":"+player.dr11+":";
+		str+=player.cornersTouched+":true:"/*ms0, acct made.*/+player.ms1+":"+player.ms2+":"+player.ms3+":"+player.ms4+":"+player.ms5+":"+player.ms6+":"+player.ms7+":"+player.ms8+":"+player.ms9+":"+player.ms10+":"+player.lives + ":" + player.weapons[9] + ":" + player.energy2 + ":nodecay:";
+		str+=new Date().getTime()+":"+player.agility2; //reset timer
+		fs.writeFileSync(source, str, {"encoding":'utf8'});
+        return;
+    }
+
     var record = {
         _id:player.name,
         lastLogin:new Date().getTime(),
@@ -253,7 +275,7 @@ global.savePlayerData = function(player) {
         ms9:player.ms9,//Claim every planet XXX
         ms10:player.ms10,//Random Trail XXX
 
-        email:player.email
+        email:player.email // Player email for password resets, etc.
     };
 
     PLAYER_DATABASE.save(record, function() { });
