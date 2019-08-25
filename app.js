@@ -1,6 +1,9 @@
 var fs = require('fs');
+// Load config 
+require('./server_src/config.js')("dev");
 require('./server_src/netcode.js');
 require('./server_src/math.js');
+
 require('./server_src/db.js');
 connectToDB();
 
@@ -56,7 +59,7 @@ global.neuralFiles = 1500; // how many files should be in competition
 global.botFrequency = trainingMode?.7:1.6;//higher: more bots spawn. Standard: 1.6
 global.playerHeal = .2; // player healing speed
 global.baseHeal = 1; // base healing speed
-global.guestsCantChat = false;
+global.guestsCantChat = !Config.getValue("guest_chat", true);
 global.lbExp = new Array(1000); // Stores in memory where people stand on the global leaderboard.
 global.ranks = [0,5,10,20,50,100,200,500,1000,2000,4000,8000,14000,20000,40000,70000,100000,140000,200000,300000,500000,800000,1000000,1500000,2000000,3000000,5000000,8000000,12000000,16000000,32000000,64000000,100000000]; // exp to rank conversion.
 
