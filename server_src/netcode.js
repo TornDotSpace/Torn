@@ -190,7 +190,7 @@ module.exports = function initNetcode() {
             }
 
             var valid = true;
-            // TODO: FIX 
+            // TODO: FIX FOR MONGODB
             fs.readdir('server/players/', function(err, items) {
                 for (var i=0; i<items.length; i++) {
                     if(items[i].startsWith(user+"[")){

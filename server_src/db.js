@@ -1,7 +1,6 @@
-// TODO: Don't hardcode this
-var MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn";
+var MONGO_CONNECTION_STR = Config.getValue("mongo_connection_string", "mongodb://localhost:27017/torn");
 var PLAYER_DATABASE = null;
-var USE_MONGO = true;
+var USE_MONGO = Config.getValue("want_mongo_db", false);
 
 var Mongo = require('mongodb').MongoClient;
 var fs = require('fs');

@@ -59,7 +59,7 @@ global.neuralFiles = 1500; // how many files should be in competition
 global.botFrequency = trainingMode?.7:1.6;//higher: more bots spawn. Standard: 1.6
 global.playerHeal = .2; // player healing speed
 global.baseHeal = 1; // base healing speed
-global.guestsCantChat = !Config.getValue("guest_chat", true);
+global.guestsCantChat = !Config.getValue("want_guest_chat", true);
 global.lbExp = new Array(1000); // Stores in memory where people stand on the global leaderboard.
 global.ranks = [0,5,10,20,50,100,200,500,1000,2000,4000,8000,14000,20000,40000,70000,100000,140000,200000,300000,500000,800000,1000000,1500000,2000000,3000000,5000000,8000000,12000000,16000000,32000000,64000000,100000000]; // exp to rank conversion.
 
@@ -74,7 +74,7 @@ global.IPSpam = {}; // Keeps track of ips flooding server.
 global.bQuests = [];//A list of the 10 available quests for humans and aliens
 global.rQuests = [];
 
-var enableDecay = false; // Enable player decay algorithm
+var enableDecay = Config.getValue("want_decay", false); // Enable player decay algorithm
 
 
 
@@ -651,6 +651,7 @@ function updateHeatmap(){
 	for(var i in lb) send(lb[i].id, 'heatmap', {hmap:hmap, lb:lbSend, youi:i, raidBlue:raidBlue, raidRed:raidRed});
 }
 function updateLB(){
+	// TODO: Needs to be fixed for MongoDB
 	chatAll("Updating torn.space/leaderboard...\n");
 	console.log("\nUpdating torn.space/leaderboard...");
 	fs.readdir('server/players/', function(err, items) {
@@ -760,6 +761,7 @@ function saveTurrets(){
 		chatAll(count + " Turrets Saved!");
 	},1000);
 }
+// TODO: needs to be fixed for MongoDB
 function decayPlayers(){
 	if (!enableDecay) return;
 	sendAll("chat",{msg:"Decaying Players..."});
