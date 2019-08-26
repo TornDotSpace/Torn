@@ -94,11 +94,14 @@ module.exports = function loadConfig(environment) {
         var split = line.split(" ");
         Config[split[0]] = parseValue(split[1]);
     }
-
-    // Debug 
-    if (Config["debug"]) {
-        for (var key in Config) {
-            console.log(key + "=" + Config[key]);
-        }
+    // Debug Handling
+    // Define debug function
+    global.debug = Config.getValue("debug", true) 
+        ? function(str) {
+            console.log("[DEBUG] " + str);
+        } 
+        : function(str) { };
+    for (var key in Config) {
+        debug(key + "=" + Config[key]);
     }
 };

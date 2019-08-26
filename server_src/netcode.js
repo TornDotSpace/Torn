@@ -47,7 +47,7 @@ function runCommand(player, msg){ // player just sent msg in chat and msg starts
 	else if(msg.toLowerCase().startsWith("/r ")) player.r(msg);
     else if(msg.toLowerCase().startsWith("/swap ")) player.swap(msg);
     else if(msg.toLowerCase().startsWith("/email ")) {
-        console.log("EMAIL!");
+        debug("EMAIL!");
         player.setEmail(msg);
     }
 	else correct = false;
@@ -117,7 +117,9 @@ module.exports = function initNetcode() {
         socket.id = Math.random();
         sockets[socket.id]=socket;
     
-        var ip = socket.handshake.headers['x-real-ip'] || socket.handshake.address.address;
+        var ip = Config.getValue("want_xreal_ip", true) 
+            ? socket.handshake.headers['x-real-ip'] 
+            : socket.handshake.address;
         console.log(ip + " Connected!");
         flood(ip);
     
@@ -194,7 +196,7 @@ module.exports = function initNetcode() {
             fs.readdir('server/players/', function(err, items) {
                 for (var i=0; i<items.length; i++) {
                     if(items[i].startsWith(user+"[")){
-                        console.log(items[i] + ":" + (user+"["));
+                        debug(items[i] + ":" + (user+"["));
                         socket.binary(false).emit("invalidReg", {reason:4});
                         valid = false;
                         break;
@@ -246,7 +248,7 @@ module.exports = function initNetcode() {
             
             //Load account
             var retCode = await loadPlayerData(player, player.password);
-            console.log("retCode: " + retCode);
+            debug("retCode: " + retCode);
             if (retCode != 0) {
                 if (retCode == -1) {
                     socket.binary(false).emit("invalidCredentials", {});

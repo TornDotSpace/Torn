@@ -39,8 +39,8 @@ global.loadPlayerData = async function(player, passwordHash) {
 
     if (record != null) {
         if (record["password"] !== passwordHash) {
-            console.log(record["password"]);
-            console.log(passwordHash);
+            debug(record["password"]);
+            debug(passwordHash);
             return -1; // Invalid credentials
         }
         for (key in record) {
@@ -148,7 +148,7 @@ global.loadPlayerData = async function(player, passwordHash) {
 }
 
 global.resetPassword = function(player) {
-  var temp = console.log(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
+  var temp = debug(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
   var hash = passwor
 };
 

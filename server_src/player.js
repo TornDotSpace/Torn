@@ -1682,7 +1682,7 @@ global.spawnBot = function(sx,sy,col,rbNow,bbNow){
 	bot.ship = bot.rank;
 	bot.x = bot.y = sectorWidth/2;
 	bot.color = col;
-	bot.name = "drone" /*+ botNames[Math.floor(Math.random() * (botNames.length))] */;
+	bot.name = Config.getValue("want_bot_names", false) ? "BOT " + botNames[Math.floor(Math.random() * (botNames.length))] : "DRONE";
 	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand*2) * .2) + .6);
 	bot.energy2 = Math.floor((bot.thrust2-1)*5/2)/5+1;
 	bot.va = ships[bot.ship].agility * .08 * bot.agility2;
