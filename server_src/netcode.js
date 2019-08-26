@@ -16,7 +16,7 @@ function flood(ip){
 		safe = true;
 		break;
 	}
-	if(!safe) return;
+	return safe;
 }
 
 global.hash = function(str){ // ass. TODO chris
@@ -121,7 +121,7 @@ module.exports = function initNetcode() {
             ? socket.handshake.headers['x-real-ip'] 
             : socket.handshake.address;
         console.log(ip + " Connected!");
-        flood(ip);
+        if (!flood(ip)) return;
     
         var player = 0;
     
@@ -135,7 +135,7 @@ module.exports = function initNetcode() {
         });
     
         socket.on('guest',function(data){ // TODO Chris
-            flood(ip);
+            if (!flood(ip)) return;
             if(instance) return;
             player = new Player(socket.id);
             player.guest = true;
@@ -166,7 +166,7 @@ module.exports = function initNetcode() {
         });
         socket.on('register',function(data){ // TODO Chris
             if (typeof data === "undefined") return;
-            flood(ip);
+            if (!flood(ip)) return;
             // Block registrations being triggered from non-guests or unconnected accounts
             // Fixes some registration spam and crash exploits
     
@@ -222,7 +222,7 @@ module.exports = function initNetcode() {
         socket.on('login', async function(data){
             if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
                 
-            flood(ip);
+            if (!flood(ip)) return;
             if(instance) return;
             //Validate and save IP
             var name = data.user, pass = data.pass;
