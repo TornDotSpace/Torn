@@ -209,7 +209,28 @@ var vortPack = new Array(mapSz);
 
 init();
 
+function sigHandle() {
+	console.log("[SERVER] Caught termination signal...");
+
+	sendAll("kick", {msg: "You have been logged out by an adminstrator working on the servers."});
+
+	for (var y in players) {
+		for (var x in players[y]) {
+			for (var id in players[y][x]) {
+				// Save & kick out
+				var player = players[y][x][id];
+				player.save();
+			}
+		}
+	}
+	setTimeout(kill, 5000);
+}
 function init(){ // start the server!
+
+	// Add signal handlers
+	process.on('SIGINT', sigHandle);
+	process.on('SIGTERM', sigHandle);
+
 	console.log("************************************************************************************************************************");
 	console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
 	console.log("▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
@@ -242,7 +263,7 @@ function init(){ // start the server!
 	for(var s = 0; s < mapSz * mapSz; s++){
 		var x = s % mapSz;
 		var y = Math.floor(s / mapSz);
-		createPlanet(planets[s], x, y);
+		createPlanet(planetNames[s], x, y);
 	}
 	for(var i = 0; i < mapSz; i++)
 		sectors[i] = new Array(mapSz);
@@ -266,7 +287,7 @@ function init(){ // start the server!
 	
 	//start ticking
 	 
-	setTimeout(update, 40);
+	setTimeout(update, 16.6);
 	setTimeout(updateLB,60000);
 
 	var netcode = require('./server_src/netcode.js');
@@ -344,7 +365,7 @@ function kill(){
 
 function createPlanet(name, sx, sy){
 	var randA = Math.random();
-	var planet = Planet(randA, planetNames[Math.floor(Math.random() * (planetNames.length))]);
+	var planet = Planet(randA, name);
 	planet.sx = sx;
 	planet.sy = sy;
 	while(square(planet.x - sectorWidth/2)+square(planet.y - sectorWidth/2) < 3000000){

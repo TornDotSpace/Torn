@@ -1537,6 +1537,10 @@ socket.on('worm', function(data){
 socket.on('raid', function(data){
 	raidTimer = data.raidTimer;
 });
+socket.on('kick', function (data) {
+	alert(data.msg);
+	socket.disconnect();
+});
 
 
 setInterval(function(){

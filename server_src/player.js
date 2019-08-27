@@ -1643,6 +1643,11 @@ function Player(i){
 		sendWeapons(self);
 		send(self.id, "chat", {msg:"Weapons swapped!"});
 	}
+	self.kick = function(msg) {
+		send(self.id, "kick", {msg: msg});
+		self.pingTimer = -1;
+		self.checkDisconnect();
+	}
 	return self;
 };
 
