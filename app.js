@@ -14,6 +14,8 @@ var Vortex = require("./server_src/universe/vortex.js");
 
 var planetNames = fs.readFileSync("./planetNames.txt").toString().split("\n");
 
+var tickRate = 1000 / Config.getValue("server_tick_rate", 60);
+
 global.createAsteroid = function(){
 	var sx = Math.floor(Math.random()*mapSz);
 	var sy = Math.floor(Math.random()*mapSz);
@@ -287,7 +289,7 @@ function init(){ // start the server!
 	
 	//start ticking
 	 
-	setTimeout(update, 16.6);
+	setTimeout(update, tickRate);
 	setTimeout(updateLB,60000);
 
 	var netcode = require('./server_src/netcode.js');
@@ -390,7 +392,7 @@ function endRaid(){
 
 function update(){
 	ops++;
-	if(ops < 2) setTimeout(update, 40);
+	if(ops < 2) setTimeout(update, tickRate);
 	tick++;
 	if(Math.random() < 0.0001) IPSpam[Math.floor(Math.random())] = 0;
 	var d = new Date();
