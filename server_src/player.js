@@ -10,17 +10,18 @@ var Orb = require('./battle/orb.js');
 var Mine = require('./battle/mine.js');
 var Beam = require('./battle/beam.js');
 
-function Player(i){
+function Player(sock){
 	var self = {
 		
 		type:"Player",
 		
 		name:"ERR0",
-		id:i, // unique identifier
+		id:sock.id, // unique identifier
+		socket:sock,
 		password:"password",
 		ip:0,
 		trail:0,
-		color:i>.5?'red':'blue',
+		color:sock.id>.5?'red':'blue',
 		ship:0,
 		experience:0,
 		rank:0,
@@ -188,12 +189,12 @@ function Player(i){
 			//In case of insufficient ammo
 			if(self.ammos[self.equipped] == 0){
 				self.reload = Math.min(wep.Charge,10);
-				send(self.id,"sound", {file:"noammo", x:self.x, y:self.y});
+				self.socket.emit("sound", {file:"noammo", x:self.x, y:self.y});
 				return;
 			} else if(self.ammos[self.equipped]>0) self.ammos[self.equipped]--;
 			
 			if(wep.Level > self.ship){
-				send(self.id,"chat",{msg:'This weapon is incompatible with your current ship!', color:'yellow'});
+				self.socket.emit("chat",{msg:'This weapon is incompatible with your current ship!', color:'yellow'});
 				return;
 			}
 			
@@ -305,12 +306,12 @@ function Player(i){
 			//Turret
 			else if(wepId == 27){
 				if(self.x < sectorWidth / 4 || self.x > 3*sectorWidth/4 || self.y < sectorWidth / 4 || self.y > 3*sectorWidth/4){
-					send(self.id, "chat",{msg:'Your turret must be closer to the center of the sector!', color:'yellow'});
+					self.socket.emit("chat",{msg:'Your turret must be closer to the center of the sector!', color:'yellow'});
 					self.space = false;
 					return;
 				}
 				if(bases[self.sy][self.sx] != 0){
-					send(self.id, "chat",{msg:'There can only be one turret in any sector!', color:'yellow'});
+					self.socket.emit("chat",{msg:'There can only be one turret in any sector!', color:'yellow'});
 					self.space = false;
 					return;
 				}
@@ -318,7 +319,7 @@ function Player(i){
 				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y);
 				b.owner = self.name;
 				bases[self.sy][self.sx] = b;
-				send(self.id, "chat",{msg:'You placed a turret! Coming soon, you will be able to name it.', color:'yellow'});
+				self.socket.emit("chat",{msg:'You placed a turret! Coming soon, you will be able to name it.', color:'yellow'});
 				self.reload =wep.Charge;
 				self.energy-=wep.energy;
 			}
@@ -354,7 +355,7 @@ function Player(i){
 			//Hyperdrive
 			else if(wepId == 22){
 				var isDrifting = (self.e || self.gyroTimer > 0) && (self.a!=self.d);
-				send(self.id,"sound", {file:"hyperspace", x:self.x, y:self.y});
+				self.socket.emit("sound", {file:"hyperspace", x:self.x, y:self.y});
 				self.hyperdriveTimer = 200;
 				if(isDrifting && self.w && !self.driftAchs[6]){ // Hyper-drift
 					self.driftAchs[6] = true;
@@ -572,7 +573,7 @@ function Player(i){
 			else self.borderJumpTimer += 100;
 		}
 		if(giveBounce && !self.randmAchs[5]){
-			if(self.guest) send(self.id, "chat", {msg:"~`orange~`You must create an account to explore the universe!"});
+			if(self.guest) self.socket.emit("chat", {msg:"~`orange~`You must create an account to explore the universe!"});
 			else{
 				self.randmAchs[5] = true;
 				self.sendAchievementsMisc(true);
@@ -601,7 +602,7 @@ function Player(i){
 		chatAll("~`violet~`" + self.name + "~`yellow~` has been " + (minutes > 0?"muted for " + minutes + " minutes!" : "unmuted!"));
 	}
 	self.onChangeSectors = function(){
-		send(self.id, "clrBullets", {});
+		self.socket.emit("clrBullets", {});
 		
 		//track my touched corners
 		if(self.sx==0){
@@ -625,7 +626,7 @@ function Player(i){
 			if((self.questsDone & 8) == 0) self.questsDone+=8;
 			
 			self.quest = 0; // reset quest and tell the client
-			send(self.id, 'quest', {quest: self.quest});
+			self.socket.emit('quest', {quest: self.quest});
 			
 			if(!self.moneyAchs[9]){ // Questor
 				self.moneyAchs[9] = true;
@@ -639,7 +640,7 @@ function Player(i){
 		
 		if(self.quest != 0 && self.quest.type === "Secret" && self.sx == self.quest.sx && self.sy == self.quest.sy){ // advance in secret quest to phase 2
 			self.quest = {type:"Secret2", exp:self.quest.exp, sx:self.quest.sx, sy:self.quest.sy};
-			send(self.id, 'quest', {quest: self.quest});
+			self.socket.emit('quest', {quest: self.quest});
 		}
 		
 		//tell client what's in this sector
@@ -838,7 +839,7 @@ function Player(i){
 			if(cleared){ // 2 ifs needed, don't merge this one with the last one
 				self.hasPackage = true;
 				self.quest = {type:"Secret3", exp:self.quest.exp};
-				send(self.id, 'quest', {quest: self.quest}); //notify client
+				self.socket.emit('quest', {quest: self.quest}); //notify client
 			}
 		}
 		
@@ -886,7 +887,7 @@ function Player(i){
 			noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
 			
 			self.quest = 0;
-			send(self.id, 'quest', {quest: self.quest}); // tell client quest is over
+			self.socket.emit('quest', {quest: self.quest}); // tell client quest is over
 			
 			if(!self.moneyAchs[9]){ // Questor
 				self.moneyAchs[9] = true;
@@ -912,7 +913,7 @@ function Player(i){
 				
 				self.hasPackage = false;
 				self.quest = 0;
-				send(self.id, 'quest', {quest: self.quest}); // tell client it's over
+				self.socket.emit('quest', {quest: self.quest}); // tell client it's over
 				if((self.questsDone & 2) == 0) self.questsDone+=2;
 				
 				if(!self.moneyAchs[9]){ // Questor
@@ -951,7 +952,7 @@ function Player(i){
 				strongLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
 				
 				self.quest = 0; //tell client it's done
-				send(self.id, 'quest', {quest: self.quest});
+				self.socket.emit('quest', {quest: self.quest});
 				if((self.questsDone & 4) == 0) self.questsDone+=4;
 				
 				if(!self.moneyAchs[9]){ // Questor
@@ -1067,13 +1068,13 @@ function Player(i){
 		if(Object.keys(mines[self.sy][self.sx]).length >= 20 && self.weapons[self.equipped] < 30){
 			self.ammos[self.equipped]++;
 			self.reload = 5;
-			send(self.id, "chat", {msg: "This sector has reached its limit of 20 mines."});
+			self.socket.emit("chat", {msg: "This sector has reached its limit of 20 mines."});
 			return;
 		}
 		if(square(self.sx - sectorWidth/2) + square(self.sy - sectorWidth/2) < square(600 * 10)){
 			self.ammos[self.equipped]++;
 			self.reload = 5;
-			send(self.id, "chat", {msg: "You may not place a mine here."});
+			self.socket.emit("chat", {msg: "You may not place a mine here."});
 			return;
 		}
 		var r = Math.random();
@@ -1166,7 +1167,7 @@ function Player(i){
 
 				//clear quest
 				self.quest = 0;
-				send(self.id, 'quest', {quest: 0});//reset quest and update client
+				self.socket.emit('quest', {quest: 0});//reset quest and update client
 				
 				if(typeof b.owner !== "undefined" && b.owner.type === "Player"){
 					sendAll('chat', {msg:("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + b.owner.name + "~`yellow~`'s `~"+b.wepnID+"`~!")});
@@ -1348,7 +1349,7 @@ function Player(i){
 		if(self.health < 0)self.die(origin);
 		
 		note('-'+Math.floor(d), self.x, self.y - 64, self.sx, self.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-		send(self.id, 'dmg', {});
+		self.socket.emit('dmg', {});
 		return self.health < 0;
 	}
 	self.EMP = function(t){
@@ -1358,7 +1359,7 @@ function Player(i){
 		
 		//turn off all keys
 		self.w = self.e = self.a = self.s = self.d = self.c = self.space = false;
-		if(!self.isBot) send(self.id, 'emp', {t:t});
+		if(!self.isBot) self.socket.emit('emp', {t:t});
 	}
 	self.save = function(){
 		if(self.guest || self.isBot) return;
@@ -1403,23 +1404,23 @@ function Player(i){
 	}
 	self.sendAchievementsKill = function(note){
 		if(self.isBot) return;
-		send(self.id, "achievementsKill", {note:note,achs:self.killsAchs});
+		self.socket.emit("achievementsKill", {note:note,achs:self.killsAchs});
 	}
 	self.sendAchievementsCash = function(note){
 		if(self.isBot) return;
-		send(self.id, "achievementsCash", {note:note,achs:self.moneyAchs});
+		self.socket.emit("achievementsCash", {note:note,achs:self.moneyAchs});
 	}
 	self.sendAchievementsDrift = function(note){
 		if(self.isBot) return;
-		send(self.id, "achievementsDrift", {note:note,achs:self.driftAchs});
+		self.socket.emit("achievementsDrift", {note:note,achs:self.driftAchs});
 	}
 	self.sendAchievementsMisc = function(note){
 		self.randmAchs[9] = !self.planetsClaimed.includes("0") && !self.planetsClaimed.includes("1"); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
 		if(self.isBot) return;
-		send(self.id, "achievementsMisc", {note:note,achs:self.randmAchs});
+		self.socket.emit("achievementsMisc", {note:note,achs:self.randmAchs});
 	}
 	self.sendStatus = function(){
-		if(!self.isBot) send(self.id, "status", {docked:self.docked, state:self.dead,lives:self.lives});
+		if(!self.isBot) self.socket.emit("status", {docked:self.docked, state:self.dead,lives:self.lives});
 	}
 	self.checkMoneyAchievements = function(){
 		if(self.isBot) return;
@@ -1479,14 +1480,14 @@ function Player(i){
 			var bullet = bullets[self.sy][self.sx][i];
 			packHere.push({wepnID:bullet.wepnID,color:bullet.color,x:bullet.x,vx:self.vx,vy:self.vy,y:bullet.y,angle:bullet.angle,id:self.id});
 		}
-		send(self.id, 'clrBullets', {pack:packHere});
+		self.socket.emit('clrBullets', {pack:packHere});
 	}
 	self.getAllPlanets = function(){ // same, but with planets
 		if(self.isBot) return;
 		var packHere = 0;
 		var planet = planets[self.sy][self.sx];
 		packHere = {id:planet.id, name:planet.name, x:planet.x, y:planet.y, color:planet.color};
-		send(self.id, 'planets', {pack:packHere});
+		self.socket.emit('planets', {pack:packHere});
 	}
 	self.updatePolars = function(){ // Convert my rectangular motion/position data to polar
 		self.driftAngle = Math.atan2(self.vy, self.vx);
@@ -1502,7 +1503,7 @@ function Player(i){
 	}
 	self.testAfk = function(){
 		if(self.afkTimer-- < 0){
-			send(self.id, "AFK",{t:0});
+			self.socket.emit("AFK",{t:0});
 			lefts[self.id] = 0;
 			if(!self.isBot){
 				var text = "~`"+self.color+"~`"+self.name + "~`yellow~` went AFK!";
@@ -1516,31 +1517,31 @@ function Player(i){
 	self.changePass = function(pass){ // /password
 	// TODO chris
 		if(!self.docked){
-			send(self.id, "chat", {msg:"~`red~`This command is only available when docked at a base."});
+			self.socket.emit("chat", {msg:"~`red~`This command is only available when docked at a base."});
 			return;
 		}
 		if(pass.length > 32 || pass.length < 1){
-			send(self.id, "chat", {msg:"~`red~`Password must be 1-32 characters."});
+			self.socket.emit("chat", {msg:"~`red~`Password must be 1-32 characters."});
 			return;
 		}
 		self.tentativePassword = pass;
-		send(self.id, "chat", {msg:"~`lime~`Type \"/confirm your_new_password\" to complete the change."});
+		self.socket.emit("chat", {msg:"~`lime~`Type \"/confirm your_new_password\" to complete the change."});
 	}
 	self.confirmPass = function(pass){ // /confirm
 	// TODO chris
 		if(!self.docked){
-			send(self.id, "chat", {msg:"~`red~`This command is only available when docked at a base."});
+			self.socket.emit("chat", {msg:"~`red~`This command is only available when docked at a base."});
 			return;
 		}
 		if(pass !== self.tentativePassword){
-			send(self.id, "chat", {msg:"~`red~`Passwords do not match! Start over from /password."});
+			self.socket.emit("chat", {msg:"~`red~`Passwords do not match! Start over from /password."});
 			return;
 		}
 		var currSource = 'server/players/' + (self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) + '.txt';
 		if (fs.existsSync(currSource)) fs.unlinkSync(currSource);
 		self.password = self.tentativePassword;
 		self.save();
-		send(self.id, "chat", {msg:"~`lime~`Password changed successfully."});
+		self.socket.emit("chat", {msg:"~`lime~`Password changed successfully."});
 	}
 	self.calculateGenerators = function(){ // count how many gens I have
 		self.generators = 0;
@@ -1557,14 +1558,14 @@ function Player(i){
 			var newPosition = lbIndex(self.experience);
 			if(newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot){
 				if(newPosition < 501) sendAll('chat', {msg:"~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!"});
-				else send(self.id, {msg:"~`yellow~` Your global rank is now #" + newPosition + "!"});
+				else self.socket.emit({msg:"~`yellow~` Your global rank is now #" + newPosition + "!"});
 			}
 			self.updateRank();
 		}
 		else if(type === "money") self.money+=amt*(self.trail % 16 == 2?1.05:1);
 		else if(type === "life" && self.lives < 20) self.lives+=amt;
 		self.experience = Math.max(self.experience, 0);
-		send(self.id,"spoils",{type:type,amt:amt});
+		self.socket.emit("spoils",{type:type,amt:amt});
 	}
 	self.r = function(msg){ // pm reply
 		if(self.reply.includes(" ")) self.reply = self.reply.split(" ")[1];
@@ -1577,23 +1578,23 @@ function Player(i){
 			self.email = email;
 			self.save();
 		} else {
-			send(self.id, "chat", {msg:"Invalid Email!"});
+			self.socket.emit("chat", {msg:"Invalid Email!"});
 		}
 	}
 	self.pm = function(msg){ // msg looks like "/pm luunch hey there pal". If a moderator, you use "2swap" not "[O] 2swap".
 		if(msg.split(" ").length < 3){ // gotta have pm, name, then message
-			send(self.id, "chat", {msg:"Invalid Syntax!"});
+			self.socket.emit("chat", {msg:"Invalid Syntax!"});
 			return;
 		}
 		var name = msg.split(" ")[1];
 		var raw = msg.substring(name.length+5);
-		send(self.id, "chat", {msg:"Sending private message to "+name+"..."});
+		self.socket.emit("chat", {msg:"Sending private message to "+name+"..."});
 		for(var i = 0; i < mapSz; i++) for(var j = 0; j < mapSz; j++)
 			for(var p in players[j][i]){
 				var player = players[j][i][p];
 				if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
 					send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
-					send(self.id, "chat", {msg:"Message sent!"});
+					self.socket.emit("chat", {msg:"Message sent!"});
 					self.reply = player.name;
 					player.reply = self.name;
 					return;
@@ -1602,7 +1603,7 @@ function Player(i){
 			var player = dockers[p];
 			if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
 				send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
-				send(self.id, "chat", {msg:"Message sent!"});
+				self.socket.emit("chat", {msg:"Message sent!"});
 				self.reply = player.name;
 				player.reply = self.name;
 				return;
@@ -1611,23 +1612,23 @@ function Player(i){
 			var player = deads[p];
 			if((player.name.includes(" ")?player.name.split(" ")[1]:player.name) === name){
 				send(player.id, "chat", {msg:"~`lime~`[PM] [" + self.name + "]: " + raw});
-				send(self.id, "chat", {msg:"Message sent!"});
+				self.socket.emit("chat", {msg:"Message sent!"});
 				self.reply = player.name;
 				player.reply = self.name;
 				return;
 			}	
 		}
-		send(self.id, "chat", {msg:"Player not found!"});
+		self.socket.emit("chat", {msg:"Player not found!"});
 	}
 	self.swap = function(msg){ // msg looks like "/swap 2 5". Swaps two weapons.
 		var spl = msg.split(" ");
 		if(spl.length != 3){ // not enough arguments
-			send(self.id, "chat", {msg:"Invalid Syntax!"});
+			self.socket.emit("chat", {msg:"Invalid Syntax!"});
 			return;
 		}
 		var slot1 = parseFloat(spl[1]), slot2 = parseFloat(spl[2]);
 		if(slot1 > 10 || slot2 > 10 || slot1 < 1 || slot2 < 1 || !slot1 || !slot2 || !Number.isInteger(slot1) || !Number.isInteger(slot2)){
-			send(self.id, "chat", {msg:"Invalid Syntax!"});
+			self.socket.emit("chat", {msg:"Invalid Syntax!"});
 			return;
 		}
 		
@@ -1641,10 +1642,10 @@ function Player(i){
 		self.ammos[slot2] = temp;
 
 		sendWeapons(self);
-		send(self.id, "chat", {msg:"Weapons swapped!"});
+		self.socket.emit("chat", {msg:"Weapons swapped!"});
 	}
 	self.kick = function(msg) {
-		send(self.id, "kick", {msg: msg});
+		self.socket.emit("kick", {msg: msg});
 		self.pingTimer = -1;
 		self.checkDisconnect();
 	}
@@ -1677,7 +1678,7 @@ global.spawnBot = function(sx,sy,col,rbNow,bbNow){
 		return;
 	}
 	id = Math.random();
-	var bot = new Player(id);
+	var bot = new Player({id: id, emit: function() { }});
 	bot.isBot = true;
 	bot.sx = sx;
 	bot.sy = sy;
@@ -1706,7 +1707,7 @@ global.spawnNNBot = function(sx,sy,col){
 	if(trainingMode){sx = 2; sy = 4;}
 	if(sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 	id = Math.random();
-	var bot = new Player(id);
+	var bot = new Player({id: id, emit: function() { }});
 	bot.isNNBot = bot.isBot = true;
 	bot.sx = sx;
 	bot.sy = sy;

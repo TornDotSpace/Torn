@@ -139,11 +139,7 @@ function sendRaidData(){ // tell everyone when the next raid is happening
 }
 
 function getPlayer(i){ // given a socket id, find the corresponding player object.
-	var p = deads[i];
-	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++) if(typeof p === "undefined") p = players[y][x][i]; // check all sectors
-	if(typeof p === "undefined") p = dockers[i]; // check dock
-	if(typeof p !== "undefined") return p;
-	return 0;
+	return sockets[i].player;
 }
 
 //Alex: I rewrote everything up to here thoroughly, and the rest not so thoroughly. 7/1/19
@@ -193,7 +189,7 @@ function updateQuestsB(){
 
 
 
-global.sectors = new Array(9);
+global.sectors = new Array(mapSz);
 
 // packs are how we send data to the client
 var pack = new Array(mapSz);

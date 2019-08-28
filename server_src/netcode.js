@@ -115,7 +115,7 @@ module.exports = function initNetcode() {
     io.sockets.on('connection', function(socket){
         var instance = false;
         socket.id = Math.random();
-        sockets[socket.id]=socket;
+        sockets[socket.id] = socket;
     
         var ip = Config.getValue("want_xreal_ip", true) 
             ? socket.handshake.headers['x-real-ip'] 
@@ -137,7 +137,8 @@ module.exports = function initNetcode() {
         socket.on('guest',function(data){ // TODO Chris
             if (!flood(ip)) return;
             if(instance) return;
-            player = new Player(socket.id);
+            player = new Player(socket);
+            socket.player = player;
             player.guest = true;
             instance = true;
             player.ip = ip;
@@ -204,8 +205,9 @@ module.exports = function initNetcode() {
                 }
 
                 if(!valid) return;
-                var player = dockers[socket.id];
-                if(typeof player === "undefined") return;
+                var playerDocked = dockers[socket.id];
+                if(typeof playerDocked === "undefined") return;
+
                 player.name = user;
                 player.password = hash(pass);
                 player.guest = false;
@@ -241,7 +243,8 @@ module.exports = function initNetcode() {
                 return;
             }
 
-            player = new Player(socket.id);
+            player = new Player(socket);
+            socket.player = player;
             player.ip = ip;
             player.name = name;
             player.password = hash(data.pass);
