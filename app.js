@@ -1,6 +1,7 @@
 var fs = require('fs');
 // Load config 
-require('./server_src/config.js')("dev");
+var configEnvironment = (process.env.length <= 3) ? "dev" : process.env[3];
+require('./server_src/config.js')(configEnvironment);
 require('./server_src/netcode.js');
 require('./server_src/math.js');
 

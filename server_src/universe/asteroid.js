@@ -109,7 +109,6 @@ module.exports = function Asteroid(i, h, sxx, syy, metal){
 		self.health-=d;
 		if(self.health < 0)self.die(origin);
 		note('-'+d, self.x, self.y - 64, self.sx, self.sy);
-		send(self.id, 'dmg', {});
 		return self.health < 0;
 	}
 	self.EMP = function(d){

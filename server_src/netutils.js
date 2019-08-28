@@ -26,9 +26,7 @@ global.chatAll = function(msg){ // sends msg in the chat
 
 global.sendTeam = function(color, out, data){ // send a socket.io message to all the members of some team
 	for(var i in sockets){
-		var player = dockers[i];
-		for(var y = 0; y < mapSz; y++) for(var y = 0; y < mapSz; y++) if(typeof player === "undefined") player = players[y][x][i];
-		if(typeof player === "undefined") player = deads[i];
+		var player = sockets[i].player;
 		if(typeof player !== "undefined" && player.color === color) sockets[i].emit(out, data);
 	}
 }
