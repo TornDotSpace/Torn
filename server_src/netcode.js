@@ -4,10 +4,12 @@ var Filter = require('bad-words'); // bad-words node package
 var filter = new Filter();
 var Player = require('./player.js');
 require('./netutils.js');
+require("./command.js");
+
 var guestCount = 0; // Enumerate guests since server boot
 
 // Global mute table 
-var muteTable = [ ];
+global.muteTable = [ ];
 
 function flood(ip){
 	var safe = false;
@@ -36,58 +38,15 @@ function expToLife(exp, guest){ // how much a life costs, given your exp and whe
 }
 
 function runCommand(player, msg){ // player just sent msg in chat and msg starts with a /
-	var correct = true;
-	
-	if(msg.startsWith("/password ")) player.changePass(msg.substring(10));
-	else if(msg.startsWith("/me ")) chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4));
-	else if(msg.startsWith("/confirm ")) player.confirmPass(msg.substring(9));
-	else if(msg === "/changeteam") send(player.id, "chat", {msg:"Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type /confirmteam to continue."});
-	else if(msg === "/confirmteam" && player.experience > 10000) {player.color = (player.color === "red"?"blue":"red"); player.money *= .9; player.experience *= .9; player.save();}
-	else if(msg.toLowerCase().startsWith("/pm ")) player.pm(msg);
-	else if(msg.toLowerCase().startsWith("/r ")) player.r(msg);
-    else if(msg.toLowerCase().startsWith("/swap ")) player.swap(msg);
-    else if(msg.toLowerCase().startsWith("/email ")) {
-        debug("EMAIL!");
-        player.setEmail(msg);
+    var toLower = msg.toLowerCase();
+    var command = cmds[toLower.split(" ")[0]];
+    if (command === undefined) {
+        player.socket.emit("chat", {msg:"~`red~`Unknown Command. Use /help for a list of commands! ~`red~`"});
+    } else {
+        command.invoke(player, msg);
     }
-	else correct = false;
-	
-	//moderator commands
-	if(player.name.includes(" ")){
-		if(msg.startsWith("/broadcast ")) sendAll('chat', {msg:"~`#f66~`       BROADCAST: ~`lime~`"+msg.substring(11)});
-		else if(msg.startsWith("/mute ")) mute(msg);
-		else correct = false;
-	}
-	
-	//owner commands
-	else if(player.name.includes("[O]")){
-		if(msg === "/reboot") initReboot();
-		else if(msg.startsWith("/smite ")) smite(msg);
-		else if(msg === "/undecayPlayers") decayPlayers(undecay);
-		else if(msg === "/spawnNN") spawnNNBot(player.sx, player.sy, Math.random()>.5?"red":"blue");
-		else if(msg === "/decayPlayers") decayPlayers(decay);
-		else if(msg === "/saveTurrets") saveTurrets();
-		else correct = false;
-	}
-	
-	if(!correct) send(player.id, "chat", {msg:"~`red~`Unknown Command."});
-	
-	return;
 }
 
-function mute(msg){
-	
-	if(msg.split(" ").length != 3) return; // split looks like {"/mute", "name", "minutesToMute"}
-	var name = msg.split(" ")[1];
-	var minutes = parseFloat(msg.split(" ")[2]);
-    if(typeof time !== "number") return;
-    
-    if (minutes < 0) {
-        return;
-    }
-
-    muteTable[name] = (Date.now() + (minutes * 60 * 1000));
-}
 function smite(msg){
 	if(msg.split(" ").length != 2) return;
 	var name = msg.split(" ")[1];
@@ -378,7 +337,10 @@ module.exports = function initNetcode() {
             }
     
             if(data.msg.startsWith("/")){//handle commands
-                if(player.guest) return;
+                if(player.guest) {
+                    socket.emit("chat", {msg: "~`red~`You must create an account to use commands!"});
+                    return;
+                }
                 runCommand(player, data.msg);
             } else { // otherwise send the text
                 var spaces = "";

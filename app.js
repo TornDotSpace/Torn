@@ -1,6 +1,99 @@
+// The Torn.Space Server Entry Point
+
+/** 
+ * 			THIS FILE IS PART OF THE "Torn.Space" PROJECT 
+ * 			Copyright (c) The Torn.Space Team 2018-2019
+ * 						ALL RIGHTS RESERVED
+ */
+
+global.initReboot = function(){
+	console.log("\nInitializing server reboot...\n");
+	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
+	setTimeout(function(){chatAll("Server is restarting in 4 minutes. Please save your progress as soon as possible.");}, 1*60*1000);
+	setTimeout(function(){chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible.");}, 2*60*1000);
+	setTimeout(function(){chatAll("Server is restarting in 2 minutes. Please save your progress as soon as possible.");}, 3*60*1000);
+	setTimeout(function(){chatAll("Server is restarting in 1 minute. Please save your progress as soon as possible.");}, 4*60*1000);
+	setTimeout(function(){chatAll("Server is restarting in 30 seconds. Please save your progress as soon as possible.");}, (4*60+30)*1000);
+	setTimeout(function(){chatAll("Server is restarting in 10 seconds. Please save your progress as soon as possible.");}, (4*60+50)*1000);
+	setTimeout(function(){chatAll("Server restarting...");}, (4*60+57)*1000);
+	setTimeout(shutdown, 5*60*1000);
+}
+
+global.saveTurrets = function() {
+
+	//delete files
+	var count = 0;
+	var items = fs.readdirSync('server/turrets/');
+	for(var i in items){
+		fs.unlinkSync('server/turrets/' + items[i]);
+		count++;
+	}
+	chatAll(count + " Turrets Currently Saved");
+
+	//save em
+	setTimeout(function(){
+		count = 0;
+		chatAll("Saving Turrets...");
+		for(var i = 0; i < mapSz; i++)
+			for(var j = 0; j < mapSz; j++){
+				var base = bases[i][j];
+				if(base != 0 && !base.isBase){
+					base.save();
+					count++;
+				}
+			}
+		chatAll(count + " Turrets Saved!");
+	},1000);
+}
+
+// TODO: needs to be fixed for MongoDB
+global.decayPlayers = function(){
+	if (!enableDecay) return;
+	sendAll("chat",{msg:"Decaying Players..."});
+	console.log("\nDecaying players...")
+	var items = fs.readdirSync('server/players/');
+	
+	
+	sendAll("chat",{msg:"Files identified: " + items.length});
+	for (var i=0; i<items.length; i++) {
+		var source = "server/players/"+items[i];
+		if(fs.lstatSync(source).isDirectory()) continue;
+		var data = fs.readFileSync(source, 'utf8');
+		var split = data.split(":");
+		if(split.length < 85){
+			if(split.length < 15) sendAll("chat",{msg:"File " + source + " unreadable. " + split.length + " entries."});
+			else{
+				var log = "Player " + split[14] + " failed to decay due to an unformatted save file with " + split.length + " entries. Cleaning file.";
+				sendAll("chat",{msg:log});
+				console.log("\n"+log+"\n");
+				cleanFile(source);
+			}
+			continue;
+		}
+		data = "";
+		var decayRate = (split[85] === "decay"?.985:.995);
+
+		split[22] = decay(parseFloat(split[22]),decayRate);//xp
+		split[15] = decay(parseFloat(split[15]),decayRate);//money
+		//split[84] = decay(parseFloat(split[84]),decayRate);//energy
+		//split[26] = decay(parseFloat(split[26]),decayRate);//thrust
+		//split[27] = decay(parseFloat(split[27]),decayRate);//radar
+		//split[28] = decay(parseFloat(split[28]),decayRate);//cargo
+		//split[29] = decay(parseFloat(split[29]),decayRate);//hull
+
+		split[23] = 0;
+		split[85] = "decay"; //reset decaymachine
+		while(split[22] > ranks[split[23]]) split[23]++;
+		
+		if (fs.existsSync("server/players/"+items[i])) fs.unlinkSync("server/players/"+items[i]);
+		for(var j = 0; j < split.length; j++) data += split[j] + (j==split.length-1?"":":");
+		fs.writeFileSync(source, data, {"encoding":'utf8'});
+	}
+}
+
 var fs = require('fs');
 // Load config 
-var configEnvironment = (process.env.length <= 3) ? "dev" : process.env[3];
+var configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
 require('./server_src/config.js')(configEnvironment);
 require('./server_src/netcode.js');
 require('./server_src/math.js');
@@ -41,9 +134,6 @@ var baseMap = [	0,1,	//A2 / G6
 				2,2,	//C3 / E5
 				3,0,	//D1 / D7
 				5,1];	//F2 / B6
-
-
-
 
 
 //some global FINAL game mechanics
@@ -735,19 +825,6 @@ function updateLB(){
 
 
 
-global.initReboot = function(){
-	console.log("\nInitializing server reboot...\n");
-	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
-	setTimeout(function(){chatAll("Server is restarting in 4 minutes. Please save your progress as soon as possible.");}, 1*60*1000);
-	setTimeout(function(){chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible.");}, 2*60*1000);
-	setTimeout(function(){chatAll("Server is restarting in 2 minutes. Please save your progress as soon as possible.");}, 3*60*1000);
-	setTimeout(function(){chatAll("Server is restarting in 1 minute. Please save your progress as soon as possible.");}, 4*60*1000);
-	setTimeout(function(){chatAll("Server is restarting in 30 seconds. Please save your progress as soon as possible.");}, (4*60+30)*1000);
-	setTimeout(function(){chatAll("Server is restarting in 10 seconds. Please save your progress as soon as possible.");}, (4*60+50)*1000);
-	setTimeout(function(){chatAll("Server restarting...");}, (4*60+57)*1000);
-	setTimeout(shutdown, 5*60*1000);
-}
-
 //meta
 setTimeout(initReboot,86400*1000-6*60*1000);
 function shutdown(){
@@ -755,76 +832,7 @@ function shutdown(){
 	decayPlayers();
 	process.exit();
 }
-function saveTurrets(){
 
-	//delete files
-	var count = 0;
-	var items = fs.readdirSync('server/turrets/');
-	for(var i in items){
-		fs.unlinkSync('server/turrets/' + items[i]);
-		count++;
-	}
-	chatAll(count + " Turrets Currently Saved");
-
-	//save em
-	setTimeout(function(){
-		count = 0;
-		chatAll("Saving Turrets...");
-		for(var i = 0; i < mapSz; i++)
-			for(var j = 0; j < mapSz; j++){
-				var base = bases[i][j];
-				if(base != 0 && !base.isBase){
-					base.save();
-					count++;
-				}
-			}
-		chatAll(count + " Turrets Saved!");
-	},1000);
-}
-// TODO: needs to be fixed for MongoDB
-function decayPlayers(){
-	if (!enableDecay) return;
-	sendAll("chat",{msg:"Decaying Players..."});
-	console.log("\nDecaying players...")
-	var items = fs.readdirSync('server/players/');
-	
-	
-	sendAll("chat",{msg:"Files identified: " + items.length});
-	for (var i=0; i<items.length; i++) {
-		var source = "server/players/"+items[i];
-		if(fs.lstatSync(source).isDirectory()) continue;
-		var data = fs.readFileSync(source, 'utf8');
-		var split = data.split(":");
-		if(split.length < 85){
-			if(split.length < 15) sendAll("chat",{msg:"File " + source + " unreadable. " + split.length + " entries."});
-			else{
-				var log = "Player " + split[14] + " failed to decay due to an unformatted save file with " + split.length + " entries. Cleaning file.";
-				sendAll("chat",{msg:log});
-				console.log("\n"+log+"\n");
-				cleanFile(source);
-			}
-			continue;
-		}
-		data = "";
-		var decayRate = (split[85] === "decay"?.985:.995);
-
-		split[22] = decay(parseFloat(split[22]),decayRate);//xp
-		split[15] = decay(parseFloat(split[15]),decayRate);//money
-		//split[84] = decay(parseFloat(split[84]),decayRate);//energy
-		//split[26] = decay(parseFloat(split[26]),decayRate);//thrust
-		//split[27] = decay(parseFloat(split[27]),decayRate);//radar
-		//split[28] = decay(parseFloat(split[28]),decayRate);//cargo
-		//split[29] = decay(parseFloat(split[29]),decayRate);//hull
-
-		split[23] = 0;
-		split[85] = "decay"; //reset decaymachine
-		while(split[22] > ranks[split[23]]) split[23]++;
-		
-		if (fs.existsSync("server/players/"+items[i])) fs.unlinkSync("server/players/"+items[i]);
-		for(var j = 0; j < split.length; j++) data += split[j] + (j==split.length-1?"":":");
-		fs.writeFileSync(source, data, {"encoding":'utf8'});
-	}
-}
 function cleanFile(x){
 	var data = fs.readFileSync(x, 'utf8');
 	var split = data.split(":");
