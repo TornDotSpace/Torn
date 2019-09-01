@@ -47,29 +47,32 @@ function runCommand(player, msg){ // player just sent msg in chat and msg starts
     }
 }
 
-function smite(msg){
-	if(msg.split(" ").length != 2) return;
-	var name = msg.split(" ")[1];
-	for(var x = 0; x < mapSz; x++) for(var y = 0; y < mapSz; y++)
-		for(var p in players[y][x]){ // only search players who are in game
-			var player = players[y][x][p];
-			if(player.name === name){
-				player.die(0);
-				chatAll("~`violet~`" + player.name + "~`yellow~` has been Smitten!");
-				return;
-			}
-		}
-}
-
 var onlineNames = [ ];
 
 module.exports = function initNetcode() {
     var port = process.argv[2];
     console.log("");
-	for(var i = 0; i < 5; i++)console.log("=== STARTING SERVER ON PORT "+port+" ===");
+    for(var i = 0; i < 5; i++)console.log("=== STARTING SERVER ON PORT "+port+" ===");
+    
+    const http = require("http");
+    const https = require("https");
 
-    var io = require('socket.io')();
-    io.listen(parseInt(port));
+    const protocol = Config.getValue("want-tls", "false") ? https : http;
+    const key = Config.getValue("tls-key-path", null);
+    const cert = Config.getValue("tls-cert-path", null);
+
+    const options = {
+        key: (key != null) ? fs.readFileSync(key) : key,
+        cert: (cert != null) ? fs.readFileSync(cert) : cert
+    };
+
+    var server = protocol.createServer(options);
+    server.listen(parseInt(port));
+
+    var io = require('socket.io')(server, {
+        serveClient: false,
+        origins: "*:*"
+    });
 
     io.sockets.on('connection', function(socket){
         var instance = false;
