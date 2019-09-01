@@ -1285,7 +1285,6 @@ socket.on('chat', function (data) {
 });
 // Extracting so we can use it locally
 function _chat (data) {
-	if((!data.msg.includes(":"))&&data.msg.includes("GUEST")) return;
 	for (var i = chatLength; i > 0; i--) messages[i] = messages[i - 1];
 	if(data.msg.includes("`~")){
 		var find1 = getPosition(data.msg,"`~",1);

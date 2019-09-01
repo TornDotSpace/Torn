@@ -134,6 +134,8 @@ module.exports = function initNetcode() {
             socket.binary(false).emit('sectors', {sectors:sectors});
             sendWeapons(player);
             socket.binary(false).emit("raid", {raidTimer:raidTimer})
+
+            chatAll("Welcome " + player.name + " to the universe!");
         });
         socket.on('register',function(data){ // TODO Chris
             if (typeof data === "undefined") return;

@@ -134,10 +134,10 @@ cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server",
 
 // Compute help menu
 for (var x in PERM_TABLE) {
-    HELP_TABLE[x] = [ ]; // construct empty array
+    HELP_TABLE[PERM_TABLE[x]] = [ ]; // construct empty array
     for (var cmd in cmds) {
-        if (cmds[cmd].permission <= x) {
-            HELP_TABLE[x].push(cmds[cmd]);
+        if (cmds[cmd].permission <= PERM_TABLE[x]) {
+            HELP_TABLE[PERM_TABLE[x]].push(cmds[cmd]);
         }
     }
 }
