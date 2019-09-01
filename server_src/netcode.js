@@ -87,7 +87,7 @@ module.exports = function initNetcode() {
         socket.id = Math.random();
         sockets[socket.id] = socket;
     
-        var ip = Config.getValue("want_xreal_ip", true) 
+        var ip = Config.getValue("want-xreal-ip", true) 
             ? socket.handshake.headers['x-real-ip'] 
             : socket.handshake.address;
         console.log(ip + " Connected!");
