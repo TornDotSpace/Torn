@@ -310,8 +310,13 @@ function loadImageEnd () {
 }
 function loadPlanetImg(i){
 	planetImgs[i] = new Image();
+	var realI = i+1;
+
+	if (realI == 6) {
+		realI == 1;
+	}
 	// TODO: fix 
-	planetImgs[i].src = '/img/space/planets/pt1.png';
+	planetImgs[i].src = '/img/space/planets/pt' + realI + '.png';
 }
 function loadShipImg(red, i){
 	if(red){
