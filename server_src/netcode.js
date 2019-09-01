@@ -9,7 +9,7 @@ require("./command.js");
 var guestCount = 0; // Enumerate guests since server boot
 
 // Global mute table 
-global.muteTable = [ ];
+global.muteTable = { };
 
 function flood(ip){
 	var safe = false;
@@ -43,11 +43,16 @@ function runCommand(player, msg){ // player just sent msg in chat and msg starts
     if (command === undefined) {
         player.socket.emit("chat", {msg:"~`red~`Unknown Command. Use /help for a list of commands! ~`red~`"});
     } else {
+        // Check for permissions
+        if (command.permissionLevel > player.permissionLevel) {
+            player.socket.emit("chat",  {msg:"~`red~`You don't have permission to access this command. ~`red~`"});
+            return;
+        }
         command.invoke(player, msg);
     }
 }
 
-var onlineNames = [ ];
+var onlineNames = { };
 
 module.exports = function initNetcode() {
     var port = process.argv[2];
@@ -61,10 +66,10 @@ module.exports = function initNetcode() {
     const key = Config.getValue("tls-key-path", null);
     const cert = Config.getValue("tls-cert-path", null);
 
-    const options = {
+    const options = (protocol === https) ? {
         key: (key != null) ? fs.readFileSync(key) : key,
         cert: (cert != null) ? fs.readFileSync(cert) : cert
-    };
+    } : { };
 
     var server = protocol.createServer(options);
     server.listen(parseInt(port));
@@ -117,7 +122,7 @@ module.exports = function initNetcode() {
             player.sendStatus();
             player.getAllBullets();
             player.getAllPlanets();
-            // TODO: FIXME 
+
             players[player.sy][player.sx][socket.id] = player;
             player.va = ships[player.ship].agility * .08 * player.agility2;
             player.thrust = ships[player.ship].thrust * player.thrust2;
@@ -173,6 +178,7 @@ module.exports = function initNetcode() {
                 player.name = user;
                 player.password = hash(pass);
                 player.guest = false;
+                player.permissionLevel = 0;
                 socket.binary(false).emit("registered",{user:data.user,pass:data.pass});
                 var text = user+' registered!';
                 console.log(text);

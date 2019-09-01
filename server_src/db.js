@@ -144,6 +144,15 @@ global.loadPlayerData = async function(player, passwordHash) {
         }
     }
 
+    if (player.name.startsWith("[O]")) {
+        player.permissionLevel = 30;
+    } else if (player.name.startsWith("[A]")) {
+        player.permissionLevel = 20;
+    } else if (player.name.includes(" ")) {
+        player.permissionLevel = 10;
+    } else {
+        player.permissionLevel = 0;
+    }
     return 0;
 }
 

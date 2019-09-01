@@ -7,13 +7,16 @@ class Command {
 }
 
 // Permissions constants
-var GUEST = -1;
-var PLAYER = 0;
-var MODERATOR = 10;
-var ADMIN = 20;
-var OWNER = 30;
+const GUEST = -1;
+const PLAYER = 0;
+const MODERATOR = 10;
+const ADMIN = 20;
+const OWNER = 30;
 
-global.cmds = [ ];
+const PERM_TABLE = [GUEST, PLAYER, MODERATOR, ADMIN, OWNER];
+var HELP_TABLE = { };
+
+global.cmds = { };
 
 // GUEST COMMANDS 
 // All players including guests have access to these
@@ -22,7 +25,10 @@ cmds["/test"] = new Command("/test - Does something secret :O", GUEST, function(
 });
 
 cmds["/help"] = new Command("/help - Displays commands & usages", GUEST, function(plyr, msg) {
-    
+    for (var x = 0; x < HELP_TABLE[plyr.permissionLevel].length; ++x) {
+        var cmd = HELP_TABLE[plyr.permissionLevel][x];
+        plyr.socket.emit("chat", {msg: cmd.usage});
+    }
 });
 
 cmds["/me"] = new Command("/me <msg>", GUEST, function(player, msg) {
@@ -124,3 +130,15 @@ cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server",
         send(player.id, "chat", {msg: "An error occurred: " + e});
     }
 });
+
+
+// Compute help menu
+for (var x in PERM_TABLE) {
+    HELP_TABLE[x] = [ ]; // construct empty array
+    for (var cmd in cmds) {
+        if (cmds[cmd].permission <= x) {
+            HELP_TABLE[x].push(cmds[cmd]);
+        }
+    }
+}
+ 

@@ -141,7 +141,8 @@ function Player(sock){
 		lastLogin: "A long, long time ago :(",
 		points:0,
 
-		email:""
+		email:"",
+		permissionLevel:-1
 	}
 
 	self.tick = function(){
