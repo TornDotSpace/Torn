@@ -62,7 +62,7 @@ module.exports = function initNetcode() {
     const http = require("http");
     const https = require("https");
 
-    const protocol = Config.getValue("want-tls", "false") ? https : http;
+    const protocol = Config.getValue("want-tls", false) ? https : http;
     const key = Config.getValue("tls-key-path", null);
     const cert = Config.getValue("tls-cert-path", null);
 
@@ -71,7 +71,10 @@ module.exports = function initNetcode() {
         cert: (cert != null) ? fs.readFileSync(cert) : cert
     } : { };
 
-    var server = protocol.createServer(options);
+    var server = (protocol == https) ? 
+            protocol.createServer(options)
+            : protocol.createServer();
+
     server.listen(parseInt(port));
 
     var io = require('socket.io')(server, {
