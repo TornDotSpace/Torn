@@ -1,2 +1,0 @@
-hi
-<script>window.location.href='Purple Drank

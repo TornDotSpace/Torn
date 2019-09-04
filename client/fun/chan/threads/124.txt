@@ -1,9 +1,0 @@
-
-
-lola.php
-bb
-ls
-<br>
-<?php echo ("www"); ?>`
-
-adad

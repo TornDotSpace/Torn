@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack -p --progress --colors --hot --config ./webpack.dev.js",
-    "build": "webpack -p --progress --colors --config ./webpack.prod.js",
-    "test-build": "webpack -p --progress --colors --config ./webpack.test.js"
+    "dev": "webpack -p --progress --colors --hot --config ./deploy/webpack.dev.js",
+    "build": "webpack -p --progress --colors --config ./deploy/webpack.prod.js",
+    "test-build": "webpack -p --progress --colors --config ./deploy/webpack.test.js"
   },
   "repository": {
     "type": "git",
