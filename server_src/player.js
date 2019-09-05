@@ -1669,7 +1669,7 @@ function lbIndex(exp){ // binary search to find where a player is on the leaderb
 
 module.exports = Player;
 
-var botNames = fs.readFileSync("././botNames.txt").toString().split("\n");
+var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");
 
 global.spawnBot = function(sx,sy,col,rbNow,bbNow){
 	if(sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
