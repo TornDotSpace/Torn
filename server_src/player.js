@@ -1214,7 +1214,7 @@ function Player(sock){
 		//TODO Chris
 		if(!self.isBot){
 			self.health = self.maxHealth;
-			var readSource = 'server/players/'+(self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + hash(self.password) +'.txt';
+			var readSource = 'server/players/'+(self.name.startsWith("[")?self.name.split(" ")[1]:self.name) + "[" + self.password +'.txt';
 			if(self.guest){
 				self.lives--;
 				self.sx = self.sy = (self.color == 'red' ? 2:4);

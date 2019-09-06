@@ -3,6 +3,7 @@ var Missile = require('../battle/missile.js');
 var Orb = require('../battle/orb.js');
 var Beam = require('../battle/beam.js');
 
+var fs = require('fs');
 
 module.exports = function Base(i, b, sxx, syy, col, x, y){
 	var self = {
