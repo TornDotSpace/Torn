@@ -509,6 +509,13 @@ function update(){
 		basePack = 0;
 		astPack.length = 0;
 		vortPack.length = 0;
+
+		for(var i in vorts[y][x]){
+			var vort = vorts[y][x][i];
+			vort.tick();
+			vortPack.push({x:vort.x,y:vort.y,size:vort.size, isWorm:vort.isWorm});
+		}
+		 
 		for(var i in players[y][x]){
 			var player = players[y][x][i];
 	
@@ -522,12 +529,6 @@ function update(){
 		}
 		
 		for(var i in bullets[y][x]) bullets[y][x][i].tick();
-		
-		for(var i in vorts[y][x]){
-			var vort = vorts[y][x][i];
-			vort.tick();
-			vortPack.push({x:vort.x,y:vort.y,size:vort.size, isWorm:vort.isWorm});
-		}
 		
 		for(var i in mines[y][x]){
 			var mine = mines[y][x][i];

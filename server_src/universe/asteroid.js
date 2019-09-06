@@ -16,8 +16,7 @@ module.exports = function Asteroid(i, h, sxx, syy, metal){
 		vx: 0,
 		vy: 0,
 		metal:metal,
-		va:(Math.random() - .5) / 10,
-		dead:false
+		va:(Math.random() - .5) / 10
 	}
 	self.tick = function(){
 		if(Math.random() < .0001) self.die(0);
@@ -59,8 +58,7 @@ module.exports = function Asteroid(i, h, sxx, syy, metal){
 	}
 	self.die = function(b){
 		// Bugfix for ion beam destroying multiple times
-		if (self.dead) return;
-		self.dead = true;
+		self.die = function() { };
 		createAsteroid();
 		delete asts[self.sy][self.sx][self.id];
 		if(b == 0) return;

@@ -30,6 +30,11 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm){
 		
 		else self.size = 2500;
 	}
+
+	self.getSectorName = function() { 
+		return String.fromCharCode(97+self.sx).toUpperCase()+""+(self.sy+1);
+	}
+
 	self.move = function(){
 		if(self.isWorm){
 			
@@ -40,11 +45,30 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm){
 			//input node
 			var bx = Math.sin(7.197 * t) / 2 + .5;
 			var by = -Math.sin(5.019 * t) / 2 + .5;
+
+			var oldSx = self.sx;
+			var oldSy = self.sy;
+
 			self.sx = Math.floor(bx * mapSz);
 			self.sy = Math.floor(by * mapSz);
+
+			if (oldSx != self.sx || oldSy != self.sy) {
+				vorts[self.sy][self.sx][self.id] = vorts[oldSy][oldSx][self.id];
+				delete vorts[oldSy][oldSx][self.id];
+			}
+
 			self.x = ((bx * mapSz) % 1) * sectorWidth;
 			self.y = ((by * mapSz) % 1) * sectorWidth;
 			
+			console.log("sx: " + self.sx);
+			console.log("sy: " + self.sy);
+			console.log("x: " + self.x);
+			console.log("y: " + self.y);
+			console.log("vorts: " +vorts[self.sy][self.sx][self.id].id);
+			console.log("local: " + self.id);
+			console.log("sector: " + self.getSectorName());
+
+
 			//output node
 			var bxo = -Math.sin(9.180 * t) / 2 + .5;
 			var byo = Math.sin(10.3847 * t) / 2 + .5;
@@ -57,16 +81,18 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm){
 			if(tick % 50 == 0) sendAll('worm', {bx: bx, by: by, bxo: bxo, byo: byo});
 			
 		}
+
+
 		for(var i in players[self.sy][self.sx]){
 			var p = players[self.sy][self.sx][i];
 			
 			// compute distance and angle to players
-			var dist = Math.sqrt(Math.sqrt(squaredDist(self,p)));
-			var a = angleBetween(self,p);
+			var dist = Math.pow(squaredDist(self,p), 0.25);
+			var a = angleBetween(p, self);
 			//then move them.
 			var guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
-			p.x -= guestMult * .25 * self.size / dist * Math.cos(a);
-			p.y -= guestMult * .25 * self.size / dist * Math.sin(a);
+			p.x -= guestMult * .33 * self.size / dist * Math.cos(a);
+			p.y -= guestMult * .33 * self.size / dist * Math.sin(a);
 			
 			if(dist < 15 && !self.isWorm){ // collision with black hole
 			
@@ -85,10 +111,13 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm){
 				p.randmAchs[3] = true; // fall into a wormhole
 				p.sendAchievementsMisc(true);
 				
+				delete players[p.sy][p.sx][p.id];
 				p.sx = self.sxo;
 				p.sy = self.syo;
 				p.y = self.yo;
 				p.x = self.xo; // teleport them to the output node
+
+				players[p.sy][p.sx][p.id] = p;
 				
 				p.planetTimer = 2501; // what is this?
 			}
