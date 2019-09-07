@@ -1,8 +1,8 @@
 var fs = require('fs');
 
-global.Config = { };
+global.Config = {};
 
-Config.getValue = function(key, default_value) {
+Config.getValue = function (key, default_value) {
     if (Config[key] === undefined) {
         return default_value;
     }
@@ -14,7 +14,7 @@ function parseValue(value) {
     if (!value) return false;
 
     value = value.toLowerCase();
-    
+
     if (value === '0') {
         return false;
     }
@@ -96,11 +96,11 @@ module.exports = function loadConfig(environment) {
     }
     // Debug Handling
     // Define debug function
-    global.debug = Config.getValue("debug", true) 
-        ? function(str) {
+    global.debug = Config.getValue("debug", true)
+        ? function (str) {
             console.log("[DEBUG] " + str);
-        } 
-        : function(str) { };
+        }
+        : function (str) { };
     for (var key in Config) {
         debug(key + "=" + Config[key]);
     }

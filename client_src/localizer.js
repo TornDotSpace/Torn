@@ -27,7 +27,7 @@ function load(lang) {
     return JSON.parse(data);
 }
 
-global.loadLang = function(name) {
+global.loadLang = function (name) {
     var assigned = null;
     if (location.href.includes("eng") || name == "eng") assigned = languagejson = eng;
     if (location.href.includes("frn") || name === "frn") assigned = languagejson = frn;
@@ -36,14 +36,14 @@ global.loadLang = function(name) {
     if (location.href.includes("deu") || name === "deu") assigned = languagejson = deu;
 
     if (!assigned) {
-        var lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");   
+        var lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
         //console.log(lang);
         if (lang == null) {
             languagejson = eng;
         }
         if (lang === "frn") {
-            languagejson = frn; 
+            languagejson = frn;
         } else if (lang === "esp") {
             languagejson = esp;
         } else if (lang === "pyc") {
