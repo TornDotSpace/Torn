@@ -337,8 +337,7 @@ function onCrash(err) {
 	process.stderr.write("Crash Time: " + new Date() + "\n");
 	process.stderr.write("Players online: " + plyrs + "\n");
 	process.stderr.write("Exception information: " + "\n");
-	process.stderr.write(err + "\n");
-	process.stderr.write("Trace: " + err.trace + "\n");
+	process.stderr.write("Trace: " + err.stack + "\n");
 
 	// Exit with status code 3 to indicate uncaught exception
 	setTimeout(function() { process.exit(3); }, 4000);
