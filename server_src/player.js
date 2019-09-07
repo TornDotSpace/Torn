@@ -181,7 +181,7 @@ function Player(sock){
 		if(self.c) self.shootEliteWeapon();
 		if(self.bulletQueue > 0)self.shootBullet(40); // SMG
 		var wepId = self.weapons[self.equipped];
-		// HACK: self.equppied is undefined before first base interaction(???). Alex!
+		// HACK: self.equipped is undefined before first base interaction(???). Alex!
 		wepId = (wepId === undefined) ? 0 : wepId;
 		var wep = wepns[wepId];
 		
@@ -680,7 +680,19 @@ function Player(sock){
 			if(player.color === self.color) {if(friendlies++>3)anyFriend=player; continue;}
 			enemies++;
 			var dist2 = hypot2(player.x, self.x, player.y, self.y);
-			if(dist2 < close){target = player;close = dist2;}
+			if(dist2 < close){
+
+				// Nerf bots 
+				// Allow only low bots (0-3) to attack guests
+				// Bots will avoid attack players where the player is 7 or more levels lower than it
+				var nerfAmt = (player.guest) ? -4 : -7;
+
+				if (player.rank - self.rank <= nerfAmt) continue;
+
+				target = player;close = dist2;
+			
+			}
+
 		}
 		
 		//Move towards the enemy
