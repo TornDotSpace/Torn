@@ -314,7 +314,39 @@ function sigHandle() {
 	}
 	setTimeout(kill, 5000);
 }
+
+function onCrash(err) {
+	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
+
+	sendAll("kick", {msg: "The server you are playing on has encountered a problem and needs to reset. :( You should be able to log right back into the game and start exploring the universe."});
+
+	var plyrs = '';
+
+	for (var y in players) {
+		for (var x in players[y]) {
+			for (var id in players[y][x]) {
+				// Save & kick out
+				var player = players[y][x][id];
+				player.save();
+				plyrs = plyrs + player.name + ', ';
+			}
+		}
+	}
+
+	process.stderr.write("==== TORN.SPACE CRASH REPORT ====\n");
+	process.stderr.write("Crash Time: " + new Date() + "\n");
+	process.stderr.write("Players online: " + plyrs + "\n");
+	process.stderr.write("Exception information: " + "\n");
+	process.stderr.write(err + "\n");
+	process.stderr.write("Trace: " + err.trace + "\n");
+
+	// Exit with status code 3 to indicate uncaught exception
+	setTimeout(function() { process.exit(3); }, 4000);
+}
 function init() { // start the server!
+
+	// Activate uncaught exception handler
+	process.on('uncaughtException', onCrash);
 
 	// Add signal handlers
 	process.on('SIGINT', sigHandle);
@@ -817,7 +849,7 @@ function updateLB() {
 			newFile += '<tr style="color:' + top1000colors[i] + ';"><th>' + (i + 1) + ".</th><th>" + top1000names[i] + "</th><th> " + top1000exp[i] + " </th><th>" + top1000rank[i] + "</th><th>" + top1000kills[i] + "</th></tr>";
 			lbExp[i] = top1000exp[i];
 		}
-		newFile += '</table></nobr><br/>Updates every 25 minutes.</center></font></body></html>';
+		newFile += '</table></nobr><br/>Updates every 25 minutes Last updated: ' + new Date() + '</center></font></body></html>';
 		fs.writeFileSync(source, newFile, { "encoding": 'utf8' });
 	});
 	saveTurrets();
