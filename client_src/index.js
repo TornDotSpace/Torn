@@ -2026,11 +2026,13 @@ $(window).bind('mousewheel DOMMouseScroll', function (event) {
 
 //random
 function write(str, x, y) {
+	return;
 	if (str.length > textIn)
 		ctx.fillText(str.substring(0, textIn), x, y);
 	else
 		ctx.fillText(str, x, y);
 }
+
 function getMousePos(canvas, evt) {
 	var rect = canvas.getBoundingClientRect();
 	return {
@@ -2820,7 +2822,9 @@ function rRadar() {
 			ctx.fill();
 		}
 	ctx.lineWidth = 2;
-	for (var a of astsInfo) {
+	for (var a in astsInfo) {
+		a = astsInfo[a];
+
 		var dx = a.x - px;
 		var dy = a.y - py;
 		if (square(dx) + square(dy) > square(r)) continue;
@@ -3153,8 +3157,8 @@ function rBullets() {
 	}
 }
 function rMissiles() {
-	for (var i = 0; i < missilesInfo.length; i++) {
-		var selfo = missilesInfo[i];
+	for (var selfo in missilesInfo) {
+		selfo = missilesInfo[selfo];
 		var img = Img.missile;
 		if (selfo.wepnID == 11 || selfo.weaponID == 13) img = Img.heavyMissile;
 		if (selfo.wepnID == 12) img = Img.empMissile;
@@ -3186,8 +3190,8 @@ function rOrbs() {
 	}
 }
 function rMines() {
-	for (var i = 0; i < minesInfo.length; i++) {
-		var selfo = minesInfo[i];
+	for (var selfo in minesInfo) {
+		selfo = minesInfo[selfo];
 		var img = Img.mine;
 		var pw = img.width;
 		var ph = img.height;
@@ -3268,8 +3272,9 @@ function rBlasts() {
 }
 function rAsteroids() {
 	var nearA = 0;
-	for (var i = 0; i < astsInfo.length; i++) {
-		var selfo = astsInfo[i];
+	for (var selfo in astsInfo) {
+		selfo = astsInfo[selfo];
+
 		var img = (selfo.metal == 0 ? Img.iron : (selfo.metal == 3 ? Img.platinum : (selfo.metal == 1 ? Img.silver : Img.aluminium)));
 		var rendX = selfo.x - px + w / 2 + scrx;
 		var rendY = selfo.y - py + h / 2 + scry;
@@ -3350,8 +3355,8 @@ function rPlanets() {
 	ctx.font = "11px Telegrama";
 }
 function rPacks() {
-	for (var i = 0; i < packsInfo.length; i++) {
-		var selfo = packsInfo[i];
+	for (var selfo in packsInfo) {
+		selfo = packsInfo[selfo];
 		var img = selfo.type == 0 ? Img.pack : (selfo.type == 1 ? Img.bonus : (selfo.type == 2 ? Img.life : Img.ammo));
 		var rendX = selfo.x - px + w / 2 + scrx;
 		var rendY = selfo.y - py + h / 2 + scry;
@@ -3367,9 +3372,9 @@ function rPacks() {
 function rVorts() {
 	let d = new Date();
 	var angleT = d.getTime() / 1000;
-	for (var i = 0; i < vortsInfo.length; i++) {
+	for (var selfo in vortsInfo) {
 		ctx.save();
-		var selfo = vortsInfo[i];
+		selfo = vortsInfo[selfo];
 		var img = selfo.isWorm ? Img.worm : Img.vort;
 		var size = 24 * selfo.size / 64;
 		var rendX = selfo.x - px + w / 2 + scrx;
@@ -3389,8 +3394,8 @@ function rPlayers() {
 	var nearE = 0;
 	var nearF = 0;
 
-	for (var i = 0; i < playersInfo.length; i++) {
-		var selfo = playersInfo[i];
+	for (var selfo in playersInfo) {
+		selfo = playersInfo[selfo];
 		if (selfo.color == 'red')
 			rs++;
 		else
