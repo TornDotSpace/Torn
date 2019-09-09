@@ -2026,7 +2026,6 @@ $(window).bind('mousewheel DOMMouseScroll', function (event) {
 
 //random
 function write(str, x, y) {
-	return;
 	if (str.length > textIn)
 		ctx.fillText(str.substring(0, textIn), x, y);
 	else
@@ -3508,7 +3507,8 @@ function rSelfCloaked() {
 	ctx.stroke();
 }
 function rBases() {
-	if (basesInfo != 0) { // render bases
+	if (basesInfo !== 0) { // render bases
+
 		var image = basesInfo.color == 'red' ? Img.base : Img.bss;
 		var pw = image.width;
 		var ph = image.height;

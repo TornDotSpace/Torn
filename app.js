@@ -296,7 +296,6 @@ var packPack = new Array(mapSz);
 var basePack = new Array(mapSz);
 var astPack = new Array(mapSz);
 var vortPack = new Array(mapSz);
-var basePack = new Array(mapSz);
 
 for(var i = 0; i < mapSz; i++){
 	playerPack[i] = new Array(mapSz);
@@ -307,7 +306,6 @@ for(var i = 0; i < mapSz; i++){
 	blastPack[i] = new Array(mapSz);
 	beamPack[i] = new Array(mapSz);
 	planetPack[i] = new Array(mapSz);
-	basePack[i] = new Array(mapSz);
 	packPack[i] = new Array(mapSz);
 	astPack[i] = new Array(mapSz);
 	vortPack[i] = new Array(mapSz);
@@ -323,7 +321,6 @@ for(var i = 0; i < mapSz; i++){
 		blastPack[i][j] = { };
 		beamPack[i][j] = { };
 		planetPack[i][j] = { };
-		basePack[i][j] = { };
 		astPack[i][j] = { };
 		vortPack[i][j] = { };
 	}
@@ -563,16 +560,6 @@ function update() {
 	}
 
 	for (var y = 0; y < mapSz; y++) for (var x = 0; x < mapSz; x++) {
-		// Skip computing data for the sector if no human players are prese nt
-		var human = false;
-
-		for (var player in players[y][x]) {
-			if (!player.isBot) human = true;
-			break;
-		}
-
-		if (!human) continue;
-
 		for (var i in vorts[y][x]) {
 			var vort = vorts[y][x][i];
 			var pack = vortPack[y][x][i];
@@ -841,7 +828,7 @@ function update() {
 		var bbNow = bb;
 
 		var base = bases[y][x];
-		if (base != 0) {
+		if (base !== 0) {
 			var pack = basePack[y][x];
 
 			base.tick(rbNow, bbNow);
@@ -868,6 +855,8 @@ function update() {
 			if (need_update) {
 				sendAllSector('base_update', {delta: delta, id: i}, x, y);
 			}
+		} else {
+			basePack[y][x] = 0;
 		}
 
 		for (var i in asts[y][x]) {
@@ -877,18 +866,16 @@ function update() {
 			ast.tick();
 			// Check for creation 
 			if (pack === undefined) {
-				pack = basePack[y][x] = { metal: ast.metal, id: ast.id, x: ast.x, y: ast.y, angle: ast.angle, health: ast.health, maxHealth: ast.maxHealth };
+				pack = astPack[y][x][i] = { metal: ast.metal, id: ast.id, x: ast.x, y: ast.y, angle: ast.angle, health: ast.health, maxHealth: ast.maxHealth };
 				sendAllSector('asteroid_create', pack, x, y);
 				continue;
 			}
 
 			// Check for deletion 
-			if (asts[y][x][i] === undefined) {
-				sendAllSector('asteroid_delete', i, x, y);
+			if (asts[y][x][i] === undefined || ast.health === 0) {
 				delete astPack[y][x][i];
 				continue;
 			}
-
 			
 			var delta = { };
 			var need_update = false;
@@ -1042,7 +1029,18 @@ function update() {
 				send(i, 'online', { lag: lag, bp: bp, rp: rp, bg: bg, rg: rg, bb: bb, rb: rb });
 				send(i, 'you', { killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
 			}
-			
+	//		console.log("Bases: " + bases[y][x]);
+	//		console.log('basePack: ' + basePack[y][x]);
+	//		console.log('basePack:' + basePack[player.sy][player.sx]);
+
+			for (var v in bases[y][x]) {
+		//		console.log(v + ":" + bases[y][x]);
+			}
+
+			for (var v in basePack[y][x]) {
+		//		console.log(v + ": " + basePack[y][x][v]);
+			}
+
 			send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx], projectiles:bPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 		}
 
