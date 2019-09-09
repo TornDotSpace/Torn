@@ -1,3 +1,5 @@
+var Vortex = require("../universe/vortex.js");
+
 module.exports = function Bullet(ownr, i, weaponID, angl, info) {
 	var self = {
 		type: "Bullet",
