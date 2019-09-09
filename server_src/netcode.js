@@ -224,7 +224,7 @@ module.exports = function initNetcode() {
 
             //Load account
             var retCode = await loadPlayerData(player, player.password);
-            debug("retCode: " + retCode);
+            
             if (retCode != 0) {
                 if (retCode == -1) {
                     socket.binary(false).emit("invalidCredentials", {});
@@ -243,7 +243,8 @@ module.exports = function initNetcode() {
             if (player.sy >= mapSz) player.sy--;
 
             players[player.sy][player.sx][socket.id] = player;
-
+            console.log("set");
+            
             player.calculateGenerators();
             socket.binary(false).emit("raid", { raidTimer: raidTimer })
             player.checkTrailAchs();

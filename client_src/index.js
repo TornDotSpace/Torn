@@ -2183,8 +2183,9 @@ function updateTrails() {
 	}
 	var d = new Date();
 	var t = d.getTime() / 100;
-	for (var i = 0; i < playersInfo.length; i++) {
+	for (var i in playersInfo) {
 		var selfo = playersInfo[i];
+
 		var trail = selfo.trail;
 		var mod = trail % 16;
 		if (Math.abs(selfo.speed) > 1 && Math.abs(selfo.driftAngle - selfo.angle) > .05) {
@@ -2791,7 +2792,8 @@ function rRadar() {
 		}
 	}
 	var t = d.getTime() * 500;
-	for (var p of playersInfo) {
+	for (var p_pack in playersInfo) {
+		var p = playersInfo[p_pack];
 		var dx = p.x - px;
 		var dy = p.y - py;
 		if (square(dx) + square(dy) > square(r)) continue;
@@ -2804,7 +2806,8 @@ function rRadar() {
 		ctx.fill();
 	}
 	if (va2 > 2.5)
-		for (var p of packsInfo) {
+		for (var p_pack in playersInfo) {
+			var p = playersInfo[p_pack];
 			var dx = p.x - px;
 			var dy = p.y - py;
 			if (square(dx) + square(dy) > square(r)) continue;

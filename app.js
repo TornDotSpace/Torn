@@ -283,7 +283,8 @@ function updateQuestsB() {
 global.sectors = new Array(mapSz);
 
 // packs are how we send data to the client
-var pack = new Array(mapSz);
+
+var playerPack = new Array(mapSz);
 var missilePack = new Array(mapSz);
 var orbPack = new Array(mapSz);
 var minePack = new Array(mapSz);
@@ -292,9 +293,42 @@ var blastPack = new Array(mapSz);
 var beamPack = new Array(mapSz);
 var planetPack = new Array(mapSz);
 var packPack = new Array(mapSz);
-var basePack = 0;
+var basePack = new Array(mapSz);
 var astPack = new Array(mapSz);
 var vortPack = new Array(mapSz);
+var basePack = new Array(mapSz);
+
+for(var i = 0; i < mapSz; i++){
+	playerPack[i] = new Array(mapSz);
+	missilePack[i] = new Array(mapSz);
+	orbPack[i] = new Array(mapSz);
+	minePack[i] = new Array(mapSz);
+	bPack[i] = new Array(mapSz);
+	blastPack[i] = new Array(mapSz);
+	beamPack[i] = new Array(mapSz);
+	planetPack[i] = new Array(mapSz);
+	basePack[i] = new Array(mapSz);
+	packPack[i] = new Array(mapSz);
+	astPack[i] = new Array(mapSz);
+	vortPack[i] = new Array(mapSz);
+	basePack[i] = { };
+
+	for(var j = 0; j < mapSz; j++){
+		playerPack[i][j] = { };
+		packPack[i][j] = { };
+		missilePack[i][j] = { };
+		orbPack[i][j] = { };
+		minePack[i][j] = { };
+		bPack[i][j] = { };
+		blastPack[i][j] = { };
+		beamPack[i][j] = { };
+		planetPack[i][j] = { };
+		basePack[i][j] = { };
+		astPack[i][j] = { };
+		vortPack[i][j] = { };
+	}
+}
+
 
 init();
 
@@ -316,6 +350,8 @@ function sigHandle() {
 }
 
 function onCrash(err) {
+	onCrash = function() { };
+
 	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
 
 	sendAll("kick", {msg: "The server you are playing on has encountered a problem and needs to reset. :( You should be able to log right back into the game and start exploring the universe."});
@@ -343,7 +379,6 @@ function onCrash(err) {
 	setTimeout(function() { process.exit(3); }, 4000);
 }
 function init() { // start the server!
-
 	// Activate uncaught exception handler
 	process.on('uncaughtException', onCrash);
 
@@ -528,27 +563,59 @@ function update() {
 	}
 
 	for (var y = 0; y < mapSz; y++) for (var x = 0; x < mapSz; x++) {
-		pack.length = 0;
-		missilePack.length = 0;
-		orbPack.length = 0;
-		minePack.length = 0;
-		bPack.length = 0;
-		blastPack.length = 0;
-		beamPack.length = 0;
-		planetPack.length = 0;
-		packPack.length = 0;
-		basePack = 0;
-		astPack.length = 0;
-		vortPack.length = 0;
+		// Skip computing data for the sector if no human players are prese nt
+		var human = false;
+
+		for (var player in players[y][x]) {
+			if (!player.isBot) human = true;
+			break;
+		}
+
+		if (!human) continue;
 
 		for (var i in vorts[y][x]) {
 			var vort = vorts[y][x][i];
+			var pack = vortPack[y][x][i];
+
 			vort.tick();
-			vortPack.push({ x: vort.x, y: vort.y, size: vort.size, isWorm: vort.isWorm });
+
+			// Check for deletion
+			if (vorts[y][x][i] === undefined) {
+				// Send delete
+				sendAllSector('vort_delete', i, x, y);
+
+				delete vortPack[y][x][i];
+				continue;
+			}
+
+			// Check for creation 
+			if (pack === undefined) {
+				// Store pack for joining clients & delta calculation
+				pack = vortPack[y][x][i] = { x: vort.x, y: vort.y, size: vort.size, isWorm: vort.isWorm };
+				// Send create
+				sendAllSector("vort_create", {pack : pack, id: i}, x, y);
+				continue;
+			}
+
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				if (pack[key] !== vort[key]) {
+					delta[key] = pack[key] = vort[key];
+					need_update = true;
+				}
+			}
+
+			if (!need_update) continue;
+
+			sendAllSector('vort_update', {delta: delta, id: i}, x, y);
 		}
 
 		for (var i in players[y][x]) {
 			var player = players[y][x][i];
+			var pack = playerPack[y][x][i];
 
 			if (!player.isBot && player.chatTimer > 0) player.chatTimer--;
 			player.muteTimer--;
@@ -556,37 +623,218 @@ function update() {
 			player.isLocked = false;
 			player.tick();
 			if (player.disguise > 0) continue;
-			pack.push({ trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle });
+
+			// Check for deletion
+			if (players[y][x][i] === undefined) {
+				// Send delete 
+				sendAllSector('player_delete', i, x, y);
+				delete playerPack[y][x][i];
+				continue;
+			}
+			// Check for creation
+			if (pack === undefined) {
+				// Store pack for joining clients & delta calculation
+				pack = playerPack[y][x][i] = { trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle };
+				// Send create 
+				sendAllSector("player_create", pack, x, y);
+				continue;
+			}
+
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				if (pack[key] !== player[key]) {
+					delta[key] = pack[key] = player[key];
+					need_update = true;
+				}
+			}
+
+			if (!need_update) continue;
+
+			sendAllSector('player_update', {delta: delta, id: i}, x, y);
 		}
 
 		for (var i in bullets[y][x]) bullets[y][x][i].tick();
 
 		for (var i in mines[y][x]) {
 			var mine = mines[y][x][i];
+			var pack = minePack[y][x][i];
+
 			mine.tick();
-			minePack.push({ wepnID: mine.wepnID, color: mine.color, x: mine.x, y: mine.y, angle: mine.angle });
+
+			// Check for deletion 
+			if (players[y][x][i] === undefined) {
+				// Send delete 
+				sendAllSector('mine_delete', i, x, y);
+				delete minePack[y][x][i];
+				continue;
+			}
+
+			// Check for creation
+			if (pack === undefined) {
+				pack = minePack[y][x][i] = { wepnID: mine.wepnID, color: mine.color, x: mine.x, y: mine.y, angle: mine.angle };
+				// Send create 
+				sendAllSector('mine_create', { pack: pack, id: i}, x, y);
+				continue;
+			}
+
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				if (pack[key] !== mine[key]) {
+					delta[key] = pack[key] = mine[key];
+					need_update = true;
+				}
+			}
+
+			if (!need_update) continue;
+			sendAllSector('mine_update', {delta: delta, id: i}, x, y);
 		}
 
 		planets[y][x].tick();
 
-		for (var i in packs[y][x]) {
-			var boon = packs[y][x][i];
-			if (tick % 5 == 0) boon.tick();
-			packPack.push({ x: boon.x, y: boon.y, type: boon.type });
+		// We only pulse these every 5 ticks
+		if (tick % 5 == 0) {
+			for (var i in packs[y][x]) {
+				var boon = packs[y][x][i];
+				var pack = packs[y][x][i];
+
+				boon.tick();
+
+				// Check for deletion 
+				if (vorts[y][x][i] === undefined) {
+					// Send delete 
+					sendAllSector('pack_delete', i, x, y);
+
+					delete packs[y][x][i];
+					continue;
+				}
+
+				// Check for creation 
+				if (pack === undefined) {
+					pack = packs[y][x][i] = { x: boon.x, y: boon.y, type: boon.type };
+
+					// Send create
+					sendAllSector('pack_create', {pack: pack, id: i}, x, y);
+					continue;
+				}
+
+
+				var delta = { };
+				var need_update = false;
+
+				// Compute delta
+				for (var key in pack) {
+					if (pack[key] !== boon[key]) {
+						delta[key] = pack[key] = boon[key];
+						need_update = true;
+					}
+				}
+
+				if (!need_update) continue;
+				sendAllSector('pack_update', {delta: delta, id: i}, x, y);
+			}
 		}
 
 		for (var i in beams[y][x]) {
 			var beam = beams[y][x][i];
+			var pack = beamPack[y][x][i];
+
 			beam.tick();
-			if (beam.time == 0) continue;
-			beamPack.push({ time: beam.time, wepnID: beam.wepnID, bx: beam.origin.x, by: beam.origin.y, ex: beam.enemy.x, ey: beam.enemy.y });
+
+			// Check for deletion
+			if (beam.time == 0 || beams[y][x][i] === undefined) {
+				sendAllSector('beam_delete', i, x, y);
+
+				delete beamPack[y][x][i];
+				continue;
+			}
+
+			// Check for creation
+			if (pack == undefined) {
+				// Store pack for joining clients & delta calculation
+				pack = beamPack[y][x][i] = { time: beam.time, wepnID: beam.wepnID, bx: beam.origin.x, by: beam.origin.y, ex: beam.enemy.x, ey: beam.enemy.y };
+				// Send create
+				sendAllSector('beam_create', {pack: pack, id: i}, x, y);
+				continue;
+			}
+
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				var beam_key = undefined;
+
+				if (key === 'bx') {
+					beam_key = beam.origin.x;
+				}
+
+				if (key === 'by') {
+					beam_key = beam.origin.y;
+				}
+
+				if (key === 'ex') {
+					beam_key = beam.enemy.x;
+				}
+
+				if (key === 'ey') {
+					beam_key = beam.enemy.y;
+				}
+
+				if (beam_key === undefined) {
+					beam_key = beam[key];
+				}
+
+				if (pack[key] !==  beam_key) {
+					delta[key] = pack[key] = beam_key;
+					need_update = true;
+				}
+			}
+
+			if (!need_update) continue;
+			sendAllSector('beam_update', {delta : delta, id : i}, x, y);
 		}
 
 		for (var i in blasts[y][x]) {
 			var blast = blasts[y][x][i];
+			var pack = blastPack[y][x][i];
+
 			blast.tick();
-			if (blast.time == 0) continue;
-			blastPack.push({ time: blast.time, wepnID: blast.wepnID, bx: blast.bx, by: blast.by, angle: blast.angle });
+
+			// Check for deletion
+			if (blast.time == 0 || blasts[y][x][i] === undefined) {
+				// Send delete
+				sendAllSector('blast_delete', i, x, y);
+				delete blastPack[y][x][i];
+				continue;
+			}
+
+			// Check for creation
+			if (pack === undefined) {
+				pack = blastPack[y][x][i] = { time: blast.time, wepnID: blast.wepnID, bx: blast.bx, by: blast.by, angle: blast.angle };
+
+				sendAllSector('blast_create', {pack: pack, id: i}, x, y);
+				continue;
+			}
+
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				if (pack[key] !== blast[key]) {
+					delta[key] = pack[key] = blast[key];
+					need_update = true;
+				}
+			}
+
+			if (!need_update) continue;
+			sendAllSector('blast_update', { delta: delta, id : i}, x, y);
 		}
 
 		var rbNow = rb;//important to calculate here, otherwise bots weighted on left.
@@ -594,21 +842,107 @@ function update() {
 
 		var base = bases[y][x];
 		if (base != 0) {
+			var pack = basePack[y][x];
+
 			base.tick(rbNow, bbNow);
-			basePack = { id: base.id, live: base.turretLive, isBase: base.isBase, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, owner: base.owner };
+
+			// Check for creation (only happens once, on first tick)
+			if (pack === undefined) {
+				pack = basePack[y][x] = { id: base.id, live: base.turretLive, isBase: base.isBase, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, owner: base.owner };
+				sendAllSector('base_create', pack, x, y);
+				continue;
+			}
+
+			// Bases will only ever update, skip delete check 
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				if (pack[key] !== base[key]) {
+					delta[key] = pack[key] = base[key];
+					need_update = true;
+				}
+			}
+
+			if (need_update) {
+				sendAllSector('base_update', {delta: delta, id: i}, x, y);
+			}
 		}
 
 		for (var i in asts[y][x]) {
 			var ast = asts[y][x][i];
+			var pack = astPack[y][x][i];
+
 			ast.tick();
-			astPack.push({ metal: ast.metal, id: ast.id, x: ast.x, y: ast.y, angle: ast.angle, health: ast.health, maxHealth: ast.maxHealth });
+			// Check for creation 
+			if (pack === undefined) {
+				pack = basePack[y][x] = { metal: ast.metal, id: ast.id, x: ast.x, y: ast.y, angle: ast.angle, health: ast.health, maxHealth: ast.maxHealth };
+				sendAllSector('asteroid_create', pack, x, y);
+				continue;
+			}
+
+			// Check for deletion 
+			if (asts[y][x][i] === undefined) {
+				sendAllSector('asteroid_delete', i, x, y);
+				delete astPack[y][x][i];
+				continue;
+			}
+
+			
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				if (pack[key] !== ast[key]) {
+					delta[key] = pack[key] = ast[key];
+					need_update = true;
+				}
+			}
+
+			if (!need_update) continue;
+
+			sendAllSector('asteroid_update', {delta: delta, id: i}, x, y);
 		}
 
 		for (var j in orbs[y][x]) {
 			var orb = orbs[y][x][j];
+			var pack = orbPack[y][x][j];
+
 			orb.tick();
-			if (typeof orb === 'undefined') return;
-			orbPack.push({ wepnID: orb.wepnID, x: orb.x, y: orb.y });
+
+			// Check for deletion
+			if (orbs[y][x][j] === undefined) {
+				sendAllSector('orb_delete', i, x, y);
+
+				delete orbPack[y][x][i];
+				continue;
+			}
+
+			// Check for creation
+			if (pack === undefined) {
+				pack = orbPack[y][x][j] = { wepnID: orb.wepnID, x: orb.x, y: orb.y };
+				sendAllSector('orb_create', {pack: pack, id: j}, x, y);
+
+				continue;
+			}
+			
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				if (pack[key] !== orb[key]) {
+					delta[key] = pack[key] = orb[key];
+					need_update = true;
+				}
+			}
+
+			if (!need_update) continue;
+			
+			sendAllSector('orb_update', {delta: delta, id: i}, x, y);
+
 			if (tick % 5 == 0 && orb.locked == 0) {
 				var locked = 0;
 				for (var i in pack) {
@@ -635,11 +969,44 @@ function update() {
 				orb.locked = locked;
 			}
 		}
+
 		for (var j in missiles[y][x]) {
 			var missile = missiles[y][x][j];
+			var pack = missilePack[y][x][j];
+
 			missile.tick();
-			if (typeof missile === 'undefined') return;
-			missilePack.push({ wepnID: missile.wepnID, x: missile.x, y: missile.y, angle: missile.angle });
+
+			// Check for deletion
+			if (missiles[y][x][j] === undefined) {
+				sendAllSector('missile_delete', j, x, y);
+
+				delete missilePack[y][x][j];
+				continue;
+			}
+
+			// Check for creation 
+			if (pack === undefined) {
+				pack = missilePack[y][x][j] = { wepnID: missile.wepnID, x: missile.x, y: missile.y, angle: missile.angle };
+
+				sendAllSector('missile_create', {pack : pack, id : j}, x, y);
+				continue;
+			}
+
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				if (pack[key] !== missile[key]) {
+					delta[key] = pack[key] = missile[key];
+					need_update = true;
+				}
+			}
+
+			if (!need_update) continue;
+
+			sendAllSector('missile_update', {delta: delta, id: i}, x, y);
+
 			if (tick % 5 == 0 && missile.locked == 0) {
 				var locked = 0;
 				for (var i in pack) {
@@ -667,6 +1034,7 @@ function update() {
 				missile.locked = locked;
 			}
 		}
+
 		for (var i in players[y][x]) {
 			var player = players[y][x][i];
 			if (player.isBot) continue;
@@ -674,7 +1042,8 @@ function update() {
 				send(i, 'online', { lag: lag, bp: bp, rp: rp, bg: bg, rg: rg, bb: bb, rb: rb });
 				send(i, 'you', { killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
 			}
-			send(i, 'posUp', { cloaked: player.disguise > 0, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.reload, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: packPack, vorts: vortPack, mines: minePack, missiles: missilePack, orbs: orbPack, blasts: blastPack, beams: beamPack, planets: planetPack, asteroids: astPack, players: pack, projectiles: bPack, bases: basePack });
+			
+			send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx], projectiles:bPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 		}
 
 		// Clear

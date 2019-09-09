@@ -24,6 +24,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		if (self.time++ > 25 * 3 * 60) self.die(); // all mines die after 3 minutes
 	}
 	self.die = function () {
+		self.die = function() { };
 		var power = 0; // how strongly this mine pushes people away on explosion
 		if (self.wepnID == 15 || self.wepnID == 33) power = 400; //mine, grenade
 		else if (self.wepnID == 32) power = 2000;
