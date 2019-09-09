@@ -873,6 +873,7 @@ function update() {
 
 			// Check for deletion 
 			if (asts[y][x][i] === undefined || ast.health === 0) {
+				sendAllSector('asteroid_delete', i, x, y);
 				delete astPack[y][x][i];
 				continue;
 			}
