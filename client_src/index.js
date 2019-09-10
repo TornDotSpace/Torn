@@ -116,7 +116,7 @@ var EVERYTHING_LOADED = false;
 var guest = false;
 
 var stars = [];
-for (var i = 0; i < 300; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
+for (var i = 0; i < 200; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
 
 var dots = [];
 for (var i = 0; i < 2000; i++) {

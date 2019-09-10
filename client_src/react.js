@@ -174,10 +174,11 @@ class LoginOverlay extends Component {
 		this.setState({ user: this.state.user, pass: event.target.value });
 	}
 	render() {
+		{/*
 		const video = (this.state.seed * 2 % 1 < 0.25) ?
 			(<iframe width="368" height="207" src="https://www.youtube.com/embed/iLlFIS1PLOo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>)
 			: (<iframe width="368" height="207" src="https://www.youtube.com/embed/44MIPle7pwQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>);
-
+		*/}
 
 		const buttonOrder = (this.state.seed < 0.5) ? (
 			<div>
@@ -201,11 +202,13 @@ class LoginOverlay extends Component {
 								{buttonOrder}
 							</center>
 						</div>
+						{/*
 						<div className="video">
 							<center><h3>Featured Video!</h3>
 								{video}
 								<br /><a href="youtubers/">Have a channel?</a></center>
 						</div>
+						*/}
 						<div className="login">
 							<center><h3>Returning Players</h3>
 								<input className="overlay-input" type="text" id="usernameid" onChange={this.handleChangeU} placeholder="Username" />
@@ -228,6 +231,7 @@ class LoginOverlay extends Component {
 						<a onClick={this.langPyc} >Pyc</a>
 					</center>
 					<br />
+					{/*
 					<a target="_blank" href="https://discord.gg/wFsdUcY">
 						<img src="img/discord.png" alt="Discord" />
 					</a>
@@ -237,6 +241,7 @@ class LoginOverlay extends Component {
 					<a target="_blank" href="https://www.subscribestar.com/haze">
 						<img src="img/subscribestar.png" alt="SubscribeStar" />
 					</a>
+					*/}
 				</div>
 			</div>)
 	}
