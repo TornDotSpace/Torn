@@ -288,7 +288,6 @@ var playerPack = new Array(mapSz);
 var missilePack = new Array(mapSz);
 var orbPack = new Array(mapSz);
 var minePack = new Array(mapSz);
-var bPack = new Array(mapSz);
 var blastPack = new Array(mapSz);
 var beamPack = new Array(mapSz);
 var planetPack = new Array(mapSz);
@@ -302,7 +301,6 @@ for(var i = 0; i < mapSz; i++){
 	missilePack[i] = new Array(mapSz);
 	orbPack[i] = new Array(mapSz);
 	minePack[i] = new Array(mapSz);
-	bPack[i] = new Array(mapSz);
 	blastPack[i] = new Array(mapSz);
 	beamPack[i] = new Array(mapSz);
 	planetPack[i] = new Array(mapSz);
@@ -317,7 +315,6 @@ for(var i = 0; i < mapSz; i++){
 		missilePack[i][j] = { };
 		orbPack[i][j] = { };
 		minePack[i][j] = { };
-		bPack[i][j] = { };
 		blastPack[i][j] = { };
 		beamPack[i][j] = { };
 		planetPack[i][j] = { };
@@ -565,16 +562,6 @@ function update() {
 			var pack = vortPack[y][x][i];
 
 			vort.tick();
-
-			// Check for deletion
-			if (vorts[y][x][i] === undefined) {
-				// Send delete
-				sendAllSector('vort_delete', i, x, y);
-
-				delete vortPack[y][x][i];
-				continue;
-			}
-
 			// Check for creation 
 			if (pack === undefined) {
 				// Store pack for joining clients & delta calculation
@@ -611,13 +598,6 @@ function update() {
 			player.tick();
 			if (player.disguise > 0) continue;
 
-			// Check for deletion
-			if (players[y][x][i] === undefined) {
-				// Send delete 
-				sendAllSector('player_delete', i, x, y);
-				delete playerPack[y][x][i];
-				continue;
-			}
 			// Check for creation
 			if (pack === undefined) {
 				// Store pack for joining clients & delta calculation
@@ -651,14 +631,6 @@ function update() {
 
 			mine.tick();
 
-			// Check for deletion 
-			if (players[y][x][i] === undefined) {
-				// Send delete 
-				sendAllSector('mine_delete', i, x, y);
-				delete minePack[y][x][i];
-				continue;
-			}
-
 			// Check for creation
 			if (pack === undefined) {
 				pack = minePack[y][x][i] = { wepnID: mine.wepnID, color: mine.color, x: mine.x, y: mine.y, angle: mine.angle };
@@ -688,22 +660,13 @@ function update() {
 		if (tick % 5 == 0) {
 			for (var i in packs[y][x]) {
 				var boon = packs[y][x][i];
-				var pack = packs[y][x][i];
+				var pack = packPack[y][x][i];
 
 				boon.tick();
 
-				// Check for deletion 
-				if (vorts[y][x][i] === undefined) {
-					// Send delete 
-					sendAllSector('pack_delete', i, x, y);
-
-					delete packs[y][x][i];
-					continue;
-				}
-
 				// Check for creation 
 				if (pack === undefined) {
-					pack = packs[y][x][i] = { x: boon.x, y: boon.y, type: boon.type };
+					pack = packPack[y][x][i] = { x: boon.x, y: boon.y, type: boon.type };
 
 					// Send create
 					sendAllSector('pack_create', {pack: pack, id: i}, x, y);
@@ -732,14 +695,6 @@ function update() {
 			var pack = beamPack[y][x][i];
 
 			beam.tick();
-
-			// Check for deletion
-			if (beam.time == 0 || beams[y][x][i] === undefined) {
-				sendAllSector('beam_delete', i, x, y);
-
-				delete beamPack[y][x][i];
-				continue;
-			}
 
 			// Check for creation
 			if (pack == undefined) {
@@ -792,14 +747,6 @@ function update() {
 			var pack = blastPack[y][x][i];
 
 			blast.tick();
-
-			// Check for deletion
-			if (blast.time == 0 || blasts[y][x][i] === undefined) {
-				// Send delete
-				sendAllSector('blast_delete', i, x, y);
-				delete blastPack[y][x][i];
-				continue;
-			}
 
 			// Check for creation
 			if (pack === undefined) {
@@ -871,13 +818,6 @@ function update() {
 				continue;
 			}
 
-			// Check for deletion 
-			if (asts[y][x][i] === undefined || ast.health === 0) {
-				sendAllSector('asteroid_delete', i, x, y);
-				delete astPack[y][x][i];
-				continue;
-			}
-			
 			var delta = { };
 			var need_update = false;
 
@@ -899,14 +839,6 @@ function update() {
 			var pack = orbPack[y][x][j];
 
 			orb.tick();
-
-			// Check for deletion
-			if (orbs[y][x][j] === undefined) {
-				sendAllSector('orb_delete', i, x, y);
-
-				delete orbPack[y][x][i];
-				continue;
-			}
 
 			// Check for creation
 			if (pack === undefined) {
@@ -933,8 +865,9 @@ function update() {
 
 			if (tick % 5 == 0 && orb.locked == 0) {
 				var locked = 0;
-				for (var i in pack) {
-					var player = pack[i];
+				for (var i in playerPack[y][x]) {
+					var player = playerPack[y][x][i];
+
 					var dist = squaredDist(player, orb);
 					if (player.empTimer <= 0 && player.color != orb.color && dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100) {
 						if (locked == 0) locked = player.id;
@@ -946,12 +879,12 @@ function update() {
 				if (basePack != 0 && basePack.color != orb.color && basePack.turretLive && locked == 0) locked = base.id;
 				orb.locked = locked;
 				if (locked != 0) continue;
-				for (var i in astPack) {
-					var ast = astPack[i];
+				for (var i in astPack[y][x]) {
+					var ast = astPack[y][x][i];
 					var dist = squaredDist(ast, orb);
 					if (dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100) {
 						if (locked == 0) locked = ast.id;
-						else if (typeof asts[locked] != "undefined" && dist < squaredDist(asts[locked], orb)) locked = player.id;
+						else if (typeof asts[y][x][locked] != "undefined" && dist < squaredDist(asts[y][x][locked], orb)) locked = player.id;
 					}
 				}
 				orb.locked = locked;
@@ -963,14 +896,6 @@ function update() {
 			var pack = missilePack[y][x][j];
 
 			missile.tick();
-
-			// Check for deletion
-			if (missiles[y][x][j] === undefined) {
-				sendAllSector('missile_delete', j, x, y);
-
-				delete missilePack[y][x][j];
-				continue;
-			}
 
 			// Check for creation 
 			if (pack === undefined) {
@@ -997,8 +922,8 @@ function update() {
 
 			if (tick % 5 == 0 && missile.locked == 0) {
 				var locked = 0;
-				for (var i in pack) {
-					var player = pack[i];
+				for (var i in playerPack[y][x]) {
+					var player = playerPack[y][x][i];
 					var dist = squaredDist(player, missile);
 					if (player.empTimer <= 0 && player.color != missile.color && dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100) {
 						if (locked == 0) locked = player.id;
@@ -1011,8 +936,8 @@ function update() {
 
 				missile.locked = locked;
 				if (locked != 0) continue;
-				for (var i in astPack) {
-					var player = astPack[i];
+				for (var i in astPack[y][x]) {
+					var player = astPack[y][x][i];
 					var dist = squaredDist(player, missile);
 					if (dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100) {
 						if (locked == 0) locked = player.id;
@@ -1020,6 +945,90 @@ function update() {
 					}
 				}
 				missile.locked = locked;
+			}
+		}
+
+		for (var i in vortPack[y][x]) {
+			if (vorts[y][x][i] === undefined) {
+				// Send delete
+				sendAllSector('vort_delete', i, x, y);
+
+				delete vortPack[y][x][i];
+				continue;
+			}
+		}
+
+		// Check for deletions
+		for (var i in playerPack[y][x]) {
+			if (players[y][x][i] === undefined) {
+				// Send delete 
+				sendAllSector('player_delete', i, x, y);
+				delete playerPack[y][x][i];
+				continue;
+			}
+		}
+
+		for (var i in minePack[y][x]) {
+			if (mines[y][x][i] === undefined) {
+				// Send delete 
+				sendAllSector('mine_delete', i, x, y);
+				delete minePack[y][x][i];
+				continue;
+			}
+		}
+
+		for (var i in missilePack[y][x]) {
+			if (missiles[y][x][i] === undefined) {
+				sendAllSector('missile_delete', i, x, y);
+
+				delete missilePack[y][x][i];
+				continue;
+			}
+		}
+
+		for (var i in orbPack[y][x]) {
+			if (orbs[y][x][j] === undefined) {
+				sendAllSector('orb_delete', i, x, y);
+
+				delete orbPack[y][x][i];
+				continue;
+			}
+
+		}
+
+		for (var i in blastPack[y][x]) {
+			if (blasts[y][x][i] === undefined) {
+				// Send delete
+				sendAllSector('blast_delete', i, x, y);
+				delete blastPack[y][x][i];
+				continue;
+			}
+		}
+
+		for (var i in beamPack[y][x]) {
+			if (beams[y][x][i] === undefined) {
+				sendAllSector('beam_delete', i, x, y);
+
+				delete beamPack[y][x][i];
+				continue;
+			}
+		}
+
+		for (var i in packPack[y][x]) {
+			if (packs[y][x][i] === undefined) {
+				// Send delete 
+				sendAllSector('pack_delete', i, x, y);
+
+				delete packPack[y][x][i];
+				continue;
+			}
+		}
+
+		for (var i in astPack[y][x]) {
+			if (asts[y][x][i] === undefined) {
+				sendAllSector('asteroid_delete', i, x, y);
+				delete astPack[y][x][i];
+				continue;
 			}
 		}
 
@@ -1042,7 +1051,7 @@ function update() {
 		//		console.log(v + ": " + basePack[y][x][v]);
 			}
 
-			send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx], projectiles:bPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
+			send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 		}
 
 		// Clear
