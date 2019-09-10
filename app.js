@@ -604,6 +604,10 @@ function update() {
 				pack = playerPack[y][x][i] = { trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle };
 				// Send create 
 				sendAllSector("player_create", pack, x, y);
+
+				// Send full update to the player
+				if (!player.isBot) 
+					send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 				continue;
 			}
 
@@ -1051,7 +1055,26 @@ function update() {
 		//		console.log(v + ": " + basePack[y][x][v]);
 			}
 
-			send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
+			//send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
+			//send(i, 'partialposUp', {cloaked: player.distance > 0, isLocked: player.isLocked, health:player.health;
+			// trail
+			// shield
+			// empTimer
+			// hasPackage
+			// id: player.id
+			// ship: ship
+			// speed
+			// maxHealth
+			// color 
+			// x 
+			// y
+			// name
+			// health
+			// angle
+			// drift 
+
+			// missing: cloaked, isLocked,planetTimer, sx, sy, charge:player.reload
+			send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, sx: x, sy: y, charge: player.reload});
 		}
 
 		// Clear

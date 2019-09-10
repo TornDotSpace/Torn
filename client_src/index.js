@@ -116,6 +116,9 @@ var EVERYTHING_LOADED = false;
 var guest = false;
 
 var stars = [];
+
+var myId = undefined;
+
 for (var i = 0; i < 300; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
 
 var dots = [];
@@ -1194,7 +1197,6 @@ socket.on('connect_error', function (error) {
 
 //packet handling
 socket.on('posUp', function (data) {
-	uframes++;
 	if (sx != data.sx || sy != data.sy) playAudio("sector", 1);
 	planetTimerSec = data.planetTimer / 25;
 	energy = data.energy;
@@ -1233,6 +1235,55 @@ socket.on('posUp', function (data) {
 	minesInfo = data.mines;
 	vortsInfo = data.vorts;
 });
+
+socket.on('update', function(data) {
+	++uframes;
+	++tick;
+	if (sx != data.sx || sy != data.sy) playAudio("sector", 1);
+	energy = data.energy;
+	sx = data.sx;
+	sy = data.sy;
+	isLocked = data.isLocked;
+	charge = data.charge;
+	cloaked = data.cloaked;
+
+	planetTimerSec = data.planetTimer / 25;
+
+	updateBooms();
+	updateNotes();
+	updateBullets();
+	updateTrails();
+	empTimer--;
+	gyroTimer--;
+	afkTimer--;
+	killStreakTimer--;
+});
+
+socket.on('player_create', function(data) {
+	playersInfo[data.id] = data;
+});
+
+socket.on('player_update', function(data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		playersInfo[data.id][d] = delta[d];
+	}
+
+	if (id == myId) {
+		px = playersInfo[data.id].x;
+		py = playersInfo[data.id].y;
+		pangle = playersInfo[data.id].angle;
+		scrx = -cosLow(pangle) * playersInfo[data.id].speed;
+		scry = -sinLow(pangle) * playersInfo[data.id].speed;
+	}
+});
+
+socket.on('player_delete', function(data) {
+	delete playersInfo[data];
+});
+
 function rInBase() {
 	tick++;
 	renderBG();
@@ -1333,6 +1384,7 @@ socket.on('loginSuccess', function (data) {
 	ReactRoot.init({ value: "" });
 	autopilot = false;
 	login = true;
+	myId = data.id;
 });
 socket.on('invalidReg', function (data) {
 	credentialState = data.reason;
@@ -1359,6 +1411,7 @@ socket.on('guested', function (data) {
 	ReactRoot.turnOffDisplay("LoginOverlay");
 	login = true;
 	guest = true;
+	myId = data.id;
 });
 
 socket.on('you', function (data) {
