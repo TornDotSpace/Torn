@@ -3034,26 +3034,39 @@ function rRaid() {
 	ctx.restore();
 }
 function rAchNotes() {
-	for (var i = 0; i < 4; i++) {
-		if (latestAchTimer[i]-- < 0)
-			latestAchs[i] = -1;
-		if (latestAchs[i] >= 0) {
-			ctx.globalAlpha = Math.sqrt(latestAchTimer[i] + 1) / 24.2;
-			ctx.fillStyle = "black";
-			roundRect(w - 384 - 96, h - 96 * (i + 1), 192, 64, 16, true, false);
-			ctx.globalAlpha *= 1.2;
-			ctx.textAlign = "center";
-			if (latestAchs[i] < 13) ctx.fillStyle = "red";
-			else if (latestAchs[i] < 25) ctx.fillStyle = "gold";
-			else if (latestAchs[i] < 37) ctx.fillStyle = "lightgray";
-			else ctx.fillStyle = "cyan";
-			ctx.font = "12px Telegrama";
-			write(mEng[203], w - 384, h - 96 * (i + 1) + 14);
-			write(jsn.achNames[latestAchs[i]].split(":")[0], w - 384, h - 96 * (i + 1) + 36);
-			ctx.font = "9px Telegrama";
-			write(jsn.achNames[latestAchs[i]].split(":")[1], w - 384, h - 96 * (i + 1) + 54);
-			ctx.globalAlpha = 1;
+	if (latestAchTimer[0]-- < 0){
+		for(int i = 0; i < 3; i++){
+			latestAchs[i] = latestAchs[i+1]; // shift array down
+			latestAchTimer[i] = latestAchTimer[i+1];
 		}
+		latestAchs[3] = latestAchTimer[3] = -1;
+	}
+
+	if (latestAchs[0] >= 0) {
+		var t = latestAchTimer[0];
+
+		//darken background
+		ctx.fillStyle = "black";
+		ctx.globalAlpha = .25/(1+square(128-t)/1000);
+		ctx.fillRect(0,0,w,h);
+
+		//box
+		var x = cube(t-10)+t-10
+		ctx.globalAlpha = .75;
+		infoBox(w/2, x-192, h/2 - 96, 384, 192, false, true);
+
+		//text
+		ctx.textAlign = "center";
+		if (latestAchs[i] < 13) ctx.fillStyle = "red";
+		else if (latestAchs[i] < 25) ctx.fillStyle = "gold";
+		else if (latestAchs[i] < 37) ctx.fillStyle = "lightgray";
+		else ctx.fillStyle = "cyan";
+		ctx.font = "24px Telegrama";
+		write(mEng[203], x, h - 96 * (i + 1) + 14);
+		write(jsn.achNames[latestAchs[0]].split(":")[0], x, h/2-64);
+		ctx.font = "12px Telegrama";
+		write(jsn.achNames[latestAchs[0]].split(":")[1], x, h/2+64);
+		ctx.globalAlpha = 1;
 	}
 }
 function rAutopilot() {
