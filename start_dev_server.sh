@@ -1,6 +1,6 @@
 #!/bin/bash
 echo Starting mongod with journaling disabled on port 27017&
-mongod --port 27017 --dbpath ./db --nojournal --bind_ip localhost&
+#mongod --port 27017 --dbpath ./db --nojournal --bind_ip localhost&
 echo Building client
 npm install && npm run dev
 echo
@@ -10,7 +10,7 @@ echo
 echo
 echo
 echo
-echo Starting shard-1 on port 7300
+echo Starting shard-1 on port 
 node app.js 7300 dev&
 echo Starting web express on port 7301
 node web.js 7301&

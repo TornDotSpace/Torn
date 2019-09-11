@@ -202,13 +202,14 @@ class LoginOverlay extends Component {
 								{buttonOrder}
 							</center>
 						</div>
-						{/*
 						<div className="video">
+							{/*
 							<center><h3>Featured Video!</h3>
 								{video}
 								<br /><a href="youtubers/">Have a channel?</a></center>
+							*/}
+							<center><img src="img/harrlogo.png" alt="Logo" width="340"/></center>
 						</div>
-						*/}
 						<div className="login">
 							<center><h3>Returning Players</h3>
 								<input className="overlay-input" type="text" id="usernameid" onChange={this.handleChangeU} placeholder="Username" />
@@ -217,31 +218,12 @@ class LoginOverlay extends Component {
 						</div>
 					</div>
 				</div>
-				<div className="changelog">
-					<a target="_blank" href="http://iogames.space/">More .io Games</a>
-					<br />
-					<a target="_blank" href="changelog">Changelog</a>
-				</div>
 				<div className="discord">
-					<center>
-						<a onClick={this.langEng} >Eng|</a>
-						<a onClick={this.langEsp} >Esp|</a>
-						<a onClick={this.langFrn} >Frn|</a>
-						<a onClick={this.langDeu} >Deu|</a>
-						<a onClick={this.langPyc} >Pyc</a>
-					</center>
-					<br />
-					{/*
-					<a target="_blank" href="https://discord.gg/wFsdUcY">
-						<img src="img/discord.png" alt="Discord" />
-					</a>
-					<a target="_blank" href="https://www.reddit.com/r/TornSpace/">
-						<img src="img/reddit.png" alt="Reddit" />
-					</a>
-					<a target="_blank" href="https://www.subscribestar.com/haze">
-						<img src="img/subscribestar.png" alt="SubscribeStar" />
-					</a>
-					*/}
+					<a onClick={this.langEng} >Eng|</a>
+					<a onClick={this.langEsp} >Esp|</a>
+					<a onClick={this.langFrn} >Frn|</a>
+					<a onClick={this.langDeu} >Deu|</a>
+					<a onClick={this.langPyc} >Pyc</a>
 				</div>
 			</div>)
 	}
