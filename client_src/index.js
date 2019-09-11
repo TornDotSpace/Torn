@@ -67,7 +67,8 @@ var scrx = 0, scry = 0;
 var mapSz = 7;
 var quests = 0, quest = 0;
 var login = false, lore = false, afk = false;
-var px = 0, py = 0, pc = 0, pangle = 0, phealth = 0, isLocked = false;
+var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false;
+var phealth = 0;
 var energy = 0;
 var bxo = 0, byo = 0, bx = 0, by = 0;
 var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0, bs = 0, rs = 0;
@@ -1273,8 +1274,10 @@ socket.on('player_update', function(data) {
 		px = playersInfo[id].x;
 		py = playersInfo[id].y;
 		pangle = playersInfo[id].angle;
+		phealth = playersInfo[id].health;
 		scrx = -cosLow(pangle) * playersInfo[id].speed;
 		scry = -sinLow(pangle) * playersInfo[id].speed;
+
 	}
 });
 

@@ -1074,7 +1074,7 @@ function update() {
 			// drift 
 
 			// missing: cloaked, isLocked,planetTimer, sx, sy, charge:player.reload
-			send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, sx: x, sy: y, charge: player.reload});
+			send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, sx: x, sy: y, charge: player.reload, energy: player.energy });
 		}
 
 		// Clear
