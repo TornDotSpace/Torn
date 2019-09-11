@@ -1266,20 +1266,168 @@ socket.on('player_update', function(data) {
 	var delta = data.delta;
 
 	for (var d in delta) {
-		playersInfo[data.id][d] = delta[d];
+		playersInfo[id][d] = delta[d];
 	}
 
 	if (id == myId) {
-		px = playersInfo[data.id].x;
-		py = playersInfo[data.id].y;
-		pangle = playersInfo[data.id].angle;
-		scrx = -cosLow(pangle) * playersInfo[data.id].speed;
-		scry = -sinLow(pangle) * playersInfo[data.id].speed;
+		px = playersInfo[id].x;
+		py = playersInfo[id].y;
+		pangle = playersInfo[id].angle;
+		scrx = -cosLow(pangle) * playersInfo[id].speed;
+		scry = -sinLow(pangle) * playersInfo[id].speed;
 	}
 });
 
 socket.on('player_delete', function(data) {
 	delete playersInfo[data];
+});
+
+socket.on('vort_create', function(data) {
+	vortsInfo[data.id] = data.pack;
+});
+
+socket.on('vort_update', function(data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		vortsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('vort_delete', function (data) {
+	delete vortsInfo[data];
+});
+
+socket.on('mine_create', function (data) {
+	minesInfo[data.id] = data.pack;
+});
+
+socket.on('mine_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		minesInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('mine_delete', function (data) {
+	delete minesInfo[data];
+});
+
+socket.on('pack_create', function (data) {
+	packsInfo[data.id] = data.pack;
+});
+
+socket.on('pack_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		packsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('pack_delete', function (data) {
+	delete packsInfo[data];
+});
+
+socket.on('beam_create', function (data) {
+	beamsInfo[data.id] = data.pack;
+});
+
+socket.on('beam_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		beamsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('beam_delete', function (data) {
+	delete beamsInfo[data];
+});
+
+socket.on('blast_create', function (data) {
+	blastsInfo[data.id] = data.pack;
+});
+
+socket.on('blast_update', function (delta) {
+	var id = delta.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		blastsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('blast_delete', function (data) {
+	delete blastsInfo[data];
+});
+
+socket.on('base_create', function (data) {
+	basesInfo = data.pack;
+});
+
+socket.on('base_update', function (data) {
+	var delta = data.delta;
+
+	for (var d in delta) {
+		basesInfo[d] = delta[d];
+	}
+});
+
+socket.on('asteroid_create', function (data) {
+	astsInfo[data.id] = data;
+});
+
+socket.on('asteroid_update', function (data) {
+	var id = data.id;
+	var delta = data.delta; 
+
+	for (var d in delta) {
+		astsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('asteroid_delete', function (data) {
+	delete astsInfo[data];
+});
+
+socket.on('orb_create', function (data) {
+	orbsInfo[data.id] = data.pack;
+});
+
+socket.on('orb_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		orbsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('orb_delete', function (data) {
+	delete orbsInfo[data];
+});
+
+socket.on('missile_create', function (data) {
+	missilesInfo[data.id] = data.pack;
+});
+
+socket.on('missile_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		missilesInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('missile_delete', function (data) {
+	delete missilesInfo[data];
 });
 
 function rInBase() {

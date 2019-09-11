@@ -817,7 +817,7 @@ function update() {
 			ast.tick();
 			// Check for creation 
 			if (pack === undefined) {
-				pack = astPack[y][x][i] = { metal: ast.metal, id: ast.id, x: ast.x, y: ast.y, angle: ast.angle, health: ast.health, maxHealth: ast.maxHealth };
+				pack = astPack[y][x][i] = { metal: ast.metal, id: i, x: ast.x, y: ast.y, angle: ast.angle, health: ast.health, maxHealth: ast.maxHealth };
 				sendAllSector('asteroid_create', pack, x, y);
 				continue;
 			}
