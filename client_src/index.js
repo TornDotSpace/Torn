@@ -67,7 +67,8 @@ var scrx = 0, scry = 0;
 var mapSz = 7;
 var quests = 0, quest = 0;
 var login = false, lore = false, afk = false;
-var px = 0, py = 0, pc = 0, pangle = 0, phealth = 0, isLocked = false;
+var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false;
+var phealth = 0;
 var energy = 0;
 var bxo = 0, byo = 0, bx = 0, by = 0;
 var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0, bs = 0, rs = 0;
@@ -116,7 +117,9 @@ var EVERYTHING_LOADED = false;
 var guest = false;
 
 var stars = [];
-for (var i = 0; i < 300; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
+for (var i = 0; i < 200; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
+
+var myId = undefined;
 
 var dots = [];
 for (var i = 0; i < 2000; i++) {
@@ -336,10 +339,9 @@ function loadAllImages() {
 	loadImage("s7", '/img/space/s7.png');
 	loadImage("s8", '/img/space/s8.png');
 	loadImage("spc", '/img/space/NewBackground.png');
-	loadImage("spcr", '/img/space/RedBackground.png');
-	loadImage("spcb", '/img/space/BlueBackground.png');
+	//loadImage("spcr", '/img/space/RedBackground.png');
+	//loadImage("spcb", '/img/space/BlueBackground.png');
 	loadImage("bullet", "/img/red/rb.png");
-	loadImage("logo", "/img/Logo.png");
 	loadImage("grad", '/img/grad.png');
 	loadImage("shockwave", "/img/shockwave.png");
 	loadImage("ebullet", '/img/blue/bb.png');
@@ -1194,7 +1196,6 @@ socket.on('connect_error', function (error) {
 
 //packet handling
 socket.on('posUp', function (data) {
-	uframes++;
 	if (sx != data.sx || sy != data.sy) playAudio("sector", 1);
 	planetTimerSec = data.planetTimer / 25;
 	energy = data.energy;
@@ -1233,6 +1234,205 @@ socket.on('posUp', function (data) {
 	minesInfo = data.mines;
 	vortsInfo = data.vorts;
 });
+
+socket.on('update', function(data) {
+	++uframes;
+	++tick;
+	if (sx != data.sx || sy != data.sy) playAudio("sector", 1);
+	energy = data.energy;
+	sx = data.sx;
+	sy = data.sy;
+	isLocked = data.isLocked;
+	charge = data.charge;
+	cloaked = data.cloaked;
+
+	planetTimerSec = data.planetTimer / 25;
+
+	updateBooms();
+	updateNotes();
+	updateBullets();
+	updateTrails();
+	empTimer--;
+	gyroTimer--;
+	afkTimer--;
+	killStreakTimer--;
+});
+
+socket.on('player_create', function(data) {
+	playersInfo[data.id] = data;
+});
+
+socket.on('player_update', function(data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		playersInfo[id][d] = delta[d];
+	}
+
+	if (id == myId) {
+		px = playersInfo[id].x;
+		py = playersInfo[id].y;
+		pangle = playersInfo[id].angle;
+		phealth = playersInfo[id].health;
+		scrx = -cosLow(pangle) * playersInfo[id].speed;
+		scry = -sinLow(pangle) * playersInfo[id].speed;
+
+	}
+});
+
+socket.on('player_delete', function(data) {
+	delete playersInfo[data];
+});
+
+socket.on('vort_create', function(data) {
+	vortsInfo[data.id] = data.pack;
+});
+
+socket.on('vort_update', function(data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		vortsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('vort_delete', function (data) {
+	delete vortsInfo[data];
+});
+
+socket.on('mine_create', function (data) {
+	minesInfo[data.id] = data.pack;
+});
+
+socket.on('mine_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		minesInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('mine_delete', function (data) {
+	delete minesInfo[data];
+});
+
+socket.on('pack_create', function (data) {
+	packsInfo[data.id] = data.pack;
+});
+
+socket.on('pack_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		packsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('pack_delete', function (data) {
+	delete packsInfo[data];
+});
+
+socket.on('beam_create', function (data) {
+	beamsInfo[data.id] = data.pack;
+});
+
+socket.on('beam_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		beamsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('beam_delete', function (data) {
+	delete beamsInfo[data];
+});
+
+socket.on('blast_create', function (data) {
+	blastsInfo[data.id] = data.pack;
+});
+
+socket.on('blast_update', function (delta) {
+	var id = delta.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		blastsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('blast_delete', function (data) {
+	delete blastsInfo[data];
+});
+
+socket.on('base_create', function (data) {
+	basesInfo = data.pack;
+});
+
+socket.on('base_update', function (data) {
+	var delta = data.delta;
+
+	for (var d in delta) {
+		basesInfo[d] = delta[d];
+	}
+});
+
+socket.on('asteroid_create', function (data) {
+	astsInfo[data.id] = data;
+});
+
+socket.on('asteroid_update', function (data) {
+	var id = data.id;
+	var delta = data.delta; 
+
+	for (var d in delta) {
+		astsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('asteroid_delete', function (data) {
+	delete astsInfo[data];
+});
+
+socket.on('orb_create', function (data) {
+	orbsInfo[data.id] = data.pack;
+});
+
+socket.on('orb_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		orbsInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('orb_delete', function (data) {
+	delete orbsInfo[data];
+});
+
+socket.on('missile_create', function (data) {
+	missilesInfo[data.id] = data.pack;
+});
+
+socket.on('missile_update', function (data) {
+	var id = data.id;
+	var delta = data.delta;
+
+	for (var d in delta) {
+		missilesInfo[id][d] = delta[d];
+	}
+});
+
+socket.on('missile_delete', function (data) {
+	delete missilesInfo[data];
+});
+
 function rInBase() {
 	tick++;
 	renderBG();
@@ -1333,6 +1533,7 @@ socket.on('loginSuccess', function (data) {
 	ReactRoot.init({ value: "" });
 	autopilot = false;
 	login = true;
+	myId = data.id;
 });
 socket.on('invalidReg', function (data) {
 	credentialState = data.reason;
@@ -1359,6 +1560,7 @@ socket.on('guested', function (data) {
 	ReactRoot.turnOffDisplay("LoginOverlay");
 	login = true;
 	guest = true;
+	myId = data.id;
 });
 
 socket.on('you', function (data) {
@@ -1686,9 +1888,6 @@ function loop() {
 		rBullets();
 		rBooms();
 		ctx.drawImage(Img.grad, 0, 0, w, h);
-		ctx.drawImage(Img.logo, 0, h - Img.logo.height * w / Img.logo.width, w, Img.logo.height * w / Img.logo.width);
-		ctx.fillStyle = 'white';
-		ctx.fillText(mEng[79], 16, 16);
 		rCreds();
 	}
 	else {
@@ -2031,6 +2230,7 @@ function write(str, x, y) {
 	else
 		ctx.fillText(str, x, y);
 }
+
 function getMousePos(canvas, evt) {
 	var rect = canvas.getBoundingClientRect();
 	return {
@@ -2183,8 +2383,9 @@ function updateTrails() {
 	}
 	var d = new Date();
 	var t = d.getTime() / 100;
-	for (var i = 0; i < playersInfo.length; i++) {
+	for (var i in playersInfo) {
 		var selfo = playersInfo[i];
+
 		var trail = selfo.trail;
 		var mod = trail % 16;
 		if (Math.abs(selfo.speed) > 1 && Math.abs(selfo.driftAngle - selfo.angle) > .05) {
@@ -2791,7 +2992,8 @@ function rRadar() {
 		}
 	}
 	var t = d.getTime() * 500;
-	for (var p of playersInfo) {
+	for (var p_pack in playersInfo) {
+		var p = playersInfo[p_pack];
 		var dx = p.x - px;
 		var dy = p.y - py;
 		if (square(dx) + square(dy) > square(r)) continue;
@@ -2804,7 +3006,8 @@ function rRadar() {
 		ctx.fill();
 	}
 	if (va2 > 2.5)
-		for (var p of packsInfo) {
+		for (var p_pack in playersInfo) {
+			var p = playersInfo[p_pack];
 			var dx = p.x - px;
 			var dy = p.y - py;
 			if (square(dx) + square(dy) > square(r)) continue;
@@ -2817,7 +3020,9 @@ function rRadar() {
 			ctx.fill();
 		}
 	ctx.lineWidth = 2;
-	for (var a of astsInfo) {
+	for (var a in astsInfo) {
+		a = astsInfo[a];
+
 		var dx = a.x - px;
 		var dy = a.y - py;
 		if (square(dx) + square(dy) > square(r)) continue;
@@ -3150,8 +3355,8 @@ function rBullets() {
 	}
 }
 function rMissiles() {
-	for (var i = 0; i < missilesInfo.length; i++) {
-		var selfo = missilesInfo[i];
+	for (var selfo in missilesInfo) {
+		selfo = missilesInfo[selfo];
 		var img = Img.missile;
 		if (selfo.wepnID == 11 || selfo.weaponID == 13) img = Img.heavyMissile;
 		if (selfo.wepnID == 12) img = Img.empMissile;
@@ -3183,8 +3388,8 @@ function rOrbs() {
 	}
 }
 function rMines() {
-	for (var i = 0; i < minesInfo.length; i++) {
-		var selfo = minesInfo[i];
+	for (var selfo in minesInfo) {
+		selfo = minesInfo[selfo];
 		var img = Img.mine;
 		var pw = img.width;
 		var ph = img.height;
@@ -3265,8 +3470,9 @@ function rBlasts() {
 }
 function rAsteroids() {
 	var nearA = 0;
-	for (var i = 0; i < astsInfo.length; i++) {
-		var selfo = astsInfo[i];
+	for (var selfo in astsInfo) {
+		selfo = astsInfo[selfo];
+
 		var img = (selfo.metal == 0 ? Img.iron : (selfo.metal == 3 ? Img.platinum : (selfo.metal == 1 ? Img.silver : Img.aluminium)));
 		var rendX = selfo.x - px + w / 2 + scrx;
 		var rendY = selfo.y - py + h / 2 + scry;
@@ -3347,8 +3553,8 @@ function rPlanets() {
 	ctx.font = "11px Telegrama";
 }
 function rPacks() {
-	for (var i = 0; i < packsInfo.length; i++) {
-		var selfo = packsInfo[i];
+	for (var selfo in packsInfo) {
+		selfo = packsInfo[selfo];
 		var img = selfo.type == 0 ? Img.pack : (selfo.type == 1 ? Img.bonus : (selfo.type == 2 ? Img.life : Img.ammo));
 		var rendX = selfo.x - px + w / 2 + scrx;
 		var rendY = selfo.y - py + h / 2 + scry;
@@ -3364,9 +3570,9 @@ function rPacks() {
 function rVorts() {
 	let d = new Date();
 	var angleT = d.getTime() / 1000;
-	for (var i = 0; i < vortsInfo.length; i++) {
+	for (var selfo in vortsInfo) {
 		ctx.save();
-		var selfo = vortsInfo[i];
+		selfo = vortsInfo[selfo];
 		var img = selfo.isWorm ? Img.worm : Img.vort;
 		var size = 24 * selfo.size / 64;
 		var rendX = selfo.x - px + w / 2 + scrx;
@@ -3386,8 +3592,8 @@ function rPlayers() {
 	var nearE = 0;
 	var nearF = 0;
 
-	for (var i = 0; i < playersInfo.length; i++) {
-		var selfo = playersInfo[i];
+	for (var selfo in playersInfo) {
+		selfo = playersInfo[selfo];
 		if (selfo.color == 'red')
 			rs++;
 		else
@@ -3500,7 +3706,8 @@ function rSelfCloaked() {
 	ctx.stroke();
 }
 function rBases() {
-	if (basesInfo != 0) { // render bases
+	if (basesInfo !== 0) { // render bases
+
 		var image = basesInfo.color == 'red' ? Img.base : Img.bss;
 		var pw = image.width;
 		var ph = image.height;
