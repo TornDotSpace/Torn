@@ -116,10 +116,9 @@ var EVERYTHING_LOADED = false;
 var guest = false;
 
 var stars = [];
+for (var i = 0; i < 200; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
 
 var myId = undefined;
-
-for (var i = 0; i < 300; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
 
 var dots = [];
 for (var i = 0; i < 2000; i++) {
@@ -339,10 +338,9 @@ function loadAllImages() {
 	loadImage("s7", '/img/space/s7.png');
 	loadImage("s8", '/img/space/s8.png');
 	loadImage("spc", '/img/space/NewBackground.png');
-	loadImage("spcr", '/img/space/RedBackground.png');
-	loadImage("spcb", '/img/space/BlueBackground.png');
+	//loadImage("spcr", '/img/space/RedBackground.png');
+	//loadImage("spcb", '/img/space/BlueBackground.png');
 	loadImage("bullet", "/img/red/rb.png");
-	loadImage("logo", "/img/Logo.png");
 	loadImage("grad", '/img/grad.png');
 	loadImage("shockwave", "/img/shockwave.png");
 	loadImage("ebullet", '/img/blue/bb.png');
@@ -1739,9 +1737,6 @@ function loop() {
 		rBullets();
 		rBooms();
 		ctx.drawImage(Img.grad, 0, 0, w, h);
-		ctx.drawImage(Img.logo, 0, h - Img.logo.height * w / Img.logo.width, w, Img.logo.height * w / Img.logo.width);
-		ctx.fillStyle = 'white';
-		ctx.fillText(mEng[79], 16, 16);
 		rCreds();
 	}
 	else {

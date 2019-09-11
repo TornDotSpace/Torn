@@ -45,14 +45,22 @@ body, #a {
 	float:center;
 }
 
-.guests, .login{
+.guests{
 	opacity:0.5;
 	float:left;
 	width:200px;
 	margin-top: 10px;
 }
 
+.login{
+	opacity:0.5;
+	float:right;
+	width:200px;
+	margin-top: 10px;
+}
+
 .video{
+	padding-top:30px;
 	opacity:0.5;
 	float:left;
 	width:380px;
@@ -124,14 +132,6 @@ body, #a {
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
-	margin:8px;
-}
-
-.changelog{
-	position:absolute;
-	float:right;
-	top: 0px;
-	right: 0px;
 	margin:8px;
 }
 
