@@ -3197,22 +3197,27 @@ function roundRect(x, y, width, height, radius, fill, stroke) {
 function infoBox(x, y, width, height, fill, stroke) {
 	ctx.save();
 	ctx.lineWidth = 1;
-	ctx.fillStyle = fill;
-	ctx.strokeStyle = stroke;
 	ctx.globalAlpha = .5;
-	ctx.fillRect(x, y, width, height);
+	
+	if(fill){
+		ctx.fillStyle = fill;
+		ctx.fillRect(x, y, width, height);
+	}
 
-	ctx.beginPath();
-	ctx.moveTo(x, y);
-	ctx.lineTo(x + width, y);
-	ctx.closePath();
-	ctx.stroke();
+	if(stroke){
+		ctx.strokeStyle = stroke;
+		ctx.beginPath();
+		ctx.moveTo(x, y);
+		ctx.lineTo(x + width, y);
+		ctx.closePath();
+		ctx.stroke();
 
-	ctx.beginPath();
-	ctx.moveTo(x, y + height);
-	ctx.lineTo(x + width, y + height);
-	ctx.closePath();
-	ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(x, y + height);
+		ctx.lineTo(x + width, y + height);
+		ctx.closePath();
+		ctx.stroke();
+	}
 
 	ctx.restore();
 }
@@ -3256,14 +3261,14 @@ function rAchNotes() {
 
 		//darken background
 		ctx.fillStyle = "black";
-		ctx.globalAlpha = .25/(1+square(128-t)/1000);
+		ctx.globalAlpha = .35/(1+square(128-t)/2000);
 		ctx.fillRect(0,0,w,h);
 
 		//box
 		ctx.strokeStyle = "lightgrey";
-		var x = w/2+(cube(t-128)+5*(t-128)/500;
+		var x = w/2+(cube(t-128)+5*(t-128))/500;
 		ctx.globalAlpha = .75;
-		infoBox(w/2 + x-192, h/2 - 96, 384, 192, false, true);
+		infoBox(x-192, h/2 - 96, 384, 192, false, true);
 
 		//text
 		ctx.textAlign = "center";
