@@ -110,7 +110,7 @@ var keys = [], lagArr = 0;
 var w = window.innerWidth;
 var h = window.innerHeight; // Canvas width and height
 var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
-var basesInfo = 0, playersInfo = 0, planetsInfo = 0, minesInfo = 0, orbsInfo = 0, missilesInfo = 0, vortsInfo = 0, beamsInfo = 0, blastsInfo = 0, astsInfo = 0, packsInfo = 0;
+var basesInfo = 0, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
 
 // for initial loading screen
 var EVERYTHING_LOADED = false;
