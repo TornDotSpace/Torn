@@ -530,7 +530,7 @@ function endRaid() {
 	raidTimer = 360000;
 	for (var i in sockets) {
 		var p = getPlayer(i);
-		if (p == 0 || p.color !== winners) continue;
+		if (p === undefined || p.color !== winners) continue;
 		p.spoils("money", p.points * 40000);
 		p.points = 0;
 	}
@@ -865,7 +865,7 @@ function update() {
 
 			if (!need_update) continue;
 			
-			sendAllSector('orb_update', {delta: delta, id: i}, x, y);
+			sendAllSector('orb_update', {delta: delta, id: j}, x, y);
 
 			if (tick % 5 == 0 && orb.locked == 0) {
 				var locked = 0;
@@ -922,7 +922,7 @@ function update() {
 
 			if (!need_update) continue;
 
-			sendAllSector('missile_update', {delta: delta, id: i}, x, y);
+			sendAllSector('missile_update', {delta: delta, id: j}, x, y);
 
 			if (tick % 5 == 0 && missile.locked == 0) {
 				var locked = 0;
