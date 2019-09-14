@@ -786,7 +786,7 @@ function update() {
 
 			// Check for creation (only happens once, on first tick)
 			if (pack === undefined) {
-				pack = basePack[y][x] = { id: base.id, live: base.turretLive, isBase: base.isBase, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, owner: base.owner };
+				pack = basePack[y][x] = { id: base.id, turretLive: base.turretLive, isBase: base.isBase, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, owner: base.owner };
 				sendAllSector('base_create', pack, x, y);
 				continue;
 			}
