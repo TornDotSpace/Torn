@@ -530,7 +530,7 @@ function endRaid() {
 	raidTimer = 360000;
 	for (var i in sockets) {
 		var p = getPlayer(i);
-		if (p == 0 || p.color !== winners) continue;
+		if (p === undefined || p.color !== winners) continue;
 		p.spoils("money", p.points * 40000);
 		p.points = 0;
 	}
