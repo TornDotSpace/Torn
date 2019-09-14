@@ -2344,12 +2344,9 @@ function expToLife() {
 	return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-experience / 15000.)) + Math.atan(experience / 150000.) - .5)) + 500;
 }
 function abbrevInt(x) {
-	if (x < 10000)
-		return "" + Math.round(x);
-	if (x < 10000000)
-		return Math.round(x / 1000) + mEng[180];
-	if (x < 10000000000)
-		return Math.round(x / 1000000) + mEng[181];
+	if (x < 10000) return "" + Math.round(x);
+	if (x < 10000000) return Math.round(x / 1000) + mEng[180];
+	if (x < 10000000000) return Math.round(x / 1000000) + mEng[181];
 }
 function lagMath(arr) {
 	if (lagArr == 0) {
@@ -3628,8 +3625,9 @@ function rPacks() {
 		var stime = (d.getMilliseconds() / 1000 + d.getSeconds()) / 3;
 		ctx.save();
 		ctx.translate(rendX, rendY);
+		ctx.scale(2,2);
 		ctx.rotate(stime * Math.PI);
-		ctx.drawImage(img, -32, -32);
+		ctx.drawImage(img, -img.width/2, -img.height/2);
 		ctx.restore();
 	}
 }
