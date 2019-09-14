@@ -13,6 +13,9 @@ console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀ 
 console.log("                                                                                                                        ");
 console.log("************************************************************************************************************************");
 
+console.log("torn-client-git-" + BRANCH + "-" + COMMITHASH);
+console.log ("Implementing protocol version " + VERSION);
+
 var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 
 var canvas = document.getElementById('ctx');

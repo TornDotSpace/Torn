@@ -1,6 +1,9 @@
 const path = require("path")
 const webpack = require("webpack")
 
+const git = require('git-revision-webpack-plugin');
+var gitRevisionPlugin = new git();
+
 module.exports = {
     entry: ["./client_src/index.js"],
     output: {
@@ -25,4 +28,11 @@ module.exports = {
         contentBase: './client',
         hot: true
     },
+    plugins: [
+	    new webpack.DefinePlugin({
+      VERSION: JSON.stringify(gitRevisionPlugin.version()),
+      COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
+      BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+    })
+   ]
 }
