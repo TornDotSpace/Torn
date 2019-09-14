@@ -865,7 +865,7 @@ function update() {
 
 			if (!need_update) continue;
 			
-			sendAllSector('orb_update', {delta: delta, id: i}, x, y);
+			sendAllSector('orb_update', {delta: delta, id: j}, x, y);
 
 			if (tick % 5 == 0 && orb.locked == 0) {
 				var locked = 0;
