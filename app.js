@@ -922,7 +922,7 @@ function update() {
 
 			if (!need_update) continue;
 
-			sendAllSector('missile_update', {delta: delta, id: i}, x, y);
+			sendAllSector('missile_update', {delta: delta, id: j}, x, y);
 
 			if (tick % 5 == 0 && missile.locked == 0) {
 				var locked = 0;
