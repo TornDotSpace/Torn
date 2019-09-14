@@ -2692,7 +2692,7 @@ function rTexts(lag, arr) {
 	}
 	for (var i = 0; i < (dev ? 15 + lagArr.length : 10); i++)
 		write(i < 15 ? info[i] : (lagNames[i - 15] + mEng[195] + parseFloat(Math.round(lagArr[i - 15] * 100) / 100).toFixed(2)), w - lbShift - 32, 64 + i * 16);
-	if(!self.guest){
+	if(!guest){
 		ctx.fillStyle = 'yellow';
 		write(mEng[196], w - lbShift - 32, 16);
 		ctx.fillStyle = 'pink';
@@ -2830,7 +2830,7 @@ function rChat() {
 	ctx.globalAlpha = .5;
 	ctx.fillStyle = "black";
 	ctx.strokeStyle = "#222222";
-	roundRect(-34, h - 184, 562, 224, 32, true, true);
+	roundRect(-34, h - 168, 562, 224, 32, true, true);
 	ctx.fillStyle = 'white';
 	roundRect(0, h - 64 - 154 * (chatScroll / chatLength), 6, 24, 2, true, false);
 
