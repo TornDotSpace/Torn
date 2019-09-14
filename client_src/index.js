@@ -3774,7 +3774,7 @@ function rBases() {
 			write(basesInfo.owner, rendX, rendY - 64);
 		}
 
-		if (basesInfo.live) {
+		if (basesInfo.turretLive) {
 			var timage = basesInfo.color == 'red' ? Img.turret : Img.bt;
 			pw = timage.width; // render turrets
 			ph = timage.height;
