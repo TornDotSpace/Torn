@@ -187,7 +187,7 @@ wepns[-2] = { name: "" };
 wepns[-1] = { name: mEng[0] };
 
 var scroll = 0, weaponTimer = 0, charge = 0;
-var equipped = {}, ammos = {};
+var equipped = 0, ammos = {};
 var musicAudio = 0;
 
 var Aud = {};
@@ -656,6 +656,7 @@ function render() {
 
 //shop rendering
 function rWeapons() {
+	if (equipped === 0) return;
 	if (equipped[1] == -2) return;
 	ctx.save();
 	ctx.globalAlpha = .5;
@@ -2519,6 +2520,7 @@ function rLore() {
 	}
 }
 function rEnergyBar() {
+	if (equipped === 0) return;
 	ctx.save();
 	ctx.strokeStyle = "red";
 	ctx.translate(guest ? 16 : 248, 324 + 16 - 5)
