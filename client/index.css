@@ -18,56 +18,122 @@ body, #a {
     margin: auto;
 	position:absolute;
 	padding:0px;
-	top: 10%;
 	right: 0;
 	left: 0;
-	width:780px;
 	height:200px;
 	animation: a-overlay .3s;
 	background-color: rgba(0,0,0,0);
 	color: white;
 }
 
+.overlay-menu{
+	width:100%;
+	top: 50%;
+	-ms-transform: translateY(-100%);
+	transform: translateY(-100%);
+}
+
 .register-menu{
+	width:780px;
 	margin-top: -100px;
 	top:50%;
 }
 
-.container{
-	margin: 0 auto;
-	width:780px;
-	float:center;
-}
+
+
+
 
 .container{
 	margin: 0 auto;
-	width:780px;
+	width:65%;
 	float:center;
+}
+
+.guests, .login{
+	width:25%;
+	margin-top: 10px;
+	opacity:0.5;
+    transition: opacity .5s;
+    -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+       -moz-animation: fadein 1s; /* Firefox < 16 */
+        -ms-animation: fadein 1s; /* Internet Explorer */
+         -o-animation: fadein 1s; /* Opera < 12.1 */
+            animation: fadein 1s;
 }
 
 .guests{
-	opacity:0.5;
 	float:left;
-	width:200px;
-	margin-top: 10px;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    animation: slide-in 1s forwards;
+    -webkit-animation: slide-in 1s forwards;
 }
 
 .login{
-	opacity:0.5;
 	float:right;
-	width:200px;
-	margin-top: 10px;
+    transform: translateX(50%);
+    -webkit-transform: translateX(50%);
+    animation: slide-in 1s forwards;
+    -webkit-animation: slide-in 1s forwards;
+}
+    
+@keyframes slide-in {
+    100% { transform: translateY(0%); }
+}
+
+@-webkit-keyframes slide-in {
+    100% { -webkit-transform: translateY(0%); }
 }
 
 .video{
 	padding-top:30px;
-	opacity:0.5;
 	float:left;
-	width:380px;
+	width:50%;
 	margin-top: 10px;
+	opacity:0.5;
+    transition: .5s;
+    -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
+       -moz-animation: fadein 2s; /* Firefox < 16 */
+        -ms-animation: fadein 2s; /* Internet Explorer */
+         -o-animation: fadein 2s; /* Opera < 12.1 */
+            animation: fadein 2s;
 }
 
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+
+
+
+
 .guests:hover, .login:hover, .video:hover{
+    transition: .3s;
 	opacity:1;
 }
 

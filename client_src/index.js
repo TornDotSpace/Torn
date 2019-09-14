@@ -80,7 +80,7 @@ var tab = 0, confirmer = -1, shipView = 0, volTransparency = 0, gVol = .5;
 global.typing = false;
 global.stopTyping = () => { typing = false }
 
-var chatLength = 30, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
+var chatLength = 20, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
 var lorePage = 0, homepageTimer = 0;
 var messages = {};
 for (var i = 0; i < chatLength; i++)
@@ -95,6 +95,7 @@ var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops 
 var credentialState = 0, textIn = 0, savedNote = 0;
 var key = '~`';
 var myName = "GUEST", currAlert = '', cloaked = false;
+var currLoading = "";
 var secret2PlanetName = "";
 var meanNLag = 0, nLagCt = 0;
 
@@ -194,13 +195,15 @@ var Aud_prgs = [0, 0];
 var Aud_loaded = false;
 
 function loadAudio(name, _src) {
-	if (Aud[name]) { console.error("Loading image twice: " + name) }
+	if (Aud[name]) { console.error("Loading audio twice: " + name) }
 	Aud[name] = new Howl({
 		src: _src,
 		autoplay: false,
 		loop: false,
 		preload: true,
 		onload: function () {
+			currLoading = "Loaded audio "+name;
+			console.log(currLoading);
 			++Aud_prgs[0];
 		},
 		pool: 15
@@ -228,7 +231,6 @@ function loadAudioEnd() {
 function loadAllAudio() {
 	loadAudio("minigun", '/aud/minigun.mp3');
 	loadAudio("boom2", '/aud/boom2.wav');
-	loadAudio("music1", '/aud/music1.mp3');
 	loadAudio("hyperspace", '/aud/hyperspace.wav');
 	loadAudio("bigboom", '/aud/bigboom.wav');
 	loadAudio("shot", '/aud/shot.mp3');
@@ -287,9 +289,11 @@ loadAllAudio();
 function loadImage(name, src) {
 	if (Img[name]) { console.error("Loading image twice: " + name); return; }
 	Img[name] = new Image();
-	Img[name].addEventListener("load", () => [
+	Img[name].addEventListener("load", function(){
+		currLoading = "Loaded sprite "+name;
+		console.log(currLoading);
 		Img_prgs[0]++
-	])
+	});
 	Img[name].src = src;
 	Img_prgs[1]++;
 }
@@ -397,6 +401,9 @@ function loadAllImages() {
 	loadImage("BHArrow", '/img/BHArrow.png');
 	loadImage("Exclamation", '/img/AAA.png');
 	loadImage("energyBar", '/img/energy.png');
+	loadShipImg(true,14); // hydra for homepage
+	for(var i = 0; i < 8; i++) loadShipImg(false, i);
+	for(var i = 0; i < 8; i++) loadShipImg(true, i);
 	loadImageEnd();
 }
 
@@ -554,6 +561,7 @@ function render() {
 	ctx.font = '11px Nasa';
 
 	var time0 = -performance.now();
+	canvas.width = canvas.width;
 	renderBG();//Fast, surprisingly.
 	var r = Math.floor(Math.random() * 25);
 	var undoing = false;
@@ -1435,6 +1443,7 @@ socket.on('missile_delete', function (data) {
 
 function rInBase() {
 	tick++;
+	canvas.width = canvas.width;
 	renderBG();
 	rStars();
 	rChat();
@@ -1492,6 +1501,7 @@ function _chat(data) {
 		data.msg = data.msg.replace("`~" + num + "`~", wepns[num].name);
 	}
 	messages[0] = data.msg;
+	chatScroll = 0;
 	preProcessChat();
 };
 function getPosition(string, subString, index) {
@@ -1789,17 +1799,22 @@ function loop() {
 			return;
 		} else ReactRoot.turnOnDisplay("LoginOverlay");
 
+		if(homepageTimer++ == 0) loadAudio("music1", '/aud/music1.mp3');
 
-		homepageTimer++;
-		var scale = (1 - Math.exp(-homepageTimer / 40.)) * 1.15;
+		canvas.width = canvas.width;
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, w, h);
 
-		ctx.translate(w / 2, h / 2);
-		ctx.scale(scale, scale);
-		ctx.translate(-w / 2, -h / 2);
+		if(homepageTimer < 200){
+			var scale = 1 - Math.exp((homepageTimer+20) / -50.);
+			ctx.translate(w / 2, h / 2);
+			ctx.scale(scale,scale);
+			ctx.translate(-w / 2, -h / 2);
 
-		renderBG();
-		rStars();
-		ctx.setTransform(1, 0, 0, 1, 0, 0);
+			renderBG(true);
+
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
+		} else renderBG();
 
 		//Main hydra
 		let d = new Date();
@@ -1845,7 +1860,7 @@ function loop() {
 
 
 		//Extra ships
-		for (var j = 0; j < 5; j++) {
+		for (var j = 0; j < 4; j++) {
 			var pxn = (32 + Math.sin(t * 4 + .2)) * 3200 + CoherentNoise(t * 4 + j * 3 * Math.E) * 192;
 			var pyn = (32 + Math.cos(t * 5 + .2)) * 3200 + CoherentNoise(t * 4 + j * 3 * Math.E + 61.23) * 192;
 			for (var i in bullets) {
@@ -1888,6 +1903,12 @@ function loop() {
 		rBullets();
 		rBooms();
 		ctx.drawImage(Img.grad, 0, 0, w, h);
+		if(homepageTimer < 10){
+			ctx.globalAlpha = 1 - homepageTimer/10;
+			ctx.fillStyle = "black";
+			ctx.fillRect(0,0,w,h);
+			ctx.globalAlpha = 1;
+		}
 		rCreds();
 	}
 	else {
@@ -2349,6 +2370,8 @@ function rLoadingBar() {
 	ctx.textAlign = "center";
 	ctx.font = "30px Nasa";
 	ctx.fillText(splash, w / 2, h / 2 - 96);
+	ctx.font = "15px Nasa";
+	ctx.fillText(currLoading, w / 2, h / 2 + 96);
 }
 
 function updateNotes() {
@@ -2438,6 +2461,7 @@ function updateBooms() {
 	}
 }
 function rLore() {
+	canvas.width = canvas.width;
 	renderBG();
 	if (lorePage == 0) {
 		ctx.drawImage(Img.grad, 0, 0, w, h);
@@ -2668,30 +2692,26 @@ function rTexts(lag, arr) {
 	}
 	for (var i = 0; i < (dev ? 15 + lagArr.length : 10); i++)
 		write(i < 15 ? info[i] : (lagNames[i - 15] + mEng[195] + parseFloat(Math.round(lagArr[i - 15] * 100) / 100).toFixed(2)), w - lbShift - 32, 64 + i * 16);
-	ctx.fillStyle = 'yellow';
-	write(mEng[196], w - lbShift - 32, 16);
-	ctx.fillStyle = 'pink';
-	write(rp + "/" + rg + "/" + rb + "/" + rs, w - lbShift - 32, 32);
-	ctx.fillStyle = 'cyan';
-	write(bp + "/" + bg + "/" + bb + "/" + bs, w - lbShift - 32, 48);
+	if(!self.guest){
+		ctx.fillStyle = 'yellow';
+		write(mEng[196], w - lbShift - 32, 16);
+		ctx.fillStyle = 'pink';
+		write(rp + "/" + rg + "/" + rb + "/" + rs, w - lbShift - 32, 32);
+		ctx.fillStyle = 'cyan';
+		write(bp + "/" + bg + "/" + bb + "/" + bs, w - lbShift - 32, 48);
+	}
 	ctx.textAlign = 'left';
 }
 function rCurrQuest() {
 	ctx.fillStyle = 'cyan';
 	ctx.textAlign = 'center';
 	var desc = "";
-	if (quest.type == 'Mining')
-		desc = mEng[37] + quest.amt + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
-	if (quest.type == 'Base')
-		desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
-	if (quest.type == 'Delivery')
-		desc = mEng[42] + getSectorName(quest.sx, quest.sy) + mEng[43] + getSectorName(quest.dsx, quest.dsy) + mEng[40];
-	if (quest.type == 'Secret')
-		desc = mEng[156] + getSectorName(quest.sx, quest.sy) + mEng[157];
-	if (quest.type == 'Secret2')
-		desc = mEng[158] + getSectorName(quest.sx, quest.sy) + mEng[159] + secret2PlanetName + mEng[40];
-	if (quest.type == 'Secret3')
-		desc = mEng[160];
+	if (quest.type == 'Mining') desc = mEng[37] + quest.amt + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
+	if (quest.type == 'Base') desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
+	if (quest.type == 'Delivery') desc = mEng[42] + getSectorName(quest.sx, quest.sy) + mEng[43] + getSectorName(quest.dsx, quest.dsy) + mEng[40];
+	if (quest.type == 'Secret') desc = mEng[156] + getSectorName(quest.sx, quest.sy) + mEng[157];
+	if (quest.type == 'Secret2') desc = mEng[158] + getSectorName(quest.sx, quest.sy) + mEng[159] + secret2PlanetName + mEng[40];
+	if (quest.type == 'Secret3') desc = mEng[160];
 	write(desc, w / 2, h - 56);
 	ctx.textAlign = 'left';
 }
@@ -2810,9 +2830,9 @@ function rChat() {
 	ctx.globalAlpha = .5;
 	ctx.fillStyle = "black";
 	ctx.strokeStyle = "#222222";
-	roundRect(-34, h - 184, 562, 240, 32, true, true);
+	roundRect(-34, h - 184, 562, 224, 32, true, true);
 	ctx.fillStyle = 'white';
-	roundRect(0, h - 64 - 168 * (chatScroll / chatLength), 6, 24, 2, true, false);
+	roundRect(0, h - 64 - 154 * (chatScroll / chatLength), 6, 24, 2, true, false);
 
 	ctx.globalAlpha = 1;
 	ctx.textAlign = "right";
@@ -2820,17 +2840,16 @@ function rChat() {
 	write(globalChat == 0 ? mEng[197] : mEng[199], 512, h - 16);
 	ctx.restore();
 
-	if (globalChat == 1)
-		return;
+	if (globalChat == 1) return;
 
 	ctx.textAlign = "left";
 	ctx.font = "11px Nasa";
 
 	ctx.fillStyle = "yellow";
 	ctx.save();
-	for (var ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 8); ri--) {
+	for (var ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
 		var fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
-		ctx.globalAlpha = (fromTop + 20) / 20;
+		ctx.globalAlpha = square((fromTop + 20) / 20);
 		var curx = 0;
 		var splitStr = preChatArr[ri].split(key);
 		for (var j = 0; j < splitStr.length; j++) {
@@ -2844,8 +2863,7 @@ function rChat() {
 	}
 	ctx.restore();
 }
-function renderBG() {
-	canvas.width = canvas.width;
+function renderBG(more) {
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, w, h);
 	ctx.font = '11px Nasa';
@@ -2872,12 +2890,12 @@ function renderBG() {
 					ctx.drawImage(img, bgPos(x, px, scrx, i, 1280), bgPos(y, py, scry, i, 1280), 1280, 1280);
 		}
 	}*/
-
+	var add = more?1:0;
 	var img = Img.spc;
 	for (var i = 0; i < ((hyperdriveTimer > 0) ? 3 : 1); i++) {
 		ctx.globalAlpha = i == 0 ? .5 : ((10000 - square(100 - hyperdriveTimer)) / (i * 10000));
-		for (var x = 0; x < 2 + Math.floor(w / 2048); x++)
-			for (var y = 0; y < 2 + Math.floor(h / 2048); y++)
+		for (var x = -add; x < 2 + Math.floor(w / 2048)+add; x++)
+			for (var y = -add; y < 2 + Math.floor(h / 2048)+add; y++)
 				ctx.drawImage(img, bgPos(x, px, scrx, i, 2048), bgPos(y, py, scry, i, 2048));
 	}
 
