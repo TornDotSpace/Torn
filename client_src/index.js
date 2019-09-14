@@ -110,7 +110,7 @@ var keys = [], lagArr = 0;
 var w = window.innerWidth;
 var h = window.innerHeight; // Canvas width and height
 var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
-var basesInfo = 0, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
+var basesInfo = 0, playersInfo = 0, planetsInfo = 0, minesInfo = 0, orbsInfo = 0, missilesInfo = 0, vortsInfo = 0, beamsInfo = 0, blastsInfo = 0, astsInfo = 0, packsInfo = 0;
 
 // for initial loading screen
 var EVERYTHING_LOADED = false;
@@ -1274,8 +1274,6 @@ socket.on('player_create', function(data) {
 socket.on('player_update', function(data) {
 	var id = data.id;
 	var delta = data.delta;
-	// We just changed sectors or are just loading in 
-	if (playersInfo[id] === undefined) return;
 
 	for (var d in delta) {
 		playersInfo[id][d] = delta[d];
@@ -1302,8 +1300,6 @@ socket.on('vort_create', function(data) {
 
 socket.on('vort_update', function(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
-	if (vortsInfo[id] === undefined) return;
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1321,9 +1317,6 @@ socket.on('mine_create', function (data) {
 
 socket.on('mine_update', function (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
-	if (minesInfo[id] === undefined) return;
-
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1341,9 +1334,6 @@ socket.on('pack_create', function (data) {
 
 socket.on('pack_update', function (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
-	if (packsInfo[id] === undefined) return;
-
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1361,9 +1351,6 @@ socket.on('beam_create', function (data) {
 
 socket.on('beam_update', function (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
-	if (beamsInfo[id] === undefined) return;
-
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1381,9 +1368,6 @@ socket.on('blast_create', function (data) {
 
 socket.on('blast_update', function (delta) {
 	var id = delta.id;
-	// We just changed sectors or are just loading in 
-	if (blastsInfo[id] === undefined) return;
-
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1402,9 +1386,6 @@ socket.on('base_create', function (data) {
 socket.on('base_update', function (data) {
 	var delta = data.delta;
 
-	// We just changed sectors or are just loading in 
-	if (basesInfo === 0) return;
-
 	for (var d in delta) {
 		basesInfo[d] = delta[d];
 	}
@@ -1416,9 +1397,6 @@ socket.on('asteroid_create', function (data) {
 
 socket.on('asteroid_update', function (data) {
 	var id = data.id;
-
-	// We just changed sectors or are just loading in 
-	if (astsInfo[id] === undefined) return;
 	var delta = data.delta; 
 
 	for (var d in delta) {
@@ -1436,8 +1414,6 @@ socket.on('orb_create', function (data) {
 
 socket.on('orb_update', function (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
-	if (orbsInfo[id] === undefined) return;
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1455,9 +1431,6 @@ socket.on('missile_create', function (data) {
 
 socket.on('missile_update', function (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
-	if (missilesInfo[id] === undefined) return;
-
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -2344,12 +2317,9 @@ function expToLife() {
 	return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-experience / 15000.)) + Math.atan(experience / 150000.) - .5)) + 500;
 }
 function abbrevInt(x) {
-	if (x < 10000)
-		return "" + Math.round(x);
-	if (x < 10000000)
-		return Math.round(x / 1000) + mEng[180];
-	if (x < 10000000000)
-		return Math.round(x / 1000000) + mEng[181];
+	if (x < 10000) return "" + Math.round(x);
+	if (x < 10000000) return Math.round(x / 1000) + mEng[180];
+	if (x < 10000000000) return Math.round(x / 1000000) + mEng[181];
 }
 function lagMath(arr) {
 	if (lagArr == 0) {
@@ -2361,14 +2331,15 @@ function lagMath(arr) {
 }
 function ach(achNo, note) {
 	achs[achNo] = true;
-	if (!note || tick < 10)
-		return;
-	for (var i = 4; i > 0; i--) {
-		latestAchTimer[i] = latestAchTimer[i - 1];
-		latestAchs[i] = latestAchs[i - 1];
-	}
-	latestAchTimer[0] = 256;
-	latestAchs[0] = achNo;
+	if (!note || tick < 10) return;
+
+	//set i to the least empty index of latestAchs
+	var i = 0;
+	for (i; i<4; i++) if(latestAchs[i] == -1) return;
+
+	//and use that index for queue
+	latestAchTimer[i] = 256;
+	latestAchs[i] = achNo;
 }
 function bgPos(x, px, scrx, i, tileSize) {
 	return ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
@@ -2855,6 +2826,7 @@ function preProcessChat() {
 	chati--;
 }
 function rChat() {
+	ctx.font = "11px Nasa";
 	ctx.save();
 	ctx.globalAlpha = .5;
 	ctx.fillStyle = "black";
@@ -2872,7 +2844,6 @@ function rChat() {
 	if (globalChat == 1) return;
 
 	ctx.textAlign = "left";
-	ctx.font = "11px Nasa";
 
 	ctx.fillStyle = "yellow";
 	ctx.save();
@@ -3269,6 +3240,7 @@ function infoBox(x, y, width, height, fill, stroke) {
 	ctx.restore();
 }
 function rRaid() {
+	if(guest || rank < 6) return;
 	ctx.save();
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'center';
@@ -3308,14 +3280,8 @@ function rAchNotes() {
 
 		//darken background
 		ctx.fillStyle = "black";
-		ctx.globalAlpha = .35/(1+square(128-t)/2000);
+		ctx.globalAlpha = .8/(1+Math.exp(square(128-t)/5000));
 		ctx.fillRect(0,0,w,h);
-
-		//box
-		ctx.strokeStyle = "lightgrey";
-		var x = w/2+(cube(t-128)+5*(t-128))/500;
-		ctx.globalAlpha = .75;
-		infoBox(x-192, h/2 - 96, 384, 192, false, true);
 
 		//text
 		ctx.textAlign = "center";
@@ -3323,10 +3289,14 @@ function rAchNotes() {
 		else if (latestAchs[i] < 25) ctx.fillStyle = "gold";
 		else if (latestAchs[i] < 37) ctx.fillStyle = "lightgray";
 		else ctx.fillStyle = "cyan";
+		var x = w/2+(cube(t-128)+10*(t-128))/1500;
+
+		ctx.globalAlpha = .7;
+		ctx.font = "48px Nasa";
+		write("Achievement Get!", x, h/2 - 64);
+		ctx.font = "36px Nasa";
+		write(jsn.achNames[latestAchs[0]].split(":")[0], x, h/2);
 		ctx.font = "24px Nasa";
-		write(mEng[203], x, h - 96 * (i + 1) + 14);
-		write(jsn.achNames[latestAchs[0]].split(":")[0], x, h/2-64);
-		ctx.font = "12px Nasa";
 		write(jsn.achNames[latestAchs[0]].split(":")[1], x, h/2+64);
 		ctx.globalAlpha = 1;
 	}
@@ -3628,8 +3598,9 @@ function rPacks() {
 		var stime = (d.getMilliseconds() / 1000 + d.getSeconds()) / 3;
 		ctx.save();
 		ctx.translate(rendX, rendY);
+		ctx.scale(2,2);
 		ctx.rotate(stime * Math.PI);
-		ctx.drawImage(img, -32, -32);
+		ctx.drawImage(img, -img.width/2, -img.height/2);
 		ctx.restore();
 	}
 }
