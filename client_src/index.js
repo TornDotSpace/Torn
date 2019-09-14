@@ -110,7 +110,7 @@ var keys = [], lagArr = 0;
 var w = window.innerWidth;
 var h = window.innerHeight; // Canvas width and height
 var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
-var basesInfo = 0, playersInfo = 0, planetsInfo = 0, minesInfo = 0, orbsInfo = 0, missilesInfo = 0, vortsInfo = 0, beamsInfo = 0, blastsInfo = 0, astsInfo = 0, packsInfo = 0;
+var basesInfo = 0, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
 
 // for initial loading screen
 var EVERYTHING_LOADED = false;
@@ -1274,6 +1274,8 @@ socket.on('player_create', function(data) {
 socket.on('player_update', function(data) {
 	var id = data.id;
 	var delta = data.delta;
+	// We just changed sectors or are just loading in 
+	if (playersInfo[id] === undefined) return;
 
 	for (var d in delta) {
 		playersInfo[id][d] = delta[d];
@@ -1300,6 +1302,8 @@ socket.on('vort_create', function(data) {
 
 socket.on('vort_update', function(data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (vortsInfo[id] === undefined) return;
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1317,6 +1321,9 @@ socket.on('mine_create', function (data) {
 
 socket.on('mine_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (minesInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1334,6 +1341,9 @@ socket.on('pack_create', function (data) {
 
 socket.on('pack_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (packsInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1351,6 +1361,9 @@ socket.on('beam_create', function (data) {
 
 socket.on('beam_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (beamsInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1368,6 +1381,9 @@ socket.on('blast_create', function (data) {
 
 socket.on('blast_update', function (delta) {
 	var id = delta.id;
+	// We just changed sectors or are just loading in 
+	if (blastsInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1386,6 +1402,9 @@ socket.on('base_create', function (data) {
 socket.on('base_update', function (data) {
 	var delta = data.delta;
 
+	// We just changed sectors or are just loading in 
+	if (basesInfo === 0) return;
+
 	for (var d in delta) {
 		basesInfo[d] = delta[d];
 	}
@@ -1397,6 +1416,9 @@ socket.on('asteroid_create', function (data) {
 
 socket.on('asteroid_update', function (data) {
 	var id = data.id;
+
+	// We just changed sectors or are just loading in 
+	if (astsInfo[id] === undefined) return;
 	var delta = data.delta; 
 
 	for (var d in delta) {
@@ -1414,6 +1436,8 @@ socket.on('orb_create', function (data) {
 
 socket.on('orb_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (orbsInfo[id] === undefined) return;
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1431,6 +1455,9 @@ socket.on('missile_create', function (data) {
 
 socket.on('missile_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (missilesInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -2317,9 +2344,12 @@ function expToLife() {
 	return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-experience / 15000.)) + Math.atan(experience / 150000.) - .5)) + 500;
 }
 function abbrevInt(x) {
-	if (x < 10000) return "" + Math.round(x);
-	if (x < 10000000) return Math.round(x / 1000) + mEng[180];
-	if (x < 10000000000) return Math.round(x / 1000000) + mEng[181];
+	if (x < 10000)
+		return "" + Math.round(x);
+	if (x < 10000000)
+		return Math.round(x / 1000) + mEng[180];
+	if (x < 10000000000)
+		return Math.round(x / 1000000) + mEng[181];
 }
 function lagMath(arr) {
 	if (lagArr == 0) {
@@ -3598,9 +3628,8 @@ function rPacks() {
 		var stime = (d.getMilliseconds() / 1000 + d.getSeconds()) / 3;
 		ctx.save();
 		ctx.translate(rendX, rendY);
-		ctx.scale(2,2);
 		ctx.rotate(stime * Math.PI);
-		ctx.drawImage(img, -img.width/2, -img.height/2);
+		ctx.drawImage(img, -32, -32);
 		ctx.restore();
 	}
 }
