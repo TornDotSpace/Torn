@@ -2333,14 +2333,15 @@ function lagMath(arr) {
 }
 function ach(achNo, note) {
 	achs[achNo] = true;
-	if (!note || tick < 10)
-		return;
-	for (var i = 4; i > 0; i--) {
-		latestAchTimer[i] = latestAchTimer[i - 1];
-		latestAchs[i] = latestAchs[i - 1];
-	}
-	latestAchTimer[0] = 256;
-	latestAchs[0] = achNo;
+	if (!note || tick < 10) return;
+
+	//set i to the least empty index of latestAchs
+	var i = 0;
+	for (i; i<4; i++) if(latestAchs[i] == -1) return;
+
+	//and use that index for queue
+	latestAchTimer[i] = 256;
+	latestAchs[i] = achNo;
 }
 function bgPos(x, px, scrx, i, tileSize) {
 	return ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
@@ -2826,6 +2827,7 @@ function preProcessChat() {
 	chati--;
 }
 function rChat() {
+	ctx.font = "11px Nasa";
 	ctx.save();
 	ctx.globalAlpha = .5;
 	ctx.fillStyle = "black";
@@ -2843,7 +2845,6 @@ function rChat() {
 	if (globalChat == 1) return;
 
 	ctx.textAlign = "left";
-	ctx.font = "11px Nasa";
 
 	ctx.fillStyle = "yellow";
 	ctx.save();
@@ -3240,6 +3241,7 @@ function infoBox(x, y, width, height, fill, stroke) {
 	ctx.restore();
 }
 function rRaid() {
+	if(guest || rank < 6) return;
 	ctx.save();
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'center';
@@ -3279,14 +3281,8 @@ function rAchNotes() {
 
 		//darken background
 		ctx.fillStyle = "black";
-		ctx.globalAlpha = .35/(1+square(128-t)/2000);
+		ctx.globalAlpha = .8/(1+Math.exp(square(128-t)/5000));
 		ctx.fillRect(0,0,w,h);
-
-		//box
-		ctx.strokeStyle = "lightgrey";
-		var x = w/2+(cube(t-128)+5*(t-128))/500;
-		ctx.globalAlpha = .75;
-		infoBox(x-192, h/2 - 96, 384, 192, false, true);
 
 		//text
 		ctx.textAlign = "center";
@@ -3294,10 +3290,14 @@ function rAchNotes() {
 		else if (latestAchs[i] < 25) ctx.fillStyle = "gold";
 		else if (latestAchs[i] < 37) ctx.fillStyle = "lightgray";
 		else ctx.fillStyle = "cyan";
+		var x = w/2+(cube(t-128)+10*(t-128))/1500;
+
+		ctx.globalAlpha = .7;
+		ctx.font = "48px Nasa";
+		write("Achievement Get!", x, h/2 - 64);
+		ctx.font = "36px Nasa";
+		write(jsn.achNames[latestAchs[0]].split(":")[0], x, h/2);
 		ctx.font = "24px Nasa";
-		write(mEng[203], x, h - 96 * (i + 1) + 14);
-		write(jsn.achNames[latestAchs[0]].split(":")[0], x, h/2-64);
-		ctx.font = "12px Nasa";
 		write(jsn.achNames[latestAchs[0]].split(":")[1], x, h/2+64);
 		ctx.globalAlpha = 1;
 	}
