@@ -226,10 +226,7 @@ module.exports = function initNetcode() {
             var retCode = await loadPlayerData(player, player.password);
             
             if (retCode != 0) {
-                if (retCode == -1) {
-                    socket.binary(false).emit("invalidCredentials", {});
-                }
-
+                if (retCode == -1) socket.binary(false).emit("invalidCredentials", {});
                 return;
             }
 
