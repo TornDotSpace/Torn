@@ -13,6 +13,9 @@ console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀ 
 console.log("                                                                                                                        ");
 console.log("************************************************************************************************************************");
 
+console.log("torn-client-git-" + BRANCH + "-" + COMMITHASH);
+console.log ("Implementing protocol version " + VERSION);
+
 var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 
 var canvas = document.getElementById('ctx');
@@ -110,7 +113,7 @@ var keys = [], lagArr = 0;
 var w = window.innerWidth;
 var h = window.innerHeight; // Canvas width and height
 var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
-var basesInfo = 0, playersInfo = 0, planetsInfo = 0, minesInfo = 0, orbsInfo = 0, missilesInfo = 0, vortsInfo = 0, beamsInfo = 0, blastsInfo = 0, astsInfo = 0, packsInfo = 0;
+var basesInfo = 0, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
 
 // for initial loading screen
 var EVERYTHING_LOADED = false;
@@ -187,7 +190,7 @@ wepns[-2] = { name: "" };
 wepns[-1] = { name: mEng[0] };
 
 var scroll = 0, weaponTimer = 0, charge = 0;
-var equipped = {}, ammos = {};
+var equipped = 0, ammos = {};
 var musicAudio = 0;
 
 var Aud = {};
@@ -656,6 +659,7 @@ function render() {
 
 //shop rendering
 function rWeapons() {
+	if (equipped === 0) return;
 	if (equipped[1] == -2) return;
 	ctx.save();
 	ctx.globalAlpha = .5;
@@ -1273,6 +1277,8 @@ socket.on('player_create', function(data) {
 socket.on('player_update', function(data) {
 	var id = data.id;
 	var delta = data.delta;
+	// We just changed sectors or are just loading in 
+	if (playersInfo[id] === undefined) return;
 
 	for (var d in delta) {
 		playersInfo[id][d] = delta[d];
@@ -1299,6 +1305,8 @@ socket.on('vort_create', function(data) {
 
 socket.on('vort_update', function(data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (vortsInfo[id] === undefined) return;
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1316,6 +1324,9 @@ socket.on('mine_create', function (data) {
 
 socket.on('mine_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (minesInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1333,6 +1344,9 @@ socket.on('pack_create', function (data) {
 
 socket.on('pack_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (packsInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1350,6 +1364,9 @@ socket.on('beam_create', function (data) {
 
 socket.on('beam_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (beamsInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1367,6 +1384,9 @@ socket.on('blast_create', function (data) {
 
 socket.on('blast_update', function (delta) {
 	var id = delta.id;
+	// We just changed sectors or are just loading in 
+	if (blastsInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1385,6 +1405,9 @@ socket.on('base_create', function (data) {
 socket.on('base_update', function (data) {
 	var delta = data.delta;
 
+	// We just changed sectors or are just loading in 
+	if (basesInfo === 0) return;
+
 	for (var d in delta) {
 		basesInfo[d] = delta[d];
 	}
@@ -1396,6 +1419,9 @@ socket.on('asteroid_create', function (data) {
 
 socket.on('asteroid_update', function (data) {
 	var id = data.id;
+
+	// We just changed sectors or are just loading in 
+	if (astsInfo[id] === undefined) return;
 	var delta = data.delta; 
 
 	for (var d in delta) {
@@ -1413,6 +1439,8 @@ socket.on('orb_create', function (data) {
 
 socket.on('orb_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (orbsInfo[id] === undefined) return;
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -1430,6 +1458,9 @@ socket.on('missile_create', function (data) {
 
 socket.on('missile_update', function (data) {
 	var id = data.id;
+	// We just changed sectors or are just loading in 
+	if (missilesInfo[id] === undefined) return;
+
 	var delta = data.delta;
 
 	for (var d in delta) {
@@ -2490,6 +2521,7 @@ function rLore() {
 	}
 }
 function rEnergyBar() {
+	if (equipped === 0) return;
 	ctx.save();
 	ctx.strokeStyle = "red";
 	ctx.translate(guest ? 16 : 248, 324 + 16 - 5)
