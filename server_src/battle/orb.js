@@ -38,13 +38,13 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 			if (typeof target === 'undefined') self.locked = 0;
 			else { // if we are locked onto something
 				if (target.type === "Player") target.isLocked = true; // tell the player they're locked onto for an alert message
-				var d2 = squaredDist(target, self);
-				if (sameSector(target, self) && d2 < square(100) && target.turretLive != false) { // if it's a base we can't attack when it's dead
+				var d2 = hypot2(target.x,self.x,target.y,self.y);
+				if (sameSector(target, self) && d2 < 10 && target.turretLive != false) { // if it's a base we can't attack when it's dead
 					target.dmg(self.dmg, self);
 					self.die();
 					return;
 				}
-				var dist = Math.sqrt(d2);
+				var dist = d2;
 				self.vx += wepns[weaponID].Speed * (target.x - self.x) / dist; // accelerate towards target
 				self.vy += wepns[weaponID].Speed * (target.y - self.y) / dist;
 				self.vx *= .9; // air resistance

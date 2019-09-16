@@ -1437,6 +1437,7 @@ socket.on('base_create', function (data) {
 });
 
 function base_update(data) {
+	if (data === undefined || data.delta === undefined) return;
 	var delta = data.delta;
 
 	// We just changed sectors or are just loading in 
