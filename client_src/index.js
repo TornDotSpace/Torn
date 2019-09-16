@@ -2324,6 +2324,7 @@ $(window).bind('mousewheel DOMMouseScroll', function (event) {
 
 //random
 function write(str, x, y) {
+	if (str === undefined) return;
 	if (str.length > textIn) ctx.fillText(str.substring(0, textIn), x, y);
 	else ctx.fillText(str, x, y);
 }
