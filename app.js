@@ -557,6 +557,20 @@ function update() {
 	}
 
 	for (var y = 0; y < mapSz; y++) for (var x = 0; x < mapSz; x++) {
+
+		var gameState = {
+			vorts : new Array(),
+			players : new Array(),
+			mines : new Array(),
+			packs : new Array(),
+			beams :  new Array(),
+			blasts :  new Array(),
+			asteroids :  new Array(),
+			orbs : new Array(),
+			missiles : new Array(),
+			base : undefined
+		}
+
 		for (var i in vorts[y][x]) {
 			var vort = vorts[y][x][i];
 			var pack = vortPack[y][x][i];
@@ -584,7 +598,7 @@ function update() {
 
 			if (!need_update) continue;
 
-			sendAllSector('vort_update', {delta: delta, id: i}, x, y);
+			gameState.vorts.push({delta: delta, id: i});
 		}
 
 		for (var i in players[y][x]) {
@@ -624,7 +638,7 @@ function update() {
 
 			if (!need_update) continue;
 
-			sendAllSector('player_update', {delta: delta, id: i}, x, y);
+			gameState.players.push({delta: delta, id: i});
 		}
 
 		for (var i in bullets[y][x]) bullets[y][x][i].tick();
@@ -655,7 +669,7 @@ function update() {
 			}
 
 			if (!need_update) continue;
-			sendAllSector('mine_update', {delta: delta, id: i}, x, y);
+			gameState.mines.push({delta: delta, id: i});
 		}
 
 		planets[y][x].tick();
@@ -690,7 +704,7 @@ function update() {
 				}
 
 				if (!need_update) continue;
-				sendAllSector('pack_update', {delta: delta, id: i}, x, y);
+				gameState.packs.push({delta: delta, id: i});
 			}
 		}
 
@@ -743,7 +757,7 @@ function update() {
 			}
 
 			if (!need_update) continue;
-			sendAllSector('beam_update', {delta : delta, id : i}, x, y);
+			gameState.beams.push({delta : delta, id : i});
 		}
 
 		for (var i in blasts[y][x]) {
@@ -772,7 +786,7 @@ function update() {
 			}
 
 			if (!need_update) continue;
-			sendAllSector('blast_update', { delta: delta, id : i}, x, y);
+			gameState.blasts.push({ delta: delta, id : i});
 		}
 
 		var rbNow = rb;//important to calculate here, otherwise bots weighted on left.
@@ -804,7 +818,7 @@ function update() {
 			}
 
 			if (need_update) {
-				sendAllSector('base_update', {delta: delta, id: i}, x, y);
+				gameState.base = {delta: delta, id: i};
 			}
 		} else {
 			basePack[y][x] = 0;
@@ -835,7 +849,7 @@ function update() {
 
 			if (!need_update) continue;
 
-			sendAllSector('asteroid_update', {delta: delta, id: i}, x, y);
+			gameState.asteroids.push({delta: delta, id: i});
 		}
 
 		for (var j in orbs[y][x]) {
@@ -865,7 +879,7 @@ function update() {
 
 			if (!need_update) continue;
 			
-			sendAllSector('orb_update', {delta: delta, id: j}, x, y);
+			gameState.orbs.push({delta: delta, id: j});
 
 			if (tick % 5 == 0 && orb.locked == 0) {
 				var locked = 0;
@@ -922,7 +936,7 @@ function update() {
 
 			if (!need_update) continue;
 
-			sendAllSector('missile_update', {delta: delta, id: j}, x, y);
+			gameState.missiles.push({delta: delta, id: j});
 
 			if (tick % 5 == 0 && missile.locked == 0) {
 				var locked = 0;
@@ -1043,17 +1057,6 @@ function update() {
 				send(i, 'online', { lag: lag, bp: bp, rp: rp, bg: bg, rg: rg, bb: bb, rb: rb });
 				send(i, 'you', { killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
 			}
-	//		console.log("Bases: " + bases[y][x]);
-	//		console.log('basePack: ' + basePack[y][x]);
-	//		console.log('basePack:' + basePack[player.sy][player.sx]);
-
-			for (var v in bases[y][x]) {
-		//		console.log(v + ":" + bases[y][x]);
-			}
-
-			for (var v in basePack[y][x]) {
-		//		console.log(v + ": " + basePack[y][x][v]);
-			}
 
 			//send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.reload,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 			//send(i, 'partialposUp', {cloaked: player.distance > 0, isLocked: player.isLocked, health:player.health;
@@ -1074,7 +1077,7 @@ function update() {
 			// drift 
 
 			// missing: cloaked, isLocked,planetTimer, sx, sy, charge:player.reload
-			send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, sx: x, sy: y, charge: player.reload, energy: player.energy });
+			send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, sx: x, sy: y, charge: player.reload, energy: player.energy, state: gameState });
 		}
 
 		// Clear

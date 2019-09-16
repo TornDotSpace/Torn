@@ -1221,14 +1221,9 @@ socket.on('posUp', function (data) {
 	scrx = -cosLow(data.angle) * data.speed;
 	scry = -sinLow(data.angle) * data.speed;
 	pangle = data.angle;
-	tick++;
 	shield = data.shield;
 	cloaked = data.cloaked;
 	if (docked) playAudio("sector", 1);
-	updateBooms();
-	updateNotes();
-	updateBullets();
-	updateTrails();
 	empTimer--;
 	gyroTimer--;
 	afkTimer--;
@@ -1258,6 +1253,48 @@ socket.on('update', function(data) {
 	charge = data.charge;
 	cloaked = data.cloaked;
 
+	var delta = data.state;
+	
+	for (var index = 0; index < delta.vorts.length; ++index) {
+		vort_update(delta.vorts[index]);
+	}
+
+	for (var index = 0; index < delta.players.length; ++index) {
+		player_update(delta.players[index]);
+	}
+
+	for (var index = 0; index < delta.mines.length; ++index) {
+		mine_update(delta.mines[index]);
+	}
+
+	for (var index = 0; index < delta.beams.length; ++index) {
+		beam_update(delta.beams[index]);
+	}
+
+	for (var index = 0; index < delta.blasts.length; ++index) {
+		blast_update(delta.blasts[index]);
+	}
+
+	for (var index = 0; index < delta.asteroids.length; ++index) {
+		asteroid_update(delta.asteroids[index]);
+	}
+
+	for (var index = 0; index < delta.missiles.length; ++index) {
+		missile_update(delta.missiles[index]);
+	}
+
+	for (var index = 0; index < delta.packs.length; ++index) {
+		pack_update(delta.packs[index]);
+	}
+
+	for (var index = 0; index < delta.orbs.length; ++index) {
+		orb_update(delta.orbs[index]);
+	}
+
+	if (delta.base === undefined) {
+		base_update(delta.base);
+	}
+
 	planetTimerSec = data.planetTimer / 25;
 
 	updateBooms();
@@ -1274,7 +1311,7 @@ socket.on('player_create', function(data) {
 	playersInfo[data.id] = data;
 });
 
-socket.on('player_update', function(data) {
+function player_update(data) {
 	var id = data.id;
 	var delta = data.delta;
 	// We just changed sectors or are just loading in 
@@ -1293,7 +1330,7 @@ socket.on('player_update', function(data) {
 		scry = -sinLow(pangle) * playersInfo[id].speed;
 
 	}
-});
+}
 
 socket.on('player_delete', function(data) {
 	delete playersInfo[data];
@@ -1303,7 +1340,7 @@ socket.on('vort_create', function(data) {
 	vortsInfo[data.id] = data.pack;
 });
 
-socket.on('vort_update', function(data) {
+function vort_update(data) {
 	var id = data.id;
 	// We just changed sectors or are just loading in 
 	if (vortsInfo[id] === undefined) return;
@@ -1312,7 +1349,7 @@ socket.on('vort_update', function(data) {
 	for (var d in delta) {
 		vortsInfo[id][d] = delta[d];
 	}
-});
+}
 
 socket.on('vort_delete', function (data) {
 	delete vortsInfo[data];
@@ -1322,7 +1359,7 @@ socket.on('mine_create', function (data) {
 	minesInfo[data.id] = data.pack;
 });
 
-socket.on('mine_update', function (data) {
+function mine_update(data) {
 	var id = data.id;
 	// We just changed sectors or are just loading in 
 	if (minesInfo[id] === undefined) return;
@@ -1332,7 +1369,7 @@ socket.on('mine_update', function (data) {
 	for (var d in delta) {
 		minesInfo[id][d] = delta[d];
 	}
-});
+}
 
 socket.on('mine_delete', function (data) {
 	delete minesInfo[data];
@@ -1342,7 +1379,7 @@ socket.on('pack_create', function (data) {
 	packsInfo[data.id] = data.pack;
 });
 
-socket.on('pack_update', function (data) {
+function pack_update(data) {
 	var id = data.id;
 	// We just changed sectors or are just loading in 
 	if (packsInfo[id] === undefined) return;
@@ -1352,7 +1389,7 @@ socket.on('pack_update', function (data) {
 	for (var d in delta) {
 		packsInfo[id][d] = delta[d];
 	}
-});
+}
 
 socket.on('pack_delete', function (data) {
 	delete packsInfo[data];
@@ -1362,7 +1399,7 @@ socket.on('beam_create', function (data) {
 	beamsInfo[data.id] = data.pack;
 });
 
-socket.on('beam_update', function (data) {
+function beam_update(data) {
 	var id = data.id;
 	// We just changed sectors or are just loading in 
 	if (beamsInfo[id] === undefined) return;
@@ -1372,7 +1409,7 @@ socket.on('beam_update', function (data) {
 	for (var d in delta) {
 		beamsInfo[id][d] = delta[d];
 	}
-});
+}
 
 socket.on('beam_delete', function (data) {
 	delete beamsInfo[data];
@@ -1382,7 +1419,7 @@ socket.on('blast_create', function (data) {
 	blastsInfo[data.id] = data.pack;
 });
 
-socket.on('blast_update', function (delta) {
+function blast_update(delta) {
 	var id = delta.id;
 	// We just changed sectors or are just loading in 
 	if (blastsInfo[id] === undefined) return;
@@ -1392,7 +1429,7 @@ socket.on('blast_update', function (delta) {
 	for (var d in delta) {
 		blastsInfo[id][d] = delta[d];
 	}
-});
+}
 
 socket.on('blast_delete', function (data) {
 	delete blastsInfo[data];
@@ -1402,7 +1439,7 @@ socket.on('base_create', function (data) {
 	basesInfo = data.pack;
 });
 
-socket.on('base_update', function (data) {
+function base_update(data) {
 	var delta = data.delta;
 
 	// We just changed sectors or are just loading in 
@@ -1411,13 +1448,13 @@ socket.on('base_update', function (data) {
 	for (var d in delta) {
 		basesInfo[d] = delta[d];
 	}
-});
+}
 
 socket.on('asteroid_create', function (data) {
 	astsInfo[data.id] = data;
 });
 
-socket.on('asteroid_update', function (data) {
+function asteroid_update (data) {
 	var id = data.id;
 
 	// We just changed sectors or are just loading in 
@@ -1427,7 +1464,7 @@ socket.on('asteroid_update', function (data) {
 	for (var d in delta) {
 		astsInfo[id][d] = delta[d];
 	}
-});
+}
 
 socket.on('asteroid_delete', function (data) {
 	delete astsInfo[data];
@@ -1437,7 +1474,7 @@ socket.on('orb_create', function (data) {
 	orbsInfo[data.id] = data.pack;
 });
 
-socket.on('orb_update', function (data) {
+function orb_update (data) {
 	var id = data.id;
 	// We just changed sectors or are just loading in 
 	if (orbsInfo[id] === undefined) return;
@@ -1446,7 +1483,7 @@ socket.on('orb_update', function (data) {
 	for (var d in delta) {
 		orbsInfo[id][d] = delta[d];
 	}
-});
+}
 
 socket.on('orb_delete', function (data) {
 	delete orbsInfo[data];
@@ -1456,7 +1493,7 @@ socket.on('missile_create', function (data) {
 	missilesInfo[data.id] = data.pack;
 });
 
-socket.on('missile_update', function (data) {
+function missile_update (data) {
 	var id = data.id;
 	// We just changed sectors or are just loading in 
 	if (missilesInfo[id] === undefined) return;
@@ -1466,7 +1503,7 @@ socket.on('missile_update', function (data) {
 	for (var d in delta) {
 		missilesInfo[id][d] = delta[d];
 	}
-});
+}
 
 socket.on('missile_delete', function (data) {
 	delete missilesInfo[data];
