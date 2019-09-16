@@ -411,9 +411,7 @@ function loadAllImages() {
 }
 
 var achs = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
-var latestAchs = [-1, -1, -1, -1];
-var latestAchTimer = [-1, -1, -1, -1];
-
+var bigNotes = [-1, -1, -1, -1];
 
 function roll(v) {
 	for (var i in dots) {
@@ -615,7 +613,6 @@ function render() {
 	if (self.quests != 0) rCurrQuest();
 	rRaid();
 	rWeapons();//fast
-	rAchNotes();
 	rEMP();
 
 	var time7 = -performance.now();
@@ -644,6 +641,7 @@ function render() {
 	if (isLocked) currAlert = mEng[132];
 	if (currAlert !== '') rAlert();
 	currAlert = '';
+	rBigNotes();
 
 	d = new Date();
 	var cTime = d.getTime();
@@ -652,7 +650,6 @@ function render() {
 	var arr = [time0, time1, time2, time3, time4, time5, time6, time7, time8, time9, timeA];
 	lagMath(arr);
 	rTexts(clientLag);
-	if (autopilot) rAutopilot();
 	ops--;
 }
 
@@ -1137,9 +1134,8 @@ function rBaseGui() {
 	ctx.fillStyle = 'yellow';
 	var info = {};
 	info[0] = mEng[3] + getSectorName(sx, sy);
-	info[1] = mEng[4] + getDanger();
-	info[2] = mEng[5] + Math.floor(money);
-	for (var i = 0; i < 3; i++) write(info[i], w - (guest ? 16 : 278), 16 + i * 16);
+	info[1] = mEng[5] + Math.floor(money);
+	for (var i = 0; i < 2; i++) write(info[i], w - (guest ? 16 : 278), 16 + i * 16);
 
 	ctx.font = '11px Nasa';
 	ctx.lineWidth = 2;
@@ -1165,10 +1161,11 @@ function rBaseGui() {
 		write(tabs[i], rx + (i * 128 + 64), ry + 23);
 
 	ctx.fillStyle = 'yellow';
-	ctx.textAlign = "left";
+	ctx.textAlign = "right";
 	ctx.font = "18px Nasa";
-	write(mEng[78], rx + 16, ry - 16);
+	write(mEng[78], rx + 768 - 16, ry + 512 + 24);
 	ctx.font = "11px Nasa";
+	ctx.textAlign = "left";
 	//ctx.drawImage(Img.baseOutline, rx - 4, ry - 4);
 }
 function wrapText(text, x, y, maxWidth, lineHeight) {
@@ -1516,7 +1513,6 @@ function rInBase() {
 	rStars();
 	rChat();
 	rBaseGui();
-	rAchNotes();
 	if (tab != -1) ReactRoot.turnOffRegister("LoginOverlay");
 	switch (tab) {
 		case 0:
@@ -1555,6 +1551,7 @@ function rInBase() {
 	rRaid();
 	updateBullets();
 	rTut();
+	rBigNotes();
 }
 socket.on('chat', function (data) {
 	_chat(data);
@@ -1765,30 +1762,43 @@ socket.on('quests', function (data) {
 });
 socket.on('quest', function (data) {
 	quest = data.quest;
+	if(quest == 0) addBigNote([256,"Quest Complete!","",""]);
 });
 socket.on('achievementsKill', function (data) {
-	for (var a in data.achs)
+	for (var a in data.achs){
 		a = Number(a);
-	if (achs[a] != data.achs[a])
-		ach(a, data.note);
+		if (achs[a] != data.achs[a]){
+			achs[a] = data.achs[a];
+			if(data.note) addBigNote([256,"Achievement Get!",jsn.achNames[a].split(":")[0],jsn.achNames[a].split(":")[1]]);
+		}
+	}
 });
 socket.on('achievementsCash', function (data) {
-	for (var a in data.achs)
+	for (var a in data.achs){
 		a = Number(a);
-	if (achs[a + 13] != data.achs[a])
-		ach(a + 13, data.note);
+		if (achs[a + 13] != data.achs[a]){
+			achs[a + 13] = data.achs[a];
+			if(data.note) addBigNote([256,"Achievement Get!",jsn.achNames[a+13].split(":")[0],jsn.achNames[a+13].split(":")[1]]);
+		}
+	}
 });
 socket.on('achievementsDrift', function (data) {
-	for (var a in data.achs)
+	for (var a in data.achs){
 		a = Number(a);
-	if (achs[a + 25] != data.achs[a])
-		ach(a + 25, data.note);
+		if (achs[a + 25] != data.achs[a]){
+			achs[a + 25] = data.achs[a];
+			if(data.note) addBigNote([256,"Achievement Get!",jsn.achNames[a+25].split(":")[0],jsn.achNames[a+25].split(":")[1]]);
+		}
+	}
 });
 socket.on('achievementsMisc', function (data) {
-	for (var a in data.achs)
-		a = Number(a)
-	if (achs[a + 37] != data.achs[a])
-		ach(a + 37, data.note);
+	for (var a in data.achs){
+		a = Number(a);
+		if (achs[a + 37] != data.achs[a]){
+			achs[a + 37] = data.achs[a];
+			if(data.note) addBigNote([256,"Achievement Get!",jsn.achNames[a+37].split(":")[0],jsn.achNames[a+37].split(":")[1]]);
+		}
+	}
 });
 socket.on('status', function (data) {
 	shipView = ship;
@@ -2011,8 +2021,7 @@ document.onkeydown = function (event) {
 			typing = false;
 		}
 	}
-	else if (autopilot)
-		return;
+	else if (autopilot) return;
 	else {
 		if (event.keyCode == 13) {
 			ReactRoot.focusChat();
@@ -2099,6 +2108,7 @@ document.onkeydown = function (event) {
 document.onkeyup = function (event) {
 	if (!typing && event.keyCode === 80 && !docked) {
 		autopilot ^= true;
+		addBigNote([256,"Autopilot "+(autopilot?"E":"Dise")+"ngaged!", "Press P to toggle.", ""]);
 		return;
 	} else if (autopilot)
 		return;
@@ -2314,10 +2324,8 @@ $(window).bind('mousewheel DOMMouseScroll', function (event) {
 
 //random
 function write(str, x, y) {
-	if (str.length > textIn)
-		ctx.fillText(str.substring(0, textIn), x, y);
-	else
-		ctx.fillText(str, x, y);
+	if (str.length > textIn) ctx.fillText(str.substring(0, textIn), x, y);
+	else ctx.fillText(str, x, y);
 }
 
 function getMousePos(canvas, evt) {
@@ -2326,14 +2334,6 @@ function getMousePos(canvas, evt) {
 		x: evt.clientX - rect.left,
 		y: evt.clientY - rect.top
 	};
-}
-function getDanger() {
-	if (sx == Math.floor(mapSz / 2) && sy == Math.floor(mapSz / 2))
-		return 1;
-	var secRed = ((sx + sy) / 12);
-	var enemiesRed = Math.atan(bs - rs) / Math.PI + .5;
-	var totalRed = Math.floor((secRed + enemiesRed) * 16 / 2) / 16;
-	return (pc == 'red' ? totalRed : (1 - totalRed));
 }
 function cube(x) {
 	return x * x * x;
@@ -2396,17 +2396,13 @@ function lagMath(arr) {
 	for (var i = 0; i < arr.length; i++)
 		lagArr[i] = (lagArr[i] + arr[i] / 20) / 1.05;
 }
-function ach(achNo, note) {
-	achs[achNo] = true;
-	if (!note || tick < 10) return;
-
-	//set i to the least empty index of latestAchs
+function addBigNote(note) {
+	//set i to the least empty index of bigNotes
 	var i = 0;
-	for (i; i<4; i++) if(latestAchs[i] == -1) return;
+	for (i; i<4; i++) if(bigNotes[i] == -1) break;
 
 	//and use that index for queue
-	latestAchTimer[i] = 256;
-	latestAchs[i] = achNo;
+	bigNotes[i] = note;
 }
 function bgPos(x, px, scrx, i, tileSize) {
 	return ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
@@ -2729,33 +2725,31 @@ function rTexts(lag, arr) {
 
 	info[0] = mEng[149] + Math.round(experience);
 	info[1] = mEng[5] + Math.floor(money);
-	info[2] = mEng[4] + getDanger();
-	info[3] = mEng[3] + getSectorName(sx, sy);
-	info[4] = mEng[6] + kills;
-	info[5] = mEng[147] + ore;
-	info[6] = mEng[148] + rank;
-	info[7] = '';
-	info[8] = isChrome ? "" : mEng[81];
-	info[9] = isChrome ? "" : mEng[82];
-	info[10] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
-	info[11] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
-	info[12] = mEng[85] + Number((nLag / 40.).toPrecision(3)) + mEng[193] + mEng[194] + Number((meanNLag / 40.).toPrecision(3)) + mEng[193] + ")";
-	info[13] = mEng[86] + fps;
-	info[14] = mEng[87] + ups;
+	info[2] = mEng[6] + kills;
+	info[3] = mEng[147] + ore;
+	info[4] = mEng[148] + rank;
+	info[5] = '';
+	info[6] = isChrome ? "" : mEng[81];
+	info[7] = isChrome ? "" : mEng[82];
+	info[8] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
+	info[9] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
+	info[10] = mEng[85] + Number((nLag / 40.).toPrecision(3)) + mEng[193] + mEng[194] + Number((meanNLag / 40.).toPrecision(3)) + mEng[193] + ")";
+	info[11] = mEng[86] + fps;
+	info[12] = mEng[87] + ups;
 	if (lag > 50) {
-		info[7] = mEng[88];
-		info[8] = mEng[89];
-		info[9] = "";
+		info[5] = mEng[88];
+		info[6] = mEng[89];
+		info[7] = "";
 	}
 	else if (nLag > 100) {
-		info[7] = mEng[90];
-		info[8] = mEng[91];
-		info[9] = mEng[92];
+		info[5] = mEng[90];
+		info[6] = mEng[91];
+		info[7] = mEng[92];
 	}
 	else if (sLag > 50) {
-		info[7] = mEng[95];
-		info[8] = mEng[92]
-		info[9] = "";
+		info[5] = mEng[95];
+		info[6] = mEng[92]
+		info[7] = "";
 	}
 	for (var i = 0; i < (dev ? 15 + lagArr.length : 10); i++)
 		write(i < 15 ? info[i] : (lagNames[i - 15] + mEng[195] + parseFloat(Math.round(lagArr[i - 15] * 100) / 100).toFixed(2)), w - lbShift - 32, 64 + i * 16);
@@ -3333,49 +3327,35 @@ function rRaid() {
 	} else if (docked && minutes > 5) write(mEng[202] + (minutes - 10) + ":" + seconds, w / 2, h - 120);
 	ctx.restore();
 }
-function rAchNotes() {
-	if (latestAchTimer[0]-- < 0){
-		for(var i = 0; i < 3; i++){
-			latestAchs[i] = latestAchs[i+1]; // shift array down
-			latestAchTimer[i] = latestAchTimer[i+1];
-		}
-		latestAchs[3] = latestAchTimer[3] = -1;
+function rBigNotes() {
+	if(bigNotes[0] === -1) return;
+	if(bigNotes[0][0]-- < 0) {
+		for(var i = 0; i < 3; i++) bigNotes[i] = bigNotes[i+1]; // shift array down
+		bigNotes[3] = -1;
+		return;
 	}
+	
+	var t = bigNotes[0][0];
 
-	if (latestAchs[0] >= 0) {
-		var t = latestAchTimer[0];
+	//darken background
+	ctx.fillStyle = "black";
+	ctx.globalAlpha = .8/(1+Math.exp(square(128-t)/5000));
+	ctx.fillRect(0,0,w,h);
 
-		//darken background
-		ctx.fillStyle = "black";
-		ctx.globalAlpha = .8/(1+Math.exp(square(128-t)/5000));
-		ctx.fillRect(0,0,w,h);
+	//text
+	ctx.textAlign = "center";
+	ctx.fillStyle = "cyan";
+	var x = w/2+(cube(t-128)+10*(t-128))/1500;
 
-		//text
-		ctx.textAlign = "center";
-		if (latestAchs[i] < 13) ctx.fillStyle = "red";
-		else if (latestAchs[i] < 25) ctx.fillStyle = "gold";
-		else if (latestAchs[i] < 37) ctx.fillStyle = "lightgray";
-		else ctx.fillStyle = "cyan";
-		var x = w/2+(cube(t-128)+10*(t-128))/1500;
-
-		ctx.globalAlpha = .7;
-		ctx.font = "48px Nasa";
-		write("Achievement Get!", x, h/2 - 64);
-		ctx.font = "36px Nasa";
-		write(jsn.achNames[latestAchs[0]].split(":")[0], x, h/2);
-		ctx.font = "24px Nasa";
-		write(jsn.achNames[latestAchs[0]].split(":")[1], x, h/2+64);
-		ctx.globalAlpha = 1;
-	}
-}
-function rAutopilot() {
-	ctx.fillStyle = 'yellow';
-	ctx.textAlign = 'center';
-	ctx.font = '40px Nasa';
-	write(mEng[204], rx + 128 * 3, ry + 192);
-	write(mEng[205], rx + 128 * 3, ry + 320);
-	ctx.textAlign = 'left';
-	ctx.font = '11px Nasa';
+	ctx.globalAlpha = .7;
+	ctx.font = "48px Nasa";
+	write(bigNotes[0][1], x, h/2 - 64);
+	ctx.font = "36px Nasa";
+	write(bigNotes[0][2], x, h/2);
+	ctx.font = "24px Nasa";
+	write(bigNotes[0][3], x, h/2+64);
+	ctx.globalAlpha = 1;
+	ctx.font = "12px Nasa";
 }
 function rKillStreak() {
 	if (killStreakTimer < 0 || killStreak < 1) return;
