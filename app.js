@@ -818,7 +818,7 @@ function update() {
 			}
 
 			if (need_update) {
-				gameState.base = {delta: delta, id: i};
+				gameState.base = {delta: delta};
 			}
 		} else {
 			basePack[y][x] = 0;
