@@ -82,7 +82,7 @@ module.exports = function initNetcode() {
     var io = socketio(server, {
         serveClient: false,
         origins: "*:*",
-        wsEngine: "uws"
+        wsEngine: Config.getValue("ws-engine", "ws")
     });
 
     io.sockets.on('connection', function (socket) {
