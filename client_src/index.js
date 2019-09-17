@@ -1762,8 +1762,8 @@ socket.on('quests', function (data) {
 	quests = data.quests;
 });
 socket.on('quest', function (data) {
+	if(quest != 0 && data.quest == 0) addBigNote([256,"Quest Complete!","",""]);
 	quest = data.quest;
-	if(quest == 0) addBigNote([256,"Quest Complete!","",""]);
 });
 socket.on('achievementsKill', function (data) {
 	for (var a in data.achs){
@@ -3804,7 +3804,7 @@ function rBases() {
 		if (basesInfo.isBase) {
 			ctx.save();
 			ctx.translate(rendX, rendY);
-			ctx.rotate(basesInfo.spinAngle * 2 + Math.PI / 2);
+			ctx.rotate(tick/1000 + Math.PI / 2);
 			ctx.drawImage(basesInfo.color == "red" ? Img.astUnderlayRed : Img.astUnderlay, -512, -512, 1024, 1024);
 			ctx.drawImage(image, -384, -384, 768, 768);
 			ctx.restore();

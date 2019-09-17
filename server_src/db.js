@@ -83,58 +83,58 @@ global.loadPlayerData = async function (player, passwordHash) {
             player.maxHealth2 = Math.max(1, parseFloat(fileData[29]));
             player.energy2 = parseFloat(fileData[84]);
             if (!(player.energy2 > 0)) player.energy2 = 1; //test undefined
-            player.kill1 = parseBoolean(fileData[30]);
-            player.kill10 = parseBoolean(fileData[31]);
-            player.kill100 = parseBoolean(fileData[32]);
-            player.kill1k = parseBoolean(fileData[33]);
-            player.kill10k = parseBoolean(fileData[34]);
-            player.kill50k = parseBoolean(fileData[35]);
-            player.kill1m = parseBoolean(fileData[36]);
-            player.killBase = parseBoolean(fileData[37]);
-            player.kill100Bases = parseBoolean(fileData[38]);
-            player.killFriend = parseBoolean(fileData[39]);
-            player.killCourier = parseBoolean(fileData[40]);
-            player.suicide = parseBoolean(fileData[41]);
+            player.killsAchs[0] = parseBoolean(fileData[30]);
+            player.killsAchs[1] = parseBoolean(fileData[31]);
+            player.killsAchs[2] = parseBoolean(fileData[32]);
+            player.killsAchs[3] = parseBoolean(fileData[33]);
+            player.killsAchs[4] = parseBoolean(fileData[34]);
+            player.killsAchs[5] = parseBoolean(fileData[35]);
+            player.killsAchs[6] = parseBoolean(fileData[36]);
+            player.killsAchs[7] = parseBoolean(fileData[37]);
+            player.killsAchs[8] = parseBoolean(fileData[38]);
+            player.killsAchs[9] = parseBoolean(fileData[39]);
+            player.killsAchs[10] = parseBoolean(fileData[40]);
+            player.killsAchs[11] = parseBoolean(fileData[41]);
             player.baseKills = parseFloat(fileData[42]);
             player.oresMined = parseFloat(fileData[43]);
-            player.mined = parseBoolean(fileData[44]);
-            player.allOres = parseBoolean(fileData[45]);
-            player.mined3k = parseBoolean(fileData[46]);
-            player.mined15k = parseBoolean(fileData[47]);
-            player.total100k = parseBoolean(fileData[48]);
-            player.total1m = parseBoolean(fileData[49]);
-            player.total100m = parseBoolean(fileData[50]);
-            player.total1b = parseBoolean(fileData[51]);
-            player.packageTaken = parseBoolean(fileData[52]);
-            player.quested = parseBoolean(fileData[53]);
-            player.allQuests = parseBoolean(fileData[54]);
-            player.goldTrail = parseBoolean(fileData[55]);
+            player.moneyAchs[0] = parseBoolean(fileData[44]);
+            player.moneyAchs[1] = parseBoolean(fileData[45]);
+            player.moneyAchs[2] = parseBoolean(fileData[46]);
+            player.moneyAchs[3] = parseBoolean(fileData[47]);
+            player.moneyAchs[4] = parseBoolean(fileData[48]);
+            player.moneyAchs[5] = parseBoolean(fileData[49]);
+            player.moneyAchs[6] = parseBoolean(fileData[50]);
+            player.moneyAchs[7] = parseBoolean(fileData[51]);
+            player.moneyAchs[8] = parseBoolean(fileData[52]);
+            player.moneyAchs[9] = parseBoolean(fileData[53]);
+            player.moneyAchs[10] = parseBoolean(fileData[54]);
+            player.moneyAchs[11] = parseBoolean(fileData[55]);
             player.questsDone = parseFloat(fileData[56]);
             player.driftTimer = parseFloat(fileData[57]);
-            player.dr0 = parseBoolean(fileData[58]);
-            player.dr1 = parseBoolean(fileData[59]);
-            player.dr2 = parseBoolean(fileData[60]);
-            player.dr3 = parseBoolean(fileData[61]);
-            player.dr4 = parseBoolean(fileData[62]);
-            player.dr5 = parseBoolean(fileData[63]);
-            player.dr6 = parseBoolean(fileData[64]);
-            player.dr7 = parseBoolean(fileData[65]);
-            player.dr8 = parseBoolean(fileData[66]);
-            player.dr9 = parseBoolean(fileData[67]);
-            player.dr10 = parseBoolean(fileData[68]);
-            player.dr11 = parseBoolean(fileData[69]);
+            player.driftAchs[0] = parseBoolean(fileData[58]);
+            player.driftAchs[1] = parseBoolean(fileData[59]);
+            player.driftAchs[2] = parseBoolean(fileData[60]);
+            player.driftAchs[3] = parseBoolean(fileData[61]);
+            player.driftAchs[4] = parseBoolean(fileData[62]);
+            player.driftAchs[5] = parseBoolean(fileData[63]);
+            player.driftAchs[6] = parseBoolean(fileData[64]);
+            player.driftAchs[7] = parseBoolean(fileData[65]);
+            player.driftAchs[8] = parseBoolean(fileData[66]);
+            player.driftAchs[9] = parseBoolean(fileData[67]);
+            player.driftAchs[10] = parseBoolean(fileData[68]);
+            player.driftAchs[11] = parseBoolean(fileData[69]);
             player.cornersTouched = parseFloat(fileData[70]);
-            player.ms0 = parseBoolean(fileData[71]);
-            player.ms1 = parseBoolean(fileData[72]);
-            player.ms2 = parseBoolean(fileData[73]);
-            player.ms3 = parseBoolean(fileData[74]);
-            player.ms4 = parseBoolean(fileData[75]);
-            player.ms5 = parseBoolean(fileData[76]);
-            player.ms6 = parseBoolean(fileData[77]);
-            player.ms7 = parseBoolean(fileData[78]);
-            player.ms8 = parseBoolean(fileData[79]);
-            player.ms9 = parseBoolean(fileData[80]);
-            player.ms10 = parseBoolean(fileData[81]);
+            player.randmAchs[0] = parseBoolean(fileData[71]);
+            player.randmAchs[1] = parseBoolean(fileData[72]);
+            player.randmAchs[2] = parseBoolean(fileData[73]);
+            player.randmAchs[3] = parseBoolean(fileData[74]);
+            player.randmAchs[4] = parseBoolean(fileData[75]);
+            player.randmAchs[5] = parseBoolean(fileData[76]);
+            player.randmAchs[6] = parseBoolean(fileData[77]);
+            player.randmAchs[7] = parseBoolean(fileData[78]);
+            player.randmAchs[8] = parseBoolean(fileData[79]);
+            player.randmAchs[9] = parseBoolean(fileData[80]);
+            player.randmAchs[10] = parseBoolean(fileData[81]);
             player.lives = parseFloat(fileData[82]);
 
             // Last login support
@@ -174,10 +174,10 @@ global.savePlayerData = function (player) {
         var weapons = "";
         for (var i = 0; i < 9; i++) weapons += player.weapons[i] + ":";
         var str = player.color + ':' + player.ship + ':' + player.trail + ':' + weapons + /*no ":", see prev line*/ spawnX + ':' + spawnY + ':' + player.name + ':' + player.money + ':' + player.kills + ':' + player.planetsClaimed + ':' + player.iron + ':' + player.silver + ':' + player.platinum + ':' + player.aluminium + ':' + player.experience + ':' + player.rank + ':' + player.x + ':' + player.y + ':' + player.thrust2 + ':' + player.radar2 + ':' + player.capacity2 + ':' + player.maxHealth2 + ":";
-        str += player.kill1 + ":" + player.kill10 + ":" + player.kill100 + ":" + player.kill1k + ":" + player.kill10k + ":" + player.kill50k + ":" + player.kill1m + ":" + player.killBase + ":" + player.kill100Bases + ":" + player.killFriend + ":" + player.killCourier + ":" + player.suicide + ":" + player.baseKills + ":";
-        str += player.oresMined + ":" + player.mined + ":" + player.allOres + ":" + player.mined3k + ":" + player.mined15k + ":" + player.total100k + ":" + player.total1m + ":" + player.total100m + ":" + player.total1b + ":" + player.packageTaken + ":" + player.quested + ":" + player.allQuests + ":" + player.goldTrail + ":" + player.questsDone + ":";
-        str += player.driftTimer + ":" + player.dr0 + ":" + player.dr1 + ":" + player.dr2 + ":" + player.dr3 + ":" + player.dr4 + ":" + player.dr5 + ":" + player.dr6 + ":" + player.dr7 + ":" + player.dr8 + ":" + player.dr9 + ":" + player.dr10 + ":" + player.dr11 + ":";
-        str += player.cornersTouched + ":true:"/*ms0, acct made.*/ + player.ms1 + ":" + player.ms2 + ":" + player.ms3 + ":" + player.ms4 + ":" + player.ms5 + ":" + player.ms6 + ":" + player.ms7 + ":" + player.ms8 + ":" + player.ms9 + ":" + player.ms10 + ":" + player.lives + ":" + player.weapons[9] + ":" + player.energy2 + ":nodecay:";
+        str += player.killsAchs[0] + ":" + player.killsAchs[1] + ":" + player.killsAchs[2] + ":" + player.killsAchs[3] + ":" + player.killsAchs[4] + ":" + player.killsAchs[5] + ":" + player.killsAchs[6] + ":" + player.killsAchs[7] + ":" + player.killsAchs[8] + ":" + player.killsAchs[9] + ":" + player.killsAchs[10] + ":" + player.killsAchs[11] + ":" + player.baseKills + ":";
+        str += player.oresMined + ":" + player.moneyAchs[0] + ":" + player.moneyAchs[1] + ":" + player.moneyAchs[2] + ":" + player.moneyAchs[3] + ":" + player.moneyAchs[4] + ":" + player.moneyAchs[5] + ":" + player.moneyAchs[6] + ":" + player.moneyAchs[7] + ":" + player.moneyAchs[8] + ":" + player.moneyAchs[9] + ":" + player.moneyAchs[10] + ":" + player.moneyAchs[11] + ":" + player.questsDone + ":";
+        str += player.driftTimer + ":" + player.driftAchs[0] + ":" + player.driftAchs[1] + ":" + player.driftAchs[2] + ":" + player.driftAchs[3] + ":" + player.driftAchs[4] + ":" + player.driftAchs[5] + ":" + player.driftAchs[6] + ":" + player.driftAchs[7] + ":" + player.driftAchs[8] + ":" + player.driftAchs[9] + ":" + player.driftAchs[10] + ":" + player.driftAchs[11] + ":";
+        str += player.cornersTouched + ":true:"/*ms0, acct made.*/ + player.randmAchs[1] + ":" + player.randmAchs[2] + ":" + player.randmAchs[3] + ":" + player.randmAchs[4] + ":" + player.randmAchs[5] + ":" + player.randmAchs[6] + ":" + player.randmAchs[7] + ":" + player.randmAchs[8] + ":" + player.randmAchs[9] + ":" + player.randmAchs[10] + ":" + player.lives + ":" + player.weapons[9] + ":" + player.energy2 + ":nodecay:";
         str += new Date().getTime() + ":" + player.agility2; //reset timer
         fs.writeFileSync(source, str, { "encoding": 'utf8' });
         return;
@@ -223,65 +223,65 @@ global.savePlayerData = function (player) {
 
         trail: player.trail,
 
-        kill1: player.kill1,//First Blood
-        kill10: player.kill10,//Private
-        kill100: player.kill100,//Specialist
-        kill1k: player.kill1k,//Corporal
-        kill10k: player.kill10k,//Sergeant
-        kill50k: player.kill50k,//General
-        kill1m: player.kill1m,//Warlord
-        killBase: player.killBase,//Invader
-        kill100Bases: player.kill100Bases,//conqueror
-        killFriend: player.killFriend,//Double Agent
-        killCourier: player.killCourier,//Gone Postal
-        suicide: player.suicide,//kms
-        bloodTrail: player.bloodTrail,//Shinigami (scythe) XXX
+        kill1: player.killsAchs[0],
+        kill10: player.killsAchs[1],
+        kill100: player.killsAchs[2],
+        kill1k: player.killsAchs[3],
+        kill10k: player.killsAchs[4],
+        kill50k: player.killsAchs[5],
+        kill1m: player.killsAchs[6],
+        killBase: player.killsAchs[7],
+        kill100Bases: player.killsAchs[8],
+        killFriend: player.killsAchs[9],
+        killCourier: player.killsAchs[10],
+        suicide: player.killsAchs[11],
+        bloodTrail: player.killsAchs[12],
 
         oresMined: player.oresMined,
         questsDone: player.questsDone,
 
-        mined: player.mined,
-        allOres: player.allOres,
-        mined3k: player.mined3k,
-        mined15k: player.mined15k,
-        total100k: player.total100k,//High Rollin
-        total1m: player.total1m,//Millionaire
-        total100m: player.total100m,//That's a lot of digits
-        total1b: player.total1b,//Billionaire
-        packageTaken: player.packageTaken,//Freeloader
-        quested: player.quested,//Community Service
-        allQuests: player.allQuests,//Adventurer XXX
-        goldTrail: player.goldTrail,//Affluenza XXX
+        mined: player.moneyAchs[0],
+        allOres: player.moneyAchs[1],
+        mined3k: player.moneyAchs[2],
+        mined15k: player.moneyAchs[3],
+        total100k: player.moneyAchs[4],//High Rollin
+        total1m: player.moneyAchs[5],//Millionaire
+        total100m: player.moneyAchs[6],//That's a lot of digits
+        total1b: player.moneyAchs[7],//Billionaire
+        packageTaken: player.moneyAchs[8],//Freeloader
+        quested: player.moneyAchs[9],//Community Service
+        allQuests: player.moneyAchs[10],//Adventurer XXX
+        goldTrail: player.moneyAchs[11],//Affluenza XXX
 
         driftTimer: player.driftTimer,
 
-        dr0: player.dr0,//Shift To Drift
-        dr1: player.dr1,//Tofu Guy (1 min total)
-        dr2: player.dr2,//Paper Cup (10 min total)
-        dr3: player.dr3,//Takumi (1 hr total)
-        dr4: player.dr4,//Bunta (10 hr total)
-        dr5: player.dr5,//Turbodrift
-        dr6: player.dr6,//Hyperdrift
-        dr7: player.dr7,//Oversteer (Reverse drift)
-        dr8: player.dr8,//Inertia Drift (BH drift)
-        dr9: player.dr9,//Driftkill
-        dr10: player.dr10,//Spinout (Reverse Drift + turbo)
-        dr11: player.dr11,//Panda AE86 XXXxxxxxxxxxxxxxxxxxxxxxx
+        dr0: player.driftAchs[0],//Shift To Drift
+        dr1: player.driftAchs[1],//Tofu Guy (1 min total)
+        dr2: player.driftAchs[2],//Paper Cup (10 min total)
+        dr3: player.driftAchs[3],//Takumi (1 hr total)
+        dr4: player.driftAchs[4],//Bunta (10 hr total)
+        dr5: player.driftAchs[5],//Turbodrift
+        dr6: player.driftAchs[6],//Hyperdrift
+        dr7: player.driftAchs[7],//Oversteer (Reverse drift)
+        dr8: player.driftAchs[8],//Inertia Drift (BH drift)
+        dr9: player.driftAchs[9],//Driftkill
+        dr10: player.driftAchs[10],//Spinout (Reverse Drift + turbo)
+        dr11: player.driftAchs[11],//Panda AE86 XXXxxxxxxxxxxxxxxxxxxxxxx
 
         cornersTouched: player.cornersTouched,
         planetsClaimed: player.planetsClaimed,
 
-        ms0: player.ms0,//Go AFK
-        ms1: player.ms1,//Die
-        ms2: player.ms2,//Risky Business
-        ms3: player.ms3,//Sucked In
-        ms4: player.ms4,//Oops...
-        ms5: player.ms5,//Boing!
-        ms6: player.ms6,//Corner XXX
-        ms7: player.ms7,//4 Corners XXX
-        ms8: player.ms8,//Claim a planet
-        ms9: player.ms9,//Claim every planet XXX
-        ms10: player.ms10,//Random Trail XXX
+        ms0: player.randmAchs[0],//Go AFK
+        ms1: player.randmAchs[1],//Die
+        ms2: player.randmAchs[2],//Risky Business
+        ms3: player.randmAchs[3],//Sucked In
+        ms4: player.randmAchs[4],//Oops...
+        ms5: player.randmAchs[5],//Boing!
+        ms6: player.randmAchs[6],//Corner XXX
+        ms7: player.randmAchs[7],//4 Corners XXX
+        ms8: player.randmAchs[8],//Claim a planet
+        ms9: player.randmAchs[9],//Claim every planet XXX
+        ms10: player.randmAchs[10],//Random Trail XXX
 
         email: player.email // Player email for password resets, etc.
     };

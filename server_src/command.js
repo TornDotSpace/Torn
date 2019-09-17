@@ -47,7 +47,7 @@ cmds["/confirm"] = new Command("/confirm <newPassword>", PLAYER, function (playe
 });
 
 cmds["/changeteam"] = new Command("/changeteam", PLAYER, function (player, msg) {
-    player.socket.emit("chat", { msg: "Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type /confirmteam to continue." });
+    player.socket.emit("chat", { msg: "Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type /confirmteam to continue. Make sure you aren't near any players or bases on your current team." });
 });
 
 cmds["/confirmteam"] = new Command("/confirmteam", PLAYER, function (player, msg) {
