@@ -1,0 +1,14 @@
+{
+  "name": "uws",
+  "version": "1.0.0",
+  "description": "Engine.IO wrapper for cws",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@clusterws/cws": "^0.15.2"
+  }
+}

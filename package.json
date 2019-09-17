@@ -43,6 +43,7 @@
     "express": "^4.17.1",
     "howler": "^2.1.2",
     "mongodb": "^3.3.2",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "uws": "file:uws"
   }
 }

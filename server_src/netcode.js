@@ -81,21 +81,9 @@ module.exports = function initNetcode() {
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js    
     var io = socketio(server, {
         serveClient: false,
-        origins: "*:*"
+        origins: "*:*",
+        wsEngine: "uws"
     });
-
-    // Replace the websocket engine with cws
-    io.eio.ws.close();
-
-    const { WebSocketServer } = require('@clusterws/cws');
-    io.eio.ws = new WebSocketServer({
-        noDelay: true,
-        noServer: true,
-        clientTracking: false,
-        perMessageDeflate: io.eio.perMessageDeflate,
-        maxPayload: io.eio.maxHttpBufferSize
-    });  
-
 
     io.sockets.on('connection', function (socket) {
         var instance = false;
