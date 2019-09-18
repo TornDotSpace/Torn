@@ -141,7 +141,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 
 		//Or a player...
 		if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-			self.sendDeathMsg("~`" + b.color + "~`" + b.owner.name + "~`yellow~`'s ~`" + b.wepnID + "~`");
+			self.sendDeathMsg("~`" + b.color + "~`" + b.owner.name + "~`yellow~`'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
 			b.owner.spoils("experience", baseKillExp); // reward them
 			b.owner.spoils("money", baseKillMoney);
@@ -159,7 +159,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		if (!self.isBase) bases[self.sy][self.sx] = 0;
 	}
 	self.sendDeathMsg = function (killedBy) {
-		sendAll('chat', { msg: ("The " + (self.isBase ? "base" : "turret") + " at sector ~`" + col + "~`" + self.getSectorName() + "~`yellow~` was destroyed by" + killedBy + ".") });
+		sendAll('chat', { msg: ("The " + (self.isBase ? "base" : "turret") + " at sector ~`" + col + "~`" + self.getSectorName() + "~`yellow~` was destroyed by " + killedBy + ".") });
 	}
 	self.getSectorName = function () {
 		return String.fromCharCode(97 + sxx).toUpperCase() + "" + (syy + 1);

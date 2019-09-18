@@ -622,7 +622,6 @@ function Player(sock) {
 			self.spoils("money", self.quest.exp); // reward the player
 			self.spoils("experience", Math.floor(self.quest.exp / 4000));
 
-			noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
 			self.hasPackage = false;
 			if ((self.questsDone & 8) == 0) self.questsDone += 8;
 
@@ -897,7 +896,6 @@ function Player(sock) {
 			//reward them
 			self.spoils("money", self.quest.exp);
 			self.spoils("experience", Math.floor(self.quest.exp / 1500));
-			noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
 
 			self.quest = 0;
 			self.socket.emit('quest', { quest: self.quest }); // tell client quest is over
@@ -922,7 +920,6 @@ function Player(sock) {
 
 				self.spoils("money", self.quest.exp);//reward
 				self.spoils("experience", Math.floor(self.quest.exp / 1500));
-				noteLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
 
 				self.hasPackage = false;
 				self.quest = 0;
@@ -1350,6 +1347,8 @@ function Player(sock) {
 	}
 	self.dmg = function (d, origin) {
 
+		if(self.health < 0) return; //multi-kill bug
+
 		//reward nn bots for hurting other players
 		if (self.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net != 0) {
 			origin.owner.net.save(self.isNNBot ? self.net.id : Math.floor(Math.random()));
@@ -1573,8 +1572,9 @@ function Player(sock) {
 			var oldPosition = lbIndex(self.experience);
 			self.experience += amt;
 			var newPosition = lbIndex(self.experience);
+			//console.log(newPosition + " " + oldPosition);
 			if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
-				if (newPosition < 501) sendAll('chat', { msg: "~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!" });
+				if (newPosition < 251) sendAll('chat', { msg: "~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!" });
 				else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
 			}
 			self.updateRank();

@@ -1762,7 +1762,7 @@ socket.on('quests', function (data) {
 	quests = data.quests;
 });
 socket.on('quest', function (data) {
-	if(quest != 0 && data.quest == 0) addBigNote([256,"Quest Complete!","",""]);
+	if(quest != 0 && data.quest == 0 && !dead) addBigNote([256,"Quest Complete!","",""]);
 	quest = data.quest;
 });
 socket.on('achievementsKill', function (data) {
@@ -2461,7 +2461,7 @@ function updateTrails() {
 
 	for (var i in trails) {
 		var selfo = trails[i];
-		if (selfo.time++ >= 7) {
+		if (selfo.time++ >= 5) {
 			delete trails[i];
 			continue;
 		}
@@ -2480,10 +2480,10 @@ function updateTrails() {
 			particleCount *= Math.min(Math.abs(selfo.driftAngle - selfo.angle) * 8, 16)
 			if (trail > 15) particleCount /= 6;
 			else if (mod != 0) particleCount *= 2.5;
+			var cos = cosLow(selfo.angle);
+			var sin = sinLow(selfo.angle);
 			for (var j = 0; j < particleCount; j++) {
-				var rando = Math.random() * selfo.speed;
-				var cos = cosLow(selfo.driftAngle);
-				var sin = sinLow(selfo.driftAngle);
+				var rando = Math.random() * selfo.speed, rando2 = Math.random();
 				var col = (((96 + Math.floor(Math.random() * 64)) << 16) + ((96 + Math.floor(Math.random() * 128)) << 8) + 255 - Math.floor(Math.random() * 64)).toString(16);
 				if (mod == 1) col = (((192 + Math.floor(Math.random() * 64)) << 16) + (Math.floor(Math.random() * 64) << 8) + Math.floor(Math.random() * 92)).toString(16);
 				else if (mod == 2) {
@@ -2497,7 +2497,9 @@ function updateTrails() {
 					col = ((Math.floor(Math.cos(t) * 128 + 128) << 16) + (Math.floor(Math.cos(t + Math.PI * 2 / 3) * 128 + 128) << 8) + Math.floor(Math.cos(t + Math.PI * 4 / 3) * 128 + 128)).toString(16);
 				} else if (mod == 5) col = ((Math.floor(Math.cos(t) * 128 + 128) << 16) + (Math.floor(Math.cos(t + Math.PI * 2 / 3) * 128 + 128) << 8) + Math.floor(Math.cos(t + Math.PI * 4 / 3) * 128 + 128)).toString(16);
 				while (col.length < 6) col = "0" + col;
-				trails[Math.random()] = { vip: trail > 15, dx: cos * selfo.speed / 2, dy: sin * selfo.speed / 2, x: selfo.x + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cos * rando, y: selfo.y + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sin * rando, time: -1, color: col };
+				trails[Math.random()] = { vip: trail > 15, dx: cos * selfo.speed / 2, dy: sin * selfo.speed / 2,
+					x: selfo.x + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cos * rando,
+					y: selfo.y + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sin * rando, time: -1, color: col };
 			}
 		}
 		if (selfo.health / selfo.maxHealth < .4)
@@ -2684,7 +2686,7 @@ function rBooms() {
 function rTrails() {
 	for (var i in trails) {
 		var selfo = trails[i];
-		ctx.globalAlpha = (9 - selfo.time) / 9;
+		ctx.globalAlpha = (7 - selfo.time) / 7;
 		ctx.strokeStyle = ctx.fillStyle = "#" + selfo.color;
 		if (!selfo.vip) ctx.fillRect(selfo.x - 1 - px + w / 2 + scrx, selfo.y - 1 - py + scry + h / 2, 3, 3);
 		else drawStar(selfo.x - px + w / 2 + scrx, selfo.y - py + scry + h / 2, 5, 3, 8);
