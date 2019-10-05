@@ -234,7 +234,7 @@ function loadAudioEnd() {
 function loadAllAudio() {
 	loadAudio("minigun", '/aud/minigun.mp3');
 	loadAudio("boom2", '/aud/boom2.wav');
-	loadAudio("hyperspace", '/aud/hyperspace.wav');
+	loadAudio("hyperspace", '/aud/hyperspace.mp3');
 	loadAudio("bigboom", '/aud/bigboom.wav');
 	loadAudio("shot", '/aud/shot.mp3');
 	loadAudio("beam", '/aud/beam.wav');
@@ -1762,7 +1762,7 @@ socket.on('quests', function (data) {
 	quests = data.quests;
 });
 socket.on('quest', function (data) {
-	if(quest != 0 && data.quest == 0 && !dead) addBigNote([256,"Quest Complete!","",""]);
+	if(data.complete) addBigNote([256,"Quest Complete!","",""]);
 	quest = data.quest;
 });
 socket.on('achievementsKill', function (data) {
@@ -2435,6 +2435,8 @@ function rLoadingBar() {
 	ctx.font = "30px Nasa";
 	ctx.fillText(splash, w / 2, h / 2 - 96);
 	ctx.font = "15px Nasa";
+	if(Img_prgs[0] == Img_prgs[1]) ctx.fillText("All images loaded.", w / 2, h / 2 + 64);
+	if(Aud_prgs[0] == Aud_prgs[1]) ctx.fillText("All sounds loaded", w / 2, h / 2 + 80);
 	ctx.fillText(currLoading, w / 2, h / 2 + 96);
 }
 

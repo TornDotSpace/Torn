@@ -626,7 +626,7 @@ function Player(sock) {
 			if ((self.questsDone & 8) == 0) self.questsDone += 8;
 
 			self.quest = 0; // reset quest and tell the client
-			self.socket.emit('quest', { quest: self.quest });
+			self.socket.emit('quest', { quest: self.quest, complete: true});
 
 			if (!self.moneyAchs[9]) { // Questor
 				self.moneyAchs[9] = true;
@@ -640,7 +640,7 @@ function Player(sock) {
 
 		if (self.quest != 0 && self.quest.type === "Secret" && self.sx == self.quest.sx && self.sy == self.quest.sy) { // advance in secret quest to phase 2
 			self.quest = { type: "Secret2", exp: self.quest.exp, sx: self.quest.sx, sy: self.quest.sy };
-			self.socket.emit('quest', { quest: self.quest });
+			self.socket.emit('quest', { quest: self.quest, complete: false});
 		}
 
 		//tell client what's in this sector
@@ -851,7 +851,7 @@ function Player(sock) {
 			if (cleared) { // 2 ifs needed, don't merge this one with the last one
 				self.hasPackage = true;
 				self.quest = { type: "Secret3", exp: self.quest.exp };
-				self.socket.emit('quest', { quest: self.quest }); //notify client
+				self.socket.emit('quest', { quest: self.quest, complete:false}); //notify client
 			}
 		}
 
@@ -898,7 +898,7 @@ function Player(sock) {
 			self.spoils("experience", Math.floor(self.quest.exp / 1500));
 
 			self.quest = 0;
-			self.socket.emit('quest', { quest: self.quest }); // tell client quest is over
+			self.socket.emit('quest', { quest: self.quest, complete:true}); // tell client quest is over
 
 			if (!self.moneyAchs[9]) { // Questor
 				self.moneyAchs[9] = true;
@@ -923,7 +923,7 @@ function Player(sock) {
 
 				self.hasPackage = false;
 				self.quest = 0;
-				self.socket.emit('quest', { quest: self.quest }); // tell client it's over
+				self.socket.emit('quest', { quest: self.quest, complete:true}); // tell client it's over
 				if ((self.questsDone & 2) == 0) self.questsDone += 2;
 
 				if (!self.moneyAchs[9]) { // Questor
@@ -959,10 +959,9 @@ function Player(sock) {
 				// reward player
 				self.spoils("money", self.quest.exp);
 				self.spoils("experience", Math.floor(self.quest.exp / 4000));
-				strongLocal('Quest Completed!', self.x, self.y - 96, self.id); // variable width
 
 				self.quest = 0; //tell client it's done
-				self.socket.emit('quest', { quest: self.quest });
+				self.socket.emit('quest', { quest: self.quest, complete: true});
 				if ((self.questsDone & 4) == 0) self.questsDone += 4;
 
 				if (!self.moneyAchs[9]) { // Questor
@@ -1177,7 +1176,7 @@ function Player(sock) {
 
 				//clear quest
 				self.quest = 0;
-				self.socket.emit('quest', { quest: 0 });//reset quest and update client
+				self.socket.emit('quest', { quest: 0, complete: false});//reset quest and update client
 
 				if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
 					sendAll('chat', { msg: ("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + b.owner.name + "~`yellow~`'s `~" + b.wepnID + "`~!") });
