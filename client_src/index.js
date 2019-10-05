@@ -1433,7 +1433,7 @@ socket.on('blast_delete', function (data) {
 });
 
 socket.on('base_create', function (data) {
-	basesInfo = data.pack;
+	basesInfo = data;
 });
 
 function base_update(data) {
