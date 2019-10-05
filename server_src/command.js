@@ -131,6 +131,13 @@ cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server",
     }
 });
 
+cmds["/max"] = new Command("/max - Maxes out a player's stats for testing purposes", ADMIN, function (player, msg) {
+    player.rank = 20;
+    player.money = Number.MAX_SAFE_INTEGER;
+    player.experience = Number.MAX_SAFE_INTEGER;
+
+    send(player.id, "chat", {msg: "Max Mode Activated"});
+});
 
 // Compute help menu
 for (var x in PERM_TABLE) {
