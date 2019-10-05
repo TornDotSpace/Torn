@@ -142,7 +142,8 @@ function Player(sock) {
 		points: 0,
 
 		email: "",
-		permissionLevel: -1
+		permissionLevel: -1,
+		equipped = 0
 	}
 
 	self.tick = function () {
@@ -181,8 +182,6 @@ function Player(sock) {
 		if (self.c) self.shootEliteWeapon();
 		if (self.bulletQueue > 0) self.shootBullet(40); // SMG
 		var wepId = self.weapons[self.equipped];
-		// HACK: self.equipped is undefined before first base interaction(???). Alex!
-		wepId = (wepId === undefined) ? 0 : wepId;
 		var wep = wepns[wepId];
 
 		if (self.space && wepId >= 0 && self.reload < -.01 && self.energy > wep.energy) {
