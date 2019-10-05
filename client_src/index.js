@@ -1761,6 +1761,9 @@ socket.on('refresh', function (data) {
 socket.on('quests', function (data) {
 	quests = data.quests;
 });
+socket.on('rank', function (data) {
+	addBigNote([256,"Rank Up!","",""]);
+});
 socket.on('quest', function (data) {
 	if(data.complete) addBigNote([256,"Quest Complete!","",""]);
 	quest = data.quest;

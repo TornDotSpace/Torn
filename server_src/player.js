@@ -389,7 +389,8 @@ function Player(sock) {
 			self.vy *= mult;
 			self.energy -= energyTake;
 		}
-		if (self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250 && self.reload <= 0) { // Quarrier
+		if (self.ship == 17){//} && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250){// && self.reload > 50) { // Quarrier
+			console.log("aaa");
 			self.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
 			self.silver -= 250;
 			self.aluminium -= 250;
@@ -982,9 +983,7 @@ function Player(sock) {
 		var prerank = self.rank;
 		self.rank = 0;
 		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
-
-		//congratulations!
-		if (self.rank != prerank) strongLocal('Rank Up!', self.x, self.y - 64, self.id);
+		if (self.rank != prerank && self.rank > 1) self.socket.emit('rank', {}); //congratulations!
 	}
 	self.dock = function () {
 
