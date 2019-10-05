@@ -143,7 +143,7 @@ function Player(sock) {
 
 		email: "",
 		permissionLevel: -1,
-		equipped = 0
+		equipped: 0
 	}
 
 	self.tick = function () {

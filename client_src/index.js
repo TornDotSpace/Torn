@@ -2757,7 +2757,7 @@ function rTexts(lag, arr) {
 		info[6] = mEng[92]
 		info[7] = "";
 	}
-	for (var i = 0; i < (dev ? 15 + lagArr.length : 10); i++)
+	for (var i = 0; i < (dev ? 15 + lagArr.length : 5); i++)
 		write(i < 15 ? info[i] : (lagNames[i - 15] + mEng[195] + parseFloat(Math.round(lagArr[i - 15] * 100) / 100).toFixed(2)), w - lbShift - 32, 64 + i * 16);
 	if(!guest){
 		ctx.fillStyle = 'yellow';
