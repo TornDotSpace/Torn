@@ -78,7 +78,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 
 	}
 	self.die = function () {
-		sendAllSector('sound', { file: "boom2", x: self.x, y: self.y, dx: self.vx, dy: self.vy }, self.sx, self.sy);
+		sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: self.vx, dy: self.vy }, self.sx, self.sy);
 		delete missiles[self.sy][self.sx][self.id];
 	}
 	return self;

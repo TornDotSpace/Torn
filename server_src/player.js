@@ -72,7 +72,6 @@ function Player(sock) {
 
 		shield: false,
 		generators: 0,
-		energy: 100,
 		isLocked: false,
 		lives: 20,
 		quest: 0,
@@ -156,14 +155,10 @@ function Player(sock) {
 		self.disguise--;
 		var reloadVal = self.energy2 / 2 + .5; //reload speed scales with energy tech
 		for (var i = 0; i < self.generators; i++) reloadVal *= 1.06;
-		self.reload -= reloadVal;
+		self.reload = self.space?(self.reload+reloadVal):0;
 
 		var amDrifting = self.e || self.gyroTimer > 0;
-		self.shield = (self.s && !amDrifting && self.energy > 5 && self.gyroTimer < 1) || self.leaveBaseShield > 0;
-		if (self.shield && !(self.leaveBaseShield-- > 0)) {
-			self.energy -= 1.3;
-			if (self.energy < 5) self.s = false;
-		}
+		self.shield = (self.s && !amDrifting && self.gyroTimer < 1) || self.leaveBaseShield > 0;
 
 		if (!self.isBot) {
 			self.checkPlanetCollision();
@@ -172,9 +167,7 @@ function Player(sock) {
 		}
 
 		self.move();
-		self.energy += reloadVal * .35 * (self.superchargerTimer > 0 ? 2 : 1);
-		if (self.energy > 100) self.energy = 100;
-		if (self.health < self.maxHealth) self.health += playerHeal;
+		if (self.health < self.maxHealth && !self.shield) self.health += playerHeal;
 
 		self.fire();
 	}
@@ -184,11 +177,11 @@ function Player(sock) {
 		var wepId = self.weapons[self.equipped];
 		var wep = wepns[wepId];
 
-		if (self.space && wepId >= 0 && self.reload < -.01 && self.energy > wep.energy) {
+		if (self.space && wepId >= 0 && self.reload > wep.Charge) {
 
 			//In case of insufficient ammo
 			if (self.ammos[self.equipped] == 0) {
-				self.reload = Math.min(wep.Charge, 10);
+				self.reload = wep.Charge - 10;
 				self.socket.emit("sound", { file: "noammo", x: self.x, y: self.y });
 				return;
 			} else if (self.ammos[self.equipped] > 0) self.ammos[self.equipped]--;
@@ -198,7 +191,7 @@ function Player(sock) {
 				return;
 			}
 
-			if (wepId == 40 && self.bulletQueue == 0 && self.energy > wep.energy * 5) { // Submachinegun physics
+			if (wepId == 40 && self.bulletQueue == 0) { // Submachinegun physics
 				self.bulletQueue += 5;
 				self.ammos[self.equipped] -= 4; // 4 not 5 because the previous if did 1.
 				sendWeapons(self);
@@ -230,8 +223,7 @@ function Player(sock) {
 			//Timery Weapons
 
 			else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-				self.energy -= wep.energy;
-				self.reload = wep.Charge;
+				self.reload = 0;
 
 				//Supercharger
 				if (wepId == 36) self.superchargerTimer = 1500;//1 min
@@ -267,8 +259,7 @@ function Player(sock) {
 						p.updatePolars(); // We changed their rectangular velocity.
 					}
 				}
-				self.energy -= wep.energy;
-				self.reload = wep.Charge;
+				self.reload = 0;
 			}
 
 			//Electromagnet
@@ -295,8 +286,7 @@ function Player(sock) {
 						p.updatePolars();
 					}
 				}
-				self.energy -= wep.energy;
-				self.reload = wep.Charge;
+				self.reload = 0;
 			}
 
 
@@ -320,20 +310,13 @@ function Player(sock) {
 				b.owner = self.name;
 				bases[self.sy][self.sx] = b;
 				self.socket.emit("chat", { msg: 'You placed a turret! Coming soon, you will be able to name it.', color: 'yellow' });
-				self.reload = wep.Charge;
-				self.energy -= wep.energy;
+				self.reload = 0;
 			}
 
 			//Turbo
 			else if (wepId == 21) {
 				var isDrifting = (self.e || self.gyroTimer > 0) && (self.a != self.d);
 				var mult = isDrifting ? 1.025 : 1.017; // Faster when drifting.
-
-				var energyTake = wep.energy; // this structure lets the user still use turbo at limited capacity when they're out of energy.
-				if (self.energy < wep.energy * 2) {
-					mult = 1 + (mult - 1) * 3.5 / 8;
-					energyTake = .35;
-				}
 
 				self.speed *= mult;
 				self.vx *= mult;
@@ -348,8 +331,7 @@ function Player(sock) {
 					self.driftAchs[10] = true;
 					self.sendAchievementsDrift(true);
 				}
-				self.energy -= energyTake;
-				self.reload = wep.Charge;// TODO can we put these all at the bottom of fire()?
+				self.reload = 0;// TODO can we put these all at the bottom of fire()?
 			}
 
 			//Hyperdrive
@@ -361,8 +343,7 @@ function Player(sock) {
 					self.driftAchs[6] = true;
 					self.sendAchievementsDrift(true);
 				}
-				self.energy -= wep.energy;
-				self.reload = wep.Charge;
+				self.reload = 0;
 			}
 
 			//If we run out of ammo on a one-use weapon, delete that weapon.
@@ -377,17 +358,10 @@ function Player(sock) {
 	self.shootEliteWeapon = function () {
 		if (self.ship == 16) { // Elite Raider
 			//This effectively just shoots turbo.
-			self.reload -= wepns[21].Charge; // Turbo
 			var mult = ((self.e || self.gyroTimer > 0) && self.w && (self.a != self.d)) ? 1.025 : 1.017;
-			var energyTake = wepns[21].energy;
-			if (self.energy < wepns[21].energy * 2) {
-				mult = 1 + (mult - 1) * 5 / 8;
-				energyTake = .35;
-			}
 			self.speed *= mult;
 			self.vx *= mult;
 			self.vy *= mult;
-			self.energy -= energyTake;
 		}
 		if (self.ship == 17){//} && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250){// && self.reload > 50) { // Quarrier
 			console.log("aaa");
@@ -402,9 +376,9 @@ function Player(sock) {
 			a.vx = Math.cos(self.angle) * 15;
 			a.vy = Math.sin(self.angle) * 15;
 			asts[self.sy][self.sx][r] = a;
-			self.reload = 50;
+			self.reload = 0;
 		}
-		if (self.ship == 18 && self.energy > 0) self.shootBullet(39); // Built in spreadshot
+		if (self.ship == 18) self.shootBullet(39); // Built in spreadshot
 	}
 	self.checkDisconnect = function () {
 		if (self.pingTimer-- < 0) {
@@ -595,8 +569,8 @@ function Player(sock) {
 
 	}
 	self.juke = function (left) {
-		if (self.energy < 7.5) return;
-		self.energy -= 7.5;
+		if (self.reload < 7.5) return;
+		self.reload = 0;
 		self.jukeTimer = (self.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
 	}
 	self.mute = function (minutes) {
@@ -731,7 +705,7 @@ function Player(sock) {
 			self.a = turn > self.cva * self.cva * 10;
 			self.d = turn < -self.cva * self.cva * 10;
 			self.w = true;
-		} else if (anyFriend != 0 || (self.energy < 5 || self.reload > 50 || self.health < self.maxHealth / 3)) {//fleeing
+		} else if (anyFriend != 0 || (self.health < self.maxHealth / 3)) {//fleeing
 			var turn = -(self.angle - Math.atan2(target.y - self.y, target.x - self.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
 			self.a = turn > self.cva * self.cva * 10;
 			self.d = turn < -self.cva * self.cva * 10;
@@ -790,7 +764,7 @@ function Player(sock) {
 		input[0] = self.rank / 8.;
 		input[1] = self.ammos[self.equipped] / 50;
 		input[2] = self.health / self.maxHealth;
-		input[3] = self.energy / 100.;
+		input[3] = 1; // energy used to be here
 		input[4] = self.reload / 50;
 		input[5] = self.speed / 100;
 		input[6] = self.cva;
@@ -1001,7 +975,6 @@ function Player(sock) {
 
 			self.leaveBaseShield = 25;
 			self.health = self.maxHealth;
-			self.energy = 100;
 			return;
 		}
 
@@ -1029,8 +1002,7 @@ function Player(sock) {
 			currWep = 40;
 		}
 
-		self.energy -= wepns[currWep].energy;
-		self.reload = wepns[currWep].Charge;
+		self.reload = 0;
 
 		//how many bullets are we firing?
 		var n = 1;
@@ -1059,8 +1031,7 @@ function Player(sock) {
 		missiles[self.sy][self.sx][r] = missile;
 		sendAllSector('sound', { file: "missile", x: self.x, y: self.y }, self.sx, self.sy);
 
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
-		self.energy -= wepns[self.weapons[self.equipped]].energy;
+		self.reload = 0;
 	}
 	self.shootOrb = function () {
 		var r = Math.random();
@@ -1068,19 +1039,18 @@ function Player(sock) {
 		orbs[self.sy][self.sx][r] = orb;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
-		self.energy -= wepns[self.weapons[self.equipped]].energy;
+		self.reload = 0;
 	}
 	self.shootMine = function () {
 		if (Object.keys(mines[self.sy][self.sx]).length >= 20 && self.weapons[self.equipped] < 30) {
 			self.ammos[self.equipped]++;
-			self.reload = 5;
+			self.reload = 0;
 			self.socket.emit("chat", { msg: "This sector has reached its limit of 20 mines." });
 			return;
 		}
 		if (square(self.sx - sectorWidth / 2) + square(self.sy - sectorWidth / 2) < square(600 * 10)) {
 			self.ammos[self.equipped]++;
-			self.reload = 5;
+			self.reload = 0;
 			self.socket.emit("chat", { msg: "You may not place a mine here." });
 			return;
 		}
@@ -1089,8 +1059,7 @@ function Player(sock) {
 		mines[self.sy][self.sx][r] = mine;
 		sendAllSector('mine', { x: self.x, y: self.y }, self.sx, self.sy);
 
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
-		self.energy -= wepns[self.weapons[self.equipped]].energy;
+		self.reload = 0;
 	}
 	self.shootBeam = function (origin, restricted) {// restricted is for recursive calls from quarriers
 		var ox = origin.x, oy = origin.y;
@@ -1145,8 +1114,7 @@ function Player(sock) {
 		beams[self.sy][self.sx][r] = beam;
 		sendAllSector('sound', { file: "beam", x: ox, y: oy }, self.sx, self.sy);
 
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
-		if (!restricted) self.energy -= wepns[self.weapons[self.equipped]].energy; // don't take energy if it was a recursive shot from an asteroid
+		self.reload = 0;
 	}
 	self.shootBlast = function () {
 		var r = Math.random();
@@ -1154,8 +1122,7 @@ function Player(sock) {
 		blasts[self.sy][self.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 
-		self.reload = wepns[self.weapons[self.equipped]].Charge;
-		self.energy -= wepns[self.weapons[self.equipped]].energy;
+		self.reload = 0;
 	}
 	self.die = function (b) { // b: bullet object or other object which killed us
 		self.empTimer = -1;

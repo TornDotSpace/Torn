@@ -98,6 +98,7 @@ var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops 
 var credentialState = 0, textIn = 0, savedNote = 0;
 var key = '~`';
 var myName = "GUEST", currAlert = '', cloaked = false;
+var soundAllowed = false;
 var currLoading = "";
 var secret2PlanetName = "";
 var meanNLag = 0, nLagCt = 0;
@@ -233,7 +234,7 @@ function loadAudioEnd() {
 }
 function loadAllAudio() {
 	loadAudio("minigun", '/aud/minigun.mp3');
-	loadAudio("boom2", '/aud/boom2.wav');
+	loadAudio("boom", '/aud/boom.mp3');
 	loadAudio("hyperspace", '/aud/hyperspace.mp3');
 	loadAudio("bigboom", '/aud/bigboom.wav');
 	loadAudio("shot", '/aud/shot.mp3');
@@ -1908,7 +1909,7 @@ function loop() {
 		var rnd = Math.random();
 		var angleNow = -Math.atan2(5 * Math.sin(5 * t), 4 * Math.cos(4 * t));
 		if (rnd < .05) {
-			playAudio("minigun", .1);
+			if(soundAllowed) playAudio("minigun", .1);
 			bullets[rnd] = { x: px, y: py, vx: 12800 / 6000 * 20 * Math.cos(4 * t) + 40 * Math.cos(angleNow), vy: -16000 / 6000 * 20 * Math.sin(5 * t) + 40 * Math.sin(angleNow), id: rnd, angle: angleNow, wepnID: 0, color: 'red' };
 		}
 		scrx = -w / 3 * Math.cos(4 * t);
@@ -1951,7 +1952,7 @@ function loop() {
 					delete bullets[i];
 					booms[Math.random()] = { x: b.x, y: b.y, time: 0, shockwave: false };
 					for (var i = 0; i < 5; i++) boomParticles[Math.random()] = { x: b.x, y: b.y, angle: Math.random() * 6.28, time: -1, dx: b.vx / 1.5, dy: b.vy / 1.5 };
-					playAudio("boom2", .35);
+					if(soundAllowed) playAudio("boom", .35);
 				}
 			}
 
@@ -2218,6 +2219,7 @@ document.addEventListener('mousemove', function (evt) {
 }, false);
 
 document.addEventListener('mousedown', function (evt) {
+	soundAllowed = true;
 	mb = 1;
 	if (lore && !login) {
 		socket.binary(false).emit('guest', { alien: pc });
@@ -2564,29 +2566,19 @@ function rLore() {
 }
 function rEnergyBar() {
 	if (equipped === 0) return;
-	ctx.save();
-	ctx.strokeStyle = "red";
-	ctx.translate(guest ? 16 : 248, 324 + 16 - 5)
-	ctx.rotate(-Math.PI / 2);
-	ctx.beginPath();
-	var wepEnergy = wepns[equipped[scroll]].energy;
-	var lineX = 314 * Math.round(wepEnergy / 100 * 35) / 35 + (Math.round(wepEnergy / 100 * 35) == 35 ? 1 : 0);
-	ctx.moveTo(lineX, -12);
-	ctx.lineTo(lineX, 36);
-	ctx.closePath();
-	ctx.stroke();
-	ctx.globalAlpha = .5;
+	var Charge = wepns[equipped[scroll]].Charge;
+	if (Charge < 12) return;
 	ctx.fillStyle = 'lime';
-	ctx.fillRect(0, 0, 314 * Math.round(energy / 100 * 35) / 35 + (Math.round(energy / 100 * 35) == 35 ? 1 : 0), 24);
-	ctx.fillStyle = 'red';
-	ctx.fillRect(0, 0, 314 * Math.round(Math.atan(charge > 0 ? charge / 10 : 0) / Math.PI * 70) / 35, 24)
+	ctx.globalAlpha = .5;
+	ctx.fillRect(0, 0, (w/2) * (charge/Charge), 4);
+	ctx.fillRect(0, h-4, (w/2) * (charge/Charge), 4);
+	ctx.fillRect(w-(w/2) * (charge/Charge), 0, (w/2) * (charge/Charge), 4);
+	ctx.fillRect(w-(w/2) * (charge/Charge), h-4, (w/2) * (charge/Charge), 4);
+	ctx.fillRect(0, 0, 4, (h/2) * (charge/Charge));
+	ctx.fillRect(w-4, 0, 4, (h/2) * (charge/Charge));
+	ctx.fillRect(0, h-(h/2) * (charge/Charge), 4, (h/2) * (charge/Charge));
+	ctx.fillRect(w-4, h-(h/2) * (charge/Charge), 4, (h/2) * (charge/Charge));
 	ctx.globalAlpha = 1;
-	ctx.restore();
-	ctx.save();
-	ctx.translate((guest ? 16 : 248) - 5, 324 + 16)
-	ctx.rotate(-Math.PI / 2);
-	ctx.drawImage(Img.energyBar, 0, 0);
-	ctx.restore();
 }
 
 function rVolumeBar() {

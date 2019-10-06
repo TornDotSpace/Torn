@@ -75,7 +75,7 @@ module.exports = function Bullet(ownr, i, weaponID, angl, info) {
 	self.die = function () {
 		sendAllSector("delBullet", { id: self.id }, self.sx, self.sy);
 		var reverse = weaponID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
-		sendAllSector('sound', { file: "boom2", x: self.x, y: self.y, dx: reverse * self.vx, dy: reverse * self.vy }, self.sx, self.sy);
+		sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: reverse * self.vx, dy: reverse * self.vy }, self.sx, self.sy);
 		delete bullets[self.sy][self.sx][self.id];
 	}
 	self.dieAndMakeVortex = function () {

@@ -57,7 +57,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 		if (self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die(); // if out of bounds
 	}
 	self.die = function () {
-		sendAllSector('sound', { file: "boom2", x: self.x, y: self.y, dx: self.vx, dy: self.vy }, self.sx, self.sy);
+		sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: self.vx, dy: self.vy }, self.sx, self.sy);
 		delete orbs[self.sy][self.sx][self.id];
 	}
 	return self;

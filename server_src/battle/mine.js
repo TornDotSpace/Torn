@@ -43,7 +43,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 				var p = players[self.sy][self.sx][i];
 				if (squaredDist(p, self) < square(wepns[33].Range * 10)) p.dmg(self.dmg, self); // if i'm in range of a player on explosion, damage them
 			}
-		sendAllSector('sound', { file: "boom2", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
+		sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
 		delete mines[self.sy][self.sx][self.id];
 	}
 	return self;
