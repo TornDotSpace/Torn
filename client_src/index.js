@@ -1888,16 +1888,12 @@ function loop() {
 		ctx.fillStyle = "black";
 		ctx.fillRect(0, 0, w, h);
 
-		if(homepageTimer < 200){
-			var scale = 1 - Math.exp((homepageTimer+20) / -50.);
-			ctx.translate(w / 2, h / 2);
-			ctx.scale(scale,scale);
-			ctx.translate(-w / 2, -h / 2);
+		var scale = 1 - Math.exp((homepageTimer*10+10) / -300.);
+		ctx.translate(w / 2, h / 2);
+		ctx.scale(scale,scale);
+		ctx.translate(-w / 2, -h / 2);
 
-			renderBG(true);
-
-			ctx.setTransform(1, 0, 0, 1, 0, 0);
-		} else renderBG();
+		renderBG(true);
 
 		//Main hydra
 		let d = new Date();
@@ -1985,13 +1981,14 @@ function loop() {
 		for (var i in bullets) if (Math.random() < .01) delete bullets[i];
 		rBullets();
 		rBooms();
-		ctx.drawImage(Img.grad, 0, 0, w, h);
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
 		if(homepageTimer < 10){
 			ctx.globalAlpha = 1 - homepageTimer/10;
 			ctx.fillStyle = "black";
 			ctx.fillRect(0,0,w,h);
 			ctx.globalAlpha = 1;
 		}
+		ctx.drawImage(Img.grad, 0, 0, w, h);
 		rCreds();
 	}
 	else {
@@ -2104,7 +2101,7 @@ document.onkeydown = function (event) {
 		}
 		else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
 			if (dead) return;
-			if (keys[9] != true) socket.binary(false).emit('key', { inputId: 'z', state: true });
+			if (keys[9] != true) socket.binary(false).emit('key', { inputId: 'c', state: true });
 			keys[9] = true;
 			afkTimer = 45000;
 		}
@@ -2142,7 +2139,7 @@ document.onkeyup = function (event) {
 	else if (event.keyCode === 88 || event.keyCode === 27)//x
 		keys[8] = false;
 	else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
-		if (keys[9] == true) socket.binary(false).emit('key', { inputId: 'z', state: false });
+		if (keys[9] == true) socket.binary(false).emit('key', { inputId: 'c', state: false });
 		keys[9] = false;
 	}
 	else if (event.keyCode === 16) {
@@ -2567,7 +2564,8 @@ function rLore() {
 function rEnergyBar() {
 	if (equipped === 0) return;
 	var Charge = wepns[equipped[scroll]].Charge;
-	if (Charge < 12) return;
+	if (Charge < 12 && charge < 12) return;
+	if (Charge < 12 && charge >= 12) Charge = 50;
 	ctx.fillStyle = 'lime';
 	ctx.globalAlpha = .5;
 	ctx.fillRect(0, 0, (w/2) * (charge/Charge), 4);

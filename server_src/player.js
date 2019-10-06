@@ -155,10 +155,11 @@ function Player(sock) {
 		self.disguise--;
 		var reloadVal = self.energy2 / 2 + .5; //reload speed scales with energy tech
 		for (var i = 0; i < self.generators; i++) reloadVal *= 1.06;
-		self.reload = (self.space) ? (self.reload+reloadVal):0;
+		self.reload = (self.space || self.c) ? (self.reload+reloadVal):0;
 
 		var amDrifting = self.e || self.gyroTimer > 0;
 		self.shield = (self.s && !amDrifting && self.gyroTimer < 1) || self.leaveBaseShield > 0;
+		self.leaveBaseShield--;
 
 		if (!self.isBot) {
 			self.checkPlanetCollision();
@@ -363,8 +364,7 @@ function Player(sock) {
 			self.vx *= mult;
 			self.vy *= mult;
 		}
-		if (self.ship == 17){//} && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250){// && self.reload > 50) { // Quarrier
-			console.log("aaa");
+		if (self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250 && self.reload > 150) { // Quarrier
 			self.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
 			self.silver -= 250;
 			self.aluminium -= 250;

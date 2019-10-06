@@ -361,7 +361,7 @@
 			"bot":false
 		},
 		{
-			"Range":150,
+			"Range":200,
 			"Damage":60,
 			"Speed":-1,
 			"Charge":5,
