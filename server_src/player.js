@@ -155,7 +155,7 @@ function Player(sock) {
 		self.disguise--;
 		var reloadVal = self.energy2 / 2 + .5; //reload speed scales with energy tech
 		for (var i = 0; i < self.generators; i++) reloadVal *= 1.06;
-		self.reload = self.space?(self.reload+reloadVal):0;
+		self.reload = (self.space) ? (self.reload+reloadVal):0;
 
 		var amDrifting = self.e || self.gyroTimer > 0;
 		self.shield = (self.s && !amDrifting && self.gyroTimer < 1) || self.leaveBaseShield > 0;
@@ -569,8 +569,8 @@ function Player(sock) {
 
 	}
 	self.juke = function (left) {
-		if (self.reload < 7.5) return;
-		self.reload = 0;
+		if (self.reload > 0) return;
+		self.reload = -10;
 		self.jukeTimer = (self.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
 	}
 	self.mute = function (minutes) {
