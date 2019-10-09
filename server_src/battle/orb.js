@@ -27,6 +27,9 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 	}
 	self.tick = function () {
 		if (self.timer++ > 3 * wepns[weaponID].Range / wepns[weaponID].Speed) self.die();
+		console.log("my color: " + self.color);
+		console.log("target detected: " + self.locked);
+
 		self.move();
 	}
 	self.move = function () {
@@ -39,7 +42,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 			else { // if we are locked onto something
 				if (target.type === "Player") target.isLocked = true; // tell the player they're locked onto for an alert message
 				var d2 = hypot2(target.x,self.x,target.y,self.y);
-				if (sameSector(target, self) && d2 < 10 && target.turretLive != false) { // if it's a base we can't attack when it's dead
+				if (sameSector(target, self) && d2 < 15 && target.turretLive != false) { // if it's a base we can't attack when it's dead
 					target.dmg(self.dmg, self);
 					self.die();
 					return;
@@ -47,8 +50,8 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 				var dist = d2;
 				self.vx += wepns[weaponID].Speed * (target.x - self.x) / dist; // accelerate towards target
 				self.vy += wepns[weaponID].Speed * (target.y - self.y) / dist;
-				self.vx *= .9; // air resistance
-				self.vy *= .9;
+				//self.vx *= .9; // air resistance
+				//self.vy *= .9;
 			}
 		}
 		if (self.locked == 0) self.lockedTimer = 0;

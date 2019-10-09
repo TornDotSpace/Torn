@@ -1616,7 +1616,7 @@ socket.on('invalidReg', function (data) {
 });
 socket.on('registered', function (data) {
 	credentialState = 0;
-	socket.binary(false).emit("login", { user: data.user, pass: data.pass, amNew: true });
+	socket.emit("login", { user: data.user, pass: data.pass, amNew: true });
 	ReactRoot.turnOffRegister("LoginOverlay");
 	guest = false;
 	textIn = 0;
@@ -1845,7 +1845,7 @@ setInterval(function () {
 	let d = new Date();
 	var time = d.getTime();
 	if (login)
-		socket.binary(false).emit('pingmsg', { time: time });
+		socket.emit('pingmsg', { time: time });
 }, 1000);
 setInterval(function () {
 	raidTimer--;
@@ -2010,7 +2010,7 @@ document.onkeydown = function (event) {
 		return;
 	if (event.keyCode === 16) {
 		if (keys[0] != true)
-			socket.binary(false).emit('key', { inputId: 'shift', state: true });
+			socket.emit('key', { inputId: 'shift', state: true });
 		keys[0] = true;
 		afkTimer = 45000;
 		shift = true;
@@ -2033,74 +2033,74 @@ document.onkeydown = function (event) {
 			tab = 1;
 		}
 		else if (event.keyCode == 89 && docked && tab == 8) { // y
-			socket.binary(false).emit('sellW', { slot: confirmer });
+			socket.emit('sellW', { slot: confirmer });
 			confirmer = -1;
 			textIn = 0;
 			tab = 1;
 		}
 		else if (event.keyCode == 66 && docked && tab == 7 && seller != 0 && actuallyBuying) { // b
-			socket.binary(false).emit('buyW', { slot: scroll, weapon: seller - 20 });
+			socket.emit('buyW', { slot: scroll, weapon: seller - 20 });
 			textIn = 0;
 			tab = 1;
 		}
 		else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] != -2)
-			socket.binary(false).emit('equip', { scroll: event.keyCode - 49 });
+			socket.emit('equip', { scroll: event.keyCode - 49 });
 		else if (event.keyCode == 48 && equipped[event.keyCode - 49] != -2)
-			socket.binary(false).emit('equip', { scroll: 9 });
+			socket.emit('equip', { scroll: 9 });
 		else if (event.keyCode === 83 || event.keyCode === 40) {//s
-			if (keys[1] != true) socket.binary(false).emit('key', { inputId: 's', state: true });
+			if (keys[1] != true) socket.emit('key', { inputId: 's', state: true });
 			keys[1] = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 192)//`
 			dev = !dev;
 		else if (event.keyCode === 69) {//e
-			if (keys[2] != true) socket.binary(false).emit('key', { inputId: 'e', state: true });
+			if (keys[2] != true) socket.emit('key', { inputId: 'e', state: true });
 			keys[2] = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 87 || event.keyCode === 38) {//w
-			if (keys[3] != true) socket.binary(false).emit('key', { inputId: 'w', state: true });
+			if (keys[3] != true) socket.emit('key', { inputId: 'w', state: true });
 			keys[3] = true;
 			didW = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 65 || event.keyCode === 37) {//a
-			if (keys[4] != true) socket.binary(false).emit('key', { inputId: 'a', state: true });
+			if (keys[4] != true) socket.emit('key', { inputId: 'a', state: true });
 			keys[4] = true;
 			didSteer = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 68 || event.keyCode === 39) {//d
-			if (keys[5] != true) socket.binary(false).emit('key', { inputId: 'd', state: true });
+			if (keys[5] != true) socket.emit('key', { inputId: 'd', state: true });
 			keys[5] = true;
 			didSteer = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 32) {//space
-			if (keys[6] != true) socket.binary(false).emit('key', { inputId: ' ', state: true });
+			if (keys[6] != true) socket.emit('key', { inputId: ' ', state: true });
 			keys[6] = true;
 			if (equipped[scroll] < 0) badWeapon = 20;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 81) {//q
-			if (keys[7] != true) socket.binary(false).emit('key', { inputId: 'q', state: true });
+			if (keys[7] != true) socket.emit('key', { inputId: 'q', state: true });
 			keys[7] = true;
 			afkTimer = 45000;
 		}
 		else if (event.keyCode === 88 || event.keyCode === 27) {//x
 			if (dead) return;
-			if (keys[8] != true) socket.binary(false).emit('key', { inputId: 'x', state: true });
+			if (keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
 			keys[8] = true;
 			if (textIn > 300) textIn = 0;
 			tab = 0;
 			ReactRoot.turnOffRegister("");
 			afkTimer = 45000;
-			socket.binary(false).emit('equip', { scroll: scroll });
+			socket.emit('equip', { scroll: scroll });
 		}
 		else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
 			if (dead) return;
-			if (keys[9] != true) socket.binary(false).emit('key', { inputId: 'z', state: true });
+			if (keys[9] != true) socket.emit('key', { inputId: 'z', state: true });
 			keys[9] = true;
 			afkTimer = 45000;
 		}
@@ -2118,33 +2118,33 @@ document.onkeyup = function (event) {
 	var resetAfk = true;
 	if (event.keyCode === 83 || event.keyCode === 40) {//s
 		keys[1] = false;
-		socket.binary(false).emit('key', { inputId: 's', state: false });
+		socket.emit('key', { inputId: 's', state: false });
 	} else if (event.keyCode === 69)//e
 		keys[2] = false;
 	else if (event.keyCode === 87 || event.keyCode === 38) {//w
 		keys[3] = false;
-		socket.binary(false).emit('key', { inputId: 'w', state: false });
+		socket.emit('key', { inputId: 'w', state: false });
 	} else if (event.keyCode === 65 || event.keyCode === 37) {//a
 		keys[4] = false;
-		socket.binary(false).emit('key', { inputId: 'a', state: false });
+		socket.emit('key', { inputId: 'a', state: false });
 	} else if (event.keyCode === 68 || event.keyCode === 39) {//d
 		keys[5] = false;
-		socket.binary(false).emit('key', { inputId: 'd', state: false });
+		socket.emit('key', { inputId: 'd', state: false });
 	} else if (event.keyCode === 32) {//space
 		keys[6] = false;
-		socket.binary(false).emit('key', { inputId: ' ', state: false });
+		socket.emit('key', { inputId: ' ', state: false });
 	} else if (event.keyCode === 81)//q
 		keys[7] = false;
 	else if (event.keyCode === 88 || event.keyCode === 27)//x
 		keys[8] = false;
 	else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
-		if (keys[9] == true) socket.binary(false).emit('key', { inputId: 'z', state: false });
+		if (keys[9] == true) socket.emit('key', { inputId: 'z', state: false });
 		keys[9] = false;
 	}
 	else if (event.keyCode === 16) {
 		keys[0] = false;
 		shift = false;
-		socket.binary(false).emit('key', { inputId: 'shift', state: false });
+		socket.emit('key', { inputId: 'shift', state: false });
 	} else
 		resetAfk = false;
 	if (resetAfk)
@@ -2217,7 +2217,7 @@ document.addEventListener('mousemove', function (evt) {
 document.addEventListener('mousedown', function (evt) {
 	mb = 1;
 	if (lore && !login) {
-		socket.binary(false).emit('guest', { alien: pc });
+		socket.emit('guest', { alien: pc });
 		return;
 	}
 	if (mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
@@ -2232,13 +2232,13 @@ document.addEventListener('mousedown', function (evt) {
 	if (i == 0 && !mouseDown) {
 		mouseDown = true;
 		if ((mx < w - 32 - 20 - 128 - 16 || my < h - 92) && (mx > 512 + 32 || my < h - 216)) {//not in vol section or chat section
-			socket.binary(false).emit('key', { inputId: ' ', state: true });
+			socket.emit('key', { inputId: ' ', state: true });
 			afkTimer = 45000;
 		}
 		if (equipped[scroll] < 0) badWeapon = 20;
 	}
 	/*if(i == 350)
-		socket.binary(false).emit('cancelquest', {});*/
+		socket.emit('cancelquest', {});*/
 	if (i == 500) window.open('https://tornspace.wikia.com/wiki/Torn.space_Wiki', '_blank');
 	if (i == 501) window.open('/store', '_blank');
 	if (i == 502) window.open('/leaderboard', '_blank');
@@ -2256,18 +2256,18 @@ document.addEventListener('mousedown', function (evt) {
 		tab = 7;
 		actuallyBuying = false;
 	}
-	if (i == 610) socket.binary(false).emit('sell', { item: 'all' });
-	if (i == 611) socket.binary(false).emit('buyLife', {});
-	if (i >= 300 && i < 310 && quest == 0) socket.binary(false).emit('quest', { quest: i - 300 });
-	if (docked && tab == 3 && i > 199 && i < 206) socket.binary(false).emit('upgrade', { item: i - 200 });
+	if (i == 610) socket.emit('sell', { item: 'all' });
+	if (i == 611) socket.emit('buyLife', {});
+	if (i >= 300 && i < 310 && quest == 0) socket.emit('quest', { quest: i - 300 });
+	if (docked && tab == 3 && i > 199 && i < 206) socket.emit('upgrade', { item: i - 200 });
 	if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40) {
 		textIn = 0;
 		tab = Math.floor((mx - rx) / 128);
 	} if (i >= 700 && i < 705)
-		socket.binary(false).emit('trail', { trail: i - 700 });
+		socket.emit('trail', { trail: i - 700 });
 	if (i == 800) {
 		globalChat = (globalChat + 1) % 2;
-		socket.binary(false).emit("toggleGlobal", {});
+		socket.emit("toggleGlobal", {});
 		preProcessChat();
 	}
 	if (docked && mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
@@ -2276,7 +2276,7 @@ document.addEventListener('mousedown', function (evt) {
 		else if (i == 6) item = 'silver';
 		else if (i == 7) item = 'platinum';
 		else if (i == 8) item = 'aluminium';
-		socket.binary(false).emit('sell', { item: item });
+		socket.emit('sell', { item: item });
 	} else if (docked && tab == 1 && my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) {
 		if (equipped[i - 10] == -1) {
 			textIn = 0;
@@ -2290,7 +2290,7 @@ document.addEventListener('mousedown', function (evt) {
 			confirmer = i - 10;
 		}
 	} else if (docked && tab == 1 && my > ry + 256 - 16 && my < ry + 512 - 16 && mx > rx + 16 && mx < rx + 256 + 16) {
-		if (my > ry + 256 + 128 + 32) socket.binary(false).emit('buyShip', { ship: shipView });
+		if (my > ry + 256 + 128 + 32) socket.emit('buyShip', { ship: shipView });
 		else if (mx > rx + 16 + 128 && shipView < ships.length - 1) shipView++;
 		else if (mx < rx + 16 + 128 && shipView > 0) shipView--;
 	}
@@ -2299,7 +2299,7 @@ document.addEventListener('mousedown', function (evt) {
 document.addEventListener('mouseup', function (evt) {
 	mb = 0;
 	if (mouseDown) {
-		socket.binary(false).emit('key', { inputId: ' ', state: false });
+		socket.emit('key', { inputId: ' ', state: false });
 		afkTimer = 45000;
 		mouseDown = false;
 	}
@@ -2312,7 +2312,7 @@ document.addEventListener('mousewheel', function (evt) {
 	}
 	if ((equipped[scroll] > 0 && (docked || scroll - d < 0 || scroll - d >= equipped.length || equipped[scroll - d] < -1)) || equipped[scroll - d] == -2)
 		return;
-	socket.binary(false).emit('equip', { scroll: scroll - d });
+	socket.emit('equip', { scroll: scroll - d });
 }, false);
 $(document).keydown(function (event) {
 	if (event.ctrlKey == true && (event.which == '61' || event.which == '107' || event.which == '173' || event.which == '109' || event.which == '187' || event.which == '189')) event.preventDefault();
