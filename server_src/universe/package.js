@@ -10,7 +10,7 @@ module.exports = function Package(ownr, i, type) {
 	}
 	self.tick = function () {
 		if (self.time++ > 25 * 60) { // 1 minute despawn
-			sendAllSector('sound', { file: "boom2", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
+			sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
 			delete packs[self.sy][self.sx][self.id];
 		}
 		for (var i in players[self.sy][self.sx]) { // loop for collision

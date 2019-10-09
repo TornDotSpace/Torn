@@ -26,7 +26,7 @@ module.exports = function Asteroid(i, h, sxx, syy, metal) {
 				var p = players[self.sy][self.sx][i];
 				if (squaredDist(p, self) < square(32 + ships[p.ship].width) / 10) { // on collision,
 					p.dmg(5 * Math.hypot(p.vx - self.vx, p.vy - self.vy), self); // damage proportional to impact velocity
-					sendAllSector('sound', { file: "boom2", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
+					sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
 
 					//bounce the player off. Same formula as used for mine impulse.
 					var mult = 200 / Math.max(1, .001 + Math.hypot(p.x - self.x, p.y - self.y))
@@ -41,7 +41,7 @@ module.exports = function Asteroid(i, h, sxx, syy, metal) {
 			var b = bases[self.sy][self.sx];
 			if (b != 0 && b.turretLive && squaredDist(self, b) < 3686.4) { // collision with base
 				b.dmg(10 * Math.hypot(self.vx, self.vy), self);
-				sendAllSector('sound', { file: "boom2", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
+				sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
 				self.die(b);
 			}
 
