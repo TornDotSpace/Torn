@@ -20,10 +20,6 @@ global.cmds = {};
 
 // GUEST COMMANDS 
 // All players including guests have access to these
-cmds["/test"] = new Command("/test - Does something secret :O", GUEST, function (plyr, msg) {
-    plyr.socket.emit("chat", { msg: "This is a test of the new command system" });
-});
-
 cmds["/help"] = new Command("/help - Displays commands & usages", GUEST, function (plyr, msg) {
     for (var x = 0; x < HELP_TABLE[plyr.permissionLevel].length; ++x) {
         var cmd = HELP_TABLE[plyr.permissionLevel][x];
@@ -74,7 +70,7 @@ cmds["/swap"] = new Command("/swap", PLAYER, function (player, msg) {
     player.swap(msg);
 });
 
-cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", PLAYER, function (player, msg) {
+cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", ADMIN, function (player, msg) {
     debug("EMAIL!");
     player.setEmail(msg);
 });
