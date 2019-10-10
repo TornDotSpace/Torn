@@ -104,7 +104,7 @@ module.exports = function initNetcode() {
         socket.on('lore', function (data) { //player is requesting lore screen.
             if (typeof data === "undefined" || typeof data.alien !== "boolean") return;
             socket_color = data.alien; // note whether they want to be alien for when they spawn
-            socket.binary(false).emit("lored", { pc: socket_color });
+            socket.emit("lored", { pc: socket_color });
         });
 
         socket.on('guest', function (data) { // TODO Chris
@@ -124,7 +124,7 @@ module.exports = function initNetcode() {
             for (var i = 0; i < ships[player.ship].weapons; i++) player.weapons[i] = -1;
             for (var i = ships[player.ship].weapons; i < 10; i++) player.weapons[i] = -2;
             player.weapons[0] = 0;
-            socket.binary(false).emit("guested", {id: player.id});
+            socket.emit("guested", {id: player.id});
             player.sendStatus();
             player.getAllBullets();
             player.getAllPlanets();
@@ -134,9 +134,9 @@ module.exports = function initNetcode() {
             player.thrust = ships[player.ship].thrust * player.thrust2;
             player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
             player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-            socket.binary(false).emit('sectors', { sectors: sectors });
+            socket.emit('sectors', { sectors: sectors });
             sendWeapons(player);
-            socket.binary(false).emit("raid", { raidTimer: raidTimer })
+            socket.emit("raid", { raidTimer: raidTimer })
 
             chatAll("Welcome " + player.name + " to the universe!");
         });
@@ -152,18 +152,18 @@ module.exports = function initNetcode() {
             var user = data.user, pass = data.pass;
 
             if (typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)) {
-                socket.binary(false).emit("invalidReg", { reason: 2 });
+                socket.emit("invalidReg", { reason: 2 });
                 return;
             }
             user = user.toLowerCase();
             if (typeof pass !== "string" || pass.length > 32 || pass.length < 1) {
-                socket.binary(false).emit("invalidReg", { reason: 3 });
+                socket.emit("invalidReg", { reason: 3 });
                 return;
             }
 
             // Test for profanity
             if (filter.isProfane(user)) {
-                socket.binary(false).emit("invalidReg", { reason: 5 });
+                socket.emit("invalidReg", { reason: 5 });
                 return;
             }
 
@@ -173,7 +173,7 @@ module.exports = function initNetcode() {
                 for (var i = 0; i < items.length; i++) {
                     if (items[i].startsWith(user + "[")) {
                         debug(items[i] + ":" + (user + "["));
-                        socket.binary(false).emit("invalidReg", { reason: 4 });
+                        socket.emit("invalidReg", { reason: 4 });
                         valid = false;
                         break;
                     }
@@ -187,7 +187,7 @@ module.exports = function initNetcode() {
                 player.password = hash(pass);
                 player.guest = false;
                 player.permissionLevel = 0;
-                socket.binary(false).emit("registered", { user: data.user, pass: data.pass });
+                socket.emit("registered", { user: data.user, pass: data.pass });
                 var text = user + ' registered!';
                 console.log(text);
                 player.save();
@@ -195,7 +195,7 @@ module.exports = function initNetcode() {
                 onlineNames[user] = 1;
                 instance = false;
             });
-            socket.binary(false).emit("raid", { raidTimer: raidTimer })
+            socket.emit("raid", { raidTimer: raidTimer })
         });
         socket.on('login', async function (data) {
             if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
@@ -205,17 +205,17 @@ module.exports = function initNetcode() {
             //Validate and save IP
             var name = data.user, pass = data.pass;
             if (typeof name !== "string" || name.length > 16 || name.length < 4 || /[^a-zA-Z0-9_]/.test(name)) {
-                socket.binary(false).emit("invalidCredentials", {});
+                socket.emit("invalidCredentials", {});
                 return;
             }
             if (typeof pass !== "string" || pass.length > 32 || pass.length < 1) {
-                socket.binary(false).emit("invalidCredentials", {});
+                socket.emit("invalidCredentials", {});
                 return;
             }
             name = name.toLowerCase();
 
             if (onlineNames[name] === 1) {
-                socket.binary(false).emit("accInUse", {});
+                socket.emit("accInUse", {});
                 return;
             }
 
@@ -229,14 +229,14 @@ module.exports = function initNetcode() {
             var retCode = await loadPlayerData(player, player.password);
             
             if (retCode != 0) {
-                if (retCode == -1) socket.binary(false).emit("invalidCredentials", {});
+                if (retCode == -1) socket.emit("invalidCredentials", {});
                 return;
             }
 
             instance = true;
 
             onlineNames[name] = 1;
-            socket.binary(false).emit("loginSuccess", {id: player.id});
+            socket.emit("loginSuccess", {id: player.id});
 
 
             if (player.sx >= mapSz) player.sx--;
@@ -245,7 +245,7 @@ module.exports = function initNetcode() {
             players[player.sy][player.sx][socket.id] = player;
             
             player.calculateGenerators();
-            socket.binary(false).emit("raid", { raidTimer: raidTimer })
+            socket.emit("raid", { raidTimer: raidTimer })
             player.checkTrailAchs();
             player.sendAchievementsKill(false);
             player.sendAchievementsCash(false);
@@ -263,7 +263,7 @@ module.exports = function initNetcode() {
             player.thrust = ships[player.ship].thrust * player.thrust2;
             player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
             player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-            if (!data.amNew) socket.binary(false).emit('sectors', { sectors: sectors });
+            if (!data.amNew) socket.emit('sectors', { sectors: sectors });
             sendWeapons(player);
         });
         socket.on('disconnect', function (data) { // graceful disconnect
@@ -284,7 +284,7 @@ module.exports = function initNetcode() {
             // We don't need to check that data.time is well-defined.
             if (player == 0) return; // if player can't be found
 
-            socket.binary(false).emit('reping', { time: data.time });
+            socket.emit('reping', { time: data.time });
             player.pingTimer = 250; // make sure they dont get disconnected.
         });
         socket.on('key', function (data) { // on client keypress or key release
@@ -327,7 +327,7 @@ module.exports = function initNetcode() {
             if (player == 0) return;
 
             if (guestsCantChat && player.guest) {
-                socket.binary(false).emit("chat", { msg: 'You must create an account in the base before you can chat!', color: 'yellow' });
+                socket.emit("chat", { msg: 'You must create an account in the base before you can chat!', color: 'yellow' });
                 return;
             }
 
@@ -344,7 +344,7 @@ module.exports = function initNetcode() {
 
             player.chatTimer += 100; // note this as potential spam
             if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
-                socket.binary(false).emit('chat', { msg: ("~`red~`You have been muted for " + Math.floor(player.muteCap / 25) + " seconds!") });
+                socket.emit('chat', { msg: ("~`red~`You have been muted for " + Math.floor(player.muteCap / 25) + " seconds!") });
                 muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
                 player.muteCap *= 2; // their next mute will be twice as long
                 return;
@@ -407,7 +407,7 @@ module.exports = function initNetcode() {
             player.capacity = Math.round(ships[data.ship].capacity * player.capacity2);
 
             player.equipped = 0; // set them as being equipped on their first weapon
-            socket.binary(false).emit('equip', { scroll: player.equipped });
+            socket.emit('equip', { scroll: player.equipped });
 
             for (var i = 0; i < 10; i++) if (player.weapons[i] == -2 && i < ships[player.ship].weapons) player.weapons[i] = -1; // unlock new possible weapon slots
             player.calculateGenerators();
@@ -522,7 +522,7 @@ module.exports = function initNetcode() {
 
             if (player.color === "red") rQuests[qid] = 0; else bQuests[qid] = 0; // note that quest as taken and queue it to be remade. TODO can we just remake it here?
             player.quest = quest; // give them the quest and tell the client.
-            socket.binary(false).emit('quest', { quest: quest });
+            socket.emit('quest', { quest: quest });
 
         });
         /*socket.on('cancelquest',function(data){ // THIS IS NO LONGER ALLOWED.
@@ -530,7 +530,7 @@ module.exports = function initNetcode() {
             if(typeof player === "undefined")
                 return;
             player.quest = 0;
-            socket.binary(false).emit('quest', {quest: player.quest});
+            socket.emit('quest', {quest: player.quest});
         }); // no longer allowed.*/
         socket.on('equip', function (data) { // Player wants to select a new weapon to hold
             if (player == 0 || typeof data === "undefined" || typeof player === "undefined" || typeof data.scroll !== 'number' || data.scroll >= ships[player.ship].weapons) return;
@@ -539,7 +539,7 @@ module.exports = function initNetcode() {
             if (player.equipped < 0) player.equipped = 0; // Ensure it's in range
             else if (player.equipped > 9) player.equipped = 9;
 
-            socket.binary(false).emit('equip', { scroll: player.equipped }); // Alert the client
+            socket.emit('equip', { scroll: player.equipped }); // Alert the client
         });
         socket.on('trail', function (data) { // Player requests an update to their trail
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.trail !== 'number') return;
