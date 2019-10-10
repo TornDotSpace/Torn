@@ -2565,7 +2565,7 @@ function rEnergyBar() {
 	if (equipped === 0) return;
 	var Charge = wepns[equipped[scroll]].Charge;
 	if (Charge < 12 && charge < 12) return;
-	if (Charge < 12 && charge >= 12) Charge = 50;
+	if (Charge < 12 && charge >= 12) Charge = 150;
 	ctx.fillStyle = 'lime';
 	ctx.globalAlpha = .5;
 	ctx.fillRect(0, 0, (w/2) * (charge/Charge), 4);
