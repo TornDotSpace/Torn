@@ -66,6 +66,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		self.experience = self.money = self.kills = 0; // and delete my earnings
 	}
 	self.move = function () { // aim and fire
+		if (!self.turretLive) return;
 
 		if (self.empTimer > 0) return; // can't do anything if emp'd
 
@@ -78,9 +79,11 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 			if (dist2 < cDist2) { c = player; cDist2 = dist2; } // update nearest player
 		}
 
+		if (c == 0) return;
+
 		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
 
-		if (self.turretLive && self.reload < 0) {
+		if (self.reload < 0) {
 			if (cDist2 < square(wepns[8].Range * 10)) self.shootLaser();//range:60
 			else if (cDist2 < square(wepns[37].Range * 10)) self.shootOrb();//range:125
 			else if (cDist2 < square(175 * 10)) self.shootMissile();//range:175

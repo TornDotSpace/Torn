@@ -114,7 +114,7 @@ var keys = [], lagArr = 0;
 var w = window.innerWidth;
 var h = window.innerHeight; // Canvas width and height
 var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
-var basesInfo = 0, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
+var basesInfo = undefined, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
 
 // for initial loading screen
 var EVERYTHING_LOADED = false;
@@ -1289,7 +1289,7 @@ socket.on('update', function(data) {
 		orb_update(delta.orbs[index]);
 	}
 
-	if (delta.base === undefined) {
+	if (delta.base !== undefined) {
 		base_update(delta.base);
 	}
 
@@ -3055,7 +3055,7 @@ function rRadar() {
 	ctx.restore();
 	ctx.globalAlpha = ctx.lineWidth = 1;
 	var r = 5120 * (1 + (va2 - 1) * 1.5);
-	if (basesInfo != 0) {
+	if (basesInfo !== undefined) {
 		var dx = basesInfo.x - px;
 		var dy = basesInfo.y - py;
 		if (square(dx) + square(dy) < square(r)) {
@@ -3789,7 +3789,7 @@ function rSelfCloaked() {
 	ctx.stroke();
 }
 function rBases() {
-	if (basesInfo !== 0) { // render bases
+	if (basesInfo !== undefined) { // render bases
 
 		var image = basesInfo.color == 'red' ? Img.base : Img.bss;
 		var pw = image.width;

@@ -793,6 +793,7 @@ function update() {
 		var bbNow = bb;
 
 		var base = bases[y][x];
+
 		if (base !== 0) {
 			var pack = basePack[y][x];
 
@@ -805,7 +806,6 @@ function update() {
 				continue;
 			}
 
-			// Bases will only ever update, skip delete check 
 			var delta = { };
 			var need_update = false;
 
@@ -820,8 +820,6 @@ function update() {
 			if (need_update) {
 				gameState.base = {delta: delta};
 			}
-		} else {
-			basePack[y][x] = 0;
 		}
 
 		for (var i in asts[y][x]) {
@@ -1048,6 +1046,11 @@ function update() {
 				delete astPack[y][x][i];
 				continue;
 			}
+		}
+
+		if (basePack[y][x] !== undefined && bases[y][x] === undefined) {
+			sendAllSector('base_delete', i, x, y);
+			delete basePack[y][x];
 		}
 
 		for (var i in players[y][x]) {
