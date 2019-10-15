@@ -14,6 +14,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		id: i, // unique identifier
 		color: col,
 		owner: 0,
+		name: "",
 		isBase: b, // This differentiates between turrets and turrets connected to bases
 		turretLive: true, // When killed, this becomes false and turret vanishes
 		angle: 0, // angle of the turret

@@ -310,7 +310,7 @@ function Player(sock) {
 				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y);
 				b.owner = self.name;
 				bases[self.sy][self.sx] = b;
-				self.socket.emit("chat", { msg: 'You placed a turret! Coming soon, you will be able to name it.', color: 'yellow' });
+				self.socket.emit("chat", { msg: 'You placed a turret! Name it with "/renameturret <name>".', color: 'yellow' });
 				self.reload = 0;
 			}
 
@@ -1351,6 +1351,12 @@ function Player(sock) {
 			self.killStreak++;
 			self.killStreakTimer = 750;//30s
 		}
+		
+		if (self.ship == 19) for (var i in players[self.sy][self.sx]){
+			var p = players[self.sy][self.sx][i];
+			if(p.id !== self.id) p.EMP(15);
+		}
+		
 		self.kills++;
 
 		if (self.isBot) return;

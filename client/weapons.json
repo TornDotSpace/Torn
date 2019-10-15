@@ -735,20 +735,20 @@
 			"capacity":10000
 		},
 		{
-			"thrust":0.37,
-			"health":250,
-			"agility":0.6,
+			"thrust":0.4,
+			"health":300,
+			"agility":0.5,
 			"width":128,
-			"price":50000000000,
+			"price":5000000,
 			"weapons":10,
-			"capacity":200
+			"capacity":5000
 		},
 		{
 			"thrust":0.2,
 			"health":500,
 			"agility":0.3,
 			"width":192,
-			"price":50000000000,
+			"price":900000000000,
 			"weapons":10,
 			"capacity":20000
 		}

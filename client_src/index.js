@@ -2101,7 +2101,7 @@ document.onkeydown = function (event) {
 		}
 		else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
 			if (dead) return;
-			if (keys[9] != true) socket.binary.emit('key', { inputId: 'c', state: true });
+			if (keys[9] != true) socket.emit('key', { inputId: 'c', state: true });
 			keys[9] = true;
 			afkTimer = 45000;
 		}
@@ -3813,11 +3813,11 @@ function rBases() {
 				ctx.font = "11px Nasa";
 			}
 			ctx.textAlign = "left";
-		} else { // write owner name
+		} else { // write name
 			ctx.textAlign = "center";
 			ctx.fillStyle = 'white';
 			ctx.font = "11px Nasa";
-			write(basesInfo.owner, rendX, rendY - 64);
+			write(basesInfo.name, rendX, rendY - 64);
 		}
 
 		if (basesInfo.turretLive) {

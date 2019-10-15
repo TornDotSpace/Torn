@@ -348,7 +348,7 @@ function onCrash(err) {
 
 	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
 
-	sendAll("kick", {msg: "The server you are playing on has encountered a problem and needs to reset. :( You should be able to log right back into the game and start exploring the universe."});
+	sendAll("kick", {msg: ":( The server you are playing on has encountered a problem and needs to reset. Please tell a developer that this happened. You should be able to log back into the game and start exploring the universe almost immediately. :("});
 
 	var plyrs = '';
 
@@ -801,7 +801,7 @@ function update() {
 
 			// Check for creation (only happens once, on first tick)
 			if (pack === undefined) {
-				pack = basePack[y][x] = { id: base.id, turretLive: base.turretLive, isBase: base.isBase, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, owner: base.owner };
+				pack = basePack[y][x] = { id: base.id, turretLive: base.turretLive, isBase: base.isBase, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, name: base.name };
 				sendAllSector('base_create', pack, x, y);
 				continue;
 			}
@@ -1208,23 +1208,28 @@ function updateLB() {
 		var top1000colors = [];
 		var top1000exp = [];
 		var top1000rank = [];
+		var top1000money = [];
+		var top1000tech = [];
 		for (var i = 0; i < 1000; i++) {
 			top1000names[i] = "Nobody!";
 			top1000kills[i] = -1;
 			top1000exp[i] = -1;
 			top1000rank[i] = -1;
 			top1000colors[i] = "yellow";
+			top1000money[i] = -1;
+			top1000tech[i] = -1;
 		}
 		for (var i = 0; i < items.length; i++) {//insertion sort cause lazy
-			if (fs.lstatSync("server/players/" + items[i]).isDirectory())
-				continue;
+			if (fs.lstatSync("server/players/" + items[i]).isDirectory()) continue;
 			var data = fs.readFileSync("server/players/" + items[i], 'utf8').split(":");
 			var exp = Math.round(parseFloat(data[22]));
 			if (exp > top1000exp[999]) {
 				var name = data[14];
 				var kills = parseFloat(data[16]);
 				var rank = parseFloat(data[23]);
-				var color = ((name.includes(" ")) ? "lime" : (data[0] === "red" ? "pink" : "cyan"));
+				var money = parseFloat(data[15]);
+				var tech = Math.floor((parseFloat(data[26]) + parseFloat(data[27]) + parseFloat(data[28]) + parseFloat(data[29]) + parseFloat(data[84]))*2)/10;
+				var color = data[0] === "red" ? "pink" : "cyan";
 				for (var j = 999; j >= 1; j--) {
 					if (exp > top1000exp[j - 1]) {
 						top1000kills[j] = top1000kills[j - 1];
@@ -1232,11 +1237,15 @@ function updateLB() {
 						top1000exp[j] = top1000exp[j - 1];
 						top1000names[j] = top1000names[j - 1];
 						top1000colors[j] = top1000colors[j - 1];
+						top1000money[j] = top1000money[j - 1];
+						top1000tech[j] = top1000money[j - 1];
 						top1000kills[j - 1] = kills;
 						top1000rank[j - 1] = rank;
 						top1000names[j - 1] = name;
 						top1000colors[j - 1] = color;
 						top1000exp[j - 1] = exp;
+						top1000money[j - 1] = money;
+						top1000tech[j - 1] = tech;
 					}
 					else break;
 				}
@@ -1249,9 +1258,9 @@ function updateLB() {
 			'<title>Leaderboard</title><link rel="stylesheet" href="../page.css" /></head>' +
 			'<body><br><br><h1><div style="padding: 20px"><center><font color="#0099ff">Leaderboard' +
 			'</font></center></div></h1>' +
-			'<font color="#0099ff"><center><nobr><table><tr><th>#</th><th>Name</th><th>Exp</th><th>Rank</th><th>Kills</th></tr>';
+			'<font color="#0099ff"><center><nobr><table><tr><th>#</th><th>Name</th><th>Exp</th><th>Rank</th><th>Kills</th><th>Money</th><th>Tech</th></tr>';
 		for (var i = 0; i < 1000; i++) {
-			newFile += '<tr style="color:' + top1000colors[i] + ';"><th>' + (i + 1) + ".</th><th>" + top1000names[i] + "</th><th> " + top1000exp[i] + " </th><th>" + top1000rank[i] + "</th><th>" + top1000kills[i] + "</th></tr>";
+			newFile += '<tr style="color:' + top1000colors[i] + ';"><th>' + (i + 1) + ".</th><th>" + top1000names[i] + "</th><th> " + top1000exp[i] + " </th><th>" + top1000rank[i] + "</th><th>" + top1000kills[i] + "</th><th>" + top1000money[i] + "</th><th>" + top1000tech[i] + "</th></tr>";
 			lbExp[i] = top1000exp[i];
 		}
 		newFile += '</table></nobr><br/>Updates every 25 minutes Last updated: ' + new Date() + '</center></font></body></html>';

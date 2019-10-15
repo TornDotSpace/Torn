@@ -46,7 +46,7 @@ cmds["/changeteam"] = new Command("/changeteam", PLAYER, function (player, msg) 
     player.socket.emit("chat", { msg: "Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type /confirmteam to continue. Make sure you aren't near any players or bases on your current team." });
 });
 
-cmds["/confirmteam"] = new Command("/confirmteam", PLAYER, function (player, msg) {
+cmds["/confirmteam"] = new Command("/this shouldnt show up", PLAYER, function (player, msg) {
     if (player.experience <= 10000) {
         player.socket.emit("chat", { msg: "You don't have enough experience!" });
         return;
@@ -56,6 +56,13 @@ cmds["/confirmteam"] = new Command("/confirmteam", PLAYER, function (player, msg
     player.money *= .9;
     player.experience *= .9;
     player.save();
+});
+
+cmds["/nameturret"] = new Command("/nameturret <name>", PLAYER, function (player, msg) {
+	var num = 0;
+    var base = bases[player.sy][player.sx];wwww
+    if(base != 0 && base.owner == player.name) { base.name = msg.substring(12); num++; }
+    player.socket.emit("chat", { msg: num + " turrets renamed." });
 });
 
 cmds["/pm"] = new Command("/pm <player> <msg>", PLAYER, function (player, msg) {
@@ -87,9 +94,7 @@ cmds["/mute"] = new Command("/mute <player> <minutesToMute> - Mutes the specifie
     var minutes = parseFloat(msg.split(" ")[2]);
     if (typeof time !== "number") return;
 
-    if (minutes < 0) {
-        return;
-    }
+    if (minutes < 0) return;
 
     muteTable[name] = (Date.now() + (minutes * 60 * 1000));
 });
