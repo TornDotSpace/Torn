@@ -60,7 +60,7 @@ cmds["/confirmteam"] = new Command("/this shouldnt show up", PLAYER, function (p
 
 cmds["/nameturret"] = new Command("/nameturret <name>", PLAYER, function (player, msg) {
 	var num = 0;
-    var base = bases[player.sy][player.sx];wwww
+    var base = bases[player.sy][player.sx];
     if(base != 0 && base.owner == player.name) { base.name = msg.substring(12); num++; }
     player.socket.emit("chat", { msg: num + " turrets renamed." });
 });

@@ -310,7 +310,7 @@ function Player(sock) {
 				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y);
 				b.owner = self.name;
 				bases[self.sy][self.sx] = b;
-				self.socket.emit("chat", { msg: 'You placed a turret! Name it with "/renameturret <name>".', color: 'yellow' });
+				self.socket.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
 				self.reload = 0;
 			}
 
