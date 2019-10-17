@@ -6,8 +6,16 @@
  * 						ALL RIGHTS RESERVED
  */
 
+var fs = require('fs');
+var logFileName = "logs/" + (new Date()) + ".log";
+
+global.log = function (text) {
+	console.log(text);
+	fs.appendFile(logFileName, text, function (err) { if (err) throw err; });
+}
+
 global.initReboot = function () {
-	console.log("\nInitializing server reboot...\n");
+	log("\nInitializing server reboot...\n");
 	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
 	setTimeout(function () { chatAll("Server is restarting in 4 minutes. Please save your progress as soon as possible."); }, 1 * 60 * 1000);
 	setTimeout(function () { chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible."); }, 2 * 60 * 1000);
@@ -50,7 +58,7 @@ global.saveTurrets = function () {
 global.decayPlayers = function () {
 	if (!enableDecay) return;
 	sendAll("chat", { msg: "Decaying Players..." });
-	console.log("\nDecaying players...")
+	log("\nDecaying players...")
 	var items = fs.readdirSync('server/players/');
 
 
@@ -65,7 +73,7 @@ global.decayPlayers = function () {
 			else {
 				var log = "Player " + split[14] + " failed to decay due to an unformatted save file with " + split.length + " entries. Cleaning file.";
 				sendAll("chat", { msg: log });
-				console.log("\n" + log + "\n");
+				log("\n" + log + "\n");
 				cleanFile(source);
 			}
 			continue;
@@ -91,7 +99,6 @@ global.decayPlayers = function () {
 	}
 }
 
-var fs = require('fs');
 // Load config 
 var configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
 require('./server_src/config.js')(configEnvironment);
@@ -327,7 +334,7 @@ for(var i = 0; i < mapSz; i++){
 init();
 
 function sigHandle() {
-	console.log("[SERVER] Caught termination signal...");
+	log("[SERVER] Caught termination signal...");
 
 	sendAll("kick", { msg: "You have been logged out by an adminstrator working on the servers." });
 
@@ -346,7 +353,7 @@ function sigHandle() {
 function onCrash(err) {
 	onCrash = function() { };
 
-	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
+	log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
 
 	sendAll("kick", {msg: ":( The server you are playing on has encountered a problem and needs to reset. Please tell a developer that this happened. You should be able to log back into the game and start exploring the universe almost immediately. :("});
 
@@ -380,20 +387,20 @@ function init() { // start the server!
 	process.on('SIGINT', sigHandle);
 	process.on('SIGTERM', sigHandle);
 
-	console.log("************************************************************************************************************************");
-	console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
-	console.log("▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
-	console.log(" ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌     ▐░▌   ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ");
-	console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌    ▐░▌   ▐░▌          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ");
-	console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▌   ▐░▌   ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░█▄▄▄▄▄▄▄▄▄ ");
-	console.log("     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌");
-	console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░▌   ▐░▌ ▐░▌    ▀▀▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀▀▀ ");
-	console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌    ▐░▌▐░▌             ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌          ");
-	console.log("     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░▌     ▐░▐░▌ ▄  ▄▄▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄ ");
-	console.log("     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌      ▐░░▌▐░▌▐░░░░░░░░░░░▌▐░▌          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
-	console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀        ▀▀  ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ ");
-	console.log("                                                                                                                        ");
-	console.log("************************************************************************************************************************");
+	log("************************************************************************************************************************");
+	log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
+	log("▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
+	log(" ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌     ▐░▌   ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ");
+	log("     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌    ▐░▌   ▐░▌          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ");
+	log("     ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▌   ▐░▌   ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░█▄▄▄▄▄▄▄▄▄ ");
+	log("     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌");
+	log("     ▐░▌     ▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░▌   ▐░▌ ▐░▌    ▀▀▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀▀▀ ");
+	log("     ▐░▌     ▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌    ▐░▌▐░▌             ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌          ");
+	log("     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░▌     ▐░▐░▌ ▄  ▄▄▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄ ");
+	log("     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌      ▐░░▌▐░▌▐░░░░░░░░░░░▌▐░▌          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
+	log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀        ▀▀  ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ ");
+	log("                                                                                                                        ");
+	log("************************************************************************************************************************");
 	// create folders for players, neural nets, and turrets if they dont exist
 	buildFileSystem();
 
@@ -442,37 +449,35 @@ function init() { // start the server!
 	var netcode = require('./server_src/netcode.js');
 	netcode();
 
-	console.log('Server started');
-
-	console.log("Server initialized successfully. Game log below.\n");
+	log("Server initialized successfully. Game log below.\n");
 }
 
 function buildFileSystem() { // create the server files/folders
-	console.log("\nCreating any potential missing files and folders needed for the server...");
+	log("\nCreating any potential missing files and folders needed for the server...");
 	var allGood = true;
 
 
 	var dir = './client/leaderboard';
-	if (!fs.existsSync(dir)) { console.log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
+	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
 
 	fs.writeFileSync("client/leaderboard/index.html", "Leaderboard not ready yet...", (err) => {
-		if (err) console.log(err); console.log("Created leaderboard file.");
+		if (err) log(err); log("Created leaderboard file.");
 	});
 
 	var dir = './server';
-	if (!fs.existsSync(dir)) { console.log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
+	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
 	dir = './server/neuralnets';
-	if (!fs.existsSync(dir)) { console.log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
+	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
 	dir = './server/players';
-	if (!fs.existsSync(dir)) { console.log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
+	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
 	dir = './server/turrets';
-	if (!fs.existsSync(dir)) { console.log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
+	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
 
 
-	if (allGood) console.log("All server files were already present!");
+	if (allGood) log("All server files were already present!");
 }
 function spawnBases() {
-	console.log("\nSpawning " + (baseMap.length / 2) + " Bases...");
+	log("\nSpawning " + (baseMap.length / 2) + " Bases...");
 	//spawn bases
 	for (var i = 0; i < baseMap.length; i += 2) {
 		//make a red base at these coords
@@ -488,12 +493,12 @@ function spawnBases() {
 }
 function loadTurrets() {
 	var count = 0;
-	console.log("\nLoading Turrets...");
+	log("\nLoading Turrets...");
 	var items = fs.readdirSync('server/turrets/');
 
 	for (var i in items) {
 		count++;
-		console.log("Turret found: " + items[i]);
+		log("Turret found: " + items[i]);
 		var data = fs.readFileSync("server/turrets/" + items[i], 'utf8').split(":");
 		var id = parseFloat(data[3]);
 		var b = new Base(id, false, parseFloat(data[8]), parseFloat(data[9]), data[4], parseFloat(data[6]), parseFloat(data[7]));
@@ -504,7 +509,7 @@ function loadTurrets() {
 		bases[parseFloat(data[8])][parseFloat(data[9])] = b;
 	}
 
-	console.log(count + " turret(s) loaded.\n");
+	log(count + " turret(s) loaded.\n");
 }
 
 function kill() {
@@ -1210,7 +1215,7 @@ function updateHeatmap() {
 function updateLB() {
 	// TODO: Needs to be fixed for MongoDB
 	chatAll("Updating torn.space/leaderboard...\n");
-	console.log("\nUpdating torn.space/leaderboard...");
+	log("\nUpdating torn.space/leaderboard...");
 	fs.readdir('server/players/', function (err, items) {
 		var top1000names = [];
 		var top1000kills = [];

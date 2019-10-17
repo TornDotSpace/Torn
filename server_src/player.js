@@ -384,7 +384,7 @@ function Player(sock) {
 		if (self.pingTimer-- < 0) {
 			var text = "~`" + self.color + "~`" + self.name + "~`yellow~` disconnected!";
 			lefts[self.id] = 0; // note me for deletion
-			console.log(text);
+			log(text);
 			chatAll(text);
 			return;
 		}
@@ -1493,7 +1493,7 @@ function Player(sock) {
 			lefts[self.id] = 0;
 			if (!self.isBot) {
 				var text = "~`" + self.color + "~`" + self.name + "~`yellow~` went AFK!";
-				console.log(text);
+				log(text);
 				chatAll(text);
 			}
 			return true;
@@ -1542,7 +1542,7 @@ function Player(sock) {
 			var oldPosition = lbIndex(self.experience);
 			self.experience += amt;
 			var newPosition = lbIndex(self.experience);
-			//console.log(newPosition + " " + oldPosition);
+			//log(newPosition + " " + oldPosition);
 			if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
 				if (newPosition < 251) sendAll('chat', { msg: "~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!" });
 				else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });

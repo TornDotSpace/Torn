@@ -27,8 +27,8 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 	}
 	self.tick = function () {
 		if (self.timer++ > 3 * wepns[weaponID].Range / wepns[weaponID].Speed) self.die();
-		//console.log("my color: " + self.color);
-		//sconsole.log("target detected: " + self.locked);
+		//log("my color: " + self.color);
+		//log("target detected: " + self.locked);
 
 		self.move();
 	}

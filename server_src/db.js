@@ -9,24 +9,24 @@ var fs = require('fs');
 // to MongoDB
 global.connectToDB = function () {
     if (!USE_MONGO) {
-        console.log("[DB] Using legacy flat-file based database");
+        log("[DB] Using legacy flat-file based database");
         return;
     }
 
     if (PLAYER_DATABASE != null) {
-        console.log("[DB] Already connected to MongoDB database...");
+        log("[DB] Already connected to MongoDB database...");
         return;
     }
 
-    console.log("[DB] Connecting to MongoDB instance @ " + MONGO_CONNECTION_STR);
+    log("[DB] Connecting to MongoDB instance @ " + MONGO_CONNECTION_STR);
     Mongo.connect(MONGO_CONNECTION_STR, function (err, client) {
         if (err) {
-            console.log("[DB] Connection failed! (ERROR: " + err + ")");
+            log("[DB] Connection failed! (ERROR: " + err + ")");
             return;
         }
 
         PLAYER_DATABASE = client.db('torn').collection('players');
-        console.log("[DB] Connection successful!");
+        log("[DB] Connection successful!");
     });
 }
 
