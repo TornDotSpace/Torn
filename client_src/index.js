@@ -1109,16 +1109,15 @@ function rWeaponStore() {
 }
 function rWeaponStats(i) {
 	ctx.font = '11px Nasa';
-	write(wepns[i].name, rx + 32, ry + 356 + 16 * -2);
-	wrapText(wepns[i].desc, rx + 32, ry + 356 + 16 * -1, 128 * 6 - 64, 16);
-	write("Type: " + wepns[i].type, rx + 32, ry + 356 + 16 * 2);
-	write(mEng[70] + (wepns[i].energy == -1 ? mEng[206] : wepns[i].energy), rx + 32, ry + 356 + 16 * 3);
-	write(mEng[71] + (wepns[i].Range == -1 ? mEng[206] : (wepns[i].Range + " Meters")), rx + 32, ry + 356 + 16 * 4);
-	write(mEng[72] + (wepns[i].Damage == -1 ? mEng[206] : wepns[i].Damage), rx + 32, ry + 356 + 16 * 5);
-	write(mEng[73] + (wepns[i].Speed == -1 ? mEng[206] : wepns[i].Speed), rx + 32, ry + 356 + 16 * 6);
-	write(mEng[74] + (wepns[i].Charge == -1 ? mEng[206] : ((wepns[i].Charge / 25) + mEng[75])), rx + 32, ry + 356 + 16 * 7);
-	write(mEng[173] + ammoCodeToString(wepns[i].ammo), rx + 32, ry + 356 + 16 * 8);
-	write(mEng[174] + wepns[i].Level, rx + 32, ry + 356 + 16 * 9);
+	write(wepns[i].name, rx + 32, ry + 364 + 16 * -2);
+	wrapText(wepns[i].desc, rx + 32, ry + 364 + 16 * -1, 128 * 6 - 64, 16);
+	write("Type: " + wepns[i].type, rx + 32, ry + 364 + 16 * 2);
+	write(mEng[71] + (wepns[i].Range == -1 ? mEng[206] : (wepns[i].Range + " Meters")), rx + 32, ry + 364 + 16 * 3);
+	write(mEng[72] + (wepns[i].Damage == -1 ? mEng[206] : wepns[i].Damage), rx + 32, ry + 364 + 16 * 4);
+	write(mEng[73] + (wepns[i].Speed == -1 ? mEng[206] : wepns[i].Speed), rx + 32, ry + 364 + 16 * 5);
+	write(mEng[74] + (wepns[i].Charge == -1 ? mEng[206] : ((wepns[i].Charge / 25) + mEng[75])), rx + 32, ry + 364 + 16 * 6);
+	write(mEng[173] + ammoCodeToString(wepns[i].ammo), rx + 32, ry + 364 + 16 * 7);
+	write(mEng[174] + wepns[i].Level, rx + 32, ry + 364 + 16 * 8);
 
 	if (actuallyBuying) {
 		ctx.fillStyle = wepns[i].price > money ? "orange" : "limeq";
