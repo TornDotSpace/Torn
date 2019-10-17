@@ -627,7 +627,7 @@
 			"desc":""
 		},
 		{
-			"nameA":"Fighter",
+			"nameA":"Private",
 			"nameH":"Piranha",
 			"desc":""
 		},
@@ -647,7 +647,7 @@
 			"desc":""
 		},
 		{
-			"nameA":"Enforcer",
+			"nameA":"Scythe",
 			"nameH":"Hammerhead",
 			"desc":""
 		},
@@ -677,7 +677,7 @@
 			"desc":""
 		},
 		{
-			"nameA":"Raider",
+			"nameA":"Swift",
 			"nameH":"Sailfish",
 			"desc":""
 		},
@@ -688,21 +688,21 @@
 		},
 		{
 			"nameA":"Destroyer",
-			"nameH":"Atlas",
+			"nameH":"Taurus",
 			"desc":""
 		},
 		{
-			"nameA":"Hydra",
+			"nameA":"Falcon",
 			"nameH":"Wyvern",
 			"desc":""
 		},
 		{
-			"nameA":"Conqueror",
+			"nameA":"Interceptor",
 			"nameH":"Leviathan",
 			"desc":""
 		},
 		{
-			"nameA":"Elite Raider",
+			"nameA":"Elite Swift",
 			"nameH":"Elite Sailfish",
 			"desc":""
 		},
@@ -713,16 +713,16 @@
 		},
 		{
 			"nameA":"Elite Destroyer",
-			"nameH":"Elite Atlas",
+			"nameH":"Elite Taurus",
 			"desc":""
 		},
 		{
-			"nameA":"Elite Hydra",
+			"nameA":"Elite Falcon",
 			"nameH":"Elite Wyvern",
 			"desc":""
 		},
 		{
-			"nameA":"Elite Conqueror",
+			"nameA":"Elite Interceptor",
 			"nameH":"Elite Leviathan",
 			"desc":""
 		}
