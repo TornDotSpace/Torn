@@ -1607,6 +1607,10 @@ function Player(sock) {
 			}
 		self.socket.emit("chat", { msg: "Player not found!" });
 	}
+	self.nameWithoutTag = function(){
+		if(self.name.includes(" ")) return self.name.split(" ")[1];
+		return self.name;
+	}
 	self.swap = function (msg) { // msg looks like "/swap 2 5". Swaps two weapons.
 		var spl = msg.split(" ");
 		if (spl.length != 3) { // not enough arguments

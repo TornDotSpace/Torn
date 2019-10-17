@@ -10,6 +10,7 @@ var guestCount = 0; // Enumerate guests since server boot
 
 // Global mute table 
 global.muteTable = {};
+global.onlineNames = {};
 
 function flood(ip) {
     var safe = false;
@@ -51,8 +52,6 @@ function runCommand(player, msg) { // player just sent msg in chat and msg start
         command.invoke(player, msg);
     }
 }
-
-var onlineNames = {};
 
 module.exports = function initNetcode() {
     var port = process.argv[2];
@@ -212,17 +211,21 @@ module.exports = function initNetcode() {
                 socket.emit("invalidCredentials", {});
                 return;
             }
+            console.log("a");
             name = name.toLowerCase();
 
             if (onlineNames[name] === 1) {
+                console.log(name);
                 socket.emit("accInUse", {});
                 return;
             }
+            console.log("b");
 
             player = new Player(socket);
             socket.player = player;
             player.ip = ip;
             player.name = name;
+            onlineNames[name] = 1;
             player.password = hash(data.pass);
 
             //Load account
@@ -235,7 +238,6 @@ module.exports = function initNetcode() {
 
             instance = true;
 
-            onlineNames[name] = 1;
             socket.emit("loginSuccess", {id: player.id});
 
 
@@ -276,7 +278,7 @@ module.exports = function initNetcode() {
             var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game!"; // write a message about the player leaving
             console.log(text); // print in terminal
             chatAll(text); // send it to all the players
-            onlineNames[player.name] = 0;
+
             //DO NOT save the player's data.
         });
         socket.on('pingmsg', function (data) { // when the player pings to tell us that it's still connected
