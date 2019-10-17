@@ -11,7 +11,7 @@ var logFileName = "logs/" + (new Date()) + ".log";
 
 global.log = function (text) {
 	console.log(text);
-	fs.appendFile(logFileName, text, function (err) { if (err) throw err; });
+	fs.appendFile(logFileName, text+"\n", function (err) { if (err) throw err; });
 }
 
 global.initReboot = function () {

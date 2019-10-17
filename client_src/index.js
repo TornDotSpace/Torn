@@ -148,7 +148,7 @@ var sectorDot = { x: xxa, y: yya, z: 0, color: 'lime' };
 var planetTimerSec = 0;
 var flash = 0;
 var hyperdriveTimer = 0;
-var didW = false, didSteer = false;
+var didW = false, didSteer = false, currTut = 0;
 
 var basess = [];
 var baseInfo = [0, 1, 0, 4, 2, 2, 3, 0, 5, 1];
@@ -1103,8 +1103,7 @@ function rWeaponStore() {
 		write("*", wx, wy);
 		ctx.fillStyle = seller - 20 == i ? 'lime' : buyable;
 		write(mEng[69] + ('$' + wepns[i].price + '         ').substring(0, 9) + wepns[i].name, wx + 11, wy);
-		if (seller - 20 == i)
-			rWeaponStats(i);
+		if (seller - 20 == i) rWeaponStats(i);
 	}
 }
 function rWeaponStats(i) {
@@ -3195,22 +3194,23 @@ function rTut() {
 	var ore = iron + silver + platinum + aluminium;
 	var text = "";
 	var line2 = "";
-	var blink = true;
 	ctx.save();
 	ctx.textAlign = "center";
 	ctx.fillStyle = 'yellow';
 	if (guest) {
-		if (money != 8000) text = mEng[123];
-		else if (!didW) text = mEng[117];
-		else if (!didSteer) text = mEng[118];
+		if (money != 8000 && currTut > 3) { text = mEng[123]; if(currTut < 5) { currTut = 5; addBigNote([256,text,"",""]); } }
+		else if (!didW) { text = mEng[117]; if(currTut < 1) { currTut = 1; addBigNote([256,text,"",""]); } }
+		else if (!didSteer) { text = mEng[118]; if(currTut < 2) { currTut = 2; addBigNote([256,text,"",""]); } }
 		else if (ship == 0 && ore == 0) {
 			text = mEng[119];
 			line2 = mEng[120];
-		} else if (ship == 0) text = docked ? mEng[122] : mEng[121];
+			if(currTut < 3) { currTut = 3; addBigNote([256,text,line2,""]); }
+		}
+		else if (ship == 0) { text = docked ? mEng[122] : mEng[121]; if(currTut < 4) { currTut = 4; addBigNote([256,text,"",""]); } }
 	}
 	var date = new Date();
 	var ms = date.getTime();
-	ctx.font = ((blink ? 5 * sinLow(ms / 180) : 0) + 25) + "px Nasa";
+	ctx.font = (5 * sinLow(ms / 180) + 25) + "px Nasa";
 	write(text, w / 2, 40);
 	write(line2, w / 2, 88);
 	ctx.restore();
@@ -3327,7 +3327,8 @@ function rRaid() {
 }
 function rBigNotes() {
 	if(bigNotes[0] === -1) return;
-	if(bigNotes[0][0]-- < 0) {
+	bigNotes[0][0] -= 2;
+	if(bigNotes[0][0] < 0) {
 		for(var i = 0; i < 3; i++) bigNotes[i] = bigNotes[i+1]; // shift array down
 		bigNotes[3] = -1;
 		return;
