@@ -1274,7 +1274,7 @@ function updateLB() {
 			'</font></center></div></h1>' +
 			'<font color="#0099ff"><center><nobr><table><tr><th>#</th><th>Name</th><th>Exp</th><th>Rank</th><th>Kills</th><th>Money</th><th>Tech</th></tr>';
 		for (var i = 0; i < 1000; i++) {
-			newFile += '<tr style="color:' + top1000colors[i] + ';"><th>' + (i + 1) + ".</th><th>" + top1000names[i] + "</th><th> " + top1000exp[i] + " </th><th>" + top1000rank[i] + "</th><th>" + top1000kills[i] + "</th><th>" + top1000money[i] + "</th><th>" + top1000tech[i] + "</th></tr>";
+			newFile += '<tr style="color:' + top1000colors[i] + ';"><td>' + (i + 1) + ".</td><td>" + top1000names[i] + "</td><td> " + top1000exp[i] + " </td><td>" + top1000rank[i] + "</td><td>" + top1000kills[i] + "</td><td>" + top1000money[i] + "</td><td>" + top1000tech[i] + "</td></tr>";
 			lbExp[i] = top1000exp[i];
 		}
 		newFile += '</table></nobr><br/>Updates every 25 minutes Last updated: ' + new Date() + '</center></font></body></html>';
