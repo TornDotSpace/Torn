@@ -1382,8 +1382,8 @@ function Player(sock) {
 
 		//achievementy stuff
 		if (self.oresMined == 15 && !self.moneyAchs[1]) self.moneyAchs[1] = true;
-		else if (!self.moneyAchs[0] && 2000 <= self.iron + self.silver + self.aluminium + self.platinum) self.moneyAchs[0] = true;
-		else if (!self.moneyAchs[2] && 6000 <= self.iron + self.silver + self.aluminium + self.platinum) self.moneyAchs[2] = true;
+		else if (!self.moneyAchs[0]) self.moneyAchs[0] = true;
+		else if (!self.moneyAchs[2] && 4000 <= self.iron + self.silver + self.aluminium + self.platinum) self.moneyAchs[2] = true;
 		else if (!self.moneyAchs[3] && 15000 <= self.iron + self.silver + self.aluminium + self.platinum) self.moneyAchs[3] = true;
 		else return;
 		self.sendAchievementsCash(true);

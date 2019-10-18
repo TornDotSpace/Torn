@@ -1762,7 +1762,7 @@ socket.on('achievementsKill', function (data) {
 		a = Number(a);
 		if (achs[a] != data.achs[a]){
 			achs[a] = data.achs[a];
-			if(data.note) addBigNote([256,"Achievement Get!",jsn.achNames[a].split(":")[0],jsn.achNames[a].split(":")[1]]);
+			if(data.note && !guest) addBigNote([256,"Achievement Get!",jsn.achNames[a].split(":")[0],jsn.achNames[a].split(":")[1]]);
 		}
 	}
 });
@@ -1771,7 +1771,7 @@ socket.on('achievementsCash', function (data) {
 		a = Number(a);
 		if (achs[a + 13] != data.achs[a]){
 			achs[a + 13] = data.achs[a];
-			if(data.note) addBigNote([256,"Achievement Get!",jsn.achNames[a+13].split(":")[0],jsn.achNames[a+13].split(":")[1]]);
+			if(data.note && !guest) addBigNote([256,"Achievement Get!",jsn.achNames[a+13].split(":")[0],jsn.achNames[a+13].split(":")[1]]);
 		}
 	}
 });
@@ -1780,7 +1780,7 @@ socket.on('achievementsDrift', function (data) {
 		a = Number(a);
 		if (achs[a + 25] != data.achs[a]){
 			achs[a + 25] = data.achs[a];
-			if(data.note) addBigNote([256,"Achievement Get!",jsn.achNames[a+25].split(":")[0],jsn.achNames[a+25].split(":")[1]]);
+			if(data.note && !guest) addBigNote([256,"Achievement Get!",jsn.achNames[a+25].split(":")[0],jsn.achNames[a+25].split(":")[1]]);
 		}
 	}
 });
@@ -1789,7 +1789,7 @@ socket.on('achievementsMisc', function (data) {
 		a = Number(a);
 		if (achs[a + 37] != data.achs[a]){
 			achs[a + 37] = data.achs[a];
-			if(data.note) addBigNote([256,"Achievement Get!",jsn.achNames[a+37].split(":")[0],jsn.achNames[a+37].split(":")[1]]);
+			if(data.note && !guest) addBigNote([256,"Achievement Get!",jsn.achNames[a+37].split(":")[0],jsn.achNames[a+37].split(":")[1]]);
 		}
 	}
 });
@@ -2590,6 +2590,7 @@ function rVolumeBar() {
 	ctx.restore();
 }
 function rExpBar() {
+	if(guest) return;
 	var dec = 256 * (experience - r2x(rank - 1)) / (r2x(rank) - r2x(rank - 1));
 	if (dec < 0)
 		dec = 0;
@@ -3317,7 +3318,7 @@ function rRaid() {
 }
 function rBigNotes() {
 	if(bigNotes[0] === -1) return;
-	bigNotes[0][0] -= 2;
+	bigNotes[0][0] -= bigNotes[0][2] === "" ? 2 : 1;
 	if(bigNotes[0][0] < 0) {
 		for(var i = 0; i < 3; i++) bigNotes[i] = bigNotes[i+1]; // shift array down
 		bigNotes[3] = -1;
