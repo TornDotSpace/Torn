@@ -696,23 +696,13 @@ function ammoCodeToString(code) {
 	else return "";
 }
 function rHome() {
-
-	ctx.textAlign = "left";
+	ctx.textAlign = "center";
 	r3DMapBig();
-
-	let d = new Date();
-	var rendX = rx + 128 * 5 - 16;
-	var rendY = ry + 128 * 3 - 16;
-	ctx.save();
-	ctx.translate(rendX, rendY);
-	ctx.rotate(d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50);
-	ctx.drawImage(pc == 'red' ? Img.base : Img.bss, -128, -128, 256, 256);
-	ctx.restore();
 	if (guest) {
 		ctx.font = (4 * sinLow(baseTick / 16) + 28) + "px Nasa";
 		ctx.fillStyle = (seller == 600) ? "lime" : "yellow";
 		ctx.textAlign = 'center';
-		write(mEng[11], rx + 728 - 96, ry + 512 - 24);
+		write(mEng[11], rx + 728 - 96, ry + 256);
 		ctx.font = "11px Nasa";
 	}
 }
