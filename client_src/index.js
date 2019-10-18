@@ -84,7 +84,7 @@ global.typing = false;
 global.stopTyping = () => { typing = false }
 
 var chatLength = 20, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
-var lorePage = 0, homepageTimer = 0;
+var lorePage = 0, homepageTimer = 0, loreTimer = 0;
 var messages = {};
 for (var i = 0; i < chatLength; i++)
 	messages[i] = "";
@@ -1857,11 +1857,6 @@ function loop() {
 	render();
 	textIn++;
 	if (!login) {
-		if (lore) {
-			rLore();
-			window.requestAnimationFrame(loop);
-			return;
-		}
 		if (!EVERYTHING_LOADED) {
 			ReactRoot.turnOffDisplay("LoginOverlay");
 			rLoadingBar();
@@ -1876,28 +1871,37 @@ function loop() {
 		ctx.fillStyle = "black";
 		ctx.fillRect(0, 0, w, h);
 
-		var scale = 1 - Math.exp((homepageTimer*10+10) / -300.);
+		//desmos this stuff or you wont have a clue whats going on vvv
+		var softsign = Math.exp(homepageTimer/15);
+		var scale = 1.885*(softsign/(1+softsign)-.47);
+		if(homepageTimer>100)scale = 1;
+
 		ctx.translate(w / 2, h / 2);
 		ctx.scale(scale,scale);
 		ctx.translate(-w / 2, -h / 2);
 
+		let d = new Date();
+		var t = d.getTime() / 6000;
+		var loreZoom = 100*(Math.hypot(loreTimer,256)-256);
+		px = (32 + Math.sin(t * 4)) * 3200;
+		py = (32 + Math.cos(t * 5)) * 3200;
+
+		scrx = (-w / 3 * Math.cos(4 * t));
+		scry = ( h / 3 * Math.sin(5 * t));
+		if(loreTimer>0) scry += loreZoom;
+
 		renderBG(true);
 
 		//Main hydra
-		let d = new Date();
-		var t = d.getTime() / 6000;
-		px = (32 + Math.sin(t * 4)) * 3200;
-		py = (32 + Math.cos(t * 5)) * 3200;
 		var vx = 4000 * Math.sin(5 * t), vy = 3200 * Math.cos(4 * t);
-		var spd = Math.sqrt(square(vx) + square(vy)) / 100.;
+		var spd = Math.hypot(vx,vy) / 100.;
 		var rnd = Math.random();
 		var angleNow = -Math.atan2(5 * Math.sin(5 * t), 4 * Math.cos(4 * t));
 		if (rnd < .05) {
 			if(soundAllowed) playAudio("minigun", .1);
 			bullets[rnd] = { x: px, y: py, vx: 12800 / 6000 * 20 * Math.cos(4 * t) + 40 * Math.cos(angleNow), vy: -16000 / 6000 * 20 * Math.sin(5 * t) + 40 * Math.sin(angleNow), id: rnd, angle: angleNow, wepnID: 0, color: 'red' };
 		}
-		scrx = -w / 3 * Math.cos(4 * t);
-		scry = h / 3 * Math.sin(5 * t);
+
 		var img = redShips[14];
 		if (typeof img === "undefined" || img == 2) {
 			redShips[14] = 2;//so we don't load a million times before its sent
@@ -1935,7 +1939,7 @@ function loop() {
 				if (square(b.x - pxn) + square(b.y - pyn) < 64 * 32) {
 					delete bullets[i];
 					booms[Math.random()] = { x: b.x, y: b.y, time: 0, shockwave: false };
-					for (var i = 0; i < 5; i++) boomParticles[Math.random()] = { x: b.x, y: b.y, angle: Math.random() * 6.28, time: -1, dx: b.vx / 1.5, dy: b.vy / 1.5 };
+					//for (var i = 0; i < 5; i++) boomParticles[Math.random()] = { x: b.x, y: b.y, angle: Math.random() * 6.28, time: -1, dx: b.vx / 1.5, dy: b.vy / 1.5 };
 					if(soundAllowed) playAudio("boom", .35);
 				}
 			}
@@ -1978,10 +1982,15 @@ function loop() {
 		}
 		ctx.drawImage(Img.grad, 0, 0, w, h);
 		rCreds();
+		if (lore) {
+			ReactRoot.turnOffDisplay("LoginOverlay");
+			rLore();
+			loreTimer++;
+			window.requestAnimationFrame(loop);
+			return;
+		}
 	}
-	else {
-		ReactRoot.activate();
-	}
+	else ReactRoot.activate();
 
 
 	window.requestAnimationFrame(loop);
@@ -2519,35 +2528,15 @@ function updateBooms() {
 	}
 }
 function rLore() {
-	canvas.width = canvas.width;
-	renderBG();
-	if (lorePage == 0) {
-		ctx.drawImage(Img.grad, 0, 0, w, h);
-		var d = new Date();
-		var t = d.getTime() / 6000;
-		px = (32 + Math.sin(t * 4)) * 3200;
-		py = (32 + Math.cos(t * 5)) * 3200;
-		ctx.fillStyle = pc ? 'pink' : 'cyan';
-		ctx.font = "22px Nasa";
-		wrapText(jsn.lore[pc ? 0 : 1], 48, 48, w - 96, 40);
-		ctx.textAlign = 'center';
-		ctx.fillStyle = 'yellow';
-		ctx.font = (28 + 4 * Math.sin(32 * t)) + "px Nasa";
-		ctx.fillText(mEng[80], w - 192, h - 32);
-	} else if (lorePage == 1) {
-		ctx.drawImage(Img.grad, 0, 0, w, h);
-		var d = new Date();
-		var t = d.getTime() / 6000;
-		px = (32 + Math.sin(t * 4)) * 3200;
-		py = (32 + Math.cos(t * 5)) * 3200;
-		ctx.fillStyle = pc ? 'pink' : 'cyan';
-		ctx.font = "22px Nasa";
-		wrapText(jsn.lore[pc ? 0 : 1], 48, 48, w - 96, 40);
-		ctx.textAlign = 'center';
-		ctx.fillStyle = 'yellow';
-		ctx.font = (28 + 4 * Math.sin(32 * t)) + "px Nasa";
-		ctx.fillText(mEng[80], w - 192, h - 32);
-	}
+	textIn = 1000;
+	ctx.fillStyle = pc ? 'pink' : 'cyan';
+	ctx.font = "22px Nasa";
+	wrapText(jsn.lore[pc ? 0 : 1], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
+	ctx.textAlign = 'center';
+	ctx.fillStyle = 'yellow';
+	var t = (new Date()).getTime() / 6000;
+	ctx.font = ((32 + 6 * Math.sin(24 * t))*(loreTimer/(loreTimer+50))) + "px Nasa";
+	ctx.fillText(mEng[80], w/2, h - 48);
 }
 function rEnergyBar() {
 	if (equipped === 0) return;
@@ -3319,7 +3308,7 @@ function rRaid() {
 }
 function rBigNotes() {
 	if(bigNotes[0] === -1) return;
-	bigNotes[0][0] -= bigNotes[0][2] === "" ? 2.5 : 1.5;
+	bigNotes[0][0] -= bigNotes[0][2] === "" ? 2.5 : 1.25;
 	if(bigNotes[0][0] < 0) {
 		for(var i = 0; i < 3; i++) bigNotes[i] = bigNotes[i+1]; // shift array down
 		bigNotes[3] = -1;

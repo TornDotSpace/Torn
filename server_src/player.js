@@ -350,7 +350,7 @@ function Player(sock) {
 			}
 
 			sendWeapons(self);
-			self.reload(false);
+			self.reload(false, wepId);
 		}
 	}
 	self.shootEliteWeapon = function () {
@@ -375,16 +375,16 @@ function Player(sock) {
 			asts[self.sy][self.sx][r] = a;
 		}
 		if (self.ship == 18) self.shootBullet(39); // Built in spreadshot
-		self.reload(true);
+		self.reload(true, 0);
 	}
-	self.reload = function(elite){
+	self.reload = function(elite, wepId){
 		if(elite){
 			if(self.ship == 18) self.charge = -wepns[39].Charge;
 			if(self.ship == 17) self.charge = -150;
 			return;
 		}
-		if(wepns[self.weapons[self.equipped]].Charge > 12) self.charge = 0;
-		else self.charge = -wepns[self.weapons[self.equipped]].Charge;
+		if(wepns[wepId].Charge > 12) self.charge = 0;
+		else self.charge = -wepns[wepId].Charge;
 	}
 	self.canShoot = function(wepId){
 		if(wepId < 0) return false;
