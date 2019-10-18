@@ -2551,19 +2551,20 @@ function rLore() {
 }
 function rEnergyBar() {
 	if (equipped === 0) return;
-	var Charge = wepns[equipped[scroll]].Charge;
+	var Charge = wepns[equipped[scroll]].Charge + 1;
 	if (Charge < 12 && charge < 12) return;
 	if (Charge < 12 && charge >= 12) Charge = 150;
 	ctx.fillStyle = 'lime';
 	ctx.globalAlpha = .5;
-	ctx.fillRect(0, 0, (w/2) * (charge/Charge), 4);
-	ctx.fillRect(0, h-4, (w/2) * (charge/Charge), 4);
-	ctx.fillRect(w-(w/2) * (charge/Charge), 0, (w/2) * (charge/Charge), 4);
-	ctx.fillRect(w-(w/2) * (charge/Charge), h-4, (w/2) * (charge/Charge), 4);
-	ctx.fillRect(0, 0, 4, (h/2) * (charge/Charge));
-	ctx.fillRect(w-4, 0, 4, (h/2) * (charge/Charge));
-	ctx.fillRect(0, h-(h/2) * (charge/Charge), 4, (h/2) * (charge/Charge));
-	ctx.fillRect(w-4, h-(h/2) * (charge/Charge), 4, (h/2) * (charge/Charge));
+	var div = (charge-1)/Charge;
+	ctx.fillRect(0, 0, (w/2) * div, 4);
+	ctx.fillRect(0, h-4, (w/2) * div, 4);
+	ctx.fillRect(w-(w/2) * div, 0, (w/2) * div, 4);
+	ctx.fillRect(w-(w/2) * div, h-4, (w/2) * div, 4);
+	ctx.fillRect(0, 0, 4, (h/2) * div);
+	ctx.fillRect(w-4, 0, 4, (h/2) * div);
+	ctx.fillRect(0, h-(h/2) * div, 4, (h/2) * div);
+	ctx.fillRect(w-4, h-(h/2) * div, 4, (h/2) * div);
 	ctx.globalAlpha = 1;
 }
 
