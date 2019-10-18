@@ -2551,7 +2551,7 @@ function rLore() {
 }
 function rEnergyBar() {
 	if (equipped === 0) return;
-	var Charge = wepns[equipped[scroll]].Charge + 1;
+	var Charge = wepns[equipped[scroll]].Charge;
 	if (Charge < 12 && charge < 12) return;
 	if (Charge < 12 && charge >= 12) Charge = 150;
 	ctx.fillStyle = 'lime';
