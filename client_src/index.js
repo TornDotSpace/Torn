@@ -2148,7 +2148,7 @@ document.addEventListener('mousemove', function (evt) {
 	if (mb == 1 && mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
 	if (mx > w - 32 - 20 - 128 && my > h - 52) volTransparency = 1;
 	var preSeller = seller;
-	if (guest && tab == 0 && docked && mx > rx + 768 - 256 && mx < rx + 768 && my > ry + 512 - 80 && my < ry + 512) seller = 600;
+	if (guest && tab == 0 && docked && mx > rx + 768 - 256 && mx < rx + 768 && my > ry + 256 - 40 && my < ry + 256 + 120) seller = 600;
 	else if (tab == 1 && docked && mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
 	else if (tab == 1 && docked && mx > rx + 768 - 16 - ctx.measureText(mEng[14]).width && mx < rx + 768 - 16 && my > ry + 512 - 32 && my < ry + 512 - 16) seller = 611;
 	else if (mb == 1 && docked && tab == 1 && mx > rx + 128 * 4 - 16 && mx < rx + 128 * 6 - 16 && my < ry + 128 * 4 - 16 && my > ry + 128 * 2 - 16) {
@@ -3318,7 +3318,7 @@ function rRaid() {
 }
 function rBigNotes() {
 	if(bigNotes[0] === -1) return;
-	bigNotes[0][0] -= bigNotes[0][2] === "" ? 2 : 1;
+	bigNotes[0][0] -= bigNotes[0][2] === "" ? 2.5 : 1.5;
 	if(bigNotes[0][0] < 0) {
 		for(var i = 0; i < 3; i++) bigNotes[i] = bigNotes[i+1]; // shift array down
 		bigNotes[3] = -1;
@@ -3869,7 +3869,7 @@ function rEdgePointer() {
 	else if (angle == 2) text = px;
 	else if (angle == 3) text = sectorWidth - py;
 	text = Math.floor(text / 10);
-	if (text < h / 10 || text > 500 * va2) return;
+	if (text < h / 30 || text > 500 * va2) return;
 
 	var rendX = w / 2 + pw * 1 * cosLow(angle * Math.PI / 2) + scrx;
 	var rendY = h / 2 - pw * 1 * sinLow(angle * Math.PI / 2) + scry;
@@ -3895,7 +3895,7 @@ function rBasePointer(nearB) {
 
 	var text = Math.sqrt((nearB.x - px) * (nearB.x - px) + (nearB.y - py) * (nearB.y - py));
 	text = Math.floor(text / 10);
-	if (text < h / 10) return;
+	if (text < h / 30) return;
 
 	var angle = Math.atan2(nearB.y - py, nearB.x - px);
 	var rendX = w / 2 + pw * 1 * cosLow(angle) + scrx;
@@ -3922,7 +3922,7 @@ function rEnemyPointer(nearE) {
 
 	var text = Math.sqrt((nearE.x - px) * (nearE.x - px) + (nearE.y - py) * (nearE.y - py));
 	text = Math.floor(text / 10);
-	if (text < h / 20 || text > 500 * va2) return;
+	if (text < h / 30 || text > 500 * va2) return;
 
 	var angle = Math.atan2(nearE.y - py, nearE.x - px);
 	var rendX = w / 2 + pw * 1 * cosLow(angle) + scrx;
@@ -3949,7 +3949,7 @@ function rFriendlyPointer(nearF) {
 
 	var text = Math.sqrt((nearF.x - px) * (nearF.x - px) + (nearF.y - py) * (nearF.y - py));
 	text = Math.floor(text / 10);
-	if (text < h / 10 || text > 500 * va2) return;
+	if (text < h / 30 || text > 500 * va2) return;
 
 	var angle = Math.atan2(nearF.y - py, nearF.x - px);
 	var rendX = w / 2 + pw * 1 * cosLow(angle) + scrx;
@@ -3977,7 +3977,7 @@ function rAstPointer(nearE) {
 
 	var text = Math.sqrt((nearE.x - px) * (nearE.x - px) + (nearE.y - py) * (nearE.y - py));
 	text = Math.floor(text / 10);
-	if (text < h / 10 || text > 500 * va2) return;
+	if (text < h / 30 || text > 500 * va2) return;
 
 	var angle = Math.atan2(nearE.y - py, nearE.x - px);
 	var rendX = w / 2 + pw * 1 * cosLow(angle) + scrx;

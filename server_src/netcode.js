@@ -537,6 +537,7 @@ module.exports = function initNetcode() {
             player.equipped = Math.floor(data.scroll); // Set their equipped weapon
             if (player.equipped < 0) player.equipped = 0; // Ensure it's in range
             else if (player.equipped > 9) player.equipped = 9;
+            player.charge = 0; // to prevent scroll charge exploit
 
             socket.emit('equip', { scroll: player.equipped }); // Alert the client
         });

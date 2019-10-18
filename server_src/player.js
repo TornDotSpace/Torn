@@ -43,7 +43,7 @@ function Player(sock) {
 		disguise: -1,
 		timer: 0,
 		gyroTimer: 0,
-		reload: 0,
+		charge: 0,
 
 		chatTimer: 100,
 		muteCap: 250,
@@ -153,9 +153,6 @@ function Player(sock) {
 		self.superchargerTimer--;
 		self.empTimer--;
 		self.disguise--;
-		var reloadVal = self.energy2 / 2 + .5; //reload speed scales with energy tech
-		for (var i = 0; i < self.generators; i++) reloadVal *= 1.06;
-		self.reload = (self.space || self.c) ? (self.reload+reloadVal):0;
 
 		var amDrifting = self.e || self.gyroTimer > 0;
 		self.shield = (self.s && !amDrifting && self.gyroTimer < 1) || self.leaveBaseShield > 0;
@@ -171,6 +168,11 @@ function Player(sock) {
 		if (self.health < self.maxHealth && !self.shield) self.health += playerHeal;
 
 		self.fire();
+
+		var chargeVal = self.energy2 / 2 + .5; //charge speed scales with energy tech
+		for (var i = 0; i < self.generators; i++) chargeVal *= 1.06;
+		if(self.charge < 0 || self.space || self.c) self.charge+=chargeVal;
+		else if(self.charge > 0 && !self.space && !self.c) self.charge = 0;
 	}
 	self.fire = function () {
 		if (self.c) self.shootEliteWeapon();
@@ -178,11 +180,11 @@ function Player(sock) {
 		var wepId = self.weapons[self.equipped];
 		var wep = wepns[wepId];
 
-		if (self.space && wepId >= 0 && self.reload > wep.Charge) {
+		if (self.canShoot(wepId)) {
 
 			//In case of insufficient ammo
 			if (self.ammos[self.equipped] == 0) {
-				self.reload = wep.Charge - 10;
+				self.charge = wep.Charge - 10;
 				self.socket.emit("sound", { file: "noammo", x: self.x, y: self.y });
 				return;
 			} else if (self.ammos[self.equipped] > 0) self.ammos[self.equipped]--;
@@ -224,7 +226,6 @@ function Player(sock) {
 			//Timery Weapons
 
 			else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-				self.reload = 0;
 
 				//Supercharger
 				if (wepId == 36) self.superchargerTimer = 1500;//1 min
@@ -260,7 +261,6 @@ function Player(sock) {
 						p.updatePolars(); // We changed their rectangular velocity.
 					}
 				}
-				self.reload = 0;
 			}
 
 			//Electromagnet
@@ -287,7 +287,6 @@ function Player(sock) {
 						p.updatePolars();
 					}
 				}
-				self.reload = 0;
 			}
 
 
@@ -311,7 +310,6 @@ function Player(sock) {
 				b.owner = self.name;
 				bases[self.sy][self.sx] = b;
 				self.socket.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
-				self.reload = 0;
 			}
 
 			//Turbo
@@ -332,7 +330,6 @@ function Player(sock) {
 					self.driftAchs[10] = true;
 					self.sendAchievementsDrift(true);
 				}
-				self.reload = 0;// TODO can we put these all at the bottom of fire()?
 			}
 
 			//Hyperdrive
@@ -344,7 +341,6 @@ function Player(sock) {
 					self.driftAchs[6] = true;
 					self.sendAchievementsDrift(true);
 				}
-				self.reload = 0;
 			}
 
 			//If we run out of ammo on a one-use weapon, delete that weapon.
@@ -354,6 +350,7 @@ function Player(sock) {
 			}
 
 			sendWeapons(self);
+			self.reload(false);
 		}
 	}
 	self.shootEliteWeapon = function () {
@@ -364,7 +361,7 @@ function Player(sock) {
 			self.vx *= mult;
 			self.vy *= mult;
 		}
-		if (self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250 && self.reload > 150) { // Quarrier
+		if (self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250) { // Quarrier
 			self.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
 			self.silver -= 250;
 			self.aluminium -= 250;
@@ -376,9 +373,23 @@ function Player(sock) {
 			a.vx = Math.cos(self.angle) * 15;
 			a.vy = Math.sin(self.angle) * 15;
 			asts[self.sy][self.sx][r] = a;
-			self.reload = 0;
 		}
 		if (self.ship == 18) self.shootBullet(39); // Built in spreadshot
+		self.reload(true);
+	}
+	self.reload = function(elite){
+		if(elite){
+			if(self.ship == 18) self.charge = -wepns[39].Charge;
+			if(self.ship == 17) self.charge = -150;
+			return;
+		}
+		if(wepns[self.weapons[self.equipped]].Charge > 12) self.charge = 0;
+		else self.charge = -wepns[self.weapons[self.equipped]].Charge;
+	}
+	self.canShoot = function(wepId){
+		if(wepId < 0) return false;
+		var sufficientCharge = self.charge > (wepns[wepId].Charge > 12 ? wepns[wepId].Charge : 0);
+		return self.space && sufficientCharge;
 	}
 	self.checkDisconnect = function () {
 		if (self.pingTimer-- < 0) {
@@ -569,8 +580,8 @@ function Player(sock) {
 
 	}
 	self.juke = function (left) {
-		if (self.reload > 0) return;
-		self.reload = -10;
+		if (self.charge > 0) return;
+		self.charge = -10;
 		self.jukeTimer = (self.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
 	}
 	self.mute = function (minutes) {
@@ -765,7 +776,7 @@ function Player(sock) {
 		input[1] = self.ammos[self.equipped] / 50;
 		input[2] = self.health / self.maxHealth;
 		input[3] = 1; // energy used to be here
-		input[4] = self.reload / 50;
+		input[4] = self.charge / 50;
 		input[5] = self.speed / 100;
 		input[6] = self.cva;
 
@@ -1002,8 +1013,6 @@ function Player(sock) {
 			currWep = 40;
 		}
 
-		self.reload = 0;
-
 		//how many bullets are we firing?
 		var n = 1;
 		if (currWep == 4) n = 4; // shotgun
@@ -1030,27 +1039,21 @@ function Player(sock) {
 		var missile = Missile(self, r, self.weapons[self.equipped], bAngle);
 		missiles[self.sy][self.sx][r] = missile;
 		sendAllSector('sound', { file: "missile", x: self.x, y: self.y }, self.sx, self.sy);
-
-		self.reload = 0;
 	}
 	self.shootOrb = function () {
 		var r = Math.random();
 		var orb = Orb(self, r, self.weapons[self.equipped]);
 		orbs[self.sy][self.sx][r] = orb;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
-
-		self.reload = 0;
 	}
 	self.shootMine = function () {
 		if (Object.keys(mines[self.sy][self.sx]).length >= 20 && self.weapons[self.equipped] < 30) {
 			self.ammos[self.equipped]++;
-			self.reload = 0;
 			self.socket.emit("chat", { msg: "This sector has reached its limit of 20 mines." });
 			return;
 		}
 		if (square(self.sx - sectorWidth / 2) + square(self.sy - sectorWidth / 2) < square(600 * 10)) {
 			self.ammos[self.equipped]++;
-			self.reload = 0;
 			self.socket.emit("chat", { msg: "You may not place a mine here." });
 			return;
 		}
@@ -1058,8 +1061,6 @@ function Player(sock) {
 		var mine = Mine(self, r, self.weapons[self.equipped]);
 		mines[self.sy][self.sx][r] = mine;
 		sendAllSector('mine', { x: self.x, y: self.y }, self.sx, self.sy);
-
-		self.reload = 0;
 	}
 	self.shootBeam = function (origin, restricted) {// restricted is for recursive calls from quarriers
 		var ox = origin.x, oy = origin.y;
@@ -1113,16 +1114,12 @@ function Player(sock) {
 		var beam = Beam(self, r, self.weapons[self.equipped], nearP, origin);
 		beams[self.sy][self.sx][r] = beam;
 		sendAllSector('sound', { file: "beam", x: ox, y: oy }, self.sx, self.sy);
-
-		self.reload = 0;
 	}
 	self.shootBlast = function () {
 		var r = Math.random();
 		var blast = Blast(self, r, self.weapons[self.equipped]);
 		blasts[self.sy][self.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
-
-		self.reload = 0;
 	}
 	self.die = function (b) { // b: bullet object or other object which killed us
 		self.empTimer = -1;
