@@ -883,33 +883,6 @@ function update() {
 			if (!need_update) continue;
 			
 			gameState.orbs.push({delta: delta, id: j});
-
-			if (tick % 5 == 0 && orb.locked == 0) {
-				var locked = 0;
-				for (var i in playerPack[y][x]) {
-					var player = playerPack[y][x][i];
-
-					var dist = squaredDist(player, orb);
-					if (player.empTimer <= 0 && player.color != orb.color && dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100) {
-						if (locked == 0) locked = player.id;
-						else if (typeof players[orb.sy][orb.sx][locked] !== 'undefined' && dist < square(players[orb.sy][orb.sx][locked].x - orb.x) + square(players[orb.sy][orb.sx][locked].y - orb.y)) locked = player.id;
-					}
-				}
-				orb.locked = locked;
-				if (locked != 0) continue;
-				if (basePack != 0 && basePack.color != orb.color && basePack.turretLive && locked == 0) locked = base.id;
-				orb.locked = locked;
-				if (locked != 0) continue;
-				for (var i in astPack[y][x]) {
-					var ast = astPack[y][x][i];
-					var dist = squaredDist(ast, orb);
-					if (dist < wepns[orb.wepnID].Range * wepns[orb.wepnID].Range * 100) {
-						if (locked == 0) locked = ast.id;
-						else if (typeof asts[y][x][locked] != "undefined" && dist < squaredDist(asts[y][x][locked], orb)) locked = player.id;
-					}
-				}
-				orb.locked = locked;
-			}
 		}
 
 		for (var j in missiles[y][x]) {
@@ -940,33 +913,6 @@ function update() {
 			if (!need_update) continue;
 
 			gameState.missiles.push({delta: delta, id: j});
-
-			if (tick % 5 == 0 && missile.locked == 0) {
-				var locked = 0;
-				for (var i in playerPack[y][x]) {
-					var player = playerPack[y][x][i];
-					var dist = squaredDist(player, missile);
-					if (player.empTimer <= 0 && player.color != missile.color && dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100) {
-						if (locked == 0) locked = player.id;
-						else if (typeof players[missile.sy][missile.sx][locked] !== 'undefined' && dist < squaredDist(players[missile.sy][missile.sx][locked], missile)) locked = player.id;
-					}
-				}
-				missile.locked = locked;
-				if (locked != 0) continue;
-				if (basePack != 0 && basePack.turretLive && locked == 0) locked = base.id;
-
-				missile.locked = locked;
-				if (locked != 0) continue;
-				for (var i in astPack[y][x]) {
-					var player = astPack[y][x][i];
-					var dist = squaredDist(player, missile);
-					if (dist < wepns[missile.wepnID].Range * wepns[missile.wepnID].Range * 100) {
-						if (locked == 0) locked = player.id;
-						else if (typeof asts[missile.sy][missile.sx][locked] != "undefined" && dist < squaredDist(asts[missile.sy][missile.sx][locked], missile)) locked = player.id;
-					}
-				}
-				missile.locked = locked;
-			}
 		}
 
 		for (var i in vortPack[y][x]) {
@@ -1206,7 +1152,7 @@ function updateHeatmap() {
 	var lbSend = [];
 	for (var i = 0; i < Math.min(16, j); i++) lbSend[i] = { name: lb[i].name, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank };
 	for (var i = 0; i < mapSz; i++) for (var j = 0; j < mapSz; j++) {
-		/*if(asteroids[i][j] >= 15) hmap[i][j] += 1500;
+		/*if(asts[i][j] >= 15) hmap[i][j] += 1500;
 		else */hmap[i][j] += 500;
 	}
 

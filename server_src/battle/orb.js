@@ -1,10 +1,3 @@
-//weapon objects
-function sameSector(a, b) {
-	return a.sx == b.sx && a.sy == b.sy
-}
-
-
-
 module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is energy disk
 	var self = {
 		type: "Orb",
@@ -17,41 +10,74 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 		y: ownr.y, // spawn where its owner is
 		sx: ownr.sx,
 		sy: ownr.sy,
-		vx: 2 * ownr.vx + wepns[weaponID].Speed * Math.cos(ownr.angle), // velocity is 2*owner's velocity plus this weapon's speed
-		vy: 2 * ownr.vy + wepns[weaponID].Speed * Math.sin(ownr.angle),
+		vx: wepns[weaponID].Speed * Math.cos(ownr.angle) * 2,
+		vy: wepns[weaponID].Speed * Math.sin(ownr.angle) * 2,
 
-		locked: 0, // the player I'm locked on to
+		locked: 0, // the id of the player I'm locked on to
 		timer: 0, // how long this orb has existed
 		lockedTimer: 0, // timer of how long it's been locked onto a player
 		wepnID: weaponID
 	}
 	self.tick = function () {
 		if (self.timer++ > 3 * wepns[weaponID].Range / wepns[weaponID].Speed) self.die();
-		//log("my color: " + self.color);
-		//log("target detected: " + self.locked);
-
 		self.move();
+
+
+		// Find next target
+		var closest = -1;
+		if (tick % 5 == 0 && self.locked == 0) {
+			//search players
+			for (var i in players[self.sy][self.sx]) {
+				var player = players[self.sy][self.sx][i];
+				var dist = squaredDist(player, self);
+				if ((player.color != self.color && dist < square(wepns[self.wepnID].Range * 10)) && (self.locked == 0 || dist < closest)) {
+					self.locked = player.id;
+					closest = dist;
+				}
+			}
+			if (self.locked != 0) return;
+			
+			//check base
+			if (bases[self.sy][self.sSx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].Range * 10)) {
+				self.locked = bases[self.sy][self.sx].id;
+				return;
+			}
+			
+
+			//search asteroids
+			for (var i in asts[self.sy][self.sx]) {
+				var ast = asts[self.sy][self.sx][i];
+				var dist = squaredDist(ast, self);
+				if (dist < square(wepns[self.wepnID].Range * 10) && (self.locked == 0 || dist < closest)) {
+					self.locked = ast.id;
+					closest = dist;
+				}
+			}
+		}
 	}
 	self.move = function () {
-		if (self.locked != 0 && typeof self.locked === 'number') {
-			if (self.lockedTimer++ > 2.5 * 25) self.die(); // after 2.5 seconds of being locked on -> delete self
+		if (self.locked != 0) {
+			log("target detected: " + self.locked);
+			if (self.lockedTimer++ > secs(2.5)) self.die(); // after 2.5 seconds of being locked on -> delete self
+
+			var baseHere = bases[self.sy][self.sx];
 			var target = players[self.sy][self.sx][self.locked];
-			if (typeof target === 'undefined' && bases[self.sy][self.sx].color != self.color) target = bases[self.sy][self.sx];
+			if (typeof target === 'undefined') target = baseHere;
 			if (target == 0) target = asts[self.sy][self.sx][self.locked];
 			if (typeof target === 'undefined') self.locked = 0;
 			else { // if we are locked onto something
-				if (target.type === "Player") target.isLocked = true; // tell the player they're locked onto for an alert message
-				var d2 = hypot2(target.x,self.x,target.y,self.y);
-				if (sameSector(target, self) && d2 < 15 && target.turretLive != false) { // if it's a base we can't attack when it's dead
+				if (target.type === "Player") target.isLocked = true; // tell the player they're locked on so they will get an alert message
+				var dist = Math.hypot(target.x-self.x,target.y-self.y);
+				if (dist < 64 && target.turretLive !== false) { // if it's a base we can't attack when it's dead. !== false works in case of non-bases
 					target.dmg(self.dmg, self);
 					self.die();
 					return;
 				}
-				var dist = d2;
 				self.vx += wepns[weaponID].Speed * (target.x - self.x) / dist; // accelerate towards target
 				self.vy += wepns[weaponID].Speed * (target.y - self.y) / dist;
-				//self.vx *= .9; // air resistance
-				//self.vy *= .9;
+				self.vx *= .9; // air resistance
+				self.vy *= .9;
+				log("target type: " + target.type);
 			}
 		}
 		if (self.locked == 0) self.lockedTimer = 0;
@@ -60,6 +86,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 		if (self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die(); // if out of bounds
 	}
 	self.die = function () {
+				log("dead");
 		sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: self.vx, dy: self.vy }, self.sx, self.sy);
 		delete orbs[self.sy][self.sx][self.id];
 	}

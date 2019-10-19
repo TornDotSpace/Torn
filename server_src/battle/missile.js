@@ -37,6 +37,37 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 			}
 			self.die(); // and then die
 		}
+
+		
+		if (tick % 5 == 0 && self.locked == 0) {
+			//search players
+			for (var i in players[self.sy][self.sx]) {
+				var player = players[self.sy][self.sx][i];
+				var dist = squaredDist(player, self);
+				if ((player.color != self.color && dist < square(wepns[self.wepnID].Range * 10)) && (self.locked == 0 || dist < closest)) {
+					self.locked = player.id;
+					closest = dist;
+				}
+			}
+			if (self.locked != 0) return;
+			
+			//check base
+			if (bases[self.sy][self.sSx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].Range * 10)) {
+				self.locked = bases[self.sy][self.sx].id;
+				return;
+			}
+			
+
+			//search asteroids
+			for (var i in asts[self.sy][self.sx]) {
+				var ast = asts[self.sy][self.sx][i];
+				var dist = squaredDist(ast, self);
+				if (dist < square(wepns[self.wepnID].Range * 10) && (self.locked == 0 || dist < closest)) {
+					self.locked = ast.id;
+					closest = dist;
+				}
+			}
+		}
 	}
 	self.move = function () {
 
