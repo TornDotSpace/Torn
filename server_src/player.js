@@ -194,7 +194,7 @@ function Player(sock) {
 				return;
 			}
 
-			if (wepId == 40 && self.bulletQueue == 0) { // Submachinegun physics
+			if (wep.name === "Submachinegun" && self.bulletQueue == 0) { // Submachinegun physics
 				self.bulletQueue += 5;
 				self.ammos[self.equipped] -= 4; // 4 not 5 because the previous if did 1.
 				sendWeapons(self);
@@ -202,51 +202,33 @@ function Player(sock) {
 			}
 
 			//Traditional Weapons
-
-			// <= 6 are traditional guns. 28 = Grav Bomb, 39 = Spreadshot
-			if (wepId <= 6 || wepId == 28 || wepId == 39) self.shootBullet(wepId);
-
-			// <= 9 are plasma, laser, hadron beams. 35: Energy Leech, 26: Mining Laser, 30: Ion Mine Beam, 31: Gyrodynamite
-			else if (wepId <= 9 || wepId == 35 || wepId == 26 || wepId == 30 || wepId == 31) self.shootBeam(self, false);
-
-			//Traditional missiles. 38: Proximity Fuze
-			else if (wepId <= 14 || wepId == 38) self.shootMissile();
-
-			// <= 17: Traditional Mines, 32: Impulse Mine, 33: Grenades
-			else if (wepId <= 17 || wepId == 32 || wepId == 33) self.shootMine();
-
-			//Energy Disk
-			else if (wepId == 37) self.shootOrb();
-
-			// 34: Muon Ray, 25: EMP Blast, 41: Hypno Ray
-			else if (wepId == 34 || wepId == 25 || wepId == 41) self.shootBlast();
+			// <= 6 are traditional guns.
+			if (wepId <= 6 || wep.name === "Gravity Bomb" || wep.name === "Spreadshot") self.shootBullet(wepId);
+			// <= 9 are plasma, laser, hadron beams.
+			else if (wepId <= 9 || wep.name === "Jammer" || wep.name === "Mining Laser" || wep.name === "Ore Cannon" || wep.name === "Destabilizer") self.shootBeam(self, false);
+			//Traditional missiles
+			else if (wepId <= 14 || wep.name === "Proximity Fuze") self.shootMissile();
+			// <= 17: Traditional Mines
+			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades") self.shootMine();
+			else if (wep.name === "Energy Disk") self.shootOrb();
+			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast();
 
 
 
 			//Timery Weapons
 
 			else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-
-				//Supercharger
-				if (wepId == 36) self.superchargerTimer = 1500;//1 min
-
-				//Hull Nanobots
-				else if (wepId == 18) self.health += Math.min(80, self.maxHealth - self.health); // min prevents overflow
-
-				//Photon Cloak
-				else if (wepId == 19) self.disguise = 150;//6s
-
-				//Warp Drive
-				else if (wepId == 29) self.speed = self.thrust * (self.ship == 16 ? 700 : 500);
-
+				if (wep.name === "Supercharger") self.superchargerTimer = 1500;//1 min
+				else if (wep.name === "Hull Nanobots") self.health += Math.min(80, self.maxHealth - self.health); // min prevents overflow
+				else if (wep.name === "Photon Cloak") self.disguise = 150;//6s
+				else if (wep.name === "Warp Drive") self.speed = self.thrust * (self.ship == 16 ? 700 : 500);
 			}
 
 
 
 			//Movey Weapons
 
-			//Pulse Wave
-			else if (wepId == 23) {
+			else if (wep.name === "Pulse Wave") {
 				sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: Math.cos(self.angle) * self.speed, dy: Math.sin(self.angle) * self.speed }, self.sx, self.sy);
 				for (var i in players[self.sy][self.sx]) {
 					var p = players[self.sy][self.sx][i];
@@ -263,8 +245,7 @@ function Player(sock) {
 				}
 			}
 
-			//Electromagnet
-			else if (wepId == 24) { // identical structurally to pulse wave, see above for comments.
+			else if (wep.name === "Electromagnet") { // identical structurally to pulse wave, see above for comments.
 				for (var i in asts[self.sy][self.sx]) {
 					var a = asts[self.sy][self.sx][i];
 					var d2 = squaredDist(self, a);
@@ -293,8 +274,7 @@ function Player(sock) {
 
 			//Misc
 
-			//Turret
-			else if (wepId == 27) {
+			else if (wep.name === "Turret") {
 				if (self.x < sectorWidth / 4 || self.x > 3 * sectorWidth / 4 || self.y < sectorWidth / 4 || self.y > 3 * sectorWidth / 4) {
 					self.socket.emit("chat", { msg: 'Your turret must be closer to the center of the sector!', color: 'yellow' });
 					self.space = false;
@@ -312,8 +292,7 @@ function Player(sock) {
 				self.socket.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
 			}
 
-			//Turbo
-			else if (wepId == 21) {
+			else if (wep.name === "Turbo") {
 				var isDrifting = (self.e || self.gyroTimer > 0) && (self.a != self.d);
 				var mult = isDrifting ? 1.025 : 1.017; // Faster when drifting.
 
@@ -332,8 +311,7 @@ function Player(sock) {
 				}
 			}
 
-			//Hyperdrive
-			else if (wepId == 22) {
+			else if (wep.name === "Hyperdrive") {
 				var isDrifting = (self.e || self.gyroTimer > 0) && (self.a != self.d);
 				self.socket.emit("sound", { file: "hyperspace", x: self.x, y: self.y });
 				self.hyperdriveTimer = 200;
