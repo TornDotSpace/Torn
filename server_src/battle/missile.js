@@ -3,14 +3,14 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 		type: "Missile",
 		id: i, // unique identifier
 		color: ownr.color, // whose side i'm on
-		dmg: wepns[weaponID].Damage,
+		dmg: wepns[weaponID].damage,
 
 		x: ownr.x,
 		y: ownr.y,
 		sx: ownr.sx,
 		sy: ownr.sy,
-		vx: Math.cos(angl) * wepns[weaponID].Speed,
-		vy: Math.sin(angl) * wepns[weaponID].Speed,
+		vx: Math.cos(angl) * wepns[weaponID].speed,
+		vy: Math.sin(angl) * wepns[weaponID].speed,
 		angle: angl,
 
 		owner: ownr,
@@ -23,7 +23,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 	self.tick = function () {
 
 		self.move();
-		if (self.timer++ > 10 * wepns[weaponID].Range / wepns[weaponID].Speed) self.die(); // out of range -> die
+		if (self.timer++ > 10 * wepns[weaponID].range / wepns[weaponID].speed) self.die(); // out of range -> die
 		if (self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();//out of sector
 
 		if (self.timer >= 20 && self.wepnID == 13) { // missile swarm
@@ -44,7 +44,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 			for (var i in players[self.sy][self.sx]) {
 				var player = players[self.sy][self.sx][i];
 				var dist = squaredDist(player, self);
-				if ((player.color != self.color && dist < square(wepns[self.wepnID].Range * 10)) && (self.locked == 0 || dist < closest)) {
+				if ((player.color != self.color && dist < square(wepns[self.wepnID].range * 10)) && (self.locked == 0 || dist < closest)) {
 					self.locked = player.id;
 					closest = dist;
 				}
@@ -52,7 +52,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 			if (self.locked != 0) return;
 			
 			//check base
-			if (bases[self.sy][self.sSx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].Range * 10)) {
+			if (bases[self.sy][self.sSx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].range * 10)) {
 				self.locked = bases[self.sy][self.sx].id;
 				return;
 			}
@@ -62,7 +62,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 			for (var i in asts[self.sy][self.sx]) {
 				var ast = asts[self.sy][self.sx][i];
 				var dist = squaredDist(ast, self);
-				if (dist < square(wepns[self.wepnID].Range * 10) && (self.locked == 0 || dist < closest)) {
+				if (dist < square(wepns[self.wepnID].range * 10) && (self.locked == 0 || dist < closest)) {
 					self.locked = ast.id;
 					closest = dist;
 				}
@@ -95,8 +95,8 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 					if (self.timer == 1 || tick % 4 == 0) self.goalAngle = angleBetween(target, self);
 					self.angle = findBisector(findBisector(self.goalAngle, self.angle), self.angle);// turn towards goal
 				}
-				self.vx = Math.cos(self.angle) * wepns[weaponID].Speed; // update velocity
-				self.vy = Math.sin(self.angle) * wepns[weaponID].Speed;
+				self.vx = Math.cos(self.angle) * wepns[weaponID].speed; // update velocity
+				self.vy = Math.sin(self.angle) * wepns[weaponID].speed;
 
 			}
 		}

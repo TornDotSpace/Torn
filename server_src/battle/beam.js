@@ -2,7 +2,7 @@ module.exports = function Beam(ownr, i, weaponID, enemy, orign) {
 	var self = {
 		type: "Beam",
 		id: i, // unique identifier
-		dmg: weaponID == 400 ? wepns[16].Damage : wepns[weaponID].Damage,
+		dmg: weaponID == 400 ? wepns[16].damage : wepns[weaponID].damage,
 		sx: ownr.sx,
 		sy: ownr.sy,
 		origin: orign,

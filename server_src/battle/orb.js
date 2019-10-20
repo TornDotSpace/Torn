@@ -3,15 +3,15 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 		type: "Orb",
 		id: i, // unique identifier
 		color: ownr.color, // owned by which team
-		dmg: wepns[weaponID].Damage,
+		dmg: wepns[weaponID].damage,
 
 		owner: ownr,
 		x: ownr.x,
 		y: ownr.y, // spawn where its owner is
 		sx: ownr.sx,
 		sy: ownr.sy,
-		vx: wepns[weaponID].Speed * Math.cos(ownr.angle) * 2,
-		vy: wepns[weaponID].Speed * Math.sin(ownr.angle) * 2,
+		vx: wepns[weaponID].speed * Math.cos(ownr.angle) * 2,
+		vy: wepns[weaponID].speed * Math.sin(ownr.angle) * 2,
 
 		locked: 0, // the id of the player I'm locked on to
 		timer: 0, // how long this orb has existed
@@ -19,7 +19,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 		wepnID: weaponID
 	}
 	self.tick = function () {
-		if (self.timer++ > 3 * wepns[weaponID].Range / wepns[weaponID].Speed) self.die();
+		if (self.timer++ > 3 * wepns[weaponID].range / wepns[weaponID].speed) self.die();
 		self.move();
 
 
@@ -30,7 +30,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 			for (var i in players[self.sy][self.sx]) {
 				var player = players[self.sy][self.sx][i];
 				var dist = squaredDist(player, self);
-				if ((player.color != self.color && dist < square(wepns[self.wepnID].Range * 10)) && (self.locked == 0 || dist < closest)) {
+				if ((player.color != self.color && dist < square(wepns[self.wepnID].range * 10)) && (self.locked == 0 || dist < closest)) {
 					self.locked = player.id;
 					closest = dist;
 				}
@@ -38,7 +38,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 			if (self.locked != 0) return;
 			
 			//check base
-			if (bases[self.sy][self.sSx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].Range * 10)) {
+			if (bases[self.sy][self.sSx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].range * 10)) {
 				self.locked = bases[self.sy][self.sx].id;
 				return;
 			}
@@ -48,7 +48,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 			for (var i in asts[self.sy][self.sx]) {
 				var ast = asts[self.sy][self.sx][i];
 				var dist = squaredDist(ast, self);
-				if (dist < square(wepns[self.wepnID].Range * 10) && (self.locked == 0 || dist < closest)) {
+				if (dist < square(wepns[self.wepnID].range * 10) && (self.locked == 0 || dist < closest)) {
 					self.locked = ast.id;
 					closest = dist;
 				}
@@ -73,8 +73,8 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 					self.die();
 					return;
 				}
-				self.vx += wepns[weaponID].Speed * (target.x - self.x) / dist; // accelerate towards target
-				self.vy += wepns[weaponID].Speed * (target.y - self.y) / dist;
+				self.vx += wepns[weaponID].speed * (target.x - self.x) / dist; // accelerate towards target
+				self.vy += wepns[weaponID].speed * (target.y - self.y) / dist;
 				self.vx *= .9; // air resistance
 				self.vy *= .9;
 				log("target type: " + target.type);

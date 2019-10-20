@@ -5,7 +5,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		id: i, // unique identifier
 		time: 0, // time since spawned
 		color: ownr.color, // what team owns me
-		dmg: wepns[weaponID].Damage,
+		dmg: wepns[weaponID].damage,
 
 		x: ownr.x,
 		y: ownr.y,
@@ -41,7 +41,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		if (self.wepnID == 33) // if i'm a grenade
 			for (var i in players[self.sy][self.sx]) {
 				var p = players[self.sy][self.sx][i];
-				if (squaredDist(p, self) < square(wepns[33].Range * 10)) p.dmg(self.dmg, self); // if i'm in range of a player on explosion, damage them
+				if (squaredDist(p, self) < square(wepns[33].range * 10)) p.dmg(self.dmg, self); // if i'm in range of a player on explosion, damage them
 			}
 		sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
 		delete mines[self.sy][self.sx][self.id];

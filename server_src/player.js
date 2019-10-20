@@ -184,12 +184,12 @@ function Player(sock) {
 
 			//In case of insufficient ammo
 			if (self.ammos[self.equipped] == 0) {
-				self.charge = wep.Charge - 10;
+				self.charge = wep.charge - 10;
 				self.socket.emit("sound", { file: "noammo", x: self.x, y: self.y });
 				return;
 			} else if (self.ammos[self.equipped] > 0) self.ammos[self.equipped]--;
 
-			if (wep.Level > self.ship) {
+			if (wep.level > self.ship) {
 				self.socket.emit("chat", { msg: 'This weapon is incompatible with your current ship!', color: 'yellow' });
 				return;
 			}
@@ -252,7 +252,7 @@ function Player(sock) {
 					var p = players[self.sy][self.sx][i];
 					if (p.color !== self.color) { // only enemies
 						var d2 = squaredDist(self, p); // distance squared between me and them
-						if (d2 > square(10 * wep.Range)) continue; // if out of range, then don't bother.
+						if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
 						var ang = angleBetween(self, p); // angle from the horizontal
 						var vel = -10000 / Math.log(d2); // compute how fast to accelerate by
 						p.vx += Math.cos(ang) * vel; // actually accelerate them
@@ -268,7 +268,7 @@ function Player(sock) {
 				for (var i in asts[self.sy][self.sx]) {
 					var a = asts[self.sy][self.sx][i];
 					var d2 = squaredDist(self, a);
-					if (d2 > square(10 * wep.Range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
+					if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
 					var ang = angleBetween(self, a);
 					var vel = 500000 / Math.max(d2, 200000);
 					a.vx += Math.cos(ang) * vel;
@@ -278,7 +278,7 @@ function Player(sock) {
 					var p = players[self.sy][self.sx][i];
 					if (p.id != self.id) { // Not the user
 						var d2 = squaredDist(self, p);
-						if (d2 > square(10 * wep.Range)) continue;
+						if (d2 > square(10 * wep.range)) continue;
 						var ang = angleBetween(self, p);
 						var vel = 3000000 / Math.max(d2, 1000000);
 						p.vx += Math.cos(ang) * vel;
@@ -379,16 +379,16 @@ function Player(sock) {
 	}
 	self.reload = function(elite, wepId){
 		if(elite){
-			if(self.ship == 18) self.charge = -wepns[39].Charge;
+			if(self.ship == 18) self.charge = -wepns[39].charge;
 			if(self.ship == 17) self.charge = -150;
 			return;
 		}
-		if(wepns[wepId].Charge > 12) self.charge = 0;
-		else self.charge = -wepns[wepId].Charge;
+		if(wepns[wepId].charge > 12) self.charge = 0;
+		else self.charge = -wepns[wepId].charge;
 	}
 	self.canShoot = function(wepId){
 		if(wepId < 0) return false;
-		var sufficientCharge = self.charge > (wepns[wepId].Charge > 12 ? wepns[wepId].Charge : 0);
+		var sufficientCharge = self.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
 		return self.space && sufficientCharge;
 	}
 	self.checkDisconnect = function () {
@@ -495,7 +495,7 @@ function Player(sock) {
 					if (m.wepnID == 17) self.EMP(50); // emp mine
 					m.die();
 					break;
-				} else if (m.wepnID == 16 && squaredDist(m, self) < square(wepns[m.wepnID].Range + ships[self.ship].width)) { // TODO range * 10?
+				} else if (m.wepnID == 16 && squaredDist(m, self) < square(wepns[m.wepnID].range + ships[self.ship].width)) { // TODO range * 10?
 					var r = Math.random(); // Laser Mine
 					var beam = Beam(m.owner, r, 400, self, m); // shoot a laser. TODO is this m supposed to be m.owner?
 					beams[self.sy][self.sx][r] = beam;
@@ -650,7 +650,7 @@ function Player(sock) {
 
 		self.equipped = 0;
 		while (self.ammos[self.equipped] == 0) self.equipped++; // select the first available weapon with ammo
-		var range = square(wepns[self.equipped].Range * 10);
+		var range = square(wepns[self.equipped].range * 10);
 
 		self.w = self.e = self.s = self.c = self.space = false; // release all keys
 
@@ -743,7 +743,7 @@ function Player(sock) {
 
 		self.equipped = 0; // select first weapon with ammo
 		while (self.ammos[self.equipped] == 0) self.equipped++;
-		var range = square(wepns[self.equipped].Range * 10);
+		var range = square(wepns[self.equipped].range * 10);
 
 		var totalFriends = 0; // in sector
 		var totalEnemies = 0;
@@ -1065,7 +1065,7 @@ function Player(sock) {
 	self.shootBeam = function (origin, restricted) {// restricted is for recursive calls from quarriers
 		var ox = origin.x, oy = origin.y;
 		var nearP = 0; // target, which we will compute
-		var range2 = square(wepns[self.weapons[self.equipped]].Range * 10);
+		var range2 = square(wepns[self.weapons[self.equipped]].range * 10);
 
 		//base
 		if (!restricted)
@@ -1530,7 +1530,7 @@ function Player(sock) {
 		self.generators = 0;
 		for (var slot = 0; slot < ships[self.ship].weapons; slot++)
 			if (self.weapons[slot] == 20) self.generators++;
-		if (self.ship <= wepns[20].Level) self.generators = 0; // gotta have sufficiently high ship
+		if (self.ship <= wepns[20].level) self.generators = 0; // gotta have sufficiently high ship
 	}
 	self.spoils = function (type, amt) { // gives you something. Called wenever you earn money / exp / w/e
 		if (typeof amt === "undefined") return;
@@ -1687,7 +1687,7 @@ global.spawnBot = function (sx, sy, col, rbNow, bbNow) {
 	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
 	for (var i = 0; i < 10; i++) {
 		do bot.weapons[i] = Math.floor(Math.random() * wepns.length);
-		while (wepns[bot.weapons[i]].Level > bot.rank || !wepns[bot.weapons[i]].bot)
+		while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot)
 	}
 	bot.refillAllAmmo();
 	players[bot.sy][bot.sx][id] = bot;
@@ -1719,7 +1719,7 @@ global.spawnNNBot = function (sx, sy, col) {
 	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
 	for (var i = 0; i < 10; i++) {
 		do bot.weapons[i] = Math.floor(Math.random() * wepns.length);
-		while (wepns[bot.weapons[i]].Level > bot.rank || !wepns[bot.weapons[i]].bot)
+		while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot)
 		if (trainingMode) bot.weapons[i] = 1;
 	}
 	bot.refillAllAmmo();
