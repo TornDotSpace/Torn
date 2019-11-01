@@ -19,7 +19,8 @@ module.exports = function Asteroid(i, h, sxx, syy, metal) {
 		va: (Math.random() - .5) / 10
 	}
 	self.tick = function () {
-		if (Math.random() < .0001) self.die(0);
+		var asteroidsHere = Object.keys(asts[self.sy][self.sx]).length;
+		self.health-=asteroidsHere/100; // decay asteroids so they don't get too bunched up in any one area
 		self.move();
 		if (Math.abs(self.vx) + Math.abs(self.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players.
 			for (var i in players[self.sy][self.sx]) {
