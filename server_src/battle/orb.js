@@ -38,7 +38,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 			if (self.locked != 0) return;
 			
 			//check base
-			if (bases[self.sy][self.sSx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].range * 10)) {
+			if (bases[self.sy][self.sx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].range * 10)) {
 				self.locked = bases[self.sy][self.sx].id;
 				return;
 			}
@@ -57,7 +57,6 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 	}
 	self.move = function () {
 		if (self.locked != 0) {
-			log("target detected: " + self.locked);
 			if (self.lockedTimer++ > secs(2.5)) self.die(); // after 2.5 seconds of being locked on -> delete self
 
 			var baseHere = bases[self.sy][self.sx];
@@ -77,7 +76,6 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 				self.vy += wepns[weaponID].speed * (target.y - self.y) / dist;
 				self.vx *= .9; // air resistance
 				self.vy *= .9;
-				log("target type: " + target.type);
 			}
 		}
 		if (self.locked == 0) self.lockedTimer = 0;

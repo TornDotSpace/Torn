@@ -863,6 +863,7 @@ function update() {
 
 			// Check for creation
 			if (pack === undefined) {
+				log("creating orb");
 				pack = orbPack[y][x][j] = { wepnID: orb.wepnID, x: orb.x, y: orb.y };
 				sendAllSector('orb_create', {pack: pack, id: j}, x, y);
 
@@ -954,7 +955,7 @@ function update() {
 		}
 
 		for (var i in orbPack[y][x]) {
-			if (orbs[y][x][j] === undefined) {
+			if (orbs[y][x][i] === undefined) {
 				sendAllSector('orb_delete', i, x, y);
 
 				delete orbPack[y][x][i];
