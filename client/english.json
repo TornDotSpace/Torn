@@ -392,11 +392,11 @@
 			"desc":"Instant speed boost for fast travel, at the expense of energy and charge."
 		},
 		{
-			"name":"Ion Mine Beam",
+			"name":"Ore Cannon",
 			"desc":"Mining laser, with twice the power and 150% range!"
 		},
 		{
-			"name":"Gyrodynamite",
+			"name":"Destabilizer",
 			"desc":"Destabilizes nearest enemy ship for 10 seconds by disrupting gyroscopic stabilization."
 		},
 		{
@@ -412,8 +412,8 @@
 			"desc":"An extremely powerful beam weapon that must be aimed. Fires a high energy particle beam in the direction that your ship is facing which will do extremely heavy damage to anything it contacts. Can pass through multiple ships."
 		},
 		{
-			"name":"Energy Leech",
-			"desc":"This beam weapon will harvest the energy of nearby opponent ships and give their energy to you."
+			"name":"Jammer",
+			"desc":"Discharges the weapons of anyone it hits, and prevents them from shooting for a short while after."
 		},
 		{
 			"name":"Supercharger",

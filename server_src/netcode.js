@@ -421,7 +421,7 @@ module.exports = function initNetcode() {
             if (data.slot < 0 || data.slot > 9 || data.weapon < 0 || data.weapon >= wepns.length) return; // if they sent out of bound variables
 
             // they cant buy when not docked. That slot must be unlocked. They need to have enough money. They need to have sufficiently high of a ship.
-            if (!player.docked || player.weapons[data.slot] != -1 || player.money < wepns[data.weapon].price || wepns[data.weapon].Level > player.ship) return;
+            if (!player.docked || player.weapons[data.slot] != -1 || player.money < wepns[data.weapon].price || wepns[data.weapon].level > player.ship) return;
 
             player.money -= wepns[data.weapon].price; // take their money
             player.weapons[data.slot] = data.weapon; // give them the weapon
@@ -537,7 +537,7 @@ module.exports = function initNetcode() {
             player.equipped = Math.floor(data.scroll); // Set their equipped weapon
             if (player.equipped < 0) player.equipped = 0; // Ensure it's in range
             else if (player.equipped > 9) player.equipped = 9;
-            player.charge = 0; // to prevent scroll charge exploit
+            player.charge = Math.min(player.charge, 0); // to prevent scroll charge exploit
 
             socket.emit('equip', { scroll: player.equipped }); // Alert the client
         });

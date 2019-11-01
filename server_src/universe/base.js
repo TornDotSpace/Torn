@@ -85,28 +85,28 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
 
 		if (self.reload < 0) {
-			if (cDist2 < square(wepns[8].Range * 10)) self.shootLaser();//range:60
-			else if (cDist2 < square(wepns[37].Range * 10)) self.shootOrb();//range:125
+			if (cDist2 < square(wepns[8].range * 10)) self.shootLaser();//range:60
+			else if (cDist2 < square(wepns[37].range * 10)) self.shootOrb();//range:125
 			else if (cDist2 < square(175 * 10)) self.shootMissile();//range:175
-			else if (cDist2 < square(wepns[3].Range * 10)) self.shootRifle();//range:750
+			else if (cDist2 < square(wepns[3].range * 10)) self.shootRifle();//range:750
 		}
 	}
 	self.shootOrb = function () {
-		self.reload = wepns[37].Charge / 2;
+		self.reload = wepns[37].charge / 2;
 		var r = Math.random();
 		var orb = Orb(self, r, 37);
 		orbs[self.sy][self.sx][r] = orb;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
 	self.shootRifle = function () {
-		self.reload = wepns[3].Charge / 2;
+		self.reload = wepns[3].charge / 2;
 		var r = Math.random();
 		var bullet = Bullet(self, r, 3, self.angle, 0);
 		bullets[self.sy][self.sx][r] = bullet;
 		sendAllSector('sound', { file: "shot", x: self.x, y: self.y }, self.sx, self.sy);
 	}
 	self.shootMissile = function () {
-		self.reload = wepns[10].Charge;
+		self.reload = wepns[10].charge;
 		var r = Math.random();
 		var bAngle = self.angle;
 		var missile = Missile(self, r, 10, bAngle);
@@ -130,7 +130,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		var beam = Beam(self, r, 8, nearP, self);
 		beams[self.sy][self.sx][r] = beam;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
-		self.reload = wepns[8].Charge / 2;
+		self.reload = wepns[8].charge / 2;
 	}
 	self.die = function (b) {
 		self.health = self.maxHealth;
