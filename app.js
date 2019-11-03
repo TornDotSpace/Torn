@@ -506,7 +506,7 @@ function loadTurrets() {
 		b.experience = parseFloat(data[1]);
 		b.money = parseFloat(data[2]);
 		b.owner = data[5];
-		bases[parseFloat(data[8])][parseFloat(data[9])] = b;
+		bases[parseFloat(data[9])][parseFloat(data[8])] = b;
 	}
 
 	log(count + " turret(s) loaded.\n");
@@ -804,7 +804,7 @@ function update() {
 
 			base.tick(rbNow, bbNow);
 
-			// Check for creation (only happens once, on first tick)
+			// Check for creation (only happens once, on first tick, or when a turret is placd)
 			if (pack === undefined) {
 				pack = basePack[y][x] = { id: base.id, turretLive: base.turretLive, isBase: base.isBase, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, name: base.name };
 				sendAllSector('base_create', pack, x, y);
@@ -1001,7 +1001,7 @@ function update() {
 		}
 
 		if (basePack[y][x] !== undefined && bases[y][x] === undefined) {
-			sendAllSector('base_delete', i, x, y);
+			sendAllSector('base_delete', 0, x, y);
 			delete basePack[y][x];
 		}
 

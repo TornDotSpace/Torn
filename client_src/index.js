@@ -1437,6 +1437,10 @@ function base_update(data) {
 	}
 }
 
+socket.on('base_delete', function (data) {
+	basesInfo = undefined;
+});
+
 socket.on('asteroid_create', function (data) {
 	astsInfo[data.id] = data;
 });
