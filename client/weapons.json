@@ -391,7 +391,7 @@
 			"bot":false
 		},
 		{
-			"name":"Ion Ore Cannon",
+			"name":"Ore Cannon",
 			"range":200,
 			"damage":60,
 			"speed":-1,

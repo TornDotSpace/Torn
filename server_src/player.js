@@ -187,7 +187,7 @@ function Player(sock) {
 				self.charge = wep.charge - 10;
 				self.socket.emit("sound", { file: "noammo", x: self.x, y: self.y });
 				return;
-			} else if (self.ammos[self.equipped] > 0) self.ammos[self.equipped]--;
+			} else if (self.ammos[self.equipped] > 0 && wep.name !== "Submachinegun") self.ammos[self.equipped]--;
 
 			if (wep.level > self.ship) {
 				self.socket.emit("chat", { msg: 'This weapon is incompatible with your current ship!', color: 'yellow' });
@@ -196,7 +196,7 @@ function Player(sock) {
 
 			if (wep.name === "Submachinegun" && self.bulletQueue == 0) { // Submachinegun physics
 				self.bulletQueue += 5;
-				self.ammos[self.equipped] -= 4; // 4 not 5 because the previous if did 1.
+				self.ammos[self.equipped] -= 5;
 				sendWeapons(self);
 				return;
 			}
