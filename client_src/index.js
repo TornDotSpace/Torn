@@ -1101,12 +1101,12 @@ function rWeaponStats(i) {
 	write(wepns[i].name, rx + 32, ry + 364 + 16 * -2);
 	wrapText(wepns[i].desc, rx + 32, ry + 364 + 16 * -1, 128 * 6 - 64, 16);
 	write("Type: " + wepns[i].type, rx + 32, ry + 364 + 16 * 2);
-	write(mEng[71] + (wepns[i].Range == -1 ? mEng[206] : (wepns[i].Range + " Meters")), rx + 32, ry + 364 + 16 * 3);
-	write(mEng[72] + (wepns[i].Damage == -1 ? mEng[206] : wepns[i].Damage), rx + 32, ry + 364 + 16 * 4);
-	write(mEng[73] + (wepns[i].Speed == -1 ? mEng[206] : wepns[i].Speed), rx + 32, ry + 364 + 16 * 5);
-	write(mEng[74] + (wepns[i].Charge == -1 ? mEng[206] : ((wepns[i].Charge / 25) + mEng[75])), rx + 32, ry + 364 + 16 * 6);
+	write(mEng[71] + (wepns[i].range == -1 ? mEng[206] : (wepns[i].range + " Meters")), rx + 32, ry + 364 + 16 * 3);
+	write(mEng[72] + (wepns[i].damage == -1 ? mEng[206] : wepns[i].damage), rx + 32, ry + 364 + 16 * 4);
+	write(mEng[73] + (wepns[i].speed == -1 ? mEng[206] : wepns[i].speed), rx + 32, ry + 364 + 16 * 5);
+	write(mEng[74] + (wepns[i].charge == -1 ? mEng[206] : ((wepns[i].charge / 25) + mEng[75])), rx + 32, ry + 364 + 16 * 6);
 	write(mEng[173] + ammoCodeToString(wepns[i].ammo), rx + 32, ry + 364 + 16 * 7);
-	write(mEng[174] + wepns[i].Level, rx + 32, ry + 364 + 16 * 8);
+	write(mEng[174] + wepns[i].level, rx + 32, ry + 364 + 16 * 8);
 
 	if (actuallyBuying) {
 		ctx.fillStyle = wepns[i].price > money ? "orange" : "limeq";
