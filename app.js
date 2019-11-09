@@ -1198,7 +1198,7 @@ function updateLB() {
 						top1000names[j] = top1000names[j - 1];
 						top1000colors[j] = top1000colors[j - 1];
 						top1000money[j] = top1000money[j - 1];
-						top1000tech[j] = top1000money[j - 1];
+						top1000tech[j] = top1000tech[j - 1];
 						top1000kills[j - 1] = kills;
 						top1000rank[j - 1] = rank;
 						top1000names[j - 1] = name;
