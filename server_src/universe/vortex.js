@@ -21,7 +21,7 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm) {
 	}
 	self.tick = function () {
 
-		if (tick % 2 == 0) self.move();
+		self.move();
 
 		if (self.owner != 0) { // if I'm a gravity bomb
 			self.size -= 6; // shrink with time
