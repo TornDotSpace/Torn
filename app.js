@@ -576,36 +576,6 @@ function update() {
 			base : undefined
 		}
 
-		for (var i in vorts[y][x]) {
-			var vort = vorts[y][x][i];
-			var pack = vortPack[y][x][i];
-
-			vort.tick();
-			// Check for creation 
-			if (pack === undefined) {
-				// Store pack for joining clients & delta calculation
-				pack = vortPack[y][x][i] = { x: vort.x, y: vort.y, size: vort.size, isWorm: vort.isWorm };
-				// Send create
-				sendAllSector("vort_create", {pack : pack, id: i}, x, y);
-				continue;
-			}
-
-			var delta = { };
-			var need_update = false;
-
-			// Compute delta
-			for (var key in pack) {
-				if (pack[key] !== vort[key]) {
-					delta[key] = pack[key] = vort[key];
-					need_update = true;
-				}
-			}
-
-			if (!need_update) continue;
-
-			gameState.vorts.push({delta: delta, id: i});
-		}
-
 		for (var i in players[y][x]) {
 			var player = players[y][x][i];
 			var pack = playerPack[y][x][i];
@@ -644,6 +614,36 @@ function update() {
 			if (!need_update) continue;
 
 			gameState.players.push({delta: delta, id: i});
+		}
+
+		for (var i in vorts[y][x]) {
+			var vort = vorts[y][x][i];
+			var pack = vortPack[y][x][i];
+
+			vort.tick();
+			// Check for creation 
+			if (pack === undefined) {
+				// Store pack for joining clients & delta calculation
+				pack = vortPack[y][x][i] = { x: vort.x, y: vort.y, size: vort.size, isWorm: vort.isWorm };
+				// Send create
+				sendAllSector("vort_create", {pack : pack, id: i}, x, y);
+				continue;
+			}
+
+			var delta = { };
+			var need_update = false;
+
+			// Compute delta
+			for (var key in pack) {
+				if (pack[key] !== vort[key]) {
+					delta[key] = pack[key] = vort[key];
+					need_update = true;
+				}
+			}
+
+			if (!need_update) continue;
+
+			gameState.vorts.push({delta: delta, id: i});
 		}
 
 		for (var i in bullets[y][x]) bullets[y][x][i].tick();
