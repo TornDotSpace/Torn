@@ -863,7 +863,6 @@ function update() {
 
 			// Check for creation
 			if (pack === undefined) {
-				log("creating orb");
 				pack = orbPack[y][x][j] = { wepnID: orb.wepnID, x: orb.x, y: orb.y };
 				sendAllSector('orb_create', {pack: pack, id: j}, x, y);
 
@@ -1044,7 +1043,7 @@ function update() {
 	}
 	for (var i in dockers) {
 		var player = dockers[i];
-		if (tick % 10 == 0) { // LAG CONTROL
+		if (tick % 12 == 0) { // LAG CONTROL
 			send(i, 'you', { killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
 			send(i, 'quests', { quests: player.color == 'red' ? rQuests : bQuests });
 		}
