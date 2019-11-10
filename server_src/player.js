@@ -173,7 +173,7 @@ function Player(sock) {
 		else if(self.charge > 0 && !self.space && !self.c) self.charge = 0;
 	}
 	self.fire = function () {
-		if (self.c) self.shootEliteWeapon();
+		if (self.c && self.charge > 0) self.shootEliteWeapon();
 		if (self.bulletQueue > 0) self.shootBullet(40); // SMG
 		var wepId = self.weapons[self.equipped];
 		var wep = wepns[wepId];
@@ -336,8 +336,7 @@ function Player(sock) {
 			self.speed *= mult;
 			self.vx *= mult;
 			self.vy *= mult;
-		}
-		if (self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250) { // Quarrier
+		} else if (self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250) { // Quarrier
 			self.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
 			self.silver -= 250;
 			self.aluminium -= 250;
@@ -349,8 +348,7 @@ function Player(sock) {
 			a.vx = Math.cos(self.angle) * 15;
 			a.vy = Math.sin(self.angle) * 15;
 			asts[self.sy][self.sx][r] = a;
-		}
-		if (self.ship == 18) self.shootBullet(39); // Built in spreadshot
+		} else if (self.ship == 18) { self.shootBullet(39); } // Built in spreadshot
 		self.reload(true, 0);
 	}
 	self.reload = function(elite, wepId){

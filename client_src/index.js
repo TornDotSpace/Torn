@@ -3018,7 +3018,21 @@ function rLB() {
 		var place = 1 + ((i != 16) ? i : parseInt(lb[i].id));
 		ctx.textAlign = "left";
 		ctx.fillStyle = lb[i].color == 'red' ? 'pink' : 'cyan';
-		write(lb[i].name, w - 216, (i + 4) * 16);
+		if(lb[i].name.includes("[V] ")){
+			let d = new Date();
+			var t = d.getTime() / (35 * 16);
+			write("[VIP]", w - 216, (i + 4) * 16);
+			ctx.fillStyle = "rgba("+Math.floor(16*Math.sqrt(Math.sin(t)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*2/3)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*4/3)*128+128))+", 1)";
+			write(lb[i].name.substring(4), w - 180, (i + 4) * 16);
+		}
+		if(lb[i].name.includes("[B] ")){
+			let d = new Date();
+			var t = d.getTime() / (35 * 16);
+			write("[MVP]", w - 216, (i + 4) * 16);
+			ctx.fillStyle = "rgba("+Math.floor(16*Math.sqrt(Math.sin(t)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*2/3)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*4/3)*128+128))+", 1)";
+			write(lb[i].name.substring(4), w - 180, (i + 4) * 16);
+		}
+		else write(lb[i].name, w - 216, (i + 4) * 16);
 		ctx.fillStyle = 'yellow';
 		write(place + mEng[40], w - 248, (i + 4) * 16);
 		ctx.textAlign = "right";
