@@ -104,9 +104,9 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm) {
 				p.y = self.yo;
 				p.x = self.xo; // teleport them to the output node
 
-				players[p.sy][p.sx][p.id] = p;
+				p.onChangeSectors();
 
-				p.planetTimer = 2501; // what is this?
+				players[p.sy][p.sx][p.id] = p;
 			}
 		}
 	}
