@@ -1059,16 +1059,13 @@ function deletePlayers() { // remove players that have left or are afk or whatev
 	for (var i in lefts) {
 		if (lefts[i]-- > 1) continue;
 		for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) if(i in players[y][x]){
-			delete onlineNames[players[y][x][i].nameWithoutTag()];
 			delete players[y][x][i];
 		}
 		delete sockets[i];
 		if(i in dockers) {
-			delete onlineNames[dockers[i].nameWithoutTag()];
 			delete dockers[i];
 		}
 		if(i in deads) {
-			delete onlineNames[deads[i].nameWithoutTag()];
 			delete deads[i];
 		}
 		delete lefts[i];

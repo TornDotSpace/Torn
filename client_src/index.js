@@ -1840,9 +1840,8 @@ setInterval(function () {
 	uframes = frames = 0;
 	let d = new Date();
 	var time = d.getTime();
-	if (login)
-		socket.emit('pingmsg', { time: time });
 }, 1000);
+
 setInterval(function () {
 	raidTimer--;
 	hyperdriveTimer--;
