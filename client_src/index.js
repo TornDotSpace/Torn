@@ -542,6 +542,7 @@ function render() {
 		return;
 	}
 	if (docked) {
+		autopilot = false;
 		updateNotes();
 		rInBase();
 	}
@@ -2110,7 +2111,8 @@ document.onkeydown = function (event) {
 document.onkeyup = function (event) {
 	if (!typing && event.keyCode === 80 && !docked) {
 		autopilot ^= true;
-		addBigNote([256,"Autopilot "+(autopilot?"E":"Dise")+"ngaged!", "Press P to toggle.", ""]);
+		if(bigNotes[0] == 0)/*to prevent spam*/
+			addBigNote([256,"Autopilot "+(autopilot?"E":"Dise")+"ngaged!", "Press P to toggle.", ""]);
 		return;
 	} else if (autopilot)
 		return;
@@ -2543,12 +2545,13 @@ function rLore() {
 }
 function rEnergyBar() {
 	if (equipped === 0) return;
-	var Charge = wepns[equipped[scroll]].Charge;
+	var Charge = wepns[equipped[scroll]].charge;
 	if (Charge < 12 && charge < 12) return;
 	if (Charge < 12 && charge >= 12) Charge = 150;
+	var div = charge/Charge;
+	if(div>1) return;
 	ctx.fillStyle = 'lime';
 	ctx.globalAlpha = .5;
-	var div = (charge-1)/Charge;
 	ctx.fillRect(0, 0, (w/2) * div, 4);
 	ctx.fillRect(0, h-4, (w/2) * div, 4);
 	ctx.fillRect(w-(w/2) * div, 0, (w/2) * div, 4);
@@ -3311,7 +3314,7 @@ function rRaid() {
 }
 function rBigNotes() {
 	if(bigNotes[0] === -1) return;
-	bigNotes[0][0] -= bigNotes[0][2] === "" ? 2.5 : 1.25;
+	bigNotes[0][0] -= bigNotes[0][2] === "" ? 2 : 1.25;
 	if(bigNotes[0][0] < 0) {
 		for(var i = 0; i < 3; i++) bigNotes[i] = bigNotes[i+1]; // shift array down
 		bigNotes[3] = -1;
