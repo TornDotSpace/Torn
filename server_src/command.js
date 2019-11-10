@@ -1,8 +1,9 @@
 class Command {
-    constructor(usage, permission, invoke) {
+    constructor(usage, permission, invoke, visible=true) {
         this.usage = usage;
         this.permission = permission;
         this.invoke = invoke;
+        this.visible = visible;
     }
 }
 
@@ -40,13 +41,13 @@ cmds["/password"] = new Command("/password <newPassword>", PLAYER, function (pla
 
 cmds["/confirm"] = new Command("/confirm <newPassword>", PLAYER, function (player, msg) {
     player.confirmPass(msg.substring(9));
-});
+}, false);
 
 cmds["/changeteam"] = new Command("/changeteam", PLAYER, function (player, msg) {
     player.socket.emit("chat", { msg: "Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type /confirmteam to continue. Make sure you aren't near any players or bases on your current team." });
 });
 
-cmds["/confirmteam"] = new Command("/this shouldnt show up", PLAYER, function (player, msg) {
+cmds["/confirmteam"] = new Command("/confirmteam", PLAYER, function (player, msg) {
     if (player.experience <= 10000) {
         player.socket.emit("chat", { msg: "You don't have enough experience!" });
         return;
@@ -56,7 +57,7 @@ cmds["/confirmteam"] = new Command("/this shouldnt show up", PLAYER, function (p
     player.money *= .9;
     player.experience *= .9;
     player.save();
-});
+}, false);
 
 cmds["/nameturret"] = new Command("/nameturret <name>", PLAYER, function (player, msg) {
 	var num = 0;
@@ -144,7 +145,7 @@ cmds["/max"] = new Command("/max - Maxes out a player's stats for testing purpos
 for (var x in PERM_TABLE) {
     HELP_TABLE[PERM_TABLE[x]] = []; // construct empty array
     for (var cmd in cmds) {
-        if (cmds[cmd].permission <= PERM_TABLE[x]) {
+        if (cmds[cmd].permission <= PERM_TABLE[x] && cmds[cmd].visible) {
             HELP_TABLE[PERM_TABLE[x]].push(cmds[cmd]);
         }
     }
