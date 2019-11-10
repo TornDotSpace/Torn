@@ -1577,6 +1577,10 @@ function Player(sock) {
 		return self.name;
 	}
 	self.swap = function (msg) { // msg looks like "/swap 2 5". Swaps two weapons.
+		if (!self.docked) {
+			self.socket.emit("chat", { msg: "You must be docked to use that command!" });
+			return;
+		}
 		var spl = msg.split(" ");
 		if (spl.length != 3) { // not enough arguments
 			self.socket.emit("chat", { msg: "Invalid Syntax!" });
@@ -1585,6 +1589,10 @@ function Player(sock) {
 		var slot1 = parseFloat(spl[1]), slot2 = parseFloat(spl[2]);
 		if (slot1 > 10 || slot2 > 10 || slot1 < 1 || slot2 < 1 || !slot1 || !slot2 || !Number.isInteger(slot1) || !Number.isInteger(slot2)) {
 			self.socket.emit("chat", { msg: "Invalid Syntax!" });
+			return;
+		}
+		if (self.weapons[slot1] == -2 || self.weapons[slot2] == -2) {
+			self.socket.emit("chat", { msg: "You haven't unlocked that slot yet!" });
 			return;
 		}
 
@@ -1597,7 +1605,11 @@ function Player(sock) {
 		self.ammos[slot1] = self.ammos[slot2];
 		self.ammos[slot2] = temp;
 
+		if(self.equipped == slot1) self.equipped = slot2;
+		else if(self.equipped == slot2) self.equipped = slot1;
+
 		sendWeapons(self);
+        self.socket.emit('equip', { scroll: self.equipped });
 		self.socket.emit("chat", { msg: "Weapons swapped!" });
 	}
 	self.kick = function (msg) {

@@ -181,7 +181,7 @@ for (var i = 0; i < mapSz * 2 + 2; i++) {
 
 var wepns = jsn.weapons, ships = jsn.ships;
 for (var j = 0; j < wepns.length - 1; j++)//this nifty loop sorts weapons by ship
-	if (wepns[weaponWithOrder(j)].type === wepns[weaponWithOrder(j + 1)].type && wepns[weaponWithOrder(j)].Level > wepns[weaponWithOrder(j + 1)].Level) {
+	if (wepns[weaponWithOrder(j)].type === wepns[weaponWithOrder(j + 1)].type && wepns[weaponWithOrder(j)].level > wepns[weaponWithOrder(j + 1)].level) {
 		var woj = weaponWithOrder(j), woj1 = weaponWithOrder(j + 1);
 		wepns[woj].order = j + 1;
 		wepns[woj1].order = j;
@@ -817,7 +817,7 @@ function rShop() {
 	for (var i = 0; i < 10; i++) {
 		ctx.fillStyle = (seller - 10 == i) ? 'lime' : 'yellow';
 		if (ships[shipView].weapons <= i) ctx.fillStyle = "orange";
-		if (shipView < wepns[equipped[i]].Level) ctx.fillStyle = "red";
+		if (shipView < wepns[equipped[i]].level) ctx.fillStyle = "red";
 		var tag = '	      ';
 		if (equipped[i] == -1) tag = mEng[14] + (i != 9 ? '  ' : ' ');
 		else if (equipped[i] > -1) tag = mEng[19] + (i != 9 ? ' ' : '');
@@ -954,7 +954,7 @@ function rStats() {
 	write(myName, rx + 192, ry + 96);
 	ctx.font = "11px Nasa";
 	var activeGens = 0;
-	if (ship >= wepns[20].Level)
+	if (ship >= wepns[20].level)
 		for (var i = 0; i < ships[ship].weapons; i++)
 			if (equipped[i] == 20) activeGens++;
 	var eMult = e2;
@@ -1079,7 +1079,7 @@ function rWeaponStore() {
 		var wx = rx + 4 + 240 * Math.floor(wepns[i].order / Math.ceil(wepns.length / 3));
 		var wy = ry + 40 + 32 + (wepns[i].order % Math.ceil(wepns.length / 3) + 2) * 16;
 		var buyable = wepns[i].price > money ? "orange" : "yellow";
-		if (ship < wepns[i].Level) buyable = "red";
+		if (ship < wepns[i].level) buyable = "red";
 
 		var starCol = "white";
 		if (wepns[i].type === "Gun") starCol = "red";
