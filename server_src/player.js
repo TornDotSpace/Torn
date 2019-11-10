@@ -178,14 +178,15 @@ function Player(sock) {
 		var wepId = self.weapons[self.equipped];
 		var wep = wepns[wepId];
 
-		if (self.canShoot(wepId)) {
+		//In case of insufficient ammo
+		if (self.ammos[self.equipped] == 0 && self.charge > 10) {
+			self.charge = 0;
+			self.socket.emit("sound", { file: "noammo", x: self.x, y: self.y });
+			return;
+		} 
 
-			//In case of insufficient ammo
-			if (self.ammos[self.equipped] == 0) {
-				self.charge = wep.charge - 10;
-				self.socket.emit("sound", { file: "noammo", x: self.x, y: self.y });
-				return;
-			} else if (self.ammos[self.equipped] > 0 && wep.name !== "Submachinegun") self.ammos[self.equipped]--;
+		if (self.canShoot(wepId)) {
+			if (self.ammos[self.equipped] > 0 && wep.name !== "Submachinegun") self.ammos[self.equipped]--;
 
 			if (wep.level > self.ship) {
 				self.socket.emit("chat", { msg: 'This weapon is incompatible with your current ship!', color: 'yellow' });
