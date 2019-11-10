@@ -1594,6 +1594,10 @@ socket.on('invalidCredentials', function (data) {
 socket.on('accInUse', function (data) {
 	credentialState = 10;
 });
+
+socket.on('outdated', function() {
+	credentialState = 20;
+});
 socket.on('loginSuccess', function (data) {
 	// Cleanup bullets from homepage
 	for (var i in bullets) delete bullets[i];
@@ -1610,7 +1614,7 @@ socket.on('invalidReg', function (data) {
 });
 socket.on('registered', function (data) {
 	credentialState = 0;
-	socket.emit("login", { user: data.user, pass: data.pass, amNew: true });
+	socket.emit("login", { user: data.user, pass: data.pass, amNew: true, version: VERSION });
 	ReactRoot.turnOffRegister("LoginOverlay");
 	guest = false;
 	textIn = 0;
@@ -2221,7 +2225,7 @@ document.addEventListener('mousedown', function (evt) {
 	soundAllowed = true;
 	mb = 1;
 	if (lore && !login) {
-		socket.emit('guest', { alien: pc });
+		socket.emit('guest', VERSION);
 		return;
 	}
 	if (mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
@@ -3180,6 +3184,7 @@ function rCreds() {
 	if (credentialState == 4) str = mEng[115];
 	if (credentialState == 5) str = "Username is profane!";
 	if (credentialState == 10) str = mEng[116];
+	if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';
 	ctx.font = '11px Nasa';

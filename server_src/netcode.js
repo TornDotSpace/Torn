@@ -5,12 +5,15 @@ var filter = new Filter();
 var Player = require('./player.js');
 require('./netutils.js');
 require("./command.js");
+var exec = require('child_process').execSync;
 
 var guestCount = 0; // Enumerate guests since server boot
 
 // Global mute table 
 global.muteTable = {};
 global.onlineNames = {};
+
+global.protocolVersion = undefined;
 
 function flood(ip) {
     var safe = false;
@@ -84,6 +87,18 @@ module.exports = function initNetcode() {
 
     server.listen(parseInt(port));
 
+
+    // Try to grab the protocol version from the current git tag
+    try {
+        global.protocolVersion = exec('git tag -l --points-at HEAD').toString().trim();
+
+        if (!global.protocolVersion)
+            global.protocolVersion = undefined;
+        console.log("Protocol Version: " + global.protocolVersion);
+    } catch (e) {
+        console.error("Failed to retrieve protocol version, all clients will be allowed!");
+    }
+
     var socketio = require('socket.io');
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js    
     var io = socketio(server, {
@@ -118,6 +133,15 @@ module.exports = function initNetcode() {
         socket.on('guest', function (data) { // TODO Chris
             if (!flood(ip)) return;
             if (instance) return;
+
+            if (global.protocolVersion !== undefined) {
+                // Verify client is running the same protocol implementation
+                if (typeof data !== "string" || data.trim() !== global.protocolVersion) {
+                    socket.emit('outdated', 0);
+                    return;
+                }
+            }
+
             player = new Player(socket);
             socket.player = player;
             player.guest = true;
@@ -212,6 +236,15 @@ module.exports = function initNetcode() {
 
             if (!flood(ip)) return;
             if (instance) return;
+
+            if (global.protocolVersion !== undefined) {
+                // Verify client is running the same protocol implementation
+                if (typeof data.version !== "string" || global.protocolVersion !== data.version.trim()) {
+                    socket.emit('outdated', 0);
+                    return;
+                }
+            }
+
             //Validate and save IP
             var name = data.user, pass = data.pass;
 
