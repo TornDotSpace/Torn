@@ -999,7 +999,7 @@ function update() {
 			}
 		}
 
-		if (basePack[y][x] !== undefined && bases[y][x] === undefined) {
+		if (basePack[y][x] !== undefined && bases[y][x] === 0) {
 			sendAllSector('base_delete', 0, x, y);
 			delete basePack[y][x];
 		}
