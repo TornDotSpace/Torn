@@ -339,8 +339,12 @@ module.exports = function initNetcode() {
 
             var time = Date.now();
 
+            if (data.msg.startsWith("/") && !data.msg.startsWith("/me ") && !data.msg.startsWith("/r ") && !data.msg.startsWith("/pm ")) { runCommand(player, data.msg); return; } // non spammable commands
+
             if (muteTable[player.name] > time) return;
             delete muteTable[player.name];
+
+            if (data.msg.startsWith("/")) runCommand(player, data.msg); // spammable commands
 
             player.chatTimer += 100; // note this as potential spam
             if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
@@ -350,9 +354,7 @@ module.exports = function initNetcode() {
                 return;
             }
 
-            if (data.msg.startsWith("/")) {//handle commands
-                runCommand(player, data.msg);
-            } else { // otherwise send the text
+            if(!data.msg.startsWith("/")) { // otherwise send the text
                 var spaces = "";
                 for (var i = player.name.length; i < 16; i++) spaces += " "; // align the message
                 const finalMsg = "~`" + player.color + "~`" + spaces + player.name + "~`yellow~`: " + data.msg;
