@@ -49,7 +49,15 @@ function runCommand(player, msg) { // player just sent msg in chat and msg start
             player.socket.emit("chat", { msg: "~`red~`You don't have permission to access this command. ~`red~`" });
             return;
         }
-        command.invoke(player, msg);
+
+        // Commands are probably one of the more bug-prone activities as they involve changing game state, et. al
+        // Wrap their invocation in a try/catch block to avoid shard death on error
+        try {
+            command.invoke(player, msg);
+        } catch (e) {
+            player.socket.emit("chat", { msg: "~`red~`An internal error occurred while running this command, please report this to a developer ~`red~`" });
+            console.error(e);
+        }
     }
 }
 
