@@ -1490,7 +1490,7 @@ function Player(sock) {
 		}
 		var currSource = 'server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + hash(self.password) + '.txt';
 		if (fs.existsSync(currSource)) fs.unlinkSync(currSource);
-		self.password = self.tentativePassword;
+		self.password = hash(self.tentativePassword);
 		self.save();
 		self.socket.emit("chat", { msg: "~`lime~`Password changed successfully." });
 	}
