@@ -1130,7 +1130,7 @@ function Player(sock) {
 				//send msg
 				else if (b.type == "Vortex") sendAll('chat', { msg: ("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!") });
 				else if (b.type == "Planet" || b.type == "Asteroid") sendAll('chat', { msg: ("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!") });
-				else if (b.owner.type == "Base") sendAll('chat', { msg: ("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base in sector " + b.owner.getSectorName() + "!") });
+				else if (b.owner !== undefined && b.owner.type == "Base") sendAll('chat', { msg: ("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base in sector " + b.owner.getSectorName() + "!") });
 
 			}
 
