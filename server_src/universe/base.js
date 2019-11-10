@@ -136,6 +136,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		self.health = self.maxHealth;
 		self.turretLive = false;
 		sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
+		if (!self.isBase) bases[self.sy][self.sx] = 0;
 
 		//If I was killed by an asteroid...
 		if (b.type == 'Asteroid') {
@@ -159,8 +160,6 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 				}
 			}
 		}
-
-		if (!self.isBase) bases[self.sy][self.sx] = 0;
 	}
 	self.sendDeathMsg = function (killedBy) {
 		sendAll('chat', { msg: ("The " + (self.isBase ? "base" : "turret") + " at sector ~`" + col + "~`" + self.getSectorName() + "~`yellow~` was destroyed by " + killedBy + ".") });
