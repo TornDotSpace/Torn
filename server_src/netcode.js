@@ -322,9 +322,11 @@ module.exports = function initNetcode() {
             }
         });
         socket.on('chat', function (data) { // when someone sends a chat message
-            if (typeof data === "undefined" || typeof data.msg !== 'string' || data.msg.length == 0 || data.msg.length > 128) return;
+            if (typeof data === "undefined" || typeof data.msg !== 'string' || data.msg.length > 128) return;
 
-            if (player == 0) return;
+            data.msg = data.msg.trim(); // "   hi   " => "hi"
+
+            if (player == 0 || data.msg.length == 0) return;
 
             if (guestsCantChat && player.guest) {
                 socket.emit("chat", { msg: 'You must create an account in the base before you can chat!', color: 'yellow' });
@@ -332,14 +334,12 @@ module.exports = function initNetcode() {
             }
 
             log("[CHAT] " + player.name + ": " + data.msg); // print their raw message
-
-            data.msg = data.msg.trim(); // "   hi   " => "hi"
             if (!player.name.includes(" ")) data.msg = data.msg.replace(/~`/ig, ''); // Normies can't triforce
             data.msg = filter.clean(data.msg); // censor
 
             var time = Date.now();
 
-            if (data.msg.startsWith("/") && !data.msg.startsWith("/me ") && !data.msg.startsWith("/r ") && !data.msg.startsWith("/pm ")) { runCommand(player, data.msg); return; } // non spammable commands
+            if (data.msg.startsWith("/") && !data.msg.startsWith("/me") && !data.msg.startsWith("/r") && !data.msg.startsWith("/pm ")) { runCommand(player, data.msg); return; } // non spammable commands
 
             if (muteTable[player.name] > time) return;
             delete muteTable[player.name];
