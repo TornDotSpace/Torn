@@ -558,7 +558,7 @@ function Player(sock) {
 
 	}
 	self.juke = function (left) {
-		if (self.charge > 0) return;
+		if (self.charge > 3) return;
 		self.charge = -10;
 		self.jukeTimer = (self.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
 	}
@@ -679,7 +679,7 @@ function Player(sock) {
 			self.a = Math.random() < .1;
 			self.w = true;
 			if (self.brainwashedBy != 0) {
-				var player = players[self.brainwashedBy];
+				var player = players[self.sy][self.sx][self.brainwashedBy];
 				if (typeof player === "undefined") return;
 				var myX = self.x + self.sx * sectorWidth;
 				var myY = self.y + self.sy * sectorWidth;
