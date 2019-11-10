@@ -81,7 +81,8 @@ module.exports = function initNetcode() {
     var io = socketio(server, {
         serveClient: false,
         origins: "*:*",
-        wsEngine: Config.getValue("ws-engine", "ws")
+        wsEngine: Config.getValue("ws-engine", "ws"),
+        timeout: 300
     });
 
     io.sockets.on('connection', function (socket) {
@@ -189,13 +190,15 @@ module.exports = function initNetcode() {
                 socket.emit("registered", { user: data.user, pass: data.pass });
                 var text = user + ' registered!';
                 log(text);
+                chatAll(text);
+
                 player.save();
-                delete dockers[player.id];
                 onlineNames[user] = 1;
                 instance = false;
             });
             socket.emit("raid", { raidTimer: raidTimer })
         });
+
         socket.on('login', async function (data) {
             if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
 
@@ -203,6 +206,7 @@ module.exports = function initNetcode() {
             if (instance) return;
             //Validate and save IP
             var name = data.user, pass = data.pass;
+
             if (typeof name !== "string" || name.length > 16 || name.length < 4 || /[^a-zA-Z0-9_]/.test(name)) {
                 socket.emit("invalidCredentials", {});
                 return;
@@ -211,6 +215,7 @@ module.exports = function initNetcode() {
                 socket.emit("invalidCredentials", {});
                 return;
             }
+
             name = name.toLowerCase();
 
             if (onlineNames[name] === 1) {
@@ -222,7 +227,6 @@ module.exports = function initNetcode() {
             socket.player = player;
             player.ip = ip;
             player.name = name;
-            onlineNames[name] = 1;
             player.password = hash(data.pass);
 
             //Load account
@@ -236,7 +240,7 @@ module.exports = function initNetcode() {
             instance = true;
 
             socket.emit("loginSuccess", {id: player.id});
-
+            onlineNames[name] = 1;
 
             if (player.sx >= mapSz) player.sx--;
             if (player.sy >= mapSz) player.sy--;
@@ -265,27 +269,24 @@ module.exports = function initNetcode() {
             if (!data.amNew) socket.emit('sectors', { sectors: sectors });
             sendWeapons(player);
         });
-        socket.on('disconnect', function (data) { // graceful disconnect
+        socket.on('disconnect', function (data) { // Emitted by socket.IO when connection is terminated or ping timeout
+            if (!player) return; // Don't allow unauthenticated clients to crash the server
+
             lefts[socket.id] = 150; // note that this player has left and queue it for deletion
 
             //try to locate the player object from their ID
             if (player == 0) return;
 
             //If the player is indeed found
-            var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game!"; // write a message about the player leaving
+            var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game (reason: " + data + ")!"; // write a message about the player leaving
+
             log(text); // print in terminal
             chatAll(text); // send it to all the players
-
             //DO NOT save the player's data.
-        });
-        socket.on('pingmsg', function (data) { // when the player pings to tell us that it's still connected
-            if (typeof data === "undefined") return;
-            // We don't need to check that data.time is well-defined.
-            if (player == 0) return; // if player can't be found
 
-            socket.emit('reping', { time: data.time });
-            player.pingTimer = 250; // make sure they dont get disconnected.
+            onlineNames[(player.name.startsWith("[") ? player.name.split(" ")[1] : player.name)] = 0;
         });
+
         socket.on('key', function (data) { // on client keypress or key release
             if (typeof data === "undefined" || typeof data.inputId === 'undefined' || typeof data.state === 'undefined') return;
             if (player == 0) return;

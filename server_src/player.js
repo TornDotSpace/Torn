@@ -33,7 +33,6 @@ function Player(sock) {
 		//misc timers
 		noDrift: 50, // A timer used for decelerating angular momentum
 		afkTimer: 25 * 60 * 30, // check for afk
-		pingTimer: 125, // check for lag-out
 		jukeTimer: 0,
 		hyperdriveTimer: -1,
 		borderJumpTimer: 0, // for deciding whether to hurt the player
@@ -161,7 +160,6 @@ function Player(sock) {
 		if (!self.isBot) {
 			self.checkPlanetCollision();
 			if (tick % 50 == 0 && planets[self.sy][self.sx].color === self.color) self.money++; // Earn $.5/sec for being in a sector w/ your color planet
-			self.checkDisconnect(); // Did we lose communications?
 		}
 
 		self.move();
@@ -369,15 +367,7 @@ function Player(sock) {
 		var sufficientCharge = self.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
 		return self.space && sufficientCharge;
 	}
-	self.checkDisconnect = function () {
-		if (self.pingTimer-- < 0) {
-			var text = "~`" + self.color + "~`" + self.name + "~`yellow~` disconnected!";
-			lefts[self.id] = 0; // note me for deletion
-			log(text);
-			chatAll(text);
-			return;
-		}
-	}
+
 	self.move = function () {
 
 		if (self.hyperdriveTimer > 0) {
@@ -1500,7 +1490,7 @@ function Player(sock) {
 		}
 		var currSource = 'server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + hash(self.password) + '.txt';
 		if (fs.existsSync(currSource)) fs.unlinkSync(currSource);
-		self.password = self.tentativePassword;
+		self.password = hash(self.tentativePassword);
 		self.save();
 		self.socket.emit("chat", { msg: "~`lime~`Password changed successfully." });
 	}
@@ -1612,8 +1602,6 @@ function Player(sock) {
 	}
 	self.kick = function (msg) {
 		self.socket.emit("kick", { msg: msg });
-		self.pingTimer = -1;
-		self.checkDisconnect();
 	}
 	return self;
 };
