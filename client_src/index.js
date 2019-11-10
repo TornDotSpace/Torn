@@ -1446,6 +1446,10 @@ socket.on('asteroid_create', function (data) {
 	astsInfo[data.id] = data;
 });
 
+socket.on('pong', (latency) => {
+	nLag = latency;
+});
+
 function asteroid_update (data) {
 	var id = data.id;
 
@@ -1567,11 +1571,7 @@ function _chat(data) {
 function getPosition(string, subString, index) {
 	return string.split(subString, index).join(subString).length;
 }
-socket.on('reping', function (data) {
-	let d = new Date();
-	var time = d.getTime();
-	nLag = time - data.time;
-});
+
 socket.on('newBullet', function (data) {
 	bullets[data.id] = data;
 	bullets[data.id].tick = 0;
@@ -2717,7 +2717,7 @@ function rTexts(lag, arr) {
 	info[7] = isChrome ? "" : mEng[82];
 	info[8] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
 	info[9] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
-	info[10] = mEng[85] + Number((nLag / 40.).toPrecision(3)) + mEng[193] + mEng[194] + Number((meanNLag / 40.).toPrecision(3)) + mEng[193] + ")";
+	info[10] = mEng[85] + nLag + " ms " + mEng[194] + Number(meanNLag).toPrecision(3) + " ms" + ")";
 	info[11] = mEng[86] + fps;
 	info[12] = mEng[87] + ups;
 	if (lag > 50) {
