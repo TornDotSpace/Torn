@@ -181,7 +181,7 @@ for (var i = 0; i < mapSz * 2 + 2; i++) {
 
 var wepns = jsn.weapons, ships = jsn.ships;
 for (var j = 0; j < wepns.length - 1; j++)//this nifty loop sorts weapons by ship
-	if (wepns[weaponWithOrder(j)].type === wepns[weaponWithOrder(j + 1)].type && wepns[weaponWithOrder(j)].Level > wepns[weaponWithOrder(j + 1)].Level) {
+	if (wepns[weaponWithOrder(j)].type === wepns[weaponWithOrder(j + 1)].type && wepns[weaponWithOrder(j)].level > wepns[weaponWithOrder(j + 1)].level) {
 		var woj = weaponWithOrder(j), woj1 = weaponWithOrder(j + 1);
 		wepns[woj].order = j + 1;
 		wepns[woj1].order = j;
@@ -817,7 +817,7 @@ function rShop() {
 	for (var i = 0; i < 10; i++) {
 		ctx.fillStyle = (seller - 10 == i) ? 'lime' : 'yellow';
 		if (ships[shipView].weapons <= i) ctx.fillStyle = "orange";
-		if (shipView < wepns[equipped[i]].Level) ctx.fillStyle = "red";
+		if (shipView < wepns[equipped[i]].level) ctx.fillStyle = "red";
 		var tag = '	      ';
 		if (equipped[i] == -1) tag = mEng[14] + (i != 9 ? '  ' : ' ');
 		else if (equipped[i] > -1) tag = mEng[19] + (i != 9 ? ' ' : '');
@@ -954,7 +954,7 @@ function rStats() {
 	write(myName, rx + 192, ry + 96);
 	ctx.font = "11px Nasa";
 	var activeGens = 0;
-	if (ship >= wepns[20].Level)
+	if (ship >= wepns[20].level)
 		for (var i = 0; i < ships[ship].weapons; i++)
 			if (equipped[i] == 20) activeGens++;
 	var eMult = e2;
@@ -1079,7 +1079,7 @@ function rWeaponStore() {
 		var wx = rx + 4 + 240 * Math.floor(wepns[i].order / Math.ceil(wepns.length / 3));
 		var wy = ry + 40 + 32 + (wepns[i].order % Math.ceil(wepns.length / 3) + 2) * 16;
 		var buyable = wepns[i].price > money ? "orange" : "yellow";
-		if (ship < wepns[i].Level) buyable = "red";
+		if (ship < wepns[i].level) buyable = "red";
 
 		var starCol = "white";
 		if (wepns[i].type === "Gun") starCol = "red";
@@ -3018,7 +3018,21 @@ function rLB() {
 		var place = 1 + ((i != 16) ? i : parseInt(lb[i].id));
 		ctx.textAlign = "left";
 		ctx.fillStyle = lb[i].color == 'red' ? 'pink' : 'cyan';
-		write(lb[i].name, w - 216, (i + 4) * 16);
+		if(lb[i].name.includes("[V] ")){
+			let d = new Date();
+			var t = d.getTime() / (35 * 16);
+			write("[VIP]", w - 216, (i + 4) * 16);
+			ctx.fillStyle = "rgba("+Math.floor(16*Math.sqrt(Math.sin(t)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*2/3)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*4/3)*128+128))+", 1)";
+			write(lb[i].name.substring(4), w - 180, (i + 4) * 16);
+		}
+		if(lb[i].name.includes("[B] ")){
+			let d = new Date();
+			var t = d.getTime() / (35 * 16);
+			write("[MVP]", w - 216, (i + 4) * 16);
+			ctx.fillStyle = "rgba("+Math.floor(16*Math.sqrt(Math.sin(t)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*2/3)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*4/3)*128+128))+", 1)";
+			write(lb[i].name.substring(4), w - 180, (i + 4) * 16);
+		}
+		else write(lb[i].name, w - 216, (i + 4) * 16);
 		ctx.fillStyle = 'yellow';
 		write(place + mEng[40], w - 248, (i + 4) * 16);
 		ctx.textAlign = "right";
