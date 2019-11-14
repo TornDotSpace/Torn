@@ -1462,6 +1462,7 @@ function Player(sock) {
 			lefts[self.id] = 0;
 			if (!self.isBot) {
 				var text = "~`" + self.color + "~`" + self.name + "~`yellow~` went AFK!";
+				onlineNames[(self.name.startsWith("[") ? self.name.split(" ")[1] : self.name)] = 1;
 				log(text);
 				chatAll(text);
 			}
