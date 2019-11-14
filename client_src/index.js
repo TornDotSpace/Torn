@@ -2111,7 +2111,7 @@ document.onkeydown = function (event) {
 document.onkeyup = function (event) {
 	if (!typing && event.keyCode === 80 && !docked) {
 		autopilot ^= true;
-		if(bigNotes[0] == 0)/*to prevent spam*/
+		if(bigNotes[0] == -1)/*to prevent spam*/
 			addBigNote([256,"Autopilot "+(autopilot?"E":"Dise")+"ngaged!", "Press P to toggle.", ""]);
 		return;
 	} else if (autopilot)
