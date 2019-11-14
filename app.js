@@ -457,10 +457,13 @@ function buildFileSystem() { // create the server files/folders
 	var allGood = true;
 
 	var dirs = ['./server', './server/neuralnets', './server/players', './server/turrets', './server/players/dead', './client/leaderboard'];
-	for(var dir in dirs) if (!fs.existsSync(dir)) {
-		log("Creating " + dir + " directory...");
-		fs.mkdirSync(dir);
-		allGood = false;
+	for(var i in dirs){
+		var dir = dirs[i];
+		if (!fs.existsSync(dir)) {
+			log("Creating " + dir + " directory...");
+			fs.mkdirSync(dir);
+			allGood = false;
+		}
 	}
 
 	if (allGood) log("All server directories were already present!");
