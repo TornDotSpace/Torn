@@ -186,19 +186,24 @@ function Player(sock) {
 		} 
 
 		if (self.canShoot(wepId)) {
-			if (self.ammos[self.equipped] > 0 && wep.name !== "Submachinegun") self.ammos[self.equipped]--;
+
+			if (self.ammos[self.equipped] < 1) return;
 
 			if (wep.level > self.ship) {
 				self.socket.emit("chat", { msg: 'This weapon is incompatible with your current ship!', color: 'yellow' });
 				return;
 			}
 
-			if (wep.name === "Submachinegun" && self.bulletQueue == 0) { // Submachinegun physics
-				self.bulletQueue += 5;
-				self.ammos[self.equipped] -= 5;
-				sendWeapons(self);
+			if (wep.name === "Submachinegun") { // Submachinegun physics
+				if(self.bulletQueue == 0){
+					self.bulletQueue += 5;
+					self.ammos[self.equipped] -= 5;
+					sendWeapons(self);
+				}
 				return;
 			}
+
+			if (self.ammos[self.equipped] > 0) self.ammos[self.equipped]--;
 
 			//Traditional Weapons
 			// <= 6 are traditional guns.

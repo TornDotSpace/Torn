@@ -456,25 +456,21 @@ function buildFileSystem() { // create the server files/folders
 	log("\nCreating any potential missing files and folders needed for the server...");
 	var allGood = true;
 
+	var dirs = ['./server', './server/neuralnets', './server/players', './server/turrets', './server/players/dead', './client/leaderboard'];
+	for(var i in dirs){
+		var dir = dirs[i];
+		if (!fs.existsSync(dir)) {
+			log("Creating " + dir + " directory...");
+			fs.mkdirSync(dir);
+			allGood = false;
+		}
+	}
 
-	var dir = './client/leaderboard';
-	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
+	if (allGood) log("All server directories were already present!");
 
 	fs.writeFileSync("client/leaderboard/index.html", "Leaderboard not ready yet...", (err) => {
 		if (err) log(err); log("Created leaderboard file.");
 	});
-
-	var dir = './server';
-	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
-	dir = './server/neuralnets';
-	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
-	dir = './server/players';
-	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
-	dir = './server/turrets';
-	if (!fs.existsSync(dir)) { log("Creating " + dir + " directory..."); fs.mkdirSync(dir); allGood = false; }
-
-
-	if (allGood) log("All server files were already present!");
 }
 function spawnBases() {
 	log("\nSpawning " + (baseMap.length / 2) + " Bases...");
