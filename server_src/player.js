@@ -198,6 +198,7 @@ function Player(sock) {
 				if(self.bulletQueue == 0){
 					self.bulletQueue += 5;
 					self.ammos[self.equipped] -= 5;
+					self.reload(false, wepId);
 					sendWeapons(self);
 				}
 				return;
