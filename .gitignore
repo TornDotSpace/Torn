@@ -1,2 +1,17 @@
 /node_modules/*
 /server/*
+/logs/*.log
+*.wt
+*.lock
+WiredTiger
+*.turtle
+*.data
+*.bson
+client/leaderboard/
+client/*.js
+
+# Server Logs (production)
+logs/
+
+# Dev ssl
+test-ssl/
