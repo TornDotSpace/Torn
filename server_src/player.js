@@ -187,7 +187,7 @@ function Player(sock) {
 
 		if (self.canShoot(wepId)) {
 
-			if (self.ammos[self.equipped] < 1) return;
+			if (self.ammos[self.equipped] == 0) return;
 
 			if (wep.level > self.ship) {
 				self.socket.emit("chat", { msg: 'This weapon is incompatible with your current ship!', color: 'yellow' });
