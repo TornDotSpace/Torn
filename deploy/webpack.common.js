@@ -2,7 +2,9 @@ const path = require("path")
 const webpack = require("webpack")
 
 const git = require('git-revision-webpack-plugin');
-var gitRevisionPlugin = new git();
+var gitRevisionPlugin = new git({
+	lightweightTags: true
+	});
 
 module.exports = {
     entry: ["./client_src/index.js"],
@@ -32,7 +34,7 @@ module.exports = {
 	    new webpack.DefinePlugin({
       VERSION: JSON.stringify(gitRevisionPlugin.version()),
       COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
-      BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+      BRANCH: JSON.stringify(gitRevisionPlugin.branch())
     })
    ]
 }

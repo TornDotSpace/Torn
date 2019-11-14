@@ -1446,6 +1446,10 @@ socket.on('asteroid_create', function (data) {
 	astsInfo[data.id] = data;
 });
 
+socket.on('pong', (latency) => {
+	nLag = latency;
+});
+
 function asteroid_update (data) {
 	var id = data.id;
 
@@ -1567,11 +1571,7 @@ function _chat(data) {
 function getPosition(string, subString, index) {
 	return string.split(subString, index).join(subString).length;
 }
-socket.on('reping', function (data) {
-	let d = new Date();
-	var time = d.getTime();
-	nLag = time - data.time;
-});
+
 socket.on('newBullet', function (data) {
 	bullets[data.id] = data;
 	bullets[data.id].tick = 0;
@@ -1594,6 +1594,10 @@ socket.on('invalidCredentials', function (data) {
 socket.on('accInUse', function (data) {
 	credentialState = 10;
 });
+
+socket.on('outdated', function() {
+	credentialState = 20;
+});
 socket.on('loginSuccess', function (data) {
 	// Cleanup bullets from homepage
 	for (var i in bullets) delete bullets[i];
@@ -1610,7 +1614,7 @@ socket.on('invalidReg', function (data) {
 });
 socket.on('registered', function (data) {
 	credentialState = 0;
-	socket.emit("login", { user: data.user, pass: data.pass, amNew: true });
+	socket.emit("login", { user: data.user, pass: data.pass, amNew: true, version: VERSION });
 	ReactRoot.turnOffRegister("LoginOverlay");
 	guest = false;
 	textIn = 0;
@@ -2221,7 +2225,7 @@ document.addEventListener('mousedown', function (evt) {
 	soundAllowed = true;
 	mb = 1;
 	if (lore && !login) {
-		socket.emit('guest', { alien: pc });
+		socket.emit('guest', VERSION);
 		return;
 	}
 	if (mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
@@ -2717,7 +2721,7 @@ function rTexts(lag, arr) {
 	info[7] = isChrome ? "" : mEng[82];
 	info[8] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
 	info[9] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
-	info[10] = mEng[85] + Number((nLag / 40.).toPrecision(3)) + mEng[193] + mEng[194] + Number((meanNLag / 40.).toPrecision(3)) + mEng[193] + ")";
+	info[10] = mEng[85] + nLag + " ms " + mEng[194] + Number(meanNLag).toPrecision(3) + " ms" + ")";
 	info[11] = mEng[86] + fps;
 	info[12] = mEng[87] + ups;
 	if (lag > 50) {
@@ -3180,6 +3184,7 @@ function rCreds() {
 	if (credentialState == 4) str = mEng[115];
 	if (credentialState == 5) str = "Username is profane!";
 	if (credentialState == 10) str = mEng[116];
+	if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';
 	ctx.font = '11px Nasa';

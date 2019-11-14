@@ -1264,8 +1264,8 @@ function Player(sock) {
 			self.lives--;
 			self.dead = true;
 			if (self.lives <= 0) {
-				fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + hash(self.password) + '.txt', fullFile, { "encoding": 'utf8' });
-				fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + hash(self.password) + '.txt');
+				fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt', fullFile, { "encoding": 'utf8' });
+				fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt');
 				lefts[self.id] = 0;
 			}
 			else self.save();
@@ -1492,7 +1492,7 @@ function Player(sock) {
 			self.socket.emit("chat", { msg: "~`red~`Passwords do not match! Start over from /password." });
 			return;
 		}
-		var currSource = 'server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + hash(self.password) + '.txt';
+		var currSource = 'server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt';
 		if (fs.existsSync(currSource)) fs.unlinkSync(currSource);
 		self.password = hash(self.tentativePassword);
 		self.save();
