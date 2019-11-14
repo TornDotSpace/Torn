@@ -133,10 +133,16 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		self.reload = wepns[8].charge / 2;
 	}
 	self.die = function (b) {
+		if (!self.turretLive) return;
+		
 		self.health = self.maxHealth;
 		self.turretLive = false;
 		sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
-		if (!self.isBase) bases[self.sy][self.sx] = 0;
+
+		if (!self.isBase) {
+			bases[self.sy][self.sx] = 0;
+			self.die = function() { };
+		}
 
 		//If I was killed by an asteroid...
 		if (b.type == 'Asteroid') {
