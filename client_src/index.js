@@ -28,6 +28,7 @@ import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
 
 const { Howl, Howler } = require('howler'); // audio
+const msgpack = require('socket.io-msgpack-parser');
 
 ReactDOM.render(
 	<ReactRoot data={{
@@ -51,7 +52,11 @@ loadLang();
 
 //Normal, on server: torn.space:443
 //dev: localhost:7300
-var socket = io(GAMESERVER_URL, { autoConnect: false });
+var socket = io(GAMESERVER_URL, 
+	{ 
+		autoConnect: false,
+		parser: msgpack
+ 	});
 // Just to make socket accessible in react.js
 ReactRoot.socket = socket;
 

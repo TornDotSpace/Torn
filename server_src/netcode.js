@@ -6,7 +6,7 @@ var Player = require('./player.js');
 require('./netutils.js');
 require("./command.js");
 var exec = require('child_process').execSync;
-
+const msgpack = require('socket.io-msgpack-parser');
 var guestCount = 0; // Enumerate guests since server boot
 
 // Global mute table 
@@ -105,7 +105,8 @@ module.exports = function initNetcode() {
         serveClient: false,
         origins: "*:*",
         wsEngine: Config.getValue("ws-engine", "ws"),
-        timeout: 300
+        timeout: 500,
+        parser: msgpack
     });
 
     io.sockets.on('connection', function (socket) {
