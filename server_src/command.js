@@ -10,11 +10,14 @@ class Command {
 // Permissions constants
 const GUEST = -1;
 const PLAYER = 0;
+const YOUTUBER = 3;
+const VIP = 5;
+const MVP = 7;
 const MODERATOR = 10;
 const ADMIN = 20;
 const OWNER = 30;
 
-const PERM_TABLE = [GUEST, PLAYER, MODERATOR, ADMIN, OWNER];
+const PERM_TABLE = [GUEST, PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
 var HELP_TABLE = {};
 
 global.cmds = {};
