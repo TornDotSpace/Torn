@@ -232,7 +232,7 @@ module.exports = function initNetcode() {
             socket.emit("raid", { raidTimer: raidTimer })
         });
 
-        socket.on('login', async function (data) {
+        socket.on('login', function (data) {
             if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
 
             if (!flood(ip)) return;
@@ -271,45 +271,49 @@ module.exports = function initNetcode() {
             player.name = name;
             player.password = hash(data.pass);
 
-            //Load account
-            var retCode = await loadPlayerData(player, player.password);
-            
-            if (retCode != 0) {
-                if (retCode == -1) socket.emit("invalidCredentials", {});
-                return;
-            }
-
             instance = true;
 
-            socket.emit("loginSuccess", {id: player.id});
-            onlineNames[name] = 1;
+            //Load account
+            var retCode = loadPlayerData(player, player.password);
+            retCode.then(function(ret) {
+                if (ret != 0) {
+                    instance = false;
+                    if (ret == -1) {
+                        socket.emit("invalidCredentials", {});
+                    }
+                    return;
+                }
 
-            if (player.sx >= mapSz) player.sx--;
-            if (player.sy >= mapSz) player.sy--;
-
-            players[player.sy][player.sx][socket.id] = player;
-            
-            player.calculateGenerators();
-            socket.emit("raid", { raidTimer: raidTimer })
-            player.checkTrailAchs();
-            player.sendAchievementsKill(false);
-            player.sendAchievementsCash(false);
-            player.sendAchievementsDrift(false);
-            player.sendAchievementsMisc(false);
-            player.sendStatus();
-
-            player.getAllBullets();
-            player.getAllPlanets();
-            player.refillAllAmmo();
-            log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
-            var text = "~`" + player.color + "~`" + player.name + '~`yellow~` logged in!';
-            chatAll(text);
-            player.va = ships[player.ship].agility * .08 * player.agility2;
-            player.thrust = ships[player.ship].thrust * player.thrust2;
-            player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
-            player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-            if (!data.amNew) socket.emit('sectors', { sectors: sectors });
-            sendWeapons(player);
+                socket.emit("loginSuccess", {id: player.id});
+                onlineNames[name] = 1;
+    
+                if (player.sx >= mapSz) player.sx--;
+                if (player.sy >= mapSz) player.sy--;
+    
+                players[player.sy][player.sx][socket.id] = player;
+                
+                player.calculateGenerators();
+                socket.emit("raid", { raidTimer: raidTimer })
+                player.checkTrailAchs();
+                player.sendAchievementsKill(false);
+                player.sendAchievementsCash(false);
+                player.sendAchievementsDrift(false);
+                player.sendAchievementsMisc(false);
+                player.sendStatus();
+    
+                player.getAllBullets();
+                player.getAllPlanets();
+                player.refillAllAmmo();
+                log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
+                var text = "~`" + player.color + "~`" + player.name + '~`yellow~` logged in!';
+                chatAll(text);
+                player.va = ships[player.ship].agility * .08 * player.agility2;
+                player.thrust = ships[player.ship].thrust * player.thrust2;
+                player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
+                player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
+                if (!data.amNew) socket.emit('sectors', { sectors: sectors });
+                sendWeapons(player);
+            });
         });
         socket.on('disconnect', function (data) { // Emitted by socket.IO when connection is terminated or ping timeout
             if (!player) return; // Don't allow unauthenticated clients to crash the server
