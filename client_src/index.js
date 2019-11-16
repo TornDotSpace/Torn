@@ -16,6 +16,8 @@ console.log("*******************************************************************
 console.log("torn-client-git-" + BRANCH + "-" + COMMITHASH);
 console.log ("Implementing protocol version " + VERSION);
 
+window.document.title = "Torn " + VERSION;
+
 var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 
 var canvas = document.getElementById('ctx');
@@ -28,6 +30,7 @@ import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
 
 const { Howl, Howler } = require('howler'); // audio
+const msgpack = require('socket.io-msgpack-parser');
 
 ReactDOM.render(
 	<ReactRoot data={{
@@ -51,7 +54,11 @@ loadLang();
 
 //Normal, on server: torn.space:443
 //dev: localhost:7300
-var socket = io(GAMESERVER_URL, { autoConnect: false });
+var socket = io(GAMESERVER_URL, 
+	{ 
+		autoConnect: false,
+		parser: msgpack
+ 	});
 // Just to make socket accessible in react.js
 ReactRoot.socket = socket;
 
