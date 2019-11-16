@@ -1,32 +1,28 @@
 var Player = require("./player.js");
 var MONGO_CONNECTION_STR = Config.getValue("mongo_connection_string", "mongodb://localhost:27017/torn");
 var PLAYER_DATABASE = null;
-var USE_MONGO = Config.getValue("want_mongo_db", false);
-
+var TURRET_DATABASE = null;
 var Mongo = require('mongodb').MongoClient;
-var fs = require('fs');
 
 // TODO: Implement failover in the event we lose connection
 // to MongoDB
 global.connectToDB = function () {
-    if (!USE_MONGO) {
-        log("[DB] Using legacy flat-file based database");
-        return;
-    }
-
     if (PLAYER_DATABASE != null) {
         log("[DB] Already connected to MongoDB database...");
         return;
     }
 
     log("[DB] Connecting to MongoDB instance @ " + MONGO_CONNECTION_STR);
+
     Mongo.connect(MONGO_CONNECTION_STR, function (err, client) {
         if (err) {
             log("[DB] Connection failed! (ERROR: " + err + ")");
             return;
         }
 
-        PLAYER_DATABASE = client.db('torn').collection('players');
+        var db = client.db('torn');
+        PLAYER_DATABASE = db.collection('players');
+        TURRET_DATABASE = db.collection('turrets');
         log("[DB] Connection successful!");
     });
 }
@@ -39,17 +35,18 @@ global.loadPlayerData = async function (playerName, passwordHash, socket) {
 
     if (record != null) {
         if (record["password"] !== passwordHash) {
-            debug(record["password"]);
-            debug(passwordHash);
-            return -1; // Invalid credentials
+            return { error: -1}; // Invalid credentials
         }
 
+        var player = new Player(socket);
 
         for (key in record) {
             player[key] = record[key];
         }
 
         player.lastLogin = new Date(player.lastLogin);
+
+        return {error: 0, player : player};
     } else {
         // Read the old fashion way 
         var readSource = "server/players/" + playerName + "[" + passwordHash + ".txt";
@@ -165,34 +162,10 @@ global.resetPassword = function (player) {
 };
 
 global.savePlayerData = function (player) {
-    if (!player) return;
-
-    var spawnX = ((player.sx == Math.floor(mapSz / 2) && player.sx == player.sy) ? (player.color === "blue" ? 4 : 2) : player.sx);
-    var spawnY = ((player.sx == Math.floor(mapSz / 2) && player.sx == player.sy) ? (player.color === "blue" ? 4 : 2) : player.sy);
-
-    // Check if we're using legacy flat files
-    if (!USE_MONGO) {
-        var source = 'server/players/' + (player.name.startsWith("[") ? player.name.split(" ")[1] : player.name) + "[" + player.password + '.txt';
-        if (fs.existsSync(source)) fs.unlinkSync(source);
-        var weapons = "";
-        for (var i = 0; i < 9; i++) weapons += player.weapons[i] + ":";
-        var str = player.color + ':' + player.ship + ':' + player.trail + ':' + weapons + /*no ":", see prev line*/ spawnX + ':' + spawnY + ':' + player.name + ':' + player.money + ':' + player.kills + ':' + player.planetsClaimed + ':' + player.iron + ':' + player.silver + ':' + player.platinum + ':' + player.aluminium + ':' + player.experience + ':' + player.rank + ':' + player.x + ':' + player.y + ':' + player.thrust2 + ':' + player.radar2 + ':' + player.capacity2 + ':' + player.maxHealth2 + ":";
-        str += player.killsAchs[0] + ":" + player.killsAchs[1] + ":" + player.killsAchs[2] + ":" + player.killsAchs[3] + ":" + player.killsAchs[4] + ":" + player.killsAchs[5] + ":" + player.killsAchs[6] + ":" + player.killsAchs[7] + ":" + player.killsAchs[8] + ":" + player.killsAchs[9] + ":" + player.killsAchs[10] + ":" + player.killsAchs[11] + ":" + player.baseKills + ":";
-        str += player.oresMined + ":" + player.moneyAchs[0] + ":" + player.moneyAchs[1] + ":" + player.moneyAchs[2] + ":" + player.moneyAchs[3] + ":" + player.moneyAchs[4] + ":" + player.moneyAchs[5] + ":" + player.moneyAchs[6] + ":" + player.moneyAchs[7] + ":" + player.moneyAchs[8] + ":" + player.moneyAchs[9] + ":" + player.moneyAchs[10] + ":" + player.moneyAchs[11] + ":" + player.questsDone + ":";
-        str += player.driftTimer + ":" + player.driftAchs[0] + ":" + player.driftAchs[1] + ":" + player.driftAchs[2] + ":" + player.driftAchs[3] + ":" + player.driftAchs[4] + ":" + player.driftAchs[5] + ":" + player.driftAchs[6] + ":" + player.driftAchs[7] + ":" + player.driftAchs[8] + ":" + player.driftAchs[9] + ":" + player.driftAchs[10] + ":" + player.driftAchs[11] + ":";
-        str += player.cornersTouched + ":true:"/*ms0, acct made.*/ + player.randmAchs[1] + ":" + player.randmAchs[2] + ":" + player.randmAchs[3] + ":" + player.randmAchs[4] + ":" + player.randmAchs[5] + ":" + player.randmAchs[6] + ":" + player.randmAchs[7] + ":" + player.randmAchs[8] + ":" + player.randmAchs[9] + ":" + player.randmAchs[10] + ":" + player.lives + ":" + player.weapons[9] + ":" + player.energy2 + ":nodecay:";
-        str += new Date().getTime() + ":" + player.agility2; //reset timer
-        fs.writeFileSync(source, str, { "encoding": 'utf8' });
-        return;
-    }
-
     var record = {
-        _id: player.name,
+        _id: player._id,
         lastLogin: new Date().getTime(),
         weapon9: player.weapons[9],
-
-        spawnX: spawnX,
-        spawnY: spawnY,
 
         color: player.color,
         ship: player.ship,
@@ -288,6 +261,5 @@ global.savePlayerData = function (player) {
 
         email: player.email // Player email for password resets, etc.
     };
-
-    PLAYER_DATABASE.save(record, function () { });
+    PLAYER_DATABASE.save(record, console.log);
 }

@@ -252,7 +252,8 @@ module.exports = function initNetcode() {
                 if (!valid) return;
                 var playerDocked = dockers[socket.id];
                 if (typeof playerDocked === "undefined") return;
-
+                
+                player._id = user;
                 player.name = user;
                 player.password = hash(pass);
                 player.guest = false;

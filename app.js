@@ -453,7 +453,7 @@ function buildFileSystem() { // create the server files/folders
 	log("\nCreating any potential missing files and folders needed for the server...");
 	var allGood = true;
 
-	var dirs = ['./server', './server/neuralnets', './server/players', './logs', './server/turrets', './server/players/dead', './client/leaderboard'];
+	var dirs = ['./server', './server/neuralnets', './logs', './server/turrets', './client/leaderboard'];
 	for(var i in dirs){
 		var dir = dirs[i];
 		if (!fs.existsSync(dir)) {
