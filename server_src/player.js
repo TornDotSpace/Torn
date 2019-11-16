@@ -356,11 +356,15 @@ function Player(sock) {
 			a.vy = Math.sin(self.angle) * 15;
 			asts[self.sy][self.sx][r] = a;
 		} else if (self.ship == 18) { self.shootBullet(39); } // Built in spreadshot
+		else if (self.ship == 20) { self.shootBullet(39); self.health *=.1; } // Built in spreadshot
+		else if (self.ship == 20) { self.health++; } // Built in spreadshot
 		self.reload(true, 0);
 	}
 	self.reload = function(elite, wepId){
 		if(elite){
+			if(self.ship == 20) self.charge = -2000;
 			if(self.ship == 18) self.charge = -wepns[39].charge;
+			if(self.ship == 19 && self.charge > -200) self.charge-=10;
 			if(self.ship == 17) self.charge = -150;
 			return;
 		}
