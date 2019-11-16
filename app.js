@@ -1054,16 +1054,10 @@ function update() {
 function deletePlayers() { // remove players that have left or are afk or whatever else
 	for (var i in lefts) {
 		if (lefts[i]-- > 1) continue;
-		for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) if(i in players[y][x]){
-			delete players[y][x][i];
-		}
+		for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) if(i in players[y][x]) delete players[y][x][i];
 		delete sockets[i];
-		if(i in dockers) {
-			delete dockers[i];
-		}
-		if(i in deads) {
-			delete deads[i];
-		}
+		if(i in dockers) delete dockers[i];
+		if(i in deads) delete deads[i];
 		delete lefts[i];
 	}
 }
