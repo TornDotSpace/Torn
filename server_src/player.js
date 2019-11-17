@@ -159,7 +159,7 @@ function Player(sock) {
 
 		if (!self.isBot) {
 			self.checkPlanetCollision();
-			if (tick % 50 == 0 && planets[self.sy][self.sx].color === self.color) self.money++; // Earn $.5/sec for being in a sector w/ your color planet
+			if (tick % 50 == 0 && planets[self.sy][self.sx].color === self.color && !self.guest) self.money++; // Earn $.5/sec for being in a sector w/ your color planet
 		}
 
 		self.move();
