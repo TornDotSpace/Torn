@@ -564,7 +564,7 @@ module.exports = function initNetcode() {
             if (quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;
 
             if (((quest.dsx == 3 && quest.dsy == 3) || (quest.sx == 3 && quest.sy == 3)) && !player.randmQuest[2]) { // risky business
-                player.randmQuest[2] = true;
+                player.randmAchs[2] = true;
                 player.sendAchievementsMisc(true);
             }
 
