@@ -1054,16 +1054,10 @@ function update() {
 function deletePlayers() { // remove players that have left or are afk or whatever else
 	for (var i in lefts) {
 		if (lefts[i]-- > 1) continue;
-		for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) if(i in players[y][x]){
-			delete players[y][x][i];
-		}
+		for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) if(i in players[y][x]) delete players[y][x][i];
 		delete sockets[i];
-		if(i in dockers) {
-			delete dockers[i];
-		}
-		if(i in deads) {
-			delete deads[i];
-		}
+		if(i in dockers) delete dockers[i];
+		if(i in deads) delete deads[i];
 		delete lefts[i];
 	}
 }
@@ -1213,7 +1207,7 @@ function updateLB() {
 			'</font></center></div></h1>' +
 			'<font color="#0099ff"><center><nobr><table><tr><th>#</th><th>Name</th><th>Exp</th><th>Rank</th><th>Kills</th><th>Money</th><th>Tech</th></tr>';
 		for (var i = 0; i < 1000; i++) {
-			newFile += '<tr style="color:' + top1000colors[i] + ';"><td>' + (i + 1) + ".</td><td>" + top1000names[i] + "</td><td> " + top1000exp[i] + " </td><td>" + top1000rank[i] + "</td><td>" + top1000kills[i] + "</td><td>" + (top1000money[i]>10000000?Math.floor(top1000money[i]/1000000+500000)+"M":(Math.floor(top1000money[i]/1000+500)+"K")) + "</td><td>" + top1000tech[i] + "</td></tr>";
+			newFile += '<tr style="color:' + top1000colors[i] + ';"><td>' + (i + 1) + ".</td><td>" + top1000names[i] + "</td><td> " + top1000exp[i] + " </td><td>" + top1000rank[i] + "</td><td>" + top1000kills[i] + "</td><td>" + (top1000money[i]>10000000?Math.floor(top1000money[i]/1000000+.5)+"M":(Math.floor(top1000money[i]/1000+.5)+"K")) + "</td><td>" + top1000tech[i] + "</td></tr>";
 			lbExp[i] = top1000exp[i];
 		}
 		newFile += '</table></nobr><br/>Updates every 25 minutes Last updated: ' + new Date() + '</center></font></body></html>';

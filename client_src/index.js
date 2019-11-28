@@ -2019,11 +2019,9 @@ document.onkeydown = function (event) {
 		document.getElementById("loginButton").click();
 		return;
 	}
-	if (!login || tab == -1)
-		return;
+	if (!login || tab == -1) return;
 	if (event.keyCode === 16) {
-		if (keys[0] != true)
-			socket.emit('key', { inputId: 'shift', state: true });
+		if (keys[0] != true) socket.emit('key', { inputId: 'shift', state: true });
 		keys[0] = true;
 		afkTimer = 45000;
 		shift = true;
