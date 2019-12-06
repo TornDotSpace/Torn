@@ -124,6 +124,30 @@ module.exports = function initNetcode() {
 
         var socket_color = 0; // the color of this socket, only used for when spawning a guest for the first time.
 
+        socket.io_on = socket.on;
+
+        socket.on = function(the_event, listener) {
+            socket.io_on(the_event, function(data) {
+                try {
+                    listener(data);
+                } catch (err) {
+
+                    // Log data to help us perform bug triage
+
+                    console.error("Exception caught in player event " + the_event);
+
+                    process.stderr.write("==== TORN.SPACE ERROR REPORT ====\n");
+                    process.stderr.write("Error Time: " + new Date() + "\n");
+                    process.stderr.write("Event: " + the_event + "\n");
+                    process.stderr.write("Exception information: " + err + "\n");
+                    process.stderr.write("Trace: " + err.stack + "\n");
+
+                    // Eject the player from the game: we don't know if they're in a valid state
+                    socket.emit("kick", { msg: "Internal server error." });
+                    socket.disconnect();
+                }
+            });
+        };
 
         socket.on('lore', function (data) { //player is requesting lore screen.
             if (typeof data === "undefined" || typeof data.alien !== "boolean") return;
@@ -563,7 +587,7 @@ module.exports = function initNetcode() {
             //You need to have unlocked this quest type.
             if (quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;
 
-            if (((quest.dsx == 3 && quest.dsy == 3) || (quest.sx == 3 && quest.sy == 3)) && !player.randmQuest[2]) { // risky business
+            if (((quest.dsx == 3 && quest.dsy == 3) || (quest.sx == 3 && quest.sy == 3)) && !player.randmAchs[2]) { // risky business
                 player.randmAchs[2] = true;
                 player.sendAchievementsMisc(true);
             }
