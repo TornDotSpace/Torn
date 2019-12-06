@@ -26,13 +26,15 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 		if (self.timer++ > 10 * wepns[weaponID].range / wepns[weaponID].speed) self.die(); // out of range -> die
 		if (self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();//out of sector
 
-		if (self.timer >= 20 && self.wepnID == 13) { // missile swarm
+		if (self.timer == 20 && self.wepnID == 13) { // missile swarm
 			for (var i = 0; i < 6; i++) { // spawn 6 missiles
 				var r = Math.random();
 				var bAngle = self.angle + r * 2 - 1;
 				var missile = Missile(self.owner, r, 10, bAngle);
 				missile.x = self.x;
 				missile.y = self.y;
+				missile.sx = self.sx; // this is crucial, otherwise rings of fire happen
+				missile.sy = self.sy; // because owner is not necessarily in the same sector as parent missile
 				missiles[self.sy][self.sx][r] = missile;
 			}
 			self.die(); // and then die
