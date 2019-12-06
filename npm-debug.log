@@ -1,0 +1,71 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'install' ]
+2 info using npm@3.5.2
+3 info using node@v8.10.0
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readLocalPackageData
+7 silly install normalizeTree
+8 silly loadCurrentTree Finishing
+9 silly loadIdealTree Starting
+10 silly install loadIdealTree
+11 silly cloneCurrentTree Starting
+12 silly install cloneCurrentTreeToIdealTree
+13 silly cloneCurrentTree Finishing
+14 silly loadShrinkwrap Starting
+15 silly install loadShrinkwrap
+16 silly loadShrinkwrap Finishing
+17 silly loadAllDepsIntoIdealTree Starting
+18 silly install loadAllDepsIntoIdealTree
+19 silly fetchNamedPackageData socket.io-msgpack-parser
+20 silly mapToRegistry name socket.io-msgpack-parser
+21 silly mapToRegistry using default registry
+22 silly mapToRegistry registry https://registry.npmjs.org/
+23 silly mapToRegistry uri https://registry.npmjs.org/socket.io-msgpack-parser
+24 verbose request uri https://registry.npmjs.org/socket.io-msgpack-parser
+25 verbose request no auth needed
+26 info attempt registry request try #1 at 3:41:09 PM
+27 verbose request id 54aa24d066b4df66
+28 http request GET https://registry.npmjs.org/socket.io-msgpack-parser
+29 info retry will retry, error on last attempt: Error: getaddrinfo ENOTFOUND registry.npmjs.org registry.npmjs.org:443
+30 info attempt registry request try #2 at 3:41:19 PM
+31 http request GET https://registry.npmjs.org/socket.io-msgpack-parser
+32 info retry will retry, error on last attempt: Error: getaddrinfo ENOTFOUND registry.npmjs.org registry.npmjs.org:443
+33 info attempt registry request try #3 at 3:42:19 PM
+34 http request GET https://registry.npmjs.org/socket.io-msgpack-parser
+35 silly fetchPackageMetaData Error: getaddrinfo ENOTFOUND registry.npmjs.org registry.npmjs.org:443
+35 silly fetchPackageMetaData     at errnoException (dns.js:50:10)
+35 silly fetchPackageMetaData     at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:92:26)
+35 silly fetchPackageMetaData  error for socket.io-msgpack-parser@^2.2.0 { Error: getaddrinfo ENOTFOUND registry.npmjs.org registry.npmjs.org:443
+35 silly fetchPackageMetaData     at errnoException (dns.js:50:10)
+35 silly fetchPackageMetaData     at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:92:26)
+35 silly fetchPackageMetaData   code: 'ENOTFOUND',
+35 silly fetchPackageMetaData   errno: 'ENOTFOUND',
+35 silly fetchPackageMetaData   syscall: 'getaddrinfo',
+35 silly fetchPackageMetaData   hostname: 'registry.npmjs.org',
+35 silly fetchPackageMetaData   host: 'registry.npmjs.org',
+35 silly fetchPackageMetaData   port: 443 }
+36 silly rollbackFailedOptional Starting
+37 silly rollbackFailedOptional Finishing
+38 silly runTopLevelLifecycles Starting
+39 silly runTopLevelLifecycles Finishing
+40 silly install printInstalled
+41 verbose stack Error: getaddrinfo ENOTFOUND registry.npmjs.org registry.npmjs.org:443
+41 verbose stack     at errnoException (dns.js:50:10)
+41 verbose stack     at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:92:26)
+42 verbose cwd /home/swap/Desktop/Hobby CS/JavaScript/mmo/Torn.Space
+43 error Linux 5.0.0-36-generic
+44 error argv "/usr/bin/node" "/usr/bin/npm" "install"
+45 error node v8.10.0
+46 error npm  v3.5.2
+47 error code ENOTFOUND
+48 error errno ENOTFOUND
+49 error syscall getaddrinfo
+50 error network getaddrinfo ENOTFOUND registry.npmjs.org registry.npmjs.org:443
+51 error network This is most likely not a problem with npm itself
+51 error network and is related to network connectivity.
+51 error network In most cases you are behind a proxy or have bad network settings.
+51 error network
+51 error network If you are behind a proxy, please make sure that the
+51 error network 'proxy' config is set properly.  See: 'npm help config'
+52 verbose exit [ 1, true ]
