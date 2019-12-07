@@ -23,24 +23,8 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 	self.tick = function () {
 
 		self.move();
-
 		if (self.timer++ > 10 * wepns[weaponID].range / wepns[weaponID].speed) self.die(); // out of range -> die
 		if (self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();//out of sector
-
-		// Force missile death, log shit
-		if (self.timer > 200) {
-			console.log("****** FORCE KILLING MISSILE DUE TO TIMEOUT *******");
-			console.log("owner: " + self.owner);
-			console.log("color: " + self.color);
-			console.log("dmg: " + self.dmg);
-			console.log("vx, vy: " + self.vx + ", " + self.vy);
-			console.log("angle: " + self.angle);
-			console.log("locked: " + self.locked);
-			console.log("lockedTimer: " + self.lockedTimer);
-			console.log("wepnID: " + self.wepnID);
-			self.die();
-			return;
-		}
 
 		if (self.timer >= 20 && self.wepnID == 13) { // missile swarm
 			for (var i = 0; i < 6; i++) { // spawn 6 missiles
@@ -116,6 +100,8 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 
 			}
 		}
+
+		if (self.locked == 0) self.lockedTimer = 0;
 
 		var accelMult = 1 - 25 / (self.timer + 25); // pick up speed w/ time
 		self.x += self.vx * accelMult;
