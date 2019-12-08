@@ -109,7 +109,7 @@ function move(){
 			var dx = ip.x-acc.x;
 			var dy = ip.y-acc.y;
 			var angle = Math.atan2(dy,dx);
-			var dist = (dy*dy+dx*dx)/200;
+			var dist = (dy*dy+dx*dx)/100;
 			var nx = dist*Math.cos(angle), ny = dist*Math.sin(angle);
 			acc.vx += nx;
 			acc.vy += ny;
@@ -119,20 +119,20 @@ function move(){
 	}
 
 
-
+	var decay = .85/(1+tick/5000)
 
 	//tick positions
 	for (var name in ips) {
 		var ip = ips[name];
-		ip.vx*=.8;
-		ip.vy*=.8;
+		ip.vx*=decay;
+		ip.vy*=decay;
 		ip.x += ip.vx/20;
 		ip.y += ip.vy/20;
 	}
 	for (var name in accs) {
 		var acc = accs[name];
-		acc.vx*=.8;
-		acc.vy*=.8;
+		acc.vx*=decay;
+		acc.vy*=decay;
 		acc.x += acc.vx/20;
 		acc.y += acc.vy/20;
 	}
@@ -140,6 +140,7 @@ function move(){
 function renderAccsAndEdges(){
 	ctx.strokeStyle = "grey";
 	ctx.fillStyle = "Orange";
+	ctx.font = "16px Ariel";
 	for (var name in accs) {
 		var acc = accs[name];
 		var sx = (acc.x-ox)/zoom+w/2, sy = (acc.y-oy)/zoom+h/2;
