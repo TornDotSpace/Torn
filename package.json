@@ -21,9 +21,9 @@
   "author": "The Torn.Space Team",
   "license": "All Rights Reserved",
   "devDependencies": {
-    "@babel/core": "^7.7.4",
+    "@babel/core": "^7.7.5",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
+    "@babel/preset-env": "^7.7.6",
     "@babel/preset-react": "^7.7.4",
     "babel-loader": "^8.0.6",
     "git-revision-webpack-plugin": "^3.0.4",
@@ -42,7 +42,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "howler": "^2.1.2",
-    "mongodb": "^3.3.5",
+    "mongodb": "^3.4.0",
     "socket.io": "^2.3.0",
     "socket.io-msgpack-parser": "^2.2.0",
     "uws": "file:uws"
