@@ -785,7 +785,7 @@ function Player(sock) {
 		var p = planets[self.sy][self.sx];
 
 		//if out of range, return. Only try this once a second.
-		if (tick % 25 != 0 || squaredDist(p, self) > square(512)) return;
+		if (tick % 10 != 0 || squaredDist(p, self) > square(512)) return;
 
 		//cooldown to prevent chat spam when 2 people are on the planet
 		var cool = p.cooldown;
@@ -808,7 +808,7 @@ function Player(sock) {
 					break;
 				}
 			}
-			if (cleared && bases[self.sy][self.sx] != 0 && bases[self.sy][self.sx].turretLive) cleared = false;//also check base is dead
+			if (bases[self.sy][self.sx] != 0 && bases[self.sy][self.sx].turretLive) cleared = false;//also check base is dead
 
 			if (cleared) { // 2 ifs needed, don't merge this one with the last one
 				self.hasPackage = true;
@@ -1285,7 +1285,7 @@ function Player(sock) {
 	}
 	self.dmg = function (d, origin) {
 
-		if(self.health < 0) return; //multi-kill bug
+		if (!players[self.sy][self.sx][self.id]) return; //multi-kill bug
 
 		//reward nn bots for hurting other players
 		if (self.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net != 0) {
