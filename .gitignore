@@ -8,6 +8,7 @@ WiredTiger
 *.data
 *.bson
 client/leaderboard/
+client/accountusage/data.json
 client/*.js
 
 # Server Logs (production)
