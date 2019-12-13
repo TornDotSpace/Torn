@@ -1285,7 +1285,7 @@ function Player(sock) {
 	}
 	self.dmg = function (d, origin) {
 
-		if(self.health < 0) return; //multi-kill bug
+		if (!players[self.sy][self.sx][self.id]) return; //multi-kill bug
 
 		//reward nn bots for hurting other players
 		if (self.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net != 0) {
