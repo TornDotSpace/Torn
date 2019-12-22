@@ -180,7 +180,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		if (self.isBase) return;
 		var source = 'server/turrets/' + self.id + '.txt';
 		if (fs.existsSync(source)) fs.unlinkSync(source);
-		var str = self.kills + ':' + self.experience + ':' + self.money + ':' + self.id + ":" + self.color + ":" + self.owner + ":" + self.x + ":" + self.y + ":" + self.sx + ":" + self.sy;
+		var str = self.kills + ':' + self.experience + ':' + self.money + ':' + self.id + ":" + self.color + ":" + self.owner + ":" + self.x + ":" + self.y + ":" + self.sx + ":" + self.sy + ":" + self.name;
 		fs.writeFileSync(source, str, { "encoding": 'utf8' });
 	}
 	self.onKill = function () {
