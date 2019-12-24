@@ -40,6 +40,7 @@ var ctx = canvas.getContext("2d");
 import React from "react";
 import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
+const io = require('socket.io-client');
 
 const { Howl, Howler } = require('howler'); // audio
 const msgpack = require('socket.io-msgpack-parser');
