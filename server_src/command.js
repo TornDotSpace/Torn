@@ -96,7 +96,7 @@ cmds["/mute"] = new Command("/mute <player> <minutesToMute> - Mutes the specifie
     if (msg.split(" ").length != 3) return; // split looks like {"/mute", "name", "minutesToMute"}
     var name = msg.split(" ")[1];
     var minutes = parseFloat(msg.split(" ")[2]);
-    if (typeof time !== "number") return;
+    if (typeof minutes !== "number") return;
 
     if (minutes < 0) return;
 

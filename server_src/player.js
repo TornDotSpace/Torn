@@ -802,8 +802,9 @@ function Player(sock) {
 
 			//compute whether there are any unkilled enemies in this sector
 			var cleared = true;
-			for (var player in players[self.sy][self.sx]) {
-				if (player.color != self.color) {
+			for (var i in players[self.sy][self.sx]) {
+				var player = players[self.sy][self.sx][i];
+				if (player.color !== self.color) {
 					cleared = false;
 					break;
 				}

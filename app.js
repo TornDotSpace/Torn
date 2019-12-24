@@ -498,6 +498,7 @@ function loadTurrets() {
 		var data = fs.readFileSync("server/turrets/" + items[i], 'utf8').split(":");
 		var id = parseFloat(data[3]);
 		var b = new Base(id, false, parseFloat(data[8]), parseFloat(data[9]), data[4], parseFloat(data[6]), parseFloat(data[7]));
+		b.name = data[10];
 		b.kills = parseFloat(data[0]);
 		b.experience = parseFloat(data[1]);
 		b.money = parseFloat(data[2]);
