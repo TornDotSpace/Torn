@@ -794,7 +794,7 @@ function Player(sock) {
 		self.checkQuestStatus(true); // lots of quests are planet based
 
 		if (self.guest) {
-			sockets[self.id].emit("chat", { msg: 'You must create an account in the base before you can claim planets!', color: 'yellow' });
+			self.socket.emit("chat", { msg: 'You must create an account in the base before you can claim planets!', color: 'yellow' });
 			return;
 		}
 
