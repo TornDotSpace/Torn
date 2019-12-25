@@ -7,6 +7,7 @@ require('./netutils.js');
 require("./command.js");
 var exec = require('child_process').execSync;
 const msgpack = require('socket.io-msgpack-parser');
+
 var guestCount = 0; // Enumerate guests since server boot
 
 // Global mute table 
@@ -101,7 +102,7 @@ module.exports = function initNetcode() {
 
     var socketio = require('socket.io');
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js    
-    var io = socketio(server, {
+    global.io = socketio(server, {
         serveClient: false,
         origins: "*:*",
         wsEngine: Config.getValue("ws-engine", "ws"),

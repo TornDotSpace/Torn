@@ -17,7 +17,7 @@ global.sendAllSector = function (out, data, sx, sy) {
 }
 
 global.sendAll = function (out, data) {
-	for (var i in sockets) sockets[i].emit(out, data);
+	io.emit(out, data);
 }
 
 global.chatAll = function (msg) { // sends msg in the chat
