@@ -172,6 +172,7 @@ module.exports = function initNetcode() {
             instance = true;
             player.ip = ip;
             player.name = "GUEST " + guestCount;
+            log(player.ip + " logged in as " + player.name);
             guestCount++;
 
             player.color = socket_color ? "red" : "blue";
