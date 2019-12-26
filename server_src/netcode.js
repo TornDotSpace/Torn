@@ -375,6 +375,7 @@ module.exports = function initNetcode() {
 
                 // Spawn was computed in die()
                 players[player.sy][player.sx][player.id] = player;
+                socket.join("" + player.sy + "," + player.sx);
                 delete deads[player.id];
                 player.sendStatus();
                 return;
