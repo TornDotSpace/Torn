@@ -550,6 +550,10 @@ function Player(sock) {
 
 		if (old_sx !== self.sx || old_sy !== self.sy) {
 			delete players[old_sy][old_sx][self.id];
+			
+			// Switch rooms
+			self.socket.join("" + self.sy + "," + self.sx);
+			self.socket.leave("" + old_sy + "," + old_sx);
 
 			players[self.sy][self.sx][self.id] = self;
 			self.onChangeSectors();
@@ -794,7 +798,7 @@ function Player(sock) {
 		self.checkQuestStatus(true); // lots of quests are planet based
 
 		if (self.guest) {
-			sockets[self.id].emit("chat", { msg: 'You must create an account in the base before you can claim planets!', color: 'yellow' });
+			self.socket.emit("chat", { msg: 'You must create an account in the base before you can claim planets!', color: 'yellow' });
 			return;
 		}
 
@@ -1657,7 +1661,7 @@ global.spawnBot = function (sx, sy, col, rbNow, bbNow) {
 		return;
 	}
 	id = Math.random();
-	var bot = new Player({ id: id, emit: function () { } });
+	var bot = new Player({ id: id, emit: function () { }, join  : function () { }, leave : function () {} });
 	bot.isBot = true;
 	bot.sx = sx;
 	bot.sy = sy;

@@ -30,6 +30,11 @@ module.exports = {
         contentBase: './client',
         hot: true
     },
+    optimization: {
+        splitChunks: {
+          chunks: "initial",
+        },
+    },
     plugins: [
 	    new webpack.DefinePlugin({
       VERSION: JSON.stringify(gitRevisionPlugin.version()),

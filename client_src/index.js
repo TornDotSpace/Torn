@@ -216,7 +216,6 @@ var musicAudio = 0;
 
 var Aud = {};
 var Aud_prgs = [0, 0];
-var Aud_loaded = false;
 
 function loadAudio(name, _src) {
 	if (Aud[name]) { console.error("Loading audio twice: " + name) }

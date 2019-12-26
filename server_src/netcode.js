@@ -7,6 +7,7 @@ require('./netutils.js');
 require("./command.js");
 var exec = require('child_process').execSync;
 const msgpack = require('socket.io-msgpack-parser');
+
 var guestCount = 0; // Enumerate guests since server boot
 
 // Global mute table 
@@ -101,7 +102,7 @@ module.exports = function initNetcode() {
 
     var socketio = require('socket.io');
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js    
-    var io = socketio(server, {
+    global.io = socketio(server, {
         serveClient: false,
         origins: "*:*",
         wsEngine: Config.getValue("ws-engine", "ws"),
@@ -111,8 +112,6 @@ module.exports = function initNetcode() {
 
     io.sockets.on('connection', function (socket) {
         var instance = false;
-        socket.id = Math.random();
-        sockets[socket.id] = socket;
 
         var ip = Config.getValue("want-xreal-ip", true)
             ? socket.handshake.headers['x-real-ip']
@@ -187,6 +186,9 @@ module.exports = function initNetcode() {
             player.getAllPlanets();
 
             players[player.sy][player.sx][socket.id] = player;
+            // Join appropriate channels
+            socket.join("team-" + player.color);
+            socket.join("" + player.sy + "," + player.sx);
             player.va = ships[player.ship].agility * .08 * player.agility2;
             player.thrust = ships[player.ship].thrust * player.thrust2;
             player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
@@ -316,6 +318,10 @@ module.exports = function initNetcode() {
     
                 players[player.sy][player.sx][socket.id] = player;
                 
+                // Join appropriate channels
+                socket.join("team-" + player.color);
+                socket.join("" + player.sy + "," + player.sx);
+
                 player.calculateGenerators();
                 socket.emit("raid", { raidTimer: raidTimer })
                 player.checkTrailAchs();
