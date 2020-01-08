@@ -1,20 +1,32 @@
-console.log("************************************************************************************************************************");
-console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
-console.log("▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
-console.log(" ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌     ▐░▌   ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌    ▐░▌   ▐░▌          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▌   ▐░▌   ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░█▄▄▄▄▄▄▄▄▄ ");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░▌   ▐░▌ ▐░▌    ▀▀▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀▀▀ ");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌    ▐░▌▐░▌             ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌          ");
-console.log("     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░▌     ▐░▐░▌ ▄  ▄▄▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄ ");
-console.log("     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌      ▐░░▌▐░▌▐░░░░░░░░░░░▌▐░▌          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
-console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀        ▀▀  ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ ");
-console.log("                                                                                                                        ");
-console.log("************************************************************************************************************************");
 
-console.log("torn-client-git-" + BRANCH + "-" + COMMITHASH);
-console.log ("Implementing protocol version " + VERSION);
+function printStartup() {
+	console.log("************************************************************************************************************************");
+	console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
+	console.log("▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
+	console.log(" ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌     ▐░▌   ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ");
+	console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌    ▐░▌   ▐░▌          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ");
+	console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▌   ▐░▌   ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░█▄▄▄▄▄▄▄▄▄ ");
+	console.log("     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌");
+	console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░▌   ▐░▌ ▐░▌    ▀▀▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀▀▀ ");
+	console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌    ▐░▌▐░▌             ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌          ");
+	console.log("     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░▌     ▐░▐░▌ ▄  ▄▄▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄ ");
+	console.log("     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌      ▐░░▌▐░▌▐░░░░░░░░░░░▌▐░▌          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
+	console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀        ▀▀  ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ ");
+	console.log("                                                                                                                        ");
+	console.log("************************************************************************************************************************");
+
+	console.log("torn-client-git-" + BRANCH + "-" + COMMITHASH);
+	console.log ("Implementing protocol version " + VERSION);
+
+	// Print client modification warning
+	console.error("***********************************************************************");
+	console.error("WARNING: PASTING CODE INTO HERE CAN ALLOW FOR YOUR ACCOUNT TO BE STOLEN");
+	console.error("ALWAYS AUDIT CODE YOU ARE INJECTING INTO THE DEVELOPER CONSOLE");
+	console.error("ADDITIONALLY, PLEASE RESPECT OUR TOS https://torn.space/tos");									 
+	console.error("***********************************************************************");
+}
+
+printStartup();
 
 window.document.title = "Torn " + VERSION;
 
@@ -28,6 +40,7 @@ var ctx = canvas.getContext("2d");
 import React from "react";
 import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
+const io = require('socket.io-client');
 
 const { Howl, Howler } = require('howler'); // audio
 const msgpack = require('socket.io-msgpack-parser');
@@ -203,7 +216,6 @@ var musicAudio = 0;
 
 var Aud = {};
 var Aud_prgs = [0, 0];
-var Aud_loaded = false;
 
 function loadAudio(name, _src) {
 	if (Aud[name]) { console.error("Loading audio twice: " + name) }
@@ -221,24 +233,6 @@ function loadAudio(name, _src) {
 	});
 	Aud_prgs[1]++;
 }
-function loadAudioEnd() {
-	let loaded = () => {
-		if (Aud_prgs[0] === Aud_prgs[1]) {
-			Aud_loaded = true
-			if (Aud_loaded && Img_loaded)
-				EVERYTHING_LOADED = true
-			return true
-		} else
-			return false
-	}
-
-	if (!loaded()) {
-		let interval = setInterval(() => {
-			if (loaded())
-				clearInterval(interval)
-		}, 100)
-	}
-}
 function loadAllAudio() {
 	loadAudio("minigun", '/aud/minigun.mp3');
 	loadAudio("boom", '/aud/boom.mp3');
@@ -251,7 +245,6 @@ function loadAllAudio() {
 	loadAudio("money", '/aud/money.wav');
 	loadAudio("button2", '/aud/button2.wav');
 	loadAudio("noammo", '/aud/noammo.wav');
-	loadAudioEnd();
 }
 
 var muted = false, musicMuted = false;
@@ -297,6 +290,7 @@ var Img_prgs = [0 /* Count of loaded images */, 0 /* Count of all images */]
 var Img_loaded = false;
 loadAllImages();
 loadAllAudio();
+
 function loadImage(name, src) {
 	if (Img[name]) { console.error("Loading image twice: " + name); return; }
 	Img[name] = new Image();
@@ -310,10 +304,10 @@ function loadImage(name, src) {
 }
 function loadImageEnd() {
 	let loaded = () => {
+		console.log('loadImageEnd');
 		if (Img_prgs[0] === Img_prgs[1]) {
-			Img_loaded = true
-			if (Img_loaded && Aud_loaded)
-				EVERYTHING_LOADED = true
+			Img_loaded = true;
+			EVERYTHING_LOADED = true
 			return true
 		} else
 			return false
@@ -327,13 +321,8 @@ function loadImageEnd() {
 }
 function loadPlanetImg(i) {
 	planetImgs[i] = new Image();
-	var realI = i + 1;
-
-	if (realI == 6) {
-		realI == 1;
-	}
 	// TODO: fix 
-	planetImgs[i].src = '/img/space/planets/pt' + realI + '.png';
+	planetImgs[i].src = '/img/space/planets/pt' + ((i % 5) + 1) + '.png';
 }
 function loadShipImg(red, i) {
 	if (red) {
@@ -540,6 +529,7 @@ function getSectorName(inx, iny) {
 
 
 function render() {
+
 	if (dead) {
 		ctx.globalAlpha = .02;
 		ctx.fillStyle = "black";

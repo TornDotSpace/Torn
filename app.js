@@ -180,7 +180,6 @@ var enableDecay = Config.getValue("want_decay", false); // Enable player decay a
 
 
 //Object lists. All of them are in Y-MAJOR ORDER.
-global.sockets = {}; // network
 global.players = new Array(mapSz); // in game
 global.dockers = {}; // at a base
 global.lefts = {}; // Queued for deletion- left the game
@@ -234,10 +233,6 @@ for (var i = 0; i < mapSz; i++) { // it's 2d
 
 function sendRaidData() { // tell everyone when the next raid is happening
 	sendAll("raid", { raidTimer: raidTimer });
-}
-
-function getPlayer(i) { // given a socket id, find the corresponding player object.
-	return sockets[i].player;
 }
 
 //Alex: I rewrote everything up to here thoroughly, and the rest not so thoroughly. 7/1/19
@@ -530,11 +525,16 @@ function endRaid() {
 	if (raidRed > raidBlue) winners = "red";
 	else if (raidBlue > raidRed) winners = "blue";
 	raidTimer = 360000;
-	for (var i in sockets) {
-		var p = getPlayer(i);
-		if (p === undefined || p.color !== winners) continue;
-		p.spoils("money", p.points * 40000);
-		p.points = 0;
+
+	for (var y in players) {
+		for (var x in players[y]) {
+			for (var i in players[y][x]) {
+				var p = players[y][x][i];
+				if (p === undefined || p.color !== winners) continue;
+				p.spoils("money", p.points * 40000);
+				p.points = 0;
+			}
+		}
 	}
 	sendRaidData();
 }
@@ -1056,7 +1056,6 @@ function deletePlayers() { // remove players that have left or are afk or whatev
 	for (var i in lefts) {
 		if (lefts[i]-- > 1) continue;
 		for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) if(i in players[y][x]) delete players[y][x][i];
-		delete sockets[i];
 		if(i in dockers) delete dockers[i];
 		if(i in deads) delete deads[i];
 		delete lefts[i];

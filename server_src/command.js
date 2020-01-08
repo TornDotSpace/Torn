@@ -55,8 +55,9 @@ cmds["/confirmteam"] = new Command("/confirmteam", PLAYER, function (player, msg
         player.socket.emit("chat", { msg: "You don't have enough experience!" });
         return;
     }
-
+    player.socket.leave("team-" + player.color);
     player.color = (player.color === "red" ? "blue" : "red");
+    player.socket.join("team-" + player.color);
     player.money *= .9;
     player.experience *= .9;
     player.save();
@@ -96,7 +97,7 @@ cmds["/mute"] = new Command("/mute <player> <minutesToMute> - Mutes the specifie
     if (msg.split(" ").length != 3) return; // split looks like {"/mute", "name", "minutesToMute"}
     var name = msg.split(" ")[1];
     var minutes = parseFloat(msg.split(" ")[2]);
-    if (typeof time !== "number") return;
+    if (typeof minutes !== "number") return;
 
     if (minutes < 0) return;
 
