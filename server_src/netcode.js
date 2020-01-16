@@ -208,6 +208,7 @@ module.exports = function initNetcode() {
 
             if (!player) return;
             if (!player.guest) return;
+            if (player.rank < 1) return;
 
             var user = data.user, pass = data.pass;
 
