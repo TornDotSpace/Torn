@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@clusterws/cws": "^0.15.2"
+    "@clusterws/cws": "^1.1.2"
   }
 }
