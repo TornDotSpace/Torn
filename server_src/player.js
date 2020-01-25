@@ -992,7 +992,7 @@ function Player(sock) {
 		if (self.bulletQueue > 0) { // Submachinegun
 			if (self.ammos[self.equipped] <= 0) return;
 			self.bulletQueue--;
-			self.reload(false, wepId);
+			self.reload(false, currWep);
 			currWep = 40;
 		}
 
