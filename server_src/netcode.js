@@ -208,6 +208,7 @@ module.exports = function initNetcode() {
 
             if (!player) return;
             if (!player.guest) return;
+            if (player.rank < 1) return;
 
             var user = data.user, pass = data.pass;
 
@@ -436,7 +437,7 @@ module.exports = function initNetcode() {
                 var spaces = "";
                 for (var i = player.name.length; i < 16; i++) spaces += " "; // align the message
                 const finalMsg = "~`" + player.color + "~`" + spaces + player.name + "~`yellow~`: " + data.msg;
-                if (player.globalChat == 0) sendAll('chat', { msg: finalMsg });//sendTeam(player.color, 'chat', {msg:finalMsg});
+                if (player.globalChat == 0) chatAll(finalMsg);//sendTeam(player.color, 'chat', {msg:finalMsg});
             }
         });
         socket.on('toggleGlobal', function (data) { // player wants to switch what chat room they're in

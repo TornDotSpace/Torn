@@ -696,7 +696,7 @@ function ammoCodeToString(code) {
 function rHome() {
 	ctx.textAlign = "center";
 	r3DMapBig();
-	if (guest) {
+	if (guest && rank > 0) {
 		ctx.font = (4 * sinLow(baseTick / 16) + 28) + "px Nasa";
 		ctx.fillStyle = (seller == 600) ? "lime" : "yellow";
 		ctx.textAlign = 'center';
@@ -2161,7 +2161,7 @@ document.addEventListener('mousemove', function (evt) {
 	if (mb == 1 && mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
 	if (mx > w - 32 - 20 - 128 && my > h - 52) volTransparency = 1;
 	var preSeller = seller;
-	if (guest && tab == 0 && docked && mx > rx + 768 - 256 && mx < rx + 768 && my > ry + 256 - 40 && my < ry + 256 + 120) seller = 600;
+	if (guest && rank > 0 && tab == 0 && docked && mx > rx + 768 - 256 && mx < rx + 768 && my > ry + 256 - 40 && my < ry + 256 + 120) seller = 600;
 	else if (tab == 1 && docked && mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
 	else if (tab == 1 && docked && mx > rx + 768 - 16 - ctx.measureText(mEng[14]).width && mx < rx + 768 - 16 && my > ry + 512 - 32 && my < ry + 512 - 16) seller = 611;
 	else if (mb == 1 && docked && tab == 1 && mx > rx + 128 * 4 - 16 && mx < rx + 128 * 6 - 16 && my < ry + 128 * 4 - 16 && my > ry + 128 * 2 - 16) {

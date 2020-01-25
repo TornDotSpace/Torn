@@ -90,7 +90,7 @@ cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for pass
 // MODERATION COMMANDS
 // These commands are accessible to moderators in the game
 cmds["/broadcast"] = new Command("/broadcast <msg> - Send a message to the whole server", MODERATOR, function (player, msg) {
-    sendAll('chat', { msg: "~`#f66~`       BROADCAST: ~`lime~`" + msg.substring(11) });
+    chatAll("~`#f66~`       BROADCAST: ~`lime~`" + msg.substring(11));
 });
 
 cmds["/mute"] = new Command("/mute <player> <minutesToMute> - Mutes the specified player.", MODERATOR, function (player, msg) {

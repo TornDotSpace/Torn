@@ -826,7 +826,7 @@ function Player(sock) {
 
 		p.color = self.color; // claim
 		p.owner = self.name;
-		sendAll('chat', { msg: 'Planet ' + p.name + ' claimed by ~`' + self.color + '~`' + self.name + "~`yellow~`!" });
+		chatAll('Planet ' + p.name + ' claimed by ~`' + self.color + '~`' + self.name + "~`yellow~`!");
 
 		for (var i in players[self.sy][self.sx]) players[self.sy][self.sx][i].getAllPlanets();//send them new planet data
 
@@ -992,6 +992,7 @@ function Player(sock) {
 		if (self.bulletQueue > 0) { // Submachinegun
 			if (self.ammos[self.equipped] <= 0) return;
 			self.bulletQueue--;
+			self.reload(false, wepId);
 			currWep = 40;
 		}
 
@@ -1119,6 +1120,7 @@ function Player(sock) {
 		sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: Math.cos(self.angle) * self.speed, dy: Math.sin(self.angle) * self.speed }, self.sx, self.sy);
 
 		self.socket.leave("" + self.sy + "," + self.sx);
+
 		if (b != 0) {
 			if (!self.isBot) {
 
@@ -1127,7 +1129,7 @@ function Player(sock) {
 				self.socket.emit('quest', { quest: 0, complete: false});//reset quest and update client
 
 				if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-					sendAll('chat', { msg: ("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + b.owner.name + "~`yellow~`'s `~" + b.wepnID + "`~!") });
+					chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + b.owner.name + "~`yellow~`'s `~" + b.wepnID + "`~!");
 
 					if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
 						b.owner.driftAchs[9] = true;
@@ -1136,9 +1138,9 @@ function Player(sock) {
 				}
 
 				//send msg
-				else if (b.type == "Vortex") sendAll('chat', { msg: ("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!") });
-				else if (b.type == "Planet" || b.type == "Asteroid") sendAll('chat', { msg: ("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!") });
-				else if (b.owner !== undefined && b.owner.type == "Base") sendAll('chat', { msg: ("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base in sector " + b.owner.getSectorName() + "!") });
+				else if (b.type == "Vortex") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!");
+				else if (b.type == "Planet" || b.type == "Asteroid") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!");
+				else if (b.owner !== undefined && b.owner.type == "Base") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base in sector " + b.owner.getSectorName() + "!");
 
 			}
 
@@ -1528,7 +1530,7 @@ function Player(sock) {
 			var newPosition = lbIndex(self.experience);
 			//log(newPosition + " " + oldPosition);
 			if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
-				if (newPosition < 251) sendAll('chat', { msg: "~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!" });
+				if (newPosition < 251) chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!");
 				else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
 			}
 			self.updateRank();

@@ -57,7 +57,7 @@ global.saveTurrets = function () {
 // TODO: needs to be fixed for MongoDB
 global.decayPlayers = function () {
 	if (!enableDecay) return;
-	sendAll("chat", { msg: "Decaying Players..." });
+	chatAll("Decaying Players...");
 	log("\nDecaying players...")
 	var items = fs.readdirSync('server/players/');
 
@@ -72,8 +72,7 @@ global.decayPlayers = function () {
 			if (split.length < 15) sendAll("chat", { msg: "File " + source + " unreadable. " + split.length + " entries." });
 			else {
 				var log = "Player " + split[14] + " failed to decay due to an unformatted save file with " + split.length + " entries. Cleaning file.";
-				sendAll("chat", { msg: log });
-				log("\n" + log + "\n");
+				chatAll(log);
 				cleanFile(source);
 			}
 			continue;
