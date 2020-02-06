@@ -20,11 +20,23 @@ module.exports = function Mine(ownr, i, weaponID) {
 	self.tick = function () {
 		self.x += self.vx; // move
 		self.y += self.vy;
+		if (self.time == 0) self.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
 		if (self.wepnID > 25 && self.time++ > 25) self.die(); // pulse wave and grenade blow up after 1 second
 		if (self.time++ > 25 * 3 * 60) self.die(); // all mines die after 3 minutes
 	}
+	self.collideWithMines = function(){ // When the mine is created, make sure it isn't placed on top of any other mines.
+		for (var m in mines[self.sy][self.sx]) {
+			var mine = mines[self.sy][self.sx][m];
+			if (mine.id == self.id) continue; // ofc the mine is on top of itself
+			if (squaredDist(mine, self) < square(wepns[self.weaponID].range)){ // if that mine is in this mine's "attack range"
+				mine.die(); // destroy both
+				self.die();
+				break;
+			}
+		}
+	}
 	self.die = function () {
-		self.die = function() { };
+		self.die = function() { }; // Purpose unclear, please comment
 		var power = 0; // how strongly this mine pushes people away on explosion
 		if (self.wepnID == 15 || self.wepnID == 33) power = 400; //mine, grenade
 		else if (self.wepnID == 32) power = 2000;
