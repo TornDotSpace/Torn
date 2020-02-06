@@ -9,7 +9,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 
 		x: ownr.x,
 		y: ownr.y,
-		vx: weaponID != 33 ? 0 : Math.cos(ownr.angle) * 30, // grnades are the only mines that move
+		vx: weaponID != 33 ? 0 : Math.cos(ownr.angle) * 30, // grenades are the only mines that move
 		vy: weaponID != 33 ? 0 : Math.sin(ownr.angle) * 30,
 		sx: ownr.sx,
 		sy: ownr.sy,
