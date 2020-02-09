@@ -1,6 +1,6 @@
 //Miscellaneous Networking
 global.send = function (id, msg, data) { // send a socketio message to id
-	var s = io.to(id);
+	var s = sockets[id];
 	if (typeof s !== "undefined") s.emit(msg, data);
 }
 
@@ -10,7 +10,10 @@ global.sendWeapons = function (player) { // tells a client what weapons that pla
 	send(player.id, 'weapons', { weapons: player.weapons, worth: worth, ammos: player.ammos });
 }
 global.sendAllSector = function (out, data, sx, sy) {
-	io.to("" + sy + "," + sx).emit(out, data);
+	for (var i in sockets) {
+		var p = players[sy][sx][i];
+		if (typeof p !== "undefined" && p.sx == sx && p.sy == sy) sockets[i].emit(out, data);
+	}
 }
 
 global.sendAll = function (out, data) {
@@ -22,7 +25,10 @@ global.chatAll = function (msg) { // sends msg in the chat
 }
 
 global.sendTeam = function (color, out, data) { // send a socket.io message to all the members of some team
-	io.to("team-" + color).emit(out, data);
+	for (var i in sockets) {
+		var player = sockets[i].player;
+		if (typeof player !== "undefined" && player.color === color) sockets[i].emit(out, data);
+	}
 }
 
 global.note = function (msg, x, y, sx, sy) { // a popup note in game that everone in the sector can see.

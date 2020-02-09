@@ -55,9 +55,8 @@ cmds["/confirmteam"] = new Command("/confirmteam", PLAYER, function (player, msg
         player.socket.emit("chat", { msg: "You don't have enough experience!" });
         return;
     }
-    player.socket.leave("team-" + player.color);
+
     player.color = (player.color === "red" ? "blue" : "red");
-    player.socket.join("team-" + player.color);
     player.money *= .9;
     player.experience *= .9;
     player.save();
