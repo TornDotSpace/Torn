@@ -234,6 +234,10 @@ function sendRaidData() { // tell everyone when the next raid is happening
 	sendAll("raid", { raidTimer: raidTimer });
 }
 
+function getPlayer(i) { // given a socket id, find the corresponding player object.
+	return io.to(i).player;
+}
+
 //Alex: I rewrote everything up to here thoroughly, and the rest not so thoroughly. 7/1/19
 
 //TODO Merge these

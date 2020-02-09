@@ -1110,16 +1110,11 @@ function Player(sock) {
 		var diff = .02 * self.experience;
 		self.leaveBaseShield = 25;
 		self.refillAllAmmo();
-
 		if (typeof b === "undefined") {
 			delete players[self.sy][self.sx][self.id];
-			self.socket.leave("" + self.sy + "," + self.sx);
 			return;
 		}
-
 		sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: Math.cos(self.angle) * self.speed, dy: Math.sin(self.angle) * self.speed }, self.sx, self.sy);
-
-		self.socket.leave("" + self.sy + "," + self.sx);
 
 		if (b != 0) {
 			if (!self.isBot) {
