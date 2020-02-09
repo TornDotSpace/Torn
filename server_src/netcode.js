@@ -112,6 +112,8 @@ module.exports = function initNetcode() {
 
     io.sockets.on('connection', function (socket) {
         var instance = false;
+        socket.id = Math.random();
+        sockets[socket.id] = socket;
 
         var ip = Config.getValue("want-xreal-ip", true)
             ? socket.handshake.headers['x-real-ip']
@@ -187,9 +189,6 @@ module.exports = function initNetcode() {
             player.getAllPlanets();
 
             players[player.sy][player.sx][socket.id] = player;
-            // Join appropriate channels
-            socket.join("team-" + player.color);
-            socket.join("" + player.sy + "," + player.sx);
             player.va = ships[player.ship].agility * .08 * player.agility2;
             player.thrust = ships[player.ship].thrust * player.thrust2;
             player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
@@ -320,10 +319,6 @@ module.exports = function initNetcode() {
     
                 players[player.sy][player.sx][socket.id] = player;
                 
-                // Join appropriate channels
-                socket.join("team-" + player.color);
-                socket.join("" + player.sy + "," + player.sx);
-
                 player.calculateGenerators();
                 socket.emit("raid", { raidTimer: raidTimer })
                 player.checkTrailAchs();
@@ -377,7 +372,6 @@ module.exports = function initNetcode() {
 
                 // Spawn was computed in die()
                 players[player.sy][player.sx][player.id] = player;
-                socket.join("" + player.sy + "," + player.sx);
                 delete deads[player.id];
                 player.sendStatus();
                 return;
