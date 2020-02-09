@@ -112,8 +112,6 @@ var Asteroid = require("./server_src/universe/asteroid.js");
 var Planet = require("./server_src/universe/planet.js");
 var Vortex = require("./server_src/universe/vortex.js");
 
-var planetNames = fs.readFileSync("./server_src/resources/planetNames.txt").toString().split("\n");
-
 var tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 
 global.createAsteroid = function () {
@@ -418,7 +416,7 @@ function init() { // start the server!
 	for (var s = 0; s < mapSz * mapSz; s++) {
 		var x = s % mapSz;
 		var y = Math.floor(s / mapSz);
-		createPlanet(planetNames[s], x, y);
+		createPlanet(planets[s], x, y);
 	}
 	for (var i = 0; i < mapSz; i++)
 		sectors[i] = new Array(mapSz);
