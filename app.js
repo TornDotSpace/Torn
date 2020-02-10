@@ -129,7 +129,7 @@ global.createAsteroid = function () {
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
-global.planets = jsn.planets;
+global.planetNames = jsn.planets;
 
 
 // bases                   (Red) / (Blue)
@@ -416,7 +416,7 @@ function init() { // start the server!
 	for (var s = 0; s < mapSz * mapSz; s++) {
 		var x = s % mapSz;
 		var y = Math.floor(s / mapSz);
-		createPlanet(planets[s], x, y);
+		createPlanet(planetNames[s], x, y);
 	}
 	for (var i = 0; i < mapSz; i++)
 		sectors[i] = new Array(mapSz);
