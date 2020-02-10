@@ -28,7 +28,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		for (var m in mines[self.sy][self.sx]) {
 			var mine = mines[self.sy][self.sx][m];
 			if (mine.id == self.id) continue; // ofc the mine is on top of itself
-			if (squaredDist(mine, self) < square(wepns[self.weaponID].range)){ // if that mine is in this mine's "attack range"
+			if (squaredDist(mine, self) < square(wepns[self.wepnID].range)){ // if that mine is in this mine's "attack range"
 				mine.die(); // destroy both
 				self.die();
 				break;
