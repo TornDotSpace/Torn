@@ -21,9 +21,9 @@
   "author": "The Torn.Space Team",
   "license": "All Rights Reserved",
   "devDependencies": {
-    "@babel/core": "^7.8.3",
+    "@babel/core": "^7.8.4",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": "^7.8.3",
     "babel-loader": "^8.0.6",
     "git-revision-webpack-plugin": "^3.0.4",
@@ -32,12 +32,12 @@
     "react-hot-loader": "^4.12.19",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1",
+    "webpack-dev-server": "^3.10.3",
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
     "@clusterws/cws": "^1.1.2",
-    "@sendgrid/mail": "^6.5.1",
+    "@sendgrid/mail": "^6.5.2",
     "bad-words": "^3.0.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
