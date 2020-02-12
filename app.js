@@ -465,9 +465,11 @@ function buildFileSystem() { // create the server files/folders
 
 	if (allGood) log("All server directories were already present!");
 
-	fs.writeFileSync("client/leaderboard/index.html", "Leaderboard not ready yet...", (err) => {
-		if (err) log(err); log("Created leaderboard file.");
-	});
+	if (!fs.existsSync("client/leaderboard/index.html")) {
+		fs.writeFileSync("client/leaderboard/index.html", "Leaderboard not ready yet...", (err) => {
+			if (err) log(err); log("Created leaderboard file.");
+		});
+	}
 }
 function spawnBases() {
 	log("\nSpawning " + (baseMap.length / 2) + " Bases...");
