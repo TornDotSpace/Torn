@@ -49,7 +49,7 @@ module.exports = function Package(ownr, i, type) {
 			}
 
 			else if (contents == 'money') p.spoils("money", 20000);
-			else if (contents == 'upgrade') { p.radar2 += .2; p.recomputeTechs(); }
+			else if (contents == 'upgrade') { p.radar2 += .2; }
 
 			var title = "Package collected: "; // the message we're going to send them
 			if (contents == 'ore') title += (amt * 4) + ' ore!';
