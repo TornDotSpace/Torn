@@ -1273,9 +1273,10 @@ function Player(sock) {
 			if (self.lives <= 0) {
 				fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt', fullFile, { "encoding": 'utf8' });
 				fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt');
-				lefts[self.id] = 0;
+				self.kick("Goodbye captain: no more lives remaining!");
 			}
 			else self.save();
+
 			self.sendStatus();
 			self.sendAchievementsMisc(true);
 
@@ -1626,6 +1627,10 @@ function Player(sock) {
 	}
 	self.kick = function (msg) {
 		self.socket.emit("kick", { msg: msg });
+		self.socket.disconnect();
+
+		// HACK: Block crash on "double-death"
+		self.die = function() { };
 	}
 	return self;
 };
