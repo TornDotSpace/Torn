@@ -1565,6 +1565,13 @@ function _chat(data) {
 	chatScroll = 0;
 	preProcessChat();
 };
+
+socket.on('mute', function (data) {
+	clientmutes[data.player] = 1;
+});
+socket.on('unmute', function (data) {
+	delete clientmutes[data.player];
+});
 function getPosition(string, subString, index) {
 	return string.split(subString, index).join(subString).length;
 }

@@ -140,7 +140,7 @@ function Player(sock) {
 		points: 0,
 
 		email: "",
-		permissionLevel: -1,
+		permissionLevels: [-1],
 		equipped: 0
 	}
 

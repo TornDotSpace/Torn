@@ -49,7 +49,14 @@ function runCommand(player, msg) { // player just sent msg in chat and msg start
         player.socket.emit("chat", { msg: "~`red~`Unknown Command. Use /help for a list of commands! ~`red~`" });
     } else {
         // Check for permissions
-        if (command.permission > player.permissionLevel) {
+        var permitted = false;
+        for(var p in player.permissionLevels){
+            if (command.permissions.includes(player.permissionLevels[p])) {
+                permitted = true;
+                break;
+            }
+        }
+        if(!permitted){
             player.socket.emit("chat", { msg: "~`red~`You don't have permission to access this command. ~`red~`" });
             return;
         }
@@ -246,7 +253,7 @@ module.exports = function initNetcode() {
                 player.name = user;
                 player.password = hash(pass);
                 player.guest = false;
-                player.permissionLevel = 0;
+                player.permissionLevels=[0];
                 socket.emit("registered", { user: data.user, pass: data.pass });
                 var text = user + ' registered!';
                 log(text);

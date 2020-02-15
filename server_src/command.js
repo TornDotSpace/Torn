@@ -16,10 +16,10 @@ const MVP = 7;
 const MODERATOR = 10;
 const ADMIN = 20;
 const OWNER = 30;
-const EVERYONE = {GUEST, PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER};
-const REGISTERED = {PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER};
-const MODPLUS = {MODERATOR, ADMIN, OWNER};
-const ADMINPLUS = {ADMIN, OWNER};
+const EVERYONE = [GUEST, PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
+const REGISTERED = [PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
+const MODPLUS = [MODERATOR, ADMIN, OWNER];
+const ADMINPLUS = [ADMIN, OWNER];
 
 const PERM_TABLE = [GUEST, PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
 var HELP_TABLE = {};
@@ -29,10 +29,13 @@ global.cmds = {};
 // GUEST COMMANDS 
 // All players including guests have access to these
 cmds["/help"] = new Command("/help - Displays commands & usages", EVERYONE, function (plyr, msg) {
-    for (var x = 0; x < HELP_TABLE[plyr.permissionLevel].length; ++x) {
-        var cmd = HELP_TABLE[plyr.permissionLevel][x];
-        plyr.socket.emit("chat", { msg: cmd.usage });
-    }
+	for (var p in plyr.permissionLevels) {
+		var lvl = plyr.permissionLevels[p];
+	    for (var x = 0; x < HELP_TABLE[lvl].length; ++x) {
+	        var cmd = HELP_TABLE[lvl][x];
+	        plyr.socket.emit("chat", { msg: cmd.usage });
+	    }
+	}
 });
 
 cmds["/me"] = new Command("/me <msg>", EVERYONE, function (player, msg) {
@@ -85,6 +88,22 @@ cmds["/swap"] = new Command("/swap", REGISTERED, function (player, msg) {
     player.swap(msg);
 });
 
+cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player's chat messages.", EVERYONE, function (player, msg) {
+    if (msg.split(" ").length != 2) return; // split looks like {"/mute", "name"}
+    var name = msg.split(" ")[1];
+    player.socket.emit("mute", { player:name });
+    player.socket.emit("chat", { msg: "Muted "+name+"." });
+    //todo votemute feature
+    //todo check player exists and send failure message if not.
+});
+
+cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the player's chat messages again.", EVERYONE, function (player, msg) {
+    if (msg.split(" ").length != 2) return; // split looks like {"/unmute", "name"}
+    var name = msg.split(" ")[1];
+    player.socket.emit("unmute", { player:name });
+    player.socket.emit("chat", { msg: "Unmuted "+name+"." });
+});
+
 cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", ADMINPLUS, function (player, msg) {
     debug("EMAIL!");
     player.setEmail(msg);
@@ -96,7 +115,7 @@ cmds["/broadcast"] = new Command("/broadcast <msg> - Send a message to the whole
     chatAll("~`#f66~`       BROADCAST: ~`lime~`" + msg.substring(11));
 });
 
-cmds["/mute"] = new Command("/mute <player> <minutesToMute> - Mutes the specified player.", MODPLUS, function (player, msg) {
+cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the specified player server-wide.", MODPLUS, function (player, msg) {
     if (msg.split(" ").length != 3) return; // split looks like {"/mute", "name", "minutesToMute"}
     var name = msg.split(" ")[1];
     var minutes = parseFloat(msg.split(" ")[2]);
@@ -128,11 +147,11 @@ cmds["/smite"] = new Command("/smite <player> - Smites the specified player", AD
 
 // TODO: need to be fixed
 //cmds["/undecayplayers"] = new Command("/undecayPlayers - Reverts decay on all players", ADMIN, undecayPlayers);
-cmds["/decayplayers"] = new Command("/decayPlayers - Decays all players tech", {ADMIN, OWNER}, decayPlayers);
+cmds["/decayplayers"] = new Command("/decayPlayers - Decays all players tech", ADMINPLUS, decayPlayers);
 
-cmds["/saveturrets"] = new Command("/saveTurrets - Runs a manual save on the server turrets", {ADMIN, OWNER}, saveTurrets);
+cmds["/saveturrets"] = new Command("/saveTurrets - Runs a manual save on the server turrets", ADMINPLUS, saveTurrets);
 
-cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server", {ADMIN, OWNER}, function (player, msg) {
+cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server", ADMINPLUS, function (player, msg) {
     try {
         send(player.id, "chat", { msg: eval(msg.substring(5)) });
     } catch (e) {
@@ -140,7 +159,7 @@ cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server",
     }
 });
 
-cmds["/max"] = new Command("/max - Maxes out a player's stats for testing purposes", {ADMIN, OWNER}, function (player, msg) {
+cmds["/max"] = new Command("/max - Maxes out a player's stats for testing purposes", ADMINPLUS, function (player, msg) {
     player.rank = 20;
     player.money = Number.MAX_SAFE_INTEGER;
     player.experience = Number.MAX_SAFE_INTEGER;
@@ -151,11 +170,10 @@ cmds["/max"] = new Command("/max - Maxes out a player's stats for testing purpos
 // Compute help menu
 for (var x in PERM_TABLE) {
     HELP_TABLE[PERM_TABLE[x]] = []; // construct empty array
-    for (var cmd in cmds) {
-    	for(var p in cmds[cmd].permission)
-	        if (cmds[cmd].permission[p] == PERM_TABLE[x] && cmds[cmd].visible) {
-	            HELP_TABLE[PERM_TABLE[x]].push(cmds[cmd]);
-	            break;
-	        }
+    for (var c in cmds) {
+    	var cmd = cmds[c];
+    	for(var p in cmd.permissions)
+	        if (cmd.permissions[p] == PERM_TABLE[x] && cmd.visible)
+	        	HELP_TABLE[PERM_TABLE[x]].push(cmd);
     }
 }
