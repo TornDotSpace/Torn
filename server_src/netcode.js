@@ -2,6 +2,9 @@ var fs = require('fs');
 
 var Filter = require('bad-words'); // bad-words node package
 var filter = new Filter();
+
+filter.removeWords('god', 'hell', 'crap', 'flipping the bird', 'Lipshitz', 'Lipshits', 'polack', 'screwing', 'slut', 'sluts', 'hui', 'poop', 'screw');
+
 var Player = require('./player.js');
 require('./netutils.js');
 require("./command.js");
