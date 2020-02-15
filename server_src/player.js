@@ -1412,28 +1412,28 @@ function Player(sock) {
 		for (var i = 0; i < 11; i++) if (!self.randmAchs[i]) rAll = false;
 		if (!self.randmAchs[11] && rAll) {
 			self.randmAchs[11] = true;
-			self.sendAchievementsMisc(true);
+			self.sendAchievementsMisc(false);
 		}
 
 		rAll = true;
 		for (var i = 0; i < 12; i++) if (!self.killsAchs[i]) rAll = false;
 		if (!self.killsAchs[12] && rAll) {
 			self.killsAchs[12] = true;
-			self.sendAchievementsKill(true);
+			self.sendAchievementsKill(false);
 		}
 
 		rAll = true;
 		for (var i = 0; i < 11; i++) if (!self.driftAchs[i]) rAll = false;
 		if (!self.driftAchs[11] && rAll) {
 			self.driftAchs[11] = true;
-			self.sendAchievementsDrift(true);
+			self.sendAchievementsDrift(false);
 		}
 
 		rAll = true;
 		for (var i = 0; i < 11; i++) if (!self.moneyAchs[i]) rAll = false;
 		if (!self.moneyAchs[11] && rAll) {
 			self.moneyAchs[11] = true;
-			self.sendAchievementsCash(true);
+			self.sendAchievementsCash(false);
 		}
 	}
 	self.getAllBullets = function () { // sends to client all the bullets in this sector.

@@ -1771,6 +1771,7 @@ socket.on('quest', function (data) {
 	quest = data.quest;
 });
 socket.on('achievementsKill', function (data) {
+	console.log("@@@@@@@@@@@@@@@@@@@gotachkill" + data.note)
 	for (var a in data.achs){
 		a = Number(a);
 		if (achs[a] != data.achs[a]){
@@ -1780,6 +1781,7 @@ socket.on('achievementsKill', function (data) {
 	}
 });
 socket.on('achievementsCash', function (data) {
+	console.log("@@@@@@@@@@@@@@@@@@@gotachcash" + data.note)
 	for (var a in data.achs){
 		a = Number(a);
 		if (achs[a + 13] != data.achs[a]){
@@ -1789,6 +1791,7 @@ socket.on('achievementsCash', function (data) {
 	}
 });
 socket.on('achievementsDrift', function (data) {
+	console.log("@@@@@@@@@@@@@@@@@@@gotachdrift" + data.note)
 	for (var a in data.achs){
 		a = Number(a);
 		if (achs[a + 25] != data.achs[a]){
@@ -1798,6 +1801,7 @@ socket.on('achievementsDrift', function (data) {
 	}
 });
 socket.on('achievementsMisc', function (data) {
+	console.log("@@@@@@@@@@@@@@@@@@@gotacmisc" + data.note)
 	for (var a in data.achs){
 		a = Number(a);
 		if (achs[a + 37] != data.achs[a]){
