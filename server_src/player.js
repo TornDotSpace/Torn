@@ -1409,9 +1409,9 @@ function Player(sock) {
 		//Check if they have all achievements of a type. If so, give them the corresponding trail achievement of that type
 
 		var rAll = true;
-		for (var i = 0; i < 11; i++) if (!self.randmAchs[i]) rAll = false;
-		if (!self.randmAchs[11] && rAll) {
-			self.randmAchs[11] = true;
+		for (var i = 0; i < 10; i++) if (!self.randmAchs[i]) rAll = false;
+		if (!self.randmAchs[10] && rAll) {
+			self.randmAchs[10] = true;
 			self.sendAchievementsMisc(false);
 		}
 
