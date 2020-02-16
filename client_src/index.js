@@ -1550,6 +1550,13 @@ function rInBase() {
 	rBigNotes();
 }
 socket.on('chat', function (data) {
+
+	// Optimization: Don't do expensive string manipulation if nobody is in the mute list
+	if (clientmutes.size == 0) {
+		_chat(data);
+		return;
+	}
+
 	var chatName = data.msg.split(":")[0].split("`")[2];
 
 	if (chatName !== undefined) {
