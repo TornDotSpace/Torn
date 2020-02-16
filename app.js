@@ -757,6 +757,11 @@ function update() {
 				}
 			}
 
+			if (beam.sy != y || beam.sx != x) {
+				beam.sy = y;
+				beam.sx = x;
+			}
+
 			if (!need_update) continue;
 			gameState.beams.push({delta : delta, id : i});
 		}
