@@ -144,13 +144,13 @@ global.loadPlayerData = async function (player, passwordHash) {
         }
     }
 
-    if (player.name.startsWith("[O]")) player.permissionLevel = 30;
-    else if (player.name.startsWith("[A]")) player.permissionLevel = 20;
-    else if (player.name.startsWith("[M]")) player.permissionLevel = 10;
-    else if (player.name.startsWith("[B]")) player.permissionLevel = 7;
-    else if (player.name.startsWith("[V]")) player.permissionLevel = 5;
-    else if (player.name.startsWith("[Y]")) player.permissionLevel = 3;
-    else player.permissionLevel = 0;
+    player.permissionLevels = [0];
+    if (player.name.includes("O")) player.permissionLevels.push(30); // they're capital, it's fine
+    if (player.name.includes("A")) player.permissionLevels.push(20);
+    if (player.name.includes("M")) player.permissionLevels.push(10);
+    if (player.name.includes("B")) player.permissionLevels.push(7);
+    if (player.name.includes("V")) player.permissionLevels.push(5);
+    if (player.name.includes("Y")) player.permissionLevels.push(3);
     return 0;
 }
 

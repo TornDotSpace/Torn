@@ -2,6 +2,9 @@ var fs = require('fs');
 
 var Filter = require('bad-words'); // bad-words node package
 var filter = new Filter();
+
+filter.removeWords('god', 'hell', 'crap', 'flipping the bird', 'Lipshitz', 'Lipshits', 'polack', 'screwing', 'slut', 'sluts', 'hui', 'poop', 'screw');
+
 var Player = require('./player.js');
 require('./netutils.js');
 require("./command.js");
@@ -49,7 +52,14 @@ function runCommand(player, msg) { // player just sent msg in chat and msg start
         player.socket.emit("chat", { msg: "~`red~`Unknown Command. Use /help for a list of commands! ~`red~`" });
     } else {
         // Check for permissions
-        if (command.permission > player.permissionLevel) {
+        var permitted = false;
+        for(var p in player.permissionLevels){
+            if (command.permissions.includes(player.permissionLevels[p])) {
+                permitted = true;
+                break;
+            }
+        }
+        if(!permitted){
             player.socket.emit("chat", { msg: "~`red~`You don't have permission to access this command. ~`red~`" });
             return;
         }
@@ -246,7 +256,7 @@ module.exports = function initNetcode() {
                 player.name = user;
                 player.password = hash(pass);
                 player.guest = false;
-                player.permissionLevel = 0;
+                player.permissionLevels=[0];
                 socket.emit("registered", { user: data.user, pass: data.pass });
                 var text = user + ' registered!';
                 log(text);

@@ -136,6 +136,7 @@ var h = window.innerHeight; // Canvas width and height
 var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
 var basesInfo = undefined, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
 
+var clientmutes = { };
 // for initial loading screen
 var EVERYTHING_LOADED = false;
 
@@ -304,7 +305,6 @@ function loadImage(name, src) {
 }
 function loadImageEnd() {
 	let loaded = () => {
-		console.log('loadImageEnd');
 		if (Img_prgs[0] === Img_prgs[1]) {
 			Img_loaded = true;
 			EVERYTHING_LOADED = true
@@ -1550,6 +1550,26 @@ function rInBase() {
 	rBigNotes();
 }
 socket.on('chat', function (data) {
+
+	// Optimization: Don't do expensive string manipulation if nobody is in the mute list
+	if (clientmutes.size == 0) {
+		_chat(data);
+		return;
+	}
+
+	var chatName = data.msg.split(":")[0].split("`")[2];
+
+	if (chatName !== undefined) {
+		chatName = chatName.trim();
+		chatName = chatName.substring(0, chatName.length - 1);
+		// If they're muted, don't chat!
+		for (var mut in clientmutes) {
+			if (mut.valueOf() == chatName) {
+				return;
+			}
+		}
+	}
+
 	_chat(data);
 });
 // Extracting so we can use it locally
@@ -1565,6 +1585,13 @@ function _chat(data) {
 	chatScroll = 0;
 	preProcessChat();
 };
+
+socket.on('mute', function (data) {
+	clientmutes[data.player.toLowerCase()] = 1;
+});
+socket.on('unmute', function (data) {
+	delete clientmutes[data.player.toLowerCase()];
+});
 function getPosition(string, subString, index) {
 	return string.split(subString, index).join(subString).length;
 }
