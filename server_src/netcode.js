@@ -302,14 +302,6 @@ module.exports = function initNetcode() {
                 return;
             }
 
-            player = new Player(socket);
-            socket.player = player;
-            player.ip = ip;
-            player.name = name;
-            player.password = hash(data.pass);
-
-            instance = true;
-
             //Load account
             var retCode = loadPlayerData(player, player.password);
             retCode.then(function(ret) {
@@ -320,6 +312,13 @@ module.exports = function initNetcode() {
                     }
                     return;
                 }
+
+                player = new Player(socket);
+                socket.player = player;
+                player.ip = ip;
+                player.name = name;
+                player.password = hash(data.pass);
+                instance = true;
 
                 socket.emit("loginSuccess", {id: player.id});
                 onlineNames[name] = 1;
@@ -365,7 +364,7 @@ module.exports = function initNetcode() {
 
             log(text); // print in terminal
             chatAll(text); // send it to all the players
-            //DO NOT save the player's data.
+            //DO NOT save the player's game data.
 
             onlineNames[(player.name.startsWith("[") ? player.name.split(" ")[1] : player.name)] = 0;
         });
