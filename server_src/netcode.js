@@ -634,7 +634,7 @@ module.exports = function initNetcode() {
             if (data.trail == 1 && player.killsAchs[12]) player.trail = 1;
             if (data.trail == 2 && player.moneyAchs[11]) player.trail = 2;
             if (data.trail == 3 && player.driftAchs[11]) player.trail = 3;
-            if (data.trail == 4 && player.randmAchs[11]) player.trail = 4;
+            if (data.trail == 4 && player.randmAchs[10]) player.trail = 4;
             if (player.name.includes(" ")) player.trail += 16;
 
         });
