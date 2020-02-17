@@ -302,23 +302,21 @@ module.exports = function initNetcode() {
                 return;
             }
 
+            player = new Player(socket);
+            socket.player = player;
+            player.ip = ip;
+            player.name = name;
+            player.password = hash(data.pass);
+            instance = true;
+
             //Load account
             var retCode = loadPlayerData(player, player.password);
             retCode.then(function(ret) {
                 if (ret != 0) {
                     instance = false;
-                    if (ret == -1) {
-                        socket.emit("invalidCredentials", {});
-                    }
+                    if (ret == -1) socket.emit("invalidCredentials", {});
                     return;
                 }
-
-                player = new Player(socket);
-                socket.player = player;
-                player.ip = ip;
-                player.name = name;
-                player.password = hash(data.pass);
-                instance = true;
 
                 socket.emit("loginSuccess", {id: player.id});
                 onlineNames[name] = 1;
