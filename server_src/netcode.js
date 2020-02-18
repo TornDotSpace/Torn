@@ -302,24 +302,18 @@ module.exports = function initNetcode() {
                 return;
             }
 
-            player = new Player(socket);
-            socket.player = player;
-            player.ip = ip;
-            player.name = name;
-            player.password = hash(data.pass);
-
-            instance = true;
-
             //Load account
-            var retCode = loadPlayerData(player, player.password);
+            var retCode = loadPlayerData(name, hash(data.pass), socket);
             retCode.then(function(ret) {
-                if (ret != 0) {
-                    instance = false;
-                    if (ret == -1) {
-                        socket.emit("invalidCredentials", {});
-                    }
+                if (ret.error != 0) {
+                    if (ret.error == -1) socket.emit("invalidCredentials", {});
                     return;
                 }
+
+                player = ret.player;
+                socket.player = player;
+                player.ip = ip;
+                instance = true;
 
                 socket.emit("loginSuccess", {id: player.id});
                 onlineNames[name] = 1;
@@ -365,7 +359,7 @@ module.exports = function initNetcode() {
 
             log(text); // print in terminal
             chatAll(text); // send it to all the players
-            //DO NOT save the player's data.
+            //DO NOT save the player's game data.
 
             onlineNames[(player.name.startsWith("[") ? player.name.split(" ")[1] : player.name)] = 0;
         });
@@ -634,7 +628,7 @@ module.exports = function initNetcode() {
             if (data.trail == 1 && player.killsAchs[12]) player.trail = 1;
             if (data.trail == 2 && player.moneyAchs[11]) player.trail = 2;
             if (data.trail == 3 && player.driftAchs[11]) player.trail = 3;
-            if (data.trail == 4 && player.randmAchs[11]) player.trail = 4;
+            if (data.trail == 4 && player.randmAchs[10]) player.trail = 4;
             if (player.name.includes(" ")) player.trail += 16;
 
         });
