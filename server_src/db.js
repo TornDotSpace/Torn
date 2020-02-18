@@ -1,3 +1,4 @@
+var Player = require("./player.js");
 var MONGO_CONNECTION_STR = Config.getValue("mongo_connection_string", "mongodb://localhost:27017/torn");
 var PLAYER_DATABASE = null;
 var USE_MONGO = Config.getValue("want_mongo_db", false);
@@ -30,12 +31,11 @@ global.connectToDB = function () {
     });
 }
 
-global.loadPlayerData = async function (player, passwordHash) {
-    if (!player) return;
-    if (player.isBot || player.guest) return;
+global.loadPlayerData = async function (playerName, passwordHash, socket) {
+    if (!playerName || !passwordHash) return;
 
     // Check if player exists in MongoDB (if we're using MongoDB)
-    var record = (USE_MONGO) ? await PLAYER_DATABASE.findOne({ _id: player.name }) : null;
+    var record = (USE_MONGO) ? await PLAYER_DATABASE.findOne({ _id: playerName }) : null;
 
     if (record != null) {
         if (record["password"] !== passwordHash) {
@@ -43,6 +43,8 @@ global.loadPlayerData = async function (player, passwordHash) {
             debug(passwordHash);
             return -1; // Invalid credentials
         }
+
+
         for (key in record) {
             player[key] = record[key];
         }
@@ -50,10 +52,11 @@ global.loadPlayerData = async function (player, passwordHash) {
         player.lastLogin = new Date(player.lastLogin);
     } else {
         // Read the old fashion way 
-        var readSource = "server/players/" + player.name + "[" + passwordHash + ".txt";
+        var readSource = "server/players/" + playerName + "[" + passwordHash + ".txt";
         if (!fs.existsSync(readSource)) {
-            return -1; // Invalid credentials
+            return { error : -1 }; // Invalid credentials
         } else {
+            var player = new Player(socket);
             var fileData = fs.readFileSync(readSource, "utf8").split(':');
             player.color = fileData[0];
             player.ship = parseFloat(fileData[1]);
@@ -141,17 +144,19 @@ global.loadPlayerData = async function (player, passwordHash) {
             if (fileData.length > 86) {
                 player.lastLogin = new Date(parseInt(fileData[86]));
             }
+
+            player.permissionLevels = [0];
+            if (player.name.includes("O")) player.permissionLevels.push(30); // they're capital, it's fine
+            if (player.name.includes("A")) player.permissionLevels.push(20);
+            if (player.name.includes("M")) player.permissionLevels.push(10);
+            if (player.name.includes("B")) player.permissionLevels.push(7);
+            if (player.name.includes("V")) player.permissionLevels.push(5);
+            if (player.name.includes("Y")) player.permissionLevels.push(3);
+            return { error: 0, player: player };
         }
     }
 
-    player.permissionLevels = [0];
-    if (player.name.includes("O")) player.permissionLevels.push(30); // they're capital, it's fine
-    if (player.name.includes("A")) player.permissionLevels.push(20);
-    if (player.name.includes("M")) player.permissionLevels.push(10);
-    if (player.name.includes("B")) player.permissionLevels.push(7);
-    if (player.name.includes("V")) player.permissionLevels.push(5);
-    if (player.name.includes("Y")) player.permissionLevels.push(3);
-    return 0;
+    return { error: 2 };
 }
 
 global.resetPassword = function (player) {
