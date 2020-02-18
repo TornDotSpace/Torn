@@ -57,6 +57,7 @@ global.loadPlayerData = async function (playerName, passwordHash, socket) {
             return { error : -1 }; // Invalid credentials
         } else {
             var player = new Player(socket);
+            player.password = passwordHash;
             var fileData = fs.readFileSync(readSource, "utf8").split(':');
             player.color = fileData[0];
             player.ship = parseFloat(fileData[1]);
