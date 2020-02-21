@@ -948,6 +948,23 @@ function Player(sock) {
 		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
 		if (self.rank != prerank && self.rank > 1) self.socket.emit('rank', {}); //congratulations!
 	}
+	self.sellOre(oretype){
+            //pay them appropriately
+              if (oretype == 'iron' || oretype == 'all') {
+                player.spoils("money", player.iron * (player.color == "red" ? 1 : 2));
+                player.iron = 0;
+            } if (oretype == 'silver' || oretype == 'all') {
+                player.spoils("money", player.silver * 1.5);
+                player.silver = 0;
+            } if (oretype == 'platinum' || oretype == 'all') {
+                player.spoils("money", player.platinum * (player.color == "blue" ? 1 : 2));
+                player.platinum = 0;
+            } if (oretype == 'aluminium' || oretype == 'all') {
+                player.spoils("money", player.aluminium * 1.5);
+                player.aluminium = 0;
+            }
+            player.save();
+	}
 	self.dock = function () {
 
 		if (self.isBot) return; // can bots even get to this point in code?
