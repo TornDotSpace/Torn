@@ -221,6 +221,8 @@ module.exports = function initNetcode() {
 
             var user = data.user, pass = data.pass;
 
+            player.guest = false;
+
             if (typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)) {
                 socket.emit("invalidReg", { reason: 2 });
                 return;
@@ -238,7 +240,9 @@ module.exports = function initNetcode() {
             }
 
             checkRegistered(user).then(function(ret) {
+
                 if (!ret) {
+                    player.guest = true;
                     socket.emit("invalidReg", { reason: 4});
                     return;
                 }
@@ -248,7 +252,6 @@ module.exports = function initNetcode() {
                 player._id = user;
                 player.name = user;
                 player.password = hash(pass);
-                player.guest = false;
                 player.permissionLevels=[0];
                 socket.emit("registered", { user: data.user, pass: data.pass });
                 var text = user + ' registered!';
