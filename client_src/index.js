@@ -1551,8 +1551,6 @@ function rInBase() {
 }
 socket.on('chat', function (data) {
 
-	console.log('c' + data.msg);
-
 	// Optimization: Don't do expensive string manipulation if nobody is in the mute list
 	if (clientmutes.size == 0) {
 		_chat(data);
