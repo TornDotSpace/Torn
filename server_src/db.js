@@ -39,7 +39,7 @@ global.loadPlayerData = async function (playerName, passwordHash, socket) {
     // Check if player exists in MongoDB (if we're using MongoDB)
     var record = await PLAYER_DATABASE.findOne({ _id: playerName });
 
-    if (record["password"] !== passwordHash) {
+    if (record == null || record["password"] !== passwordHash) {
         return { error: -1}; // Invalid credentials
     }
 
