@@ -295,18 +295,20 @@ module.exports = function initNetcode() {
                 return;
             }
 
+            instance = true;
+
             //Load account
             var retCode = loadPlayerData(name, hash(data.pass), socket);
             retCode.then(function(ret) {
                 if (ret.error != 0) {
                     if (ret.error == -1) socket.emit("invalidCredentials", {});
+                    instance = false;
                     return;
                 }
 
                 player = ret.player;
                 socket.player = player;
                 player.ip = ip;
-                instance = true;
 
                 socket.emit("loginSuccess", {id: player.id});
                 onlineNames[name] = 1;
