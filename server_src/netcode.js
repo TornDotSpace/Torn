@@ -449,16 +449,16 @@ module.exports = function initNetcode() {
 
             //pay them appropriately
             if (data.item == 'iron' || data.item == 'all') {
-                player.money += player.iron * (player.color == "red" ? 1 : 2);
+                player.spoils("money", player.iron * (player.color == "red" ? 1 : 2));
                 player.iron = 0;
             } if (data.item == 'silver' || data.item == 'all') {
-                player.money += player.silver * 1.5;
+                player.spoils("money", player.silver * 1.5);
                 player.silver = 0;
             } if (data.item == 'platinum' || data.item == 'all') {
-                player.money += player.platinum * (player.color == "blue" ? 1 : 2);
+                player.spoils("money", player.platinum * (player.color == "blue" ? 1 : 2));
                 player.platinum = 0;
             } if (data.item == 'aluminium' || data.item == 'all') {
-                player.money += player.aluminium * 1.5;
+                player.spoils("money", player.aluminium * 1.5);
                 player.aluminium = 0;
             }
 
