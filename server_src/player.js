@@ -948,7 +948,7 @@ function Player(sock) {
 		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
 		if (self.rank != prerank && self.rank > 1) self.socket.emit('rank', {}); //congratulations!
 	}
-	self.sellOre(oretype){
+	self.sellOre = function(oretype){
             //pay them appropriately
               if (oretype == 'iron' || oretype == 'all') {
                 player.spoils("money", player.iron * (player.color == "red" ? 1 : 2));
