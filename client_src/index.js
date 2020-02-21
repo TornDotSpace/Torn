@@ -1551,6 +1551,8 @@ function rInBase() {
 }
 socket.on('chat', function (data) {
 
+	console.log('c' + data.msg);
+
 	// Optimization: Don't do expensive string manipulation if nobody is in the mute list
 	if (clientmutes.size == 0) {
 		_chat(data);
@@ -1574,13 +1576,19 @@ socket.on('chat', function (data) {
 });
 // Extracting so we can use it locally
 function _chat(data) {
-	for (var i = chatLength; i > 0; i--) messages[i] = messages[i - 1];
+
 	if (data.msg.includes("`~")) {
 		var find1 = getPosition(data.msg, "`~", 1);
 		var find2 = getPosition(data.msg, "`~", 2);
+
+		if (find1 == -1 || find2 == -1) return;
+		
 		var num = parseFloat(data.msg.substring(find1 + 2, find2));
 		data.msg = data.msg.replace("`~" + num + "`~", wepns[num].name);
 	}
+
+	for (var i = chatLength; i > 0; i--) messages[i] = messages[i - 1];
+
 	messages[0] = data.msg;
 	chatScroll = 0;
 	preProcessChat();
