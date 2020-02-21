@@ -302,18 +302,20 @@ module.exports = function initNetcode() {
                 return;
             }
 
+            instance = true;
+
             //Load account
             var retCode = loadPlayerData(name, hash(data.pass), socket);
             retCode.then(function(ret) {
                 if (ret.error != 0) {
                     if (ret.error == -1) socket.emit("invalidCredentials", {});
+                    instance = false;
                     return;
                 }
 
                 player = ret.player;
                 socket.player = player;
                 player.ip = ip;
-                instance = true;
 
                 socket.emit("loginSuccess", {id: player.id});
                 onlineNames[name] = 1;
@@ -443,25 +445,8 @@ module.exports = function initNetcode() {
             player.globalChat = (player.globalChat + 1) % 2;
         });
         socket.on('sell', function (data) { // selling ore
-            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'string' || !player.docked) return;
-
-            //pay them appropriately
-            if (data.item == 'iron' || data.item == 'all') {
-                player.money += player.iron * (player.color == "red" ? 1 : 2);
-                player.iron = 0;
-            } if (data.item == 'silver' || data.item == 'all') {
-                player.money += player.silver * 1.5;
-                player.silver = 0;
-            } if (data.item == 'platinum' || data.item == 'all') {
-                player.money += player.platinum * (player.color == "blue" ? 1 : 2);
-                player.platinum = 0;
-            } if (data.item == 'aluminium' || data.item == 'all') {
-                player.money += player.aluminium * 1.5;
-                player.aluminium = 0;
-            }
-
-            player.save();
-
+            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'string') return;
+            player.sellOre(data.item);
         });
         socket.on('buyShip', function (data) { // client wants to buy a new ship
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.ship !== 'number') return;
@@ -473,12 +458,10 @@ module.exports = function initNetcode() {
             price += ships[data.ship].price;
             if (player.money < price) return; // if it cannot be afforded
 
-            //sell all ore
-            player.money += (player.aluminium + player.platinum + player.silver + player.iron) * 1.5; // TODO this is wrong.
-            player.aluminium = player.iron = player.silver = player.platinum = 0;
+            player.sellOre("all"); //sell all ore, because their new ship may not have the cargo room to hold it all
 
             player.money -= price; // charge them money
-            player.ship = data.ship; // Give them the next ship
+            player.ship = data.ship; // Give them the new ship
 
             player.va = ships[data.ship].agility * .08 * player.agility2; // TODO this is going to be redone
             player.thrust = ships[data.ship].thrust * player.thrust2;
