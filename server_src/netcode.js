@@ -128,7 +128,7 @@ module.exports = function initNetcode() {
         var ip = Config.getValue("want-xreal-ip", true)
             ? socket.handshake.headers['x-real-ip']
             : socket.handshake.address;
-        log(ip + " Connected!");
+        log("Guest Connected!");
         if (!flood(ip)) return;
 
         var player = 0;
