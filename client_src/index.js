@@ -958,7 +958,7 @@ function rStats() {
 	for (var i = 0; i < activeGens; i++) eMult *= 1.06;
 
 
-	var stats = [mEng[162] + activeGens, mEng[20] + Number((ships[ship].thrust * t2).toPrecision(3)), mEng[21] + Number(va2.toPrecision(3)) + mEng[163], mEng[22] + Number((ships[ship].capacity * c2).toPrecision(3)), mEng[23] + Number((ships[ship].health * mh2).toPrecision(3)), mEng[164] + Number((eMult).toPrecision(3)), (kills - baseKills) + mEng[51], baseKills + mEng[52], lives + mEng[53], mEng[54] + ore, mEng[55] + Number((worth + upgradeCosts).toPrecision(3)), mEng[56] + Number((money + ore + worth + upgradeCosts).toPrecision(3)), Math.round(experience) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
+	var stats = [mEng[20] + Number((ships[ship].thrust * t2).toPrecision(3)), mEng[22] + Number((ships[ship].capacity * c2).toPrecision(3)), mEng[23] + Number((ships[ship].health * mh2).toPrecision(3)), mEng[164] + Number((eMult).toPrecision(3)), (kills - baseKills) + mEng[51], baseKills + mEng[52], mEng[55] + Number((worth + upgradeCosts).toPrecision(3)), mEng[56] + Number((money + ore + worth + upgradeCosts).toPrecision(3)), Math.round(experience) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
 
 	for (var i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
 
