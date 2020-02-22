@@ -460,6 +460,7 @@ module.exports = function initNetcode() {
                 player.aluminium = 0;
             }
 
+            //TODO convert to spoils
             player.save();
 
         });
