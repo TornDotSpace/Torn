@@ -1219,8 +1219,10 @@ function Player(sock) {
 			self.aluminium = parseFloat(fileData[21]);
 			self.experience = parseFloat(fileData[22]) * .98;
 			self.rank = parseFloat(fileData[23]);
-			self.x = parseFloat(fileData[24]);
-			self.y = parseFloat(fileData[25]);
+			//self.x = parseFloat(fileData[24]);
+			//self.y = parseFloat(fileData[25]);
+			self.x = self.y = sectorWidth/2;
+			log(self.x);
 			self.thrust2 = parseFloat(fileData[26]);
 			self.radar2 = parseFloat(fileData[27]);
 			if (fileData.length > 87) self.agility2 = parseFloat(fileData[87]);
