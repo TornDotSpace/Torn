@@ -1532,11 +1532,9 @@ function Player(sock) {
 	self.spoils = function (type, amt) { // gives you something. Called wenever you earn money / exp / w/e
 		if (typeof amt === "undefined") return;
 		if (type === "experience") {
-			// TODO This is broken- it announces your rank always whenever you log in
 			var oldPosition = lbIndex(self.experience);
 			self.experience += amt;
 			var newPosition = lbIndex(self.experience);
-			//log(newPosition + " " + oldPosition);
 			if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
 				if (newPosition < 251) chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!");
 				else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
@@ -1652,6 +1650,7 @@ function Player(sock) {
 };
 
 function lbIndex(exp) { // binary search to find where a player is on the leaderboard. TODO there is a bug where this prints stuff when someone gets their first kill of the day
+	exp+=.01; // epsilon so that you always are evaluated as having higher exp than yourself
 	if (exp < lbExp[999]) return -1;
 	if (exp > lbExp[0]) return 1;
 	var ub = 999, lb = 0;
