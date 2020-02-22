@@ -474,7 +474,7 @@ function Player(sock) {
 					break;
 				} else if (m.wepnID == 16 && squaredDist(m, self) < square(wepns[m.wepnID].range + ships[self.ship].width)) { // TODO range * 10?
 					var r = Math.random(); // Laser Mine
-					var beam = Beam(m.owner, r, 400, self, m); // shoot a laser. TODO is this m supposed to be m.owner?
+					var beam = Beam(m.owner, r, m.wepnID, self, m); // m.owner is the owner, m is the origin location
 					beams[self.sy][self.sx][r] = beam;
 					sendAllSector('sound', { file: "beam", x: m.x, y: m.y }, m.sx, m.sy);
 					m.die();
@@ -948,6 +948,23 @@ function Player(sock) {
 		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
 		if (self.rank != prerank && self.rank > 1) self.socket.emit('rank', {}); //congratulations!
 	}
+	self.sellOre = function(oretype){
+            //pay them appropriately
+              if (oretype == 'iron' || oretype == 'all') {
+                self.spoils("money", self.iron * (self.color == "red" ? 1 : 2));
+                self.iron = 0;
+            } if (oretype == 'silver' || oretype == 'all') {
+                self.spoils("money", self.silver * 1.5);
+                self.silver = 0;
+            } if (oretype == 'platinum' || oretype == 'all') {
+                self.spoils("money", self.platinum * (self.color == "blue" ? 1 : 2));
+                self.platinum = 0;
+            } if (oretype == 'aluminium' || oretype == 'all') {
+                self.spoils("money", self.aluminium * 1.5);
+                self.aluminium = 0;
+            }
+            self.save();
+	}
 	self.dock = function () {
 
 		if (self.isBot) return; // can bots even get to this point in code?
@@ -1129,10 +1146,9 @@ function Player(sock) {
 				}
 
 				//send msg
-				else if (b.type == "Vortex") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!");
-				else if (b.type == "Planet" || b.type == "Asteroid") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!");
-				else if (b.owner !== undefined && b.owner.type == "Base") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base in sector " + b.owner.getSectorName() + "!");
-
+				else if (b.type === "Vortex") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!");
+				else if (b.type === "Planet" || b.type === "Asteroid") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!");
+				else if (b.owner !== undefined && b.owner.type === "Base") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base in sector " + b.owner.getSectorName() + "!");
 			}
 
 			//drop a package
@@ -1143,7 +1159,7 @@ function Player(sock) {
 			else if (!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
 
 			//give the killer stuff
-			if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Vortex" || b.owner.type === "Player" || b.owner.type === "Base")) {
+			if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
 				b.owner.onKill(self);
 				b.owner.spoils("experience", 10 + diff * (self.color === b.owner.color ? -1 : 1));
 				// Prevent farming and disincentivize targetting guests
