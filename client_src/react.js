@@ -139,7 +139,9 @@ class Register extends Component {
 						<br /><button className="register" onClick={this.register}>Register!</button>
 						<br />
 						<br />
-						By registering, you agree to our terms of service, available at torn.space/tos.
+						By registering, you agree to follow our terms of service and abide by our privacy policy.
+						<a href="legal/privacy_policy.pdf" > Privacy Policy |	</a>
+						<a href="legal/tos.pdf" > Terms of Service </a><br/>
 					<br />
 						Remember, never give your password to anyone!!
 				</center>
@@ -219,6 +221,8 @@ class LoginOverlay extends Component {
 					</div>
 				</div>
 				<div className="discord">
+					<a href="legal/privacy_policy.pdf" > Privacy Policy |	</a>
+					<a href="legal/tos.pdf" > Terms of Service </a><br/>
 					<a onClick={this.langEng} >Eng|</a>
 					<a onClick={this.langEsp} >Esp|</a>
 					<a onClick={this.langFrn} >Frn|</a>
