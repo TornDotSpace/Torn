@@ -6,7 +6,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    working-directory: ./desktop
     strategy:
       matrix:
         node-version: [12.x]
@@ -17,7 +16,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: npm install & build
+    - name: Build and Package
+      working-directory: ./desktop
       run: |
         npm install
         npm ci
