@@ -22,7 +22,7 @@ function printStartup() {
 	console.error("***********************************************************************");
 	console.error("WARNING: PASTING CODE INTO HERE CAN ALLOW FOR YOUR ACCOUNT TO BE STOLEN");
 	console.error("ALWAYS AUDIT CODE YOU ARE INJECTING INTO THE DEVELOPER CONSOLE");
-	console.error("ADDITIONALLY, PLEASE RESPECT OUR TOS https://torn.space/tos");									 
+	console.error("ADDITIONALLY, PLEASE RESPECT OUR TOS https://torn.space/legal/tos.pdf AND NOTE OUR PRIVACY POLICY https://torn.space/legal/privacy_policy.pdf");
 	console.error("***********************************************************************");
 }
 
@@ -67,8 +67,8 @@ loadLang();
 
 //Normal, on server: torn.space:443
 //dev: localhost:7300
-var socket = io(GAMESERVER_URL, 
-	{ 
+var socket = io(GAMESERVER_URL,
+	{
 		autoConnect: false,
 		parser: msgpack
  	});
@@ -321,7 +321,7 @@ function loadImageEnd() {
 }
 function loadPlanetImg(i) {
 	planetImgs[i] = new Image();
-	// TODO: fix 
+	// TODO: fix
 	planetImgs[i].src = '/img/space/planets/pt' + ((i % 5) + 1) + '.png';
 }
 function loadShipImg(red, i) {
@@ -958,7 +958,7 @@ function rStats() {
 	for (var i = 0; i < activeGens; i++) eMult *= 1.06;
 
 
-	var stats = [mEng[162] + activeGens, mEng[20] + Number((ships[ship].thrust * t2).toPrecision(3)), mEng[21] + Number(va2.toPrecision(3)) + mEng[163], mEng[22] + Number((ships[ship].capacity * c2).toPrecision(3)), mEng[23] + Number((ships[ship].health * mh2).toPrecision(3)), mEng[164] + Number((eMult).toPrecision(3)), (kills - baseKills) + mEng[51], baseKills + mEng[52], lives + mEng[53], mEng[54] + ore, mEng[55] + Number((worth + upgradeCosts).toPrecision(3)), mEng[56] + Number((money + ore + worth + upgradeCosts).toPrecision(3)), Math.round(experience) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
+	var stats = [mEng[20] + Number((ships[ship].thrust * t2).toPrecision(3)), mEng[22] + Number((ships[ship].capacity * c2).toPrecision(3)), mEng[23] + Number((ships[ship].health * mh2).toPrecision(3)), mEng[164] + Number((eMult).toPrecision(3)), (kills - baseKills) + mEng[51], baseKills + mEng[52], mEng[55] + Number((worth + upgradeCosts).toPrecision(3)), mEng[56] + Number((money + ore + worth + upgradeCosts).toPrecision(3)), Math.round(experience) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
 
 	for (var i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
 
@@ -1178,7 +1178,7 @@ function clearBullets() {
 	for (var i in data.pack) bullets[data.pack[i].id] = data.pack[i];
 }
 
-// socket error handling 
+// socket error handling
 socket.on('connect_error', function (error) {
 	if (!login) {
 		alert("Failed to connect to the Torn servers. This probably either means they are down or your firewall is blocking the request. " + error);
@@ -1238,7 +1238,7 @@ socket.on('update', function(data) {
 	cloaked = data.cloaked;
 
 	var delta = data.state;
-	
+
 	for (var index = 0; index < delta.vorts.length; ++index) {
 		vort_update(delta.vorts[index]);
 	}
@@ -1298,7 +1298,7 @@ socket.on('player_create', function(data) {
 function player_update(data) {
 	var id = data.id;
 	var delta = data.delta;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (playersInfo[id] === undefined) return;
 
 	for (var d in delta) {
@@ -1326,7 +1326,7 @@ socket.on('vort_create', function(data) {
 
 function vort_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (vortsInfo[id] === undefined) return;
 	var delta = data.delta;
 
@@ -1345,7 +1345,7 @@ socket.on('mine_create', function (data) {
 
 function mine_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (minesInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1365,7 +1365,7 @@ socket.on('pack_create', function (data) {
 
 function pack_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (packsInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1385,7 +1385,7 @@ socket.on('beam_create', function (data) {
 
 function beam_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (beamsInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1405,7 +1405,7 @@ socket.on('blast_create', function (data) {
 
 function blast_update(delta) {
 	var id = delta.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (blastsInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1427,7 +1427,7 @@ function base_update(data) {
 	if (data === undefined || data.delta === undefined) return;
 	var delta = data.delta;
 
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (basesInfo === 0) return;
 
 	for (var d in delta) {
@@ -1450,9 +1450,9 @@ socket.on('pong', (latency) => {
 function asteroid_update (data) {
 	var id = data.id;
 
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (astsInfo[id] === undefined) return;
-	var delta = data.delta; 
+	var delta = data.delta;
 
 	for (var d in delta) {
 		astsInfo[id][d] = delta[d];
@@ -1469,7 +1469,7 @@ socket.on('orb_create', function (data) {
 
 function orb_update (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (orbsInfo[id] === undefined) return;
 	var delta = data.delta;
 
@@ -1488,7 +1488,7 @@ socket.on('missile_create', function (data) {
 
 function missile_update (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (missilesInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1556,6 +1556,7 @@ socket.on('chat', function (data) {
 		_chat(data);
 		return;
 	}
+	console.log("Chat: " + data.msg);
 
 	var chatName = data.msg.split(":")[0].split("`")[2];
 
@@ -1574,13 +1575,19 @@ socket.on('chat', function (data) {
 });
 // Extracting so we can use it locally
 function _chat(data) {
-	for (var i = chatLength; i > 0; i--) messages[i] = messages[i - 1];
+
 	if (data.msg.includes("`~")) {
 		var find1 = getPosition(data.msg, "`~", 1);
 		var find2 = getPosition(data.msg, "`~", 2);
+
+		if (find1 == -1 || find2 == -1) return;
+
 		var num = parseFloat(data.msg.substring(find1 + 2, find2));
 		data.msg = data.msg.replace("`~" + num + "`~", wepns[num].name);
 	}
+
+	for (var i = chatLength; i > 0; i--) messages[i] = messages[i - 1];
+
 	messages[0] = data.msg;
 	chatScroll = 0;
 	preProcessChat();
@@ -3304,7 +3311,7 @@ function infoBox(x, y, width, height, fill, stroke) {
 	ctx.save();
 	ctx.lineWidth = 1;
 	ctx.globalAlpha = .5;
-	
+
 	if(fill){
 		ctx.fillStyle = fill;
 		ctx.fillRect(x, y, width, height);
@@ -3362,7 +3369,7 @@ function rBigNotes() {
 		bigNotes[3] = -1;
 		return;
 	}
-	
+
 	var t = bigNotes[0][0];
 
 	//darken background

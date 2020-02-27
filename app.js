@@ -14,6 +14,8 @@ global.log = function (text) {
 	fs.appendFile(logFileName, text+"\n", function (err) { if (err) throw err; });
 }
 
+buildFileSystem(); // create folders for players, neural nets, and turrets if they dont exist
+
 global.initReboot = function () {
 	log("\nInitializing server reboot...\n");
 	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
@@ -398,8 +400,6 @@ function init() { // start the server!
 	log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀        ▀▀  ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ ");
 	log("                                                                                                                        ");
 	log("************************************************************************************************************************");
-	// create folders for players, neural nets, and turrets if they dont exist
-	buildFileSystem();
 
 	//initialize lists of quests
 	for (var i = 0; i < 10; i++) {
@@ -450,24 +450,25 @@ function init() { // start the server!
 }
 
 function buildFileSystem() { // create the server files/folders
-	log("\nCreating any potential missing files and folders needed for the server...");
+	//IMPORTANT that we do not log to file in this function, as this function does not assume the logs folder exists.
+	console.log("\nCreating any potential missing files and folders needed for the server...");
 	var allGood = true;
 
 	var dirs = ['./server', './server/neuralnets', './logs', './server/turrets', './client/leaderboard'];
 	for(var i in dirs){
 		var dir = dirs[i];
 		if (!fs.existsSync(dir)) {
-			log("Creating " + dir + " directory...");
+			console.log("Creating " + dir + " directory...");
 			fs.mkdirSync(dir);
 			allGood = false;
 		}
 	}
 
-	if (allGood) log("All server directories were already present!");
+	if (allGood) console.log("All server directories were already present!");
 
 	if (!fs.existsSync("client/leaderboard/index.html")) {
 		fs.writeFileSync("client/leaderboard/index.html", "Leaderboard not ready yet...", (err) => {
-			if (err) log(err); log("Created leaderboard file.");
+			if (err) console.log(err); console.log("Created leaderboard file.");
 		});
 	}
 }
