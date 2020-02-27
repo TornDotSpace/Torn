@@ -33,6 +33,24 @@ global.checkRegistered = async function (name) {
     return record == null;
 }
 
+global.handlePlayerDeath = async function (player) {
+    var record = await PLAYER_DATABASE.findOne({_id: player._id});
+
+    if (record == null) return;
+
+    var login = player.lastLogin;
+    var lives = player.lives - 1;
+
+    for (key in record) {
+        player[key] = record[key];
+    }
+
+    player.lastLogin = login;
+    player.experience *= .98;
+    player.randmAchs[1] = true; // Death Achievement
+    player.lives = lives;
+}
+
 global.loadPlayerData = async function (playerName, passwordHash, socket) {
     if (!playerName || !passwordHash) return;
 
@@ -91,7 +109,7 @@ global.savePlayerData = function (player) {
         driftAchs : player.driftAchs,
         cornersTouched : player.cornersTouched,
         lastLogin : player.lastLogin,
-        randomAchs : player.randomAchs,
+        randmAchs : player.randmAchs,
         lives : player.lives,
         password : player.password,
         sx : player.sx,

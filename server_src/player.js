@@ -1117,7 +1117,7 @@ function Player(sock) {
 		blasts[self.sy][self.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
-	self.die = function (b) { // b: bullet object or other object which killed us
+	self.die = async function (b) { // b: bullet object or other object which killed us
 		self.empTimer = -1;
 		self.killStreak = 0;
 		var diff = .02 * self.experience;
@@ -1199,16 +1199,18 @@ function Player(sock) {
 				self.sx = 0;
 				self.sy = 1;
 			} else self.sy = self.sx = (self.color === "blue" ? 4 : 2);
-			self.lives--;
+
+
 			self.dead = true;
 
-			
+			await handlePlayerDeath(self);
 			self.x = self.y = sectorWidth/2;
 
 
 			if (self.lives <= 0) {
 				self.kick("Goodbye captain: no more lives remaining!");
 			}
+
 
 
 			else self.save();
