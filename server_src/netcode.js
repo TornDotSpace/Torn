@@ -414,7 +414,6 @@ module.exports = function initNetcode() {
 
             log("[CHAT] " + player.name + ": " + data.msg); // print their raw message
             if (!player.name.includes("[O]")) data.msg = data.msg.replace(/~`/ig, ''); // Normies can't triforce
-            data.msg = filter.clean(data.msg); // censor
 
             var time = Date.now();
 
@@ -423,6 +422,8 @@ module.exports = function initNetcode() {
             if (muteTable[player.name] > time) return;
             delete muteTable[player.name];
 
+            data.msg = filter.clean(data.msg); // censor
+            
             if (data.msg.startsWith("/")) runCommand(player, data.msg); // spammable commands
 
             player.chatTimer += 100; // note this as potential spam
