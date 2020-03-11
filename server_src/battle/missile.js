@@ -89,7 +89,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 				if (target.sx == self.sx && target.sy == self.sy && squaredDist(target, self) < 10000 * (self.wepnID == 38 ? 5 : 1) && target.turretLive != false /*we don't know it's a base. can't just say ==true.*/) {
 					target.dmg(self.dmg, self);
 					self.die();
-					if (self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(40); // emp missile
+					if (self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(25); // emp missile
 					return;
 				}
 
