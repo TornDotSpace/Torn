@@ -145,6 +145,21 @@ cmds["/smite"] = new Command("/smite <player> - Smites the specified player", AD
         }
 });
 
+cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMINPLUS, function (ply, msg) {
+    if (msg.split(" ").length != 2) return;
+    var name = msg.split(" ")[1];
+    log("attempting to kick player" + name);
+    for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++)
+        for (var p in players[y][x]) { // only search players who are in game
+            var player = players[y][x][p];
+            if (player.name === name) {
+                player.kick();
+                chatAll("~`violet~`" + name + "~`yellow~` has been kicked!");
+                return;
+            }
+        }
+});
+
 // TODO: need to be fixed
 //cmds["/undecayplayers"] = new Command("/undecayPlayers - Reverts decay on all players", ADMIN, undecayPlayers);
 cmds["/decayplayers"] = new Command("/decayPlayers - Decays all players tech", ADMINPLUS, decayPlayers);
