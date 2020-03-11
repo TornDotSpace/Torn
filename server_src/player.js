@@ -474,7 +474,7 @@ function Player(sock) {
 					break;
 				} else if (m.wepnID == 16 && squaredDist(m, self) < square(wepns[m.wepnID].range + ships[self.ship].width)) { // TODO range * 10?
 					var r = Math.random(); // Laser Mine
-					var beam = Beam(m.owner, r, 400, self, m); // shoot a laser. TODO is this m supposed to be m.owner?
+					var beam = Beam(m.owner, r, m.wepnID, self, m); // m.owner is the owner, m is the origin location
 					beams[self.sy][self.sx][r] = beam;
 					sendAllSector('sound', { file: "beam", x: m.x, y: m.y }, m.sx, m.sy);
 					m.die();
@@ -1137,7 +1137,6 @@ function Player(sock) {
 				self.socket.emit('quest', { quest: 0, complete: false});//reset quest and update client
 
 				if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-				log("killed3" + b.type + b.owner.type);
 					chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + b.owner.name + "~`yellow~`'s `~" + b.wepnID + "`~!");
 
 					if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
@@ -1150,8 +1149,6 @@ function Player(sock) {
 				else if (b.type === "Vortex") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!");
 				else if (b.type === "Planet" || b.type === "Asteroid") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!");
 				else if (b.owner !== undefined && b.owner.type === "Base") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base in sector " + b.owner.getSectorName() + "!");
-
-				log("killed2" + b.type + b.owner.type);
 			}
 
 			//drop a package
@@ -1163,7 +1160,6 @@ function Player(sock) {
 
 			//give the killer stuff
 			if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
-				log("killed" + b.type + b.owner.type);
 				b.owner.onKill(self);
 				b.owner.spoils("experience", 10 + diff * (self.color === b.owner.color ? -1 : 1));
 				// Prevent farming and disincentivize targetting guests
@@ -1223,8 +1219,10 @@ function Player(sock) {
 			self.aluminium = parseFloat(fileData[21]);
 			self.experience = parseFloat(fileData[22]) * .98;
 			self.rank = parseFloat(fileData[23]);
-			self.x = parseFloat(fileData[24]);
-			self.y = parseFloat(fileData[25]);
+			//self.x = parseFloat(fileData[24]);
+			//self.y = parseFloat(fileData[25]);
+			self.x = self.y = sectorWidth/2;
+			log(self.x);
 			self.thrust2 = parseFloat(fileData[26]);
 			self.radar2 = parseFloat(fileData[27]);
 			if (fileData.length > 87) self.agility2 = parseFloat(fileData[87]);
@@ -1536,11 +1534,9 @@ function Player(sock) {
 	self.spoils = function (type, amt) { // gives you something. Called wenever you earn money / exp / w/e
 		if (typeof amt === "undefined") return;
 		if (type === "experience") {
-			// TODO This is broken- it announces your rank always whenever you log in
 			var oldPosition = lbIndex(self.experience);
 			self.experience += amt;
 			var newPosition = lbIndex(self.experience);
-			//log(newPosition + " " + oldPosition);
 			if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
 				if (newPosition < 251) chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!");
 				else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
@@ -1656,6 +1652,7 @@ function Player(sock) {
 };
 
 function lbIndex(exp) { // binary search to find where a player is on the leaderboard. TODO there is a bug where this prints stuff when someone gets their first kill of the day
+	exp+=.01; // epsilon so that you always are evaluated as having higher exp than yourself
 	if (exp < lbExp[999]) return -1;
 	if (exp > lbExp[0]) return 1;
 	var ub = 999, lb = 0;

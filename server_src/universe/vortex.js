@@ -9,6 +9,7 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm) {
 		yo: Math.random() * sectorWidth,
 
 		type: "Vortex",
+		wepnID: 28,
 		owner: ownr,
 		id: i, // unique identifier
 
