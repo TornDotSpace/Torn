@@ -173,6 +173,7 @@ global.IPSpam = {}; // Keeps track of ips flooding server.
 global.bQuests = [];//A list of the 10 available quests for humans and aliens
 global.rQuests = [];
 
+var broadcastMsg=0;
 var enableDecay = Config.getValue("want_decay", false); // Enable player decay algorithm
 
 
@@ -1227,10 +1228,23 @@ function updateLB() {
 
 //meta
 setTimeout(initReboot, 86400 * 1000 - 6 * 60 * 1000);
+
 function shutdown() {
 	saveTurrets();
 	decayPlayers();
 	process.exit();
+}
+
+broadcastInfo();
+function broadcastInfo(){
+	randomMsgs = [
+	"Remember, never give your password to anyone, for any reason!",
+	"If you're interested in running a torn youtube channel, contact the developers!",
+	"Please support the game by buying a VIP pass in the store!"
+	]
+	chatAll("~`#ff0000~`"+randomMsgs[broadcastMsg%randomMsgs.length]);
+	broadcastMsg++
+	setTimeout(broadcastInfo,10*60*1000);
 }
 
 function cleanFile(x) {

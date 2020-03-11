@@ -12,6 +12,8 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm) {
 		owner: ownr,
 		id: i, // unique identifier
 
+		vx:0,
+		vy:0,
 		x: x, //input node or black hole location
 		y: y,
 		sx: sxx,
