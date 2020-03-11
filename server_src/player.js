@@ -262,7 +262,7 @@ function Player(sock) {
 				}
 				for (var i in players[self.sy][self.sx]) {
 					var p = players[self.sy][self.sx][i];
-					if (p.id != self.id) { // Not the user
+					if (p.color !== self.color) { // Not the user
 						var d2 = squaredDist(self, p);
 						if (d2 > square(10 * wep.range)) continue;
 						var ang = angleBetween(self, p);
