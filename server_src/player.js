@@ -1483,15 +1483,16 @@ function Player(sock) {
 		strongLocal("Ammo Replenished!", self.x, self.y + 256, self.id);
 	}
 	self.testAfk = function () {
+		if (self.isBot) return false;
+
 		if (self.afkTimer-- < 0) {
 			self.socket.emit("AFK", { t: 0 });
 			lefts[self.id] = 0;
-			if (!self.isBot) {
-				var text = "~`" + self.color + "~`" + self.name + "~`yellow~` went AFK!";
-				onlineNames[(self.name.startsWith("[") ? self.name.split(" ")[1] : self.name)] = 0;
-				log(text);
-				chatAll(text);
-			}
+			var text = "~`" + self.color + "~`" + self.name + "~`yellow~` went AFK!";
+			onlineNames[(self.name.startsWith("[") ? self.name.split(" ")[1] : self.name)] = 0;
+			log(text);
+			chatAll(text);
+			self.socket.disconnect();
 			return true;
 		}
 		return false;
