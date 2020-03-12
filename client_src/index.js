@@ -1556,7 +1556,6 @@ socket.on('chat', function (data) {
 		_chat(data);
 		return;
 	}
-	console.log("Chat: " + data.msg);
 
 	var chatName = data.msg.split(":")[0].split("`")[2];
 
