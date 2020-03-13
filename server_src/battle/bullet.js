@@ -50,10 +50,8 @@ module.exports = function Bullet(ownr, i, weaponID, angl, info) {
 		for (var i in players[self.sy][self.sx]) {
 			var p = players[self.sy][self.sx][i];
 			if (p.color != self.color && squaredDist(p, self) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
-				if (self.wepnID == 28) { // if a grav bomb hits a player, explode into a black hole
-					self.dieAndMakeVortex();
+				if (self.wepnID == 28) // if a grav bomb hits a player, just die
 					return;
-				}
 				p.dmg(self.dmg, self); // damage the enemy
 				self.die();//despawn this bullet
 				break;
