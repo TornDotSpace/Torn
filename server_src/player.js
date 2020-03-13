@@ -958,11 +958,13 @@ function Player(sock) {
 
 	}
 	self.updateRank = function () {
-
 		var prerank = self.rank;
 		self.rank = 0;
 		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
-		if (self.rank != prerank && self.rank > 1) self.socket.emit('rank', {}); //congratulations!
+		if (self.rank > prerank && self.rank > 5){
+			self.socket.emit('rank', {}); //congratulations!
+			chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` just ranked up to rank " + self.rank + "!");
+		}
 	}
 	self.sellOre = function(oretype){
             //pay them appropriately
@@ -1551,13 +1553,13 @@ function Player(sock) {
 	self.spoils = function (type, amt) { // gives you something. Called wenever you earn money / exp / w/e
 		if (typeof amt === "undefined") return;
 		if (type === "experience") {
-			var oldPosition = lbIndex(self.experience);
+			//var oldPosition = lbIndex(self.experience);
 			self.experience += amt;
-			var newPosition = lbIndex(self.experience);
-			if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
-				if (newPosition < 251) chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!");
-				else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
-			}
+			//var newPosition = lbIndex(self.experience);
+			//if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
+			//	if (newPosition < 100) chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!");
+			//	else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
+			//}
 			self.updateRank();
 		}
 		else if (type === "money") self.money += amt * ((amt > 0 && self.trail % 16 == 2) ? 1.05 : 1);
