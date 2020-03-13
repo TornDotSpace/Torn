@@ -40,6 +40,12 @@ global.hash = function (str) { // ass. TODO chris
     return hash;
 }
 
+function slightlybetterhash(str) {
+    var hash = 5381, i = str.length;
+    while(i) hash = (hash * 33) ^ str.charCodeAt(--i);
+    return hash+hash(str);
+}
+
 
 function expToLife(exp, guest) { // how much a life costs, given your exp and whether you're logged in
     return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-exp / 15000.)) + Math.atan(exp / 150000.) - .5)) + 500;
@@ -184,7 +190,7 @@ module.exports = function initNetcode() {
             instance = true;
             player.ip = ip;
             player.name = "GUEST " + guestCount;
-            log(player.ip + " logged in as " + player.name);
+            log(slightlybetterhash(player.ip) + " logged in as " + player.name);
             guestCount++;
 
             player.color = socket_color ? "red" : "blue";
@@ -337,7 +343,7 @@ module.exports = function initNetcode() {
                 player.getAllBullets();
                 player.getAllPlanets();
                 player.refillAllAmmo();
-                log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
+                log(slightlybetterhash(ip) + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
                 var text = "~`" + player.color + "~`" + player.name + '~`yellow~` logged in!';
                 chatAll(text);
                 player.va = ships[player.ship].agility * .08 * player.agility2;
