@@ -961,9 +961,9 @@ function Player(sock) {
 		var prerank = self.rank;
 		self.rank = 0;
 		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
-		if (self.rank > prerank && self.rank > 5){
+		if (!self.isBot && self.rank > prerank && self.rank > 5){
 			self.socket.emit('rank', {}); //congratulations!
-			chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` just ranked up to rank " + self.rank + "!");
+			chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` just leveled up to rank " + self.rank + "!");
 		}
 	}
 	self.sellOre = function(oretype){
