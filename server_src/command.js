@@ -149,15 +149,14 @@ cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMIN
     if (msg.split(" ").length != 2) return;
     var name = msg.split(" ")[1];
     log("attempting to kick player" + name);
-    for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++)
-        for (var p in players[y][x]) { // only search players who are in game
-            var player = players[y][x][p];
-            if (player.name === name) {
-                player.kick();
-                chatAll("~`violet~`" + name + "~`yellow~` has been kicked!");
-                return;
-            }
+    for (var p in sockets) {
+        var player = sockets[p].player;
+        if (player.name === name) {
+            player.kick();
+            chatAll("~`violet~`" + name + "~`yellow~` has been kicked!");
+            return;
         }
+    }
 });
 
 // TODO: need to be fixed
