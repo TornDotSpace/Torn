@@ -775,10 +775,9 @@ function r3DMapBig() {
 }
 function rShop() {
 	var info = {};
-	var mult = (myTrail % 16 == 2)?1.05:1;
-	var mult1 = mult;
-	var mult1point5 = mult*1.5;
-	var mult2 = mult*2;
+	var mult1 = (myTrail % 16 == 2)?1.05:1;
+	var mult1point5 = (myTrail % 16 == 2)?1.575:1.5;
+	var mult2 = (myTrail % 16 == 2)?2.1:2;
 	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + iron * (pc === "red" ? mult1 : mult2) + " ($" + (pc === "red" ? mult1 : mult2) + " " + mEng[155] + ")";
 	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + silver * mult1point5 + " ($"+mult1point5+" " + mEng[155] + ")";
 	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + platinum * (pc === "blue" ? mult1 : mult2) + " ($" + (pc === "blue" ? mult1 : mult2) + " " + mEng[155] + ")";
@@ -1690,6 +1689,7 @@ socket.on('you', function (data) {
 	ship = data.ship;
 	experience = data.experience;
 	rank = data.rank;
+	myTrail = data.trail;
 	t2 = Math.round(1000 * data.t2) / 1000;
 	va2 = Math.round(1000 * data.va2) / 1000;
 	ag2 = Math.round(1000 * data.ag2) / 1000;
