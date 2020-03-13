@@ -2930,9 +2930,9 @@ function rChat() {
 
 	ctx.textAlign = "left";
 
-	ctx.fillStyle = "yellow";
 	ctx.save();
 	for (var ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
+		ctx.fillStyle = "yellow";
 		var fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
 		ctx.globalAlpha = square((fromTop + 20) / 20);
 		var curx = 0;
