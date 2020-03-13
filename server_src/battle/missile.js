@@ -97,9 +97,12 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 					if (self.timer == 1 || tick % 4 == 0) self.goalAngle = angleBetween(target, self);
 					self.angle = findBisector(findBisector(self.goalAngle, self.angle), self.angle);// turn towards goal
 				}
-				self.vx = Math.cos(self.angle) * wepns[weaponID].speed; // update velocity
-				self.vy = Math.sin(self.angle) * wepns[weaponID].speed;
-
+				self.vx *= 7;
+				self.vy *= 7;
+				self.vx += Math.cos(self.angle) * wepns[weaponID].speed; // update velocity
+				self.vy += Math.sin(self.angle) * wepns[weaponID].speed;
+				self.vx /= 8;
+				self.vy /= 8;
 			}
 		}
 

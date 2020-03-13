@@ -34,14 +34,12 @@ buildFileSystem(); // create folders for players, neural nets, and turrets if th
 
 global.initReboot = function () {
 	log("\nInitializing server reboot...\n");
-	chatAll("Server is restarting in 5 minutes. Please save your progress as soon as possible.");
-	setTimeout(function () { chatAll("Server is restarting in 4 minutes. Please save your progress as soon as possible."); }, 1 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible."); }, 2 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 2 minutes. Please save your progress as soon as possible."); }, 3 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 1 minute. Please save your progress as soon as possible."); }, 4 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 30 seconds. Please save your progress as soon as possible."); }, (4 * 60 + 30) * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 10 seconds. Please save your progress as soon as possible."); }, (4 * 60 + 50) * 1000);
-	setTimeout(function () { chatAll("Server restarting..."); }, (4 * 60 + 57) * 1000);
+	chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible.");
+	setTimeout(function () { chatAll("Server is restarting in 2 minutes. Please save your progress as soon as possible."); }, 1 * 60 * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 1 minute. Please save your progress as soon as possible."); }, 2 * 60 * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 30 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 30) * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 10 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 50) * 1000);
+	setTimeout(function () { chatAll("Server restarting..."); }, (2 * 60 + 57) * 1000);
 	setTimeout(shutdown, 5 * 60 * 1000);
 }
 
@@ -1251,7 +1249,6 @@ function updateLB() {
 setTimeout(initReboot, 86400 * 1000 - 6 * 60 * 1000);
 
 function shutdown() {
-	saveTurrets();
 	decayPlayers();
 	process.exit();
 }
