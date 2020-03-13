@@ -1560,7 +1560,7 @@ function Player(sock) {
 			}
 			self.updateRank();
 		}
-		else if (type === "money") self.money += amt * (self.trail % 16 == 2 ? 1.05 : 1);
+		else if (type === "money") self.money += amt * ((amt > 0 && self.trail % 16 == 2) ? 1.05 : 1);
 		else if (type === "life" && self.lives < 20) self.lives += amt;
 		self.experience = Math.max(self.experience, 0);
 		self.socket.emit("spoils", { type: type, amt: amt });

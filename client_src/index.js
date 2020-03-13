@@ -899,6 +899,7 @@ function rQuests() {
 	ctx.font = '11px Nasa';
 	ctx.textAlign = 'left';
 	rMap();
+	var mult = (myTrail % 16 == 2)?1.05:1;
 	if (quest != 0) {
 		ctx.fillStyle = 'cyan';
 		ctx.textAlign = 'center';
@@ -929,7 +930,7 @@ function rQuests() {
 				else desc = mEng[46];
 			if (questi.type == 'Delivery') desc = mEng[42] + getSectorName(questi.sx, questi.sy) + mEng[43] + getSectorName(questi.dsx, questi.dsy) + mEng[40];
 			write(questi.type, xv + rx + 16, ry + 72 + i % 5 * 80);
-			write(mEng[47] + questi.exp + mEng[48] + Math.floor(questi.exp / ((questi.type === 'Mining' || questi.type === 'Delivery') ? 1500 : 4000)) + mEng[49], xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
+			write(mEng[47] + mult*questi.exp + mEng[48] + Math.floor(questi.exp / ((questi.type === 'Mining' || questi.type === 'Delivery') ? 1500 : 4000)) + mEng[49], xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
 			wrapText(mEng[50] + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
 		}
 }
