@@ -39,8 +39,8 @@ global.initReboot = function () {
 	setTimeout(function () { chatAll("Server is restarting in 1 minute. Please save your progress as soon as possible."); }, 2 * 60 * 1000);
 	setTimeout(function () { chatAll("Server is restarting in 30 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 30) * 1000);
 	setTimeout(function () { chatAll("Server is restarting in 10 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 50) * 1000);
-	setTimeout(function () { chatAll("Server restarting..."); }, (4 * 60 + 57) * 1000);
-	setTimeout(shutdown, 5 * 60 * 1000);
+	setTimeout(function () { chatAll("Server restarting..."); }, (2 * 60 + 57) * 1000);
+	setTimeout(shutdown, 3 * 60 * 1000);
 }
 
 global.saveTurrets = function () {
