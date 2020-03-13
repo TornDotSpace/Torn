@@ -126,6 +126,7 @@ var meanNLag = 0, nLagCt = 0;
 var booms = {};
 var boomParticles = {};
 var trails = {};
+var myTrail = 0;
 var notes = {};
 var bullets = {};
 var planets = 0, hmap = 0, lb = 0, youi = 0;
@@ -774,10 +775,14 @@ function r3DMapBig() {
 }
 function rShop() {
 	var info = {};
-	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + iron * (pc === "red" ? 1 : 2) + " ($" + (pc === "red" ? "1" : "2") + " " + mEng[155] + ")";
-	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + silver * 1.5 + " ($1.5 " + mEng[155] + ")";
-	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + platinum * (pc === "blue" ? 1 : 2) + " ($" + (pc === "blue" ? "1" : "2") + " " + mEng[155] + ")";
-	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + aluminium * 1.5 + " ($1.5 " + mEng[155] + ")";
+	var mult = (myTrail % 16 == 2)?1.05:1;
+	var mult1 = mult;
+	var mult1point5 = mult*1.5;
+	var mult2 = mult*2;
+	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + iron * (pc === "red" ? mult1 : mult2) + " ($" + (pc === "red" ? mult1 : mult2) + " " + mEng[155] + ")";
+	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + silver * mult1point5 + " ($"+mult1point5+" " + mEng[155] + ")";
+	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + platinum * (pc === "blue" ? mult1 : mult2) + " ($" + (pc === "blue" ? mult1 : mult2) + " " + mEng[155] + ")";
+	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + aluminium * mult1point5 + " ($"+mult1point5+" " + mEng[155] + ")";
 
 	r3DMap(rx + 128 * 6 - 256 - 16 + 128, ry + 128 * 4 - 128 - 32);
 
@@ -1207,6 +1212,7 @@ socket.on('posUp', function (data) {
 	pangle = data.angle;
 	shield = data.shield;
 	cloaked = data.cloaked;
+	myTrail = data.trail;
 	if (docked) playAudio("sector", 1);
 	empTimer--;
 	gyroTimer--;

@@ -11,6 +11,8 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 		sy: ownr.sy,
 		vx: Math.cos(angl) * wepns[weaponID].speed,
 		vy: Math.sin(angl) * wepns[weaponID].speed,
+		emvx:0,
+		emvy:0,
 		angle: angl,
 
 		owner: ownr,
@@ -97,20 +99,18 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 					if (self.timer == 1 || tick % 4 == 0) self.goalAngle = angleBetween(target, self);
 					self.angle = findBisector(findBisector(self.goalAngle, self.angle), self.angle);// turn towards goal
 				}
-				self.vx *= 7;
-				self.vy *= 7;
-				self.vx += Math.cos(self.angle) * wepns[weaponID].speed; // update velocity
-				self.vy += Math.sin(self.angle) * wepns[weaponID].speed;
-				self.vx /= 8;
-				self.vy /= 8;
+				self.vx = Math.cos(self.angle) * wepns[weaponID].speed; // update velocity
+				self.vy = Math.sin(self.angle) * wepns[weaponID].speed;
 			}
 		}
 
 		if (self.locked == 0) self.lockedTimer = 0;
 
 		var accelMult = 1 - 25 / (self.timer + 25); // pick up speed w/ time
-		self.x += self.vx * accelMult;
-		self.y += self.vy * accelMult; // move on tick
+		self.x += self.vx * accelMult + self.emvx;
+		self.y += self.vy * accelMult + self.emvy; // move on tick
+		self.emvx *= .95;
+		self.emvy *= .95;
 
 	}
 	self.die = function () {

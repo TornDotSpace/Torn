@@ -39,7 +39,7 @@ global.initReboot = function () {
 	setTimeout(function () { chatAll("Server is restarting in 1 minute. Please save your progress as soon as possible."); }, 2 * 60 * 1000);
 	setTimeout(function () { chatAll("Server is restarting in 30 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 30) * 1000);
 	setTimeout(function () { chatAll("Server is restarting in 10 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 50) * 1000);
-	setTimeout(function () { chatAll("Server restarting..."); }, (2 * 60 + 57) * 1000);
+	setTimeout(function () { chatAll("Server restarting..."); }, (4 * 60 + 57) * 1000);
 	setTimeout(shutdown, 5 * 60 * 1000);
 }
 
@@ -613,7 +613,7 @@ function update() {
 
 				// Send full update to the player
 				if (!player.isBot) 
-					send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.charge,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
+					send(i, 'posUp', {cloaked: player.disguise > 0, trail:player.trail, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.charge,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 				continue;
 			}
 

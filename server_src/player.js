@@ -266,16 +266,16 @@ function Player(sock) {
 						var d2 = squaredDist(self, m);
 						if (d2 > square(10 * wep.range)) continue;
 						var ang = angleBetween(self, m);
-						var vel = -5000000 / Math.max(d2, 2000000);
-						m.vx += Math.cos(ang) * vel;
-						m.vy += Math.sin(ang) * vel;
+						var vel = -10000000 / Math.max(d2, 2000000);
+						m.emvx += Math.cos(ang) * vel;
+						m.emvy += Math.sin(ang) * vel;
 					}
 					for (var i in orbs[self.sy][self.sx]) {
 						var o = orbs[self.sy][self.sx][i];
 						var d2 = squaredDist(self, o);
 						if (d2 > square(10 * wep.range)) continue;
 						var ang = angleBetween(self, o);
-						var vel = -5000000 / Math.max(d2, 2000000);
+						var vel = -25000000 / Math.max(d2, 2000000);
 						o.vx += Math.cos(ang) * vel;
 						o.vy += Math.sin(ang) * vel;
 					}
