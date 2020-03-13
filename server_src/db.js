@@ -115,5 +115,5 @@ global.savePlayerData = function (player) {
         sx : player.sx,
         sy : player.sy
     };
-    PLAYER_DATABASE.save(record);
+    PLAYER_DATABASE.replaceOne( { _id: player._id }, record, { upsert: true });
 }
