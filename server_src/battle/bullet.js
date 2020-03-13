@@ -31,7 +31,7 @@ module.exports = function Bullet(ownr, i, weaponID, angl, info) {
 		self.dist += wepns[weaponID].speed / 10;
 		if (self.wepnID == 28 && self.time > 25 * 3) { // gravity bomb has 3 seconds to explode
 			var base = bases[self.sy][self.sx];
-			if (squaredDist(base, self) < square(1000)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when out of range.
+			if (squaredDist(base, self) < square(3500)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 350 units away
 			self.dieAndMakeVortex(); // collapse into black hole
 		}
 		else if (self.dist > wepns[weaponID].range) self.die(); // out of range
@@ -50,10 +50,8 @@ module.exports = function Bullet(ownr, i, weaponID, angl, info) {
 		for (var i in players[self.sy][self.sx]) {
 			var p = players[self.sy][self.sx][i];
 			if (p.color != self.color && squaredDist(p, self) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
-				if (self.wepnId == 28) { // if a grav bomb hits a player, explode into a black hole
-					self.dieAndMakeVortex();
+				if (self.wepnID == 28) // if a grav bomb hits a player, just die
 					return;
-				}
 				p.dmg(self.dmg, self); // damage the enemy
 				self.die();//despawn this bullet
 				break;
