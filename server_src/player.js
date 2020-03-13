@@ -251,26 +251,42 @@ function Player(sock) {
 			}
 
 			else if (wep.name === "Electromagnet") { // identical structurally to pulse wave, see above for comments.
-				for (var i in asts[self.sy][self.sx]) {
-					var a = asts[self.sy][self.sx][i];
-					var d2 = squaredDist(self, a);
-					if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
-					var ang = angleBetween(self, a);
-					var vel = 500000 / Math.max(d2, 200000);
-					a.vx += Math.cos(ang) * vel;
-					a.vy += Math.sin(ang) * vel;
-				}
-				for (var i in players[self.sy][self.sx]) {
-					var p = players[self.sy][self.sx][i];
-					if (p.color !== self.color) { // Not the user
-						var d2 = squaredDist(self, p);
+				if(global.tick % 2 == 0){
+					for (var i in asts[self.sy][self.sx]) {
+						var a = asts[self.sy][self.sx][i];
+						var d2 = squaredDist(self, a);
+						if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
+						var ang = angleBetween(self, a);
+						var vel = -1000000 / Math.max(d2, 200000);
+						a.vx += Math.cos(ang) * vel;
+						a.vy += Math.sin(ang) * vel;
+					}
+					for (var i in missiles[self.sy][self.sx]) {
+						var m = missiles[self.sy][self.sx][i];
+						var d2 = squaredDist(self, m);
 						if (d2 > square(10 * wep.range)) continue;
-						var ang = angleBetween(self, p);
-						var vel = 3000000 / Math.max(d2, 1000000);
-						p.vx += Math.cos(ang) * vel;
-						p.vy += Math.sin(ang) * vel;
-						p.gyroTimer = 25;
-						p.updatePolars();
+						var ang = angleBetween(self, m);
+						var vel = -10000000 / Math.max(d2, 2000000);
+						m.emvx += Math.cos(ang) * vel;
+						m.emvy += Math.sin(ang) * vel;
+					}
+					for (var i in orbs[self.sy][self.sx]) {
+						var o = orbs[self.sy][self.sx][i];
+						var d2 = squaredDist(self, o);
+						if (d2 > square(10 * wep.range)) continue;
+						var ang = angleBetween(self, o);
+						var vel = -25000000 / Math.max(d2, 2000000);
+						o.vx += Math.cos(ang) * vel;
+						o.vy += Math.sin(ang) * vel;
+					}
+					for (var i in mines[self.sy][self.sx]) {
+						var m = mines[self.sy][self.sx][i];
+						var d2 = squaredDist(self, m);
+						if (d2 > square(10 * wep.range)) continue;
+						var ang = angleBetween(self, m);
+						var vel = -5000000 / Math.max(d2, 2000000);
+						m.vx += Math.cos(ang) * vel;
+						m.vy += Math.sin(ang) * vel;
 					}
 				}
 			}
@@ -356,7 +372,7 @@ function Player(sock) {
 			a.vy = Math.sin(self.angle) * 15;
 			asts[self.sy][self.sx][r] = a;
 		} else if (self.ship == 18) { self.shootBullet(39); } // Built in spreadshot
-		else if (self.ship == 20) { self.shootBullet(28); self.health *=.1; } // Built in spreadshot
+		else if (self.ship == 20 && self.rank >= self.ship) { self.shootBullet(28); self.health *=.1; self.exp-=200; self.money-=20000; self.save();} // Built in Grav Bomb
 		else if (self.ship == 19) { self.health++; } // Built in spreadshot
 		self.reload(true, 0);
 	}
@@ -942,11 +958,13 @@ function Player(sock) {
 
 	}
 	self.updateRank = function () {
-
 		var prerank = self.rank;
 		self.rank = 0;
 		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
-		if (self.rank != prerank && self.rank > 1) self.socket.emit('rank', {}); //congratulations!
+		if (self.rank > prerank && self.rank > 5){
+			self.socket.emit('rank', {}); //congratulations!
+			chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` just ranked up to rank " + self.rank + "!");
+		}
 	}
 	self.sellOre = function(oretype){
             //pay them appropriately
@@ -1535,16 +1553,16 @@ function Player(sock) {
 	self.spoils = function (type, amt) { // gives you something. Called wenever you earn money / exp / w/e
 		if (typeof amt === "undefined") return;
 		if (type === "experience") {
-			var oldPosition = lbIndex(self.experience);
+			//var oldPosition = lbIndex(self.experience);
 			self.experience += amt;
-			var newPosition = lbIndex(self.experience);
-			if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
-				if (newPosition < 251) chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!");
-				else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
-			}
+			//var newPosition = lbIndex(self.experience);
+			//if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
+			//	if (newPosition < 100) chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!");
+			//	else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
+			//}
 			self.updateRank();
 		}
-		else if (type === "money") self.money += amt * (self.trail % 16 == 2 ? 1.05 : 1);
+		else if (type === "money") self.money += amt * ((amt > 0 && self.trail % 16 == 2) ? 1.05 : 1);
 		else if (type === "life" && self.lives < 20) self.lives += amt;
 		self.experience = Math.max(self.experience, 0);
 		self.socket.emit("spoils", { type: type, amt: amt });

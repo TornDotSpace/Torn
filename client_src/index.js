@@ -126,6 +126,7 @@ var meanNLag = 0, nLagCt = 0;
 var booms = {};
 var boomParticles = {};
 var trails = {};
+var myTrail = 0;
 var notes = {};
 var bullets = {};
 var planets = 0, hmap = 0, lb = 0, youi = 0;
@@ -774,10 +775,13 @@ function r3DMapBig() {
 }
 function rShop() {
 	var info = {};
-	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + iron * (pc === "red" ? 1 : 2) + " ($" + (pc === "red" ? "1" : "2") + " " + mEng[155] + ")";
-	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + silver * 1.5 + " ($1.5 " + mEng[155] + ")";
-	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + platinum * (pc === "blue" ? 1 : 2) + " ($" + (pc === "blue" ? "1" : "2") + " " + mEng[155] + ")";
-	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + aluminium * 1.5 + " ($1.5 " + mEng[155] + ")";
+	var mult1 = (myTrail % 16 == 2)?1.05:1;
+	var mult1point5 = (myTrail % 16 == 2)?1.575:1.5;
+	var mult2 = (myTrail % 16 == 2)?2.1:2;
+	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + iron * (pc === "red" ? mult1 : mult2) + " ($" + (pc === "red" ? mult1 : mult2) + " " + mEng[155] + ")";
+	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + silver * mult1point5 + " ($"+mult1point5+" " + mEng[155] + ")";
+	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + platinum * (pc === "blue" ? mult1 : mult2) + " ($" + (pc === "blue" ? mult1 : mult2) + " " + mEng[155] + ")";
+	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + aluminium * mult1point5 + " ($"+mult1point5+" " + mEng[155] + ")";
 
 	r3DMap(rx + 128 * 6 - 256 - 16 + 128, ry + 128 * 4 - 128 - 32);
 
@@ -894,6 +898,7 @@ function rQuests() {
 	ctx.font = '11px Nasa';
 	ctx.textAlign = 'left';
 	rMap();
+	var mult = (myTrail % 16 == 2)?1.05:1;
 	if (quest != 0) {
 		ctx.fillStyle = 'cyan';
 		ctx.textAlign = 'center';
@@ -924,7 +929,7 @@ function rQuests() {
 				else desc = mEng[46];
 			if (questi.type == 'Delivery') desc = mEng[42] + getSectorName(questi.sx, questi.sy) + mEng[43] + getSectorName(questi.dsx, questi.dsy) + mEng[40];
 			write(questi.type, xv + rx + 16, ry + 72 + i % 5 * 80);
-			write(mEng[47] + questi.exp + mEng[48] + Math.floor(questi.exp / ((questi.type === 'Mining' || questi.type === 'Delivery') ? 1500 : 4000)) + mEng[49], xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
+			write(mEng[47] + mult*questi.exp + mEng[48] + Math.floor(questi.exp / ((questi.type === 'Mining' || questi.type === 'Delivery') ? 1500 : 4000)) + mEng[49], xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
 			wrapText(mEng[50] + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
 		}
 }
@@ -1207,6 +1212,7 @@ socket.on('posUp', function (data) {
 	pangle = data.angle;
 	shield = data.shield;
 	cloaked = data.cloaked;
+	myTrail = data.trail;
 	if (docked) playAudio("sector", 1);
 	empTimer--;
 	gyroTimer--;
@@ -1683,6 +1689,7 @@ socket.on('you', function (data) {
 	ship = data.ship;
 	experience = data.experience;
 	rank = data.rank;
+	myTrail = data.trail;
 	t2 = Math.round(1000 * data.t2) / 1000;
 	va2 = Math.round(1000 * data.va2) / 1000;
 	ag2 = Math.round(1000 * data.ag2) / 1000;
