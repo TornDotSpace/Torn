@@ -1670,21 +1670,6 @@ function Player(sock) {
 	return self;
 };
 
-function lbIndex(exp) { // binary search to find where a player is on the leaderboard. TODO there is a bug where this prints stuff when someone gets their first kill of the day
-	exp+=.01; // epsilon so that you always are evaluated as having higher exp than yourself
-	if (exp < lbExp[999]) return -1;
-	if (exp > lbExp[0]) return 1;
-	var ub = 999, lb = 0;
-	while (ub > lb) {
-		if (exp >= lbExp[ub] && exp < lbExp[ub - 1]) return ub + 1;
-		ub--;
-		var index = Math.floor((ub + lb) / 2);
-		if (exp < lbExp[index]) lb = index;
-		else ub = index;
-	}
-	return ub + 1;//1-indexed
-}
-
 module.exports = Player;
 
 var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");

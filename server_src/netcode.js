@@ -413,7 +413,7 @@ module.exports = function initNetcode() {
             }
 
             log("[CHAT] " + player.name + ": " + data.msg); // print their raw message
-            if (!player.name.includes("[O]")) data.msg = data.msg.replace(/~`/ig, ''); // Normies can't triforce
+            if (!player.name.includes("[")) data.msg = data.msg.replace(/`/ig, ''); // Normies can't triforce
 
             var time = Date.now();
 
