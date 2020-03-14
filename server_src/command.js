@@ -165,21 +165,23 @@ cmds["/decayplayers"] = new Command("/decayPlayers - Decays all players tech", A
 
 cmds["/saveturrets"] = new Command("/saveTurrets - Runs a manual save on the server turrets", ADMINPLUS, saveTurrets);
 
-cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server", ADMINPLUS, function (player, msg) {
-    try {
-        send(player.id, "chat", { msg: eval(msg.substring(5)) });
-    } catch (e) {
-        send(player.id, "chat", { msg: "An error occurred: " + e });
-    }
-});
-
-cmds["/max"] = new Command("/max - Maxes out a player's stats for testing purposes", ADMINPLUS, function (player, msg) {
-    player.rank = 20;
-    player.money = Number.MAX_SAFE_INTEGER;
-    player.experience = Number.MAX_SAFE_INTEGER;
-
-    send(player.id, "chat", {msg: "Max Mode Activated"});
-});
+if (Config.getValue("debug", false)) {
+    cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server", ADMINPLUS, function (player, msg) {
+        try {
+            send(player.id, "chat", { msg: eval(msg.substring(5)) });
+        } catch (e) {
+            send(player.id, "chat", { msg: "An error occurred: " + e });
+        }
+    });
+    
+    cmds["/max"] = new Command("/max - Maxes out a player's stats for testing purposes", ADMINPLUS, function (player, msg) {
+        player.rank = 20;
+        player.money = Number.MAX_SAFE_INTEGER;
+        player.experience = Number.MAX_SAFE_INTEGER;
+    
+        send(player.id, "chat", {msg: "Max Mode Activated"});
+    });
+}
 
 // Compute help menu
 for (var x in PERM_TABLE) {
