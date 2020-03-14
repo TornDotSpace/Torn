@@ -1258,9 +1258,10 @@ function broadcastInfo(){
 	randomMsgs = [
 	"Remember, never give your password to anyone, for any reason!",
 	"If you're interested in running a torn youtube channel, contact the developers!",
-	"Please support the game by buying a VIP pass in the store!"
+	"Please support the game by buying a VIP pass in the store!",
+	"Join the torn.space discord! https://discord.gg/SnUMSqM",
 	]
-	chatAll("~`#ff0000~`"+randomMsgs[broadcastMsg%randomMsgs.length]);
+	chatAll("~`#ff0000~`Transmission: "+randomMsgs[broadcastMsg%randomMsgs.length]);
 	broadcastMsg++
 	setTimeout(broadcastInfo,10*60*1000);
 }
