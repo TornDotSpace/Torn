@@ -1627,9 +1627,6 @@ socket.on('AFK', function (data) {
 socket.on('invalidCredentials', function (data) {
 	credentialState = 1;
 });
-socket.on('accInUse', function (data) {
-	credentialState = 10;
-});
 
 socket.on('outdated', function() {
 	credentialState = 20;
@@ -3219,7 +3216,6 @@ function rCreds() {
 	if (credentialState == 3) str = mEng[114];
 	if (credentialState == 4) str = mEng[115];
 	if (credentialState == 5) str = "Username is profane!";
-	if (credentialState == 10) str = mEng[116];
 	if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';

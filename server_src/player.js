@@ -225,7 +225,7 @@ function Player(sock) {
 			else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
 				if (wep.name === "Supercharger") self.superchargerTimer = 1500;//1 min
 				else if (wep.name === "Hull Nanobots") self.health += Math.min(80, self.maxHealth - self.health); // min prevents overflow
-				else if (wep.name === "Photon Cloak") self.disguise = 150;//6s
+				else if (wep.name === "Photon Cloak") self.disguise = 200;//6s
 				else if (wep.name === "Warp Drive") self.speed = self.thrust * (self.ship == 16 ? 700 : 500);
 			}
 
@@ -1507,10 +1507,9 @@ function Player(sock) {
 			self.socket.emit("AFK", { t: 0 });
 			lefts[self.id] = 0;
 			var text = "~`" + self.color + "~`" + self.name + "~`yellow~` went AFK!";
-			onlineNames[(self.name.startsWith("[") ? self.name.split(" ")[1] : self.name)] = 0;
 			log(text);
 			chatAll(text);
-			self.socket.disconnect();
+			self.kick("AFK!");
 			return true;
 		}
 		return false;

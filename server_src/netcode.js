@@ -15,7 +15,6 @@ var guestCount = 0; // Enumerate guests since server boot
 
 // Global mute table 
 global.muteTable = {};
-global.onlineNames = {};
 
 global.protocolVersion = undefined;
 
@@ -263,7 +262,6 @@ module.exports = function initNetcode() {
                 chatAll(text);
 
                 player.save();
-                onlineNames[user] = 1;
                 instance = false;
             });
             socket.emit("raid", { raidTimer: raidTimer })
@@ -297,11 +295,6 @@ module.exports = function initNetcode() {
 
             name = name.toLowerCase();
 
-            if (onlineNames[name] === 1) {
-                socket.emit("accInUse", {});
-                return;
-            }
-
             instance = true;
 
             //Load account
@@ -314,12 +307,20 @@ module.exports = function initNetcode() {
                 }
 
                 player = ret.player;
+
+                for (var p in sockets) {
+                    if (sockets[p].player !== undefined) {
+                        if (sockets[p].player.name === player.name) {
+                            sockets[p].player.kick("A user has logged into this account from another location.");
+                        }
+                    }
+                }
+    
                 socket.player = player;
                 player.ip = ip;
 
                 socket.emit("loginSuccess", {id: player.id});
-                onlineNames[name] = 1;
-    
+
                 if (player.sx >= mapSz) player.sx--;
                 if (player.sy >= mapSz) player.sy--;
     
@@ -362,8 +363,6 @@ module.exports = function initNetcode() {
             log(text); // print in terminal
             chatAll(text); // send it to all the players
             //DO NOT save the player's game data.
-
-            onlineNames[(player.name.startsWith("[") ? player.name.split(" ")[1] : player.name)] = 0;
         });
 
         socket.on('key', function (data) { // on client keypress or key release

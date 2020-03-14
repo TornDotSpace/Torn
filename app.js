@@ -602,7 +602,6 @@ function update() {
 			if (player.testAfk()) continue;
 			player.isLocked = false;
 			player.tick();
-			if (player.disguise > 0) continue;
 
 			// Check for creation
 			if (pack === undefined) {
@@ -626,6 +625,12 @@ function update() {
 					delta[key] = pack[key] = player[key];
 					need_update = true;
 				}
+			}
+
+			// Handle cloaking
+			if (need_update && !player.isBot && player.disguise > 0) {
+				send(i, 'posUp', {cloaked: player.disguise > 0, trail:player.trail, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.charge,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
+				continue;
 			}
 
 			if (!need_update) continue;
