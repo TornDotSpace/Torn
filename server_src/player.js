@@ -1507,10 +1507,9 @@ function Player(sock) {
 			self.socket.emit("AFK", { t: 0 });
 			lefts[self.id] = 0;
 			var text = "~`" + self.color + "~`" + self.name + "~`yellow~` went AFK!";
-			onlineNames[(self.name.startsWith("[") ? self.name.split(" ")[1] : self.name)] = 0;
 			log(text);
 			chatAll(text);
-			self.socket.disconnect();
+			self.kick("AFK!");
 			return true;
 		}
 		return false;
