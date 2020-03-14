@@ -3,6 +3,7 @@ var MONGO_CONNECTION_STR = Config.getValue("mongo_connection_string", "mongodb:/
 var PLAYER_DATABASE = null;
 var TURRET_DATABASE = null;
 var Mongo = require('mongodb').MongoClient;
+var Base = require('./universe/base.js');
 
 // TODO: Implement failover in the event we lose connection
 // to MongoDB
@@ -23,6 +24,8 @@ global.connectToDB = function () {
         var db = client.db('torn');
         PLAYER_DATABASE = db.collection('players');
         TURRET_DATABASE = db.collection('turrets');
+
+        loadTurretData();
         log("[DB] Connection successful!");
     });
 }
@@ -76,6 +79,46 @@ global.resetPassword = function (player) {
     var temp = debug(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
     var hash = passwor
 };
+
+global.saveTurret = function (turret) {
+    var record = {
+        id : turret.id,
+        kills: turret.kills,
+        experience: turret.experience,
+        money: turret.money,
+        color: turret.color,
+        owner: turret.owner,
+        x: turret.x,
+        y: turret.y,
+        sx: turret.sx,
+        sy: turret.sy,
+        name: turret.name
+    };
+    TURRET_DATABASE.replaceOne( { id : turret.id }, record, { upsert: true});
+}
+
+global.deleteTurret = function (turret) {
+    TURRET_DATABASE.remove( {_id: turret._id });
+}
+
+global.loadTurretData = async function() {
+    var count = 0;
+    log("\nLoading Turrets...");
+    var items = await TURRET_DATABASE.find();
+    
+    items.forEach(i => {
+        count++;
+        var b = new Base(0, false, 0, 0, 0, 0, 0);
+        for (var x in i) {
+            for (var y in x) {
+                b[x] = y;
+            }
+        }
+        bases[b.y][b.x] = b;
+    });
+    
+    log(count + " turret(s) loaded.\n");
+}
 
 global.savePlayerData = function (player) {
     var record = {

@@ -21,6 +21,9 @@ console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀ 
 console.log("                                                                                                                        ");
 console.log("************************************************************************************************************************");
 
+// Load config 
+var configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
+require('./server_src/config.js')(configEnvironment);
 
 var fs = require('fs');
 var logFileName = "logs/" + (new Date()) + ".log";
@@ -44,19 +47,23 @@ global.initReboot = function () {
 }
 
 global.saveTurrets = function () {
-
-	//delete files
-	var count = 0;
-	var items = fs.readdirSync('server/turrets/');
-	for (var i in items) {
-		fs.unlinkSync('server/turrets/' + items[i]);
-		count++;
-	}
-	chatAll(count + " Turrets Currently Saved");
-
 	//save em
+	console.log("FUCK!");
+
+	var count = 0;
+	//chatAll("Saving Turrets...");
+	for (var i = 0; i < mapSz; i++)
+		for (var j = 0; j < mapSz; j++) {
+			var base = bases[i][j];
+			if (base != 0 && !base.isBase) {
+				base.save();
+				count++;
+			}
+		}
+	console.log(count + " Turrets Saved!");
+	
 	setTimeout(function () {
-		count = 0;
+		var count = 0;
 		chatAll("Saving Turrets...");
 		for (var i = 0; i < mapSz; i++)
 			for (var j = 0; j < mapSz; j++) {
@@ -67,7 +74,7 @@ global.saveTurrets = function () {
 				}
 			}
 		chatAll(count + " Turrets Saved!");
-	}, 1000);
+	}, 10);
 }
 
 // TODO: needs to be fixed for MongoDB
@@ -124,19 +131,16 @@ global.readMuteTable = function(){
 	console.log(muteTable);
 }
 
-// Load config 
-var configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
-require('./server_src/config.js')(configEnvironment);
 require('./server_src/netcode.js');
 require('./server_src/math.js');
-
-require('./server_src/db.js');
-connectToDB();
 
 var Base = require('./server_src/universe/base.js');
 var Asteroid = require("./server_src/universe/asteroid.js");
 var Planet = require("./server_src/universe/planet.js");
 var Vortex = require("./server_src/universe/vortex.js");
+
+require('./server_src/db.js');
+connectToDB();
 
 var tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 
@@ -447,9 +451,6 @@ function init() { // start the server!
 	v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, 3, 3, .15, 0, false);
 	vorts[v.sy][v.sx][id] = v;
 
-	//load existing turrets
-	loadTurrets();
-
 	//start ticking
 
 	setTimeout(update, tickRate);
@@ -466,7 +467,7 @@ function buildFileSystem() { // create the server files/folders
 	console.log("\nCreating any potential missing files and folders needed for the server...");
 	var allGood = true;
 
-	var dirs = ['./server', './server/neuralnets', './logs', './server/turrets', './client/leaderboard'];
+	var dirs = ['./server', './server/neuralnets', './logs'];
 	for(var i in dirs){
 		var dir = dirs[i];
 		if (!fs.existsSync(dir)) {
@@ -486,11 +487,6 @@ function buildFileSystem() { // create the server files/folders
 
 	if (allGood) console.log("All server directories were already present!");
 
-	if (!fs.existsSync("client/leaderboard/index.html")) {
-		fs.writeFileSync("client/leaderboard/index.html", "Leaderboard not ready yet...", (err) => {
-			if (err) console.log(err); console.log("Created leaderboard file.");
-		});
-	}
 }
 function spawnBases() {
 	log("\nSpawning " + (baseMap.length / 2) + " Bases...");
@@ -507,27 +503,7 @@ function spawnBases() {
 		bases[mapSz - 1 - baseMap[i + 1]][mapSz - 1 - baseMap[i]] = blueBase;
 	}
 }
-function loadTurrets() {
-	var count = 0;
-	log("\nLoading Turrets...");
-	var items = fs.readdirSync('server/turrets/');
 
-	for (var i in items) {
-		count++;
-		log("Turret found: " + items[i]);
-		var data = fs.readFileSync("server/turrets/" + items[i], 'utf8').split(":");
-		var id = parseFloat(data[3]);
-		var b = new Base(id, false, parseFloat(data[8]), parseFloat(data[9]), data[4], parseFloat(data[6]), parseFloat(data[7]));
-		b.name = data[10];
-		b.kills = parseFloat(data[0]);
-		b.experience = parseFloat(data[1]);
-		b.money = parseFloat(data[2]);
-		b.owner = data[5];
-		bases[parseFloat(data[9])][parseFloat(data[8])] = b;
-	}
-
-	log(count + " turret(s) loaded.\n");
-}
 
 function kill() {
 	process.exit();
@@ -1239,11 +1215,10 @@ function updateLB() {
 		newFile += '</table></nobr><br/>Updates every 25 minutes Last updated: ' + new Date() + '</center></font></body></html>';
 		fs.writeFileSync(source, newFile, { "encoding": 'utf8' });
 	});
-	saveTurrets();
 	setTimeout(updateLB, 1000 * 25 * 60);
 }
 
-
+saveTurrets();
 
 //meta
 setTimeout(initReboot, 86400 * 1000 - 6 * 60 * 1000);

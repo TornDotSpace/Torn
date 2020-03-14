@@ -29,7 +29,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		maxHealth: baseHealth,
 		heal: 1,
 		empTimer: -1,
-		speed: 0,//vs unused but there for bullets
+		speed: 0,//vs unused but there for bullets,
 	}
 	self.tick = function (rbNow, bbNow) {
 		//spawn a bot if we need more bots
@@ -134,6 +134,8 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 	}
 	self.die = function (b) {
 		if (!self.turretLive) return;
+
+		deleteTurret(self);
 		
 		self.health = self.maxHealth;
 		self.turretLive = false;
@@ -167,6 +169,10 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 			}
 		}
 	}
+
+	self.save = function () {
+		saveTurret(self);
+	}
 	self.sendDeathMsg = function (killedBy) {
 		chatAll("The " + (self.isBase ? "base" : "turret") + " at sector ~`" + col + "~`" + self.getSectorName() + "~`yellow~` was destroyed by " + killedBy + ".");
 	}
@@ -176,13 +182,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 	self.EMP = function (t) {
 		self.empTimer = t;
 	}
-	self.save = function () {// TODO Chris
-		if (self.isBase) return;
-		var source = 'server/turrets/' + self.id + '.txt';
-		if (fs.existsSync(source)) fs.unlinkSync(source);
-		var str = self.kills + ':' + self.experience + ':' + self.money + ':' + self.id + ":" + self.color + ":" + self.owner + ":" + self.x + ":" + self.y + ":" + self.sx + ":" + self.sy + ":" + self.name;
-		fs.writeFileSync(source, str, { "encoding": 'utf8' });
-	}
+
 	self.onKill = function () {
 		self.kills++;
 	}
