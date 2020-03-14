@@ -148,10 +148,10 @@ cmds["/smite"] = new Command("/smite <player> - Smites the specified player", AD
 cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 2) return;
     var name = msg.split(" ")[1];
-    log("attempting to kick player" + name);
+
     for (var p in sockets) {
         var player = sockets[p].player;
-        if (player.name === name) {
+        if (player.nameWithoutTag() === name) {
             player.kick();
             chatAll("~`violet~`" + name + "~`yellow~` has been kicked!");
             return;
