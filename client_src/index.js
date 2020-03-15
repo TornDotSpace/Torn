@@ -1235,22 +1235,19 @@ socket.on('posUp', function (data) {
 socket.on('update', function(data) {
 	++uframes;
 	++tick;
-	if (sx != data.sx || sy != data.sy) playAudio("sector", 1);
 	energy = data.energy;
-	sx = data.sx;
-	sy = data.sy;
 	isLocked = data.isLocked;
 	charge = data.charge;
 	cloaked = data.cloaked;
 
 	var delta = data.state;
 
-	for (var index = 0; index < delta.vorts.length; ++index) {
-		vort_update(delta.vorts[index]);
-	}
-
 	for (var index = 0; index < delta.players.length; ++index) {
 		player_update(delta.players[index]);
+	}
+
+	for (var index = 0; index < delta.vorts.length; ++index) {
+		vort_update(delta.vorts[index]);
 	}
 
 	for (var index = 0; index < delta.mines.length; ++index) {
