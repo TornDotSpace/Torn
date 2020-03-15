@@ -629,7 +629,7 @@ function update() {
 
 			// Handle cloaking
 			if (need_update && !player.isBot && player.disguise > 0) {
-				send(i, 'posUp', {cloaked: player.disguise > 0, trail:player.trail, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.charge,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
+				send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: { players: [ {delta: delta, id: i} ] }} );
 				continue;
 			}
 
@@ -1058,7 +1058,7 @@ function update() {
 			// drift 
 
 			// missing: cloaked, isLocked,planetTimer, sx, sy, charge:player.charge
-			send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, sx: x, sy: y, charge: player.charge, energy: player.energy, state: gameState });
+			send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: gameState });
 		}
 
 		// Clear
