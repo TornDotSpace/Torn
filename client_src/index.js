@@ -35,7 +35,7 @@ var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-var ctx = canvas.getContext("2d");
+var ctx = canvas.getContext("2d", { alpha: false });
 
 import React from "react";
 import ReactDOM from "react-dom";
