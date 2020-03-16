@@ -145,27 +145,43 @@ cmds["/smite"] = new Command("/smite <player> - Smites the specified player", AD
         }
 });
 
+cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMINPLUS, function (ply, msg) {
+    if (msg.split(" ").length != 2) return;
+    var name = msg.split(" ")[1];
+
+    for (var p in sockets) {
+        var player = sockets[p].player;
+        if (player.nameWithoutTag() === name) {
+            player.kick();
+            chatAll("~`violet~`" + name + "~`yellow~` has been kicked!");
+            return;
+        }
+    }
+});
+
 // TODO: need to be fixed
 //cmds["/undecayplayers"] = new Command("/undecayPlayers - Reverts decay on all players", ADMIN, undecayPlayers);
 cmds["/decayplayers"] = new Command("/decayPlayers - Decays all players tech", ADMINPLUS, decayPlayers);
 
 cmds["/saveturrets"] = new Command("/saveTurrets - Runs a manual save on the server turrets", ADMINPLUS, saveTurrets);
 
-cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server", ADMINPLUS, function (player, msg) {
-    try {
-        send(player.id, "chat", { msg: eval(msg.substring(5)) });
-    } catch (e) {
-        send(player.id, "chat", { msg: "An error occurred: " + e });
-    }
-});
-
-cmds["/max"] = new Command("/max - Maxes out a player's stats for testing purposes", ADMINPLUS, function (player, msg) {
-    player.rank = 20;
-    player.money = Number.MAX_SAFE_INTEGER;
-    player.experience = Number.MAX_SAFE_INTEGER;
-
-    send(player.id, "chat", {msg: "Max Mode Activated"});
-});
+if (Config.getValue("debug", false)) {
+    cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server", ADMINPLUS, function (player, msg) {
+        try {
+            send(player.id, "chat", { msg: eval(msg.substring(5)) });
+        } catch (e) {
+            send(player.id, "chat", { msg: "An error occurred: " + e });
+        }
+    });
+    
+    cmds["/max"] = new Command("/max - Maxes out a player's stats for testing purposes", ADMINPLUS, function (player, msg) {
+        player.rank = 20;
+        player.money = Number.MAX_SAFE_INTEGER;
+        player.experience = Number.MAX_SAFE_INTEGER;
+    
+        send(player.id, "chat", {msg: "Max Mode Activated"});
+    });
+}
 
 // Compute help menu
 for (var x in PERM_TABLE) {

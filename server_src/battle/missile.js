@@ -11,6 +11,8 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 		sy: ownr.sy,
 		vx: Math.cos(angl) * wepns[weaponID].speed,
 		vy: Math.sin(angl) * wepns[weaponID].speed,
+		emvx:0,
+		emvy:0,
 		angle: angl,
 
 		owner: ownr,
@@ -89,7 +91,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 				if (target.sx == self.sx && target.sy == self.sy && squaredDist(target, self) < 10000 * (self.wepnID == 38 ? 5 : 1) && target.turretLive != false /*we don't know it's a base. can't just say ==true.*/) {
 					target.dmg(self.dmg, self);
 					self.die();
-					if (self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(40); // emp missile
+					if (self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(25); // emp missile
 					return;
 				}
 
@@ -99,15 +101,16 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 				}
 				self.vx = Math.cos(self.angle) * wepns[weaponID].speed; // update velocity
 				self.vy = Math.sin(self.angle) * wepns[weaponID].speed;
-
 			}
 		}
 
 		if (self.locked == 0) self.lockedTimer = 0;
 
 		var accelMult = 1 - 25 / (self.timer + 25); // pick up speed w/ time
-		self.x += self.vx * accelMult;
-		self.y += self.vy * accelMult; // move on tick
+		self.x += self.vx * accelMult + self.emvx;
+		self.y += self.vy * accelMult + self.emvy; // move on tick
+		self.emvx *= .95;
+		self.emvy *= .95;
 
 	}
 	self.die = function () {

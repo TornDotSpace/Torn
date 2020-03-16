@@ -22,7 +22,7 @@ function printStartup() {
 	console.error("***********************************************************************");
 	console.error("WARNING: PASTING CODE INTO HERE CAN ALLOW FOR YOUR ACCOUNT TO BE STOLEN");
 	console.error("ALWAYS AUDIT CODE YOU ARE INJECTING INTO THE DEVELOPER CONSOLE");
-	console.error("ADDITIONALLY, PLEASE RESPECT OUR TOS https://torn.space/tos");									 
+	console.error("ADDITIONALLY, PLEASE RESPECT OUR TOS https://torn.space/legal/tos.pdf AND NOTE OUR PRIVACY POLICY https://torn.space/legal/privacy_policy.pdf");
 	console.error("***********************************************************************");
 }
 
@@ -67,8 +67,8 @@ loadLang();
 
 //Normal, on server: torn.space:443
 //dev: localhost:7300
-var socket = io(GAMESERVER_URL, 
-	{ 
+var socket = io(GAMESERVER_URL,
+	{
 		autoConnect: false,
 		parser: msgpack
  	});
@@ -126,6 +126,7 @@ var meanNLag = 0, nLagCt = 0;
 var booms = {};
 var boomParticles = {};
 var trails = {};
+var myTrail = 0;
 var notes = {};
 var bullets = {};
 var planets = 0, hmap = 0, lb = 0, youi = 0;
@@ -321,7 +322,7 @@ function loadImageEnd() {
 }
 function loadPlanetImg(i) {
 	planetImgs[i] = new Image();
-	// TODO: fix 
+	// TODO: fix
 	planetImgs[i].src = '/img/space/planets/pt' + ((i % 5) + 1) + '.png';
 }
 function loadShipImg(red, i) {
@@ -766,10 +767,13 @@ function r3DMapBig() {
 }
 function rShop() {
 	var info = {};
-	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + iron * (pc === "red" ? 1 : 2) + " ($" + (pc === "red" ? "1" : "2") + " " + mEng[155] + ")";
-	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + silver * 1.5 + " ($1.5 " + mEng[155] + ")";
-	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + platinum * (pc === "blue" ? 1 : 2) + " ($" + (pc === "blue" ? "1" : "2") + " " + mEng[155] + ")";
-	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + aluminium * 1.5 + " ($1.5 " + mEng[155] + ")";
+	var mult1 = (myTrail % 16 == 2)?1.05:1;
+	var mult1point5 = (myTrail % 16 == 2)?1.575:1.5;
+	var mult2 = (myTrail % 16 == 2)?2.1:2;
+	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + iron * (pc === "red" ? mult1 : mult2) + " ($" + (pc === "red" ? mult1 : mult2) + " " + mEng[155] + ")";
+	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + silver * mult1point5 + " ($"+mult1point5+" " + mEng[155] + ")";
+	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + platinum * (pc === "blue" ? mult1 : mult2) + " ($" + (pc === "blue" ? mult1 : mult2) + " " + mEng[155] + ")";
+	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + aluminium * mult1point5 + " ($"+mult1point5+" " + mEng[155] + ")";
 
 	r3DMap(rx + 128 * 6 - 256 - 16 + 128, ry + 128 * 4 - 128 - 32);
 
@@ -886,6 +890,7 @@ function rQuests() {
 	ctx.font = '11px Nasa';
 	ctx.textAlign = 'left';
 	rMap();
+	var mult = (myTrail % 16 == 2)?1.05:1;
 	if (quest != 0) {
 		ctx.fillStyle = 'cyan';
 		ctx.textAlign = 'center';
@@ -916,7 +921,7 @@ function rQuests() {
 				else desc = mEng[46];
 			if (questi.type == 'Delivery') desc = mEng[42] + getSectorName(questi.sx, questi.sy) + mEng[43] + getSectorName(questi.dsx, questi.dsy) + mEng[40];
 			write(questi.type, xv + rx + 16, ry + 72 + i % 5 * 80);
-			write(mEng[47] + questi.exp + mEng[48] + Math.floor(questi.exp / ((questi.type === 'Mining' || questi.type === 'Delivery') ? 1500 : 4000)) + mEng[49], xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
+			write(mEng[47] + mult*questi.exp + mEng[48] + Math.floor(questi.exp / ((questi.type === 'Mining' || questi.type === 'Delivery') ? 1500 : 4000)) + mEng[49], xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
 			wrapText(mEng[50] + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
 		}
 }
@@ -1170,7 +1175,7 @@ function clearBullets() {
 	for (var i in data.pack) bullets[data.pack[i].id] = data.pack[i];
 }
 
-// socket error handling 
+// socket error handling
 socket.on('connect_error', function (error) {
 	if (!login) {
 		alert("Failed to connect to the Torn servers. This probably either means they are down or your firewall is blocking the request. " + error);
@@ -1199,6 +1204,7 @@ socket.on('posUp', function (data) {
 	pangle = data.angle;
 	shield = data.shield;
 	cloaked = data.cloaked;
+	myTrail = data.trail;
 	if (docked) playAudio("sector", 1);
 	empTimer--;
 	gyroTimer--;
@@ -1221,22 +1227,19 @@ socket.on('posUp', function (data) {
 socket.on('update', function(data) {
 	++uframes;
 	++tick;
-	if (sx != data.sx || sy != data.sy) playAudio("sector", 1);
 	energy = data.energy;
-	sx = data.sx;
-	sy = data.sy;
 	isLocked = data.isLocked;
 	charge = data.charge;
 	cloaked = data.cloaked;
 
 	var delta = data.state;
-	
-	for (var index = 0; index < delta.vorts.length; ++index) {
-		vort_update(delta.vorts[index]);
-	}
 
 	for (var index = 0; index < delta.players.length; ++index) {
 		player_update(delta.players[index]);
+	}
+
+	for (var index = 0; index < delta.vorts.length; ++index) {
+		vort_update(delta.vorts[index]);
 	}
 
 	for (var index = 0; index < delta.mines.length; ++index) {
@@ -1290,7 +1293,7 @@ socket.on('player_create', function(data) {
 function player_update(data) {
 	var id = data.id;
 	var delta = data.delta;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (playersInfo[id] === undefined) return;
 
 	for (var d in delta) {
@@ -1318,7 +1321,7 @@ socket.on('vort_create', function(data) {
 
 function vort_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (vortsInfo[id] === undefined) return;
 	var delta = data.delta;
 
@@ -1337,7 +1340,7 @@ socket.on('mine_create', function (data) {
 
 function mine_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (minesInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1357,7 +1360,7 @@ socket.on('pack_create', function (data) {
 
 function pack_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (packsInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1377,7 +1380,7 @@ socket.on('beam_create', function (data) {
 
 function beam_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (beamsInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1397,7 +1400,7 @@ socket.on('blast_create', function (data) {
 
 function blast_update(delta) {
 	var id = delta.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (blastsInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1419,7 +1422,7 @@ function base_update(data) {
 	if (data === undefined || data.delta === undefined) return;
 	var delta = data.delta;
 
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (basesInfo === 0) return;
 
 	for (var d in delta) {
@@ -1442,9 +1445,9 @@ socket.on('pong', (latency) => {
 function asteroid_update (data) {
 	var id = data.id;
 
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (astsInfo[id] === undefined) return;
-	var delta = data.delta; 
+	var delta = data.delta;
 
 	for (var d in delta) {
 		astsInfo[id][d] = delta[d];
@@ -1461,7 +1464,7 @@ socket.on('orb_create', function (data) {
 
 function orb_update (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (orbsInfo[id] === undefined) return;
 	var delta = data.delta;
 
@@ -1480,7 +1483,7 @@ socket.on('missile_create', function (data) {
 
 function missile_update (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in 
+	// We just changed sectors or are just loading in
 	if (missilesInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1548,7 +1551,6 @@ socket.on('chat', function (data) {
 		_chat(data);
 		return;
 	}
-	console.log("Chat: " + data.msg);
 
 	var chatName = data.msg.split(":")[0].split("`")[2];
 
@@ -1573,7 +1575,7 @@ function _chat(data) {
 		var find2 = getPosition(data.msg, "`~", 2);
 
 		if (find1 == -1 || find2 == -1) return;
-		
+
 		var num = parseFloat(data.msg.substring(find1 + 2, find2));
 		data.msg = data.msg.replace("`~" + num + "`~", wepns[num].name);
 	}
@@ -1613,9 +1615,6 @@ socket.on('AFK', function (data) {
 });
 socket.on('invalidCredentials', function (data) {
 	credentialState = 1;
-});
-socket.on('accInUse', function (data) {
-	credentialState = 10;
 });
 
 socket.on('outdated', function() {
@@ -1676,6 +1675,7 @@ socket.on('you', function (data) {
 	ship = data.ship;
 	experience = data.experience;
 	rank = data.rank;
+	myTrail = data.trail;
 	t2 = Math.round(1000 * data.t2) / 1000;
 	va2 = Math.round(1000 * data.va2) / 1000;
 	ag2 = Math.round(1000 * data.ag2) / 1000;
@@ -2913,9 +2913,9 @@ function rChat() {
 
 	ctx.textAlign = "left";
 
-	ctx.fillStyle = "yellow";
 	ctx.save();
 	for (var ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
+		ctx.fillStyle = "yellow";
 		var fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
 		ctx.globalAlpha = square((fromTop + 20) / 20);
 		var curx = 0;
@@ -3197,7 +3197,6 @@ function rCreds() {
 	if (credentialState == 3) str = mEng[114];
 	if (credentialState == 4) str = mEng[115];
 	if (credentialState == 5) str = "Username is profane!";
-	if (credentialState == 10) str = mEng[116];
 	if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';
@@ -3295,7 +3294,7 @@ function infoBox(x, y, width, height, fill, stroke) {
 	ctx.save();
 	ctx.lineWidth = 1;
 	ctx.globalAlpha = .5;
-	
+
 	if(fill){
 		ctx.fillStyle = fill;
 		ctx.fillRect(x, y, width, height);
@@ -3353,7 +3352,7 @@ function rBigNotes() {
 		bigNotes[3] = -1;
 		return;
 	}
-	
+
 	var t = bigNotes[0][0];
 
 	//darken background
