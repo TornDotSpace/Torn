@@ -35,7 +35,6 @@ var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-
 var ctx = canvas.getContext("2d");
 
 import React from "react";
@@ -555,8 +554,7 @@ function render() {
 	ctx.font = '11px Nasa';
 
 	var time0 = -performance.now();
-	
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	canvas.width = canvas.width;
 	renderBG();//Fast, surprisingly.
 	var r = Math.floor(Math.random() * 25);
 	var undoing = false;
@@ -2934,12 +2932,10 @@ function rChat() {
 	ctx.restore();
 }
 function renderBG(more) {
-	if (login) return;
-	
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, w, h);
 	ctx.font = '11px Nasa';
-	//var diagDist = ((sx + sy) * sectorWidth + px + py) / sectorWidth - (mapSz - 1);
+	var diagDist = ((sx + sy) * sectorWidth + px + py) / sectorWidth - (mapSz - 1);
 
 	/*if(diagDist < 2){
 		var img = Img.spcr;
