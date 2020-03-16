@@ -1,4 +1,6 @@
 
+document.getElementById('ctx').style.backgroundImage = "/img/space/NewBackgroundWithBlack.png";
+
 function printStartup() {
 	console.log("************************************************************************************************************************");
 	console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
