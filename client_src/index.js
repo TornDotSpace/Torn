@@ -143,7 +143,7 @@ var EVERYTHING_LOADED = false;
 var guest = false;
 
 var stars = [];
-for (var i = 0; i < 200; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
+for (var i = 0; i < 30; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
 
 var myId = undefined;
 
@@ -334,14 +334,6 @@ function loadShipImg(red, i) {
 	}
 }
 function loadAllImages() {
-	loadImage("s1", '/img/space/s1.png');
-	loadImage("s2", '/img/space/s2.png');
-	loadImage("s3", '/img/space/s3.png');
-	loadImage("s4", '/img/space/s4.png');
-	loadImage("s5", '/img/space/s5.png');
-	loadImage("s6", '/img/space/s6.png');
-	loadImage("s7", '/img/space/s7.png');
-	loadImage("s8", '/img/space/s8.png');
 	loadImage("spc", '/img/space/NewBackground.png');
 	//loadImage("spcr", '/img/space/RedBackground.png');
 	//loadImage("spcb", '/img/space/BlueBackground.png');
@@ -2280,7 +2272,7 @@ document.addEventListener('mousedown', function (evt) {
 	if (i == 500) window.open('https://tornspace.wikia.com/wiki/Torn.space_Wiki', '_blank');
 	if (i == 501) window.open('/store', '_blank');
 	if (i == 502) window.open('/leaderboard', '_blank');
-	if (i == 503) window.open('/contact', '_blank');
+	if (i == 503) window.open('https://padlet.com/mchontz10/k2n7p1pnaxct', '_blank');
 	if (i == 504) window.open('https://www.youtube.com/channel/UCKsbC4GfoPOcyifiwW1GA4w', '_blank');
 	if (i == 505) window.open('https://discord.gg/wFsdUcY', '_blank');
 	if (i == 506) window.open('/credits', '_blank');
@@ -2824,32 +2816,29 @@ function rEMP() {
 	}
 }
 function rStars() {
-	var num = 0;
+	var mirrors = 3;
+	var wm = w/mirrors;
+	var hm = h/mirrors;
 	for (var i in stars) {
 		var s = stars[i];
-		var spr = Img.s1;
-		if (i < 150) {
-			spr = Img.s5;
-			if (i % 4 == 1)
-				spr = Img.s6;
-			else if (i % 4 == 2)
-				spr = Img.s7;
-			else if (i % 4 == 3)
-				spr = Img.s8;
-		} else {
-			if (i % 4 == 1)
-				spr = Img.s2;
-			else if (i % 4 == 2)
-				spr = Img.s3;
-			else if (i % 4 == 3)
-				spr = Img.s4;
+		ctx.strokeStyle = ctx.fillStyle = "rgb("+(128+32*(i%4))+","+(128+32*(i/4%4))+","+(128+32*(i/16%4))+")";
+		var starSz = (1000 - i) / 1000.0;
+		starSz = starSz * starSz;
+		starSz = starSz * starSz;
+		starSz = starSz * starSz;
+		ctx.lineWidth = starSz*2;
+		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (starSz * starSz + .1) * .25) % wm;
+		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (starSz * starSz + .1) * .25) % hm;
+		var dx = hyperdriveTimer <= 0? scrx/10:(10000-square(100-hyperdriveTimer))*Math.cos(pangle)/40;
+		var dy = hyperdriveTimer <= 0? scry/10:(10000-square(100-hyperdriveTimer))*Math.sin(pangle)/40;
+		for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++)
+			ctx.fillRect(x+j*wm-.5,y+k*hm-.5,1,1);
+		ctx.beginPath();
+		for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++){
+			ctx.moveTo(x+j*wm, y+k*hm);
+			ctx.lineTo(x+j*wm-starSz*dx, y+k*hm-starSz*dy);
 		}
-		var starSz = (1000 - i) / 1000;
-		starSz = starSz * starSz * starSz;
-		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (starSz * starSz + .1) * .25) % w;
-		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (starSz * starSz + .1) * .25) % h;
-		//ctx.drawImage(spr, Math.floor(x), Math.floor(y));
-		ctx.drawImage(spr, x, y);
+		ctx.stroke();
 	}
 }
 function rSectorEdge() {
@@ -2983,11 +2972,9 @@ function renderBG(more) {
 function rMap() {
 	if (guest) return;
 	if (hmap != 0) {
-		if (typeof hmap[sx] === "undefined")
-			return;
+		if (typeof hmap[sx] === "undefined") return;
 		var hmt = hMapTrans(hmap[sx][sy]);
-		if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red'))
-			currAlert = mEng[104];
+		if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104];
 		for (var i = 0; i < mapSz; i++)
 			for (var j = 0; j < mapSz; j++) {
 				var eachmt = hMapTrans(hmap[i][j]);
@@ -3005,12 +2992,9 @@ function rMap() {
 	if (sectorMap != 0 && hmap != 0) {
 		for (var i = 0; i < mapSz; i++)
 			for (var j = 0; j < mapSz; j++) {
-				if (sectorMap[i][j] == 1)
-					ctx.drawImage(Img.mrss, 21.5 + i * 26, 21.5 + j * 27);
-				else if (sectorMap[i][j] == 2)
-					ctx.drawImage(Img.mbss, 21.5 + i * 26, 21.5 + j * 26);
-				else if (hmap[i][j] >= 1000)
-					ctx.drawImage(Img.ma, 21.5 + i * 26, 21.5 + j * 26);
+				if (sectorMap[i][j] == 1) ctx.drawImage(Img.mrss, 21.5 + i * 26, 21.5 + j * 27);
+				else if (sectorMap[i][j] == 2) ctx.drawImage(Img.mbss, 21.5 + i * 26, 21.5 + j * 26);
+				else if (hmap[i][j] >= 1000) ctx.drawImage(Img.ma, 21.5 + i * 26, 21.5 + j * 26);
 			}
 	}
 	if (va2 < 1.9) return;

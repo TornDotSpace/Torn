@@ -1233,6 +1233,20 @@ function shutdown() {
 	process.exit();
 }
 
+broadcastInfo();
+function broadcastInfo(){
+	randomMsgs = [
+	"Remember, never give your password to anyone, for any reason!",
+	"Contact the developers if you're want to run a torn youtube channel!",
+	"Please support the game by buying a VIP pass in the store!",
+	"Join the torn.space discord! https://discord.gg/SnUMSqM",
+	"If you find any bugs, please report them in the 'more' menu!",
+	]
+	chatAll("~`#ff0000~`SERVER: "+randomMsgs[broadcastMsg%randomMsgs.length]);
+	broadcastMsg++
+	setTimeout(broadcastInfo,20*60*1000);
+}
+
 function cleanFile(x) {
 	var data = fs.readFileSync(x, 'utf8');
 	var split = data.split(":");
