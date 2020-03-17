@@ -262,7 +262,6 @@ module.exports = function initNetcode() {
                 chatAll(text);
 
                 player.save();
-                instance = false;
             });
             socket.emit("raid", { raidTimer: raidTimer })
         });

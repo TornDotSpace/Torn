@@ -1636,7 +1636,6 @@ socket.on('invalidReg', function (data) {
 });
 socket.on('registered', function (data) {
 	credentialState = 0;
-	socket.emit("login", { user: data.user, pass: data.pass, amNew: true, version: VERSION });
 	ReactRoot.turnOffRegister("LoginOverlay");
 	guest = false;
 	textIn = 0;
