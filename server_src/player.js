@@ -353,6 +353,7 @@ function Player(sock) {
 		}
 	}
 	self.shootEliteWeapon = function () {
+		if(self.rank < self.ship) return;
 		if (self.ship == 16) { // Elite Raider
 			//This effectively just shoots turbo.
 			var mult = ((self.e || self.gyroTimer > 0) && self.w && (self.a != self.d)) ? 1.025 : 1.017;
@@ -372,7 +373,7 @@ function Player(sock) {
 			a.vy = Math.sin(self.angle) * 15;
 			asts[self.sy][self.sx][r] = a;
 		} else if (self.ship == 18) { self.shootBullet(39); } // Built in spreadshot
-		else if (self.ship == 20 && self.rank >= self.ship) { self.shootBullet(28); self.health *=.1; self.exp-=200; self.money-=20000; self.save();} // Built in Grav Bomb
+		else if (self.ship == 20) { self.shootBullet(28); self.health *=.1; self.exp-=800; self.money-=20000; self.save();} // Built in Grav Bomb
 		else if (self.ship == 19) { self.health++; } // Built in spreadshot
 		self.reload(true, 0);
 	}
