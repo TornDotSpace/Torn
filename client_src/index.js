@@ -90,7 +90,7 @@ var scrx = 0, scry = 0;
 var mapSz = 7;
 var quests = 0, quest = 0;
 var login = false, lore = false, afk = false;
-var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false;
+var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
 var phealth = 0;
 var energy = 0;
 var bxo = 0, byo = 0, bx = 0, by = 0;
@@ -1301,8 +1301,12 @@ function player_update(data) {
 	}
 
 	if (id == myId) {
+		pvx = -px;
+		pvy = -py;
 		px = playersInfo[id].x;
 		py = playersInfo[id].y;
+		pvx += px;
+		pvy += py;
 		pangle = playersInfo[id].angle;
 		phealth = playersInfo[id].health;
 		scrx = -cosLow(pangle) * playersInfo[id].speed;
@@ -2821,23 +2825,24 @@ function rStars() {
 	for (var i in stars) {
 		var s = stars[i];
 		ctx.strokeStyle = ctx.fillStyle = "rgb("+(128+32*(i%4))+","+(128+32*(i/4%4))+","+(128+32*(i/16%4))+")";
-		var starSz = (1000 - i) / 1000.0;
-		starSz = starSz * starSz;
-		starSz = starSz * starSz;
-		starSz = starSz * starSz;
-		ctx.lineWidth = starSz*2;
-		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (starSz * starSz + .1) * .25) % wm;
-		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (starSz * starSz + .1) * .25) % hm;
-		var dx = hyperdriveTimer <= 0? scrx/10:(10000-square(100-hyperdriveTimer))*Math.cos(pangle)/40;
-		var dy = hyperdriveTimer <= 0? scry/10:(10000-square(100-hyperdriveTimer))*Math.sin(pangle)/40;
+		var parallax = (100 - i) / 100.0;
+		parallax = parallax * parallax;
+		parallax = parallax * parallax;
+		var starSz = 3-i/15; // distant stars are size 1, near stars are 3x3
+		ctx.lineWidth = starSz;
+		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (parallax + .1) * .25) % wm;
+		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (parallax + .1) * .25) % hm;
 		for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++)
-			ctx.fillRect(x+j*wm-.5,y+k*hm-.5,1,1);
-		ctx.beginPath();
-		for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++){
-			ctx.moveTo(x+j*wm, y+k*hm);
-			ctx.lineTo(x+j*wm-starSz*dx, y+k*hm-starSz*dy);
+			ctx.fillRect(x+j*wm-2,y+k*hm-2,starSz,starSz);
+		
+		if(hyperdriveTimer>0){
+			ctx.beginPath();
+			for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++){
+				ctx.moveTo(x+j*wm, y+k*hm);
+				ctx.lineTo(x+j*wm-starSz*pvx/10, y+k*hm-starSz*pvy/10);
+			}
+			ctx.stroke();
 		}
-		ctx.stroke();
 	}
 }
 function rSectorEdge() {
