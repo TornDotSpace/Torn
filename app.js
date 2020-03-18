@@ -52,12 +52,10 @@ global.saveTurrets = function () {
 		fs.unlinkSync('server/turrets/' + items[i]);
 		count++;
 	}
-	chatAll(count + " Turrets Currently Saved");
 
 	//save em
 	setTimeout(function () {
 		count = 0;
-		chatAll("Saving Turrets...");
 		for (var i = 0; i < mapSz; i++)
 			for (var j = 0; j < mapSz; j++) {
 				var base = bases[i][j];
@@ -66,7 +64,6 @@ global.saveTurrets = function () {
 					count++;
 				}
 			}
-		chatAll(count + " Turrets Saved!");
 	}, 1000);
 }
 
@@ -1178,7 +1175,6 @@ function updateHeatmap() {
 }
 function updateLB() {
 	// TODO: Needs to be fixed for MongoDB
-	chatAll("Updating torn.space/leaderboard...\n");
 	log("\nUpdating torn.space/leaderboard...");
 	fs.readdir('server/players/', function (err, items) {
 		var top1000names = [];

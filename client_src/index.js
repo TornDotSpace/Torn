@@ -1,4 +1,6 @@
 
+location.reload(true);
+
 function printStartup() {
 	console.log("************************************************************************************************************************");
 	console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
@@ -90,7 +92,7 @@ var scrx = 0, scry = 0;
 var mapSz = 7;
 var quests = 0, quest = 0;
 var login = false, lore = false, afk = false;
-var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false;
+var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
 var phealth = 0;
 var energy = 0;
 var bxo = 0, byo = 0, bx = 0, by = 0;
@@ -551,7 +553,7 @@ function render() {
 	ops++;
 	var d = new Date();
 	var lagTimer = d.getTime();
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 
 	var time0 = -performance.now();
 	canvas.width = canvas.width;
@@ -657,7 +659,7 @@ function rWeapons() {
 	roundRect(w - 208, h - 432 + 8 * 16, 210, 12 * 16, { bl: 32, tl: 32 }, true, false);
 	ctx.restore();
 
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'right';
 	ctx.globalAlpha = Math.max(weaponTimer--, 0) / 100 * .7 + .3;
@@ -675,9 +677,9 @@ function rWeapons() {
 	ctx.globalAlpha = 1;
 	ctx.fillStyle = 'yellow';
 	badWeapon = (badWeapon < 1) ? 0 : (badWeapon - 1);
-	ctx.font = (16 + badWeapon) + "px Nasa";
+	ctx.font = (16 + badWeapon) + "px ShareTech";
 	write(mEng[2], w - 16, h - 96);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.textAlign = 'left';
 }
 function ammoCodeToString(code) {
@@ -690,11 +692,11 @@ function rHome() {
 	ctx.textAlign = "center";
 	r3DMapBig();
 	if (guest && rank > 0) {
-		ctx.font = (4 * sinLow(baseTick / 16) + 28) + "px Nasa";
+		ctx.font = (4 * sinLow(baseTick / 16) + 28) + "px ShareTech";
 		ctx.fillStyle = (seller == 600) ? "lime" : "yellow";
 		ctx.textAlign = 'center';
 		write(mEng[11], rx + 728 - 96, ry + 256);
-		ctx.font = "11px Nasa";
+		ctx.font = "14px ShareTech";
 	}
 }
 function r3DMap(xp, yp) {
@@ -779,7 +781,7 @@ function rShop() {
 
 	ctx.strokeStyle = 'white';
 	ctx.lineWidth = 1;
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = "left";
 
 	for (var i = 4; i < 8; i++) {
@@ -798,12 +800,12 @@ function rShop() {
 	ctx.textAlign = 'left';
 
 	ctx.fillStyle = 'yellow';
-	ctx.font = "24px Nasa";
+	ctx.font = "24px ShareTech";
 	write(mEng[15], rx + 256 + 32, ry + 256 - 16);
 	ctx.textAlign = 'center';
 	write(mEng[16], rx + 256, ry + 64 + 8);
 	ctx.textAlign = 'left';
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.fillStyle = seller == 601 ? "lime" : "yellow";
 	write(mEng[18], rx + 512 - 64, ry + 256 - 16);
 	ctx.fillStyle = 'yellow';
@@ -840,9 +842,9 @@ function rShop() {
 
 	ctx.textAlign = "center";
 	ctx.fillStyle = 'yellow';
-	ctx.font = '20px Nasa';
+	ctx.font = '20px ShareTech';
 	write(mEng[24], rx + 128 + 16, ry + 256 + 16);
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	write(mEng[25] + " " + shipView, rx + 128 + 16, ry + 256 + 56);
 	write(pc === "red" ? ships[shipView].nameA : ships[shipView].nameH, rx + 128 + 16, ry + 256 + 40);
 	if (shipView > rank) ctx.fillStyle = "red";
@@ -879,24 +881,24 @@ function rShop() {
 function rConfirm() {
 	ctx.fillStyle = 'cyan';
 	ctx.textAlign = 'center';
-	ctx.font = '16px Nasa';
+	ctx.font = '16px ShareTech';
 	write(mEng[32] + wepns[equipped[confirmer]].name + mEng[33] + (wepns[equipped[confirmer]].price * .75) + mEng[34], rx + 128 * 3, ry + 128);
-	ctx.font = '13px Nasa';
+	ctx.font = '15px ShareTech';
 	write(mEng[35], rx + 128 * 3, ry + 192);
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
 }
 function rQuests() {
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
 	rMap();
 	var mult = (myTrail % 16 == 2)?1.05:1;
 	if (quest != 0) {
 		ctx.fillStyle = 'cyan';
 		ctx.textAlign = 'center';
-		ctx.font = '30px Nasa';
+		ctx.font = '30px ShareTech';
 		write(mEng[36], rx + 128 * 3, ry + 128);
-		ctx.font = '11px Nasa';
+		ctx.font = '14px ShareTech';
 		var desc = "";
 		if (quest.type === 'Mining') desc = mEng[37] + quest.amt + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
 		if (quest.type === 'Base') desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
@@ -926,7 +928,7 @@ function rQuests() {
 		}
 }
 function rStats() {
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
 	let d = new Date();
 	var t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
@@ -943,10 +945,10 @@ function rStats() {
 	for (var i in achs) if (achs[i]) achievements++;
 	ctx.fillStyle = "yellow";
 	write(mEng[161], rx + 16, ry + 512 - 16);
-	ctx.font = "32px Nasa";
+	ctx.font = "32px ShareTech";
 	ctx.textAlign = "center";
 	write(myName, rx + 192, ry + 96);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	var activeGens = 0;
 	if (ship >= wepns[20].level)
 		for (var i = 0; i < ships[ship].weapons; i++)
@@ -998,10 +1000,10 @@ function rStats() {
 	//Upgrades
 	ctx.fillStyle = "yellow";
 	ctx.textAlign = "left";
-	ctx.font = "24px Nasa";
+	ctx.font = "24px ShareTech";
 	write(mEng[17], rx + 64, ry + 256 + 64 + 16);
 	ctx.fillStyle = "white";
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.drawImage((seller == 200) ? Img.gbutton : Img.button, rx + 64, ry + 416 - 64);
 	ctx.drawImage((seller == 201) ? Img.gbutton : Img.button, rx + 192, ry + 416 - 64);
 	ctx.drawImage((seller == 202) ? Img.gbutton : Img.button, rx + 64, ry + 416);
@@ -1025,7 +1027,7 @@ function rStats() {
 function rAchievements() {
 	ctx.save();
 	ctx.fillStyle = "yellow";
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.textAlign = "center";
 	for (var i = 0; i < achs.length; i++) {
 		if (i < 13) ctx.fillStyle = achs[i] ? "red" : "pink";
@@ -1033,17 +1035,17 @@ function rAchievements() {
 		else if (i < 37) ctx.fillStyle = achs[i] ? "lightgray" : "white";
 		else ctx.fillStyle = achs[i] ? "cyan" : "yellow";
 		if (achs[i]) {
-			ctx.font = "9px Nasa";
+			ctx.font = "11px ShareTech";
 			write(jsn.achNames[i].split(":")[1], rx + 768 * (1 + (i % 5) * 2) / 10, ry + 20 + 40 * Math.floor(i / 5) + 60);
 		}
-		ctx.font = "12px Nasa";
+		ctx.font = "15px ShareTech";
 		write(achs[i] ? jsn.achNames[i].split(":")[0] : mEng[172], rx + 768 * (1 + (i % 5) * 2) / 10, ry + 8 + 40 * Math.floor(i / 5) + 60);
 	}
 	ctx.restore();
 }
 function rHelp() {
 	ctx.textAlign = "center";
-	ctx.font = "26px Nasa";
+	ctx.font = "26px ShareTech";
 	var data = [mEng[62], mEng[63], mEng[64], mEng[65], mEng[66], mEng[67], mEng[68]];
 	for (var i = 0; i < 3; i++)
 		for (var j = 0; j < 2; j++) {
@@ -1055,19 +1057,19 @@ function rHelp() {
 	var rendX = rx + 384, rendY = ry + 40 + (512 - 40) / 3 + (512 - 40) / 6;
 	write(data[3], rendX, rendY);
 	ctx.textAlign = "left";
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 }
 function rWeaponStore() {
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = "right";
 	ctx.fillStyle = 'yellow';
 
 	write(mEng[5] + Math.floor(money), rx + 128 * 6 - 16, ry + 64);
 	ctx.textAlign = "center";
-	ctx.font = '24px Nasa';
+	ctx.font = '24px ShareTech';
 	write(mEng[15], rx + 128 * 3, ry + 68);
 	ctx.textAlign = "left";
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	//R to return to shop
 	for (var i = 0; i < wepns.length; i++) {
 		var wx = rx + 4 + 240 * Math.floor(wepns[i].order / Math.ceil(wepns.length / 3));
@@ -1092,7 +1094,7 @@ function rWeaponStore() {
 	}
 }
 function rWeaponStats(i) {
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	write(wepns[i].name, rx + 32, ry + 364 + 16 * -2);
 	wrapText(wepns[i].desc, rx + 32, ry + 364 + 16 * -1, 128 * 6 - 64, 16);
 	write("Type: " + wepns[i].type, rx + 32, ry + 364 + 16 * 2);
@@ -1106,10 +1108,10 @@ function rWeaponStats(i) {
 	if (actuallyBuying) {
 		ctx.fillStyle = wepns[i].price > money ? "orange" : "limeq";
 		var buyText = wepns[i].price > money ? mEng[76] : mEng[77];
-		ctx.font = '20px Nasa';
+		ctx.font = '20px ShareTech';
 		write(buyText, rx + 256 + 32, ry + 256 + 100 + 16 * 7);
 	}
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rBaseGui() {
 
@@ -1121,7 +1123,7 @@ function rBaseGui() {
 	info[1] = mEng[5] + Math.floor(money);
 	for (var i = 0; i < 2; i++) write(info[i], w - (guest ? 16 : 278), 16 + i * 16);
 
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.lineWidth = 2;
 	baseTick++;
 	roll(sinLow((baseTick % 3142) / 100.) / 16);
@@ -1146,9 +1148,9 @@ function rBaseGui() {
 
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = "right";
-	ctx.font = "18px Nasa";
+	ctx.font = "18px ShareTech";
 	write(mEng[78], rx + 768 - 16, ry + 512 + 24);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.textAlign = "left";
 	//ctx.drawImage(Img.baseOutline, rx - 4, ry - 4);
 }
@@ -1301,8 +1303,12 @@ function player_update(data) {
 	}
 
 	if (id == myId) {
+		pvx = -px;
+		pvy = -py;
 		px = playersInfo[id].x;
 		py = playersInfo[id].y;
+		pvx += px;
+		pvy += py;
 		pangle = playersInfo[id].angle;
 		phealth = playersInfo[id].health;
 		scrx = -cosLow(pangle) * playersInfo[id].speed;
@@ -2461,9 +2467,9 @@ function rLoadingBar() {
 	ctx.fillStyle = 'white';
 	ctx.fillRect(w / 2 - 128 + 16, h / 2 - 32 + 16, (256 - 32) * ((Aud_prgs[0] + Img_prgs[0]) / (Aud_prgs[1] + Img_prgs[1])), 64 - 32);
 	ctx.textAlign = "center";
-	ctx.font = "30px Nasa";
+	ctx.font = "30px ShareTech";
 	ctx.fillText(splash, w / 2, h / 2 - 96);
-	ctx.font = "15px Nasa";
+	ctx.font = "15px ShareTech";
 	if(Img_prgs[0] == Img_prgs[1]) ctx.fillText("All images loaded.", w / 2, h / 2 + 64);
 	if(Aud_prgs[0] == Aud_prgs[1]) ctx.fillText("All sounds loaded", w / 2, h / 2 + 80);
 	ctx.fillText(currLoading, w / 2, h / 2 + 96);
@@ -2560,12 +2566,12 @@ function updateBooms() {
 function rLore() {
 	textIn = 1000;
 	ctx.fillStyle = pc ? 'pink' : 'cyan';
-	ctx.font = "22px Nasa";
+	ctx.font = "22px ShareTech";
 	wrapText(jsn.lore[pc ? 0 : 1], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
 	ctx.textAlign = 'center';
 	ctx.fillStyle = 'yellow';
 	var t = (new Date()).getTime() / 6000;
-	ctx.font = ((32 + 6 * Math.sin(24 * t))*(loreTimer/(loreTimer+50))) + "px Nasa";
+	ctx.font = ((32 + 6 * Math.sin(24 * t))*(loreTimer/(loreTimer+50))) + "px ShareTech";
 	ctx.fillText(mEng[80], w/2, h - 48);
 }
 function rEnergyBar() {
@@ -2624,11 +2630,11 @@ function rExpBar() {
 	write("" + Math.max(r2x(rank - 1), 0), w / 2 - 140, h - 14);
 	ctx.textAlign = "left";
 	write("" + r2x(rank), w / 2 + 140, h - 14);
-	ctx.font = "9px Nasa";
+	ctx.font = "11px ShareTech";
 	ctx.textAlign = (dec > 128) ? "right" : "left";
 	ctx.fillStyle = (dec > 128) ? "black" : "white";
 	write("" + Math.round(experience), w / 2 - 128 + dec + (dec > 128 ? -8 : 8), h - 14);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.textAlign = "left";
 }
 function rNotes() {
@@ -2636,7 +2642,7 @@ function rNotes() {
 	ctx.fillStyle = "pink";
 	for (var i in notes) {
 		var note = notes[i];
-		ctx.font = (note.strong ? 40 : 20) + 'px Nasa';
+		ctx.font = (note.strong ? 40 : 20) + 'px ShareTech';
 		ctx.globalAlpha = (39 - note.time) / 39;
 		var x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + (note.local ? px : 0));
 		var y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + (note.local ? py : 0));
@@ -2644,7 +2650,7 @@ function rNotes() {
 	}
 	ctx.globalAlpha = 1;
 	ctx.textAlign = "left";
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rBooms() {
 	if (!login)
@@ -2787,29 +2793,29 @@ function rCurrQuest() {
 }
 function rEMP() {
 	if (empTimer > 0) {
-		ctx.font = '24px Nasa';
+		ctx.font = '24px ShareTech';
 		ctx.textAlign = 'center';
 		ctx.fillStyle = 'orange';
 		write(mEng[96] + Math.round(empTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '11px Nasa';
+		ctx.font = '14px ShareTech';
 		ctx.textAlign = 'left';
 		currAlert = mEng[98];
 	}
 	if (gyroTimer > 0) {
-		ctx.font = '24px Nasa';
+		ctx.font = '24px ShareTech';
 		ctx.textAlign = 'center';
 		ctx.fillStyle = 'orange';
 		write(mEng[99] + Math.round(gyroTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '11px Nasa';
+		ctx.font = '14px ShareTech';
 		ctx.textAlign = 'left';
 		currAlert = mEng[100];
 	}
 	if (!afk && afkTimer < 90 * 25) {
-		ctx.font = '24px Nasa';
+		ctx.font = '24px ShareTech';
 		ctx.textAlign = 'center';
 		ctx.fillStyle = 'orange';
 		write(mEng[102] + Math.round(afkTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '11px Nasa';
+		ctx.font = '14px ShareTech';
 		ctx.textAlign = 'left';
 		currAlert = mEng[101];
 	}
@@ -2821,28 +2827,29 @@ function rStars() {
 	for (var i in stars) {
 		var s = stars[i];
 		ctx.strokeStyle = ctx.fillStyle = "rgb("+(128+32*(i%4))+","+(128+32*(i/4%4))+","+(128+32*(i/16%4))+")";
-		var starSz = (1000 - i) / 1000.0;
-		starSz = starSz * starSz;
-		starSz = starSz * starSz;
-		starSz = starSz * starSz;
-		ctx.lineWidth = starSz*2;
-		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (starSz * starSz + .1) * .25) % wm;
-		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (starSz * starSz + .1) * .25) % hm;
-		var dx = hyperdriveTimer <= 0? scrx/10:(10000-square(100-hyperdriveTimer))*Math.cos(pangle)/40;
-		var dy = hyperdriveTimer <= 0? scry/10:(10000-square(100-hyperdriveTimer))*Math.sin(pangle)/40;
+		var parallax = (100 - i) / 100.0;
+		parallax = parallax * parallax;
+		parallax = parallax * parallax;
+		var starSz = 3-i/15; // distant stars are size 1, near stars are 3x3
+		ctx.lineWidth = starSz;
+		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (parallax + .1) * .25) % wm;
+		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (parallax + .1) * .25) % hm;
 		for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++)
-			ctx.fillRect(x+j*wm-.5,y+k*hm-.5,1,1);
-		ctx.beginPath();
-		for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++){
-			ctx.moveTo(x+j*wm, y+k*hm);
-			ctx.lineTo(x+j*wm-starSz*dx, y+k*hm-starSz*dy);
+			ctx.fillRect(x+j*wm-2,y+k*hm-2,starSz,starSz);
+		
+		if(hyperdriveTimer>0){
+			ctx.beginPath();
+			for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++){
+				ctx.moveTo(x+j*wm, y+k*hm);
+				ctx.lineTo(x+j*wm-starSz*pvx/10, y+k*hm-starSz*pvy/10);
+			}
+			ctx.stroke();
 		}
-		ctx.stroke();
 	}
 }
 function rSectorEdge() {
 	ctx.textAlign = 'center';
-	ctx.font = '14px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.strokeStyle = ctx.fillStyle = 'yellow';
 	ctx.lineWidth = 2;
 	ctx.setLineDash([20, 15]);
@@ -2864,7 +2871,7 @@ function rSectorEdge() {
 		ctx.stroke();
 		write(mEng[103], w / 2, i);
 	}
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
 	ctx.setLineDash([]);
 }
@@ -2893,7 +2900,7 @@ function preProcessChat() {
 	chati--;
 }
 function rChat() {
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.save();
 	ctx.globalAlpha = .5;
 	ctx.fillStyle = "black";
@@ -2933,7 +2940,7 @@ function rChat() {
 function renderBG(more) {
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, w, h);
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	var diagDist = ((sx + sy) * sectorWidth + px + py) / sectorWidth - (mapSz - 1);
 
 	/*if(diagDist < 2){
@@ -3022,10 +3029,10 @@ function rLB() {
 	ctx.restore();
 
 	ctx.fillStyle = 'yellow';
-	ctx.font = "24px Nasa";
+	ctx.font = "24px ShareTech";
 	ctx.textAlign = "center";
 	write(mEng[105], w - 128, 28);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.fillStyle = 'yellow';
 	write(mEng[106], w - 208, 48);
 	ctx.textAlign = "right";
@@ -3160,36 +3167,36 @@ function rBlackHoleWarning() {
 function rAfk() {
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'center';
-	ctx.font = '40px Nasa';
+	ctx.font = '40px ShareTech';
 	write(mEng[109], rx + 128 * 3, ry + 512);
 	ctx.textAlign = 'left';
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rDead() {
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'center';
-	ctx.font = '50px Nasa';
+	ctx.font = '50px ShareTech';
 	write(mEng[110], rx + 128 * 3, ry + 128);
-	ctx.font = '34px Nasa';
+	ctx.font = '34px ShareTech';
 	write(mEng[13] + lives, rx + 128 * 3, ry + 384);
 	if (lives > 0) write(mEng[111], rx + 128 * 3, ry + 512);
 	ctx.textAlign = 'left';
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rPlanetTimer() {
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'right';
-	ctx.font = '48px Nasa';
+	ctx.font = '48px ShareTech';
 	var str = ((planetTimerSec + .0078125) + "").replace(".", ":");
 	str = str.substr(0, str.length - 5);
 	write(str, w - 256, 64);
 	ctx.textAlign = 'left';
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rCreds() {
 	ctx.fillStyle = 'pink';
 	ctx.textAlign = 'center';
-	ctx.font = '20px Nasa';
+	ctx.font = '20px ShareTech';
 	var str = "";
 	if (credentialState == 1) str = mEng[112];
 	if (credentialState == 2) str = mEng[113];
@@ -3199,7 +3206,7 @@ function rCreds() {
 	if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rFlash() {
 	ctx.globalAlpha = (.3 * flash + .01) * .2;
@@ -3228,7 +3235,7 @@ function rTut() {
 	}
 	var date = new Date();
 	var ms = date.getTime();
-	ctx.font = (5 * sinLow(ms / 180) + 25) + "px Nasa";
+	ctx.font = (5 * sinLow(ms / 180) + 25) + "px ShareTech";
 	write(text, w / 2, 40);
 	write(line2, w / 2, 88);
 	ctx.restore();
@@ -3248,7 +3255,7 @@ function undoDmg(r) {
 }
 function rAlert() {
 	ctx.save();
-	ctx.font = '20px Nasa';
+	ctx.font = '20px ShareTech';
 	ctx.fillStyle = tick % 6 < 3 ? 'orange' : 'yellow';
 	ctx.textAlign = 'right';
 	if (self.lives < 3) currAlert = "Low Lives";
@@ -3260,7 +3267,7 @@ function rSavedNote() {
 	ctx.textAlign = "center";
 	ctx.fillStyle = "yellow";
 	ctx.strokeStyle = "black";
-	ctx.font = "64px Nasa";
+	ctx.font = "64px ShareTech";
 	ctx.globalAlpha = Math.sqrt(savedNote / 41);
 	ctx.fillText(mEng[126], w / 2, h / 2);
 	ctx.strokeText(mEng[126], w / 2, h / 2);
@@ -3324,13 +3331,13 @@ function rRaid() {
 	var secs = raidTimer / 25;
 	var minutes = Math.floor(secs / 60), seconds = "" + (Math.floor(secs) % 60);
 	if (seconds.length == 1) seconds = "0" + seconds;
-	ctx.font = "16px Nasa";
+	ctx.font = "16px ShareTech";
 
 	if (raidTimer >= 0 && raidTimer < 15000) {
 		write(mEng[200] + minutes + ":" + seconds, w / 2, h - 120);
 		write(mEng[201] + points, w / 2, h - 80);
 
-		ctx.font = "14px Nasa";
+		ctx.font = "14px ShareTech";
 		write("-", w / 2, h - 100);
 
 		ctx.fillStyle = "pink";
@@ -3365,14 +3372,14 @@ function rBigNotes() {
 	var x = w/2+(cube(t-128)+10*(t-128))/1500;
 
 	ctx.globalAlpha = .7;
-	ctx.font = "48px Nasa";
+	ctx.font = "48px ShareTech";
 	write(bigNotes[0][1], x, h/2 - 64);
-	ctx.font = "36px Nasa";
+	ctx.font = "36px ShareTech";
 	write(bigNotes[0][2], x, h/2);
-	ctx.font = "24px Nasa";
+	ctx.font = "24px ShareTech";
 	write(bigNotes[0][3], x, h/2+64);
 	ctx.globalAlpha = 1;
-	ctx.font = "12px Nasa";
+	ctx.font = "15px ShareTech";
 }
 function rKillStreak() {
 	if (killStreakTimer < 0 || killStreak < 1) return;
@@ -3387,10 +3394,10 @@ function rKillStreak() {
 	var sizeMult = 1 + Math.max(0, Math.cbrt(killStreakTimer - 730.)) / 2.;
 	ctx.textAlign = "center";
 
-	ctx.font = (sizeMult * 30.) + "px Nasa";
+	ctx.font = (sizeMult * 30.) + "px ShareTech";
 	write(strMult, w / 2, 64);
 
-	ctx.font = (sizeMult * 20.) + "px Nasa";
+	ctx.font = (sizeMult * 20.) + "px ShareTech";
 	write(strTime, w / 2, 88);
 
 	ctx.restore();
@@ -3644,13 +3651,13 @@ function rPlanets() {
 	ctx.fillStyle = selfo.color;
 	if (ctx.fillStyle == "red") ctx.fillStyle == "pink";
 	else if (ctx.fillStyle == "blue") ctx.fillStyle == "cyan";
-	ctx.font = "60px Nasa";
+	ctx.font = "60px ShareTech";
 	var str = ((selfo.record / 25 + .0078125) + "").replace(".", ":");
 	str = str.substr(0, str.length - 5);
 	write(mEng[127] + selfo.name, rendX, rendY - 128 - 256);
 	//write("Record: " + selfo.winner + ": " + str, rendX, rendY - 192 + 80 - 256);
 	ctx.textAlign = "left";
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 }
 function rPacks() {
 	for (var selfo in packsInfo) {
@@ -3826,15 +3833,15 @@ function rBases() {
 			ctx.textAlign = "center";
 			ctx.fillStyle = 'lime';
 			if (experience < 64 && basesInfo.color == pc && square(px - basesInfo.x) + square(py - basesInfo.y) < square(512)) {
-				ctx.font = "" + (2.5 * sinLow(tick / 8) + 15) + "px Nasa";
+				ctx.font = "" + (2.5 * sinLow(tick / 8) + 15) + "px ShareTech";
 				write(mEng[130], rendX, rendY - 96);
-				ctx.font = "11px Nasa";
+				ctx.font = "14px ShareTech";
 			}
 			ctx.textAlign = "left";
 		} else { // write name
 			ctx.textAlign = "center";
 			ctx.fillStyle = 'white';
-			ctx.font = "11px Nasa";
+			ctx.font = "14px ShareTech";
 			write(basesInfo.name, rendX, rendY - 64);
 		}
 
