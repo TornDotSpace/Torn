@@ -507,48 +507,51 @@ module.exports = function initNetcode() {
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
             var item = Math.floor(data.item);
 
+
             switch (item) {
                 case 1: // radar
-                    if (player.money >= Math.round(Math.pow(1024, player.radar2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.radar2) / 1000) * 1000;
-                        player.radar2 += .2;
+            		var price = techPrice(player.radar2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.radar2 = nextTechLevel(player.radar2);
                     }
                     break;
                 case 2: // cargo
-                    if (player.money >= Math.round(Math.pow(1024, player.capacity2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.capacity2) / 1000) * 1000;
-                        player.capacity2 += .2;
+            		var price = techPrice(player.capacity2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.capacity2 = nextTechLevel(player.capacity2);
                         player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
                     }
                     break;
-                case 3:
-                    if (player.maxHealth2 > 3.99) {
-                        player.maxHealth2 = 4;
-                        break;
-                    } // hull
-                    if (player.money >= Math.round(Math.pow(1024, player.maxHealth2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.maxHealth2) / 1000) * 1000;
-                        player.maxHealth2 += .2
+                case 3: //hull
+            		var price = techPrice(player.maxHealth2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.maxHealth2 = nextTechLevel(player.maxHealth2);
                         player.maxHealth = Math.round(ships[player.ship].health * player.maxHealth2);
                     }
                     break;
                 case 4: // energy
-                    if (player.money >= Math.round(Math.pow(4096, player.energy2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(4096, player.energy2) / 1000) * 1000;
-                        player.energy2 += .2;
+            		var price = techPrice(player.energy2+.6);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.energy2 = nextTechLevel(player.energy2);
                     }
                     break;
                 case 5: // agility
-                    if (player.money >= Math.round(Math.pow(1024, player.agility2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.agility2) / 1000) * 1000;
-                        player.agility2 += .2;
+            		var price = techPrice(player.agility2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.agility2 = nextTechLevel(player.agility2);
                         player.va = ships[player.ship].agility * .08 * player.agility2;
                     }
                     break;
                 default: //0: thrust
-                    if (player.money >= Math.round(Math.pow(1024, player.thrust2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.thrust2) / 1000) * 1000;
-                        player.thrust2 += .2;
+            		var price = techPrice(player.thrust2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.thrust2 = nextTechLevel(player.thrust2);
                         player.thrust = ships[player.ship].thrust * player.thrust2;
                     }
                     break;

@@ -925,6 +925,15 @@ function rQuests() {
 			wrapText(mEng[50] + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
 		}
 }
+function techPrice(x){ // money required to upgrade Tech
+	return techEnergy(nextTechLevel(x))-techEnergy(x);
+}
+function techEnergy(x){ // Net price of some tech level
+	return Math.round(Math.pow(1024, x) / 1000) * 500;
+}
+function nextTechLevel(x){
+	return Math.floor(x*8.+1)/8.;
+}
 function rStats() {
 	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
@@ -933,12 +942,7 @@ function rStats() {
 
 	var ore = iron + silver + platinum + aluminium;
 	var upgradeCosts = 0;
-	for (var i = 1; i < t2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < va2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < ag2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < c2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < mh2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < e2; i += .2) upgradeCosts += Math.round(Math.pow(4096, i) / 1000) * 1000;
+	upgradeCosts += techEnergy(t2) + techEnergy(va2) + techEnergy(ag2) + techEnergy(c2) + techEnergy(mh2) + techEnergy(e2+.6);
 	var achievements = 0;
 	for (var i in achs) if (achs[i]) achievements++;
 	ctx.fillStyle = "yellow";
@@ -1015,12 +1019,12 @@ function rStats() {
 	write(mEng[23] + mh2 + mEng[163], rx + 192 + 54, ry + 416 + 16);
 	write("Energy: " + e2 + mEng[163], rx + 320 + 54, ry + 416 - 64 + 16);
 	write("Agility: " + ag2 + mEng[163], rx + 320 + 54, ry + 416 + 16);
-	write("$" + (Math.round(Math.pow(1024, t2) / 1000) * 1000), rx + 64 + 54, ry + 416 - 64 + 32);
-	write("$" + (Math.round(Math.pow(1024, va2) / 1000) * 1000), rx + 192 + 54, ry + 416 - 64 + 32);
-	write("$" + (Math.round(Math.pow(1024, c2) / 1000) * 1000), rx + 64 + 54, ry + 416 + 32);
-	write("$" + (Math.round(Math.pow(1024, mh2) / 1000) * 1000), rx + 192 + 54, ry + 416 + 32);
-	write("$" + (Math.round(Math.pow(4096, e2) / 1000) * 1000), rx + 320 + 54, ry + 416 - 64 + 32);
-	write("$" + (Math.round(Math.pow(1024, ag2) / 1000) * 1000), rx + 320 + 54, ry + 416 + 32);
+	write("$" + techPrice(t2), rx + 64 + 54, ry + 416 - 64 + 32);
+	write("$" + techPrice(va2), rx + 192 + 54, ry + 416 - 64 + 32);
+	write("$" + techPrice(c2), rx + 64 + 54, ry + 416 + 32);
+	write("$" + techPrice(mh2), rx + 192 + 54, ry + 416 + 32);
+	write("$" + techPrice(e2+.6), rx + 320 + 54, ry + 416 - 64 + 32);
+	write("$" + techPrice(ag2), rx + 320 + 54, ry + 416 + 32);
 }
 function rAchievements() {
 	ctx.save();
