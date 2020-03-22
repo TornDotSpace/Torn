@@ -1301,6 +1301,8 @@ function Player(sock) {
             self.randmAchs[9] = parseBoolean(fileData[80]);
             self.randmAchs[10] = parseBoolean(fileData[81]);
 
+            self.updateRank();
+
 			// Last login support
 			if (fileData.length > 86) {
 				self.lastLogin = new Date(parseInt(fileData[86]));
