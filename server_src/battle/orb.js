@@ -19,7 +19,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 		wepnID: weaponID
 	}
 	self.tick = function () {
-		if (self.timer++ > 3 * wepns[weaponID].range / wepns[weaponID].speed) self.die();
+		if (self.timer++ > 3 * wepns[self.wepnID].range / wepns[self.wepnID].speed) self.die();
 		self.move();
 
 

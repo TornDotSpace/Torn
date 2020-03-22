@@ -545,7 +545,7 @@
 			"order":26,
 			"type":"Blast",
 			"bot":false
-		}
+		},
 		{
 			"name":"Photon Orb",
 			"range":75,
@@ -553,7 +553,7 @@
 			"speed":6,
 			"charge":15,
 			"price":10000,
-			"ammo":-2,
+			"ammo":-1,
 			"level":6,
 			"order":16,
 			"type":"Orb",

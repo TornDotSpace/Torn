@@ -215,7 +215,7 @@ function Player(sock) {
 			else if (wepId <= 14 || wep.name === "Proximity Fuze") self.shootMissile();
 			// <= 17: Traditional Mines
 			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades") self.shootMine();
-			else if (wep.name === "Energy Disk") self.shootOrb();
+			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") self.shootOrb();
 			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast();
 
 
