@@ -1262,6 +1262,7 @@ function broadcastInfo(){
 	"Please support the game by buying a VIP pass in the store!",
 	"Join the torn.space discord! https://discord.gg/SnUMSqM",
 	"If you find any bugs, please report them in the 'more' menu!",
+	"If a player is bothering you, mute them with /mute playerName",
 	]
 	chatAll("~`#ff0000~`SERVER: "+randomMsgs[broadcastMsg%randomMsgs.length]);
 	broadcastMsg++
