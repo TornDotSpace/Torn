@@ -1347,7 +1347,7 @@ function Player(sock) {
 	}
 	self.EMP = function (t) {
 		if (self.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
-		if (self.ship >= 16) t *= 1.3; // Emp works better on elites
+		if (self.ship >= 16) t *= 1.5; // Emp works better on elites
 		self.empTimer = t;
 
 		//turn off all keys

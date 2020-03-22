@@ -427,6 +427,10 @@
 		{
 			"name":"Haz hipnotizador",
 			"desc":"Dispara ésto contra una nave no tripulada de tu equipo y te seguirá hasta que sea destruida."
+		},
+		{
+			"name":"Photon Orb",
+			"desc":"Tracks players with Photon Cloak, but does not do as much damage as most other weapons."
 		}
 	],
 	"splashes":[

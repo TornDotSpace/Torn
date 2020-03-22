@@ -47,6 +47,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 			//search players
 			for (var i in players[self.sy][self.sx]) {
 				var player = players[self.sy][self.sx][i];
+				if(player.disguise>0) continue;
 				var dist = squaredDist(player, self);
 				if ((player.color != self.color && dist < square(wepns[self.wepnID].range * 10)) && (self.locked == 0 || dist < closest)) {
 					self.locked = player.id;
@@ -91,7 +92,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 				if (target.sx == self.sx && target.sy == self.sy && squaredDist(target, self) < 10000 * (self.wepnID == 38 ? 5 : 1) && target.turretLive != false /*we don't know it's a base. can't just say ==true.*/) {
 					target.dmg(self.dmg, self);
 					self.die();
-					if (self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(25); // emp missile
+					if (self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(18); // emp missile
 					return;
 				}
 

@@ -366,6 +366,7 @@ function loadAllImages() {
 	loadImage("fire", '/img/fire.png');
 	loadImage("arrow", '/img/arrow.png');
 	loadImage("energyDisk", '/img/missile/energyDisk.png');
+	loadImage("photonOrb", '/img/missile/photonOrb.png');
 	loadImage("missile", '/img/missile/missile.png');
 	loadImage("torpedo", '/img/missile/torpedo.png');
 	loadImage("heavyMissile", '/img/missile/heavyMissile.png');
@@ -3485,6 +3486,8 @@ function rOrbs() {
 	for (var i in orbsInfo) {
 		var selfo = orbsInfo[i];
 		var img = Img.energyDisk;
+		if (selfo.wepnID == 42)
+			img = Img.photonOrb;
 		var pw = img.width;
 		var ph = img.height;
 		var rendX = selfo.x - px + w / 2 + scrx;
