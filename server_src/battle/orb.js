@@ -19,7 +19,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 		wepnID: weaponID
 	}
 	self.tick = function () {
-		if (self.timer++ > 3 * wepns[weaponID].range / wepns[weaponID].speed) self.die();
+		if (self.timer++ > 3 * wepns[self.wepnID].range / wepns[self.wepnID].speed) self.die();
 		self.move();
 
 
@@ -29,6 +29,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 			//search players
 			for (var i in players[self.sy][self.sx]) {
 				var player = players[self.sy][self.sx][i];
+				if(player.disguise>0 && self.wepnID != 42) continue;
 				var dist = squaredDist(player, self);
 				if ((player.color != self.color && dist < square(wepns[self.wepnID].range * 10)) && (self.locked == 0 || dist < closest)) {
 					self.locked = player.id;

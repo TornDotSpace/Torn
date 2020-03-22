@@ -215,7 +215,7 @@ function Player(sock) {
 			else if (wepId <= 14 || wep.name === "Proximity Fuze") self.shootMissile();
 			// <= 17: Traditional Mines
 			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades") self.shootMine();
-			else if (wep.name === "Energy Disk") self.shootOrb();
+			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") self.shootOrb();
 			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast();
 
 
@@ -1301,6 +1301,8 @@ function Player(sock) {
             self.randmAchs[9] = parseBoolean(fileData[80]);
             self.randmAchs[10] = parseBoolean(fileData[81]);
 
+            self.updateRank();
+
 			// Last login support
 			if (fileData.length > 86) {
 				self.lastLogin = new Date(parseInt(fileData[86]));
@@ -1345,7 +1347,7 @@ function Player(sock) {
 	}
 	self.EMP = function (t) {
 		if (self.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
-		if (self.ship >= 16) t *= 1.3; // Emp works better on elites
+		if (self.ship >= 16) t *= 1.5; // Emp works better on elites
 		self.empTimer = t;
 
 		//turn off all keys
