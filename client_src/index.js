@@ -3708,7 +3708,10 @@ function rPlayers() {
 
 	for (var selfo in playersInfo) {
 		selfo = playersInfo[selfo];
-		if (selfo.color == 'red')
+		console.log(selfo.cloaked);
+		if(selfo.cloaked)continue;
+
+		if (selfo.color === 'red')
 			rs++;
 		else
 			bs++;
@@ -3778,6 +3781,7 @@ function rPlayers() {
 	if (nearF != 0) rFriendlyPointer(nearF);
 }
 function rSelfCloaked() {
+	console.log("Cloakedd");
 	ctx.strokeStyle = "grey";
 	var isRed = pc === "red";
 	var img = isRed ? redShips[ship] : blueShips[ship];

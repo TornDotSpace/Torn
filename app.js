@@ -603,7 +603,7 @@ function update() {
 			// Check for creation
 			if (pack === undefined) {
 				// Store pack for joining clients & delta calculation
-				pack = playerPack[y][x][i] = { trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle };
+				pack = playerPack[y][x][i] = {cloaked: player.disguise > 0, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle };
 				// Send create 
 				sendAllSector("player_create", pack, x, y);
 
@@ -1262,6 +1262,7 @@ function broadcastInfo(){
 	"Please support the game by buying a VIP pass in the store!",
 	"Join the torn.space discord! https://discord.gg/SnUMSqM",
 	"If you find any bugs, please report them in the 'more' menu!",
+	"If a player is bothering you, mute them with /mute playerName",
 	]
 	chatAll("~`#ff0000~`SERVER: "+randomMsgs[broadcastMsg%randomMsgs.length]);
 	broadcastMsg++
