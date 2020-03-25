@@ -155,7 +155,7 @@ function Player(sock) {
 
 		var amDrifting = self.e || self.gyroTimer > 0;
 		self.shield = (self.s && !amDrifting && self.gyroTimer < 1) || self.leaveBaseShield > 0;
-		if(self.disguise>0 || (self.shield && self.weapons[self.equipped]>0 && wepns[self.weapons[self.equipped]].type !== "Misc"))self.charge=Math.min(self.charge,0);
+		if(self.disguise>0 || (self.shield && self.weapons[self.equipped]>0 && wepns[self.weapons[self.equipped]].type !== "Misc" && self.space))self.charge=Math.min(self.charge,0);
 		self.leaveBaseShield--;
 
 		if (!self.isBot) {
