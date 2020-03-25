@@ -136,7 +136,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		if (!self.turretLive) return;
 
 		var numBotsToSpawn = 6*Math.random()*Math.random();
-		for(var i = 0; i < numBotsToSpawn; i++) spawnBot(self.sx, self.sy, self.color, rbNow, bbNow);
+		for(var i = 0; i < numBotsToSpawn; i++) spawnBot(self.sx, self.sy, self.color, 0, 0);
 		
 		self.health = self.maxHealth;
 		self.turretLive = false;
