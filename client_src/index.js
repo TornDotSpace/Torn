@@ -1014,12 +1014,12 @@ function rStats() {
 	ctx.drawImage((seller == 204) ? Img.gbutton : Img.button, rx + 320, ry + 416 - 64);
 	ctx.drawImage((seller == 205) ? Img.gbutton : Img.button, rx + 320, ry + 416);
 	ctx.textAlign = 'center';
-	write("Thrust lvl " + ((t2-1)*8) + mEng[163], rx + 64 + 54, ry + 416 - 64 + 16);
-	write("Radar lvl " + ((va2-1)*8) + mEng[163], rx + 192 + 54, ry + 416 - 64 + 16);
-	write("Cargo lvl " + ((c2-1)*8) + mEng[163], rx + 64 + 54, ry + 416 + 16);
-	write("Hull lvl " + ((mh2-1)*8) + mEng[163], rx + 192 + 54, ry + 416 + 16);
-	write("Energy: " + ((e2-1)*8) + mEng[163], rx + 320 + 54, ry + 416 - 64 + 16);
-	write("Agility: " + ((ag2-1)*8) + mEng[163], rx + 320 + 54, ry + 416 + 16);
+	write("Thrust lvl " + ((t2-1)*8), rx + 64 + 54, ry + 416 - 64 + 16);
+	write("Radar lvl " + ((va2-1)*8), rx + 192 + 54, ry + 416 - 64 + 16);
+	write("Cargo lvl " + ((c2-1)*8), rx + 64 + 54, ry + 416 + 16);
+	write("Hull lvl " + ((mh2-1)*8), rx + 192 + 54, ry + 416 + 16);
+	write("Energy lvl " + ((e2-1)*8), rx + 320 + 54, ry + 416 - 64 + 16);
+	write("Agility lvl " + ((ag2-1)*8), rx + 320 + 54, ry + 416 + 16);
 	write("$" + techPrice(t2), rx + 64 + 54, ry + 416 - 64 + 32);
 	write("$" + techPrice(va2), rx + 192 + 54, ry + 416 - 64 + 32);
 	write("$" + techPrice(c2), rx + 64 + 54, ry + 416 + 32);
