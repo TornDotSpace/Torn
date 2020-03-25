@@ -91,7 +91,7 @@ global.decayPlayers = function () {
 			continue;
 		}
 		data = "";
-		var decayRate = (split[85] === "decay" ? .985 : .995);
+		var decayRate = (split[85] === "decay" ? .99 : .996);
 
 		split[22] = decay(parseFloat(split[22]), decayRate);//xp
 		split[15] = decay(parseFloat(split[15]), decayRate);//money
@@ -1257,12 +1257,12 @@ function shutdown() {
 broadcastInfo();
 function broadcastInfo(){
 	randomMsgs = [
-	"Remember, never give your password to anyone, for any reason!",
-	"Contact the developers if you're want to run a torn youtube channel!",
-	"Please support the game by buying a VIP pass in the store!",
-	"Join the torn.space discord! https://discord.gg/SnUMSqM",
-	"If you find any bugs, please report them in the 'more' menu!",
-	"If a player is bothering you, mute them with /mute playerName",
+		"Never give anyone your password, for any reason!",
+		"Let us know if you want to run a torn youtube channel!",
+		"Support the game by buying a VIP pass in the store!",
+		"Join the torn.space discord in the 'more' tab!",
+		"If you find a bug, report it in the 'more' menu!",
+		"Mute bothersome players with /mute username",
 	]
 	chatAll("~`#ff0000~`SERVER: "+randomMsgs[broadcastMsg%randomMsgs.length]);
 	broadcastMsg++
