@@ -390,7 +390,7 @@ function Player(sock) {
 		else self.charge = -wepns[wepId].charge;
 	}
 	self.canShoot = function(wepId){
-		if(wepId < 0 || self.disguise > 0 || self.s) return false;
+		if(wepId < 0 || self.disguise > 0 || (self.shield && wepns[wepId].type !== "Misc")) return false;
 		var sufficientCharge = self.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
 		return self.space && sufficientCharge;
 	}
