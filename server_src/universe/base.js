@@ -27,7 +27,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		reload: 0, // timer for shooting
 		health: baseHealth,
 		maxHealth: baseHealth,
-		heal: 1,
+		heal: 1.25,
 		empTimer: -1,
 		speed: 0,//vs unused but there for bullets
 	}

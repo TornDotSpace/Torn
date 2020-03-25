@@ -39,7 +39,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 			if (self.locked != 0) return;
 			
 			//check base
-			if ((bases[self.sy][self.sx] != 0) && (bases[self.sy][self.sx].color !== self.color) && bases[self.sy][self.sx].turretLive && (squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].range * 10))) {
+			if (bases[self.sy][self.sx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].range * 10)) {
 				self.locked = bases[self.sy][self.sx].id;
 				return;
 			}
@@ -62,7 +62,7 @@ module.exports = function Orb(ownr, i, weaponID) {//currently the only orb is en
 
 			var baseHere = bases[self.sy][self.sx];
 			var target = players[self.sy][self.sx][self.locked];
-			if (typeof target === 'undefined') target = baseHere;
+			if (typeof target === 'undefined' && bases[self.sy][self.sx].color != self.color) target = bases[self.sy][self.sx];
 			if (target == 0) target = asts[self.sy][self.sx][self.locked];
 			if (typeof target === 'undefined') self.locked = 0;
 			else { // if we are locked onto something
