@@ -35,10 +35,10 @@ buildFileSystem(); // create folders for players, neural nets, and turrets if th
 global.initReboot = function () {
 	log("\nInitializing server reboot...\n");
 	chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible.");
-	setTimeout(function () { chatAll("Server is restarting in 2 minutes. Please save your progress as soon as possible."); }, 1 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 1 minute. Please save your progress as soon as possible."); }, 2 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 30 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 30) * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 10 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 50) * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 2 minutes. Please save your progress."); }, 1 * 60 * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 1 minute. Please save your progress."); }, 2 * 60 * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 30 seconds. Please save your progress."); }, (2 * 60 + 30) * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 10 seconds. Please save your progress."); }, (2 * 60 + 50) * 1000);
 	setTimeout(function () { chatAll("Server restarting..."); }, (2 * 60 + 57) * 1000);
 	setTimeout(shutdown, 3 * 60 * 1000);
 }
@@ -259,6 +259,14 @@ function sendRaidData() { // tell everyone when the next raid is happening
 
 function getPlayer(i) { // given a socket id, find the corresponding player object.
 	return sockets[i].player;
+}
+
+global.getPlayerFromName = function(name) { // given a socket id, find the corresponding player object.
+    for (var p in sockets) {
+        var player = sockets[p].player;
+        if (player.nameWithoutTag() === name) return player;
+    }
+    return -1;
 }
 
 //Alex: I rewrote everything up to here thoroughly, and the rest not so thoroughly. 7/1/19

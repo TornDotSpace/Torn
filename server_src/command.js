@@ -73,7 +73,7 @@ cmds["/nameturret"] = new Command("/nameturret <name>", REGISTERED, function (pl
 	var num = 0;
     var base = bases[player.sy][player.sx];
     if(base != 0 && base.owner == player.name) { base.name = msg.substring(12); num++; }
-    player.socket.emit("chat", { msg: num + " turrets renamed." });
+    player.socket.emit("chat", { msg: num + " turret(s) renamed." });
 });
 
 cmds["/pm"] = new Command("/pm <player> <msg>", REGISTERED, function (player, msg) {
@@ -88,20 +88,28 @@ cmds["/swap"] = new Command("/swap", REGISTERED, function (player, msg) {
     player.swap(msg);
 });
 
-cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player's chat messages.", EVERYONE, function (player, msg) {
+cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player's chat messages.", EVERYONE, function (ply, msg) {
     if (msg.split(" ").length != 2) return; // split looks like {"/mute", "name"}
     var name = msg.split(" ")[1];
-    player.socket.emit("mute", { player:name });
-    player.socket.emit("chat", { msg: "Muted "+name+"." });
-    //todo votemute feature
-    //todo check player exists and send failure message if not.
+    var player = getPlayerFromName(name);
+    if(player == -1){
+	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
+	    return;
+    }
+    ply.socket.emit("mute", { player:name });
+    ply.socket.emit("chat", { msg: "Muted "+name+"." });
 });
 
-cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the player's chat messages again.", EVERYONE, function (player, msg) {
+cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the player's chat messages again.", EVERYONE, function (ply, msg) {
     if (msg.split(" ").length != 2) return; // split looks like {"/unmute", "name"}
     var name = msg.split(" ")[1];
-    player.socket.emit("unmute", { player:name });
-    player.socket.emit("chat", { msg: "Unmuted "+name+"." });
+    var player = getPlayerFromName(name);
+    if(player == -1){
+	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
+	    return;
+    }
+    ply.socket.emit("unmute", { player:name });
+    ply.socket.emit("chat", { msg: "Unmuted "+name+"." });
 });
 
 cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", ADMINPLUS, function (player, msg) {
@@ -115,15 +123,21 @@ cmds["/broadcast"] = new Command("/broadcast <msg> - Send a message to the whole
     chatAll("~`#f66~`       BROADCAST: ~`lime~`" + msg.substring(11));
 });
 
-cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the specified player server-wide.", MODPLUS, function (player, msg) {
+cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the specified player server-wide.", MODPLUS, function (ply, msg) {
     if (msg.split(" ").length != 3) return; // split looks like {"/mute", "name", "minutesToMute"}
     var name = msg.split(" ")[1];
+    var player = getPlayerFromName(name);
+    if(player == -1){
+	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
+	    return;
+    }
     var minutes = parseFloat(msg.split(" ")[2]);
     if (typeof minutes !== "number") return;
 
     if (minutes < 0) return;
 
     muteTable[name] = (Date.now() + (minutes * 60 * 1000));
+    chatAll("~`violet~`" + player.name + "~`yellow~` has been muted for "+minutes+" minutes!");
 });
 
 
@@ -134,29 +148,27 @@ cmds["/reboot"] = new Command("/reboot - Schedules a restart of the shard", ADMI
 cmds["/smite"] = new Command("/smite <player> - Smites the specified player", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 2) return;
     var name = msg.split(" ")[1];
-    for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++)
-        for (var p in players[y][x]) { // only search players who are in game
-            var player = players[y][x][p];
-            if (player.name === name) {
-                player.die(0);
-                chatAll("~`violet~`" + player.name + "~`yellow~` has been Smitten!");
-                return;
-            }
-        }
+    
+    var player = getPlayerFromName(name);
+    if(player == -1){
+	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
+	    return;
+    }
+    player.die(0);
+    chatAll("~`violet~`" + player.name + "~`yellow~` has been Smitten!");
 });
 
 cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 2) return;
     var name = msg.split(" ")[1];
 
-    for (var p in sockets) {
-        var player = sockets[p].player;
-        if (player.nameWithoutTag() === name) {
-            player.kick();
-            chatAll("~`violet~`" + name + "~`yellow~` has been kicked!");
-            return;
-        }
+    var player = getPlayerFromName(name);
+    if(player == -1){
+	    ply.socket.emit("chat", { msg: "Player '"+name+"'' not found." });
+	    return;
     }
+    player.kick();
+    chatAll("~`violet~`" + name + "~`yellow~` has been kicked!");
 });
 
 // TODO: need to be fixed
