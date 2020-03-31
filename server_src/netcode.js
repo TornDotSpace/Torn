@@ -182,7 +182,7 @@ module.exports = function initNetcode() {
             player.guest = true;
             instance = true;
             player.ip = ip;
-            player.name = "GUEST" + guestCount;
+            player.name = "GUEST " + guestCount;
             log(player.ip + " logged in as " + player.name);
             guestCount++;
 
@@ -194,7 +194,7 @@ module.exports = function initNetcode() {
             player.weapons[0] = 0;
             socket.emit("guested", {id: player.id});
             player.sendStatus();
-            player.getAllBullets();
+            
             player.getAllPlanets();
 
             players[player.sy][player.sx][socket.id] = player;

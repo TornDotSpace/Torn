@@ -135,7 +135,7 @@ var keys = [], lagArr = 0;
 var w = window.innerWidth;
 var h = window.innerHeight; // Canvas width and height
 var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
-var basesInfo = undefined, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
+var basesInfo = undefined, playersInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
 
 var clientmutes = { };
 // for initial loading screen
@@ -1219,7 +1219,6 @@ socket.on('posUp', function (data) {
 	docked = false;
 	packsInfo = data.packs;
 	playersInfo = data.players;
-	planetsInfo = data.planets;
 	basesInfo = data.bases;
 	astsInfo = data.asteroids;
 	beamsInfo = data.beams;
@@ -1228,6 +1227,7 @@ socket.on('posUp', function (data) {
 	orbsInfo = data.orbs;
 	minesInfo = data.mines;
 	vortsInfo = data.vorts;
+	clearBullets();
 });
 
 socket.on('update', function(data) {
@@ -1557,22 +1557,19 @@ function rInBase() {
 socket.on('chat', function (data) {
 
 	// Optimization: Don't do expensive string manipulation if nobody is in the mute list
-	if (clientmutes.size == 0 || !data.msg.includes(":")) {
+	if (clientmutes.size == 0) {
 		_chat(data);
 		return;
 	}
 
-	var header = data.msg.split(":")[0];
-	var chatName = header.split("`")[2]; // normal chat
-	if(header.includes("\[PM\] ")) chatName = header.split("\[PM\]")[1]; // pms
-	chatName = chatName.replace(/[^0-9a-zA-Z]/g, '');
-	console.log(header +"+"+chatName);
+	var chatName = data.msg.split(":")[0].split("`")[2];
 
 	if (chatName !== undefined) {
 		chatName = chatName.trim();
+		chatName = chatName.substring(0, chatName.length - 1);
 		// If they're muted, don't chat!
 		for (var mut in clientmutes) {
-			if (mut.valueOf().equalsIgnoreCase(chatName)) {
+			if (mut.valueOf() == chatName) {
 				return;
 			}
 		}
@@ -1617,9 +1614,7 @@ socket.on('newBullet', function (data) {
 socket.on('delBullet', function (data) {
 	delete bullets[data.id];
 });
-socket.on('clrBullet', function (data) {
-	clearBullets();
-});
+
 socket.on('AFK', function (data) {
 	if (data.t == 0) {
 		afk = true;
@@ -3712,6 +3707,7 @@ function rPlayers() {
 
 	for (var selfo in playersInfo) {
 		selfo = playersInfo[selfo];
+		console.log(selfo.cloaked);
 		if(selfo.cloaked)continue;
 
 		if (selfo.color === 'red')
@@ -3784,7 +3780,6 @@ function rPlayers() {
 	if (nearF != 0) rFriendlyPointer(nearF);
 }
 function rSelfCloaked() {
-	console.log("Cloakedd");
 	ctx.strokeStyle = "grey";
 	var isRed = pc === "red";
 	var img = isRed ? redShips[ship] : blueShips[ship];

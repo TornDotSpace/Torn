@@ -89,7 +89,7 @@ cmds["/swap"] = new Command("/swap", REGISTERED, function (player, msg) {
 });
 
 cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player's chat messages.", EVERYONE, function (ply, msg) {
-    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playername'"});return;} // split looks like {"/mute", "name"}
+    if (msg.split(" ").length != 2) return; // split looks like {"/mute", "name"}
     var name = msg.split(" ")[1];
     var player = getPlayerFromName(name);
     if(player == -1){
@@ -101,7 +101,7 @@ cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player
 });
 
 cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the player's chat messages again.", EVERYONE, function (ply, msg) {
-    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playername'"});return;} // split looks like {"/unmute", "name"}
+    if (msg.split(" ").length != 2) return; // split looks like {"/unmute", "name"}
     var name = msg.split(" ")[1];
     var player = getPlayerFromName(name);
     if(player == -1){
@@ -124,7 +124,7 @@ cmds["/broadcast"] = new Command("/broadcast <msg> - Send a message to the whole
 });
 
 cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the specified player server-wide.", MODPLUS, function (ply, msg) {
-    if (msg.split(" ").length != 3) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playername minutes'"});return;} // split looks like {"/mute", "name", "minutesToMute"}
+    if (msg.split(" ").length != 3) return; // split looks like {"/mute", "name", "minutesToMute"}
     var name = msg.split(" ")[1];
     var player = getPlayerFromName(name);
     if(player == -1){

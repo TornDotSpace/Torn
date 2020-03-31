@@ -584,8 +584,6 @@ function Player(sock) {
 		chatAll("~`violet~`" + self.name + "~`yellow~` has been " + (minutes > 0 ? "muted for " + minutes + " minutes!" : "unmuted!"));
 	}
 	self.onChangeSectors = function () {
-		self.socket.emit("clrBullets", {});
-
 		//track my touched corners
 		if (self.sx == 0) {
 			if (self.sy == 0 && (self.cornersTouched & 1) != 1) self.cornersTouched++;
@@ -1211,7 +1209,6 @@ function Player(sock) {
 				self.sendStatus();
 				deads[self.id] = self;
 				sendWeapons(self);
-				if (self.lives <= 0) self.loseLastLife();
 				return;
 			}
 			var fullFile = fs.readFileSync(readSource, "utf8");
@@ -1312,8 +1309,11 @@ function Player(sock) {
 			}
 			self.lives--;
 			self.dead = true;
-
-			if (self.lives <= 0) self.loseLastLife();
+			if (self.lives <= 0) {
+				fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt', fullFile, { "encoding": 'utf8' });
+				fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt');
+				self.kick("Goodbye captain: no more lives remaining!");
+			}
 			else self.save();
 
 			self.sendStatus();
@@ -1324,13 +1324,6 @@ function Player(sock) {
 
 			sendWeapons(self);
 		}
-	}
-	self.loseLastLife = function() {
-		if(!self.guest) {
-			fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt', fullFile, { "encoding": 'utf8' });
-			fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt');
-		}
-		self.kick("Goodbye captain: no more lives remaining!");
 	}
 	self.dmg = function (d, origin) {
 
@@ -1482,15 +1475,7 @@ function Player(sock) {
 			self.sendAchievementsCash(false);
 		}
 	}
-	self.getAllBullets = function () { // sends to client all the bullets in this sector.
-		if (self.isBot) return;
-		var packHere = [];
-		for (var i in bullets[self.sy][self.sx]) {
-			var bullet = bullets[self.sy][self.sx][i];
-			packHere.push({ wepnID: bullet.wepnID, color: bullet.color, x: bullet.x, vx: self.vx, vy: self.vy, y: bullet.y, angle: bullet.angle, id: self.id });
-		}
-		self.socket.emit('clrBullets', { pack: packHere });
-	}
+	
 	self.getAllPlanets = function () { // same, but with planets
 		if (self.isBot) return;
 		var packHere = 0;
