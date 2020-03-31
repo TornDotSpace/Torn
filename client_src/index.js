@@ -135,7 +135,7 @@ var keys = [], lagArr = 0;
 var w = window.innerWidth;
 var h = window.innerHeight; // Canvas width and height
 var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
-var basesInfo = undefined, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
+var basesInfo = undefined, playersInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
 
 var clientmutes = { };
 // for initial loading screen
@@ -1219,7 +1219,6 @@ socket.on('posUp', function (data) {
 	docked = false;
 	packsInfo = data.packs;
 	playersInfo = data.players;
-	planetsInfo = data.planets;
 	basesInfo = data.bases;
 	astsInfo = data.asteroids;
 	beamsInfo = data.beams;
@@ -1228,6 +1227,7 @@ socket.on('posUp', function (data) {
 	orbsInfo = data.orbs;
 	minesInfo = data.mines;
 	vortsInfo = data.vorts;
+	clearBullets();
 });
 
 socket.on('update', function(data) {
@@ -1614,9 +1614,7 @@ socket.on('newBullet', function (data) {
 socket.on('delBullet', function (data) {
 	delete bullets[data.id];
 });
-socket.on('clrBullet', function (data) {
-	clearBullets();
-});
+
 socket.on('AFK', function (data) {
 	if (data.t == 0) {
 		afk = true;

@@ -194,7 +194,7 @@ module.exports = function initNetcode() {
             player.weapons[0] = 0;
             socket.emit("guested", {id: player.id});
             player.sendStatus();
-            player.getAllBullets();
+            
             player.getAllPlanets();
 
             players[player.sy][player.sx][socket.id] = player;
