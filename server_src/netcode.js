@@ -182,7 +182,7 @@ module.exports = function initNetcode() {
             player.guest = true;
             instance = true;
             player.ip = ip;
-            player.name = "GUEST " + guestCount;
+            player.name = "GUEST" + guestCount;
             log(player.ip + " logged in as " + player.name);
             guestCount++;
 
