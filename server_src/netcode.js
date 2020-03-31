@@ -334,7 +334,6 @@ module.exports = function initNetcode() {
                 player.sendAchievementsMisc(false);
                 player.sendStatus();
     
-                player.getAllBullets();
                 player.getAllPlanets();
                 player.refillAllAmmo();
                 log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
