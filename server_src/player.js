@@ -623,7 +623,6 @@ function Player(sock) {
 		}
 
 		//tell client what's in this sector
-		self.getAllBullets();
 		self.getAllPlanets();
 
 		//update list of visited sectors.
@@ -989,8 +988,7 @@ function Player(sock) {
 		if (self.isBot) return; // can bots even get to this point in code?
 
 		if (self.docked) { // undock if already docked. This toggles the player's dock status
-
-			self.getAllBullets();
+;
 			self.getAllPlanets(); // tell client what's out in the sector
 
 			self.docked = false;
