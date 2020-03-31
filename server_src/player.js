@@ -374,7 +374,7 @@ function Player(sock) {
 			a.vy = Math.sin(self.angle) * 15;
 			asts[self.sy][self.sx][r] = a;
 		} else if (self.ship == 18) { self.shootBullet(39); } // Built in spreadshot
-		else if (self.ship == 20) { self.shootBullet(28); self.health *=.1; self.exp-=800; self.money-=20000; self.save();} // Built in Grav Bomb
+		else if (self.ship == 20) { self.shootBullet(28); self.health *=.1; self.experience-=800; self.money-=20000; self.save();} // Built in Grav Bomb
 		else if (self.ship == 19) { self.health++; } // Built in spreadshot
 		self.reload(true, 0);
 	}
@@ -576,8 +576,8 @@ function Player(sock) {
 
 	}
 	self.juke = function (left) {
-		if (self.charge > 3) return;
-		self.charge = -10;
+		if (self.charge < 0) return;
+		self.charge = -20;
 		self.jukeTimer = (self.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
 	}
 	self.mute = function (minutes) {
@@ -1209,6 +1209,7 @@ function Player(sock) {
 				self.sendStatus();
 				deads[self.id] = self;
 				sendWeapons(self);
+				if (self.lives <= 0) self.loseLastLife();
 				return;
 			}
 			var fullFile = fs.readFileSync(readSource, "utf8");
@@ -1309,11 +1310,8 @@ function Player(sock) {
 			}
 			self.lives--;
 			self.dead = true;
-			if (self.lives <= 0) {
-				fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt', fullFile, { "encoding": 'utf8' });
-				fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt');
-				self.kick("Goodbye captain: no more lives remaining!");
-			}
+
+			if (self.lives <= 0) self.loseLastLife();
 			else self.save();
 
 			self.sendStatus();
@@ -1324,6 +1322,13 @@ function Player(sock) {
 
 			sendWeapons(self);
 		}
+	}
+	self.loseLastLife = function() {
+		if(!self.guest) {
+			fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt', fullFile, { "encoding": 'utf8' });
+			fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt');
+		}
+		self.kick("Goodbye captain: no more lives remaining!");
 	}
 	self.dmg = function (d, origin) {
 
