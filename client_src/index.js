@@ -1566,7 +1566,6 @@ socket.on('chat', function (data) {
 	var chatName = header.split("`")[2]; // normal chat
 	if(header.includes("\[PM\] ")) chatName = header.split("\[PM\]")[1]; // pms
 	chatName = chatName.replace(/[^0-9a-zA-Z]/g, '');
-	console.log(header +"+"+chatName);
 
 	if (chatName !== undefined) {
 		chatName = chatName.trim();
@@ -3782,7 +3781,6 @@ function rPlayers() {
 	if (nearF != 0) rFriendlyPointer(nearF);
 }
 function rSelfCloaked() {
-	console.log("Cloakedd");
 	ctx.strokeStyle = "grey";
 	var isRed = pc === "red";
 	var img = isRed ? redShips[ship] : blueShips[ship];
