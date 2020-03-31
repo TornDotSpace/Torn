@@ -1557,21 +1557,19 @@ function rInBase() {
 socket.on('chat', function (data) {
 
 	// Optimization: Don't do expensive string manipulation if nobody is in the mute list
-	if (clientmutes.size == 0 || !data.msg.includes(":")) {
+	if (clientmutes.size == 0) {
 		_chat(data);
 		return;
 	}
 
-	var header = data.msg.split(":")[0];
-	var chatName = header.split("`")[2]; // normal chat
-	if(header.includes("\[PM\] ")) chatName = header.split("\[PM\]")[1]; // pms
-	chatName = chatName.replace(/[^0-9a-zA-Z]/g, '');
+	var chatName = data.msg.split(":")[0].split("`")[2];
 
 	if (chatName !== undefined) {
 		chatName = chatName.trim();
+		chatName = chatName.substring(0, chatName.length - 1);
 		// If they're muted, don't chat!
 		for (var mut in clientmutes) {
-			if (mut.valueOf().equalsIgnoreCase(chatName)) {
+			if (mut.valueOf() == chatName) {
 				return;
 			}
 		}
@@ -3709,6 +3707,7 @@ function rPlayers() {
 
 	for (var selfo in playersInfo) {
 		selfo = playersInfo[selfo];
+		console.log(selfo.cloaked);
 		if(selfo.cloaked)continue;
 
 		if (selfo.color === 'red')

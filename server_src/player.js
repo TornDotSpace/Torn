@@ -1209,7 +1209,6 @@ function Player(sock) {
 				self.sendStatus();
 				deads[self.id] = self;
 				sendWeapons(self);
-				if (self.lives <= 0) self.loseLastLife();
 				return;
 			}
 			var fullFile = fs.readFileSync(readSource, "utf8");
@@ -1310,8 +1309,11 @@ function Player(sock) {
 			}
 			self.lives--;
 			self.dead = true;
-
-			if (self.lives <= 0) self.loseLastLife();
+			if (self.lives <= 0) {
+				fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt', fullFile, { "encoding": 'utf8' });
+				fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt');
+				self.kick("Goodbye captain: no more lives remaining!");
+			}
 			else self.save();
 
 			self.sendStatus();
@@ -1322,13 +1324,6 @@ function Player(sock) {
 
 			sendWeapons(self);
 		}
-	}
-	self.loseLastLife = function() {
-		if(!self.guest) {
-			fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt', fullFile, { "encoding": 'utf8' });
-			fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt');
-		}
-		self.kick("Goodbye captain: no more lives remaining!");
 	}
 	self.dmg = function (d, origin) {
 
