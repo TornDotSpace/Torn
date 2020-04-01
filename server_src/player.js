@@ -1178,7 +1178,7 @@ function Player(sock) {
 			//give the killer stuff
 			if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
 				b.owner.onKill(self);
-				b.owner.spoils("experience", self.guest ? (10 + diff * (self.color === b.owner.color ? -1 : 1)) : 0);
+				b.owner.spoils("experience", !self.guest ? (10 + diff * (self.color === b.owner.color ? -1 : 1)) : 0);
 				// Prevent farming and disincentivize targetting guests
 				b.owner.spoils("money", 1000 * (b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak) : 1));
 
