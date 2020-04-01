@@ -611,18 +611,24 @@ function update() {
 			// Check for creation
 			if (pack === undefined) {
 				// Store pack for joining clients & delta calculation
-				pack = playerPack[y][x][i] = {cloaked: player.disguise > 0, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle };
+				pack = playerPack[y][x][i] = {disguise : player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle };
 				// Send create 
 				sendAllSector("player_create", pack, x, y);
 
 				// Send full update to the player
 				if (!player.isBot) 
-					send(i, 'posUp', {cloaked: player.disguise > 0, trail:player.trail, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.charge,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
+					send(i, 'posUp', {disguise : player.disguise, trail:player.trail, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.charge,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 				continue;
 			}
 
 			var delta = { };
 			var need_update = false;
+
+			var cloak = false;
+
+			if (!player.isBot && pack.disguise > 0)
+				cloak = true;
+
 
 			// Compute delta
 			for (var key in pack) {
@@ -633,8 +639,8 @@ function update() {
 			}
 
 			// Handle cloaking
-			if (need_update && !player.isBot && player.disguise > 0) {
-				send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: { players: [ {delta: delta, id: i} ] }} );
+			if (need_update && cloak) {
+				send(i, 'update', {disguise: player.disguise, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: { players: [ {delta: delta, id: i} ] }} );
 				continue;
 			}
 
