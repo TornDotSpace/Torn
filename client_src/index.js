@@ -117,7 +117,7 @@ var t2 = 1, mh2 = 1, c2 = 1, va2 = 1, e2 = 1, ag2 = 1;
 var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops = 0, frames = 0, uframes = 0, ups = 0, dev = false;
 var credentialState = 0, textIn = 0, savedNote = 0;
 var key = '~`';
-var myName = "GUEST", currAlert = '', cloaked = false;
+var myName = "GUEST", currAlert = '', disguise = 0;
 var soundAllowed = false;
 var currLoading = "";
 var secret2PlanetName = "";
@@ -537,7 +537,7 @@ function render() {
 		updateNotes();
 		rInBase();
 	}
-	if (docked || (playersInfo == 0 && !cloaked)) return;
+	if (docked || (playersInfo == 0 && !(disguise > 0))) return;
 	if (ops > 0 || clientLag >= 35) {
 		rTexts(clientLag);
 		clientLag = 34;
@@ -583,7 +583,7 @@ function render() {
 	time3 -= time4;
 	rTrails();//Gets to .2-.25 in heavy drifting
 	rPlayers();//fast
-	if (cloaked) rSelfCloaked();
+	if (disguise > 0) rSelfCloaked();
 
 	var time5 = -performance.now();
 	time4 -= time5;
@@ -1209,7 +1209,7 @@ socket.on('posUp', function (data) {
 	scry = -sinLow(data.angle) * data.speed;
 	pangle = data.angle;
 	shield = data.shield;
-	cloaked = data.cloaked;
+	disguise = data.disguise;
 	myTrail = data.trail;
 	if (docked) playAudio("sector", 1);
 	empTimer--;
@@ -1236,7 +1236,6 @@ socket.on('update', function(data) {
 	energy = data.energy;
 	isLocked = data.isLocked;
 	charge = data.charge;
-	cloaked = data.cloaked;
 
 	var delta = data.state;
 
@@ -1317,7 +1316,7 @@ function player_update(data) {
 		phealth = playersInfo[id].health;
 		scrx = -cosLow(pangle) * playersInfo[id].speed;
 		scry = -sinLow(pangle) * playersInfo[id].speed;
-
+		disguise = delta.disguise;
 	}
 }
 
@@ -3707,8 +3706,7 @@ function rPlayers() {
 
 	for (var selfo in playersInfo) {
 		selfo = playersInfo[selfo];
-		console.log(selfo.cloaked);
-		if(selfo.cloaked)continue;
+		if(selfo.disguise > 0) continue;
 
 		if (selfo.color === 'red')
 			rs++;
