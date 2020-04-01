@@ -1180,7 +1180,7 @@ function Player(sock) {
 				b.owner.onKill(self);
 				b.owner.spoils("experience", 10 + diff * (self.color === b.owner.color ? -1 : 1));
 				// Prevent farming and disincentivize targetting guests
-				b.owner.spoils("money", 1000 * (b.owner.type === "Player" && !self.guest ? b.owner.killStreak : 1));
+				b.owner.spoils("money", 1000 * (b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak) : 1));
 
 				if (self.points > 0) { // raid points
 					b.owner.points++;
