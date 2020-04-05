@@ -1203,9 +1203,7 @@ function Player(sock) {
 				self.sx = self.sy = (self.color == 'red' ? 2 : 4);
 				self.x = self.y = sectorWidth / 2;
 				self.dead = true;
-				if (self.lives <= 0) {
-					self.kick("Goodbye captain: no more lives remaining!");
-				}
+				if (self.lives <= 0) self.kick("Goodbye captain: no more lives remaining!");
 				self.sendStatus();
 				deads[self.id] = self;
 				sendWeapons(self);
