@@ -1556,21 +1556,21 @@ function rInBase() {
 socket.on('chat', function (data) {
 
 	// Optimization: Don't do expensive string manipulation if nobody is in the mute list
-	if (clientmutes.size == 0) {
+	if (clientmutes.size == 0 || !data.msg.includes(":")) {
 		_chat(data);
 		return;
 	}
 
-	var chatName = data.msg.split(":")[0].split("`")[2];
+	var header = data.msg.split(":")[0];
+	var chatName = header.split("`")[2]; // normal chat
+	if(header.includes("\[PM\] ")) chatName = header.split("\[PM\]")[1]; // pms
+	chatName = chatName.replace(/[^0-9a-zA-Z]/g, '');
 
 	if (chatName !== undefined) {
 		chatName = chatName.trim();
-		chatName = chatName.substring(0, chatName.length - 1);
 		// If they're muted, don't chat!
 		for (var mut in clientmutes) {
-			if (mut.valueOf() == chatName) {
-				return;
-			}
+			if (mut.valueOf().equalsIgnoreCase(chatName)) return;
 		}
 	}
 
