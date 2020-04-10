@@ -27,7 +27,6 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		reload: 0, // timer for shooting
 		health: baseHealth,
 		maxHealth: baseHealth,
-		heal: 1,
 		empTimer: -1,
 		speed: 0,//vs unused but there for bullets,
 	}
@@ -45,7 +44,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		self.empTimer--;
 		self.reload--;
 
-		if (self.health < self.maxHealth) self.health += self.heal;
+		if (self.health < self.maxHealth) self.health += 1.5;
 		if (tick % 50 == 0 && !self.isBase) self.tryGiveToOwner();
 	}
 	self.tryGiveToOwner = function () { // if a base's owner stands over it, they get the stuff it's earned from killing people

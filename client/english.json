@@ -65,7 +65,7 @@
 		"Wiki",
 		"Store",
 		"Leaderboard",
-		"Contact/Bug Report",
+		"Bug Report",
 		"Youtube",
 		"Discord",
 		"Credits",
@@ -369,7 +369,7 @@
 		},
 		{
 			"name":"Electromagnet",
-			"desc":"Accelerates asteroids towards you. With practice, you can fling them at enemies, causing damage. Very effective against bases, but you do not recieve exp/bounty for killing a base with an asteroid."
+			"desc":"Repels asteroids, mines, orbs, and missiles. With practice, you can fling them at enemies, causing damage. Very effective against bases, but you do not recieve exp/bounty for killing a base with an asteroid."
 		},
 		{
 			"name":"EMP Blast",
@@ -438,6 +438,10 @@
 		{
 			"name":"Hypno Ray",
 			"desc":"Fire this beam at a bot and it will follow you around until it dies. Single-use."
+		},
+		{
+			"name":"Photon Orb",
+			"desc":"Tracks players with Photon Cloak, but does not do as much damage as most other weapons."
 		}
 	],
 	"splashes":[

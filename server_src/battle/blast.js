@@ -45,7 +45,7 @@ module.exports = function Blast(ownr, i, weaponID) {
 		}
 	}
 	self.hit = function (b) {
-		if (self.wepnID == 25 && self.owner.color !== b.color) b.EMP(wepns[25].charge * .6); // emp blast
+		if (self.wepnID == 25 && self.owner.color !== b.color) b.EMP(42); // emp blast
 		else if (self.wepnID == 34 && self.owner.color !== b.color) b.dmg(self.dmg, self); // muon
 		else if (self.wepnID == 41) b.brainwashedBy = self.owner.id; // brainwashing laser
 	}

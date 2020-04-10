@@ -15,7 +15,6 @@ var guestCount = 0; // Enumerate guests since server boot
 
 // Global mute table 
 global.muteTable = {};
-global.onlineNames = {};
 
 global.protocolVersion = undefined;
 
@@ -183,7 +182,7 @@ module.exports = function initNetcode() {
             player.guest = true;
             instance = true;
             player.ip = ip;
-            player.name = "GUEST " + guestCount;
+            player.name = "GUEST" + guestCount;
             log(player.ip + " logged in as " + player.name);
             guestCount++;
 
@@ -195,7 +194,7 @@ module.exports = function initNetcode() {
             player.weapons[0] = 0;
             socket.emit("guested", {id: player.id});
             player.sendStatus();
-            player.getAllBullets();
+            
             player.getAllPlanets();
 
             players[player.sy][player.sx][socket.id] = player;
@@ -259,9 +258,6 @@ module.exports = function initNetcode() {
                 chatAll(text);
     
                 player.save();
-                onlineNames[user] = 1;
-                instance = false;
-                socket.emit("raid", { raidTimer: raidTimer });
             });
         });
 
@@ -293,11 +289,6 @@ module.exports = function initNetcode() {
 
             name = name.toLowerCase();
 
-            if (onlineNames[name] === 1) {
-                socket.emit("accInUse", {});
-                return;
-            }
-
             instance = true;
 
             //Load account
@@ -310,12 +301,20 @@ module.exports = function initNetcode() {
                 }
 
                 player = ret.player;
+
+                for (var p in sockets) {
+                    if (sockets[p].player !== undefined) {
+                        if (sockets[p].player.name === player.name) {
+                            sockets[p].player.kick("A user has logged into this account from another location.");
+                        }
+                    }
+                }
+    
                 socket.player = player;
                 player.ip = ip;
 
                 socket.emit("loginSuccess", {id: player.id});
-                onlineNames[name] = 1;
-    
+
                 if (player.sx >= mapSz) player.sx--;
                 if (player.sy >= mapSz) player.sy--;
     
@@ -330,7 +329,6 @@ module.exports = function initNetcode() {
                 player.sendAchievementsMisc(false);
                 player.sendStatus();
     
-                player.getAllBullets();
                 player.getAllPlanets();
                 player.refillAllAmmo();
                 log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
@@ -361,8 +359,6 @@ module.exports = function initNetcode() {
             log(text); // print in terminal
             chatAll(text); // send it to all the players
             //DO NOT save the player's game data.
-
-            onlineNames[(player.name.startsWith("[") ? player.name.split(" ")[1] : player.name)] = 0;
         });
 
         socket.on('key', function (data) { // on client keypress or key release
@@ -412,7 +408,7 @@ module.exports = function initNetcode() {
             }
 
             log("[CHAT] " + player.name + ": " + data.msg); // print their raw message
-            if (!player.name.includes("[O]")) data.msg = data.msg.replace(/~`/ig, ''); // Normies can't triforce
+            if (!player.name.includes("[")) data.msg = data.msg.replace(/`/ig, ''); // Normies can't triforce
 
             var time = Date.now();
 
@@ -508,48 +504,51 @@ module.exports = function initNetcode() {
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
             var item = Math.floor(data.item);
 
+
             switch (item) {
                 case 1: // radar
-                    if (player.money >= Math.round(Math.pow(1024, player.radar2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.radar2) / 1000) * 1000;
-                        player.radar2 += .2;
+            		var price = techPrice(player.radar2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.radar2 = nextTechLevel(player.radar2);
                     }
                     break;
                 case 2: // cargo
-                    if (player.money >= Math.round(Math.pow(1024, player.capacity2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.capacity2) / 1000) * 1000;
-                        player.capacity2 += .2;
+            		var price = techPrice(player.capacity2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.capacity2 = nextTechLevel(player.capacity2);
                         player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
                     }
                     break;
-                case 3:
-                    if (player.maxHealth2 > 3.99) {
-                        player.maxHealth2 = 4;
-                        break;
-                    } // hull
-                    if (player.money >= Math.round(Math.pow(1024, player.maxHealth2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.maxHealth2) / 1000) * 1000;
-                        player.maxHealth2 += .2
+                case 3: //hull
+            		var price = techPrice(player.maxHealth2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.maxHealth2 = nextTechLevel(player.maxHealth2);
                         player.maxHealth = Math.round(ships[player.ship].health * player.maxHealth2);
                     }
                     break;
                 case 4: // energy
-                    if (player.money >= Math.round(Math.pow(4096, player.energy2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(4096, player.energy2) / 1000) * 1000;
-                        player.energy2 += .2;
+            		var price = techPrice(player.energy2+.6);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.energy2 = nextTechLevel(player.energy2);
                     }
                     break;
                 case 5: // agility
-                    if (player.money >= Math.round(Math.pow(1024, player.agility2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.agility2) / 1000) * 1000;
-                        player.agility2 += .2;
+            		var price = techPrice(player.agility2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.agility2 = nextTechLevel(player.agility2);
                         player.va = ships[player.ship].agility * .08 * player.agility2;
                     }
                     break;
                 default: //0: thrust
-                    if (player.money >= Math.round(Math.pow(1024, player.thrust2) / 1000) * 1000) {
-                        player.money -= Math.round(Math.pow(1024, player.thrust2) / 1000) * 1000;
-                        player.thrust2 += .2;
+            		var price = techPrice(player.thrust2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.thrust2 = nextTechLevel(player.thrust2);
                         player.thrust = ships[player.ship].thrust * player.thrust2;
                     }
                     break;

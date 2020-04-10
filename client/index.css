@@ -1,10 +1,11 @@
 @font-face {
-	font-family: 'Nasa';
-	src: url('fonts/nasa.ttf');
+	font-family: 'ShareTech';
+	src: url('fonts/ShareTech.ttf');
+	font-stretch: 'condensed';
 }
 
 body, #a {
-	font-family: 'Nasa';
+	font-family: 'ShareTech';
 	margin: 0;
 	padding: 0;
 	overflow:hidden;
@@ -76,7 +77,7 @@ body, #a {
     animation: slide-in 1s forwards;
     -webkit-animation: slide-in 1s forwards;
 }
-    
+
 @keyframes slide-in {
     100% { transform: translateY(0%); }
 }
@@ -138,7 +139,7 @@ body, #a {
 }
 
 .overlay-input{
-	font-family: 'Nasa';
+	font-family: 'ShareTech';
 	width:176px;
 	font-size: 16px;
 	padding: 5px;
@@ -148,7 +149,7 @@ body, #a {
 }
 
 .register{
-	font-family: 'Nasa';
+	font-family: 'ShareTech';
 	width:190px;
 	font-size: 16px;
 	padding: 5px;
@@ -161,7 +162,7 @@ body, #a {
 }
 
 #registerA, #registerH, .overlay-button{
-	font-family: 'Nasa';
+	font-family: 'ShareTech';
 	width:190px;
 	font-size: 16px;
 	padding: 5px;
@@ -241,7 +242,7 @@ a:hover{
 
 .chat-input {
 	background-color: rgba(0, 0, 0, 0);
-	font-family: 'Nasa';
+	font-family: 'ShareTech';
 	border:0;
 	width: 384px;
 	color: white;
@@ -255,7 +256,7 @@ a:hover{
 .chat-msg {
 	transition: opacity 2s;
 	font-size: 13px;
-	font-family: 'Nasa';
+	font-family: 'ShareTech';
 }
 
 .chat-msg-fadeout {

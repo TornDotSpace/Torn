@@ -155,6 +155,7 @@ function Player(sock) {
 
 		var amDrifting = self.e || self.gyroTimer > 0;
 		self.shield = (self.s && !amDrifting && self.gyroTimer < 1) || self.leaveBaseShield > 0;
+		if(self.disguise>0 || (self.shield && self.weapons[self.equipped]>0 && wepns[self.weapons[self.equipped]].type !== "Misc" && self.space))self.charge=Math.min(self.charge,0);
 		self.leaveBaseShield--;
 
 		if (!self.isBot) {
@@ -215,7 +216,7 @@ function Player(sock) {
 			else if (wepId <= 14 || wep.name === "Proximity Fuze") self.shootMissile();
 			// <= 17: Traditional Mines
 			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades") self.shootMine();
-			else if (wep.name === "Energy Disk") self.shootOrb();
+			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") self.shootOrb();
 			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast();
 
 
@@ -225,7 +226,7 @@ function Player(sock) {
 			else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
 				if (wep.name === "Supercharger") self.superchargerTimer = 1500;//1 min
 				else if (wep.name === "Hull Nanobots") self.health += Math.min(80, self.maxHealth - self.health); // min prevents overflow
-				else if (wep.name === "Photon Cloak") self.disguise = 150;//6s
+				else if (wep.name === "Photon Cloak") self.disguise = 200;//6s
 				else if (wep.name === "Warp Drive") self.speed = self.thrust * (self.ship == 16 ? 700 : 500);
 			}
 
@@ -353,6 +354,7 @@ function Player(sock) {
 		}
 	}
 	self.shootEliteWeapon = function () {
+		if(self.rank < self.ship) return;
 		if (self.ship == 16) { // Elite Raider
 			//This effectively just shoots turbo.
 			var mult = ((self.e || self.gyroTimer > 0) && self.w && (self.a != self.d)) ? 1.025 : 1.017;
@@ -372,7 +374,7 @@ function Player(sock) {
 			a.vy = Math.sin(self.angle) * 15;
 			asts[self.sy][self.sx][r] = a;
 		} else if (self.ship == 18) { self.shootBullet(39); } // Built in spreadshot
-		else if (self.ship == 20 && self.rank >= self.ship) { self.shootBullet(28); self.health *=.1; self.exp-=200; self.money-=20000; self.save();} // Built in Grav Bomb
+		else if (self.ship == 20) { self.shootBullet(28); self.health *=.1; self.experience-=800; self.money-=20000; self.save();} // Built in Grav Bomb
 		else if (self.ship == 19) { self.health++; } // Built in spreadshot
 		self.reload(true, 0);
 	}
@@ -389,6 +391,7 @@ function Player(sock) {
 	}
 	self.canShoot = function(wepId){
 		if(wepId < 0) return false;
+		if(self.disguise > 0 || (self.shield && wepns[wepId].type !== "Misc")) return false;
 		var sufficientCharge = self.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
 		return self.space && sufficientCharge;
 	}
@@ -573,16 +576,14 @@ function Player(sock) {
 
 	}
 	self.juke = function (left) {
-		if (self.charge > 3) return;
-		self.charge = -10;
+		if (self.charge < 0) return;
+		self.charge = -20;
 		self.jukeTimer = (self.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
 	}
 	self.mute = function (minutes) {
 		chatAll("~`violet~`" + self.name + "~`yellow~` has been " + (minutes > 0 ? "muted for " + minutes + " minutes!" : "unmuted!"));
 	}
 	self.onChangeSectors = function () {
-		self.socket.emit("clrBullets", {});
-
 		//track my touched corners
 		if (self.sx == 0) {
 			if (self.sy == 0 && (self.cornersTouched & 1) != 1) self.cornersTouched++;
@@ -622,7 +623,6 @@ function Player(sock) {
 		}
 
 		//tell client what's in this sector
-		self.getAllBullets();
 		self.getAllPlanets();
 
 		//update list of visited sectors.
@@ -988,8 +988,7 @@ function Player(sock) {
 		if (self.isBot) return; // can bots even get to this point in code?
 
 		if (self.docked) { // undock if already docked. This toggles the player's dock status
-
-			self.getAllBullets();
+;
 			self.getAllPlanets(); // tell client what's out in the sector
 
 			self.docked = false;
@@ -1179,9 +1178,9 @@ function Player(sock) {
 			//give the killer stuff
 			if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
 				b.owner.onKill(self);
-				b.owner.spoils("experience", 10 + diff * (self.color === b.owner.color ? -1 : 1));
+				b.owner.spoils("experience", !self.guest ? (10 + diff * (self.color === b.owner.color ? -1 : 1)) : 0);
 				// Prevent farming and disincentivize targetting guests
-				b.owner.spoils("money", 1000 * (b.owner.type === "Player" && !self.guest ? b.owner.killStreak : 1));
+				b.owner.spoils("money", 1000 * (b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak) : 1));
 
 				if (self.points > 0) { // raid points
 					b.owner.points++;
@@ -1203,7 +1202,7 @@ function Player(sock) {
 				self.sx = self.sy = (self.color == 'red' ? 2 : 4);
 				self.x = self.y = sectorWidth / 2;
 				self.dead = true;
-				if (self.lives <= 0) lefts[self.id] = 0;
+				if (self.lives <= 0) self.kick("Goodbye captain: no more lives remaining!");
 				self.sendStatus();
 				deads[self.id] = self;
 				sendWeapons(self);
@@ -1218,7 +1217,6 @@ function Player(sock) {
 				self.sy = 1;
 			} else self.sy = self.sx = (self.color === "blue" ? 4 : 2);
 
-
 			self.dead = true;
 
 			await handlePlayerDeath(self);
@@ -1228,9 +1226,6 @@ function Player(sock) {
 			if (self.lives <= 0) {
 				self.kick("Goodbye captain: no more lives remaining!");
 			}
-
-
-
 			else self.save();
 			
 			self.sendStatus();
@@ -1264,7 +1259,7 @@ function Player(sock) {
 	}
 	self.EMP = function (t) {
 		if (self.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
-		if (self.ship >= 16) t *= 1.3; // Emp works better on elites
+		if (self.ship >= 16) t *= 1.5; // Emp works better on elites
 		self.empTimer = t;
 
 		//turn off all keys
@@ -1392,15 +1387,7 @@ function Player(sock) {
 			self.sendAchievementsCash(false);
 		}
 	}
-	self.getAllBullets = function () { // sends to client all the bullets in this sector.
-		if (self.isBot) return;
-		var packHere = [];
-		for (var i in bullets[self.sy][self.sx]) {
-			var bullet = bullets[self.sy][self.sx][i];
-			packHere.push({ wepnID: bullet.wepnID, color: bullet.color, x: bullet.x, vx: self.vx, vy: self.vy, y: bullet.y, angle: bullet.angle, id: self.id });
-		}
-		self.socket.emit('clrBullets', { pack: packHere });
-	}
+	
 	self.getAllPlanets = function () { // same, but with planets
 		if (self.isBot) return;
 		var packHere = 0;
@@ -1427,10 +1414,9 @@ function Player(sock) {
 			self.socket.emit("AFK", { t: 0 });
 			lefts[self.id] = 0;
 			var text = "~`" + self.color + "~`" + self.name + "~`yellow~` went AFK!";
-			onlineNames[(self.name.startsWith("[") ? self.name.split(" ")[1] : self.name)] = 0;
 			log(text);
 			chatAll(text);
-			self.socket.disconnect();
+			self.kick("AFK!");
 			return true;
 		}
 		return false;
@@ -1590,21 +1576,6 @@ function Player(sock) {
 	return self;
 };
 
-function lbIndex(exp) { // binary search to find where a player is on the leaderboard. TODO there is a bug where this prints stuff when someone gets their first kill of the day
-	exp+=.01; // epsilon so that you always are evaluated as having higher exp than yourself
-	if (exp < lbExp[999]) return -1;
-	if (exp > lbExp[0]) return 1;
-	var ub = 999, lb = 0;
-	while (ub > lb) {
-		if (exp >= lbExp[ub] && exp < lbExp[ub - 1]) return ub + 1;
-		ub--;
-		var index = Math.floor((ub + lb) / 2);
-		if (exp < lbExp[index]) lb = index;
-		else ub = index;
-	}
-	return ub + 1;//1-indexed
-}
-
 module.exports = Player;
 
 var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");
@@ -1624,7 +1595,7 @@ global.spawnBot = function (sx, sy, col, rbNow, bbNow) {
 	bot.sx = sx;
 	bot.sy = sy;
 	var rand = .33 + 3.67 * Math.random();
-	bot.experience = Math.floor(Math.pow(2, Math.pow(2, rand))) / 4 + 3 * rand;
+	bot.experience = Math.floor(Math.pow(2, Math.pow(2, rand))) + 3 * rand;
 	bot.updateRank();
 	bot.ship = bot.rank;
 	bot.x = bot.y = sectorWidth / 2;

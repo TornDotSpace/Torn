@@ -35,7 +35,7 @@ var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 var canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-var ctx = canvas.getContext("2d");
+var ctx = canvas.getContext("2d", { alpha: false });
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -90,7 +90,7 @@ var scrx = 0, scry = 0;
 var mapSz = 7;
 var quests = 0, quest = 0;
 var login = false, lore = false, afk = false;
-var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false;
+var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
 var phealth = 0;
 var energy = 0;
 var bxo = 0, byo = 0, bx = 0, by = 0;
@@ -117,7 +117,7 @@ var t2 = 1, mh2 = 1, c2 = 1, va2 = 1, e2 = 1, ag2 = 1;
 var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops = 0, frames = 0, uframes = 0, ups = 0, dev = false;
 var credentialState = 0, textIn = 0, savedNote = 0;
 var key = '~`';
-var myName = "GUEST", currAlert = '', cloaked = false;
+var myName = "GUEST", currAlert = '', disguise = 0;
 var soundAllowed = false;
 var currLoading = "";
 var secret2PlanetName = "";
@@ -135,7 +135,7 @@ var keys = [], lagArr = 0;
 var w = window.innerWidth;
 var h = window.innerHeight; // Canvas width and height
 var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
-var basesInfo = undefined, playersInfo = { }, planetsInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
+var basesInfo = undefined, playersInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
 
 var clientmutes = { };
 // for initial loading screen
@@ -144,7 +144,7 @@ var EVERYTHING_LOADED = false;
 var guest = false;
 
 var stars = [];
-for (var i = 0; i < 200; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
+for (var i = 0; i < 30; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
 
 var myId = undefined;
 
@@ -335,14 +335,6 @@ function loadShipImg(red, i) {
 	}
 }
 function loadAllImages() {
-	loadImage("s1", '/img/space/s1.png');
-	loadImage("s2", '/img/space/s2.png');
-	loadImage("s3", '/img/space/s3.png');
-	loadImage("s4", '/img/space/s4.png');
-	loadImage("s5", '/img/space/s5.png');
-	loadImage("s6", '/img/space/s6.png');
-	loadImage("s7", '/img/space/s7.png');
-	loadImage("s8", '/img/space/s8.png');
 	loadImage("spc", '/img/space/NewBackground.png');
 	//loadImage("spcr", '/img/space/RedBackground.png');
 	//loadImage("spcb", '/img/space/BlueBackground.png');
@@ -374,6 +366,7 @@ function loadAllImages() {
 	loadImage("fire", '/img/fire.png');
 	loadImage("arrow", '/img/arrow.png');
 	loadImage("energyDisk", '/img/missile/energyDisk.png');
+	loadImage("photonOrb", '/img/missile/photonOrb.png');
 	loadImage("missile", '/img/missile/missile.png');
 	loadImage("torpedo", '/img/missile/torpedo.png');
 	loadImage("heavyMissile", '/img/missile/heavyMissile.png');
@@ -544,7 +537,7 @@ function render() {
 		updateNotes();
 		rInBase();
 	}
-	if (docked || (playersInfo == 0 && !cloaked)) return;
+	if (docked || (playersInfo == 0 && !(disguise > 0))) return;
 	if (ops > 0 || clientLag >= 35) {
 		rTexts(clientLag);
 		clientLag = 34;
@@ -559,7 +552,7 @@ function render() {
 	ops++;
 	var d = new Date();
 	var lagTimer = d.getTime();
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 
 	var time0 = -performance.now();
 	canvas.width = canvas.width;
@@ -590,7 +583,7 @@ function render() {
 	time3 -= time4;
 	rTrails();//Gets to .2-.25 in heavy drifting
 	rPlayers();//fast
-	if (cloaked) rSelfCloaked();
+	if (disguise > 0) rSelfCloaked();
 
 	var time5 = -performance.now();
 	time4 -= time5;
@@ -665,7 +658,7 @@ function rWeapons() {
 	roundRect(w - 208, h - 432 + 8 * 16, 210, 12 * 16, { bl: 32, tl: 32 }, true, false);
 	ctx.restore();
 
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'right';
 	ctx.globalAlpha = Math.max(weaponTimer--, 0) / 100 * .7 + .3;
@@ -683,9 +676,9 @@ function rWeapons() {
 	ctx.globalAlpha = 1;
 	ctx.fillStyle = 'yellow';
 	badWeapon = (badWeapon < 1) ? 0 : (badWeapon - 1);
-	ctx.font = (16 + badWeapon) + "px Nasa";
+	ctx.font = (16 + badWeapon) + "px ShareTech";
 	write(mEng[2], w - 16, h - 96);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.textAlign = 'left';
 }
 function ammoCodeToString(code) {
@@ -698,11 +691,11 @@ function rHome() {
 	ctx.textAlign = "center";
 	r3DMapBig();
 	if (guest && rank > 0) {
-		ctx.font = (4 * sinLow(baseTick / 16) + 28) + "px Nasa";
+		ctx.font = (4 * sinLow(baseTick / 16) + 28) + "px ShareTech";
 		ctx.fillStyle = (seller == 600) ? "lime" : "yellow";
 		ctx.textAlign = 'center';
 		write(mEng[11], rx + 728 - 96, ry + 256);
-		ctx.font = "11px Nasa";
+		ctx.font = "14px ShareTech";
 	}
 }
 function r3DMap(xp, yp) {
@@ -787,7 +780,7 @@ function rShop() {
 
 	ctx.strokeStyle = 'white';
 	ctx.lineWidth = 1;
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = "left";
 
 	for (var i = 4; i < 8; i++) {
@@ -806,12 +799,12 @@ function rShop() {
 	ctx.textAlign = 'left';
 
 	ctx.fillStyle = 'yellow';
-	ctx.font = "24px Nasa";
+	ctx.font = "24px ShareTech";
 	write(mEng[15], rx + 256 + 32, ry + 256 - 16);
 	ctx.textAlign = 'center';
 	write(mEng[16], rx + 256, ry + 64 + 8);
 	ctx.textAlign = 'left';
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.fillStyle = seller == 601 ? "lime" : "yellow";
 	write(mEng[18], rx + 512 - 64, ry + 256 - 16);
 	ctx.fillStyle = 'yellow';
@@ -848,9 +841,9 @@ function rShop() {
 
 	ctx.textAlign = "center";
 	ctx.fillStyle = 'yellow';
-	ctx.font = '20px Nasa';
+	ctx.font = '20px ShareTech';
 	write(mEng[24], rx + 128 + 16, ry + 256 + 16);
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	write(mEng[25] + " " + shipView, rx + 128 + 16, ry + 256 + 56);
 	write(pc === "red" ? ships[shipView].nameA : ships[shipView].nameH, rx + 128 + 16, ry + 256 + 40);
 	if (shipView > rank) ctx.fillStyle = "red";
@@ -887,24 +880,24 @@ function rShop() {
 function rConfirm() {
 	ctx.fillStyle = 'cyan';
 	ctx.textAlign = 'center';
-	ctx.font = '16px Nasa';
+	ctx.font = '16px ShareTech';
 	write(mEng[32] + wepns[equipped[confirmer]].name + mEng[33] + (wepns[equipped[confirmer]].price * .75) + mEng[34], rx + 128 * 3, ry + 128);
-	ctx.font = '13px Nasa';
+	ctx.font = '15px ShareTech';
 	write(mEng[35], rx + 128 * 3, ry + 192);
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
 }
 function rQuests() {
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
 	rMap();
 	var mult = (myTrail % 16 == 2)?1.05:1;
 	if (quest != 0) {
 		ctx.fillStyle = 'cyan';
 		ctx.textAlign = 'center';
-		ctx.font = '30px Nasa';
+		ctx.font = '30px ShareTech';
 		write(mEng[36], rx + 128 * 3, ry + 128);
-		ctx.font = '11px Nasa';
+		ctx.font = '14px ShareTech';
 		var desc = "";
 		if (quest.type === 'Mining') desc = mEng[37] + quest.amt + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
 		if (quest.type === 'Base') desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
@@ -933,28 +926,32 @@ function rQuests() {
 			wrapText(mEng[50] + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
 		}
 }
+function techPrice(x){ // money required to upgrade Tech
+	return techEnergy(nextTechLevel(x))-techEnergy(x);
+}
+function techEnergy(x){ // Net price of some tech level
+	return Math.round(Math.pow(1024, x) / 1000) * 500;
+}
+function nextTechLevel(x){
+	return Math.floor(x*8.+1)/8.;
+}
 function rStats() {
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
 	let d = new Date();
 	var t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
 
 	var ore = iron + silver + platinum + aluminium;
 	var upgradeCosts = 0;
-	for (var i = 1; i < t2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < va2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < ag2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < c2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < mh2; i += .2) upgradeCosts += Math.round(Math.pow(1024, i) / 1000) * 1000;
-	for (var i = 1; i < e2; i += .2) upgradeCosts += Math.round(Math.pow(4096, i) / 1000) * 1000;
+	upgradeCosts += techEnergy(t2) + techEnergy(va2) + techEnergy(ag2) + techEnergy(c2) + techEnergy(mh2) + techEnergy(e2+.6);
 	var achievements = 0;
 	for (var i in achs) if (achs[i]) achievements++;
 	ctx.fillStyle = "yellow";
 	write(mEng[161], rx + 16, ry + 512 - 16);
-	ctx.font = "32px Nasa";
+	ctx.font = "32px ShareTech";
 	ctx.textAlign = "center";
 	write(myName, rx + 192, ry + 96);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	var activeGens = 0;
 	if (ship >= wepns[20].level)
 		for (var i = 0; i < ships[ship].weapons; i++)
@@ -1006,10 +1003,10 @@ function rStats() {
 	//Upgrades
 	ctx.fillStyle = "yellow";
 	ctx.textAlign = "left";
-	ctx.font = "24px Nasa";
+	ctx.font = "24px ShareTech";
 	write(mEng[17], rx + 64, ry + 256 + 64 + 16);
 	ctx.fillStyle = "white";
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.drawImage((seller == 200) ? Img.gbutton : Img.button, rx + 64, ry + 416 - 64);
 	ctx.drawImage((seller == 201) ? Img.gbutton : Img.button, rx + 192, ry + 416 - 64);
 	ctx.drawImage((seller == 202) ? Img.gbutton : Img.button, rx + 64, ry + 416);
@@ -1017,23 +1014,23 @@ function rStats() {
 	ctx.drawImage((seller == 204) ? Img.gbutton : Img.button, rx + 320, ry + 416 - 64);
 	ctx.drawImage((seller == 205) ? Img.gbutton : Img.button, rx + 320, ry + 416);
 	ctx.textAlign = 'center';
-	write(mEng[20] + t2 + mEng[163], rx + 64 + 54, ry + 416 - 64 + 16);
-	write(mEng[21] + va2 + mEng[163], rx + 192 + 54, ry + 416 - 64 + 16);
-	write(mEng[22] + c2 + mEng[163], rx + 64 + 54, ry + 416 + 16);
-	write(mEng[23] + mh2 + mEng[163], rx + 192 + 54, ry + 416 + 16);
-	write("Energy: " + e2 + mEng[163], rx + 320 + 54, ry + 416 - 64 + 16);
-	write("Agility: " + ag2 + mEng[163], rx + 320 + 54, ry + 416 + 16);
-	write("$" + (Math.round(Math.pow(1024, t2) / 1000) * 1000), rx + 64 + 54, ry + 416 - 64 + 32);
-	write("$" + (Math.round(Math.pow(1024, va2) / 1000) * 1000), rx + 192 + 54, ry + 416 - 64 + 32);
-	write("$" + (Math.round(Math.pow(1024, c2) / 1000) * 1000), rx + 64 + 54, ry + 416 + 32);
-	write("$" + (Math.round(Math.pow(1024, mh2) / 1000) * 1000), rx + 192 + 54, ry + 416 + 32);
-	write("$" + (Math.round(Math.pow(4096, e2) / 1000) * 1000), rx + 320 + 54, ry + 416 - 64 + 32);
-	write("$" + (Math.round(Math.pow(1024, ag2) / 1000) * 1000), rx + 320 + 54, ry + 416 + 32);
+	write("Thrust lvl " + ((t2-1)*8), rx + 64 + 54, ry + 416 - 64 + 16);
+	write("Radar lvl " + ((va2-1)*8), rx + 192 + 54, ry + 416 - 64 + 16);
+	write("Cargo lvl " + ((c2-1)*8), rx + 64 + 54, ry + 416 + 16);
+	write("Hull lvl " + ((mh2-1)*8), rx + 192 + 54, ry + 416 + 16);
+	write("Energy lvl " + ((e2-1)*8), rx + 320 + 54, ry + 416 - 64 + 16);
+	write("Agility lvl " + ((ag2-1)*8), rx + 320 + 54, ry + 416 + 16);
+	write("$" + techPrice(t2), rx + 64 + 54, ry + 416 - 64 + 32);
+	write("$" + techPrice(va2), rx + 192 + 54, ry + 416 - 64 + 32);
+	write("$" + techPrice(c2), rx + 64 + 54, ry + 416 + 32);
+	write("$" + techPrice(mh2), rx + 192 + 54, ry + 416 + 32);
+	write("$" + techPrice(e2+.6), rx + 320 + 54, ry + 416 - 64 + 32);
+	write("$" + techPrice(ag2), rx + 320 + 54, ry + 416 + 32);
 }
 function rAchievements() {
 	ctx.save();
 	ctx.fillStyle = "yellow";
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.textAlign = "center";
 	for (var i = 0; i < achs.length; i++) {
 		if (i < 13) ctx.fillStyle = achs[i] ? "red" : "pink";
@@ -1041,17 +1038,17 @@ function rAchievements() {
 		else if (i < 37) ctx.fillStyle = achs[i] ? "lightgray" : "white";
 		else ctx.fillStyle = achs[i] ? "cyan" : "yellow";
 		if (achs[i]) {
-			ctx.font = "9px Nasa";
+			ctx.font = "11px ShareTech";
 			write(jsn.achNames[i].split(":")[1], rx + 768 * (1 + (i % 5) * 2) / 10, ry + 20 + 40 * Math.floor(i / 5) + 60);
 		}
-		ctx.font = "12px Nasa";
+		ctx.font = "15px ShareTech";
 		write(achs[i] ? jsn.achNames[i].split(":")[0] : mEng[172], rx + 768 * (1 + (i % 5) * 2) / 10, ry + 8 + 40 * Math.floor(i / 5) + 60);
 	}
 	ctx.restore();
 }
 function rHelp() {
 	ctx.textAlign = "center";
-	ctx.font = "26px Nasa";
+	ctx.font = "26px ShareTech";
 	var data = [mEng[62], mEng[63], mEng[64], mEng[65], mEng[66], mEng[67], mEng[68]];
 	for (var i = 0; i < 3; i++)
 		for (var j = 0; j < 2; j++) {
@@ -1063,19 +1060,19 @@ function rHelp() {
 	var rendX = rx + 384, rendY = ry + 40 + (512 - 40) / 3 + (512 - 40) / 6;
 	write(data[3], rendX, rendY);
 	ctx.textAlign = "left";
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 }
 function rWeaponStore() {
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = "right";
 	ctx.fillStyle = 'yellow';
 
 	write(mEng[5] + Math.floor(money), rx + 128 * 6 - 16, ry + 64);
 	ctx.textAlign = "center";
-	ctx.font = '24px Nasa';
+	ctx.font = '24px ShareTech';
 	write(mEng[15], rx + 128 * 3, ry + 68);
 	ctx.textAlign = "left";
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	//R to return to shop
 	for (var i = 0; i < wepns.length; i++) {
 		var wx = rx + 4 + 240 * Math.floor(wepns[i].order / Math.ceil(wepns.length / 3));
@@ -1100,24 +1097,25 @@ function rWeaponStore() {
 	}
 }
 function rWeaponStats(i) {
-	ctx.font = '11px Nasa';
-	write(wepns[i].name, rx + 32, ry + 364 + 16 * -2);
-	wrapText(wepns[i].desc, rx + 32, ry + 364 + 16 * -1, 128 * 6 - 64, 16);
-	write("Type: " + wepns[i].type, rx + 32, ry + 364 + 16 * 2);
-	write(mEng[71] + (wepns[i].range == -1 ? mEng[206] : (wepns[i].range + " Meters")), rx + 32, ry + 364 + 16 * 3);
-	write(mEng[72] + (wepns[i].damage == -1 ? mEng[206] : wepns[i].damage), rx + 32, ry + 364 + 16 * 4);
-	write(mEng[73] + (wepns[i].speed == -1 ? mEng[206] : wepns[i].speed), rx + 32, ry + 364 + 16 * 5);
-	write(mEng[74] + (wepns[i].charge == -1 ? mEng[206] : ((wepns[i].charge / 25) + mEng[75])), rx + 32, ry + 364 + 16 * 6);
-	write(mEng[173] + ammoCodeToString(wepns[i].ammo), rx + 32, ry + 364 + 16 * 7);
-	write(mEng[174] + wepns[i].level, rx + 32, ry + 364 + 16 * 8);
+	ctx.font = '14px ShareTech';
+	write(wepns[i].name, rx + 32, ry + 364 + 16 * 1);
+	wrapText(wepns[i].desc, rx + 32, ry + 364 + 16 * 2, 128 * 6 - 64, 16);
+
+	write("Type   : " + wepns[i].type, rx + 32, ry + 364 + 16 * 5);
+	write(mEng[71] + (wepns[i].range == -1 ? mEng[206] : (wepns[i].range + " Meters")), rx + 32, ry + 364 + 16 * 6);
+	write(mEng[72] + (wepns[i].damage == -1 ? mEng[206] : wepns[i].damage), rx + 32, ry + 364 + 16 * 7);
+	write(mEng[73] + (wepns[i].speed == -1 ? mEng[206] : wepns[i].speed), rx + 32, ry + 364 + 16 * 8);
+	write(mEng[74] + (wepns[i].charge == -1 ? mEng[206] : ((wepns[i].charge / 25) + mEng[75])), rx + 256 + 32, ry + 364 + 16 * 6);
+	write(mEng[173] + ammoCodeToString(wepns[i].ammo), rx + 256 + 32, ry + 364 + 16 * 7);
+	write(mEng[174] + wepns[i].level, rx + 256 + 32, ry + 364 + 16 * 8);
 
 	if (actuallyBuying) {
 		ctx.fillStyle = wepns[i].price > money ? "orange" : "limeq";
 		var buyText = wepns[i].price > money ? mEng[76] : mEng[77];
-		ctx.font = '20px Nasa';
-		write(buyText, rx + 256 + 32, ry + 256 + 100 + 16 * 7);
+		ctx.font = '24px ShareTech';
+		write(buyText, rx + 512 + 16, ry + 256 + 100 + 16 * 7);
 	}
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rBaseGui() {
 
@@ -1129,7 +1127,7 @@ function rBaseGui() {
 	info[1] = mEng[5] + Math.floor(money);
 	for (var i = 0; i < 2; i++) write(info[i], w - (guest ? 16 : 278), 16 + i * 16);
 
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.lineWidth = 2;
 	baseTick++;
 	roll(sinLow((baseTick % 3142) / 100.) / 16);
@@ -1154,9 +1152,9 @@ function rBaseGui() {
 
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = "right";
-	ctx.font = "18px Nasa";
+	ctx.font = "18px ShareTech";
 	write(mEng[78], rx + 768 - 16, ry + 512 + 24);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.textAlign = "left";
 	//ctx.drawImage(Img.baseOutline, rx - 4, ry - 4);
 }
@@ -1211,7 +1209,7 @@ socket.on('posUp', function (data) {
 	scry = -sinLow(data.angle) * data.speed;
 	pangle = data.angle;
 	shield = data.shield;
-	cloaked = data.cloaked;
+	disguise = data.disguise;
 	myTrail = data.trail;
 	if (docked) playAudio("sector", 1);
 	empTimer--;
@@ -1221,7 +1219,6 @@ socket.on('posUp', function (data) {
 	docked = false;
 	packsInfo = data.packs;
 	playersInfo = data.players;
-	planetsInfo = data.planets;
 	basesInfo = data.bases;
 	astsInfo = data.asteroids;
 	beamsInfo = data.beams;
@@ -1230,27 +1227,24 @@ socket.on('posUp', function (data) {
 	orbsInfo = data.orbs;
 	minesInfo = data.mines;
 	vortsInfo = data.vorts;
+	clearBullets();
 });
 
 socket.on('update', function(data) {
 	++uframes;
 	++tick;
-	if (sx != data.sx || sy != data.sy) playAudio("sector", 1);
 	energy = data.energy;
-	sx = data.sx;
-	sy = data.sy;
 	isLocked = data.isLocked;
 	charge = data.charge;
-	cloaked = data.cloaked;
 
 	var delta = data.state;
 
-	for (var index = 0; index < delta.vorts.length; ++index) {
-		vort_update(delta.vorts[index]);
-	}
-
 	for (var index = 0; index < delta.players.length; ++index) {
 		player_update(delta.players[index]);
+	}
+
+	for (var index = 0; index < delta.vorts.length; ++index) {
+		vort_update(delta.vorts[index]);
 	}
 
 	for (var index = 0; index < delta.mines.length; ++index) {
@@ -1312,13 +1306,17 @@ function player_update(data) {
 	}
 
 	if (id == myId) {
+		pvx = -px;
+		pvy = -py;
 		px = playersInfo[id].x;
 		py = playersInfo[id].y;
+		pvx += px;
+		pvy += py;
 		pangle = playersInfo[id].angle;
 		phealth = playersInfo[id].health;
 		scrx = -cosLow(pangle) * playersInfo[id].speed;
 		scry = -sinLow(pangle) * playersInfo[id].speed;
-
+		disguise = delta.disguise;
 	}
 }
 
@@ -1558,21 +1556,21 @@ function rInBase() {
 socket.on('chat', function (data) {
 
 	// Optimization: Don't do expensive string manipulation if nobody is in the mute list
-	if (clientmutes.size == 0) {
+	if (clientmutes.size == 0 || !data.msg.includes(":")) {
 		_chat(data);
 		return;
 	}
 
-	var chatName = data.msg.split(":")[0].split("`")[2];
+	var header = data.msg.split(":")[0];
+	var chatName = header.split("`")[2]; // normal chat
+	if(header.includes("\[PM\] ")) chatName = header.split("\[PM\]")[1]; // pms
+	chatName = chatName.replace(/[^0-9a-zA-Z]/g, '');
 
 	if (chatName !== undefined) {
 		chatName = chatName.trim();
-		chatName = chatName.substring(0, chatName.length - 1);
 		// If they're muted, don't chat!
 		for (var mut in clientmutes) {
-			if (mut.valueOf() == chatName) {
-				return;
-			}
+			if (mut.valueOf().equalsIgnoreCase(chatName)) return;
 		}
 	}
 
@@ -1615,9 +1613,7 @@ socket.on('newBullet', function (data) {
 socket.on('delBullet', function (data) {
 	delete bullets[data.id];
 });
-socket.on('clrBullet', function (data) {
-	clearBullets();
-});
+
 socket.on('AFK', function (data) {
 	if (data.t == 0) {
 		afk = true;
@@ -1626,9 +1622,6 @@ socket.on('AFK', function (data) {
 });
 socket.on('invalidCredentials', function (data) {
 	credentialState = 1;
-});
-socket.on('accInUse', function (data) {
-	credentialState = 10;
 });
 
 socket.on('outdated', function() {
@@ -1650,7 +1643,6 @@ socket.on('invalidReg', function (data) {
 });
 socket.on('registered', function (data) {
 	credentialState = 0;
-	socket.emit("login", { user: data.user, pass: data.pass, amNew: true, version: VERSION });
 	ReactRoot.turnOffRegister("LoginOverlay");
 	guest = false;
 	textIn = 0;
@@ -2286,7 +2278,7 @@ document.addEventListener('mousedown', function (evt) {
 	if (i == 500) window.open('https://tornspace.wikia.com/wiki/Torn.space_Wiki', '_blank');
 	if (i == 501) window.open('/store', '_blank');
 	if (i == 502) window.open('/leaderboard', '_blank');
-	if (i == 503) window.open('/contact', '_blank');
+	if (i == 503) window.open('https://padlet.com/mchontz10/k2n7p1pnaxct', '_blank');
 	if (i == 504) window.open('https://www.youtube.com/channel/UCKsbC4GfoPOcyifiwW1GA4w', '_blank');
 	if (i == 505) window.open('https://discord.gg/wFsdUcY', '_blank');
 	if (i == 506) window.open('/credits', '_blank');
@@ -2476,9 +2468,9 @@ function rLoadingBar() {
 	ctx.fillStyle = 'white';
 	ctx.fillRect(w / 2 - 128 + 16, h / 2 - 32 + 16, (256 - 32) * ((Aud_prgs[0] + Img_prgs[0]) / (Aud_prgs[1] + Img_prgs[1])), 64 - 32);
 	ctx.textAlign = "center";
-	ctx.font = "30px Nasa";
+	ctx.font = "30px ShareTech";
 	ctx.fillText(splash, w / 2, h / 2 - 96);
-	ctx.font = "15px Nasa";
+	ctx.font = "15px ShareTech";
 	if(Img_prgs[0] == Img_prgs[1]) ctx.fillText("All images loaded.", w / 2, h / 2 + 64);
 	if(Aud_prgs[0] == Aud_prgs[1]) ctx.fillText("All sounds loaded", w / 2, h / 2 + 80);
 	ctx.fillText(currLoading, w / 2, h / 2 + 96);
@@ -2575,12 +2567,12 @@ function updateBooms() {
 function rLore() {
 	textIn = 1000;
 	ctx.fillStyle = pc ? 'pink' : 'cyan';
-	ctx.font = "22px Nasa";
+	ctx.font = "22px ShareTech";
 	wrapText(jsn.lore[pc ? 0 : 1], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
 	ctx.textAlign = 'center';
 	ctx.fillStyle = 'yellow';
 	var t = (new Date()).getTime() / 6000;
-	ctx.font = ((32 + 6 * Math.sin(24 * t))*(loreTimer/(loreTimer+50))) + "px Nasa";
+	ctx.font = ((32 + 6 * Math.sin(24 * t))*(loreTimer/(loreTimer+50))) + "px ShareTech";
 	ctx.fillText(mEng[80], w/2, h - 48);
 }
 function rEnergyBar() {
@@ -2639,11 +2631,11 @@ function rExpBar() {
 	write("" + Math.max(r2x(rank - 1), 0), w / 2 - 140, h - 14);
 	ctx.textAlign = "left";
 	write("" + r2x(rank), w / 2 + 140, h - 14);
-	ctx.font = "9px Nasa";
+	ctx.font = "11px ShareTech";
 	ctx.textAlign = (dec > 128) ? "right" : "left";
 	ctx.fillStyle = (dec > 128) ? "black" : "white";
 	write("" + Math.round(experience), w / 2 - 128 + dec + (dec > 128 ? -8 : 8), h - 14);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.textAlign = "left";
 }
 function rNotes() {
@@ -2651,7 +2643,7 @@ function rNotes() {
 	ctx.fillStyle = "pink";
 	for (var i in notes) {
 		var note = notes[i];
-		ctx.font = (note.strong ? 40 : 20) + 'px Nasa';
+		ctx.font = (note.strong ? 40 : 20) + 'px ShareTech';
 		ctx.globalAlpha = (39 - note.time) / 39;
 		var x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + (note.local ? px : 0));
 		var y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + (note.local ? py : 0));
@@ -2659,7 +2651,7 @@ function rNotes() {
 	}
 	ctx.globalAlpha = 1;
 	ctx.textAlign = "left";
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rBooms() {
 	if (!login)
@@ -2802,65 +2794,63 @@ function rCurrQuest() {
 }
 function rEMP() {
 	if (empTimer > 0) {
-		ctx.font = '24px Nasa';
+		ctx.font = '24px ShareTech';
 		ctx.textAlign = 'center';
 		ctx.fillStyle = 'orange';
 		write(mEng[96] + Math.round(empTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '11px Nasa';
+		ctx.font = '14px ShareTech';
 		ctx.textAlign = 'left';
 		currAlert = mEng[98];
 	}
 	if (gyroTimer > 0) {
-		ctx.font = '24px Nasa';
+		ctx.font = '24px ShareTech';
 		ctx.textAlign = 'center';
 		ctx.fillStyle = 'orange';
 		write(mEng[99] + Math.round(gyroTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '11px Nasa';
+		ctx.font = '14px ShareTech';
 		ctx.textAlign = 'left';
 		currAlert = mEng[100];
 	}
 	if (!afk && afkTimer < 90 * 25) {
-		ctx.font = '24px Nasa';
+		ctx.font = '24px ShareTech';
 		ctx.textAlign = 'center';
 		ctx.fillStyle = 'orange';
 		write(mEng[102] + Math.round(afkTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '11px Nasa';
+		ctx.font = '14px ShareTech';
 		ctx.textAlign = 'left';
 		currAlert = mEng[101];
 	}
 }
 function rStars() {
-	var num = 0;
+	var mirrors = 3;
+	var wm = w/mirrors;
+	var hm = h/mirrors;
 	for (var i in stars) {
 		var s = stars[i];
-		var spr = Img.s1;
-		if (i < 150) {
-			spr = Img.s5;
-			if (i % 4 == 1)
-				spr = Img.s6;
-			else if (i % 4 == 2)
-				spr = Img.s7;
-			else if (i % 4 == 3)
-				spr = Img.s8;
-		} else {
-			if (i % 4 == 1)
-				spr = Img.s2;
-			else if (i % 4 == 2)
-				spr = Img.s3;
-			else if (i % 4 == 3)
-				spr = Img.s4;
+		ctx.strokeStyle = ctx.fillStyle = "rgb("+(128+32*(i%4))+","+(128+32*(i/4%4))+","+(128+32*(i/16%4))+")";
+		var parallax = (100 - i) / 100.0;
+		parallax = parallax * parallax;
+		parallax = parallax * parallax;
+		var starSz = 3-i/15; // distant stars are size 1, near stars are 3x3
+		ctx.lineWidth = starSz;
+		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (parallax + .1) * .25) % wm;
+		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (parallax + .1) * .25) % hm;
+		for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++)
+			ctx.fillRect(x+j*wm-2,y+k*hm-2,starSz,starSz);
+		
+		if(hyperdriveTimer>0){
+			ctx.beginPath();
+			for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++){
+				ctx.moveTo(x+j*wm, y+k*hm);
+				ctx.lineTo(x+j*wm-starSz*pvx/10, y+k*hm-starSz*pvy/10);
+			}
+			ctx.stroke();
 		}
-		var starSz = (1000 - i) / 1000;
-		starSz = starSz * starSz * starSz;
-		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (starSz * starSz + .1) * .25) % w;
-		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (starSz * starSz + .1) * .25) % h;
-		//ctx.drawImage(spr, Math.floor(x), Math.floor(y));
-		ctx.drawImage(spr, x, y);
 	}
 }
 function rSectorEdge() {
 	ctx.textAlign = 'center';
-	ctx.font = '14px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.strokeStyle = ctx.fillStyle = 'yellow';
 	ctx.lineWidth = 2;
 	ctx.setLineDash([20, 15]);
@@ -2882,7 +2872,7 @@ function rSectorEdge() {
 		ctx.stroke();
 		write(mEng[103], w / 2, i);
 	}
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
 	ctx.setLineDash([]);
 }
@@ -2911,7 +2901,7 @@ function preProcessChat() {
 	chati--;
 }
 function rChat() {
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.save();
 	ctx.globalAlpha = .5;
 	ctx.fillStyle = "black";
@@ -2930,9 +2920,9 @@ function rChat() {
 
 	ctx.textAlign = "left";
 
-	ctx.fillStyle = "yellow";
 	ctx.save();
 	for (var ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
+		ctx.fillStyle = "yellow";
 		var fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
 		ctx.globalAlpha = square((fromTop + 20) / 20);
 		var curx = 0;
@@ -2951,7 +2941,7 @@ function rChat() {
 function renderBG(more) {
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, w, h);
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 	var diagDist = ((sx + sy) * sectorWidth + px + py) / sectorWidth - (mapSz - 1);
 
 	/*if(diagDist < 2){
@@ -2989,11 +2979,9 @@ function renderBG(more) {
 function rMap() {
 	if (guest) return;
 	if (hmap != 0) {
-		if (typeof hmap[sx] === "undefined")
-			return;
+		if (typeof hmap[sx] === "undefined") return;
 		var hmt = hMapTrans(hmap[sx][sy]);
-		if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red'))
-			currAlert = mEng[104];
+		if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104];
 		for (var i = 0; i < mapSz; i++)
 			for (var j = 0; j < mapSz; j++) {
 				var eachmt = hMapTrans(hmap[i][j]);
@@ -3011,12 +2999,9 @@ function rMap() {
 	if (sectorMap != 0 && hmap != 0) {
 		for (var i = 0; i < mapSz; i++)
 			for (var j = 0; j < mapSz; j++) {
-				if (sectorMap[i][j] == 1)
-					ctx.drawImage(Img.mrss, 21.5 + i * 26, 21.5 + j * 27);
-				else if (sectorMap[i][j] == 2)
-					ctx.drawImage(Img.mbss, 21.5 + i * 26, 21.5 + j * 26);
-				else if (hmap[i][j] >= 1000)
-					ctx.drawImage(Img.ma, 21.5 + i * 26, 21.5 + j * 26);
+				if (sectorMap[i][j] == 1) ctx.drawImage(Img.mrss, 21.5 + i * 26, 21.5 + j * 27);
+				else if (sectorMap[i][j] == 2) ctx.drawImage(Img.mbss, 21.5 + i * 26, 21.5 + j * 26);
+				else if (hmap[i][j] >= 1000) ctx.drawImage(Img.ma, 21.5 + i * 26, 21.5 + j * 26);
 			}
 	}
 	if (va2 < 1.9) return;
@@ -3045,10 +3030,10 @@ function rLB() {
 	ctx.restore();
 
 	ctx.fillStyle = 'yellow';
-	ctx.font = "24px Nasa";
+	ctx.font = "24px ShareTech";
 	ctx.textAlign = "center";
 	write(mEng[105], w - 128, 28);
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 	ctx.fillStyle = 'yellow';
 	write(mEng[106], w - 208, 48);
 	ctx.textAlign = "right";
@@ -3183,47 +3168,46 @@ function rBlackHoleWarning() {
 function rAfk() {
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'center';
-	ctx.font = '40px Nasa';
+	ctx.font = '40px ShareTech';
 	write(mEng[109], rx + 128 * 3, ry + 512);
 	ctx.textAlign = 'left';
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rDead() {
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'center';
-	ctx.font = '50px Nasa';
+	ctx.font = '50px ShareTech';
 	write(mEng[110], rx + 128 * 3, ry + 128);
-	ctx.font = '34px Nasa';
+	ctx.font = '34px ShareTech';
 	write(mEng[13] + lives, rx + 128 * 3, ry + 384);
 	if (lives > 0) write(mEng[111], rx + 128 * 3, ry + 512);
 	ctx.textAlign = 'left';
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rPlanetTimer() {
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'right';
-	ctx.font = '48px Nasa';
+	ctx.font = '48px ShareTech';
 	var str = ((planetTimerSec + .0078125) + "").replace(".", ":");
 	str = str.substr(0, str.length - 5);
 	write(str, w - 256, 64);
 	ctx.textAlign = 'left';
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rCreds() {
 	ctx.fillStyle = 'pink';
 	ctx.textAlign = 'center';
-	ctx.font = '20px Nasa';
+	ctx.font = '20px ShareTech';
 	var str = "";
 	if (credentialState == 1) str = mEng[112];
 	if (credentialState == 2) str = mEng[113];
 	if (credentialState == 3) str = mEng[114];
 	if (credentialState == 4) str = mEng[115];
 	if (credentialState == 5) str = "Username is profane!";
-	if (credentialState == 10) str = mEng[116];
 	if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';
-	ctx.font = '11px Nasa';
+	ctx.font = '14px ShareTech';
 }
 function rFlash() {
 	ctx.globalAlpha = (.3 * flash + .01) * .2;
@@ -3252,7 +3236,7 @@ function rTut() {
 	}
 	var date = new Date();
 	var ms = date.getTime();
-	ctx.font = (5 * sinLow(ms / 180) + 25) + "px Nasa";
+	ctx.font = (5 * sinLow(ms / 180) + 25) + "px ShareTech";
 	write(text, w / 2, 40);
 	write(line2, w / 2, 88);
 	ctx.restore();
@@ -3272,10 +3256,11 @@ function undoDmg(r) {
 }
 function rAlert() {
 	ctx.save();
-	ctx.font = '20px Nasa';
+	ctx.font = '20px ShareTech';
 	ctx.fillStyle = tick % 6 < 3 ? 'orange' : 'yellow';
 	ctx.textAlign = 'right';
 	if (self.lives < 3) currAlert = "Low Lives";
+	if (self.lives == 1) currAlert = "ONE LIFE LEFT";
 	write(mEng[125] + currAlert, w - 16, h - 320);
 	ctx.restore();
 }
@@ -3284,7 +3269,7 @@ function rSavedNote() {
 	ctx.textAlign = "center";
 	ctx.fillStyle = "yellow";
 	ctx.strokeStyle = "black";
-	ctx.font = "64px Nasa";
+	ctx.font = "64px ShareTech";
 	ctx.globalAlpha = Math.sqrt(savedNote / 41);
 	ctx.fillText(mEng[126], w / 2, h / 2);
 	ctx.strokeText(mEng[126], w / 2, h / 2);
@@ -3348,13 +3333,13 @@ function rRaid() {
 	var secs = raidTimer / 25;
 	var minutes = Math.floor(secs / 60), seconds = "" + (Math.floor(secs) % 60);
 	if (seconds.length == 1) seconds = "0" + seconds;
-	ctx.font = "16px Nasa";
+	ctx.font = "16px ShareTech";
 
 	if (raidTimer >= 0 && raidTimer < 15000) {
 		write(mEng[200] + minutes + ":" + seconds, w / 2, h - 120);
 		write(mEng[201] + points, w / 2, h - 80);
 
-		ctx.font = "14px Nasa";
+		ctx.font = "14px ShareTech";
 		write("-", w / 2, h - 100);
 
 		ctx.fillStyle = "pink";
@@ -3389,14 +3374,14 @@ function rBigNotes() {
 	var x = w/2+(cube(t-128)+10*(t-128))/1500;
 
 	ctx.globalAlpha = .7;
-	ctx.font = "48px Nasa";
+	ctx.font = "48px ShareTech";
 	write(bigNotes[0][1], x, h/2 - 64);
-	ctx.font = "36px Nasa";
+	ctx.font = "36px ShareTech";
 	write(bigNotes[0][2], x, h/2);
-	ctx.font = "24px Nasa";
+	ctx.font = "24px ShareTech";
 	write(bigNotes[0][3], x, h/2+64);
 	ctx.globalAlpha = 1;
-	ctx.font = "12px Nasa";
+	ctx.font = "15px ShareTech";
 }
 function rKillStreak() {
 	if (killStreakTimer < 0 || killStreak < 1) return;
@@ -3411,10 +3396,10 @@ function rKillStreak() {
 	var sizeMult = 1 + Math.max(0, Math.cbrt(killStreakTimer - 730.)) / 2.;
 	ctx.textAlign = "center";
 
-	ctx.font = (sizeMult * 30.) + "px Nasa";
+	ctx.font = (sizeMult * 30.) + "px ShareTech";
 	write(strMult, w / 2, 64);
 
-	ctx.font = (sizeMult * 20.) + "px Nasa";
+	ctx.font = (sizeMult * 20.) + "px ShareTech";
 	write(strTime, w / 2, 88);
 
 	ctx.restore();
@@ -3500,6 +3485,8 @@ function rOrbs() {
 	for (var i in orbsInfo) {
 		var selfo = orbsInfo[i];
 		var img = Img.energyDisk;
+		if (selfo.wepnID == 42)
+			img = Img.photonOrb;
 		var pw = img.width;
 		var ph = img.height;
 		var rendX = selfo.x - px + w / 2 + scrx;
@@ -3668,13 +3655,13 @@ function rPlanets() {
 	ctx.fillStyle = selfo.color;
 	if (ctx.fillStyle == "red") ctx.fillStyle == "pink";
 	else if (ctx.fillStyle == "blue") ctx.fillStyle == "cyan";
-	ctx.font = "60px Nasa";
+	ctx.font = "60px ShareTech";
 	var str = ((selfo.record / 25 + .0078125) + "").replace(".", ":");
 	str = str.substr(0, str.length - 5);
 	write(mEng[127] + selfo.name, rendX, rendY - 128 - 256);
 	//write("Record: " + selfo.winner + ": " + str, rendX, rendY - 192 + 80 - 256);
 	ctx.textAlign = "left";
-	ctx.font = "11px Nasa";
+	ctx.font = "14px ShareTech";
 }
 function rPacks() {
 	for (var selfo in packsInfo) {
@@ -3719,7 +3706,9 @@ function rPlayers() {
 
 	for (var selfo in playersInfo) {
 		selfo = playersInfo[selfo];
-		if (selfo.color == 'red')
+		if(selfo.disguise > 0) continue;
+
+		if (selfo.color === 'red')
 			rs++;
 		else
 			bs++;
@@ -3850,15 +3839,15 @@ function rBases() {
 			ctx.textAlign = "center";
 			ctx.fillStyle = 'lime';
 			if (experience < 64 && basesInfo.color == pc && square(px - basesInfo.x) + square(py - basesInfo.y) < square(512)) {
-				ctx.font = "" + (2.5 * sinLow(tick / 8) + 15) + "px Nasa";
+				ctx.font = "" + (2.5 * sinLow(tick / 8) + 15) + "px ShareTech";
 				write(mEng[130], rendX, rendY - 96);
-				ctx.font = "11px Nasa";
+				ctx.font = "14px ShareTech";
 			}
 			ctx.textAlign = "left";
 		} else { // write name
 			ctx.textAlign = "center";
 			ctx.fillStyle = 'white';
-			ctx.font = "11px Nasa";
+			ctx.font = "14px ShareTech";
 			write(basesInfo.name, rendX, rendY - 64);
 		}
 

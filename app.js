@@ -38,20 +38,18 @@ buildFileSystem(); // create folders for players, neural nets, and turrets if th
 global.initReboot = function () {
 	log("\nInitializing server reboot...\n");
 	chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible.");
-	setTimeout(function () { chatAll("Server is restarting in 2 minutes. Please save your progress as soon as possible."); }, 1 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 1 minute. Please save your progress as soon as possible."); }, 2 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 30 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 30) * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 10 seconds. Please save your progress as soon as possible."); }, (2 * 60 + 50) * 1000);
-	setTimeout(function () { chatAll("Server restarting..."); }, (4 * 60 + 57) * 1000);
-	setTimeout(shutdown, 5 * 60 * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 2 minutes. Please save your progress."); }, 1 * 60 * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 1 minute. Please save your progress."); }, 2 * 60 * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 30 seconds. Please save your progress."); }, (2 * 60 + 30) * 1000);
+	setTimeout(function () { chatAll("Server is restarting in 10 seconds. Please save your progress."); }, (2 * 60 + 50) * 1000);
+	setTimeout(function () { chatAll("Server restarting..."); }, (2 * 60 + 57) * 1000);
+	setTimeout(shutdown, 3 * 60 * 1000);
 }
 
 global.saveTurrets = function () {
 	//save em
-	console.log("FUCK!");
 
 	var count = 0;
-	//chatAll("Saving Turrets...");
 	for (var i = 0; i < mapSz; i++)
 		for (var j = 0; j < mapSz; j++) {
 			var base = bases[i][j];
@@ -60,22 +58,10 @@ global.saveTurrets = function () {
 				count++;
 			}
 		}
-	console.log(count + " Turrets Saved!");
-	
-	setTimeout(function () {
-		var count = 0;
-		chatAll("Saving Turrets...");
-		for (var i = 0; i < mapSz; i++)
-			for (var j = 0; j < mapSz; j++) {
-				var base = bases[i][j];
-				if (base != 0 && !base.isBase) {
-					base.save();
-					count++;
-				}
-			}
-		chatAll(count + " Turrets Saved!");
-	}, 10);
 }
+
+	
+setTimeout(saveTurrets, 1000);
 
 // TODO: needs to be fixed for MongoDB
 global.decayPlayers = function () {
@@ -101,7 +87,7 @@ global.decayPlayers = function () {
 			continue;
 		}
 		data = "";
-		var decayRate = (split[85] === "decay" ? .985 : .995);
+		var decayRate = (split[85] === "decay" ? .99 : .996);
 
 		split[22] = decay(parseFloat(split[22]), decayRate);//xp
 		split[15] = decay(parseFloat(split[15]), decayRate);//money
@@ -173,9 +159,9 @@ var baseMap = [0, 1,	//A2 / G6
 //some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
 var mineLifetime = 3; // mines despawn after 3 minutes
-global.baseHealth = 600; // max base health
-global.baseKillExp = 50; // Exp reward for killing a base
-global.baseKillMoney = 25000; // ditto but money
+global.baseHealth = 800; // max base health
+global.baseKillExp = 500; // Exp reward for killing a base
+global.baseKillMoney = 100000; // ditto but money
 global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
 
@@ -266,6 +252,14 @@ function sendRaidData() { // tell everyone when the next raid is happening
 
 function getPlayer(i) { // given a socket id, find the corresponding player object.
 	return sockets[i].player;
+}
+
+global.getPlayerFromName = function(name) { // given a socket id, find the corresponding player object.
+    for (var p in sockets) {
+        var player = sockets[p].player;
+        if (typeof player !== "undefined" && player.nameWithoutTag() === name) return player;
+    }
+    return -1;
 }
 
 //Alex: I rewrote everything up to here thoroughly, and the rest not so thoroughly. 7/1/19
@@ -578,23 +572,28 @@ function update() {
 			if (player.testAfk()) continue;
 			player.isLocked = false;
 			player.tick();
-			if (player.disguise > 0) continue;
 
 			// Check for creation
 			if (pack === undefined) {
 				// Store pack for joining clients & delta calculation
-				pack = playerPack[y][x][i] = { trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle };
+				pack = playerPack[y][x][i] = {disguise : player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle };
 				// Send create 
 				sendAllSector("player_create", pack, x, y);
 
 				// Send full update to the player
 				if (!player.isBot) 
-					send(i, 'posUp', {cloaked: player.disguise > 0, trail:player.trail, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.charge,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
+					send(i, 'posUp', {disguise : player.disguise, trail:player.trail, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.charge,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
 				continue;
 			}
 
 			var delta = { };
 			var need_update = false;
+
+			var cloak = false;
+
+			if (!player.isBot && pack.disguise > 0)
+				cloak = true;
+
 
 			// Compute delta
 			for (var key in pack) {
@@ -602,6 +601,12 @@ function update() {
 					delta[key] = pack[key] = player[key];
 					need_update = true;
 				}
+			}
+
+			// Handle cloaking
+			if (need_update && cloak) {
+				send(i, 'update', {disguise: player.disguise, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: { players: [ {delta: delta, id: i} ] }} );
+				continue;
 			}
 
 			if (!need_update) continue;
@@ -1029,7 +1034,7 @@ function update() {
 			// drift 
 
 			// missing: cloaked, isLocked,planetTimer, sx, sy, charge:player.charge
-			send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, sx: x, sy: y, charge: player.charge, energy: player.energy, state: gameState });
+			send(i, 'update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: gameState });
 		}
 
 		// Clear
@@ -1149,7 +1154,6 @@ function updateHeatmap() {
 }
 function updateLB() {
 	// TODO: Needs to be fixed for MongoDB
-	chatAll("Updating torn.space/leaderboard...\n");
 	log("\nUpdating torn.space/leaderboard...");
 	fs.readdir('server/players/', function (err, items) {
 		var top1000names = [];
@@ -1231,13 +1235,16 @@ function shutdown() {
 broadcastInfo();
 function broadcastInfo(){
 	randomMsgs = [
-	"Remember, never give your password to anyone, for any reason!",
-	"If you're interested in running a torn youtube channel, contact the developers!",
-	"Please support the game by buying a VIP pass in the store!"
+		"Never give anyone your password, for any reason!",
+		"Let us know if you want to run a torn youtube channel!",
+		"Support the game by buying a VIP pass in the store!",
+		"Join the torn.space discord in the 'more' tab!",
+		"If you find a bug, report it in the 'more' menu!",
+		"Mute bothersome players with /mute username",
 	]
-	chatAll("~`#ff0000~`"+randomMsgs[broadcastMsg%randomMsgs.length]);
+	chatAll("~`#ff0000~`SERVER: "+randomMsgs[broadcastMsg%randomMsgs.length]);
 	broadcastMsg++
-	setTimeout(broadcastInfo,10*60*1000);
+	setTimeout(broadcastInfo,20*60*1000);
 }
 
 function cleanFile(x) {

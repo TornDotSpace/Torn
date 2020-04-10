@@ -58,7 +58,7 @@ module.exports = function Package(ownr, i, type) {
 			strongLocal(title, p.x, p.y - 192, p.id); // send it
 		}
 
-		else if (self.type == 1) p.spoils("money", 1000); // coin
+		else if (self.type == 1) p.spoils("money", 5000); // coin
 		else if (self.type == 2) p.spoils("life", 1); // floating life
 		else if (self.type == 3) p.refillAllAmmo(); // ammo package
 
