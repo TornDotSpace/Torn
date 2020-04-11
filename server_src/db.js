@@ -2,7 +2,7 @@ var Player = require("./player.js");
 var MONGO_CONNECTION_STR = Config.getValue("mongo_connection_string", "mongodb://localhost:27017/torn");
 var PLAYER_DATABASE = null;
 var TURRET_DATABASE = null;
-var Mongo = require('mongodb').MongoClient;
+var Mongo = require('mongodb').MongoClient(MONGO_CONNECTION_STR, { useUnifiedTopology: true })
 var Base = require('./universe/base.js');
 
 // TODO: Implement failover in the event we lose connection
@@ -15,7 +15,7 @@ global.connectToDB = function () {
 
     log("[DB] Connecting to MongoDB instance @ " + MONGO_CONNECTION_STR);
 
-    Mongo.connect(MONGO_CONNECTION_STR, function (err, client) {
+    Mongo.connect(function (err, client) {
         if (err) {
             log("[DB] Connection failed! (ERROR: " + err + ")");
             return;
