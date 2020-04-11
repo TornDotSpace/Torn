@@ -401,7 +401,7 @@ function init() { // start the server!
 	//start ticking
 
 	setTimeout(update, tickRate);
-	
+
 	var netcode = require('./server_src/netcode.js');
 	netcode();
 
@@ -1127,21 +1127,4 @@ function broadcastInfo(){
 	chatAll("~`#ff0000~`SERVER: "+randomMsgs[broadcastMsg%randomMsgs.length]);
 	broadcastMsg++
 	setTimeout(broadcastInfo,20*60*1000);
-}
-
-function cleanFile(x) {
-	var data = fs.readFileSync(x, 'utf8');
-	var split = data.split(":");
-	if (fs.existsSync(x)) fs.unlinkSync(x);
-	data = "";
-	for (var j = 0; j < 85; j++) data += split[j] + (j == 84 ? "" : ":");
-	fs.writeFileSync(x, data, { "encoding": 'utf8' });
-}
-var decay = function (x, decayRate) {
-	if (x < 1) return 1;
-	return (x - 1) * decayRate + 1;
-}
-var undecay = function (x, decayRate) {
-	if (x < 1) return 1;
-	return (x - 1) / decayRate + 1;
 }
