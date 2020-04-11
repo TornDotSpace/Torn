@@ -150,13 +150,6 @@ async function loadPlayerData(playerName, passwordHash) {
         player.lastLogin = new Date(parseInt(fileData[86]));
     }
 
-    player.permissionLevels = [0];
-    if (player.name.includes("O")) player.permissionLevels.push(30); // they're capital, it's fine
-    if (player.name.includes("A")) player.permissionLevels.push(20);
-    if (player.name.includes("M")) player.permissionLevels.push(10);
-    if (player.name.includes("B")) player.permissionLevels.push(7);
-    if (player.name.includes("V")) player.permissionLevels.push(5);
-    if (player.name.includes("Y")) player.permissionLevels.push(3);
     return player;
 }
 
