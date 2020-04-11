@@ -48,7 +48,6 @@ global.initReboot = function () {
 
 global.saveTurrets = function () {
 	//save em
-
 	var count = 0;
 	for (var i = 0; i < mapSz; i++)
 		for (var j = 0; j < mapSz; j++) {
@@ -62,50 +61,6 @@ global.saveTurrets = function () {
 
 	
 setTimeout(saveTurrets, 1000);
-
-// TODO: needs to be fixed for MongoDB
-global.decayPlayers = function () {
-	if (!enableDecay) return;
-	chatAll("Decaying Players...");
-	log("\nDecaying players...")
-	var items = fs.readdirSync('server/players/');
-
-
-	sendAll("chat", { msg: "Files identified: " + items.length });
-	for (var i = 0; i < items.length; i++) {
-		var source = "server/players/" + items[i];
-		if (fs.lstatSync(source).isDirectory()) continue;
-		var data = fs.readFileSync(source, 'utf8');
-		var split = data.split(":");
-		if (split.length < 85) {
-			if (split.length < 15) sendAll("chat", { msg: "File " + source + " unreadable. " + split.length + " entries." });
-			else {
-				var log = "Player " + split[14] + " failed to decay due to an unformatted save file with " + split.length + " entries. Cleaning file.";
-				chatAll(log);
-				cleanFile(source);
-			}
-			continue;
-		}
-		data = "";
-		var decayRate = (split[85] === "decay" ? .99 : .996);
-
-		split[22] = decay(parseFloat(split[22]), decayRate);//xp
-		split[15] = decay(parseFloat(split[15]), decayRate);//money
-		//split[84] = decay(parseFloat(split[84]),decayRate);//energy
-		//split[26] = decay(parseFloat(split[26]),decayRate);//thrust
-		//split[27] = decay(parseFloat(split[27]),decayRate);//radar
-		//split[28] = decay(parseFloat(split[28]),decayRate);//cargo
-		//split[29] = decay(parseFloat(split[29]),decayRate);//hull
-
-		split[23] = 0;
-		split[85] = "decay"; //reset decaymachine
-		while (split[22] > ranks[split[23]]) split[23]++;
-
-		if (fs.existsSync("server/players/" + items[i])) fs.unlinkSync("server/players/" + items[i]);
-		for (var j = 0; j < split.length; j++) data += split[j] + (j == split.length - 1 ? "" : ":");
-		fs.writeFileSync(source, data, { "encoding": 'utf8' });
-	}
-}
 
 global.readMuteTable = function(){
 	var source = "server/permamute";
@@ -188,8 +143,6 @@ global.bQuests = [];//A list of the 10 available quests for humans and aliens
 global.rQuests = [];
 
 var broadcastMsg=0;
-var enableDecay = Config.getValue("want_decay", false); // Enable player decay algorithm
-
 
 
 
@@ -1228,7 +1181,6 @@ saveTurrets();
 setTimeout(initReboot, 86400 * 1000 - 6 * 60 * 1000);
 
 function shutdown() {
-	decayPlayers();
 	process.exit();
 }
 
