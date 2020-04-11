@@ -401,8 +401,7 @@ function init() { // start the server!
 	//start ticking
 
 	setTimeout(update, tickRate);
-	setTimeout(updateLB, 60000);
-
+	
 	var netcode = require('./server_src/netcode.js');
 	netcode();
 
@@ -1104,75 +1103,6 @@ function updateHeatmap() {
 	}
 
 	for (var i in lb) send(lb[i].id, 'heatmap', { hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed });
-}
-function updateLB() {
-	// TODO: Needs to be fixed for MongoDB
-	log("\nUpdating torn.space/leaderboard...");
-	fs.readdir('server/players/', function (err, items) {
-		var top1000names = [];
-		var top1000kills = [];
-		var top1000colors = [];
-		var top1000exp = [];
-		var top1000rank = [];
-		var top1000money = [];
-		var top1000tech = [];
-		for (var i = 0; i < 1000; i++) {
-			top1000names[i] = "Nobody!";
-			top1000kills[i] = -1;
-			top1000exp[i] = -1;
-			top1000rank[i] = -1;
-			top1000colors[i] = "yellow";
-			top1000money[i] = -1;
-			top1000tech[i] = -1;
-		}
-		for (var i = 0; i < items.length; i++) {//insertion sort cause lazy
-			if (fs.lstatSync("server/players/" + items[i]).isDirectory()) continue;
-			var data = fs.readFileSync("server/players/" + items[i], 'utf8').split(":");
-			var exp = Math.round(parseFloat(data[22]));
-			if (exp > top1000exp[999]) {
-				var name = data[14];
-				var kills = parseFloat(data[16]);
-				var rank = parseFloat(data[23]);
-				var money = parseFloat(data[15]);
-				var tech = Math.floor((parseFloat(data[26]) + parseFloat(data[27]) + parseFloat(data[28]) + parseFloat(data[29]) + parseFloat(data[84]))*2)/10;
-				var color = data[0] === "red" ? "pink" : "cyan";
-				for (var j = 999; j >= 1; j--) {
-					if (exp > top1000exp[j - 1]) {
-						top1000kills[j] = top1000kills[j - 1];
-						top1000rank[j] = top1000rank[j - 1];
-						top1000exp[j] = top1000exp[j - 1];
-						top1000names[j] = top1000names[j - 1];
-						top1000colors[j] = top1000colors[j - 1];
-						top1000money[j] = top1000money[j - 1];
-						top1000tech[j] = top1000tech[j - 1];
-						top1000kills[j - 1] = kills;
-						top1000rank[j - 1] = rank;
-						top1000names[j - 1] = name;
-						top1000colors[j - 1] = color;
-						top1000exp[j - 1] = exp;
-						top1000money[j - 1] = money;
-						top1000tech[j - 1] = tech;
-					}
-					else break;
-				}
-			}
-		}
-		var source = 'client/leaderboard/index.html';
-		if (fs.existsSync(source))
-			fs.unlinkSync(source);
-		var newFile = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en"><head>' +
-			'<title>Leaderboard</title><link rel="stylesheet" href="../page.css" /></head>' +
-			'<body><br><br><h1><div style="padding: 20px"><center><font color="#0099ff">Leaderboard' +
-			'</font></center></div></h1>' +
-			'<font color="#0099ff"><center><nobr><table><tr><th>#</th><th>Name</th><th>Exp</th><th>Rank</th><th>Kills</th><th>Money</th><th>Tech</th></tr>';
-		for (var i = 0; i < 1000; i++) {
-			newFile += '<tr style="color:' + top1000colors[i] + ';"><td>' + (i + 1) + ".</td><td>" + top1000names[i] + "</td><td> " + top1000exp[i] + " </td><td>" + top1000rank[i] + "</td><td>" + top1000kills[i] + "</td><td>" + (top1000money[i]>10000000?Math.floor(top1000money[i]/1000000+.5)+"M":(Math.floor(top1000money[i]/1000+.5)+"K")) + "</td><td>" + top1000tech[i] + "</td></tr>";
-			lbExp[i] = top1000exp[i];
-		}
-		newFile += '</table></nobr><br/>Updates every 25 minutes Last updated: ' + new Date() + '</center></font></body></html>';
-		fs.writeFileSync(source, newFile, { "encoding": 'utf8' });
-	});
-	setTimeout(updateLB, 1000 * 25 * 60);
 }
 
 saveTurrets();
