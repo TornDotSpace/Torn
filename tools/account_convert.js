@@ -5,14 +5,19 @@
  * 
  ***********************************************************/
 
+var MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn";
+var Mongo = require('mongodb').MongoClient(MONGO_CONNECTION_STR, { useUnifiedTopology: true });
+var PLAYERS_DIR = "../server/players";
 
-var Mongo = require('mongodb').MongoClient;
+global.parseBoolean = function (s) {
+	return (s === 'true');
+}
+
 
 // legacy loader
-
-async function writePlayer(player, db) {
+async function writePlayer(player, _id, db) {
     var record = {
-        _id: player._id,
+        _id: _id,
         color: player.color,
         ship: player.ship,
         weapons: player.weapons,
@@ -49,17 +54,20 @@ async function writePlayer(player, db) {
         sy: player.sy
     };
 
-    db.save(record);
+    await db.save(record);
+    console.log("Saved: " + player);
 }
-async function loadPlayerData(playerName, passwordHash) {
+
+
+function loadPlayerData(playerName, passwordHash) {
     if (!playerName || !passwordHash) return;
 
     // Read the old fashion way 
-    var readSource = "server/players/" + playerName + "[" + passwordHash + ".txt";
+    var readSource = PLAYERS_DIR + "/" + playerName + "[" + passwordHash + ".txt";
     if (!fs.existsSync(readSource))
         return null;
 
-    var player = new Player(socket);
+    var player = new Player( { id: 0 });
     player._id = playerName;
     player.password = passwordHash;
     var fileData = fs.readFileSync(readSource, "utf8").split(':');
@@ -69,8 +77,6 @@ async function loadPlayerData(playerName, passwordHash) {
     player.weapons[9] = parseFloat(fileData[83]);
     player.sx = Math.floor(parseFloat(fileData[12]));
     player.sy = Math.floor(parseFloat(fileData[13]));
-    if (player.sx > mapSz - 1) player.sx = mapSz - 1;
-    if (player.sy > mapSz - 1) player.sy = mapSz - 1;
     player.name = fileData[14];
     player.trail = parseFloat(fileData[2]) % 16 + (player.name.includes(" ") ? 16 : 0);
     player.money = parseFloat(fileData[15]);
@@ -155,7 +161,7 @@ async function loadPlayerData(playerName, passwordHash) {
 
 // Player object
 
-function Player() {
+function Player(sock) {
     var self = {
 
         type: "Player",
@@ -199,8 +205,8 @@ function Player() {
 
         sx: 0, // sector
         sy: 0,
-        x: sectorWidth / 2,
-        y: sectorWidth / 2,
+        x: 2 / 2,
+        y: 2 / 2,
         vx: 0,
         vy: 0,
         cva: 0,
@@ -291,3 +297,32 @@ function Player() {
 
     return self;
 }
+
+const fs = require('fs');
+
+function main() {
+    Mongo.connect(function (err, client) {
+        var db = client.db('torn');
+        var player_db = db.collection('players');
+
+        fs.readdirSync(PLAYERS_DIR).forEach(file => {
+            var stat = fs.statSync(PLAYERS_DIR + "/" + file);
+
+            if (!stat.isDirectory()) {
+                console.log("Beginning conversion of: " + file);
+
+                var f_str = file.split("[");
+    
+                var player_name = f_str[0];
+                var player_hash = f_str[1].split(".txt")[0];
+    
+                console.log("Got player (" + player_name + "," + player_hash + ")");
+                
+                var player = loadPlayerData(player_name, player_hash);
+                writePlayer(player, player_name, player_db);
+            }
+        });
+    });
+}
+
+main();
