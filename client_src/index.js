@@ -1024,7 +1024,7 @@ function rStats() {
 	write("$" + techPrice(va2), rx + 192 + 54, ry + 416 - 64 + 32);
 	write("$" + techPrice(c2), rx + 64 + 54, ry + 416 + 32);
 	write("$" + techPrice(mh2), rx + 192 + 54, ry + 416 + 32);
-	write("$" + techPrice(e2*8), rx + 320 + 54, ry + 416 - 64 + 32);
+	write("$" + techPrice(e2)*8, rx + 320 + 54, ry + 416 - 64 + 32);
 	write("$" + techPrice(ag2), rx + 320 + 54, ry + 416 + 32);
 }
 function rAchievements() {
