@@ -320,11 +320,14 @@ function main() {
 
                 var player = loadPlayerData(player_name, player_hash);
 
-                // Don't convert players who aren't rank 1 or higher
-                if (player.rank > 0) {
-                    writePlayer(player, player_name, player_db);
-                } else {
-                    console.log("Skipping player " + player_name + " because they are < rank 1");
+                if (player !== undefined) {
+
+                    // Don't convert players who aren't rank 1 or higher
+                    if (player.rank > 0) {
+                        writePlayer(player, player_name, player_db);
+                    } else {
+                        console.log("Skipping player " + player_name + " because they are < rank 1");
+                    }
                 }
             }
         });
