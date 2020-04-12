@@ -59,9 +59,6 @@ global.saveTurrets = function () {
 		}
 }
 
-	
-setTimeout(saveTurrets, 1000);
-
 global.readMuteTable = function(){
 	var source = "server/permamute";
 	var data = fs.readFileSync(source, 'utf8');

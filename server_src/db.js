@@ -26,6 +26,7 @@ global.connectToDB = function () {
         TURRET_DATABASE = db.collection('turrets');
 
         loadTurretData();
+        setTimeout(saveTurrets, 1000);
         log("[DB] Connection successful!");
     });
 }
@@ -110,7 +111,6 @@ global.deleteTurret = function (turret) {
 }
 
 global.loadTurretData = async function() {
-    var count = 0;
     log("\nLoading Turrets...");
     var items = await TURRET_DATABASE.find();
 
