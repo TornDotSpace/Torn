@@ -530,7 +530,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 case 4: // energy
-            		var price = techPrice(player.energy2+.6);
+            		var price = techPrice(player.energy2)*8;
                     if (player.money >= price) {
                         player.money -= price;
                         player.energy2 = nextTechLevel(player.energy2);

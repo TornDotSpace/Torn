@@ -3,7 +3,7 @@
 		{
 			"name":"Stock Gun",
 			"range":250,
-			"damage":20,
+			"damage":30,
 			"speed":50,
 			"charge":8,
 			"price":0,
@@ -42,7 +42,7 @@
 		{
 			"name":"Rifle",
 			"range":750,
-			"damage":30,
+			"damage":40,
 			"speed":80,
 			"charge":10,
 			"price":5000,
@@ -67,8 +67,8 @@
 		},
 		{
 			"name":"Machine Gun",
-			"range":250,
-			"damage":10,
+			"range":300,
+			"damage":12,
 			"speed":80,
 			"charge":4,
 			"price":6000,
@@ -93,10 +93,10 @@
 		},
 		{
 			"name":"Plasma Beam",
-			"range":60,
+			"range":200,
 			"damage":5,
 			"speed":-1,
-			"charge":3,
+			"charge":4,
 			"price":6000,
 			"ammo":-1,
 			"level":1,
@@ -146,7 +146,7 @@
 		{
 			"name":"Heavy Missile",
 			"range":750,
-			"damage":40,
+			"damage":50,
 			"speed":60,
 			"charge":20,
 			"price":10000,
@@ -185,8 +185,8 @@
 		{
 			"name":"Torpedo",
 			"range":3000,
-			"damage":12,
-			"speed":120,
+			"damage":15,
+			"speed":180,
 			"charge":30,
 			"price":18000,
 			"ammo":15,
@@ -198,7 +198,7 @@
 		{
 			"name":"Mine",
 			"range":16,
-			"damage":45,
+			"damage":60,
 			"speed":-1,
 			"charge":25,
 			"price":1000,
@@ -211,9 +211,9 @@
 		{
 			"name":"Laser Mine",
 			"range":64,
-			"damage":50,
+			"damage":40,
 			"speed":-1,
-			"charge":100,
+			"charge":80,
 			"price":6000,
 			"ammo":10,
 			"level":3,
@@ -432,7 +432,7 @@
 		{
 			"name":"Grenades",
 			"range":16,
-			"damage":45,
+			"damage":70,
 			"speed":30,
 			"charge":25,
 			"price":8000,
@@ -497,7 +497,7 @@
 		{
 			"name":"Proximity Fuze",
 			"range":175,
-			"damage":30,
+			"damage":40,
 			"speed":60,
 			"charge":25,
 			"price":5000,
@@ -523,7 +523,7 @@
 		{
 			"name":"Submachinegun",
 			"range":250,
-			"damage":10,
+			"damage":12,
 			"speed":60,
 			"charge":10,
 			"price":30000,
@@ -549,9 +549,9 @@
 		{
 			"name":"Photon Orb",
 			"range":125,
-			"damage":10,
+			"damage":15,
 			"speed":8,
-			"charge":15,
+			"charge":12,
 			"price":10000,
 			"ammo":-1,
 			"level":6,
