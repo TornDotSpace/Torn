@@ -355,6 +355,7 @@ function Player(sock) {
 	}
 	self.shootEliteWeapon = function () {
 		if(self.rank < self.ship) return;
+		if(self.disguise > 0 || self.shield) return;
 		if (self.ship == 16) { // Elite Raider
 			//This effectively just shoots turbo.
 			var mult = ((self.e || self.gyroTimer > 0) && self.w && (self.a != self.d)) ? 1.025 : 1.017;
@@ -1537,6 +1538,8 @@ function Player(sock) {
 			return;
 		}
 		var slot1 = parseFloat(spl[1]), slot2 = parseFloat(spl[2]);
+		if (slot1 == 0) slot1 = 10;
+		if (slot2 == 0) slot2 = 10;
 		if (slot1 > 10 || slot2 > 10 || slot1 < 1 || slot2 < 1 || !slot1 || !slot2 || !Number.isInteger(slot1) || !Number.isInteger(slot2)) {
 			self.socket.emit("chat", { msg: "Invalid Syntax!" });
 			return;
