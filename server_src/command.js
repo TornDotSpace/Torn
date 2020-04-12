@@ -171,10 +171,6 @@ cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMIN
     chatAll("~`violet~`" + name + "~`yellow~` has been kicked!");
 });
 
-// TODO: need to be fixed
-//cmds["/undecayplayers"] = new Command("/undecayPlayers - Reverts decay on all players", ADMIN, undecayPlayers);
-cmds["/decayplayers"] = new Command("/decayPlayers - Decays all players tech", ADMINPLUS, decayPlayers);
-
 cmds["/saveturrets"] = new Command("/saveTurrets - Runs a manual save on the server turrets", ADMINPLUS, saveTurrets);
 
 if (Config.getValue("debug", false)) {

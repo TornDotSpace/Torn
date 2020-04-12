@@ -12,7 +12,7 @@ var Beam = require('./battle/beam.js');
 
 function Player(sock) {
 	var self = {
-
+		_id: "",
 		type: "Player",
 
 		name: "ERR0",
@@ -1134,7 +1134,7 @@ function Player(sock) {
 		blasts[self.sy][self.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
-	self.die = function (b) { // b: bullet object or other object which killed us
+	self.die = async function (b) { // b: bullet object or other object which killed us
 		self.empTimer = -1;
 		self.killStreak = 0;
 		var diff = .02 * self.experience;
@@ -1197,7 +1197,6 @@ function Player(sock) {
 		//TODO Chris
 		if (!self.isBot) {
 			self.health = self.maxHealth;
-			var readSource = 'server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt';
 			if (self.guest) {
 				self.lives--;
 				self.sx = self.sy = (self.color == 'red' ? 2 : 4);
@@ -1209,15 +1208,7 @@ function Player(sock) {
 				sendWeapons(self);
 				return;
 			}
-			var fullFile = fs.readFileSync(readSource, "utf8");
-			var fileData = fullFile.split(':');
-			self.color = fileData[0];
-			self.ship = parseFloat(fileData[1]);
-			for (var i = 0; i < 9; i++) self.weapons[i] = parseFloat(fileData[3 + i]);
-			self.weapons[9] = parseFloat(fileData[83]);
-			self.calculateGenerators();
-			self.sx = Math.floor(parseFloat(fileData[12]));
-			self.sy = Math.floor(parseFloat(fileData[13]));
+
 			if (self.color === "blue" && self.sx == 4 && self.sy == 4) {
 				self.sx = 6;
 				self.sy = 5;
@@ -1225,95 +1216,18 @@ function Player(sock) {
 				self.sx = 0;
 				self.sy = 1;
 			} else self.sy = self.sx = (self.color === "blue" ? 4 : 2);
-			self.name = fileData[14];
-			self.trail = parseFloat(fileData[2]) % 16 + (self.name.includes(" ") ? 16 : 0);
-			self.money = parseFloat(fileData[15]);
-			self.kills = parseFloat(fileData[16]);
-			self.planetsClaimed = fileData[17];
-			self.iron = parseFloat(fileData[18]);
-			self.silver = parseFloat(fileData[19]);
-			self.platinum = parseFloat(fileData[20]);
-			self.aluminium = parseFloat(fileData[21]);
-			self.experience = parseFloat(fileData[22]) * .98;
-			self.rank = parseFloat(fileData[23]);
-			//self.x = parseFloat(fileData[24]);
-			//self.y = parseFloat(fileData[25]);
-			self.x = self.y = sectorWidth/2;
-			log(self.x);
-			self.thrust2 = parseFloat(fileData[26]);
-			self.radar2 = parseFloat(fileData[27]);
-			if (fileData.length > 87) self.agility2 = parseFloat(fileData[87]);
-			self.capacity2 = parseFloat(fileData[28]);
-			self.maxhealth2 = parseFloat(fileData[29]);
-			self.energy2 = parseFloat(fileData[84]);
-            self.killsAchs[0] = parseBoolean(fileData[30]);
-            self.killsAchs[1] = parseBoolean(fileData[31]);
-            self.killsAchs[2] = parseBoolean(fileData[32]);
-            self.killsAchs[3] = parseBoolean(fileData[33]);
-            self.killsAchs[4] = parseBoolean(fileData[34]);
-            self.killsAchs[5] = parseBoolean(fileData[35]);
-            self.killsAchs[6] = parseBoolean(fileData[36]);
-            self.killsAchs[7] = parseBoolean(fileData[37]);
-            self.killsAchs[8] = parseBoolean(fileData[38]);
-            self.killsAchs[9] = parseBoolean(fileData[39]);
-            self.killsAchs[10] = parseBoolean(fileData[40]);
-			//self.killsAchs[11] = parseBoolean(fileData[41]); DON'T update sui achievement.
-			self.baseKills = parseFloat(fileData[42]);
-			self.oresMined = parseFloat(fileData[43]);
-            self.moneyAchs[0] = parseBoolean(fileData[44]);
-            self.moneyAchs[1] = parseBoolean(fileData[45]);
-            self.moneyAchs[2] = parseBoolean(fileData[46]);
-            self.moneyAchs[3] = parseBoolean(fileData[47]);
-            self.moneyAchs[4] = parseBoolean(fileData[48]);
-            self.moneyAchs[5] = parseBoolean(fileData[49]);
-            self.moneyAchs[6] = parseBoolean(fileData[50]);
-            self.moneyAchs[7] = parseBoolean(fileData[51]);
-            self.moneyAchs[8] = parseBoolean(fileData[52]);
-            self.moneyAchs[9] = parseBoolean(fileData[53]);
-            self.moneyAchs[10] = parseBoolean(fileData[54]);
-            self.moneyAchs[11] = parseBoolean(fileData[55]);
-			self.questsDone = parseFloat(fileData[56]);
-			self.driftTimer = parseFloat(fileData[57]);
-            self.driftAchs[0] = parseBoolean(fileData[58]);
-            self.driftAchs[1] = parseBoolean(fileData[59]);
-            self.driftAchs[2] = parseBoolean(fileData[60]);
-            self.driftAchs[3] = parseBoolean(fileData[61]);
-            self.driftAchs[4] = parseBoolean(fileData[62]);
-            self.driftAchs[5] = parseBoolean(fileData[63]);
-            self.driftAchs[6] = parseBoolean(fileData[64]);
-            self.driftAchs[7] = parseBoolean(fileData[65]);
-            self.driftAchs[8] = parseBoolean(fileData[66]);
-            self.driftAchs[9] = parseBoolean(fileData[67]);
-            self.driftAchs[10] = parseBoolean(fileData[68]);
-            self.driftAchs[11] = parseBoolean(fileData[69]);
-			self.cornersTouched = parseFloat(fileData[70]);
-            self.randmAchs[0] = parseBoolean(fileData[71]);
-            self.randmAchs[1] = true; // i died
-            self.randmAchs[2] = parseBoolean(fileData[73]);
-            self.randmAchs[3] = parseBoolean(fileData[74]);
-            self.randmAchs[4] = parseBoolean(fileData[75]);
-            self.randmAchs[5] = parseBoolean(fileData[76]);
-            self.randmAchs[6] = parseBoolean(fileData[77]);
-            self.randmAchs[7] = parseBoolean(fileData[78]);
-            self.randmAchs[8] = parseBoolean(fileData[79]);
-            self.randmAchs[9] = parseBoolean(fileData[80]);
-            self.randmAchs[10] = parseBoolean(fileData[81]);
 
-            self.updateRank();
-
-			// Last login support
-			if (fileData.length > 86) {
-				self.lastLogin = new Date(parseInt(fileData[86]));
-			}
-			self.lives--;
 			self.dead = true;
+
+			await handlePlayerDeath(self);
+			self.x = self.y = sectorWidth/2;
+
+
 			if (self.lives <= 0) {
-				fs.writeFileSync('server/players/dead/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt', fullFile, { "encoding": 'utf8' });
-				fs.unlinkSync('server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt');
 				self.kick("Goodbye captain: no more lives remaining!");
 			}
 			else self.save();
-
+			
 			self.sendStatus();
 			self.sendAchievementsMisc(true);
 
