@@ -134,9 +134,11 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 	self.die = function (b) {
 		if (!self.turretLive) return;
 
-		var numBotsToSpawn = 6*Math.random()*Math.random();
-		for(var i = 0; i < numBotsToSpawn; i++) spawnBot(self.sx, self.sy, self.color, 0, 0);
-		
+		if(self.isBase){
+			var numBotsToSpawn = 6*Math.random()*Math.random();
+			for(var i = 0; i < numBotsToSpawn; i++) spawnBot(self.sx, self.sy, self.color, 0, 0);
+		}
+
 		self.health = self.maxHealth;
 		self.turretLive = false;
 		sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
