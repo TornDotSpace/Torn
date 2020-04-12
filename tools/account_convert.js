@@ -55,7 +55,7 @@ async function writePlayer(player, _id, db) {
     };
 
     await db.save(record);
-    console.log("Saved: " + player);
+    console.log("Saved: " + player.name);
 }
 
 
@@ -317,9 +317,15 @@ function main() {
                 var player_hash = f_str[1].split(".txt")[0];
     
                 console.log("Got player (" + player_name + "," + player_hash + ")");
-                
+
                 var player = loadPlayerData(player_name, player_hash);
-                writePlayer(player, player_name, player_db);
+
+                // Don't convert players who aren't rank 1 or higher
+                if (player.rank > 0) {
+                    writePlayer(player, player_name, player_db);
+                } else {
+                    console.log("Skipping player " + player_name + " because they are < rank 1");
+                }
             }
         });
     });
