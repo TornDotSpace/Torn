@@ -128,8 +128,8 @@ cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the sp
     var name = msg.split(" ")[1];
     var player = getPlayerFromName(name);
     if(player == -1){
-	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
-	    return;
+        ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
+        return;
     }
     var minutes = parseFloat(msg.split(" ")[2]);
     if (typeof minutes !== "number") return;
@@ -138,6 +138,23 @@ cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the sp
 
     muteTable[name] = (Date.now() + (minutes * 60 * 1000));
     chatAll("~`violet~`" + player.name + "~`yellow~` has been muted for "+minutes+" minutes!");
+});
+
+cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, function (ply, msg) {
+    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/tp playername'"});return;} // split looks like {"/mute", "name", "minutesToMute"}
+    var name = msg.split(" ")[1];
+    var player = getPlayerFromName(name);
+    if(player == -1){
+        ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
+        return;
+    }
+
+    ply.x = player.x;
+    ply.y = player.y;
+    ply.sx = player.sx;
+    ply.sy = player.sy;
+
+    ply.socket.emit("chat", { msg: "Player found, attempting to teleport. May fail if they are docked or dead." });
 });
 
 
