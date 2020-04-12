@@ -113,19 +113,15 @@ global.loadTurretData = async function() {
     var count = 0;
     log("\nLoading Turrets...");
     var items = await TURRET_DATABASE.find();
-    
+
     items.forEach(i => {
-        count++;
         var b = new Base(0, false, 0, 0, 0, 0, 0);
         for (var x in i) {
-            for (var y in x) {
-                b[x] = y;
-            }
+            b[x] = i[x];
         }
-        bases[b.y][b.x] = b;
+        bases[b.sy][b.sx] = b;
+        log("Turret (" + b.sy + "," + b.sx + ") loaded!");
     });
-    
-    log(count + " turret(s) loaded.\n");
 }
 
 global.savePlayerData = function (player) {
