@@ -716,7 +716,7 @@ function Player(sock) {
 			var turn = -(self.angle - Math.atan2(target.y - self.y, target.x - self.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
 			self.a = turn > self.cva * self.cva * 10;
 			self.d = turn < -self.cva * self.cva * 10;
-			self.w = true;
+			self.w = self.s = true;
 		} else {//fighting
 			self.space = self.e = close < range * 1.2;
 			var turn = -(self.angle - calculateInterceptionAngle(target.x, target.y, target.vx, target.vy, self.x, self.y) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
@@ -1596,7 +1596,7 @@ global.spawnBot = function (sx, sy, col, rbNow, bbNow) {
 	bot.sx = sx;
 	bot.sy = sy;
 	var rand = .33 + 3.67 * Math.random();
-	bot.experience = Math.floor(Math.pow(2, Math.pow(2, rand))) + 3 * rand;
+	bot.experience = 550*Math.sqrt(Math.pow(2, Math.pow(2, rand))) + 3 * rand;
 	bot.updateRank();
 	bot.ship = bot.rank;
 	bot.x = bot.y = sectorWidth / 2;
