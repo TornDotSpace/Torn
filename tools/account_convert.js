@@ -314,7 +314,7 @@ function main() {
                 var f_str = file.split("[");
     
                 var player_name = f_str[0];
-                var player_hash = f_str[1].split(".txt")[0];
+                var player_hash = parseInt(f_str[1].split(".txt")[0]);
     
                 console.log("Got player (" + player_name + "," + player_hash + ")");
 
