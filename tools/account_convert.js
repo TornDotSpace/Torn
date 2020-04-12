@@ -314,17 +314,20 @@ function main() {
                 var f_str = file.split("[");
     
                 var player_name = f_str[0];
-                var player_hash = f_str[1].split(".txt")[0];
+                var player_hash = parseInt(f_str[1].split(".txt")[0]);
     
                 console.log("Got player (" + player_name + "," + player_hash + ")");
 
                 var player = loadPlayerData(player_name, player_hash);
 
-                // Don't convert players who aren't rank 1 or higher
-                if (player.rank > 0) {
-                    writePlayer(player, player_name, player_db);
-                } else {
-                    console.log("Skipping player " + player_name + " because they are < rank 1");
+                if (player !== undefined) {
+
+                    // Don't convert players who aren't rank 1 or higher
+                    if (player.rank > 0) {
+                        writePlayer(player, player_name, player_db);
+                    } else {
+                        console.log("Skipping player " + player_name + " because they are < rank 1");
+                    }
                 }
             }
         });
