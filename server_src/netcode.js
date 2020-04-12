@@ -220,6 +220,8 @@ module.exports = function initNetcode() {
 
             var user = data.user, pass = data.pass;
 
+            player.guest = false;
+
             if (typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)) {
                 socket.emit("invalidReg", { reason: 2 });
                 return;
@@ -236,34 +238,27 @@ module.exports = function initNetcode() {
                 return;
             }
 
-            var valid = true;
-            // TODO: FIX FOR MONGODB
-            fs.readdir('server/players/', function (err, items) {
-                for (var i = 0; i < items.length; i++) {
-                    if (items[i].startsWith(user + "[")) {
-                        debug(items[i] + ":" + (user + "["));
-                        socket.emit("invalidReg", { reason: 4 });
-                        valid = false;
-                        break;
-                    }
-                }
+            checkRegistered(user).then(function(ret) {
 
-                if (!valid) return;
+                if (!ret) {
+                    player.guest = true;
+                    socket.emit("invalidReg", { reason: 4});
+                    return;
+                }
                 var playerDocked = dockers[socket.id];
                 if (typeof playerDocked === "undefined") return;
-
+                    
+                player._id = user;
                 player.name = user;
                 player.password = hash(pass);
-                player.guest = false;
                 player.permissionLevels=[0];
                 socket.emit("registered", { user: data.user, pass: data.pass });
                 var text = user + ' registered!';
                 log(text);
                 chatAll(text);
-
+    
                 player.save();
             });
-            socket.emit("raid", { raidTimer: raidTimer })
         });
 
         socket.on('login', function (data) {
@@ -339,6 +334,9 @@ module.exports = function initNetcode() {
                 log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
                 var text = "~`" + player.color + "~`" + player.name + '~`yellow~` logged in!';
                 chatAll(text);
+
+                // Update last login
+                player.lastLogin = Date.now();
                 player.va = ships[player.ship].agility * .08 * player.agility2;
                 player.thrust = ships[player.ship].thrust * player.thrust2;
                 player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
