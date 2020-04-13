@@ -1417,6 +1417,7 @@ function Player(sock) {
 			log(text);
 			chatAll(text);
 			self.kick("AFK!");
+			self.afkTimer = 1;
 			return true;
 		}
 		return false;
