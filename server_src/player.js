@@ -141,7 +141,8 @@ function Player(sock) {
 
 		email: "",
 		permissionLevels: [-1],
-		equipped: 0
+		equipped: 0,
+		kickMsg: ""
 	}
 
 	self.tick = function () {
@@ -1413,10 +1414,10 @@ function Player(sock) {
 		if (self.afkTimer-- < 0) {
 			self.socket.emit("AFK", { t: 0 });
 			lefts[self.id] = 0;
-			var text = "~`" + self.color + "~`" + self.name + "~`yellow~` went AFK!";
 			log(text);
 			chatAll(text);
 			self.kick("AFK!");
+			self.testAfk = function() { return false; };
 			return true;
 		}
 		return false;
@@ -1569,6 +1570,7 @@ function Player(sock) {
 		self.socket.emit("chat", { msg: "Weapons swapped!" });
 	}
 	self.kick = function (msg) {
+		self.kickMsg = msg;
 		self.socket.emit("kick", { msg: msg });
 		self.socket.disconnect();
 
