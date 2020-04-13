@@ -114,7 +114,7 @@
 		"Press E to respawn.",
 		"Invalid user/pass combo!",
 		"Username must be alphanumeric, with 4-16 characters!",
-		"Password must be 1-32 characters long!",
+		"Password must be 6-128 characters long!",
 		"Username taken!",
 		"Account already in use!",
 		"Press W to move!",
