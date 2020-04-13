@@ -30,7 +30,7 @@ def updateLB(conn_str, path):
         name = player['name']
         kills = player['kills']
         rank = player['rank']
-        xp = floor(player['experience'])
+        xp = int(player['experience'])
         tech = floor((player['thrust2'] + player['radar2'] + player['capacity2'] + player['agility2'] + player['maxHealth2']) * 2) / 10
         money = player['money']
         color = "pink" if (player['color'] == 'red') else 'cyan'
