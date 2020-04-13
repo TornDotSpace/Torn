@@ -1207,6 +1207,9 @@ function Player(sock) {
 				sendWeapons(self);
 				return;
 			}
+			
+			await handlePlayerDeath(self);
+			self.dead = true;
 
 			if (self.color === "blue" && self.sx == 4 && self.sy == 4) {
 				self.sx = 6;
@@ -1216,9 +1219,7 @@ function Player(sock) {
 				self.sy = 1;
 			} else self.sy = self.sx = (self.color === "blue" ? 4 : 2);
 
-			self.dead = true;
 
-			await handlePlayerDeath(self);
 			self.x = self.y = sectorWidth/2;
 
 
