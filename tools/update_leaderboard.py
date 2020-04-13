@@ -4,6 +4,7 @@ import pymongo
 from pymongo import MongoClient
 from math import floor
 import datetime
+from decimal import Decimal
 
 MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn"
 PATH = "../client/leaderboard/index.html"
@@ -29,8 +30,8 @@ def updateLB(conn_str, path):
         name = player['name']
         kills = player['kills']
         rank = player['rank']
-        xp = player['experience']
-        tech = ((player['thrust2'] + player['radar2'] + player['capacity2'] + player['agility2'] + player['maxHealth2']) * 2) / 10
+        xp = floor(player['experience'])
+        tech = floor((player['thrust2'] + player['radar2'] + player['capacity2'] + player['agility2'] + player['maxHealth2']) * 2) / 10
         money = player['money']
         color = "pink" if (player['color'] == 'red') else 'cyan'
         
