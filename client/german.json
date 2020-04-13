@@ -114,7 +114,7 @@
         "Drücke E zum Auferstehen.",
         "Ungültige Namen-Passwort-Kombination!",
         "Nutzername muß alphanumerisch sein, mit 4-16 Zeichen!",
-        "Passwort muß 1-32 Zeichen lang sein!",
+        "Passwort muß 6-128 Zeichen lang sein!",
         "Nutzername vergeben!",
         "Nutzerkonto bereits in Nutzung!",
         "Drücke W zum bewegen!",

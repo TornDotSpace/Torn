@@ -1428,8 +1428,8 @@ function Player(sock) {
 			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
 			return;
 		}
-		if (pass.length > 32 || pass.length < 1) {
-			self.socket.emit("chat", { msg: "~`red~`Password must be 1-32 characters." });
+		if (pass.length > 128 || pass.length < 6) {
+			self.socket.emit("chat", { msg: "~`red~`Password must be 6-128 characters." });
 			return;
 		}
 		self.tentativePassword = pass;
