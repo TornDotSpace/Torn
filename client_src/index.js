@@ -1570,7 +1570,7 @@ socket.on('chat', function (data) {
 		chatName = chatName.trim();
 		// If they're muted, don't chat!
 		for (var mut in clientmutes) {
-			if (mut.valueOf().equalsIgnoreCase(chatName)) return;
+			if (mut.equalsIgnoreCase(chatName)) return;
 		}
 	}
 
