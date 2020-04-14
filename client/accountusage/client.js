@@ -3,6 +3,8 @@ var w = canvas.width = window.innerWidth;
 var h = canvas.height = window.innerHeight;
 var ctx = canvas.getContext('2d');
 
+var displayLoners = confirm("Press OK to display isolated nodes, cancel to not show these nodes.");
+
 var rendered = false;
 var tick = 0;
 var ox = 0, oy = 0, zoom = 1, tryzoom = 1;
@@ -53,7 +55,7 @@ function render(){
 	if(!rendered){
 		var del = {};
 		for (var name in ips) {
-			if(ips[name].num < 2) del[name] = 0;
+			if(ips[name].num < 2 && !displayLoners) del[name] = 0;
 		}
 		for(var i in del){
 			for(var a in accs) delete accs[a].addrs[i];
