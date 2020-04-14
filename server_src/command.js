@@ -153,6 +153,7 @@ cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, f
     ply.y = player.y;
     ply.sx = player.sx;
     ply.sy = player.sy;
+    ply.onChangeSectors();
 
     ply.socket.emit("chat", { msg: "Player found, attempting to teleport. May fail if they are docked or dead." });
 });
@@ -181,7 +182,7 @@ cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMIN
 
     var player = getPlayerFromName(name);
     if(player == -1){
-	    ply.socket.emit("chat", { msg: "Player '"+name+"'' not found." });
+	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
 	    return;
     }
     player.kick();

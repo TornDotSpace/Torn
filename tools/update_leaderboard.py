@@ -30,12 +30,12 @@ def updateLB(conn_str, path):
         kills = player['kills']
         rank = player['rank']
         xp = player['experience']
-        tech = ((player['thrust2'] + player['radar2'] + player['capacity2'] + player['agility2'] + player['maxHealth2']) * 2) / 10
+        tech = int(((player['thrust2'] + player['radar2'] + player['capacity2'] + player['agility2'] + player['maxHealth2'] + player['energy2'])/6-1)*8*100)/100
         money = player['money']
         color = "pink" if (player['color'] == 'red') else 'cyan'
         
         out = ( '<tr style="color:' + color + ';"><td>' + str(i) + ".</td><td>" + name + "</td><td> " + str(xp) + " </td><td>" + str(rank) + "</td><td>" + str(kills) + "</td><td>" + 
-        ((str(floor(money //1000000+.5))+"M") if money >10000000 else str(floor(money//1000+.5))+"K")  + "</td><td>" + str(tech) + "</td></tr>")
+        ((str(int(money //1000000+.5))+"M") if money >10000000 else str(int(money//1000+.5))+"K")  + "</td><td>" + str(tech) + "</td></tr>")
 
         # Alex Formatting (don't ask)
         newFile = newFile + out
