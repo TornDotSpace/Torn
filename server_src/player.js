@@ -358,8 +358,6 @@ function Player(sock) {
 		if(self.rank < self.ship) return;
 		if (self.ship == 16) { // Elite Raider
 			if(self.disguise > 0) return;
-			if(self.charge<0) return;
-			self.charge = 0;
 			//This effectively just shoots turbo.
 			var mult = ((self.e || self.gyroTimer > 0) && self.w && (self.a != self.d)) ? 1.025 : 1.017;
 			self.speed *= mult;
