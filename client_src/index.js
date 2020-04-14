@@ -3045,7 +3045,7 @@ function rLB() {
 		ctx.fillStyle = lb[i].color == 'red' ? 'pink' : 'cyan';
 		if(lb[i].name.includes(" ")){
 			ctx.font = "10px ShareTech";
-			write(lb[i].name.charAt(2), w - 224, (i + 4) * 16);
+			write(lb[i].name.charAt(1), w - 224, (i + 4) * 16);
 			ctx.font = "14px ShareTech";
 			let d = new Date();
 			var t = d.getTime() / (35 * 16);
@@ -3638,13 +3638,6 @@ function rPlanets() {
 	ctx.lineWidth = 3;
 	ctx.strokeStyle = "pink";
 	ctx.beginPath();
-	//ctx.arc(0, 0, maxPD(sx,sy), 0, Math.PI * 2);
-	//ctx.stroke();
-	//ctx.beginPath();
-	//ctx.arc(0, 0, minPD(sx,sy), 0, Math.PI * 2);
-	//ctx.stroke();
-	//ctx.closePath();
-	//ctx.setLineDash([]);
 	ctx.lineWidth = 1;
 	ctx.restore();
 	ctx.textAlign = "center";
