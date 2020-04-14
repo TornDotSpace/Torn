@@ -383,7 +383,7 @@ function Player(sock) {
 			self.shootBullet(39);
 		} // Built in spreadshot
 		else if (self.ship == 19) {
-			if(self.disguise > 0 || self.shield) return;
+			if(self.disguise > 0) return;
 			self.health++;
 		} // Heals you
 		else if (self.ship == 20) {

@@ -46,6 +46,7 @@ def updateLB(conn_str, path):
 
     # Write out
     lb = open(path, 'w')
+    newFile = newFile.encode('utf-8')
     lb.write(newFile)
     lb.close()
 
