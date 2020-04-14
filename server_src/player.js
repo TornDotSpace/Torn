@@ -141,7 +141,8 @@ function Player(sock) {
 
 		email: "",
 		permissionLevels: [-1],
-		equipped: 0
+		equipped: 0,
+		kickMsg: ""
 	}
 
 	self.tick = function () {
@@ -1221,6 +1222,9 @@ function Player(sock) {
 				sendWeapons(self);
 				return;
 			}
+			
+			await handlePlayerDeath(self);
+			self.dead = true;
 
 			if (self.color === "blue" && self.sx == 4 && self.sy == 4) {
 				self.sx = 6;
@@ -1230,9 +1234,7 @@ function Player(sock) {
 				self.sy = 1;
 			} else self.sy = self.sx = (self.color === "blue" ? 4 : 2);
 
-			self.dead = true;
 
-			await handlePlayerDeath(self);
 			self.x = self.y = sectorWidth/2;
 
 
@@ -1426,10 +1428,10 @@ function Player(sock) {
 		if (self.afkTimer-- < 0) {
 			self.socket.emit("AFK", { t: 0 });
 			lefts[self.id] = 0;
-			var text = "~`" + self.color + "~`" + self.name + "~`yellow~` went AFK!";
 			log(text);
 			chatAll(text);
 			self.kick("AFK!");
+			self.testAfk = function() { return false; };
 			return true;
 		}
 		return false;
@@ -1440,8 +1442,8 @@ function Player(sock) {
 			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
 			return;
 		}
-		if (pass.length > 32 || pass.length < 1) {
-			self.socket.emit("chat", { msg: "~`red~`Password must be 1-32 characters." });
+		if (pass.length > 128 || pass.length < 6) {
+			self.socket.emit("chat", { msg: "~`red~`Password must be 6-128 characters." });
 			return;
 		}
 		self.tentativePassword = pass;
@@ -1582,6 +1584,7 @@ function Player(sock) {
 		self.socket.emit("chat", { msg: "Weapons swapped!" });
 	}
 	self.kick = function (msg) {
+		self.kickMsg = msg;
 		self.socket.emit("kick", { msg: msg });
 		self.socket.disconnect();
 

@@ -227,7 +227,7 @@ module.exports = function initNetcode() {
                 return;
             }
             user = user.toLowerCase();
-            if (typeof pass !== "string" || pass.length > 32 || pass.length < 1) {
+            if (typeof pass !== "string" || pass.length > 128 || pass.length < 6) {
                 socket.emit("invalidReg", { reason: 3 });
                 return;
             }
@@ -350,11 +350,14 @@ module.exports = function initNetcode() {
 
             lefts[socket.id] = 150; // note that this player has left and queue it for deletion
 
-            //try to locate the player object from their ID
-            if (player == 0) return;
-
             //If the player is indeed found
-            var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game (reason: " + data + ")!"; // write a message about the player leaving
+            var reason = player.kickMsg;
+
+            if (!reason.localeCompare("")) {
+                reason = data;
+            }
+
+            var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game (reason: " + reason + ")"; // write a message about the player leaving
 
             log(text); // print in terminal
             chatAll(text); // send it to all the players
