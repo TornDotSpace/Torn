@@ -1428,7 +1428,7 @@ function Player(sock) {
 		if (self.afkTimer-- < 0) {
 			self.socket.emit("AFK", { t: 0 });
 			lefts[self.id] = 0;
-			log(text);
+			console.log(text);
 			chatAll(text);
 			self.kick("AFK!");
 			self.testAfk = function() { return false; };

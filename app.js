@@ -26,17 +26,18 @@ var configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
 require('./server_src/config.js')(configEnvironment);
 
 var fs = require('fs');
-var logFileName = "logs/" + (new Date()) + ".log";
 
-global.log = function (text) {
-	console.log(text);
-	fs.appendFile(logFileName, text+"\n", function (err) { if (err) throw err; });
-}
 
 buildFileSystem(); // create folders for players, neural nets, and turrets if they dont exist
 
+if (!Config.getValue("debug", "false")) {
+	var stdoutFileName = "logs/" + (new Date()) + ".log";
+	var stderrFilename = "error_logs/" + (new Date()) + ".log";
+	global.console = new console.Console(fs.createWriteStream(stdoutFileName), fs.createWriteStream(stderrFilename));
+}
+
 global.initReboot = function () {
-	log("\nInitializing server reboot...\n");
+	console.log("\nInitializing server reboot...\n");
 	chatAll("~`red~`Server restarting in 2 minutes. Save your progress as soon as possible.");
 	setTimeout(function () { chatAll("~`red~`Server restarting in 1 minute. Please save your progress."); }, 1 * 60 * 1000);
 	setTimeout(function () { chatAll("~`red~`Server restarting in 30 seconds. Please save your progress."); }, (1 * 60 + 30) * 1000);
@@ -305,7 +306,7 @@ for(var i = 0; i < mapSz; i++){
 init();
 
 function sigHandle() {
-	log("[SERVER] Caught termination signal...");
+	console.log("[SERVER] Caught termination signal...");
 
 	sendAll("kick", { msg: "You have been logged out by an adminstrator working on the servers." });
 
@@ -324,7 +325,7 @@ function sigHandle() {
 function onCrash(err) {
 	onCrash = function() { };
 
-	log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
+	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
 
 	sendAll("kick", {msg: ":( The server you are playing on has encountered a problem and needs to reset. Please tell a developer that this happened. You should be able to log back into the game and start exploring the universe almost immediately. :("});
 
@@ -401,7 +402,7 @@ function init() { // start the server!
 	var netcode = require('./server_src/netcode.js');
 	netcode();
 
-	log("Server initialized successfully. Game log below.\n");
+	console.log("Server initialized successfully. Game log below.\n");
 }
 
 function buildFileSystem() { // create the server files/folders
@@ -409,7 +410,7 @@ function buildFileSystem() { // create the server files/folders
 	console.log("\nCreating any potential missing files and folders needed for the server...");
 	var allGood = true;
 
-	var dirs = ['./server', './server/neuralnets', './logs'];
+	var dirs = ['./server', './server/neuralnets', './logs', './error_logs'];
 	for(var i in dirs){
 		var dir = dirs[i];
 		if (!fs.existsSync(dir)) {
@@ -431,7 +432,7 @@ function buildFileSystem() { // create the server files/folders
 
 }
 function spawnBases() {
-	log("\nSpawning " + (baseMap.length / 2) + " Bases...");
+	console.log("\nSpawning " + (baseMap.length / 2) + " Bases...");
 	//spawn bases
 	for (var i = 0; i < baseMap.length; i += 2) {
 		//make a red base at these coords

@@ -45,7 +45,7 @@ module.exports = function loadConfig(environment) {
     var config_file = './config/torn.cfg';
 
     if (!fs.existsSync(config_file)) {
-        log("[CFG] WARNING! config/torn.cfg doesn't exist! Using hard-coded defaults");
+        console.log("[CFG] WARNING! config/torn.cfg doesn't exist! Using hard-coded defaults");
         return;
     }
 
