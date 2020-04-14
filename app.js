@@ -37,12 +37,11 @@ buildFileSystem(); // create folders for players, neural nets, and turrets if th
 
 global.initReboot = function () {
 	log("\nInitializing server reboot...\n");
-	chatAll("Server is restarting in 3 minutes. Please save your progress as soon as possible.");
-	setTimeout(function () { chatAll("Server is restarting in 2 minutes. Please save your progress."); }, 1 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 1 minute. Please save your progress."); }, 2 * 60 * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 30 seconds. Please save your progress."); }, (2 * 60 + 30) * 1000);
-	setTimeout(function () { chatAll("Server is restarting in 10 seconds. Please save your progress."); }, (2 * 60 + 50) * 1000);
-	setTimeout(function () { chatAll("Server restarting..."); }, (2 * 60 + 57) * 1000);
+	chatAll("~`red~`Server restarting in 2 minutes. Save your progress as soon as possible.");
+	setTimeout(function () { chatAll("~`red~`Server restarting in 1 minute. Please save your progress."); }, 1 * 60 * 1000);
+	setTimeout(function () { chatAll("~`red~`Server restarting in 30 seconds. Please save your progress."); }, (1 * 60 + 30) * 1000);
+	setTimeout(function () { chatAll("~`red~`Server restarting in 10 seconds. Please save your progress."); }, (1 * 60 + 50) * 1000);
+	setTimeout(function () { chatAll("~`red~`Server restarting..."); }, (1 * 60 + 57) * 1000);
 	setTimeout(shutdown, 3 * 60 * 1000);
 }
 
