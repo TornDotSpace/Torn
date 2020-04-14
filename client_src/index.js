@@ -3607,12 +3607,14 @@ function rAsteroids() {
 function rPlanets() {
 	if (planets == 0) return;
 	var selfo = planets;
-	var rendX = (selfo.x - px + w / 2 + scrx);
-	var rendY = (selfo.y - py + h / 2 + scry);
+	var rendX = ((selfo.x - px)/2 + w / 2 + scrx);
+	var rendY = ((selfo.y - py)/2 + h / 2 + scry);
+	if(rendX < -1000 || rendX > w+1000 || rendY < -1000 || rendY > h+1500) return;
+
 	let d = new Date();
 	var t = d.getTime() * 500;
-	var dx, dy;
 	var stime = d.getTime() / 150000;
+
 	var imgi = (sx + sy * mapSz) % 5;
 	var img = planetImgs[imgi];
 	if (typeof img === "undefined" || img == 2) {
