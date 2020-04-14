@@ -154,10 +154,14 @@ cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, f
         return;
     }
 
+    var old_sy = ply.sy, old_sx = ply.sx;
+
     ply.x = player.x;
     ply.y = player.y;
     ply.sx = player.sx;
     ply.sy = player.sy;
+    delete players[old_sy][old_sx][ply.id];
+    players[ply.sy][ply.sx][ply.id] = ply;
     ply.onChangeSectors();
 
     ply.socket.emit("chat", { msg: "Player found, attempting to teleport. May fail if they are docked or dead." });
@@ -173,9 +177,9 @@ cmds["/settag"] = new Command("/settag <player> <tag> - Sets a player's tag. tag
         return;
     }
 
-    ply.name = "["+newTag+"] "+name;
-    ply.save();
-    ply.socket.emit("chat", { msg: "Player found, attempting to teleport. May fail if they are docked or dead." });
+    player.name = "["+newTag+"] "+name;
+    player.save();
+    ply.socket.emit("chat", { msg: "~`violet~`Tag set." });
 });
 
 cmds["/smite"] = new Command("/smite <player> - Smites the specified player", ADMINPLUS, function (ply, msg) {
