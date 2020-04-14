@@ -136,7 +136,7 @@ cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the sp
 
     if (minutes < 0) return;
 
-    muteTable[name] = (Date.now() + (minutes * 60 * 1000));
+    muteTable[player.name] = (Date.now() + (minutes * 60 * 1000));
     chatAll("~`violet~`" + player.name + "~`yellow~` has been muted for "+minutes+" minutes!");
 });
 
