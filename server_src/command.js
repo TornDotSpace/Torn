@@ -89,7 +89,7 @@ cmds["/swap"] = new Command("/swap", REGISTERED, function (player, msg) {
 });
 
 cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player's chat messages.", EVERYONE, function (ply, msg) {
-    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playername'"});return;} // split looks like {"/mute", "name"}
+    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playernamewithouttag'"});return;} // split looks like {"/mute", "name"}
     var name = msg.split(" ")[1];
     var player = getPlayerFromName(name);
     if(player == -1){
@@ -101,7 +101,7 @@ cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player
 });
 
 cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the player's chat messages again.", EVERYONE, function (ply, msg) {
-    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playername'"});return;} // split looks like {"/unmute", "name"}
+    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playernamewithouttag'"});return;} // split looks like {"/unmute", "name"}
     var name = msg.split(" ")[1];
     var player = getPlayerFromName(name);
     if(player == -1){
@@ -124,7 +124,7 @@ cmds["/broadcast"] = new Command("/broadcast <msg> - Send a message to the whole
 });
 
 cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the specified player server-wide.", MODPLUS, function (ply, msg) {
-    if (msg.split(" ").length != 3) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playername minutes'"});return;} // split looks like {"/mute", "name", "minutesToMute"}
+    if (msg.split(" ").length != 3) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playernamewithouttag minutes'"});return;} // split looks like {"/mute", "name", "minutesToMute"}
     var name = msg.split(" ")[1];
     var player = getPlayerFromName(name);
     if(player == -1){
@@ -140,8 +140,13 @@ cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the sp
     chatAll("~`violet~`" + player.name + "~`yellow~` has been muted for "+minutes+" minutes!");
 });
 
+
+// ADMINSTRATOR COMMANDS
+// These commands are accessible to adminstrators in the game
+cmds["/reboot"] = new Command("/reboot - Schedules a restart of the shard", ADMINPLUS, initReboot);
+
 cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, function (ply, msg) {
-    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/tp playername'"});return;} // split looks like {"/mute", "name", "minutesToMute"}
+    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/tp playernamewithouttag'"});return;}
     var name = msg.split(" ")[1];
     var player = getPlayerFromName(name);
     if(player == -1){
@@ -158,10 +163,20 @@ cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, f
     ply.socket.emit("chat", { msg: "Player found, attempting to teleport. May fail if they are docked or dead." });
 });
 
+cmds["/settag"] = new Command("/settag <player> <tag> - Sets a player's tag. tag should not contain brackets.", ADMINPLUS, function (ply, msg) {
+    if (msg.split(" ").length != 3) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/settag playernamewithouttag tag'"});return;}
+    var name = msg.split(" ")[1];
+    var newTag = msg.split(" ")[2];
+    var player = getPlayerFromName(name);
+    if(player == -1){
+        ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
+        return;
+    }
 
-// ADMINSTRATOR COMMANDS
-// These commands are accessible to adminstrators in the game
-cmds["/reboot"] = new Command("/reboot - Schedules a restart of the shard", ADMINPLUS, initReboot);
+    ply.name = "["+newTag+"] "+name;
+    ply.save();
+    ply.socket.emit("chat", { msg: "Player found, attempting to teleport. May fail if they are docked or dead." });
+});
 
 cmds["/smite"] = new Command("/smite <player> - Smites the specified player", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 2) return;

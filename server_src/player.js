@@ -355,8 +355,8 @@ function Player(sock) {
 	}
 	self.shootEliteWeapon = function () {
 		if(self.rank < self.ship) return;
-		if(self.disguise > 0 || self.shield) return;
 		if (self.ship == 16) { // Elite Raider
+			if(self.disguise > 0) return;
 			if(self.charge<0) return;
 			self.charge = 0;
 			//This effectively just shoots turbo.
@@ -365,6 +365,7 @@ function Player(sock) {
 			self.vx *= mult;
 			self.vy *= mult;
 		} else if (self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250) { // Quarrier
+			if(self.disguise > 0 || self.shield) return;
 			self.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
 			self.silver -= 250;
 			self.aluminium -= 250;
@@ -376,9 +377,22 @@ function Player(sock) {
 			a.vx = Math.cos(self.angle) * 15;
 			a.vy = Math.sin(self.angle) * 15;
 			asts[self.sy][self.sx][r] = a;
-		} else if (self.ship == 18) { self.shootBullet(39); } // Built in spreadshot
-		else if (self.ship == 20) { self.shootBullet(28); self.health *=.1; self.experience-=800; self.money-=20000; self.save();} // Built in Grav Bomb
-		else if (self.ship == 19) { self.health++; } // Built in spreadshot
+		} else if (self.ship == 18) {
+			if(self.disguise > 0 || self.shield) return;
+			self.shootBullet(39);
+		} // Built in spreadshot
+		else if (self.ship == 19) {
+			if(self.disguise > 0 || self.shield) return;
+			self.health++;
+		} // Heals you
+		else if (self.ship == 20) {
+			if(self.disguise > 0 || self.shield) return;
+			self.shootBullet(28);
+			self.health *=.1;
+			self.experience-=800;
+			self.money-=20000;
+			self.save();
+		} // Built in Grav Bomb
 		self.reload(true, 0);
 	}
 	self.reload = function(elite, wepId){

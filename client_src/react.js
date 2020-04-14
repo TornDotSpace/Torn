@@ -210,7 +210,9 @@ class LoginOverlay extends Component {
 								{video}
 								<br /><a href="youtubers/">Have a channel?</a></center>
 							*/}
-							<center><img src="img/harrlogo.png" alt="Logo" width="340"/></center>
+							<center>
+								<img src="img/harrlogo.png" alt="Logo" width="340"/>
+							</center>
 						</div>
 						<div className="login">
 							<center><h3>Returning Players</h3>
