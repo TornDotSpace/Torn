@@ -20,7 +20,7 @@ def updateLB(conn_str, path):
     db = client.torn
     players = db.players
     
-    newFile = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en"><head><title>Leaderboard</title><link rel="stylesheet" href="../page.css" /></head><body><br><br><h1><div style="padding: 20px"><center><font color="#0099ff">Leaderboard</font></center></div></h1><font color="#0099ff"><center><nobr><table><tr><th>#</th><th>Name</th><th>Exp</th><th>Rank</th><th>Kills</th><th>Money</th><th>Tech</th></tr>'
+    newFile = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><meta charset="utf-8"/><html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en"><head><title>Leaderboard</title><link rel="stylesheet" href="../page.css" /></head><body><br><br><h1><div style="padding: 20px"><center><font color="#0099ff">Leaderboard</font></center></div></h1><font color="#0099ff"><center><nobr><table><tr><th>#</th><th>Name</th><th>Exp</th><th>Rank</th><th>Kills</th><th>Money</th><th>Tech</th></tr>'
 
     # Grab needed data
     i = 0
