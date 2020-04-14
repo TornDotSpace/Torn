@@ -353,7 +353,7 @@ module.exports = function initNetcode() {
             //If the player is indeed found
             var reason = player.kickMsg;
 
-            if (!reason.localeCompare("")) {
+            if (reason === undefined || !reason.localeCompare("")) {
                 reason = data;
             }
 
