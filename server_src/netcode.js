@@ -76,8 +76,8 @@ function runCommand(player, msg) { // player just sent msg in chat and msg start
 
 module.exports = function initNetcode() {
     var port = process.argv[2];
-    log("");
-    for (var i = 0; i < 5; i++)log("=== STARTING SERVER ON PORT " + port + " ===");
+    console.log("");
+    for (var i = 0; i < 5; i++) console.log("=== STARTING SERVER ON PORT " + port + " ===");
 
     const http = require("http");
     const https = require("https");
@@ -127,7 +127,7 @@ module.exports = function initNetcode() {
         var ip = Config.getValue("want-xreal-ip", true)
             ? socket.handshake.headers['x-real-ip']
             : socket.handshake.address;
-        log("Guest Connected!");
+
         if (!flood(ip)) return;
 
         var player = 0;
@@ -183,7 +183,7 @@ module.exports = function initNetcode() {
             instance = true;
             player.ip = ip;
             player.name = "GUEST" + guestCount;
-            log(player.ip + " logged in as " + player.name);
+            console.log(player.ip + " logged in as " + player.name);
             guestCount++;
 
             player.color = socket_color ? "red" : "blue";
@@ -254,7 +254,7 @@ module.exports = function initNetcode() {
                 player.permissionLevels=[0];
                 socket.emit("registered", { user: data.user, pass: data.pass });
                 var text = user + ' registered!';
-                log(text);
+                console.log(text);
                 chatAll(text);
     
                 player.save();
@@ -331,7 +331,7 @@ module.exports = function initNetcode() {
     
                 player.getAllPlanets();
                 player.refillAllAmmo();
-                log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
+                console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
                 var text = "~`" + player.color + "~`" + player.name + '~`yellow~` logged in!';
                 chatAll(text);
 
@@ -359,7 +359,7 @@ module.exports = function initNetcode() {
 
             var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game (reason: " + reason + ")"; // write a message about the player leaving
 
-            log(text); // print in terminal
+            console.log(text); // print in terminal
             chatAll(text); // send it to all the players
             //DO NOT save the player's game data.
         });
@@ -410,7 +410,7 @@ module.exports = function initNetcode() {
                 return;
             }
 
-            log("[CHAT] " + player.name + ": " + data.msg); // print their raw message
+            console.log("[CHAT] " + player.name + ": " + data.msg); // print their raw message
             if (!player.name.includes("[")) data.msg = data.msg.replace(/`/ig, ''); // Normies can't triforce
 
             var time = Date.now();

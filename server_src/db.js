@@ -9,15 +9,15 @@ var Base = require('./universe/base.js');
 // to MongoDB
 global.connectToDB = function () {
     if (PLAYER_DATABASE != null) {
-        log("[DB] Already connected to MongoDB database...");
+        console.log("[DB] Already connected to MongoDB database...");
         return;
     }
 
-    log("[DB] Connecting to MongoDB instance @ " + MONGO_CONNECTION_STR);
+    console.log("[DB] Connecting to MongoDB instance @ " + MONGO_CONNECTION_STR);
 
     Mongo.connect(function (err, client) {
         if (err) {
-            log("[DB] Connection failed! (ERROR: " + err + ")");
+            console.log("[DB] Connection failed! (ERROR: " + err + ")");
             return;
         }
 
@@ -27,7 +27,7 @@ global.connectToDB = function () {
 
         loadTurretData();
         setTimeout(saveTurrets, 1000);
-        log("[DB] Connection successful!");
+        console.log("[DB] Connection successful!");
     });
 }
 
@@ -111,7 +111,7 @@ global.deleteTurret = function (turret) {
 }
 
 global.loadTurretData = async function() {
-    log("\nLoading Turrets...");
+    console.log("\nLoading Turrets...");
     var items = await TURRET_DATABASE.find();
 
     items.forEach(i => {
@@ -120,7 +120,7 @@ global.loadTurretData = async function() {
             b[x] = i[x];
         }
         bases[b.sy][b.sx] = b;
-        log("Turret (" + b.sy + "," + b.sx + ") loaded!");
+        console.log("Turret (" + b.sy + "," + b.sx + ") loaded!");
     });
 }
 

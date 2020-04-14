@@ -13,6 +13,7 @@ client/*.js
 
 # Server Logs (production)
 logs/
+error_logs/
 
 # Dev ssl
 test-ssl/
