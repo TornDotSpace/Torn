@@ -1,5 +1,3 @@
-import discord
-
 from os import listdir, remove
 from os.path import isfile
 from discord_webhook import DiscordWebhook
