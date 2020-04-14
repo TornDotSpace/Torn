@@ -1570,7 +1570,7 @@ socket.on('chat', function (data) {
 		chatName = chatName.trim();
 		// If they're muted, don't chat!
 		for (var mut in clientmutes) {
-			if (mut.valueOf().equalsIgnoreCase(chatName)) return;
+			if (mut.equalsIgnoreCase(chatName)) return;
 		}
 	}
 
@@ -3043,19 +3043,15 @@ function rLB() {
 		var place = 1 + ((i != 16) ? i : parseInt(lb[i].id));
 		ctx.textAlign = "left";
 		ctx.fillStyle = lb[i].color == 'red' ? 'pink' : 'cyan';
-		if(lb[i].name.startsWith("[V] ")){
+		if(lb[i].name.includes(" ")){
+			ctx.font = "10px ShareTech";
+			write(lb[i].name.charAt(1), w - 224, (i + 4) * 16);
+			ctx.font = "14px ShareTech";
 			let d = new Date();
 			var t = d.getTime() / (35 * 16);
-			write("[VIP]", w - 216, (i + 4) * 16);
-			ctx.fillStyle = "rgba("+Math.floor(16*Math.sqrt(Math.sin(t)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*2/3)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*4/3)*128+128))+", 1)";
-			write(lb[i].name.substring(4), w - 186, (i + 4) * 16);
-		}
-		else if(lb[i].name.startsWith("[B] ")){
-			let d = new Date();
-			var t = d.getTime() / (35 * 16);
-			write("[MVP]", w - 216, (i + 4) * 16);
-			ctx.fillStyle = "rgba("+Math.floor(16*Math.sqrt(Math.sin(t)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*2/3)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*4/3)*128+128))+", 1)";
-			write(lb[i].name.substring(4), w - 180, (i + 4) * 16);
+			if(lb[i].name.includes("V")||lb[i].name.includes("B"))
+				ctx.fillStyle = "rgba("+Math.floor(16*Math.sqrt(Math.sin(t)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*2/3)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*4/3)*128+128))+", 1)";
+			write(lb[i].name.substring(4), w - 216, (i + 4) * 16);
 		}
 		else write(lb[i].name, w - 216, (i + 4) * 16);
 		ctx.fillStyle = 'yellow';
@@ -3611,12 +3607,14 @@ function rAsteroids() {
 function rPlanets() {
 	if (planets == 0) return;
 	var selfo = planets;
-	var rendX = (selfo.x - px + w / 2 + scrx);
-	var rendY = (selfo.y - py + h / 2 + scry);
+	var rendX = ((selfo.x - px)/2 + w / 2 + scrx);
+	var rendY = ((selfo.y - py)/2 + h / 2 + scry);
+	if(rendX < -1000 || rendX > w+1000 || rendY < -1000 || rendY > h+1500) return;
+
 	let d = new Date();
 	var t = d.getTime() * 500;
-	var dx, dy;
 	var stime = d.getTime() / 150000;
+
 	var imgi = (sx + sy * mapSz) % 5;
 	var img = planetImgs[imgi];
 	if (typeof img === "undefined" || img == 2) {
@@ -3642,13 +3640,6 @@ function rPlanets() {
 	ctx.lineWidth = 3;
 	ctx.strokeStyle = "pink";
 	ctx.beginPath();
-	//ctx.arc(0, 0, maxPD(sx,sy), 0, Math.PI * 2);
-	//ctx.stroke();
-	//ctx.beginPath();
-	//ctx.arc(0, 0, minPD(sx,sy), 0, Math.PI * 2);
-	//ctx.stroke();
-	//ctx.closePath();
-	//ctx.setLineDash([]);
 	ctx.lineWidth = 1;
 	ctx.restore();
 	ctx.textAlign = "center";
