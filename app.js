@@ -38,11 +38,16 @@ if (!Config.getValue("debug", "false")) {
 
 global.initReboot = function () {
 	console.log("\nInitializing server reboot...\n");
-	chatAll("~`#f00~`Server restarting in 2 minutes. Save your progress as soon as possible.");
-	setTimeout(function () { chatAll("~`#f00~`Server restarting in 1 minute. Please save your progress."); }, 60 * 1000);
-	setTimeout(function () { chatAll("~`#f00~`Server restarting in 30 seconds. Please save your progress."); }, 90 * 1000);
-	setTimeout(function () { chatAll("~`#f00~`Server restarting in 10 seconds. Please save your progress."); }, 110 * 1000);
-	setTimeout(function () { chatAll("~`#f00~`Server restarting..."); }, 117 * 1000);
+	chatAll("~`#f00~`Server restarting in 120 seconds. Save your progress!");
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 90 seconds. Save your progress!"); }, 30 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 60 seconds. Save your progress!"); }, 60 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 30 seconds. Save your progress!"); }, 90 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 10 seconds. Save your progress!"); }, 110 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 5..."); }, 115 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 4..."); }, 116 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 3..."); }, 117 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 2..."); }, 118 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 1..."); }, 119 * 1000);
 	setTimeout(shutdown, 120 * 1000);
 }
 
