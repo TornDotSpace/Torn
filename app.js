@@ -342,11 +342,11 @@ function onCrash(err) {
 		}
 	}
 
-	process.stderr.write("==== TORN.SPACE CRASH REPORT ====\n");
-	process.stderr.write("Crash Time: " + new Date() + "\n");
-	process.stderr.write("Players online: " + plyrs + "\n");
-	process.stderr.write("Exception information: " + "\n");
-	process.stderr.write("Trace: " + err.stack + "\n");
+	console.error("==== TORN.SPACE CRASH REPORT ====\n");
+	console.error("Crash Time: " + new Date() + "\n");
+	console.error("Players online: " + plyrs + "\n");
+	console.error("Exception information: " + "\n");
+	console.error("Trace: " + err.stack + "\n");
 
 	// Exit with status code 3 to indicate uncaught exception
 	setTimeout(function() { process.exit(3); }, 4000);

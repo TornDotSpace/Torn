@@ -146,11 +146,11 @@ module.exports = function initNetcode() {
 
                     console.error("Exception caught in player event " + the_event);
 
-                    process.stderr.write("==== TORN.SPACE ERROR REPORT ====\n");
-                    process.stderr.write("Error Time: " + new Date() + "\n");
-                    process.stderr.write("Event: " + the_event + "\n");
-                    process.stderr.write("Exception information: " + err + "\n");
-                    process.stderr.write("Trace: " + err.stack + "\n");
+                    console.error("==== TORN.SPACE ERROR REPORT ====\n");
+                    console.error("Error Time: " + new Date() + "\n");
+                    console.error("Event: " + the_event + "\n");
+                    console.error("Exception information: " + err + "\n");
+                    console.error("Trace: " + err.stack + "\n");
 
                     // Eject the player from the game: we don't know if they're in a valid state
                     socket.emit("kick", { msg: "Internal server error." });
