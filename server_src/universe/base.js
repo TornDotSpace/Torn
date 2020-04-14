@@ -143,6 +143,9 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		if (!self.isBase) {
 			bases[self.sy][self.sx] = 0;
 			self.die = function() { };
+		} else {
+			var numBotsToSpawn = 2+4*Math.random()*Math.random();
+			for(var i = 0; i < numBotsToSpawn; i++) spawnBot(self.sx, self.sy, self.color, 0, 0);
 		}
 
 		//If I was killed by an asteroid...

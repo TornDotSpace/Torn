@@ -1570,7 +1570,7 @@ socket.on('chat', function (data) {
 		chatName = chatName.trim();
 		// If they're muted, don't chat!
 		for (var mut in clientmutes) {
-			if (mut.valueOf().equalsIgnoreCase(chatName)) return;
+			if (mut.equalsIgnoreCase(chatName)) return;
 		}
 	}
 
@@ -3045,7 +3045,7 @@ function rLB() {
 		ctx.fillStyle = lb[i].color == 'red' ? 'pink' : 'cyan';
 		if(lb[i].name.includes(" ")){
 			ctx.font = "10px ShareTech";
-			write(lb[i].name.charAt(2), w - 224, (i + 4) * 16);
+			write(lb[i].name.charAt(1), w - 224, (i + 4) * 16);
 			ctx.font = "14px ShareTech";
 			let d = new Date();
 			var t = d.getTime() / (35 * 16);
@@ -3607,12 +3607,14 @@ function rAsteroids() {
 function rPlanets() {
 	if (planets == 0) return;
 	var selfo = planets;
-	var rendX = (selfo.x - px + w / 2 + scrx);
-	var rendY = (selfo.y - py + h / 2 + scry);
+	var rendX = ((selfo.x - px)/2 + w / 2 + scrx);
+	var rendY = ((selfo.y - py)/2 + h / 2 + scry);
+	if(rendX < -1000 || rendX > w+1000 || rendY < -1000 || rendY > h+1500) return;
+
 	let d = new Date();
 	var t = d.getTime() * 500;
-	var dx, dy;
 	var stime = d.getTime() / 150000;
+
 	var imgi = (sx + sy * mapSz) % 5;
 	var img = planetImgs[imgi];
 	if (typeof img === "undefined" || img == 2) {
@@ -3638,13 +3640,6 @@ function rPlanets() {
 	ctx.lineWidth = 3;
 	ctx.strokeStyle = "pink";
 	ctx.beginPath();
-	//ctx.arc(0, 0, maxPD(sx,sy), 0, Math.PI * 2);
-	//ctx.stroke();
-	//ctx.beginPath();
-	//ctx.arc(0, 0, minPD(sx,sy), 0, Math.PI * 2);
-	//ctx.stroke();
-	//ctx.closePath();
-	//ctx.setLineDash([]);
 	ctx.lineWidth = 1;
 	ctx.restore();
 	ctx.textAlign = "center";
