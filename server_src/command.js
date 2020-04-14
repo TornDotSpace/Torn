@@ -182,6 +182,20 @@ cmds["/settag"] = new Command("/settag <player> <tag> - Sets a player's tag. tag
     ply.socket.emit("chat", { msg: "~`violet~`Tag set." });
 });
 
+cmds["/deltag"] = new Command("/deltag <player> <tag> - Removes a player's tag.", ADMINPLUS, function (ply, msg) {
+    if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/settag playernamewithouttag'"});return;}
+    var name = msg.split(" ")[1];
+    var player = getPlayerFromName(name);
+    if(player == -1){
+        ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
+        return;
+    }
+
+    player.name = name;
+    player.save();
+    ply.socket.emit("chat", { msg: "~`violet~`Tag removed." });
+});
+
 cmds["/smite"] = new Command("/smite <player> - Smites the specified player", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 2) return;
     var name = msg.split(" ")[1];
