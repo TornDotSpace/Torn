@@ -38,12 +38,12 @@ if (!Config.getValue("debug", "false")) {
 
 global.initReboot = function () {
 	console.log("\nInitializing server reboot...\n");
-	chatAll("~`red~`Server restarting in 2 minutes. Save your progress as soon as possible.");
-	setTimeout(function () { chatAll("~`red~`Server restarting in 1 minute. Please save your progress."); }, 1 * 60 * 1000);
-	setTimeout(function () { chatAll("~`red~`Server restarting in 30 seconds. Please save your progress."); }, (1 * 60 + 30) * 1000);
-	setTimeout(function () { chatAll("~`red~`Server restarting in 10 seconds. Please save your progress."); }, (1 * 60 + 50) * 1000);
-	setTimeout(function () { chatAll("~`red~`Server restarting..."); }, (1 * 60 + 57) * 1000);
-	setTimeout(shutdown, 3 * 60 * 1000);
+	chatAll("~`#f00~`Server restarting in 2 minutes. Save your progress as soon as possible.");
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 1 minute. Please save your progress."); }, 60 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 30 seconds. Please save your progress."); }, 90 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting in 10 seconds. Please save your progress."); }, 110 * 1000);
+	setTimeout(function () { chatAll("~`#f00~`Server restarting..."); }, 117 * 1000);
+	setTimeout(shutdown, 120 * 1000);
 }
 
 global.saveTurrets = function () {
@@ -111,7 +111,7 @@ var baseMap = [0, 1,	//A2 / G6
 //some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
 var mineLifetime = 3; // mines despawn after 3 minutes
-global.baseHealth = 900; // max base health
+global.baseHealth = 1200; // max base health
 global.baseKillExp = 1200; // Exp reward for killing a base
 global.baseKillMoney = 100000; // ditto but money
 global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
