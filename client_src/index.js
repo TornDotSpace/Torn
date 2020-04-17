@@ -3597,8 +3597,8 @@ function rAsteroids() {
 function rPlanets() {
 	if (planets == 0) return;
 	var selfo = planets;
-	var rendX = ((selfo.x - px)/2 + w / 2 + scrx);
-	var rendY = ((selfo.y - py)/2 + h / 2 + scry);
+	var rendX = (selfo.x - px + w + scrx)/2;
+	var rendY = (selfo.y - py + h + scry)/2;
 	if(rendX < -1000 || rendX > w+1000 || rendY < -1000 || rendY > h+1500) return;
 
 	let d = new Date();
