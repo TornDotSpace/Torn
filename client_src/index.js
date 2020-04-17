@@ -3599,7 +3599,7 @@ function rPlanets() {
 	var selfo = planets;
 	var rendX = (selfo.x - px + scrx)/4 + w/2;
 	var rendY = (selfo.y - py + scry)/4 + h/2;
-	if(rendX < -250 || rendX > w+250 || rendY < -250 || rendY > h+250) return;
+	if(rendX < -100 || rendX > w+100 || rendY < -100 || rendY > h+150) return;
 
 	let d = new Date();
 	var t = d.getTime() * 500;
