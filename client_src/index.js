@@ -3597,9 +3597,9 @@ function rAsteroids() {
 function rPlanets() {
 	if (planets == 0) return;
 	var selfo = planets;
-	var rendX = (selfo.x - px + w + scrx)/2;
-	var rendY = (selfo.y - py + h + scry)/2;
-	if(rendX < -1000 || rendX > w+1000 || rendY < -1000 || rendY > h+1500) return;
+	var rendX = (selfo.x - px + scrx)/4 + w/2;
+	var rendY = (selfo.y - py + scry)/4 + h/2;
+	if(rendX < -250 || rendX > w+250 || rendY < -250 || rendY > h+250) return;
 
 	let d = new Date();
 	var t = d.getTime() * 500;
@@ -3632,7 +3632,7 @@ function rPlanets() {
 	if (ctx.fillStyle == "red") ctx.fillStyle == "pink";
 	else if (ctx.fillStyle == "blue") ctx.fillStyle == "cyan";
 	ctx.font = "30px ShareTech";
-	write(mEng[127] + selfo.name, rendX, rendY - 256);
+	write(mEng[127] + selfo.name, rendX, rendY - 196);
 	ctx.textAlign = "left";
 	ctx.font = "14px ShareTech";
 }
