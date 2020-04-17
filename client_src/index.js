@@ -1570,10 +1570,10 @@ socket.on('chat', function (data) {
 		chatName = chatName.trim();
 		// If they're muted, don't chat!
 		for (var mut in clientmutes) {
-			if (mut.equals(chatName)) return;
+			if (mut.localeCompare(chatName, undefined, { sensitivity: 'accent'}) == 0) return;
 		}
 	}
-
+	
 	_chat(data);
 });
 // Extracting so we can use it locally

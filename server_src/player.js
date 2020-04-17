@@ -1237,6 +1237,7 @@ function Player(sock) {
 
 
 			if (self.lives <= 0) {
+				self.save();
 				self.kick("Goodbye captain: no more lives remaining!");
 			}
 			else self.save();
