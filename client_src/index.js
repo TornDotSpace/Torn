@@ -320,11 +320,6 @@ function loadImageEnd() {
 		}, 100)
 	}
 }
-function loadPlanetImg(i) {
-	planetImgs[i] = new Image();
-	// TODO: fix
-	planetImgs[i].src = '/img/space/planets/pt' + ((i % 5) + 1) + '.png';
-}
 function loadShipImg(red, i) {
 	if (red) {
 		redShips[i] = new Image();
@@ -395,10 +390,14 @@ function loadAllImages() {
 	loadImage("BHArrow", '/img/BHArrow.png');
 	loadImage("Exclamation", '/img/AAA.png');
 	loadImage("energyBar", '/img/energy.png');
-	loadShipImg(true,14); // hydra for homepage
-	for(var i = 0; i < 8; i++) loadShipImg(false, i);
-	for(var i = 0; i < 8; i++) loadShipImg(true, i);
+	for(var i = 0; i < 20; i++) loadShipImg(false, i);
+	for(var i = 0; i < 20; i++) loadShipImg(true, i);
 	loadImageEnd();
+
+	for (var i = 1; i < 6; i++) {
+		planetImgs[i] = new Image();
+		planetImgs[i].src = '/img/space/planets/pt' + i + '.png';	
+	}
 }
 
 var achs = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
@@ -827,17 +826,12 @@ function rShop() {
 	var rendY = ry + 128 * 3 - 16;
 	var isRed = pc === "red";
 	var img = isRed ? redShips[shipView] : blueShips[shipView];
-	if (typeof img === "undefined" || img == 2) {
-		(isRed ? redShips : blueShips)[shipView] = 2;//so we don't load a million times before its sent
-		if (img != 2) loadShipImg(isRed, shipView);
-	} else {
-		ctx.save();
-		ctx.translate(rendX, rendY);
-		ctx.rotate(-3 * t);
-		if (shipView > rank) img = Img.q;
-		ctx.drawImage(img, -img.width / 2, -img.height / 2);
-		ctx.restore();
-	}
+	ctx.save();
+	ctx.translate(rendX, rendY);
+	ctx.rotate(-3 * t);
+	if (shipView > rank) img = Img.q;
+	ctx.drawImage(img, -img.width / 2, -img.height / 2);
+	ctx.restore();
 
 	ctx.textAlign = "center";
 	ctx.fillStyle = 'yellow';
@@ -3617,11 +3611,7 @@ function rPlanets() {
 
 	var imgi = (sx + sy * mapSz) % 5;
 	var img = planetImgs[imgi];
-	if (typeof img === "undefined" || img == 2) {
-		planetImgs[imgi] = 2;//so we don't load a million times before its sent
-		if (img != 2 && !isNaN(imgi)) loadPlanetImg(imgi);
-		return;
-	}
+
 	var ox = (sinLow(stime * 5) / 2 + .5) * (img.width - 512) + 256;//error on t05 width of undefined
 	var oy = (cosLow(stime * 4) / 2 + .5) * (img.height - 512) + 256;
 	ctx.save();
