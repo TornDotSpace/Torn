@@ -121,7 +121,6 @@ module.exports = function initNetcode() {
 
     io.sockets.on('connection', function (socket) {
         var instance = false;
-        socket.id = Math.random();
         sockets[socket.id] = socket;
 
         var ip = Config.getValue("want-xreal-ip", true)

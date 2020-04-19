@@ -44,6 +44,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 
 		
 		if (tick % 5 == 0 && self.locked == 0) {
+			var closest = Number.MAX_SAFE_INTEGER;
 			//search players
 			for (var i in players[self.sy][self.sx]) {
 				var player = players[self.sy][self.sx][i];
@@ -76,7 +77,7 @@ module.exports = function Missile(ownr, i, weaponID, angl) {
 	}
 	self.move = function () {
 
-		if (self.locked != 0 && typeof self.locked === 'number') {
+		if (self.locked != 0)  {
 			if (self.lockedTimer++ > 7 * 25) self.die(); // if locked for >7s, die
 
 			var target = players[self.sy][self.sx][self.locked]; // try 2 find the target object
