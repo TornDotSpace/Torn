@@ -366,6 +366,7 @@ module.exports = function initNetcode() {
 
             // Kill socket
             socket.disconnect();
+            delete sockets[socket.id];
             delete socket;
         });
 
