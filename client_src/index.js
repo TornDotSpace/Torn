@@ -3599,7 +3599,7 @@ function rPlanets() {
 	var t = d.getTime() * 500;
 	var stime = d.getTime() / 150000;
 
-	var imgi = (sx + sy * mapSz) % 5;
+	var imgi = (sx + sy * mapSz) % 5 + 1;
 	var img = planetImgs[imgi];
 
 	var ox = (sinLow(stime * 5) / 2 + .5) * (img.width - 256) + 128;//error on t05 width of undefined
