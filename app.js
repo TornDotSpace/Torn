@@ -152,7 +152,6 @@ var broadcastMsg=0;
 global.sockets = {}; // network
 global.players = new Array(mapSz); // in game
 global.dockers = {}; // at a base
-global.lefts = {}; // Queued for deletion- left the game
 global.deads = {}; // Dead
 
 global.bullets = new Array(mapSz);
@@ -1007,21 +1006,12 @@ function update() {
 	}
 	if (raidTimer-- % 4000 == 0) sendRaidData();
 	if (raidTimer <= 0) endRaid();
-	deletePlayers();
+	
 	d = new Date();
 	lag = d.getTime() - lagTimer;
 	ops--;
 }
-function deletePlayers() { // remove players that have left or are afk or whatever else
-	for (var i in lefts) {
-		if (lefts[i]-- > 1) continue;
-		for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) if(i in players[y][x]) delete players[y][x][i];
-		delete sockets[i];
-		if(i in dockers) delete dockers[i];
-		if(i in deads) delete deads[i];
-		delete lefts[i];
-	}
-}
+
 setInterval(updateHeatmap, 1000);
 function updateHeatmap() {
 	var hmap = [];
