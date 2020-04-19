@@ -1591,10 +1591,10 @@ function _chat(data) {
 };
 
 socket.on('mute', function (data) {
-	clientmutes[data.player.toLowerCase()] = 1;
+	clientmutes[data.player] = 1;
 });
 socket.on('unmute', function (data) {
-	delete clientmutes[data.player.toLowerCase()];
+	delete clientmutes[data.player];
 });
 function getPosition(string, subString, index) {
 	return string.split(subString, index).join(subString).length;
@@ -3174,16 +3174,6 @@ function rDead() {
 	ctx.textAlign = 'left';
 	ctx.font = '14px ShareTech';
 }
-function rPlanetTimer() {
-	ctx.fillStyle = 'yellow';
-	ctx.textAlign = 'right';
-	ctx.font = '48px ShareTech';
-	var str = ((planetTimerSec + .0078125) + "").replace(".", ":");
-	str = str.substr(0, str.length - 5);
-	write(str, w - 256, 64);
-	ctx.textAlign = 'left';
-	ctx.font = '14px ShareTech';
-}
 function rCreds() {
 	ctx.fillStyle = 'pink';
 	ctx.textAlign = 'center';
@@ -3601,9 +3591,9 @@ function rAsteroids() {
 function rPlanets() {
 	if (planets == 0) return;
 	var selfo = planets;
-	var rendX = ((selfo.x - px)/2 + w / 2 + scrx);
-	var rendY = ((selfo.y - py)/2 + h / 2 + scry);
-	if(rendX < -1000 || rendX > w+1000 || rendY < -1000 || rendY > h+1500) return;
+	var rendX = (selfo.x - px + scrx)/4 + w/2;
+	var rendY = (selfo.y - py + scry)/4 + h/2;
+	if(rendX < -100 || rendX > w+100 || rendY < -100 || rendY > h+150) return;
 
 	let d = new Date();
 	var t = d.getTime() * 500;
@@ -3612,35 +3602,28 @@ function rPlanets() {
 	var imgi = (sx + sy * mapSz) % 5;
 	var img = planetImgs[imgi];
 
-	var ox = (sinLow(stime * 5) / 2 + .5) * (img.width - 512) + 256;//error on t05 width of undefined
-	var oy = (cosLow(stime * 4) / 2 + .5) * (img.height - 512) + 256;
+	var ox = (sinLow(stime * 5) / 2 + .5) * (img.width - 256) + 128;//error on t05 width of undefined
+	var oy = (cosLow(stime * 4) / 2 + .5) * (img.height - 256) + 128;
+	
 	ctx.save();
 	var pattern = ctx.createPattern(img, "no-repeat");
 	ctx.fillStyle = pattern;
 	ctx.translate(rendX, rendY);
-	ctx.drawImage(selfo.color == "blue" ? Img.planetUB : (selfo.color == "red" ? Img.planetUR : Img.planetU), -310, -310, 620, 620);
+	ctx.drawImage(selfo.color == "blue" ? Img.planetUB : (selfo.color == "red" ? Img.planetUR : Img.planetU), -155, -155, 310, 310);
 	ctx.translate(-ox, -oy);
 	ctx.beginPath();
-	ctx.arc(ox, oy, 256, 0, 2 * Math.PI);
+	ctx.arc(ox, oy, 128, 0, 2 * Math.PI);
 	ctx.closePath();
 	ctx.fill();
 	ctx.translate(ox, oy);
-	ctx.drawImage(Img.planetO, -256, -256);
-	ctx.setLineDash([20, 15]);
-	ctx.lineWidth = 3;
-	ctx.strokeStyle = "pink";
-	ctx.beginPath();
-	ctx.lineWidth = 1;
+	ctx.drawImage(Img.planetO, -128, -128);
 	ctx.restore();
 	ctx.textAlign = "center";
 	ctx.fillStyle = selfo.color;
 	if (ctx.fillStyle == "red") ctx.fillStyle == "pink";
 	else if (ctx.fillStyle == "blue") ctx.fillStyle == "cyan";
-	ctx.font = "60px ShareTech";
-	var str = ((selfo.record / 25 + .0078125) + "").replace(".", ":");
-	str = str.substr(0, str.length - 5);
-	write(mEng[127] + selfo.name, rendX, rendY - 128 - 256);
-	//write("Record: " + selfo.winner + ": " + str, rendX, rendY - 192 + 80 - 256);
+	ctx.font = "30px ShareTech";
+	write(mEng[127] + selfo.name, rendX, rendY - 196);
 	ctx.textAlign = "left";
 	ctx.font = "14px ShareTech";
 }
