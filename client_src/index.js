@@ -390,8 +390,8 @@ function loadAllImages() {
 	loadImage("BHArrow", '/img/BHArrow.png');
 	loadImage("Exclamation", '/img/AAA.png');
 	loadImage("energyBar", '/img/energy.png');
-	for(var i = 0; i < 20; i++) loadShipImg(false, i);
-	for(var i = 0; i < 20; i++) loadShipImg(true, i);
+	for(var i = 0; i < 21; i++) loadShipImg(false, i);
+	for(var i = 0; i < 21; i++) loadShipImg(true, i);
 	loadImageEnd();
 
 	for (var i = 1; i < 6; i++) {
@@ -985,12 +985,7 @@ function rStats() {
 	ctx.rotate(-3 * t);
 	var isRed = pc === "red";
 	var img = isRed ? redShips[ship] : blueShips[ship];
-	if (typeof img === "undefined" || img == 2) {
-		(isRed ? redShips : blueShips)[ship] = 2;//so we don't load a million times before its sent
-		if (img != 2)
-			loadShipImg(isRed, ship);
-		return;
-	}
+
 	ctx.drawImage(img, -img.width / 2, -img.height / 2);
 	ctx.restore();
 
@@ -1935,12 +1930,7 @@ function loop() {
 		}
 
 		var img = redShips[14];
-		if (typeof img === "undefined" || img == 2) {
-			redShips[14] = 2;//so we don't load a million times before its sent
-			if (img != 2) loadShipImg(true, 14);
-			window.requestAnimationFrame(loop);
-			return;
-		}
+
 		var pw = img.width;
 		var ph = img.height;
 		var rendX = w / 2 + scrx;
@@ -1978,12 +1968,6 @@ function loop() {
 
 
 			img = blueShips[j * 2];
-			if (typeof img === "undefined" || img == 2) {
-				blueShips[j * 2] = 2;//so we don't load a million times before its sent
-				if (img != 2) loadShipImg(false, j * 2);
-				window.requestAnimationFrame(loop);
-				return;
-			}
 			pw = img.width;
 			ph = img.height;
 			rendX = pxn - px + w / 2 + scrx;
@@ -3680,11 +3664,7 @@ function rPlayers() {
 		ctx.strokeStyle = "grey";
 		var isRed = selfo.color === "red";
 		var img = (isRed ? redShips : blueShips)[selfo.ship];
-		if (typeof img === "undefined" || img == 2) {
-			(isRed ? redShips : blueShips)[selfo.ship] = 2;//so we don't load a million times before its sent
-			if (img != 2) loadShipImg(isRed, selfo.ship);
-			return;
-		}
+
 		var pw = img.width;
 		var ph = img.height;
 		if (pw == 0 || ph == 0) return;
@@ -3745,11 +3725,7 @@ function rSelfCloaked() {
 	ctx.strokeStyle = "grey";
 	var isRed = pc === "red";
 	var img = isRed ? redShips[ship] : blueShips[ship];
-	if (typeof img === "undefined" || img == 2) {
-		(isRed ? redShips : blueShips)[ship] = 2;//so we don't load a million times before its sent
-		if (img != 2) loadShipImg(isRed, ship);
-		return;
-	}
+
 	var pw = img.width;
 	var ph = img.height;
 	var rendX = px - px + w / 2 + scrx;
