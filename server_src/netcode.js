@@ -348,7 +348,9 @@ module.exports = function initNetcode() {
         socket.on('disconnect', function (data) { // Emitted by socket.IO when connection is terminated or ping timeout
             if (!player) return; // Don't allow unauthenticated clients to crash the server
 
-            lefts[socket.id] = 150; // note that this player has left and queue it for deletion
+            // Cleanup
+            delete dockers[player.id];
+            delete players[player.sy][player.sx][player.id];
 
             //If the player is indeed found
             var reason = player.kickMsg;
@@ -362,6 +364,10 @@ module.exports = function initNetcode() {
             console.log(text); // print in terminal
             chatAll(text); // send it to all the players
             //DO NOT save the player's game data.
+
+            // Kill socket
+            socket.disconnect();
+            delete socket;
         });
 
         socket.on('key', function (data) { // on client keypress or key release
