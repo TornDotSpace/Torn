@@ -1099,8 +1099,24 @@ function updateHeatmap() {
 
 saveTurrets();
 
+function idleSocketCheck() {
+	var time = Date.now();
+	const timeout = 1000 * 60 * 5;
+
+	for (var s in sockets) {
+		s = sockets[s];
+
+		if (s.player === undefined && (time - s.start) >= timeout) {
+			s.disconnect();
+			delete s;
+		}
+	}
+
+	setTimeout(idleSocketCheck, timeout);
+}
 //meta
 setTimeout(initReboot, 86400 * 1000 - 6 * 60 * 1000);
+setTimeout(idleSocketCheck, 1000 * 60 * 5);
 
 function shutdown() {
 	process.exit();

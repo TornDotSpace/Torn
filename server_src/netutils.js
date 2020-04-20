@@ -30,6 +30,7 @@ global.note = function (msg, x, y, sx, sy) { // a popup note in game that everon
 	sendAllSector('note', { msg: msg, x: x, y: y, local: false }, sx, sy);
 }
 global.noteLocal = function (msg, x, y, player) { // same as above but only id can see it.
+	if (player === undefined) return;
 	player.socket.emit('note', { msg: msg, x: x, y: y, local: true });
 }
 
@@ -38,6 +39,7 @@ global.strong = function (msg, x, y, sx, sy) { // a bigger note
 }
 
 global.strongLocal = function (msg, x, y, player) { // you get the gist
+	if (player === undefined) return;
 	player.socket.emit('strong', { msg: msg, x: x, y: y, local: true });
 }
 
