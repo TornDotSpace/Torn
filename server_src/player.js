@@ -907,7 +907,7 @@ function Player(sock) {
 			//pickup
 			if (self.sx == self.quest.sx && self.sy == self.quest.sy && !self.hasPackage) {
 				self.hasPackage = true;
-				strongLocal("Package obtained!", self.x, self.y - 192, self);
+				self.strongLocal("Package obtained!", self.x, self.y - 192);
 			}
 
 			//dropoff
@@ -1419,7 +1419,7 @@ function Player(sock) {
 	self.refillAllAmmo = function () {
 		for (var i = 0; i < 10; i++) self.refillAmmo(i);
 		sendWeapons(self);
-		strongLocal("Ammo Replenished!", self.x, self.y + 256, self);
+		self.strongLocal("Ammo Replenished!", self.x, self.y + 256);
 	}
 	self.testAfk = function () {
 		if (self.isBot) return false;
@@ -1586,6 +1586,12 @@ function Player(sock) {
 
 		// HACK: Block crash on "double-death"
 		self.die = function() { };
+	}
+	self.noteLocal = function (msg, x, y) {
+		self.socket.emit('note', { msg: msg, x: x, y: y, local: true })
+	}
+	self.strongLocal = function (msg, x, y) {
+		player.socket.emit('strong', { msg: msg, x: x, y: y, local: true });
 	}
 	return self;
 };
