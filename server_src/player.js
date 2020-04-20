@@ -1591,7 +1591,7 @@ function Player(sock) {
 		self.socket.emit('note', { msg: msg, x: x, y: y, local: true })
 	}
 	self.strongLocal = function (msg, x, y) {
-		player.socket.emit('strong', { msg: msg, x: x, y: y, local: true });
+		self.socket.emit('strong', { msg: msg, x: x, y: y, local: true });
 	}
 	return self;
 };
