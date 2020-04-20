@@ -31,6 +31,8 @@ global.note = function (msg, x, y, sx, sy) { // a popup note in game that everon
 }
 global.noteLocal = function (msg, x, y, player) { // same as above but only id can see it.
 	if (player === undefined) return;
+	if (player.socket === undefined) return;
+	
 	player.socket.emit('note', { msg: msg, x: x, y: y, local: true });
 }
 
