@@ -120,6 +120,7 @@ module.exports = function initNetcode() {
     });
 
     io.sockets.on('connection', function (socket) {
+        socket.start = Date.now();
         var instance = false;
         sockets[socket.id] = socket;
 
