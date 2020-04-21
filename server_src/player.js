@@ -677,10 +677,10 @@ function Player(sock) {
 
 				// Nerf bots 
 				// Allow only low bots (0-3) to attack guests
-				// Bots will avoid attack players where the player is 6 or more levels lower than it
-				var nerfAmt = (player.guest) ? -4 : -6;
+				// Bots will avoid attack players where the player is 7 or more levels lower than it
+				var nerfAmt = (player.guest) ? -4 : -7;
 
-				if ( (player.rank - self.rank) >= nerfAmt) continue;
+				if (player.rank - self.rank <= nerfAmt) continue;
 
 				target = player; close = dist2;
 
