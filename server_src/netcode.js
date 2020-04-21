@@ -350,6 +350,7 @@ module.exports = function initNetcode() {
 
             // Cleanup
             delete dockers[player.id];
+            delete deads[player.id];
             delete players[player.sy][player.sx][player.id];
 
             //If the player is indeed found
