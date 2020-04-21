@@ -369,6 +369,7 @@ module.exports = function initNetcode() {
             socket.disconnect();
             delete sockets[socket.id];
             delete socket;
+            delete player;
         });
 
         socket.on('key', function (data) { // on client keypress or key release
