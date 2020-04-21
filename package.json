@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@clusterws/cws": "^1.6.0",
-    "@sendgrid/mail": "^7.0.0",
     "bad-words": "^3.0.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
