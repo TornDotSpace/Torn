@@ -170,7 +170,7 @@ function Player(sock) {
 		self.fire();
 
 		var chargeVal = self.energy2 / 2 + .5; //charge speed scales with energy tech
-		for (var i = 0; i < self.generators; i++) chargeVal *= 1.06;
+		for (var i = 0; i < self.generators; i++) chargeVal *= 1.05;
 		if(self.charge < 0 || self.space || self.c) self.charge+=chargeVal;
 		else if(self.charge > 0 && !self.space && !self.c) self.charge = 0;
 	}
@@ -218,7 +218,7 @@ function Player(sock) {
 			// <= 17: Traditional Mines
 			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades") self.shootMine();
 			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") self.shootOrb();
-			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast();
+			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast(wepId);
 
 
 
@@ -226,9 +226,9 @@ function Player(sock) {
 
 			else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
 				if (wep.name === "Supercharger") self.superchargerTimer = 1500;//1 min
-				else if (wep.name === "Hull Nanobots") self.health += Math.min(80, self.maxHealth - self.health); // min prevents overflow
+				else if (wep.name === "Hull Nanobots") self.health += Math.min(self.maxHealth*.2, self.maxHealth - self.health); // min prevents overflow
 				else if (wep.name === "Photon Cloak") self.disguise = 200;//6s
-				else if (wep.name === "Warp Drive") self.speed = self.thrust * (self.ship == 16 ? 700 : 500);
+				else if (wep.name === "Warp Drive") self.speed = self.thrust * (self.ship == 16 ? 1000 : 750);
 			}
 
 
@@ -385,13 +385,9 @@ function Player(sock) {
 			self.health++;
 		} // Heals you
 		else if (self.ship == 20) {
-			if(self.disguise > 0 || self.shield) return;
-			self.shootBullet(28);
-			self.health *=.1;
-			self.experience-=800;
-			self.money-=20000;
+			self.shootBlast(41);
 			self.save();
-		} // Built in Grav Bomb
+		} // Built in Hypno
 		self.reload(true, 0);
 	}
 	self.reload = function(elite, wepId){
@@ -1140,9 +1136,9 @@ function Player(sock) {
 		beams[self.sy][self.sx][r] = beam;
 		sendAllSector('sound', { file: "beam", x: ox, y: oy }, self.sx, self.sy);
 	}
-	self.shootBlast = function () {
+	self.shootBlast = function (currWep) {
 		var r = Math.random();
-		var blast = Blast(self, r, self.weapons[self.equipped]);
+		var blast = Blast(self, r, currWep);
 		blasts[self.sy][self.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}

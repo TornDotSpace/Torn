@@ -236,8 +236,8 @@ function updateQuestsR() {
 		nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
 	}
 	else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else if (i < 9) nm = { type: "Base", exp: 75000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else nm = { type: "Secret", exp: 300000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
+	else if (i < 9) nm = { type: "Base", exp: 200000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
+	else nm = { type: "Secret", exp: 500000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
 	rQuests[i] = nm;
 }
 function updateQuestsB() {
@@ -476,7 +476,7 @@ function endRaid() {
 	for (var i in sockets) {
 		var p = getPlayer(i);
 		if (p === undefined || p.color !== winners) continue;
-		p.spoils("money", p.points * 40000);
+		p.spoils("money", p.points * 75000);
 		p.points = 0;
 	}
 	sendRaidData();
