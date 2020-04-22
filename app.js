@@ -116,8 +116,8 @@ var baseMap = [0, 1,	//A2 / G6
 //some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
 var mineLifetime = 3; // mines despawn after 3 minutes
-global.baseHealth = 1200; // max base health
-global.baseKillExp = 1200; // Exp reward for killing a base
+global.baseHealth = 1300; // max base health
+global.baseKillExp = 1300; // Exp reward for killing a base
 global.baseKillMoney = 100000; // ditto but money
 global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
@@ -236,8 +236,8 @@ function updateQuestsR() {
 		nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
 	}
 	else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else if (i < 9) nm = { type: "Base", exp: 75000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else nm = { type: "Secret", exp: 300000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
+	else if (i < 9) nm = { type: "Base", exp: 200000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
+	else nm = { type: "Secret", exp: 500000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
 	rQuests[i] = nm;
 }
 function updateQuestsB() {
@@ -476,7 +476,7 @@ function endRaid() {
 	for (var i in sockets) {
 		var p = getPlayer(i);
 		if (p === undefined || p.color !== winners) continue;
-		p.spoils("money", p.points * 40000);
+		p.spoils("money", p.points * 75000);
 		p.points = 0;
 	}
 	sendRaidData();
