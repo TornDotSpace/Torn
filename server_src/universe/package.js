@@ -39,7 +39,7 @@ module.exports = function Package(ownr, i, type) {
 				var left = p.capacity - p.iron - p.aluminium - p.silver - p.platinum; // how much more cargo space they have
 				if (amt > left) { // if they don't have enough cargo space for the ore we're about to give
 					amt = left; // give them as much as they can take
-					strongLocal("Cargo Bay Full", p.x, p.y + 256, p.id); //tell them they have no room left
+					p.strongLocal("Cargo Bay Full", p.x, p.y + 256); //tell them they have no room left
 				}
 				amt /= 4; // give them some of each
 				p.iron += amt
@@ -55,7 +55,7 @@ module.exports = function Package(ownr, i, type) {
 			if (contents == 'ore') title += (amt * 4) + ' ore!';
 			if (contents == 'upgrade') title += 'New radar!';
 			if (contents == 'money') title += '20000 money!';
-			strongLocal(title, p.x, p.y - 192, p.id); // send it
+			p.strongLocal(title, p.x, p.y - 192); // send it
 		}
 
 		else if (self.type == 1) p.spoils("money", 5000); // coin

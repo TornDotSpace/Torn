@@ -907,7 +907,7 @@ function Player(sock) {
 			//pickup
 			if (self.sx == self.quest.sx && self.sy == self.quest.sy && !self.hasPackage) {
 				self.hasPackage = true;
-				strongLocal("Package obtained!", self.x, self.y - 192, self.id)
+				self.strongLocal("Package obtained!", self.x, self.y - 192);
 			}
 
 			//dropoff
@@ -1126,7 +1126,7 @@ function Player(sock) {
 		//gyrodynamite
 		if (self.weapons[self.equipped] == 31 && nearP.sx == self.sx && nearP.sy == self.sy && nearP.color != self.color) {
 			nearP.gyroTimer = 250;
-			send(nearP.id, "gyro", { t: 250 });
+			nearP.socket.emit("gyro", { t: 250 });
 		}
 
 		//elite quarrier
@@ -1419,14 +1419,13 @@ function Player(sock) {
 	self.refillAllAmmo = function () {
 		for (var i = 0; i < 10; i++) self.refillAmmo(i);
 		sendWeapons(self);
-		strongLocal("Ammo Replenished!", self.x, self.y + 256, self.id);
+		self.strongLocal("Ammo Replenished!", self.x, self.y + 256);
 	}
 	self.testAfk = function () {
 		if (self.isBot) return false;
 
 		if (self.afkTimer-- < 0) {
 			self.socket.emit("AFK", { t: 0 });
-			lefts[self.id] = 0;
 			self.kick("AFK!");
 			self.testAfk = function() { return false; };
 			return true;
@@ -1511,7 +1510,7 @@ function Player(sock) {
 			for (var p in players[j][i]) {
 				var player = players[j][i][p];
 				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					send(player.id, "chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
+					player.socket.emit("chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
 					self.socket.emit("chat", { msg: "Message sent!" });
 					self.reply = player.name;
 					player.reply = self.name;
@@ -1520,7 +1519,7 @@ function Player(sock) {
 			} for (var p in dockers) {
 				var player = dockers[p];
 				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					send(player.id, "chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
+					player.socket.emit("chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
 					self.socket.emit("chat", { msg: "Message sent!" });
 					self.reply = player.name;
 					player.reply = self.name;
@@ -1529,7 +1528,7 @@ function Player(sock) {
 			} for (var p in deads) {
 				var player = deads[p];
 				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					send(player.id, "chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
+					player.socket.emit("chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
 					self.socket.emit("chat", { msg: "Message sent!" });
 					self.reply = player.name;
 					player.reply = self.name;
@@ -1587,6 +1586,12 @@ function Player(sock) {
 
 		// HACK: Block crash on "double-death"
 		self.die = function() { };
+	}
+	self.noteLocal = function (msg, x, y) {
+		self.socket.emit('note', { msg: msg, x: x, y: y, local: true })
+	}
+	self.strongLocal = function (msg, x, y) {
+		self.socket.emit('strong', { msg: msg, x: x, y: y, local: true });
 	}
 	return self;
 };

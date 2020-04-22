@@ -70,36 +70,36 @@ module.exports = function Asteroid(i, h, sxx, syy, metal) {
 				b.owner.iron += self.maxHealth;
 				if (b.owner.platinum + b.owner.iron + b.owner.aluminium + b.owner.silver > b.owner.capacity) { // TODO represent player.ores as an array to make this much less stupid
 					b.owner.iron = b.owner.capacity - (b.owner.platinum + b.owner.aluminium + b.owner.silver);
-					strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256, b.owner.id);
+					if (b.owner.strongLocal !== undefined) b.owner.strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256);
 				}
 				break;
 			case 1:
 				b.owner.silver += self.maxHealth;
 				if (b.owner.platinum + b.owner.iron + b.owner.aluminium + b.owner.silver > b.owner.capacity) {
 					b.owner.silver = b.owner.capacity - (b.owner.platinum + b.owner.aluminium + b.owner.iron);
-					strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256, b.owner.id);
+					if (b.owner.strongLocal !== undefined) b.owner.strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256);
 				}
 				break;
 			case 2:
 				b.owner.aluminium += self.maxHealth;
 				if (b.owner.platinum + b.owner.iron + b.owner.aluminium + b.owner.silver > b.owner.capacity) {
 					b.owner.aluminium = b.owner.capacity - (b.owner.platinum + b.owner.iron + b.owner.silver);
-					strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256, b.owner.id);
+					if (b.owner.strongLocal !== undefined) b.owner.strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256);
 				}
 				break;
 			default:
 				b.owner.platinum += self.maxHealth;
 				if (b.owner.platinum + b.owner.iron + b.owner.aluminium + b.owner.silver > b.owner.capacity) {
 					b.owner.platinum = b.owner.capacity - (b.owner.iron + b.owner.aluminium + b.owner.silver);
-					strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256, b.owner.id);
+					if (b.owner.strongLocal !== undefined) b.owner.strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256);
 				}
 				break;
 		}
 		if (b.owner.type == "Player") {
 			b.owner.onMined(self.metal);
 			b.owner.spoils("ore", self.maxHealth);//just sends the message
+			b.owner.noteLocal('+' + self.maxHealth + ' ore', b.owner.x, b.owner.y - 64);
 		}
-		noteLocal('+' + self.maxHealth + ' ore', b.owner.x, b.owner.y - 64, b.owner.id);
 		var expGained = 1;
 		if (b.owner.type === "Player") expGained = b.owner.rank < 10?2-b.owner.rank/5:0;
 		if (b.owner.type === "Player" || b.owner.type === "Base") b.owner.spoils("experience", expGained);

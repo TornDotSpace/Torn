@@ -227,9 +227,9 @@ cmds["/saveturrets"] = new Command("/saveTurrets - Runs a manual save on the ser
 if (Config.getValue("debug", false)) {
     cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server", ADMINPLUS, function (player, msg) {
         try {
-            send(player.id, "chat", { msg: eval(msg.substring(5)) });
+            player.socket.emit("chat", { msg: eval(msg.substring(5)) });
         } catch (e) {
-            send(player.id, "chat", { msg: "An error occurred: " + e });
+            player.socket.emit("chat", { msg: "An error occurred: " + e });
         }
     });
     
@@ -238,7 +238,7 @@ if (Config.getValue("debug", false)) {
         player.money = Number.MAX_SAFE_INTEGER;
         player.experience = Number.MAX_SAFE_INTEGER;
     
-        send(player.id, "chat", {msg: "Max Mode Activated"});
+        player.socket.emit("chat", {msg: "Max Mode Activated"});
     });
 }
 

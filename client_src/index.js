@@ -320,11 +320,6 @@ function loadImageEnd() {
 		}, 100)
 	}
 }
-function loadPlanetImg(i) {
-	planetImgs[i] = new Image();
-	// TODO: fix
-	planetImgs[i].src = '/img/space/planets/pt' + ((i % 5) + 1) + '.png';
-}
 function loadShipImg(red, i) {
 	if (red) {
 		redShips[i] = new Image();
@@ -395,10 +390,14 @@ function loadAllImages() {
 	loadImage("BHArrow", '/img/BHArrow.png');
 	loadImage("Exclamation", '/img/AAA.png');
 	loadImage("energyBar", '/img/energy.png');
-	loadShipImg(true,14); // hydra for homepage
-	for(var i = 0; i < 8; i++) loadShipImg(false, i);
-	for(var i = 0; i < 8; i++) loadShipImg(true, i);
+	for(var i = 0; i < 21; i++) loadShipImg(false, i);
+	for(var i = 0; i < 21; i++) loadShipImg(true, i);
 	loadImageEnd();
+
+	for (var i = 1; i < 6; i++) {
+		planetImgs[i] = new Image();
+		planetImgs[i].src = '/img/space/planets/pt' + i + '.png';	
+	}
 }
 
 var achs = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
@@ -827,17 +826,12 @@ function rShop() {
 	var rendY = ry + 128 * 3 - 16;
 	var isRed = pc === "red";
 	var img = isRed ? redShips[shipView] : blueShips[shipView];
-	if (typeof img === "undefined" || img == 2) {
-		(isRed ? redShips : blueShips)[shipView] = 2;//so we don't load a million times before its sent
-		if (img != 2) loadShipImg(isRed, shipView);
-	} else {
-		ctx.save();
-		ctx.translate(rendX, rendY);
-		ctx.rotate(-3 * t);
-		if (shipView > rank) img = Img.q;
-		ctx.drawImage(img, -img.width / 2, -img.height / 2);
-		ctx.restore();
-	}
+	ctx.save();
+	ctx.translate(rendX, rendY);
+	ctx.rotate(-3 * t);
+	if (shipView > rank) img = Img.q;
+	ctx.drawImage(img, -img.width / 2, -img.height / 2);
+	ctx.restore();
 
 	ctx.textAlign = "center";
 	ctx.fillStyle = 'yellow';
@@ -991,12 +985,7 @@ function rStats() {
 	ctx.rotate(-3 * t);
 	var isRed = pc === "red";
 	var img = isRed ? redShips[ship] : blueShips[ship];
-	if (typeof img === "undefined" || img == 2) {
-		(isRed ? redShips : blueShips)[ship] = 2;//so we don't load a million times before its sent
-		if (img != 2)
-			loadShipImg(isRed, ship);
-		return;
-	}
+
 	ctx.drawImage(img, -img.width / 2, -img.height / 2);
 	ctx.restore();
 
@@ -1941,12 +1930,7 @@ function loop() {
 		}
 
 		var img = redShips[14];
-		if (typeof img === "undefined" || img == 2) {
-			redShips[14] = 2;//so we don't load a million times before its sent
-			if (img != 2) loadShipImg(true, 14);
-			window.requestAnimationFrame(loop);
-			return;
-		}
+
 		var pw = img.width;
 		var ph = img.height;
 		var rendX = w / 2 + scrx;
@@ -1984,12 +1968,6 @@ function loop() {
 
 
 			img = blueShips[j * 2];
-			if (typeof img === "undefined" || img == 2) {
-				blueShips[j * 2] = 2;//so we don't load a million times before its sent
-				if (img != 2) loadShipImg(false, j * 2);
-				window.requestAnimationFrame(loop);
-				return;
-			}
 			pw = img.width;
 			ph = img.height;
 			rendX = pxn - px + w / 2 + scrx;
@@ -3605,15 +3583,12 @@ function rPlanets() {
 	var t = d.getTime() * 500;
 	var stime = d.getTime() / 150000;
 
-	var imgi = (sx + sy * mapSz) % 5;
+	var imgi = (sx + sy * mapSz) % 5 + 1;
 	var img = planetImgs[imgi];
-	if (typeof img === "undefined" || img == 2) {
-		planetImgs[imgi] = 2;//so we don't load a million times before its sent
-		if (img != 2 && !isNaN(imgi)) loadPlanetImg(imgi);
-		return;
-	}
+
 	var ox = (sinLow(stime * 5) / 2 + .5) * (img.width - 256) + 128;//error on t05 width of undefined
 	var oy = (cosLow(stime * 4) / 2 + .5) * (img.height - 256) + 128;
+	
 	ctx.save();
 	var pattern = ctx.createPattern(img, "no-repeat");
 	ctx.fillStyle = pattern;
@@ -3689,11 +3664,7 @@ function rPlayers() {
 		ctx.strokeStyle = "grey";
 		var isRed = selfo.color === "red";
 		var img = (isRed ? redShips : blueShips)[selfo.ship];
-		if (typeof img === "undefined" || img == 2) {
-			(isRed ? redShips : blueShips)[selfo.ship] = 2;//so we don't load a million times before its sent
-			if (img != 2) loadShipImg(isRed, selfo.ship);
-			return;
-		}
+
 		var pw = img.width;
 		var ph = img.height;
 		if (pw == 0 || ph == 0) return;
@@ -3754,11 +3725,7 @@ function rSelfCloaked() {
 	ctx.strokeStyle = "grey";
 	var isRed = pc === "red";
 	var img = isRed ? redShips[ship] : blueShips[ship];
-	if (typeof img === "undefined" || img == 2) {
-		(isRed ? redShips : blueShips)[ship] = 2;//so we don't load a million times before its sent
-		if (img != 2) loadShipImg(isRed, ship);
-		return;
-	}
+
 	var pw = img.width;
 	var ph = img.height;
 	var rendX = px - px + w / 2 + scrx;
