@@ -116,8 +116,8 @@ var baseMap = [0, 1,	//A2 / G6
 //some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
 var mineLifetime = 3; // mines despawn after 3 minutes
-global.baseHealth = 1200; // max base health
-global.baseKillExp = 1200; // Exp reward for killing a base
+global.baseHealth = 1300; // max base health
+global.baseKillExp = 1300; // Exp reward for killing a base
 global.baseKillMoney = 100000; // ditto but money
 global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
