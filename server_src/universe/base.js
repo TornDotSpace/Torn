@@ -100,10 +100,10 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 	}
 	self.shootMuon = function () {
 		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, 1000); // muon is fast
-		self.reload = wepns[37].charge / 2;
+		self.reload = wepns[34].charge / 2;
 		var r = Math.random();
-		var orb = Orb(self, r, 37);
-		orbs[self.sy][self.sx][r] = orb;
+		var beam = Beam(self, r, 34);
+		beams[self.sy][self.sx][r] = beam;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
 	self.shootRifle = function () {
