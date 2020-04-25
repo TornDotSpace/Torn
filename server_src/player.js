@@ -728,7 +728,7 @@ function Player(sock) {
 			self.w = self.s = true;
 		} else {//fighting
 			self.space = self.e = close < range * 1.2;
-			var turn = -(self.angle - calculateInterceptionAngle(target.x, target.y, target.vx, target.vy, self.x, self.y) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+			var turn = -(self.angle - calculateInterceptionAngle(target.x, target.y, target.vx, target.vy, self.x, self.y, wepns[self.equipped].speed) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
 			self.d = turn > self.cva * self.cva * 10;
 			self.a = turn < -self.cva * self.cva * 10;
 			self.s = self.space && Math.abs(turn) > Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
