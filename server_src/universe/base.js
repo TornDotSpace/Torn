@@ -84,7 +84,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, wepns[3].speed); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
 
 		if (self.reload < 0) {
-			if (cDist2 < square(wepns[8].range * 10) && Math.random()<.005) {return; self.shootMuon();}
+			if (cDist2 < square(wepns[8].range * 10) && Math.random()<.01) {self.shootMuon(); return;}
 			if (cDist2 < square(wepns[8].range * 10)) self.shootLaser();//range:60
 			else if (cDist2 < square(wepns[37].range * 10)) self.shootOrb();//range:125
 			else if (cDist2 < square(175 * 10)) self.shootMissile();//range:175
