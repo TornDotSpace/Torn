@@ -1,5 +1,6 @@
 var Bullet = require('../battle/bullet.js');
 var Missile = require('../battle/missile.js');
+var Blast = require('../battle/blast.js');
 var Orb = require('../battle/orb.js');
 var Beam = require('../battle/beam.js');
 
@@ -81,10 +82,11 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 
 		if (c == 0) return;
 
-		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, wepns[3].speed); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
+		var shouldMuon = self.reload < 0 && Math.random()<.01;
+		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, shouldMuon?1000:wepns[3].speed); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
 
 		if (self.reload < 0) {
-			if (cDist2 < square(wepns[8].range * 10) && Math.random()<.01) {self.shootMuon(); return;}
+			if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {self.shootMuon(); return;}
 			if (cDist2 < square(wepns[8].range * 10)) self.shootLaser();//range:60
 			else if (cDist2 < square(wepns[37].range * 10)) self.shootOrb();//range:125
 			else if (cDist2 < square(175 * 10)) self.shootMissile();//range:175
@@ -99,11 +101,10 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
 	self.shootMuon = function () {
-		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, 1000); // muon is fast
 		self.reload = wepns[34].charge / 2;
 		var r = Math.random();
 		var blast = Blast(self, r, 34);
-		blasts[self.sy][self.sx][r] = beam;
+		blasts[self.sy][self.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
 	self.shootRifle = function () {
