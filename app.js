@@ -105,12 +105,12 @@ global.ships = jsn.ships;
 global.planetNames = jsn.planets;
 
 
-// bases                   (Red) / (Blue)
-var baseMap = [0, 1,	//A2 / G6
-	0, 4,	//A5 / G3
-	2, 2,	//C3 / E5
-	3, 0,	//D1 / D7
-	5, 1];	//F2 / B6
+// bases                (Red) / (Blue)
+var baseMap = [	2, 2,	//C3 / E5
+				0, 1,	//A2 / G6
+				0, 4,	//A5 / G3
+				3, 0,	//D1 / D7
+				5, 1];	//F2 / B6
 
 
 //some global FINAL game mechanics
@@ -237,7 +237,7 @@ function updateQuestsR() {
 	}
 	else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1] };
 	else if (i < 9) nm = { type: "Base", exp: 200000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else nm = { type: "Secret", exp: 500000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
+	else nm = { type: "Secret", exp: 500000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 4+1) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 4+1) * 2 + 1] };
 	rQuests[i] = nm;
 }
 function updateQuestsB() {
@@ -257,7 +257,7 @@ function updateQuestsB() {
 		nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt((sxv - dsxv) * (sxv - dsxv) + (syv - dsyv) * (syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
 	} else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
 	else if (i < 9) nm = { type: "Base", exp: 75000, sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else nm = { type: "Secret", exp: 300000, sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1] };
+	else nm = { type: "Secret", exp: 300000, sx: baseMap[Math.floor(r2 * 4+1) * 2], sy: baseMap[Math.floor(r2 * 4+1) * 2 + 1] };
 	bQuests[i] = nm;
 }
 
