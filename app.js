@@ -216,8 +216,6 @@ global.getPlayerFromName = function(name) { // given a socket id, find the corre
     return -1;
 }
 
-//Alex: I rewrote everything up to here thoroughly, and the rest not so thoroughly. 7/1/19
-
 //TODO Merge these
 function updateQuestsR() {
 	var i = 0;
