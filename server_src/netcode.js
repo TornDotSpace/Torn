@@ -220,8 +220,6 @@ module.exports = function initNetcode() {
 
             var user = data.user, pass = data.pass;
 
-            player.guest = false;
-
             if (typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)) {
                 socket.emit("invalidReg", { reason: 2 });
                 return;
@@ -237,6 +235,8 @@ module.exports = function initNetcode() {
                 socket.emit("invalidReg", { reason: 5 });
                 return;
             }
+            
+            player.guest = false;
 
             checkRegistered(user).then(function(ret) {
 
