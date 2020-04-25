@@ -220,8 +220,6 @@ module.exports = function initNetcode() {
 
             var user = data.user, pass = data.pass;
 
-            player.guest = false;
-
             if (typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)) {
                 socket.emit("invalidReg", { reason: 2 });
                 return;
@@ -237,6 +235,8 @@ module.exports = function initNetcode() {
                 socket.emit("invalidReg", { reason: 5 });
                 return;
             }
+            
+            player.guest = false;
 
             checkRegistered(user).then(function(ret) {
 
@@ -351,7 +351,7 @@ module.exports = function initNetcode() {
             // Cleanup
             delete dockers[player.id];
             delete deads[player.id];
-            delete players[player.sy][player.sx][player.id];
+            delete sockets[socket.id];
 
             //If the player is indeed found
             var reason = player.kickMsg;
@@ -368,9 +368,12 @@ module.exports = function initNetcode() {
 
             // Kill socket
             socket.disconnect();
-            delete sockets[socket.id];
-            delete socket;
-            delete player;
+
+            // Delay deletion for 5 seconds
+            setTimeout(function() {             
+                delete players[player.sy][player.sx][player.id];
+                delete socket;
+                delete player; }, 6000);
         });
 
         socket.on('key', function (data) { // on client keypress or key release
