@@ -44,8 +44,7 @@ global.atan = function (y, x) { // arctangent, but fast
 	return r;
 }
 
-global.calculateInterceptionAngle = function (ax, ay, vx, vy, bx, by) { // for finding where to shoot at a moving object
-	var s = wepns[3].speed;
+global.calculateInterceptionAngle = function (ax, ay, vx, vy, bx, by, s) { // for finding where to shoot at a moving object
 	var ox = ax - bx;
 	var oy = ay - by;
 

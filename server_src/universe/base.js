@@ -81,9 +81,10 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 
 		if (c == 0) return;
 
-		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
+		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, wepns[3].speed); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
 
 		if (self.reload < 0) {
+			if (cDist2 < square(wepns[8].range * 10) && Math.random()<.005) {return; self.shootMuon();}
 			if (cDist2 < square(wepns[8].range * 10)) self.shootLaser();//range:60
 			else if (cDist2 < square(wepns[37].range * 10)) self.shootOrb();//range:125
 			else if (cDist2 < square(175 * 10)) self.shootMissile();//range:175
@@ -91,6 +92,14 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		}
 	}
 	self.shootOrb = function () {
+		self.reload = wepns[37].charge / 2;
+		var r = Math.random();
+		var orb = Orb(self, r, 37);
+		orbs[self.sy][self.sx][r] = orb;
+		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
+	}
+	self.shootMuon = function () {
+		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, 1000); // muon is fast
 		self.reload = wepns[37].charge / 2;
 		var r = Math.random();
 		var orb = Orb(self, r, 37);
