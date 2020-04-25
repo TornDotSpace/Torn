@@ -351,7 +351,7 @@ module.exports = function initNetcode() {
             // Cleanup
             delete dockers[player.id];
             delete deads[player.id];
-            delete players[player.sy][player.sx][player.id];
+            delete sockets[socket.id];
 
             //If the player is indeed found
             var reason = player.kickMsg;
@@ -368,9 +368,12 @@ module.exports = function initNetcode() {
 
             // Kill socket
             socket.disconnect();
-            delete sockets[socket.id];
-            delete socket;
-            delete player;
+
+            // Delay deletion for 5 seconds
+            setTimeout(function() {             
+                delete players[player.sy][player.sx][player.id];
+                delete socket;
+                delete player; }, 6000);
         });
 
         socket.on('key', function (data) { // on client keypress or key release
