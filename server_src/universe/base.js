@@ -82,7 +82,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 
 		if (c == 0) return;
 
-		var shouldMuon = self.reload < 0 && Math.random()<.01;
+		var shouldMuon = self.reload < 0 && Math.random()<.015;
 		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, shouldMuon?1000:wepns[3].speed); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
 
 		if (self.reload < 0) {
