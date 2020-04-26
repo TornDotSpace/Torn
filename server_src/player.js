@@ -169,8 +169,8 @@ function Player(sock) {
 
 		self.fire();
 
-		var chargeVal = self.energy2 / 2 + .5; //charge speed scales with energy tech
-		for (var i = 0; i < self.generators; i++) chargeVal *= 1.05;
+		var chargeVal = (self.energy2 + 1)/1.8; //charge speed scales with energy tech
+		for (var i = 0; i < self.generators; i++) chargeVal *= 1.04;
 		if(self.charge < 0 || self.space || self.c) self.charge+=chargeVal;
 		else if(self.charge > 0 && !self.space && !self.c) self.charge = 0;
 	}
@@ -382,7 +382,7 @@ function Player(sock) {
 		} // Built in spreadshot
 		else if (self.ship == 19) {
 			if(self.disguise > 0) return;
-			self.health++;
+			if (self.health < self.maxHealth) self.health++;
 		} // Heals you
 		else if (self.ship == 20) {
 			self.shootBlast(41);
