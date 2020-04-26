@@ -116,7 +116,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		sendAllSector('sound', { file: "shot", x: self.x, y: self.y }, self.sx, self.sy);
 	}
 	self.shootMissile = function () {//this is a torpedo
-		self.reload = wepns[14].charge;
+		self.reload = wepns[14].charge/2;
 		var r = Math.random();
 		var bAngle = self.angle;
 		var missile = Missile(self, r, 14, bAngle);
