@@ -382,7 +382,7 @@ function Player(sock) {
 		} // Built in spreadshot
 		else if (self.ship == 19) {
 			if(self.disguise > 0) return;
-			self.health++;
+			if (self.health < self.maxHealth) self.health++;
 		} // Heals you
 		else if (self.ship == 20) {
 			self.shootBlast(41);
