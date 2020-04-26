@@ -341,7 +341,7 @@
 		},
 		{
 			"name":"Generator",
-			"desc":"For each generator you carry, your weapons and energy charge 6% faster, but you turn a tenth slower."
+			"desc":"For each generator you carry, your weapons and energy charge 4% faster, but you turn a tenth slower."
 		},
 		{
 			"name":"Turbo",

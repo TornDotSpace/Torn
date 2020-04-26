@@ -75,7 +75,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		var cDist2 = 1000000000; // min dist to player
 		for (var i in players[self.sy][self.sx]) {
 			var player = players[self.sy][self.sx][i];
-			if (player.color == self.color) continue; // don't shoot at friendlies
+			if (player.color == self.color || player.disguise > 0) continue; // don't shoot at friendlies
 			var dist2 = squaredDist(player, self);
 			if (dist2 < cDist2) { c = player; cDist2 = dist2; } // update nearest player
 		}
@@ -83,7 +83,9 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		if (c == 0) return;
 
 		var shouldMuon = self.reload < 0 && Math.random()<.015;
-		self.angle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, shouldMuon?1000:wepns[3].speed); // find out where to aim (since the player could be moving). TODO make the turret move smoothly
+		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, shouldMuon?1000:wepns[3].speed);
+
+		
 
 		if (self.reload < 0) {
 			if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {self.shootMuon(); return;}
@@ -115,10 +117,10 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		sendAllSector('sound', { file: "shot", x: self.x, y: self.y }, self.sx, self.sy);
 	}
 	self.shootMissile = function () {
-		self.reload = wepns[10].charge;
+		self.reload = wepns[14].charge;
 		var r = Math.random();
 		var bAngle = self.angle;
-		var missile = Missile(self, r, 10, bAngle);
+		var missile = Missile(self, r, 14, bAngle);
 		missiles[self.sy][self.sx][r] = missile;
 		sendAllSector('sound', { file: "missile", x: self.x, y: self.y }, self.sx, self.sy);
 	}
