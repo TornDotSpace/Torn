@@ -2957,12 +2957,12 @@ function renderBG(more) {
 function rMap() {
 	if (guest) return;
 	if (hmap != 0) {
-		if (typeof hmap[sx] === "undefined") return;
-		var hmt = hMapTrans(hmap[sx][sy]);
+		if (typeof hmap[sy] === "undefined") return;
+		var hmt = hMapTrans(hmap[sy][sx]);
 		if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104];
 		for (var i = 0; i < mapSz; i++)
 			for (var j = 0; j < mapSz; j++) {
-				var eachmt = hMapTrans(hmap[i][j]);
+				var eachmt = hMapTrans(hmap[j][i]);
 				ctx.fillStyle = eachmt > 0 ? 'red' : 'cyan';
 				var alp = Math.sqrt(Math.abs(eachmt) / 30);
 				ctx.globalAlpha = Math.min(1, alp);
@@ -2979,7 +2979,7 @@ function rMap() {
 			for (var j = 0; j < mapSz; j++) {
 				if (sectorMap[i][j] == 1) ctx.drawImage(Img.mrss, 21.5 + i * 26, 21.5 + j * 27);
 				else if (sectorMap[i][j] == 2) ctx.drawImage(Img.mbss, 21.5 + i * 26, 21.5 + j * 26);
-				else if (hmap[i][j] >= 1000) ctx.drawImage(Img.ma, 21.5 + i * 26, 21.5 + j * 26);
+				else if (hmap[j][i] >= 1000) ctx.drawImage(Img.ma, 21.5 + i * 26, 21.5 + j * 26);
 			}
 	}
 	if (va2 < 1.9) return;
