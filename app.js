@@ -1014,15 +1014,17 @@ setInterval(updateHeatmap, 1000);
 function updateHeatmap() {
 	var hmap = [];
 	var lb = [];
+
 	for (var i = 0; i < mapSz; i++) {
 		hmap[i] = [];
 		for (var j = 0; j < mapSz; j++) hmap[i][j] = 0;
 	}
+
 	var j = 0;
 	rb = rg = rp = bp = bg = bb = raidRed = raidBlue = 0;
 	
 	for (var s in sockets) {
-		var p = sockets[s];
+		var p = sockets[s].player;
 		if (p === undefined)  continue;
 
 		if (p.color === "red") {
