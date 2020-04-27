@@ -1016,7 +1016,7 @@ function updateHeatmap() {
 	var lb = [];
 	for (var i = 0; i < mapSz; i++) {
 		hmap[i] = [];
-		for (var j = 0; j < mapSz; j++) hmap[j][i] = 0;
+		for (var j = 0; j < mapSz; j++) hmap[i][j] = 0;
 	}
 	var j = 0;
 	rb = rg = rp = bp = bg = bb = raidRed = raidBlue = 0;
