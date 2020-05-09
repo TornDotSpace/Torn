@@ -369,7 +369,7 @@ module.exports = function initNetcode() {
             // Kill socket
             socket.disconnect();
 
-            // Delay deletion for 6 seconds
+            // Delay deletion for 5 seconds
             setTimeout(function() {             
                 delete players[player.sy][player.sx][player.id];
                 delete socket;

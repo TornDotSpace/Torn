@@ -1014,19 +1014,36 @@ setInterval(updateHeatmap, 1000);
 function updateHeatmap() {
 	var hmap = [];
 	var lb = [];
-
 	for (var i = 0; i < mapSz; i++) {
 		hmap[i] = [];
 		for (var j = 0; j < mapSz; j++) hmap[i][j] = 0;
 	}
-
 	var j = 0;
 	rb = rg = rp = bp = bg = bb = raidRed = raidBlue = 0;
-	
-	for (var s in sockets) {
-		var p = sockets[s].player;
-		if (p === undefined)  continue;
 
+	for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) {
+		for (var i in players[y][x]) {
+			var p = players[y][x][i];
+			if (p.color === "red") {
+				raidRed += p.points;
+				if (p.isBot) rb++;
+				else if (p.guest) rg++;
+				else rp++;
+			} else {
+				raidBlue += p.points;
+				if (p.isBot) bb++;
+				else if (p.guest) bg++;
+				else bp++;
+			}
+			if (p.name !== "" && !p.isBot) {
+				lb[j] = p;
+				j++;
+			}
+			hmap[p.sx][p.sy] += p.color === 'blue' ? -1 : 1; // this is supposed to be x-y order. TODO fix
+		}
+	}
+	for (var i in dockers) {
+		var p = dockers[i];
 		if (p.color === "red") {
 			raidRed += p.points;
 			if (p.isBot) rb++;
@@ -1038,12 +1055,26 @@ function updateHeatmap() {
 			else if (p.guest) bg++;
 			else bp++;
 		}
-		if (p.name !== "" && !p.isBot) {
-			lb[j] = p;
-			j++;
-		}
-		hmap[p.sy][p.sx] += p.color === 'blue' ? -1 : 1;
+		lb[j] = p;
+		j++;
 	}
+	for (var i in deads) {
+		var p = deads[i];
+		if (p.color === "red") {
+			raidRed += p.points;
+			if (p.isBot) rb++;
+			else if (p.guest) rg++;
+			else rp++;
+		} else {
+			raidBlue += p.points;
+			if (p.isBot) bb++;
+			else if (p.guest) bg++;
+			else bp++;
+		}
+		lb[j] = p;
+		j++;
+	}
+
 
 	for (var i = 0; i < lb.length - 1; i++) // sort it
 		for (var k = 0; k < lb.length - i - 1; k++) {
@@ -1058,7 +1089,7 @@ function updateHeatmap() {
 	for (var i = 0; i < Math.min(16, j); i++) lbSend[i] = { name: lb[i].name, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank };
 	for (var i = 0; i < mapSz; i++) for (var j = 0; j < mapSz; j++) {
 		/*if(asts[i][j] >= 15) hmap[i][j] += 1500;
-		else */hmap[j][i] += 500;
+		else */hmap[i][j] += 500;
 	}
 
 	for (var i in lb) lb[i].socket.emit('heatmap', { hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed });
