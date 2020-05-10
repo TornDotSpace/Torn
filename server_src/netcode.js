@@ -209,6 +209,7 @@ module.exports = function initNetcode() {
             chatAll("Welcome " + player.name + " to the universe!");
         });
         socket.on('register', function (data) { // TODO Chris
+            console.log("Registration attempted...");
             if (typeof data === "undefined") return;
             if (!flood(ip)) return;
             // Block registrations being triggered from non-guests or unconnected accounts
@@ -216,7 +217,10 @@ module.exports = function initNetcode() {
 
             if (!player) return;
             if (!player.guest) return;
-            if (player.rank < 1) return;
+            if (player.rank < 1) {
+                socket.emit("invalidReg", { reason: 8 });
+                return;
+            }
 
             var user = data.user, pass = data.pass;
 
