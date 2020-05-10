@@ -1841,7 +1841,7 @@ socket.on('status', function (data) {
 	shipView = ship;
 	if (!docked && data.docked) savedNote = 40;
 	if (docked != data.docked) textIn = 0;
-	if(data.docked && !docked && guest) {ReactRoot.turnOnRegister(""); tab = -1; keys[8] = false;}
+	if(data.docked && !docked && guest && rank>0) {ReactRoot.turnOnRegister(""); tab = -1; keys[8] = false;}
 	docked = data.docked;
 	dead = data.state;
 	lives = data.lives;
@@ -3122,6 +3122,7 @@ function rCreds() {
 	if (credentialState == 4) str = mEng[115];
 	if (credentialState == 5) str = "Username is profane!";
 	if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
+	if (credentialState == 8) str = "You must be rank 1 to create an account!";
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';
 	ctx.font = '14px ShareTech';
