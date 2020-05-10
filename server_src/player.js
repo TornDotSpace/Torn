@@ -1596,12 +1596,11 @@ module.exports = Player;
 
 var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");
 
-global.spawnBot = function (sx, sy, col, rbNow, bbNow) {
+global.spawnBot = function (sx, sy, col) {
 	if (!Config.getValue("want-bots", true)) return;
 	
 	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
-	if ((rbNow > bbNow + 5 && col == "red") || (rbNow + 5 < bbNow && col == "blue")) return;
-	if (Math.random() > trainingMode ? 0 : 1) {
+	if (trainingMode && Math.random() < .5) {
 		spawnNNBot(sx, sy, col);
 		return;
 	}

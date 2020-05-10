@@ -105,17 +105,34 @@ global.ships = jsn.ships;
 global.planetNames = jsn.planets;
 
 
-// bases                (Red) / (Blue)
-var baseMap = [	2, 2,	//C3 / E5
-				0, 1,	//A2 / G6
-				0, 4,	//A5 / G3
-				3, 0,	//D1 / D7
-				5, 1];	//F2 / B6
-
+// bases
+global.baseMap=	{
+					"red":[	
+					2, 2,
+					0, 1,
+					0, 4,
+					3, 0,
+					5, 1
+					],
+					"blue":[	
+					4, 4,
+					6, 5,
+					6, 2,
+					3, 6,
+					1, 5
+					],
+					"green":[	
+					6, 0,
+					0, 6,
+					0, 0,
+					6, 6,
+					4, 2
+					],
+				};
 
 //some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
-var mineLifetime = 3; // mines despawn after 3 minutes
+var mineLifetime = 3; // mines despawn after this many minutes
 global.baseHealth = 1300; // max base health
 global.baseKillExp = 1300; // Exp reward for killing a base
 global.baseKillMoney = 100000; // ditto but money
@@ -126,7 +143,7 @@ global.sectorWidth = 14336; // must be divisible by 2048.
 global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
 global.neuralFiles = 1500; // how many files should be in competition
 
-global.botFrequency = trainingMode ? .7 : 1.6;//higher: more bots spawn. Standard: 1.6
+global.botFrequency = trainingMode ? .0014 : .003;//higher: more bots spawn.
 global.playerHeal = .2; // player healing speed
 global.baseHeal = 1; // base healing speed
 global.guestsCantChat = !Config.getValue("want_guest_chat", true);
@@ -141,8 +158,7 @@ var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0; // blue/red players/guests/b
 global.raidTimer = 50000;
 var raidRed = 0, raidBlue = 0; // Timer and points
 global.IPSpam = {}; // Keeps track of ips flooding server.
-global.bQuests = [];//A list of the 10 available quests for humans and aliens
-global.rQuests = [];
+global.teamQuests = {"blue":[], "red":[], "green":[]};//A list of the 10 available quests for humans and aliens
 
 var broadcastMsg=0;
 
@@ -216,52 +232,29 @@ global.getPlayerFromName = function(name) { // given a socket id, find the corre
     return -1;
 }
 
-//TODO Merge these
-function updateQuestsR() {
-	var i = 0;
-	for (i = 0; i < 10; i++) {
-		if (rQuests[i] == 0) break;
-		if (i == 9) return;
+function updateQuests() {
+	for(var teamColor in baseMap) {
+		var thisMap = baseMap[teamColor];
+		for (var i = 0; i < 10; i++) {
+			if (teamQuests[teamColor][i] !== 0) continue;
+			var r = Math.random();
+			var r2 = Math.random();
+			var whatTeam = Math.random()<5?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
+			var metals = ["aluminium", "silver", "platinum", "iron"];
+			var nm = 0;
+			if (i < 4) {
+				var dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
+				var sxv = Math.floor(r2 * mapSz), syv = Math.floor(r2 * 10 % 1 * mapSz);
+				if (dsxv == sxv && dsyv == syv) return;
+				nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
+			}
+			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * 5) * 2], sy: thisMap[Math.floor(r2 * 5) * 2 + 1] };
+			else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 5) * 2 + 1] };
+			else 			nm = { type: "Secret", 	exp: 400000, sx: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 4+1) * 2], sy: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 4+1) * 2 + 1] };
+			teamQuests[teamColor][i] = nm;
+		}
 	}
-	var r = Math.random();
-	var r2 = Math.random();
-	var metals = ["aluminium", "silver", "platinum", "iron"];
-	var nm = 0;
-	if (i < 4) {
-		var dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
-		var sxv = Math.floor(r2 * mapSz), syv = Math.floor(r2 * 10 % 1 * mapSz);
-		if (dsxv == sxv && dsyv == syv) return;
-		nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
-	}
-	else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else if (i < 9) nm = { type: "Base", exp: 200000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else nm = { type: "Secret", exp: 500000, sx: mapSz - 1 - baseMap[Math.floor(r2 * 4+1) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 4+1) * 2 + 1] };
-	rQuests[i] = nm;
 }
-function updateQuestsB() {
-	var i = 0;
-	for (i = 0; i < 10; i++) {
-		if (bQuests[i] == 0) break;
-		if (i == 9) return;
-	}
-	var r = Math.random();
-	var r2 = Math.random();
-	var metals = ["aluminium", "silver", "platinum", "iron"];
-	var nm = 0;
-	if (i < 4) {
-		var dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
-		var sxv = Math.floor(r2 * mapSz), syv = Math.floor(r2 * 10 % 1 * mapSz);
-		if (dsxv == sxv && dsyv == syv) return;
-		nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt((sxv - dsxv) * (sxv - dsxv) + (syv - dsyv) * (syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
-	} else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else if (i < 9) nm = { type: "Base", exp: 75000, sx: baseMap[Math.floor(r2 * 5) * 2], sy: baseMap[Math.floor(r2 * 5) * 2 + 1] };
-	else nm = { type: "Secret", exp: 300000, sx: baseMap[Math.floor(r2 * 4+1) * 2], sy: baseMap[Math.floor(r2 * 4+1) * 2 + 1] };
-	bQuests[i] = nm;
-}
-
-
-
-global.sectors = new Array(mapSz);
 
 // packs are how we send data to the client
 
@@ -362,9 +355,10 @@ function init() { // start the server!
 	process.on('SIGTERM', sigHandle);
 
 	//initialize lists of quests
-	for (var i = 0; i < 10; i++) {
-		bQuests[i] = 0;
-		rQuests[i] = 0;
+	for(var s in teamQuests){
+		for (var i = 0; i < 10; i++) {
+			teamQuests[s][i] = 0;
+		}
 	}
 
 	readMuteTable();
@@ -379,12 +373,6 @@ function init() { // start the server!
 		var x = s % mapSz;
 		var y = Math.floor(s / mapSz);
 		createPlanet(planetNames[s], x, y);
-	}
-	for (var i = 0; i < mapSz; i++)
-		sectors[i] = new Array(mapSz);
-	for (var i = 0; i < baseMap.length; i += 2) {
-		sectors[baseMap[i]][baseMap[i + 1]] = 1;
-		sectors[mapSz - 1 - baseMap[i]][mapSz - 1 - baseMap[i + 1]] = 2;
 	}
 
 	//wormhole
@@ -434,19 +422,17 @@ function buildFileSystem() { // create the server files/folders
 
 }
 function spawnBases() {
-	console.log("\nSpawning " + (baseMap.length / 2) + " Bases...");
-	//spawn bases
-	for (var i = 0; i < baseMap.length; i += 2) {
-		//make a red base at these coords
-		var randBase = Math.random();
-		var redBase = Base(randBase, true, baseMap[i], baseMap[i + 1], 'red', sectorWidth / 2, sectorWidth / 2);
-		bases[baseMap[i + 1]][baseMap[i]] = redBase;
-
-		//mirror coordinates and make a blue base
-		randBase = Math.random();
-		var blueBase = Base(randBase, true, mapSz - 1 - baseMap[i], mapSz - 1 - baseMap[i + 1], 'blue', sectorWidth / 2, sectorWidth / 2);
-		bases[mapSz - 1 - baseMap[i + 1]][mapSz - 1 - baseMap[i]] = blueBase;
+	console.log("\nSpawning Bases...");
+	for (var teamColor in baseMap) {
+		var thisMap = baseMap[teamColor];
+		for (var i = 0; i < thisMap.length; i += 2) {
+			//make a base at these coords
+			var randBase = Math.random();
+			var thisBase = Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2);
+			bases[thisMap[i + 1]][thisMap[i]] = thisBase;
+		}
 	}
+	console.log("\nBases Spawned!");
 }
 
 
@@ -487,8 +473,7 @@ function update() {
 	if (Math.random() < 0.0001) IPSpam[Math.floor(Math.random())] = 0;
 	var d = new Date();
 	var lagTimer = d.getTime();
-	updateQuestsR();
-	updateQuestsB();
+	updateQuests();
 
 	for (var i in dockers) {
 		var player = dockers[i];
@@ -748,15 +733,12 @@ function update() {
 			gameState.blasts.push({ delta: delta, id : i});
 		}
 
-		var rbNow = rb;//important to calculate here, otherwise bots weighted on left.
-		var bbNow = bb;
-
 		var base = bases[y][x];
 
 		if (base !== 0) {
 			var pack = basePack[y][x];
 
-			base.tick(rbNow, bbNow);
+			base.tick();
 
 			// Check for creation (only happens once, on first tick, or when a turret is placd)
 			if (pack === undefined) {
@@ -999,7 +981,7 @@ function update() {
 		var player = dockers[i];
 		if (tick % 12 == 0) { // LAG CONTROL
 			player.socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
-			player.socket.emit('quests', { quests: player.color == 'red' ? rQuests : bQuests });
+			player.socket.emit('quests', { quests: teamQuests[player.color]});
 		}
 	}
 	if (raidTimer-- % 4000 == 0) sendRaidData();
@@ -1019,58 +1001,31 @@ function updateHeatmap() {
 		for (var j = 0; j < mapSz; j++) hmap[i][j] = 0;
 	}
 	var j = 0;
-	rb = rg = rp = bp = bg = bb = raidRed = raidBlue = 0;
+	raidRed = raidBlue = 0;
 
 	for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) {
 		for (var i in players[y][x]) {
 			var p = players[y][x][i];
-			if (p.color === "red") {
-				raidRed += p.points;
-				if (p.isBot) rb++;
-				else if (p.guest) rg++;
-				else rp++;
-			} else {
-				raidBlue += p.points;
-				if (p.isBot) bb++;
-				else if (p.guest) bg++;
-				else bp++;
-			}
+			if (p.color === "red") raidRed += p.points;
+			else raidBlue += p.points;
 			if (p.name !== "" && !p.isBot) {
 				lb[j] = p;
 				j++;
 			}
-			hmap[p.sx][p.sy] += p.color === 'blue' ? -1 : 1; // this is supposed to be x-y order. TODO fix
+			hmap[p.sx][p.sy] += .1 + colorSelect(p.color, 1<<16, 1, 1<<8); // this is not supposed to be x-y order. TODO fix
 		}
 	}
 	for (var i in dockers) {
 		var p = dockers[i];
-		if (p.color === "red") {
-			raidRed += p.points;
-			if (p.isBot) rb++;
-			else if (p.guest) rg++;
-			else rp++;
-		} else {
-			raidBlue += p.points;
-			if (p.isBot) bb++;
-			else if (p.guest) bg++;
-			else bp++;
-		}
+		if (p.color === "red") raidRed += p.points;
+		else raidBlue += p.points;
 		lb[j] = p;
 		j++;
 	}
 	for (var i in deads) {
 		var p = deads[i];
-		if (p.color === "red") {
-			raidRed += p.points;
-			if (p.isBot) rb++;
-			else if (p.guest) rg++;
-			else rp++;
-		} else {
-			raidBlue += p.points;
-			if (p.isBot) bb++;
-			else if (p.guest) bg++;
-			else bp++;
-		}
+		if (p.color === "red") raidRed += p.points;
+		else raidBlue += p.points;
 		lb[j] = p;
 		j++;
 	}
@@ -1087,9 +1042,19 @@ function updateHeatmap() {
 
 	var lbSend = [];
 	for (var i = 0; i < Math.min(16, j); i++) lbSend[i] = { name: lb[i].name, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank };
+
+	//Normalize colors as though they are vectors to length 255
 	for (var i = 0; i < mapSz; i++) for (var j = 0; j < mapSz; j++) {
-		/*if(asts[i][j] >= 15) hmap[i][j] += 1500;
-		else */hmap[i][j] += 500;
+		var col = hmap[i][j];
+		var r = Math.floor(col/0x10000)%0x100;
+		var g = Math.floor(col/0x100)%0x100;
+		var b = Math.floor(col)%0x100;
+		var a = col-Math.floor(col);
+		var length = Math.sqrt(r*r+g*g+b*b)+.01;
+		r/=length;
+		b/=length;
+		g/=length;
+		hmap[i][j]=Math.floor(r*256)*0x10000+Math.floor(g*256)*0x100+Math.floor(b*256)+a;
 	}
 
 	for (var i in lb) lb[i].socket.emit('heatmap', { hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed });

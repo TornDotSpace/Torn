@@ -117,6 +117,10 @@ cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for pass
     player.setEmail(msg);
 });
 
+cmds["/green"] = new Command("/green Join green team", ADMINPLUS, function (player, msg) {
+    player.color = "green";
+});
+
 // MODERATION COMMANDS
 // These commands are accessible to moderators in the game
 cmds["/broadcast"] = new Command("/broadcast <msg> - Send a message to the whole server", MODPLUS, function (player, msg) {

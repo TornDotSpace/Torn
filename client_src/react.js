@@ -72,8 +72,8 @@ class MuteButton extends Component {
 		return (
 			<div className="mute-button" onClick={this.click.bind(this)}>
 				{!this.state.muted ?
-					<span><img src="img/soundOn.png" /></span> :
-					<span><img src="img/soundOff.png" /></span>
+					<span><img src="img/sound/soundOn.png" /></span> :
+					<span><img src="img/sound/soundOff.png" /></span>
 				}
 			</div>
 		)
@@ -97,8 +97,8 @@ class MusicButton extends Component {
 		return (
 			<div className="music-button" onClick={this.click.bind(this)}>
 				{!this.state.musicMuted ?
-					<span><img src="img/musicOn.png" /></span> :
-					<span><img src="img/musicOff.png" /></span>
+					<span><img src="img/sound/musicOn.png" /></span> :
+					<span><img src="img/sound/musicOff.png" /></span>
 				}
 			</div>
 		)
