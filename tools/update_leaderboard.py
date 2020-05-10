@@ -33,7 +33,7 @@ def updateLB(conn_str, path):
         tech = int(((player['thrust2'] + player['radar2'] + player['capacity2'] + player['agility2'] + player['maxHealth2'] + player['energy2'])/6-1)*8*100)/100
         xp = int(player['experience'])
         money = player['money']
-        color = "pink" if (player['color'] == 'red') else 'cyan'
+        color = "pink" if (player['color'] == 'red') else ("lime" if (player['color'] == 'green') else 'cyan')
         
         out = ( '<tr style="color:' + color + ';"><td>' + str(i) + ".</td><td>" + name + "</td><td> " + str(xp) + " </td><td>" + str(rank) + "</td><td>" + str(kills) + "</td><td>" + 
         ((str(int(money //1000000+.5))+"M") if money >10000000 else str(int(money//1000+.5))+"K")  + "</td><td>" + str(tech) + "</td></tr>")

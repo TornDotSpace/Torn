@@ -1161,8 +1161,8 @@ function rBaseGui() {
 	ctx.font = '14px ShareTech';
 	ctx.lineWidth = 2;
 	baseTick++;
-	roll(sinLow((baseTick % 3142) / 100.) / 16);
-	spin(cosLow((baseTick % 3142) / Math.PI / 50) / 16);
+	//roll(sinLow((baseTick % 3142) / 100.) / 16);
+	//spin(cosLow((baseTick % 3142) / Math.PI / 50) / 16);
 	var tabs = {};
 	tabs[0] = mEng[142];
 	tabs[1] = mEng[143];
@@ -1665,7 +1665,7 @@ socket.on('registered', function (data) {
 	guest = false;
 	textIn = 0;
 	autopilot = false;
-	tab = -1;
+	tab = 0
 });
 socket.on('lored', function (data) {
 	// Cleanup bullets from homepage
@@ -1682,6 +1682,7 @@ socket.on('guested', function (data) {
 	guest = true;
 	autopilot = false;
 	myId = data.id;
+	tab = 0;
 });
 
 socket.on('you', function (data) {
@@ -1840,6 +1841,7 @@ socket.on('status', function (data) {
 	shipView = ship;
 	if (!docked && data.docked) savedNote = 40;
 	if (docked != data.docked) textIn = 0;
+	if(data.docked && !docked && guest) {ReactRoot.turnOnRegister(""); tab = -1; keys[8] = false;}
 	docked = data.docked;
 	dead = data.state;
 	lives = data.lives;
@@ -2134,7 +2136,6 @@ document.onkeydown = function (event) {
 			if (keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
 			keys[8] = true;
 			if (textIn > 300) textIn = 0;
-			tab = 0;
 			ReactRoot.turnOffRegister("");
 			afkTimer = 45000;
 			socket.emit('equip', { scroll: scroll });
@@ -2301,11 +2302,6 @@ document.addEventListener('mousedown', function (evt) {
 	if (i == 504) window.open('https://www.youtube.com/channel/UCKsbC4GfoPOcyifiwW1GA4w', '_blank');
 	if (i == 505) window.open('https://discord.gg/wFsdUcY', '_blank');
 	if (i == 506) window.open('/credits', '_blank');
-	if (i == 600 && guest) {
-		ReactRoot.turnOnRegister("");
-		textIn = 0;
-		tab = -1;
-	}
 	if (i == 601) {
 		textIn = 0;
 		tab = 7;
@@ -3633,7 +3629,7 @@ function rPlayers() {
 			}
 		}
 
-		if (selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];
+		if (selfo.name === myName && selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];
 		if (selfo.hasPackage) rBackPack(selfo);
 		ctx.lineWidth = 6;
 		if (selfo.shield) {
@@ -3764,9 +3760,9 @@ function rEdgePointer() {
 	var angle = 0;
 	if (px < py) {
 		if (sectorWidth - px > py) angle = 2;
-		else angle = 3;
+		else angle = 1;
 	} else {
-		if (sectorWidth - px > py) angle = 1;
+		if (sectorWidth - px > py) angle = 3;
 		else angle = 0;
 	}
 	var text = '';
