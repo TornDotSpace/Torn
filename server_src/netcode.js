@@ -202,9 +202,9 @@ module.exports = function initNetcode() {
             player.thrust = ships[player.ship].thrust * player.thrust2;
             player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
             player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-            socket.emit('sectors', { sectors: sectors });
             sendWeapons(player);
-            socket.emit("raid", { raidTimer: raidTimer })
+            socket.emit("raid", { raidTimer: raidTimer });
+            socket.emit('baseMap', {baseMap: baseMap});
 
             chatAll("Welcome " + player.name + " to the universe!");
         });
@@ -341,8 +341,8 @@ module.exports = function initNetcode() {
                 player.thrust = ships[player.ship].thrust * player.thrust2;
                 player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
                 player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-                if (!data.amNew) socket.emit('sectors', { sectors: sectors });
                 sendWeapons(player);
+                socket.emit('baseMap', {baseMap: baseMap});
             });
         });
         socket.on('disconnect', function (data) { // Emitted by socket.IO when connection is terminated or ping timeout

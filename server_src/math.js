@@ -16,6 +16,12 @@ global.secs = function(x){
 	return 25 * x;
 }
 
+global.colorSelect = function(col, red, blue, green){
+	if(col === "red")  return red;
+	if(col === "blue") return blue;
+	return green;
+}
+
 global.pdist = function (x, sx, sy) { // used in blast collision algorithm
 	var i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
 	var i2 = ((sx * sx + sy) % 5 + 1) / 2.23;

@@ -31,11 +31,11 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		empTimer: -1,
 		speed: 0,//vs unused but there for bullets,
 	}
-	self.tick = function (rbNow, bbNow) {
+	self.tick = function () {
 		//spawn a bot if we need more bots
 		var botSpawn = Math.random();
-		if (self.isBase && botSpawn < botFrequency / square(rbNow + bbNow + 5)) {
-			spawnBot(self.sx, self.sy, self.color, rbNow, bbNow);
+		if (botSpawn < botFrequency) {
+			spawnBot(self.sx, self.sy, self.color);
 		}
 
 		if (!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) self.turretLive = true; // revive. TODO: add a timer

@@ -174,19 +174,6 @@ var hyperdriveTimer = 0;
 var didW = false, didSteer = false, currTut = 0;
 
 var basess = [];
-var baseInfo = [0, 1, 0, 4, 2, 2, 3, 0, 5, 1];
-for (var i = 0; i < 12; i += 2) {
-	var xx = baseInfo[i] - (mapSz - 1) / 2;
-	var yy = baseInfo[i + 1] - (mapSz - 1) / 2;
-	xx *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-	yy *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-	basess[i / 2] = { x: xx, y: yy, z: 0, color: 'red' };
-	var xxb = (mapSz - 1) / 2 - baseInfo[i];
-	var yyb = (mapSz - 1) / 2 - baseInfo[i + 1];
-	xxb *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-	yyb *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-	basess[i / 2 + 6] = { x: xxb, y: yyb, z: 0, color: 'cyan' };
-}
 
 var sectorPoints = {};
 for (var i = 0; i < mapSz + 1; i++) {
@@ -730,17 +717,9 @@ function r3DMap(xp, yp) {
 		var yy = yp + dot.y / 1.33;
 		ctx.fillRect(xx, yy, 1, 1);
 	}
-	for (var i in basess) {
-		var dot = basess[i];
-		var xx = xp + dot.x / 1.33; // /1.414 to keep in bounds
-		var yy = yp + dot.y / 1.33;
-		var img = (dot.color == "red") ? Img.mrss : ((dot.color == "cyan") ? Img.mbss : Img.ma);
-		ctx.drawImage(img, xx - 7, yy - 7, 15, 15);
-	}
 	if (hmap == 0 || typeof hmap[sx] === "undefined") return;
 
-	var hmt = hMapTrans(hmap[sx][sy]);
-	if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO
+	//if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO
 	
 	ctx.strokeStyle = 'gray';
 	ctx.lineWidth = .35;
@@ -770,6 +749,25 @@ function r3DMap(xp, yp) {
 			ctx.closePath();
 			if(i == sx && j == sy){
 
+				//Render wormhole
+				/*
+					if (va2 < 1.9) return;
+					ctx.fillStyle = 'white';
+					ctx.beginPath();
+					ctx.arc(20 + 182 * bx, 20 + 182 * by, 4, 0, 2 * Math.PI, false);
+					ctx.fill();
+
+					ctx.fillStyle = 'black';
+					ctx.beginPath();
+					ctx.arc(20 + 182 * bx, 20 + 182 * by, 3, 0, 2 * Math.PI, false);
+					ctx.fill();
+
+					ctx.fillStyle = 'white';
+					ctx.beginPath();
+					ctx.arc(20 + 182 * bxo, 20 + 182 * byo, 4, 0, 2 * Math.PI, false);
+					ctx.fill();
+				*/
+
 				//Highlight the player's sector
 				ctx.lineWidth = 3;
 				ctx.strokeStyle = ctx.fillStyle = brighten(pc);
@@ -790,14 +788,23 @@ function r3DMap(xp, yp) {
 			else ctx.stroke();
 
 			//render heatmap
-			var eachmt = hMapTrans(hmap[i][j]);
-			ctx.fillStyle = eachmt > 0 ? 'red' : 'cyan';
-			var alp = Math.sqrt(Math.abs(eachmt) / 30);
-			ctx.globalAlpha = Math.min(1, alp);
+			var eachmt = hmap[i][j];
+			ctx.fillStyle = "rgb("+(Math.floor(eachmt>>16)%0x100)+", "+(Math.floor(eachmt>>8)%0x100)+", "+(eachmt%0x100)+")";
+			var alp = eachmt-Math.floor(eachmt);
+			ctx.globalAlpha = Math.sqrt(Math.min(1, alp))/2;
 			ctx.fill();
 		}
 	}
 	ctx.globalAlpha = 1;
+
+
+	for (var i in basess) {
+		var dot = basess[i];
+		var xx = xp + dot.x / 1.25; // /1.414 to keep in bounds
+		var yy = yp + dot.y / 1.25;
+		var img = colorSelect(dot.color, Img.mrss, Img.mbss, Img.mgss);
+		ctx.drawImage(img, xx - 7, yy - 7, 15, 15);
+	}
 }
 function rBuyShipWindow(){
 
@@ -1353,7 +1360,6 @@ socket.on('vort_create', function(data) {
 
 function vort_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in
 	if (vortsInfo[id] === undefined) return;
 	var delta = data.delta;
 
@@ -1372,7 +1378,6 @@ socket.on('mine_create', function (data) {
 
 function mine_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in
 	if (minesInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1392,7 +1397,6 @@ socket.on('pack_create', function (data) {
 
 function pack_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in
 	if (packsInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1412,7 +1416,6 @@ socket.on('beam_create', function (data) {
 
 function beam_update(data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in
 	if (beamsInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1432,7 +1435,6 @@ socket.on('blast_create', function (data) {
 
 function blast_update(delta) {
 	var id = delta.id;
-	// We just changed sectors or are just loading in
 	if (blastsInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1454,7 +1456,6 @@ function base_update(data) {
 	if (data === undefined || data.delta === undefined) return;
 	var delta = data.delta;
 
-	// We just changed sectors or are just loading in
 	if (basesInfo === 0) return;
 
 	for (var d in delta) {
@@ -1477,7 +1478,6 @@ socket.on('pong', (latency) => {
 function asteroid_update (data) {
 	var id = data.id;
 
-	// We just changed sectors or are just loading in
 	if (astsInfo[id] === undefined) return;
 	var delta = data.delta;
 
@@ -1496,7 +1496,6 @@ socket.on('orb_create', function (data) {
 
 function orb_update (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in
 	if (orbsInfo[id] === undefined) return;
 	var delta = data.delta;
 
@@ -1515,7 +1514,6 @@ socket.on('missile_create', function (data) {
 
 function missile_update (data) {
 	var id = data.id;
-	// We just changed sectors or are just loading in
 	if (missilesInfo[id] === undefined) return;
 
 	var delta = data.delta;
@@ -1780,20 +1778,6 @@ socket.on('online', function (data) {
 	rg = data.rg;
 	sLag = data.lag;
 });
-socket.on('sectors', function (data) {
-	sectorMap = data.sectors;
-	var i = 12;
-	for (var x = 0; x < mapSz; x++)
-		for (var y = 0; y < mapSz; y++)
-			if (sectorMap[x][y] == 4) {
-				var xxb = x - (mapSz - 1) / 2;
-				var yyb = y - (mapSz - 1) / 2;
-				xxb *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-				yyb *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-				basess[i] = { x: xxb, y: yyb, z: 0, color: 'lime' };
-				i++;
-			}
-});
 socket.on('emp', function (data) {
 	empTimer = data.t;
 });
@@ -1864,6 +1848,23 @@ socket.on('planets', function (data) {
 	planets = data.pack;
 	if (quest != 0 && quest.type === "Secret2" && sx == quest.sx && sy == quest.sy)
 		secret2PlanetName = planets.name;
+});
+socket.on('baseMap', function(data) {
+	var baseMap = data.baseMap;
+	console.log(baseMap);
+	var j = 0;
+	for (var teamColor in baseMap){
+		var thisMap = baseMap[teamColor];
+		console.log(teamColor);
+		for (var i = 0; i < thisMap.length; i += 2) {
+			var xx = thisMap[i] - (mapSz - 1) / 2;
+			var yy = thisMap[i + 1] - (mapSz - 1) / 2;
+			xx *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
+			yy *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
+			basess[j] = { x: xx, y: yy, z: 0, color: teamColor };
+			j++;
+		}
+	}
 });
 socket.on('heatmap', function (data) {
 	hmap = data.hmap;
@@ -2450,9 +2451,6 @@ function addBigNote(note) {
 function bgPos(x, px, scrx, i, tileSize) {
 	return ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
 }
-function hMapTrans(x) {
-	return x % 1000 - 500;
-}
 function weaponWithOrder(x) {
 	for (var i = 0; i < wepns.length; i++) if (wepns[i].order == x) return i;
 }
@@ -2957,29 +2955,6 @@ function renderBG(more) {
 
 	ctx.globalAlpha = 1;
 }
-/*function rMap() {
-	ctx.globalAlpha = 1;
-	ctx.drawImage(Img.galaxy, 14, 14);
-	ctx.lineWidth = 3;
-	ctx.strokeStyle = "#FFFF00"
-	ctx.strokeRect(20 + 182 * sx / mapSz, 20 + 182 * sy / mapSz, 182 / mapSz, 182 / mapSz);
-
-	if (va2 < 1.9) return;
-	ctx.fillStyle = 'white';
-	ctx.beginPath();
-	ctx.arc(20 + 182 * bx, 20 + 182 * by, 4, 0, 2 * Math.PI, false);
-	ctx.fill();
-
-	ctx.fillStyle = 'black';
-	ctx.beginPath();
-	ctx.arc(20 + 182 * bx, 20 + 182 * by, 3, 0, 2 * Math.PI, false);
-	ctx.fill();
-
-	ctx.fillStyle = 'white';
-	ctx.beginPath();
-	ctx.arc(20 + 182 * bxo, 20 + 182 * byo, 4, 0, 2 * Math.PI, false);
-	ctx.fill();
-}*/
 function rLB() {
 	if (guest) return;
 	ctx.save();
