@@ -586,7 +586,7 @@ module.exports = function initNetcode() {
             if (typeof data === "undefined" || player == 0 || !player.docked || player.quest != 0 || typeof data.quest !== 'number' || data.quest < 0 || data.quest > 9) return;
 
             var qid = Math.floor(data.quest); // Find the correct quest.
-            var quest = (player.color === "red" ? rQuests : bQuests)[qid];
+            var quest = teamQuests[player.color][qid];
 
             //You need to have unlocked this quest type.
             if (quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;
@@ -596,7 +596,7 @@ module.exports = function initNetcode() {
                 player.sendAchievementsMisc(true);
             }
 
-            if (player.color === "red") rQuests[qid] = 0; else bQuests[qid] = 0; // note that quest as taken and queue it to be remade. TODO can we just remake it here?
+            teamQuests[player.color][qid] = 0;
             player.quest = quest; // give them the quest and tell the client.
             socket.emit('quest', { quest: quest });
 

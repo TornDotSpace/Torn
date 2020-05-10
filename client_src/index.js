@@ -2201,51 +2201,69 @@ document.addEventListener('mousemove', function (evt) {
 	if (mb == 1 && mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
 	if (mx > w - 32 - 20 - 128 && my > h - 52) volTransparency = 1;
 	var preSeller = seller;
-	if (guest && rank > 0 && tab == 0 && docked && mx > rx + 768 - 256 && mx < rx + 768 && my > ry + 256 - 40 && my < ry + 256 + 120) seller = 600;
-	else if (tab == 1 && docked && mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
-	else if (tab == 1 && docked && mx > rx + 768 - 16 - ctx.measureText(mEng[14]).width && mx < rx + 768 - 16 && my > ry + 512 - 32 && my < ry + 512 - 16) seller = 611;
-	else if (mb == 1 && mx > 8 && mx < 216 && my < 216 && my > 8) {
+	
+	//Map movement
+	if (mb == 1 && mx > 8 && mx < 216 && my < 216 && my > 8) {
 		var mxn = mx - omx;
 		var myn = my - omy;
 		roll(myn / 4);
 		spin(mxn / 4);
 	}
-	else if (docked && tab == 2 && mx > 16 + rx && mx < rx + 128 * 6 - 16 && my > ry + 40 + 32 && my < ry + 512 - 48 && quest == 0) {
+
+	//Shop
+	else if(docked && tab == 0){
+			 if (mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
+		else if (mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
+			seller = 5 + Math.floor((my - 84 - ry) / 32);
+			if (Math.floor((my - 84 - ry) / 16) % 2 == 1) seller = 0;
+		}
+		else if (my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) seller = Math.floor((my - ry - 246) / 16 + 10);
+		else if (my > ry + 256 - 30 && my < ry + 256 - 16 && mx > rx + 512 - 64 && mx < rx + 512 - 64 + ctx.measureText(mEng[18]).width) seller = 601;
+		else if (mx > rx + 768 - 16 - ctx.measureText(mEng[14]).width && mx < rx + 768 - 16 && my > ry + 512 - 32 && my < ry + 512 - 16) seller = 611;
+		else if (my > ry + 256 - 16 && my < ry + 512 - 16 && mx > rx + 16 && mx < rx + 256 + 16) {
+			if (my > ry + 256 + 128 + 32) seller = 100;
+			else seller = 0;
+		}
+	}
+
+	//Quests
+	else if (docked && tab == 1 && mx > 16 + rx && mx < rx + 128 * 6 - 16 && my > ry + 40 + 32 && my < ry + 512 - 48 && quest == 0) {
 		seller = Math.floor((my - ry - 40 - 32) / 80) + 300;
 		if (mx > rx + 128 * 3) seller += 5;
 	}
-	/*else if(docked && tab == 2 && quest != 0 && my > ry + 210 && my < ry + 228 && mx < rx + 384 + 64 && mx > rx + 320)
-		seller = 350;*/
-	else if (tab == 1 && docked && mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
-		seller = 5 + Math.floor((my - 84 - ry) / 32);
-		if (Math.floor((my - 84 - ry) / 16) % 2 == 1) seller = 0;
+
+	//Stats
+	else if (docked && tab == 2){
+			 if (my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
+		else if (my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 192 && mx < rx + 192 + 112) seller = 201;
+		else if (my > ry + 416 && my < ry + 416 + 48 && mx > rx + 64 && mx < rx + 64 + 112) seller = 202;
+		else if (my > ry + 416 && my < ry + 416 + 48 && mx > rx + 192 && mx < rx + 192 + 112) seller = 203;
+		else if (my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 320 && mx < rx + 320 + 112) seller = 204;
+		else if (my > ry + 416 && my < ry + 416 + 48 && mx > rx + 320 && mx < rx + 320 + 112) seller = 205;
+		else if (my > ry + 44 + 64 - 24 && my < ry + 44 + 64 + 8 * 21 && mx > rx + 512 && mx < rx + 768) {
+			seller = 700 + Math.floor((my - ry - 44 - 64 + 24) / 32);
+			if ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && true)) seller = 0;
+		}
 	}
-	else if (tab == 1 && docked && my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) seller = Math.floor((my - ry - 246) / 16 + 10);
-	else if (tab == 1 && docked && my > ry + 256 - 30 && my < ry + 256 - 16 && mx > rx + 512 - 64 && mx < rx + 512 - 64 + ctx.measureText(mEng[18]).width) seller = 601;
-	else if (tab == 7 && docked && my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16)) + 20;
-	else if (tab == 7 && docked && my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 && mx < rx + 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3))) + 20;
-	else if (tab == 7 && docked && my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3) * 2)) + 20;
-	else if (docked && tab == 1 && my > ry + 256 - 16 && my < ry + 512 - 16 && mx > rx + 16 && mx < rx + 256 + 16) {
-		if (my > ry + 256 + 128 + 32) seller = 100;
-		else seller = 0;
+
+	//Buy weapon
+	else if (docked && tab == 7){
+			 if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16)) + 20;
+		else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 && mx < rx + 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3))) + 20;
+		else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3) * 2)) + 20;
 	}
-	else if (docked && tab == 3 && my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
-	else if (docked && tab == 3 && my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 192 && mx < rx + 192 + 112) seller = 201;
-	else if (docked && tab == 3 && my > ry + 416 && my < ry + 416 + 48 && mx > rx + 64 && mx < rx + 64 + 112) seller = 202;
-	else if (docked && tab == 3 && my > ry + 416 && my < ry + 416 + 48 && mx > rx + 192 && mx < rx + 192 + 112) seller = 203;
-	else if (docked && tab == 3 && my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 320 && mx < rx + 320 + 112) seller = 204;
-	else if (docked && tab == 3 && my > ry + 416 && my < ry + 416 + 48 && mx > rx + 320 && mx < rx + 320 + 112) seller = 205;
-	else if (docked && tab == 5 && my > ry + 40 && my < ry + 512 && mx > rx && mx < rx + 768) {
+
+	//More
+	else if (docked && tab == 4 && my > ry + 40 && my < ry + 512 && mx > rx && mx < rx + 768) {
 		var ticX = Math.floor((mx - rx) / 256);
 		var ticY = Math.floor((my - ry - 40) / ((512 - 40) / 3));
 		if (ticY == 1) seller = 503;
 		else seller = 500 + ticX + ticY * 2;
 	}
-	else if (docked && tab == 3 && my > ry + 44 + 64 - 24 && my < ry + 44 + 64 + 8 * 21 && mx > rx + 512 && mx < rx + 768) {
-		seller = 700 + Math.floor((my - ry - 44 - 64 + 24) / 32);
-		if ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && true)) seller = 0;
-	}
+
+	//Global Chat Button
 	else if (mx < 512 + 32 && mx > 512 - 64 && my > h - 32) seller = 800;
+
 	else seller = 0;
 	if (seller != 0 && seller != preSeller) playAudio("button2", .2);
 }, false);
@@ -2296,7 +2314,7 @@ document.addEventListener('mousedown', function (evt) {
 	if (i == 610) socket.emit('sell', { item: 'all' });
 	if (i == 611) socket.emit('buyLife', {});
 	if (i >= 300 && i < 310 && quest == 0) socket.emit('quest', { quest: i - 300 });
-	if (docked && tab == 3 && i > 199 && i < 206) socket.emit('upgrade', { item: i - 200 });
+	if (docked && tab == 2 && i > 199 && i < 206) socket.emit('upgrade', { item: i - 200 });
 	if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40) {
 		textIn = 0;
 		tab = Math.floor((mx - rx) / (768/5));
@@ -2314,7 +2332,7 @@ document.addEventListener('mousedown', function (evt) {
 		else if (i == 7) item = 'platinum';
 		else if (i == 8) item = 'aluminium';
 		socket.emit('sell', { item: item });
-	} else if (docked && tab == 1 && my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) {
+	} else if (docked && tab == 0 && my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) {
 		if (equipped[i - 10] == -1) {
 			textIn = 0;
 			tab = 7;
@@ -2326,7 +2344,7 @@ document.addEventListener('mousedown', function (evt) {
 			tab = 8;
 			confirmer = i - 10;
 		}
-	} else if (docked && tab == 1 && my > ry + 256 - 16 && my < ry + 512 - 16 && mx > rx + 16 && mx < rx + 256 + 16) {
+	} else if (docked && tab == 0 && my > ry + 256 - 16 && my < ry + 512 - 16 && mx > rx + 16 && mx < rx + 256 + 16) {
 		if (my > ry + 256 + 128 + 32) socket.emit('buyShip', { ship: shipView });
 		else if (mx > rx + 16 + 128 && shipView < ships.length - 1) shipView++;
 		else if (mx < rx + 16 + 128 && shipView > 0) shipView--;

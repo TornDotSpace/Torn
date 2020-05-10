@@ -235,25 +235,24 @@ global.getPlayerFromName = function(name) { // given a socket id, find the corre
 function updateQuests() {
 	for(var teamColor in baseMap) {
 		var thisMap = baseMap[teamColor];
-		var i = 0;
-		for (i = 0; i < 10; i++) {
-			if (teamQuests[teamColor][i] == 0) break;
-			if (i == 9) return;
+		for (var i = 0; i < 10; i++) {
+			if (teamQuests[teamColor][i] !== 0) continue;
+			var r = Math.random();
+			var r2 = Math.random();
+			var whatTeam = Math.random()<5?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
+			var metals = ["aluminium", "silver", "platinum", "iron"];
+			var nm = 0;
+			if (i < 4) {
+				var dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
+				var sxv = Math.floor(r2 * mapSz), syv = Math.floor(r2 * 10 % 1 * mapSz);
+				if (dsxv == sxv && dsyv == syv) return;
+				nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
+			}
+			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * 5) * 2], sy: thisMap[Math.floor(r2 * 5) * 2 + 1] };
+			else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 5) * 2 + 1] };
+			else 			nm = { type: "Secret", 	exp: 400000, sx: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 4+1) * 2], sy: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 4+1) * 2 + 1] };
+			teamQuests[teamColor][i] = nm;
 		}
-		var r = Math.random();
-		var r2 = Math.random();
-		var metals = ["aluminium", "silver", "platinum", "iron"];
-		var nm = 0;
-		if (i < 4) {
-			var dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
-			var sxv = Math.floor(r2 * mapSz), syv = Math.floor(r2 * 10 % 1 * mapSz);
-			if (dsxv == sxv && dsyv == syv) return;
-			nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
-		}
-		else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * 5) * 2], sy: thisMap[Math.floor(r2 * 5) * 2 + 1] };
-		else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: mapSz - 1 - thisMap[Math.floor(r2 * 5) * 2], sy: mapSz - 1 - thisMap[Math.floor(r2 * 5) * 2 + 1] };
-		else 			nm = { type: "Secret", 	exp: 500000, sx: mapSz - 1 - thisMap[Math.floor(r2 * 4+1) * 2], sy: mapSz - 1 - thisMap[Math.floor(r2 * 4+1) * 2 + 1] };
-		teamQuests[teamColor][i] = nm;
 	}
 }
 
