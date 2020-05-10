@@ -54,20 +54,30 @@ cmds["/confirm"] = new Command("/confirm <newPassword>", REGISTERED, function (p
 }, false);
 
 cmds["/changeteam"] = new Command("/changeteam", REGISTERED, function (player, msg) {
-    player.socket.emit("chat", { msg: "Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type /confirmteam to continue. Make sure you aren't near any players or bases on your current team." });
-});
-
-cmds["/confirmteam"] = new Command("/confirmteam", REGISTERED, function (player, msg) {
-    if (player.experience <= 10000) {
-        player.socket.emit("chat", { msg: "You don't have enough experience!" });
-        return;
+    var split = msg.split(" ");
+    if (split.length > 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/changeteam'"});return;}
+    if (split.length == 1) {
+        player.socket.emit("chat", { msg: "Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type \"/changeteam <color>\" to continue. Make sure you aren't near any players or bases on your current team." });
     }
-
-    player.color = (player.color === "red" ? "blue" : "red");
-    player.money *= .9;
-    player.experience *= .9;
-    player.save();
-}, false);
+    if(split.length == 2) {
+        if (player.experience <= 10000) {
+            player.socket.emit("chat", { msg: "You don't have enough experience!" });
+            return;
+        }
+        if (split[1] !== "green" && split[1] !== "blue" && split[1] !== "red") {
+            player.socket.emit("chat", { msg: "Invalid team to switch to!" });
+            return;
+        }
+        if (split[1] === "green") {
+            player.socket.emit("chat", { msg: "Green team coming soon!" });
+            return;
+        }
+        player.color = split[1];
+        player.money *= .9;
+        player.experience *= .9;
+        player.save();
+    }
+});
 
 cmds["/nameturret"] = new Command("/nameturret <name>", REGISTERED, function (player, msg) {
 	var num = 0;
