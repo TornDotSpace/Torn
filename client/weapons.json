@@ -739,7 +739,7 @@
 			"thrust":0.35,
 			"health":300,
 			"agility":0.3,
-			"width":128,
+			"width":192,
 			"price":500000,
 			"weapons":9,
 			"capacity":10000
@@ -784,7 +784,7 @@
 			"thrust":0.32,
 			"health":500,
 			"agility":0.3,
-			"width":128,
+			"width":192,
 			"price":3000000,
 			"weapons":10,
 			"capacity":10000
