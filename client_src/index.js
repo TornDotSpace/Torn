@@ -3818,10 +3818,10 @@ function rEdgePointer() {
 		else angle = 0;
 	}
 	var text = '';
-	if (angle == 2) text = sectorWidth - px;
-	else if (angle == 1) text = py;
-	else if (angle == 0) text = px;
-	else if (angle == 3) text = sectorWidth - py;
+	if (angle == 0) text = sectorWidth - px;
+	else if (angle == 3) text = py;
+	else if (angle == 2) text = px;
+	else if (angle == 1) text = sectorWidth - py;
 	rPointerArrow(Img.yellowArrow,angle*Math.PI/2,text,'yellow');
 }
 function rBasePointer(nearB) {

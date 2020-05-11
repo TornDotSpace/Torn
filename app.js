@@ -236,7 +236,7 @@ function updateQuests() {
 			if (teamQuests[teamColor][i] !== 0) continue;
 			var r = Math.random();
 			var r2 = Math.random();
-			var whatTeam = Math.random()<.5?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
+			var whatTeam = i==8?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
 			var metals = ["aluminium", "silver", "platinum", "iron"];
 			var nm = 0;
 			if (i < 4) {
@@ -457,8 +457,9 @@ function endRaid() {
 	raidTimer = 360000;
 	for (var i in sockets) {
 		var p = getPlayer(i);
+		if (p === undefined) continue;
 		p.points = 0;
-		if (p === undefined || p.color !== winners) continue;
+		if (p.color !== winners) continue;
 		p.spoils("money", p.points * 75000);
 	}
 	sendRaidData();
