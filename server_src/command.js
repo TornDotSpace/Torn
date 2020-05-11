@@ -68,8 +68,8 @@ cmds["/changeteam"] = new Command("/changeteam", REGISTERED, function (player, m
             player.socket.emit("chat", { msg: "Invalid team to switch to!" });
             return;
         }
-        if (split[1] === "green") {
-            player.socket.emit("chat", { msg: "Green team coming soon!" });
+        if (split[1] === player.color) {
+            player.socket.emit("chat", { msg: "That's your current team!" });
             return;
         }
         player.color = split[1];

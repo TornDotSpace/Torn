@@ -97,6 +97,10 @@ function mod(n, m) { // used in findBisector
 	return Math.floor(remain >= 0 ? remain : remain + m);
 }
 
+global.techPriceForDowngrade = function(x){ // money required to upgrade Tech
+	return techEnergy(lastTechLevel(x))-techEnergy(x);
+}
+
 global.techPrice = function(x){ // money required to upgrade Tech
 	return techEnergy(nextTechLevel(x))-techEnergy(x);
 }
@@ -107,4 +111,8 @@ global.techEnergy = function(x){ // Net price of some tech level
 
 global.nextTechLevel = function(x){
 	return Math.floor(x*8.+1)/8.;
+}
+
+global.lastTechLevel = function(x){
+	return Math.floor(x*8.-.001)/8.;
 }

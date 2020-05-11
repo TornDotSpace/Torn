@@ -106,27 +106,25 @@ global.planetNames = jsn.planets;
 
 
 // bases
+global.basesPerTeam = 4;
 global.baseMap=	{
-					"red":[	
-					2, 2,
-					0, 1,
-					0, 4,
-					3, 0,
-					5, 1
-					],
-					"blue":[	
-					4, 4,
-					6, 5,
-					6, 2,
-					3, 6,
-					1, 5
-					],
-					"green":[	
-					6, 0,
-					0, 6,
+					"red":[	//x, y
 					0, 0,
-					6, 6,
-					4, 2
+					2, 0,
+					0, 4,
+					1, 2
+					],
+					"blue":[
+					6, 0,
+					4, 0,
+					6, 4,
+					5, 2
+					],
+					"green":[
+					1, 5,
+					2, 6,
+					4, 6,
+					5, 5
 					],
 				};
 
@@ -239,7 +237,7 @@ function updateQuests() {
 			if (teamQuests[teamColor][i] !== 0) continue;
 			var r = Math.random();
 			var r2 = Math.random();
-			var whatTeam = Math.random()<5?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
+			var whatTeam = Math.random()<.5?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
 			var metals = ["aluminium", "silver", "platinum", "iron"];
 			var nm = 0;
 			if (i < 4) {
@@ -249,8 +247,8 @@ function updateQuests() {
 				nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
 			}
 			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * 5) * 2], sy: thisMap[Math.floor(r2 * 5) * 2 + 1] };
-			else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 5) * 2], sy: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 5) * 2 + 1] };
-			else 			nm = { type: "Secret", 	exp: 400000, sx: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 4+1) * 2], sy: mapSz - 1 - baseMap[whatTeam][Math.floor(r2 * 4+1) * 2 + 1] };
+			else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
+			else 			nm = { type: "Secret", 	exp: 400000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
 			teamQuests[teamColor][i] = nm;
 		}
 	}
@@ -992,7 +990,7 @@ function update() {
 	ops--;
 }
 
-setInterval(updateHeatmap, 1000);
+setInterval(updateHeatmap, 700);
 function updateHeatmap() {
 	var hmap = [];
 	var lb = [];

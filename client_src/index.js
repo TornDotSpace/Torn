@@ -104,6 +104,14 @@ var tab = 0, confirmer = -1, shipView = 0, volTransparency = 0, gVol = .5;
 global.typing = false;
 global.stopTyping = () => { typing = false }
 
+var baseMap2D = {}
+for(var i = 0; i < mapSz; i++){
+	baseMap2D[i] = {};
+	for(var j = 0; j < mapSz; j++){
+		baseMap2D[i][j] = 0;
+	}
+}
+
 var chatLength = 20, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
 var lorePage = 0, homepageTimer = 0, loreTimer = 0;
 var messages = {};
@@ -150,7 +158,7 @@ for (var i = 0; i < 30; i++) stars[i] = { x: Math.random() * w, y: Math.random()
 var myId = undefined;
 
 var dots = [];
-for (var i = 0; i < 200; i++) {
+for (var i = 0; i < 2; i++) {
 	var a = Math.random() * 6.28318;
 	var rnd = Math.random() * 128;
 	a += sinLow((a % (2 * Math.PI / 5) + rnd / 32) * 5 / 2) / (1 + (128 / rnd));
@@ -167,16 +175,25 @@ var xxa = sx;
 var yya = sy;
 xxa *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
 yya *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-var sectorDot = { x: xxa, y: yya, z: 0, color: 'lime' };
 var planetTimerSec = 0;
 var flash = 0;
 var hyperdriveTimer = 0;
 var didW = false, didSteer = false, currTut = 0;
 
-var basess = [];
-
 var sectorPoints = {};
-for (var i = 0; i < mapSz + 1; i++) {
+/*for (var i = 0; i < mapSz + 1; i++) {
+	sectorPoints[i] = {};
+	for (var j = 0; j < mapSz + 1; j++) {
+		var theta = -2*Math.PI*i/mapSz;
+		var upwards = square((mapSz+7-j)/(mapSz+7));
+		var radius = cerp(0,1,upwards)*128;
+		var xx = Math.sin(theta) * radius;
+		var yy = Math.cos(theta) * radius;
+		var zz = upwards*256;
+		sectorPoints[i][j] = { x: xx, y: yy, z: zz };
+	}
+}*/
+for (var i = 0; i < mapSz + 1; i++) { // Old Map
 	sectorPoints[i] = {};
 	for (var j = 0; j < mapSz + 1; j++) {
 		var xx = (i - mapSz / 2) * 256 / mapSz;
@@ -380,7 +397,6 @@ function loadAllImages() {
 	//baseGui
 	loadImage("q", '/img/baseGui/q.png');
 	loadImage("button", '/img/baseGui/button.png');
-	loadImage("gbutton", '/img/baseGui/gbutton.png');
 	loadImage("arrow", '/img/baseGui/arrow.png');
 
 	//packs
@@ -406,7 +422,7 @@ function loadAllImages() {
 
 	for (var i = 1; i < 6; i++) {
 		planetImgs[i] = new Image();
-		planetImgs[i].src = '/img/space/planets/pt' + i + '.png';	
+		planetImgs[i].src = '/img/space/planets/pt' + i + '.jpg';	
 	}
 }
 
@@ -416,15 +432,6 @@ var bigNotes = [-1, -1, -1, -1];
 function roll(v) {
 	for (var i in dots) {
 		var dot = dots[i];
-		var dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
-		var ang = Math.atan2(dot.z, dot.y) + v / 28;
-		var cos = Math.cos(ang) * dist;
-		var sin = Math.sin(ang) * dist;
-		dot.y = cos;
-		dot.z = sin;
-	}
-	for (var i in basess) {
-		var dot = basess[i];
 		var dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
 		var ang = Math.atan2(dot.z, dot.y) + v / 28;
 		var cos = Math.cos(ang) * dist;
@@ -443,26 +450,10 @@ function roll(v) {
 			dot.z = sin;
 		}
 	}
-	var dot = sectorDot;
-	var dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
-	var ang = Math.atan2(dot.z, dot.y) + v / 28;
-	var cos = Math.cos(ang) * dist;
-	var sin = Math.sin(ang) * dist;
-	dot.y = cos;
-	dot.z = sin;
 }
 function spin(v) {
 	for (var i in dots) {
 		var dot = dots[i];
-		var dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
-		var ang = Math.atan2(dot.z, dot.x) + v / 28;
-		var cos = Math.cos(ang) * dist;
-		var sin = Math.sin(ang) * dist;
-		dot.x = cos;
-		dot.z = sin;
-	}
-	for (var i in basess) {
-		var dot = basess[i];
 		var dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
 		var ang = Math.atan2(dot.z, dot.x) + v / 28;
 		var cos = Math.cos(ang) * dist;
@@ -481,26 +472,10 @@ function spin(v) {
 			dot.z = sin;
 		}
 	}
-	var dot = sectorDot;
-	var dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
-	var ang = Math.atan2(dot.z, dot.x) + v / 28;
-	var cos = Math.cos(ang) * dist;
-	var sin = Math.sin(ang) * dist;
-	dot.x = cos;
-	dot.z = sin;
 }
 function rotate(v) {
 	for (var i in dots) {
 		var dot = dots[i];
-		var dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
-		var ang = Math.atan2(dot.y, dot.x) + v / 28;
-		var cos = Math.cos(ang) * dist;
-		var sin = Math.sin(ang) * dist;
-		dot.x = cos;
-		dot.y = sin;
-	}
-	for (var i in basess) {
-		var dot = basess[i];
 		var dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
 		var ang = Math.atan2(dot.y, dot.x) + v / 28;
 		var cos = Math.cos(ang) * dist;
@@ -519,13 +494,20 @@ function rotate(v) {
 			dot.y = sin;
 		}
 	}
-	var dot = sectorDot;
-	var dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
-	var ang = Math.atan2(dot.y, dot.x) + v / 28;
-	var cos = Math.cos(ang) * dist;
-	var sin = Math.sin(ang) * dist;
-	dot.x = cos;
-	dot.y = sin;
+}
+function center3D(xxp,yyp,zzp) {
+	for (var i in dots) {
+		dots[i].x-=xxp;
+		dots[i].y-=yyp;
+		dots[i].z-=zzp;
+	}
+	for (var i = 0; i < mapSz+1; i++) {
+		for (var j = 0; j < mapSz+1; j++) {
+			sectorPoints[i][j].x-=xxp;
+			sectorPoints[i][j].y-=yyp;
+			sectorPoints[i][j].z-=zzp;
+		}
+	}
 }
 
 
@@ -720,26 +702,42 @@ function r3DMap(xp, yp) {
 	if (hmap == 0 || typeof hmap[sx] === "undefined") return;
 
 	//if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO
+
+	var c3dx, c3dy, c3dz;
 	
 	ctx.strokeStyle = 'gray';
-	ctx.lineWidth = .35;
+	ctx.lineWidth = .5;
+
+	var avgX = 0;
+	var avgY = 0;
+	var avgZ = 0;
+	var avgi = 0;
+
 	for (var i = 0; i < mapSz; i++) {
 		for (var j = 0; j < mapSz; j++) {
-			ctx.globalAlpha = 0.5;
+
+			var dot1 = sectorPoints[i][j];
+			var dot4 = sectorPoints[i+1][j+1];
+
+			var cz = (dot1.z+dot4.z)/2;
+
+			ctx.globalAlpha=.7//Math.min(1,48*square(square(square(-cz/800+.5))));
 
 			//render lines
-			var dot1 = sectorPoints[i][j];
 			var dot2 = sectorPoints[i][j+1];
 			var dot3 = sectorPoints[i+1][j];
-			var dot4 = sectorPoints[i+1][j+1];
 			var xx1 = dot1.x / 1.33;
 			var yy1 = dot1.y / 1.33;
+			var zz1 = dot1.z / 1.33;
 			var xx2 = dot2.x / 1.33;
 			var yy2 = dot2.y / 1.33;
+			var zz2 = dot2.z / 1.33;
 			var xx3 = dot3.x / 1.33;
 			var yy3 = dot3.y / 1.33;
+			var zz3 = dot3.z / 1.33;
 			var xx4 = dot4.x / 1.33;
 			var yy4 = dot4.y / 1.33;
+			var zz4 = dot4.z / 1.33;
 			ctx.beginPath();
 			ctx.moveTo(xp+xx3, yp+yy3);
 			ctx.lineTo(xp+xx1, yp+yy1);
@@ -747,6 +745,15 @@ function r3DMap(xp, yp) {
 			ctx.lineTo(xp+xx4, yp+yy4);
 			ctx.lineTo(xp+xx3, yp+yy3);
 			ctx.closePath();
+
+			var cx = (xx1+xx4)/2;
+			var cy = (yy1+yy4)/2;
+
+			avgX+=cx;
+			avgY+=cy;
+			avgZ+=cz;
+			avgi++;
+
 			if(i == sx && j == sy){
 
 				//Render wormhole
@@ -775,36 +782,34 @@ function r3DMap(xp, yp) {
 				ctx.lineWidth = .35;
 				ctx.strokeStyle = 'gray';
 
-				var cx = (xx1+xx4)/2;
-				var cy = (yy1+yy4)/2;
-
 				var xxp1 = lerp(xx1,xx4,(px/sectorWidth+py/sectorWidth)/2)-cx; // these are just clever ways of using linear interpolation in a skew vector space
 				var yyp1 = lerp(yy1,yy4,(px/sectorWidth+py/sectorWidth)/2)-cy; // the same can be done for the wormhole when i get to it
+				//var zzp1 = lerp(zz1,zz4,(px/sectorWidth+py/sectorWidth)/2)-cz;
 				var xxp2 = lerp(xx3,xx2,(-px/sectorWidth+1+py/sectorWidth)/2)-cx;
 				var yyp2 = lerp(yy3,yy2,(-px/sectorWidth+1+py/sectorWidth)/2)-cy;
-				ctx.globalAlpha = 1;
-				ctx.fillRect(xp+cx+xxp1+xxp2-2, yp+cy+yyp1+yyp2-2, 4, 4);
+				//var zzp2 = lerp(zz3,zz2,(-px/sectorWidth+1+py/sectorWidth)/2)-cz;
+				c3dx = cx+xxp1+xxp2;
+				c3dy = cy+yyp1+yyp2;
+				//c3dz = cz+zzp1+zzp2;
+				ctx.fillRect(xp+c3dx-2, yp+c3dy-2, 4, 4);
 			}
 			else ctx.stroke();
+
+			if(baseMap2D[i][j]!==0){
+				var img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss);
+				ctx.drawImage(img, xp+cx-7, yp+cy-7, 15, 15);
+			}
 
 			//render heatmap
 			var eachmt = hmap[i][j];
 			ctx.fillStyle = "rgb("+(Math.floor(eachmt>>16)%0x100)+", "+(Math.floor(eachmt>>8)%0x100)+", "+(eachmt%0x100)+")";
 			var alp = eachmt-Math.floor(eachmt);
-			ctx.globalAlpha = Math.sqrt(Math.min(1, alp))/2;
+			ctx.globalAlpha *= Math.sqrt(Math.min(1, alp))/2;
 			ctx.fill();
 		}
 	}
+	center3D((avgX/avgi+c3dx)/2,(avgY/avgi+c3dy)/2,avgZ/avgi);
 	ctx.globalAlpha = 1;
-
-
-	for (var i in basess) {
-		var dot = basess[i];
-		var xx = xp + dot.x / 1.25; // /1.414 to keep in bounds
-		var yy = yp + dot.y / 1.25;
-		var img = colorSelect(dot.color, Img.mrss, Img.mbss, Img.mgss);
-		ctx.drawImage(img, xx - 7, yy - 7, 15, 15);
-	}
 }
 function rBuyShipWindow(){
 
@@ -966,11 +971,17 @@ function rQuests() {
 function techPrice(x){ // money required to upgrade Tech
 	return techEnergy(nextTechLevel(x))-techEnergy(x);
 }
+function techPriceForDowngrade(x){ // money required to upgrade Tech
+	return techEnergy(lastTechLevel(x))-techEnergy(x);
+}
 function techEnergy(x){ // Net price of some tech level
 	return Math.round(Math.pow(1024, x) / 1000) * 500;
 }
 function nextTechLevel(x){
 	return Math.floor(x*8.+1)/8.;
+}
+function lastTechLevel(x){
+	return Math.floor(x*8.-.001)/8.;
 }
 function rStats() {
 	ctx.font = '14px ShareTech';
@@ -1037,26 +1048,48 @@ function rStats() {
 	ctx.font = "24px ShareTech";
 	write(mEng[17], rx + 64, ry + 256 + 64 + 16);
 	ctx.fillStyle = "white";
-	ctx.font = "14px ShareTech";
-	ctx.drawImage((seller == 200) ? Img.gbutton : Img.button, rx + 64, ry + 416 - 64);
-	ctx.drawImage((seller == 201) ? Img.gbutton : Img.button, rx + 192, ry + 416 - 64);
-	ctx.drawImage((seller == 202) ? Img.gbutton : Img.button, rx + 64, ry + 416);
-	ctx.drawImage((seller == 203) ? Img.gbutton : Img.button, rx + 192, ry + 416);
-	ctx.drawImage((seller == 204) ? Img.gbutton : Img.button, rx + 320, ry + 416 - 64);
-	ctx.drawImage((seller == 205) ? Img.gbutton : Img.button, rx + 320, ry + 416);
+	ctx.font = "12px ShareTech";
+	ctx.drawImage(Img.button, rx + 64, ry + 416 - 64);
+	ctx.drawImage(Img.button, rx + 192, ry + 416 - 64);
+	ctx.drawImage(Img.button, rx + 64, ry + 416);
+	ctx.drawImage(Img.button, rx + 192, ry + 416);
+	ctx.drawImage(Img.button, rx + 320, ry + 416 - 64);
+	ctx.drawImage(Img.button, rx + 320, ry + 416);
 	ctx.textAlign = 'center';
-	write("Thrust lvl " + ((t2-1)*8), rx + 64 + 54, ry + 416 - 64 + 16);
-	write("Radar lvl " + ((va2-1)*8), rx + 192 + 54, ry + 416 - 64 + 16);
-	write("Cargo lvl " + ((c2-1)*8), rx + 64 + 54, ry + 416 + 16);
-	write("Hull lvl " + ((mh2-1)*8), rx + 192 + 54, ry + 416 + 16);
-	write("Energy lvl " + ((e2-1)*8), rx + 320 + 54, ry + 416 - 64 + 16);
-	write("Agility lvl " + ((ag2-1)*8), rx + 320 + 54, ry + 416 + 16);
-	write("$" + techPrice(t2), rx + 64 + 54, ry + 416 - 64 + 32);
-	write("$" + techPrice(va2), rx + 192 + 54, ry + 416 - 64 + 32);
-	write("$" + techPrice(c2), rx + 64 + 54, ry + 416 + 32);
-	write("$" + techPrice(mh2), rx + 192 + 54, ry + 416 + 32);
-	write("$" + techPrice(e2)*8, rx + 320 + 54, ry + 416 - 64 + 32);
-	write("$" + techPrice(ag2), rx + 320 + 54, ry + 416 + 32);
+	write("Thrust lvl " + ((t2-1)*8), rx + 64 + 54, ry + 416 - 64 + 14);
+	write("Radar lvl " + ((va2-1)*8), rx + 192 + 54, ry + 416 - 64 + 14);
+	write("Cargo lvl " + ((c2-1)*8), rx + 64 + 54, ry + 416 + 14);
+	write("Hull lvl " + ((mh2-1)*8), rx + 192 + 54, ry + 416 + 14);
+	write("Energy lvl " + ((e2-1)*8), rx + 320 + 54, ry + 416 - 64 + 14);
+	write("Agility lvl " + ((ag2-1)*8), rx + 320 + 54, ry + 416 + 14);
+	
+	//upgrades
+	ctx.fillStyle = (seller == 200) ? "lime" : "white";
+	write("[+] $" + techPrice(t2), rx + 64 + 54, ry + 416 - 64 + 28);
+	ctx.fillStyle = (seller == 201) ? "lime" : "white";
+	write("[+] $" + techPrice(va2), rx + 192 + 54, ry + 416 - 64 + 28);
+	ctx.fillStyle = (seller == 202) ? "lime" : "white";
+	write("[+] $" + techPrice(c2), rx + 64 + 54, ry + 416 + 28);
+	ctx.fillStyle = (seller == 203) ? "lime" : "white";
+	write("[+] $" + techPrice(mh2), rx + 192 + 54, ry + 416 + 28);
+	ctx.fillStyle = (seller == 204) ? "lime" : "white";
+	write("[+] $" + techPrice(e2)*8, rx + 320 + 54, ry + 416 - 64 + 28);
+	ctx.fillStyle = (seller == 205) ? "lime" : "white";
+	write("[+] $" + techPrice(ag2), rx + 320 + 54, ry + 416 + 28);
+
+	//downgrades
+	ctx.fillStyle = (seller == 206) ? "lime" : "white";
+	if(t2 >1) write("[-] $" + -techPriceForDowngrade(t2), rx + 64 + 54, ry + 416 - 64 + 42);
+	ctx.fillStyle = (seller == 207) ? "lime" : "white";
+	if(va2>1) write("[-] $" + -techPriceForDowngrade(va2), rx + 192 + 54, ry + 416 - 64 + 42);
+	ctx.fillStyle = (seller == 208) ? "lime" : "white";
+	if(c2 >1) write("[-] $" + -techPriceForDowngrade(c2), rx + 64 + 54, ry + 416 + 42);
+	ctx.fillStyle = (seller == 209) ? "lime" : "white";
+	if(mh2>1) write("[-] $" + -techPriceForDowngrade(mh2), rx + 192 + 54, ry + 416 + 42);
+	ctx.fillStyle = (seller == 210) ? "lime" : "white";
+	if(e2 >1) write("[-] $" + -techPriceForDowngrade(e2)*8, rx + 320 + 54, ry + 416 - 64 + 42);
+	ctx.fillStyle = (seller == 211) ? "lime" : "white";
+	if(ag2>1) write("[-] $" + -techPriceForDowngrade(ag2), rx + 320 + 54, ry + 416 + 42);
 }
 function rAchievements() {
 	ctx.save();
@@ -1853,19 +1886,10 @@ socket.on('planets', function (data) {
 });
 socket.on('baseMap', function(data) {
 	var baseMap = data.baseMap;
-	console.log(baseMap);
-	var j = 0;
 	for (var teamColor in baseMap){
 		var thisMap = baseMap[teamColor];
-		console.log(teamColor);
-		for (var i = 0; i < thisMap.length; i += 2) {
-			var xx = thisMap[i] - (mapSz - 1) / 2;
-			var yy = thisMap[i + 1] - (mapSz - 1) / 2;
-			xx *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-			yy *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-			basess[j] = { x: xx, y: yy, z: 0, color: teamColor };
-			j++;
-		}
+		for (var i = 0; i < thisMap.length; i += 2)
+			baseMap2D[thisMap[i]][thisMap[i+1]] = teamColor;
 	}
 });
 socket.on('heatmap', function (data) {
@@ -2225,6 +2249,8 @@ document.addEventListener('mousemove', function (evt) {
 			if (my > ry + 256 + 128 + 32) seller = 100;
 			else seller = 0;
 		}
+
+		else seller = 0;
 	}
 
 	//Quests
@@ -2235,16 +2261,26 @@ document.addEventListener('mousemove', function (evt) {
 
 	//Stats
 	else if (docked && tab == 2){
-			 if (my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
-		else if (my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 192 && mx < rx + 192 + 112) seller = 201;
-		else if (my > ry + 416 && my < ry + 416 + 48 && mx > rx + 64 && mx < rx + 64 + 112) seller = 202;
-		else if (my > ry + 416 && my < ry + 416 + 48 && mx > rx + 192 && mx < rx + 192 + 112) seller = 203;
-		else if (my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 320 && mx < rx + 320 + 112) seller = 204;
-		else if (my > ry + 416 && my < ry + 416 + 48 && mx > rx + 320 && mx < rx + 320 + 112) seller = 205;
+			 if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
+		else if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 201;
+		else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 202;
+		else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 203;
+		else if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 320 && mx < rx + 320 + 112) seller = 204;
+		else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 320 && mx < rx + 320 + 112) seller = 205;
+
+		else if (my > ry + 416 - 64 + 32 && my < ry + 416 - 64 + 46 && mx > rx + 64 && mx < rx + 64 + 112) seller = 206;
+		else if (my > ry + 416 - 64 + 32 && my < ry + 416 - 64 + 46 && mx > rx + 192 && mx < rx + 192 + 112) seller = 207;
+		else if (my > ry + 416 + 32 && my < ry + 416 + 46 && mx > rx + 64 && mx < rx + 64 + 112) seller = 208;
+		else if (my > ry + 416 + 32 && my < ry + 416 + 46 && mx > rx + 192 && mx < rx + 192 + 112) seller = 209;
+		else if (my > ry + 416 - 64 + 32 && my < ry + 416 - 64 + 46 && mx > rx + 320 && mx < rx + 320 + 112) seller = 210;
+		else if (my > ry + 416 + 32 && my < ry + 416 + 46 && mx > rx + 320 && mx < rx + 320 + 112) seller = 211;
+
 		else if (my > ry + 44 + 64 - 24 && my < ry + 44 + 64 + 8 * 21 && mx > rx + 512 && mx < rx + 768) {
 			seller = 700 + Math.floor((my - ry - 44 - 64 + 24) / 32);
 			if ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && true)) seller = 0;
 		}
+
+		else seller = 0;
 	}
 
 	//Buy weapon
@@ -2252,6 +2288,8 @@ document.addEventListener('mousemove', function (evt) {
 			 if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16)) + 20;
 		else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 && mx < rx + 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3))) + 20;
 		else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3) * 2)) + 20;
+
+		else seller = 0;
 	}
 
 	//More
@@ -2311,6 +2349,7 @@ document.addEventListener('mousedown', function (evt) {
 	if (i == 611) socket.emit('buyLife', {});
 	if (i >= 300 && i < 310 && quest == 0) socket.emit('quest', { quest: i - 300 });
 	if (docked && tab == 2 && i > 199 && i < 206) socket.emit('upgrade', { item: i - 200 });
+	if (docked && tab == 2 && i > 205 && i < 212) socket.emit('downgrade', { item: i - 206 });
 	if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40) {
 		textIn = 0;
 		tab = Math.floor((mx - rx) / (768/5));
@@ -2437,6 +2476,10 @@ function CoherentNoise(x) {
 }
 function lerp(a, b, w) {
 	return a * (1 - w) + b * w;
+}
+function cerp(a, b, w) {
+	var fancyweight = 3*w*w-2*w*w*w;
+	return lerp(a,b,fancyweight);
 }
 function expToLife() {
 	return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-experience / 15000.)) + Math.atan(experience / 150000.) - .5)) + 500;
@@ -3013,7 +3056,7 @@ function rLB() {
 function rRadar() {
 	if (va2 < 1.1) return;
 	ctx.fillStyle = "white";
-	ctx.globalAlpha = 0.75;
+	ctx.globalAlpha = 0.5;
 	ctx.drawImage(Img.grid, 16, 32 + 214);
 	let d = new Date();
 	var stime = d.getTime() / (35 * 16);

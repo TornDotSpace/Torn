@@ -187,8 +187,8 @@ module.exports = function initNetcode() {
             guestCount++;
 
             player.color = socket_color ? "red" : "blue";
-            if (mapSz % 2 == 0) player.sx = player.sy = (socket_color ? (mapSz / 2 - 1) : (mapSz / 2));
-            else player.sx = player.sy = (socket_color ? (mapSz / 2 - 1.5) : (mapSz / 2 + .5));
+            player.sx = baseMap[player.color][0];
+            player.sy = baseMap[player.color][1];
             for (var i = 0; i < ships[player.ship].weapons; i++) player.weapons[i] = -1;
             for (var i = ships[player.ship].weapons; i < 10; i++) player.weapons[i] = -2;
             player.weapons[0] = 0;
@@ -374,7 +374,7 @@ module.exports = function initNetcode() {
             socket.disconnect();
 
             // Delay deletion for 5 seconds
-            setTimeout(function() {             
+            setTimeout(function() {
                 delete players[player.sy][player.sx][player.id];
                 delete socket;
                 delete player; }, 6000);
@@ -568,6 +568,61 @@ module.exports = function initNetcode() {
                     if (player.money >= price) {
                         player.money -= price;
                         player.thrust2 = nextTechLevel(player.thrust2);
+                        player.thrust = ships[player.ship].thrust * player.thrust2;
+                    }
+                    break;
+            }
+            player.save();
+        });
+        socket.on('downgrade', function (data) { // client wants to downgrade a tech
+            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
+            var item = Math.floor(data.item);
+
+
+            switch (item) {
+                case 1: // radar
+                    break; // Not allowed to downgrade radar
+            		var price = techPriceForDowngrade(player.radar2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.radar2 = lastTechLevel(player.radar2);
+                    }
+                case 2: // cargo
+            		var price = techPriceForDowngrade(player.capacity2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.capacity2 = lastTechLevel(player.capacity2);
+                        player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
+                    }
+                    break;
+                case 3: //hull
+            		var price = techPriceForDowngrade(player.maxHealth2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.maxHealth2 = lastTechLevel(player.maxHealth2);
+                        player.maxHealth = Math.round(ships[player.ship].health * player.maxHealth2);
+                    }
+                    break;
+                case 4: // energy
+            		var price = techPriceForDowngrade(player.energy2)*8;
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.energy2 = lastTechLevel(player.energy2);
+                    }
+                    break;
+                case 5: // agility
+            		var price = techPriceForDowngrade(player.agility2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.agility2 = lastTechLevel(player.agility2);
+                        player.va = ships[player.ship].agility * .08 * player.agility2;
+                    }
+                    break;
+                default: //0: thrust
+            		var price = techPriceForDowngrade(player.thrust2);
+                    if (player.money >= price) {
+                        player.money -= price;
+                        player.thrust2 = lastTechLevel(player.thrust2);
                         player.thrust = ships[player.ship].thrust * player.thrust2;
                     }
                     break;
