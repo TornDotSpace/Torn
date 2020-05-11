@@ -782,16 +782,18 @@ function r3DMap(xp, yp) {
 				ctx.lineWidth = .35;
 				ctx.strokeStyle = 'gray';
 
-				var xxp1 = lerp(xx1,xx4,(px/sectorWidth+py/sectorWidth)/2)-cx; // these are just clever ways of using linear interpolation in a skew vector space
-				var yyp1 = lerp(yy1,yy4,(px/sectorWidth+py/sectorWidth)/2)-cy; // the same can be done for the wormhole when i get to it
-				//var zzp1 = lerp(zz1,zz4,(px/sectorWidth+py/sectorWidth)/2)-cz;
-				var xxp2 = lerp(xx3,xx2,(-px/sectorWidth+1+py/sectorWidth)/2)-cx;
-				var yyp2 = lerp(yy3,yy2,(-px/sectorWidth+1+py/sectorWidth)/2)-cy;
-				//var zzp2 = lerp(zz3,zz2,(-px/sectorWidth+1+py/sectorWidth)/2)-cz;
-				c3dx = cx+xxp1+xxp2;
-				c3dy = cy+yyp1+yyp2;
-				//c3dz = cz+zzp1+zzp2;
-				ctx.fillRect(xp+c3dx-2, yp+c3dy-2, 4, 4);
+				if (i == sx && j == sy) {
+					var xxp1 = lerp(xx1,xx4,(px/sectorWidth+py/sectorWidth)/2)-cx; // these are just clever ways of using linear interpolation in a skew vector space
+					var yyp1 = lerp(yy1,yy4,(px/sectorWidth+py/sectorWidth)/2)-cy; // the same can be done for the wormhole when i get to it
+					//var zzp1 = lerp(zz1,zz4,(px/sectorWidth+py/sectorWidth)/2)-cz;
+					var xxp2 = lerp(xx3,xx2,(-px/sectorWidth+1+py/sectorWidth)/2)-cx;
+					var yyp2 = lerp(yy3,yy2,(-px/sectorWidth+1+py/sectorWidth)/2)-cy;
+					//var zzp2 = lerp(zz3,zz2,(-px/sectorWidth+1+py/sectorWidth)/2)-cz;
+					c3dx = cx+xxp1+xxp2;
+					c3dy = cy+yyp1+yyp2;
+					//c3dz = cz+zzp1+zzp2;
+					ctx.fillRect(xp+c3dx-2, yp+c3dy-2, 4, 4);
+				}
 			}
 			else ctx.stroke();
 
@@ -3306,7 +3308,7 @@ function rRaid() {
 
 		ctx.fillStyle = "pink";
 		ctx.textAlign = 'right';
-		write(raidRed, w / 2 - 12, h - 100);
+		write(raidRed, w / 2 - 24, h - 100);
 
 		ctx.fillStyle = "lime";
 		ctx.textAlign = "center";
@@ -3314,7 +3316,7 @@ function rRaid() {
 
 		ctx.fillStyle = "cyan";
 		ctx.textAlign = 'left';
-		write(raidBlue, w / 2 + 12, h - 100);
+		write(raidBlue, w / 2 + 24, h - 100);
 
 	} else if (docked && minutes > 5) write(mEng[202] + (minutes - 10) + ":" + seconds, w / 2, h - 120);
 	ctx.restore();
