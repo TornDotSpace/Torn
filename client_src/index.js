@@ -88,7 +88,7 @@ var sectorWidth = 14336;
 var mx = 0, my = 0, mb = 0;
 var tick = 0, baseTick = 0;
 var scrx = 0, scry = 0;
-var mapSz = 9;
+var mapSz = 7;
 var quests = 0, quest = 0;
 var login = false, lore = false, afk = false;
 var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
@@ -181,7 +181,7 @@ var hyperdriveTimer = 0;
 var didW = false, didSteer = false, currTut = 0;
 
 var sectorPoints = {};
-for (var i = 0; i < mapSz + 1; i++) {
+/*for (var i = 0; i < mapSz + 1; i++) {
 	sectorPoints[i] = {};
 	for (var j = 0; j < mapSz + 1; j++) {
 		var theta = -2*Math.PI*i/mapSz;
@@ -191,6 +191,14 @@ for (var i = 0; i < mapSz + 1; i++) {
 		var yy = Math.cos(theta) * radius;
 		var zz = upwards*256;
 		sectorPoints[i][j] = { x: xx, y: yy, z: zz };
+	}
+}*/
+for (var i = 0; i < mapSz + 1; i++) { // Old Map
+	sectorPoints[i] = {};
+	for (var j = 0; j < mapSz + 1; j++) {
+		var xx = (i - mapSz / 2) * 256 / mapSz;
+		var yy = (j - mapSz / 2) * 256 / mapSz;
+		sectorPoints[i][j] = { x: xx, y: yy, z: 0 };
 	}
 }
 
@@ -389,7 +397,6 @@ function loadAllImages() {
 	//baseGui
 	loadImage("q", '/img/baseGui/q.png');
 	loadImage("button", '/img/baseGui/button.png');
-	loadImage("gbutton", '/img/baseGui/gbutton.png');
 	loadImage("arrow", '/img/baseGui/arrow.png');
 
 	//packs
@@ -714,7 +721,7 @@ function r3DMap(xp, yp) {
 
 			var cz = (dot1.z+dot4.z)/2;
 
-			ctx.globalAlpha=4*square(square(-cz/800+.5));
+			ctx.globalAlpha=.7//Math.min(1,48*square(square(square(-cz/800+.5))));
 
 			//render lines
 			var dot2 = sectorPoints[i][j+1];
@@ -964,11 +971,17 @@ function rQuests() {
 function techPrice(x){ // money required to upgrade Tech
 	return techEnergy(nextTechLevel(x))-techEnergy(x);
 }
+function techPriceForDowngrade(x){ // money required to upgrade Tech
+	return techEnergy(lastTechLevel(x))-techEnergy(x);
+}
 function techEnergy(x){ // Net price of some tech level
 	return Math.round(Math.pow(1024, x) / 1000) * 500;
 }
 function nextTechLevel(x){
 	return Math.floor(x*8.+1)/8.;
+}
+function lastTechLevel(x){
+	return Math.floor(x*8.-.001)/8.;
 }
 function rStats() {
 	ctx.font = '14px ShareTech';
@@ -1035,26 +1048,48 @@ function rStats() {
 	ctx.font = "24px ShareTech";
 	write(mEng[17], rx + 64, ry + 256 + 64 + 16);
 	ctx.fillStyle = "white";
-	ctx.font = "14px ShareTech";
-	ctx.drawImage((seller == 200) ? Img.gbutton : Img.button, rx + 64, ry + 416 - 64);
-	ctx.drawImage((seller == 201) ? Img.gbutton : Img.button, rx + 192, ry + 416 - 64);
-	ctx.drawImage((seller == 202) ? Img.gbutton : Img.button, rx + 64, ry + 416);
-	ctx.drawImage((seller == 203) ? Img.gbutton : Img.button, rx + 192, ry + 416);
-	ctx.drawImage((seller == 204) ? Img.gbutton : Img.button, rx + 320, ry + 416 - 64);
-	ctx.drawImage((seller == 205) ? Img.gbutton : Img.button, rx + 320, ry + 416);
+	ctx.font = "12px ShareTech";
+	ctx.drawImage(Img.button, rx + 64, ry + 416 - 64);
+	ctx.drawImage(Img.button, rx + 192, ry + 416 - 64);
+	ctx.drawImage(Img.button, rx + 64, ry + 416);
+	ctx.drawImage(Img.button, rx + 192, ry + 416);
+	ctx.drawImage(Img.button, rx + 320, ry + 416 - 64);
+	ctx.drawImage(Img.button, rx + 320, ry + 416);
 	ctx.textAlign = 'center';
-	write("Thrust lvl " + ((t2-1)*8), rx + 64 + 54, ry + 416 - 64 + 16);
-	write("Radar lvl " + ((va2-1)*8), rx + 192 + 54, ry + 416 - 64 + 16);
-	write("Cargo lvl " + ((c2-1)*8), rx + 64 + 54, ry + 416 + 16);
-	write("Hull lvl " + ((mh2-1)*8), rx + 192 + 54, ry + 416 + 16);
-	write("Energy lvl " + ((e2-1)*8), rx + 320 + 54, ry + 416 - 64 + 16);
-	write("Agility lvl " + ((ag2-1)*8), rx + 320 + 54, ry + 416 + 16);
-	write("$" + techPrice(t2), rx + 64 + 54, ry + 416 - 64 + 32);
-	write("$" + techPrice(va2), rx + 192 + 54, ry + 416 - 64 + 32);
-	write("$" + techPrice(c2), rx + 64 + 54, ry + 416 + 32);
-	write("$" + techPrice(mh2), rx + 192 + 54, ry + 416 + 32);
-	write("$" + techPrice(e2)*8, rx + 320 + 54, ry + 416 - 64 + 32);
-	write("$" + techPrice(ag2), rx + 320 + 54, ry + 416 + 32);
+	write("Thrust lvl " + ((t2-1)*8), rx + 64 + 54, ry + 416 - 64 + 14);
+	write("Radar lvl " + ((va2-1)*8), rx + 192 + 54, ry + 416 - 64 + 14);
+	write("Cargo lvl " + ((c2-1)*8), rx + 64 + 54, ry + 416 + 14);
+	write("Hull lvl " + ((mh2-1)*8), rx + 192 + 54, ry + 416 + 14);
+	write("Energy lvl " + ((e2-1)*8), rx + 320 + 54, ry + 416 - 64 + 14);
+	write("Agility lvl " + ((ag2-1)*8), rx + 320 + 54, ry + 416 + 14);
+	
+	//upgrades
+	ctx.fillStyle = (seller == 200) ? "lime" : "white";
+	write("[+] $" + techPrice(t2), rx + 64 + 54, ry + 416 - 64 + 28);
+	ctx.fillStyle = (seller == 201) ? "lime" : "white";
+	write("[+] $" + techPrice(va2), rx + 192 + 54, ry + 416 - 64 + 28);
+	ctx.fillStyle = (seller == 202) ? "lime" : "white";
+	write("[+] $" + techPrice(c2), rx + 64 + 54, ry + 416 + 28);
+	ctx.fillStyle = (seller == 203) ? "lime" : "white";
+	write("[+] $" + techPrice(mh2), rx + 192 + 54, ry + 416 + 28);
+	ctx.fillStyle = (seller == 204) ? "lime" : "white";
+	write("[+] $" + techPrice(e2)*8, rx + 320 + 54, ry + 416 - 64 + 28);
+	ctx.fillStyle = (seller == 205) ? "lime" : "white";
+	write("[+] $" + techPrice(ag2), rx + 320 + 54, ry + 416 + 28);
+
+	//downgrades
+	ctx.fillStyle = (seller == 206) ? "lime" : "white";
+	if(t2 >1) write("[-] $" + -techPriceForDowngrade(t2), rx + 64 + 54, ry + 416 - 64 + 42);
+	ctx.fillStyle = (seller == 207) ? "lime" : "white";
+	if(va2>1) write("[-] $" + -techPriceForDowngrade(va2), rx + 192 + 54, ry + 416 - 64 + 42);
+	ctx.fillStyle = (seller == 208) ? "lime" : "white";
+	if(c2 >1) write("[-] $" + -techPriceForDowngrade(c2), rx + 64 + 54, ry + 416 + 42);
+	ctx.fillStyle = (seller == 209) ? "lime" : "white";
+	if(mh2>1) write("[-] $" + -techPriceForDowngrade(mh2), rx + 192 + 54, ry + 416 + 42);
+	ctx.fillStyle = (seller == 210) ? "lime" : "white";
+	if(e2 >1) write("[-] $" + -techPriceForDowngrade(e2)*8, rx + 320 + 54, ry + 416 - 64 + 42);
+	ctx.fillStyle = (seller == 211) ? "lime" : "white";
+	if(ag2>1) write("[-] $" + -techPriceForDowngrade(ag2), rx + 320 + 54, ry + 416 + 42);
 }
 function rAchievements() {
 	ctx.save();
@@ -2214,6 +2249,8 @@ document.addEventListener('mousemove', function (evt) {
 			if (my > ry + 256 + 128 + 32) seller = 100;
 			else seller = 0;
 		}
+
+		else seller = 0;
 	}
 
 	//Quests
@@ -2224,16 +2261,26 @@ document.addEventListener('mousemove', function (evt) {
 
 	//Stats
 	else if (docked && tab == 2){
-			 if (my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
-		else if (my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 192 && mx < rx + 192 + 112) seller = 201;
-		else if (my > ry + 416 && my < ry + 416 + 48 && mx > rx + 64 && mx < rx + 64 + 112) seller = 202;
-		else if (my > ry + 416 && my < ry + 416 + 48 && mx > rx + 192 && mx < rx + 192 + 112) seller = 203;
-		else if (my > ry + 416 - 64 && my < ry + 416 - 64 + 48 && mx > rx + 320 && mx < rx + 320 + 112) seller = 204;
-		else if (my > ry + 416 && my < ry + 416 + 48 && mx > rx + 320 && mx < rx + 320 + 112) seller = 205;
+			 if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
+		else if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 201;
+		else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 202;
+		else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 203;
+		else if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 320 && mx < rx + 320 + 112) seller = 204;
+		else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 320 && mx < rx + 320 + 112) seller = 205;
+
+		else if (my > ry + 416 - 64 + 32 && my < ry + 416 - 64 + 46 && mx > rx + 64 && mx < rx + 64 + 112) seller = 206;
+		else if (my > ry + 416 - 64 + 32 && my < ry + 416 - 64 + 46 && mx > rx + 192 && mx < rx + 192 + 112) seller = 207;
+		else if (my > ry + 416 + 32 && my < ry + 416 + 46 && mx > rx + 64 && mx < rx + 64 + 112) seller = 208;
+		else if (my > ry + 416 + 32 && my < ry + 416 + 46 && mx > rx + 192 && mx < rx + 192 + 112) seller = 209;
+		else if (my > ry + 416 - 64 + 32 && my < ry + 416 - 64 + 46 && mx > rx + 320 && mx < rx + 320 + 112) seller = 210;
+		else if (my > ry + 416 + 32 && my < ry + 416 + 46 && mx > rx + 320 && mx < rx + 320 + 112) seller = 211;
+
 		else if (my > ry + 44 + 64 - 24 && my < ry + 44 + 64 + 8 * 21 && mx > rx + 512 && mx < rx + 768) {
 			seller = 700 + Math.floor((my - ry - 44 - 64 + 24) / 32);
 			if ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && true)) seller = 0;
 		}
+
+		else seller = 0;
 	}
 
 	//Buy weapon
@@ -2241,6 +2288,8 @@ document.addEventListener('mousemove', function (evt) {
 			 if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16)) + 20;
 		else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 && mx < rx + 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3))) + 20;
 		else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3) * 2)) + 20;
+
+		else seller = 0;
 	}
 
 	//More
@@ -2300,6 +2349,7 @@ document.addEventListener('mousedown', function (evt) {
 	if (i == 611) socket.emit('buyLife', {});
 	if (i >= 300 && i < 310 && quest == 0) socket.emit('quest', { quest: i - 300 });
 	if (docked && tab == 2 && i > 199 && i < 206) socket.emit('upgrade', { item: i - 200 });
+	if (docked && tab == 2 && i > 205 && i < 212) socket.emit('downgrade', { item: i - 206 });
 	if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40) {
 		textIn = 0;
 		tab = Math.floor((mx - rx) / (768/5));

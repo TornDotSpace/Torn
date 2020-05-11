@@ -106,24 +106,25 @@ global.planetNames = jsn.planets;
 
 
 // bases
+global.basesPerTeam = 4;
 global.baseMap=	{
-					"red":[	
-					1, 1,
-					0, 3,
-					2, 5,
-					1, 7
+					"red":[	//x, y
+					0, 0,
+					2, 0,
+					0, 4,
+					1, 2
 					],
-					"blue":[	
-					4, 1,
-					3, 3,
-					5, 5,
-					4, 7
+					"blue":[
+					6, 0,
+					4, 0,
+					6, 4,
+					5, 2
 					],
-					"green":[	
-					7, 1,
-					6, 3,
-					8, 5,
-					7, 7
+					"green":[
+					1, 5,
+					2, 6,
+					4, 6,
+					5, 5
 					],
 				};
 
@@ -133,7 +134,7 @@ var mineLifetime = 3; // mines despawn after this many minutes
 global.baseHealth = 1300; // max base health
 global.baseKillExp = 1300; // Exp reward for killing a base
 global.baseKillMoney = 100000; // ditto but money
-global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
+global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
 
 //Machine Learning
@@ -246,8 +247,8 @@ function updateQuests() {
 				nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
 			}
 			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * 5) * 2], sy: thisMap[Math.floor(r2 * 5) * 2 + 1] };
-			else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: baseMap[whatTeam][Math.floor(r2 * 4) * 2], sy: baseMap[whatTeam][Math.floor(r2 * 4) * 2 + 1] };
-			else 			nm = { type: "Secret", 	exp: 400000, sx: baseMap[whatTeam][Math.floor(r2 * 4) * 2], sy: baseMap[whatTeam][Math.floor(r2 * 4) * 2 + 1] };
+			else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
+			else 			nm = { type: "Secret", 	exp: 400000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
 			teamQuests[teamColor][i] = nm;
 		}
 	}
@@ -989,7 +990,7 @@ function update() {
 	ops--;
 }
 
-setInterval(updateHeatmap, 1000);
+setInterval(updateHeatmap, 700);
 function updateHeatmap() {
 	var hmap = [];
 	var lb = [];

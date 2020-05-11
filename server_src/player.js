@@ -520,51 +520,55 @@ function Player(sock) {
 		var giveBounce = false; // did they bounce on a galaxy edge?
 		if (self.x > sectorWidth) {//check each edge of the 4 they could bounce on
 			self.x = 1;
-			self.sx++;
-			if (self.sx >= mapSz || self.guest || (trainingMode && self.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
+			if (self.guest || (trainingMode && self.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
 				giveBounce = true;
-				self.sx--;
 				self.x = (sectorWidth - 5);
 				self.driftAngle = self.angle = 3.1415 - self.angle;
 				self.vx *= -1;
 			}
-			else self.borderJumpTimer += 100;
+			else {
+				self.sx = (self.sx+1+mapSz)%mapSz;
+				self.borderJumpTimer += 100;
+			}
 		}
 		else if (self.y > sectorWidth) {
 			self.y = 1;
-			self.sy++;
-			if (self.sy >= mapSz || self.guest || (trainingMode && self.isNNBot)) {
+			if (self.sy == mapSz-1 || self.guest || (trainingMode && self.isNNBot)) {
 				giveBounce = true;
-				self.sy--;
 				self.y = (sectorWidth - 5);
 				self.driftAngle = self.angle = -self.angle;
 				self.vy *= -1;
 			}
-			else self.borderJumpTimer += 100;
+			else {
+				self.sy++;
+				self.borderJumpTimer += 100;
+			}
 		}
 		else if (self.x < 0) {
 			self.x = (sectorWidth - 1);
-			self.sx--;
-			if (self.sx < 0 || self.guest || (trainingMode && self.isNNBot)) {
+			if (self.guest || (trainingMode && self.isNNBot)) {
 				giveBounce = true;
-				self.sx++;
 				self.x = 5;
 				self.driftAngle = self.angle = 3.1415 - self.angle;
 				self.vx *= -1;
 			}
-			else self.borderJumpTimer += 100;
+			else {
+				self.sx = (self.sx-1+mapSz)%mapSz;
+				self.borderJumpTimer += 100;
+			}
 		}
 		else if (self.y < 0) {
 			self.y = (sectorWidth - 1);
-			self.sy--;
-			if (self.sy < 0 || (self.guest) || (trainingMode && self.isNNBot)) {
+			if (self.sy == 0 || self.guest || (trainingMode && self.isNNBot)) {
 				giveBounce = true;
-				self.sy++;
 				self.y = 5;
 				self.driftAngle = self.angle = -self.angle;
 				self.vy *= -1;
 			}
-			else self.borderJumpTimer += 100;
+			else {
+				self.sy--;
+				self.borderJumpTimer += 100;
+			}
 		}
 		if (giveBounce && !self.randmAchs[5]) {
 			if (self.guest) self.socket.emit("chat", { msg: "~`orange~`You must create an account to explore the universe!" });
@@ -1220,15 +1224,9 @@ function Player(sock) {
 			await handlePlayerDeath(self);
 			self.dead = true;
 
-			if (self.color === "blue" && self.sx == 4 && self.sy == 4) {
-				self.sx = 6;
-				self.sy = 5;
-			} else if (self.color === "red" && self.sx == 2 && self.sy == 2) {
-				self.sx = 0;
-				self.sy = 1;
-			} else self.sy = self.sx = (self.color === "blue" ? 4 : 2);
-
-
+			var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
+			self.sx = baseMap[self.color][whereToRespawn];
+			self.sy = baseMap[self.color][whereToRespawn+1];
 			self.x = self.y = sectorWidth/2;
 
 
