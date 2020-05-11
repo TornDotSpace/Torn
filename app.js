@@ -27,7 +27,6 @@ require('./server_src/config.js')(configEnvironment);
 
 var fs = require('fs');
 
-
 buildFileSystem(); // create folders for players, neural nets, and turrets if they dont exist
 
 if (!Config.getValue("debug", "false")) {
@@ -154,7 +153,7 @@ global.tick = 0;
 var lag = 0, ops = 0; // ticks elapsed since boot, lag, count of number of instances of update() running at once
 var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0; // blue/red players/guests/bots
 global.raidTimer = 50000;
-var raidRed = 0, raidBlue = 0; // Timer and points
+var raidRed = 0, raidBlue = 0, raidGreen = 0; // Timer and points
 global.IPSpam = {}; // Keeps track of ips flooding server.
 global.teamQuests = {"blue":[], "red":[], "green":[]};//A list of the 10 available quests for humans and aliens
 
@@ -452,14 +451,15 @@ function createPlanet(name, sx, sy) {
 }
 function endRaid() {
 	var winners = "yellow";
-	if (raidRed > raidBlue) winners = "red";
-	else if (raidBlue > raidRed) winners = "blue";
+	if (raidRed > raidBlue && raidRed > raidGreen) winners = "red";
+	else if (raidBlue > raidRed && raidBlue > raidGreen) winners = "blue";
+	else if (raidGreen > raidRed && raidGreen > raidBlue) winners = "green";
 	raidTimer = 360000;
 	for (var i in sockets) {
 		var p = getPlayer(i);
+		p.points = 0;
 		if (p === undefined || p.color !== winners) continue;
 		p.spoils("money", p.points * 75000);
-		p.points = 0;
 	}
 	sendRaidData();
 }
@@ -999,13 +999,14 @@ function updateHeatmap() {
 		for (var j = 0; j < mapSz; j++) hmap[i][j] = 0;
 	}
 	var j = 0;
-	raidRed = raidBlue = 0;
+	raidRed = raidBlue = raidGreen = 0;
 
 	for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) {
 		for (var i in players[y][x]) {
 			var p = players[y][x][i];
 			if (p.color === "red") raidRed += p.points;
-			else raidBlue += p.points;
+			else if (p.color === "red") raidBlue += p.points;
+			else if (p.color === "red") raidGreen += p.points;
 			if (p.name !== "" && !p.isBot) {
 				lb[j] = p;
 				j++;
@@ -1016,14 +1017,16 @@ function updateHeatmap() {
 	for (var i in dockers) {
 		var p = dockers[i];
 		if (p.color === "red") raidRed += p.points;
-		else raidBlue += p.points;
+		else if (p.color === "red") raidBlue += p.points;
+		else if (p.color === "red") raidGreen += p.points;
 		lb[j] = p;
 		j++;
 	}
 	for (var i in deads) {
 		var p = deads[i];
 		if (p.color === "red") raidRed += p.points;
-		else raidBlue += p.points;
+		else if (p.color === "red") raidBlue += p.points;
+		else if (p.color === "red") raidGreen += p.points;
 		lb[j] = p;
 		j++;
 	}
@@ -1055,7 +1058,7 @@ function updateHeatmap() {
 		hmap[i][j]=Math.floor(r*256)*0x10000+Math.floor(g*256)*0x100+Math.floor(b*256)+a;
 	}
 
-	for (var i in lb) lb[i].socket.emit('heatmap', { hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed });
+	for (var i in lb) lb[i].socket.emit('heatmap', { hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen});
 }
 
 saveTurrets();

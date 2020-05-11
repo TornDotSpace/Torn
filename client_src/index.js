@@ -118,7 +118,7 @@ var messages = {};
 for (var i = 0; i < chatLength; i++)
 	messages[i] = "";
 preProcessChat();
-var raidTimer = -1, raidRed = 0, raidBlue = 0, points = 0;
+var raidTimer = -1, raidRed = 0, raidBlue = 0, raidGreen = 0, points = 0;
 var shift = false, shield = false, autopilot = false;
 var seller = 0, sectorMap = 0, worth = 0, ship = 0;
 var empTimer = -1, dmgTimer = -1, gyroTimer = 0, afkTimer = 45000;
@@ -1897,6 +1897,7 @@ socket.on('heatmap', function (data) {
 	lb = data.lb;
 	raidRed = data.raidRed;
 	raidBlue = data.raidBlue;
+	raidGreen = data.raidGreen;
 	youi = parseInt(data.youi);
 	if (data.youi > 15)
 		lb[16] = { id: data.youi, name: myName, exp: experience, color: pc, rank: rank };
@@ -3301,15 +3302,20 @@ function rRaid() {
 		write(mEng[201] + points, w / 2, h - 80);
 
 		ctx.font = "14px ShareTech";
-		write("-", w / 2, h - 100);
+		write("/   /", w / 2, h - 100);
 
-		ctx.fillStyle = "pink"; // GREENTODO
+		ctx.fillStyle = "pink";
 		ctx.textAlign = 'right';
-		write(raidRed, w / 2 - 8, h - 100);
+		write(raidRed, w / 2 - 12, h - 100);
+
+		ctx.fillStyle = "lime";
+		ctx.textAlign = "center";
+		write(raidGreen, w / 2, h - 100);
 
 		ctx.fillStyle = "cyan";
 		ctx.textAlign = 'left';
-		write(raidBlue, w / 2 + 8, h - 100);
+		write(raidBlue, w / 2 + 12, h - 100);
+
 	} else if (docked && minutes > 5) write(mEng[202] + (minutes - 10) + ":" + seconds, w / 2, h - 120);
 	ctx.restore();
 }
