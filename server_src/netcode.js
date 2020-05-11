@@ -581,13 +581,15 @@ module.exports = function initNetcode() {
 
             switch (item) {
                 case 1: // radar
-                    break; // Not allowed to downgrade radar
+                	if (player.radar2 < 1) break;
             		var price = techPriceForDowngrade(player.radar2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.radar2 = lastTechLevel(player.radar2);
                     }
+                    break;
                 case 2: // cargo
+                	if (player.capacity2 < 1) break;
             		var price = techPriceForDowngrade(player.capacity2);
                     if (player.money >= price) {
                         player.money -= price;
@@ -596,6 +598,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 case 3: //hull
+                	if (player.maxHealth2 < 1) break;
             		var price = techPriceForDowngrade(player.maxHealth2);
                     if (player.money >= price) {
                         player.money -= price;
@@ -604,6 +607,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 case 4: // energy
+                	if (player.energy2 < 1) break;
             		var price = techPriceForDowngrade(player.energy2)*8;
                     if (player.money >= price) {
                         player.money -= price;
@@ -611,6 +615,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 case 5: // agility
+                	if (player.agility2 < 1) break;
             		var price = techPriceForDowngrade(player.agility2);
                     if (player.money >= price) {
                         player.money -= price;
@@ -619,6 +624,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 default: //0: thrust
+                	if (player.thrust2 < 1) break;
             		var price = techPriceForDowngrade(player.thrust2);
                     if (player.money >= price) {
                         player.money -= price;

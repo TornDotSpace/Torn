@@ -245,7 +245,7 @@ function updateQuests() {
 				if (dsxv == sxv && dsyv == syv) return;
 				nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
 			}
-			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * 5) * 2], sy: thisMap[Math.floor(r2 * 5) * 2 + 1] };
+			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * basesPerTeam) * 2], sy: thisMap[Math.floor(r2 * basesPerTeam) * 2 + 1] };
 			else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
 			else 			nm = { type: "Secret", 	exp: 400000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
 			teamQuests[teamColor][i] = nm;

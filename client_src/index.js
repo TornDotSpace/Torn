@@ -754,7 +754,7 @@ function r3DMap(xp, yp) {
 			avgZ+=cz;
 			avgi++;
 
-			if(i == sx && j == sy){
+			if((i == sx && j == sy) || (i == quest.sx && j == quest.sy) || (i == quest.dsx && j == quest.dsy)){
 
 				//Render wormhole
 				/*
@@ -777,7 +777,7 @@ function r3DMap(xp, yp) {
 
 				//Highlight the player's sector
 				ctx.lineWidth = 3;
-				ctx.strokeStyle = ctx.fillStyle = brighten(pc);
+				ctx.strokeStyle = ctx.fillStyle = (i == sx && j == sy) ? brighten(pc) : "yellow";
 				ctx.stroke();
 				ctx.lineWidth = .35;
 				ctx.strokeStyle = 'gray';
@@ -972,7 +972,7 @@ function techPrice(x){ // money required to upgrade Tech
 	return techEnergy(nextTechLevel(x))-techEnergy(x);
 }
 function techPriceForDowngrade(x){ // money required to upgrade Tech
-	return techEnergy(lastTechLevel(x))-techEnergy(x);
+	return Math.min(techEnergy(lastTechLevel(x))-techEnergy(x), 300000000);
 }
 function techEnergy(x){ // Net price of some tech level
 	return Math.round(Math.pow(1024, x) / 1000) * 500;
