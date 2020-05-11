@@ -422,7 +422,7 @@ function loadAllImages() {
 
 	for (var i = 1; i < 6; i++) {
 		planetImgs[i] = new Image();
-		planetImgs[i].src = '/img/space/planets/pt' + i + '.png';	
+		planetImgs[i].src = '/img/space/planets/pt' + i + '.jpg';	
 	}
 }
 
@@ -3056,7 +3056,7 @@ function rLB() {
 function rRadar() {
 	if (va2 < 1.1) return;
 	ctx.fillStyle = "white";
-	ctx.globalAlpha = 0.75;
+	ctx.globalAlpha = 0.5;
 	ctx.drawImage(Img.grid, 16, 32 + 214);
 	let d = new Date();
 	var stime = d.getTime() / (35 * 16);
