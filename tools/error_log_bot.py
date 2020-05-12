@@ -19,6 +19,6 @@ for f in listdir(PATH):
 if len(data) != 0:
     # We need to post to discord
     print(data)
-    webhook = DiscordWebhook(url='https://discordapp.com/api/webhooks/699745801924247582/BJKcA2Dpa5I_ghWJ979BQFqMkVRTFdzihcF_nkJv9UyEJb0TsBVMn4UiXD36UZK-Ch8U', content='```bash' + data + "```")
+    webhook = DiscordWebhook(url='https://discordapp.com/api/webhooks/699745801924247582/BJKcA2Dpa5I_ghWJ979BQFqMkVRTFdzihcF_nkJv9UyEJb0TsBVMn4UiXD36UZK-Ch8U', content='```bash\n' + data + "```")
     response = webhook.execute()
     print(response)
