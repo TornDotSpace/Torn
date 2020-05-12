@@ -1617,6 +1617,7 @@ function rInBase() {
 	rRaid();
 	updateBullets();
 	rTut();
+	rVolumeBar();
 	rBigNotes();
 }
 socket.on('chat', function (data) {
