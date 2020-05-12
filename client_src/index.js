@@ -814,7 +814,6 @@ function r3DMap(xp, yp) {
 	ctx.globalAlpha = 1;
 }
 function rBuyShipWindow(){
-
 	ctx.fillStyle = 'white';
 	roundRect(rx + 16, ry + 256 - 16, 256, 256, 8, false, true);
 
@@ -859,17 +858,20 @@ function rBuyShipWindow(){
 		ctx.drawImage(Img.arrow, - 16, - 16);
 		ctx.restore();
 	}
-
 }
-function rShop() {
+function rOreShop(){
 	var info = {};
 	var mult1 = (myTrail % 16 == 2)?1.05:1;
 	var mult1point5 = (myTrail % 16 == 2)?1.575:1.5;
 	var mult2 = (myTrail % 16 == 2)?2.1:2;
-	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + iron * (pc === "red" ? mult1 : mult2) + " ($" + (pc === "red" ? mult1 : mult2) + " " + mEng[155] + ")";
-	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + silver * mult1point5 + " ($"+mult1point5+" " + mEng[155] + ")";
-	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + platinum * (pc === "blue" ? mult1 : mult2) + " ($" + (pc === "blue" ? mult1 : mult2) + " " + mEng[155] + ")";
-	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + aluminium * mult1point5 + " ($"+mult1point5+" " + mEng[155] + ")";
+	var allIronPrice = iron * (pc === "red" ? mult1 : mult2);
+	var allSilverPrice = silver * mult1point5;
+	var allPlatinumPrice = platinum * (pc === "blue" ? mult1 : mult2);
+	var allAluminiumPrice = aluminium * mult1point5;
+	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + allIronPrice + " ($" + (pc === "red" ? mult1 : mult2) + " " + mEng[155] + ")";
+	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + allSilverPrice + " ($"+mult1point5+" " + mEng[155] + ")";
+	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + allPlatinumPrice + " ($" + (pc === "blue" ? mult1 : mult2) + " " + mEng[155] + ")";
+	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + allAluminiumPrice + " ($"+mult1point5+" " + mEng[155] + ")";
 
 	ctx.strokeStyle = 'white';
 	ctx.lineWidth = 1;
@@ -881,16 +883,27 @@ function rShop() {
 		write(info[i], rx + 256 - 32, ry - 32 + i * 32);
 	}
 
-	ctx.fillStyle = ((seller == 610) ? 'lime' : 'yellow');
-	write(mEng[12], rx + 256 + 48, ry + 76);
+	ctx.fillStyle = seller == 610 ? 'lime' : 'yellow';
+	write(mEng[12] + " => $" + (allAluminiumPrice + allPlatinumPrice + allSilverPrice + allIronPrice), rx + 256 + 48, ry + 76); // Sell all
 
+	let d = new Date();
+	var stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
+	var spx = (stime % 8) * 128;
+	var Secret = Math.floor((stime / 8) % 4) * 128;
+	ctx.save();
+	ctx.translate(rx + 128 - 16, ry + (256 - 32 - 40) / 2 + 40);
+	ctx.drawImage(Img.silver, spx, Secret, 128, 128, -64, -64, 128, 128);
+	ctx.restore();
+}
+function rBuyLifeShop(){
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'right';
 	write(mEng[13] + lives + " ($" + expToLife() + ") ", rx + 768 - 16 - ctx.measureText(mEng[14]).width, ry + 512 - 16);
 	ctx.fillStyle = (lives >= 20 || money < expToLife()) ? 'red' : ((seller == 611) ? 'lime' : 'yellow');
 	write(mEng[14], rx + 768 - 16, ry + 512 - 16);
 	ctx.textAlign = 'left';
-
+}
+function rWeaponsInShop(){
 	ctx.fillStyle = 'yellow';
 	ctx.font = "24px ShareTech";
 	write(mEng[15], rx + 256 + 32, ry + 256 - 16);
@@ -910,17 +923,17 @@ function rShop() {
 		else if (equipped[i] > -1) tag = mEng[19] + (i != 9 ? ' ' : '');
 		write(tag + (i + 1) + ": " + wepns[equipped[i]].name, rx + 256 + 32, ry + 256 + i * 16);
 	}
+}
+function rShop() {
+
+	rOreShop();
+
+	rBuyLifeShop();
+
+	rWeaponsInShop();
 
 	rBuyShipWindow();
 
-	let d = new Date();
-	var stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
-	var spx = (stime % 8) * 128;
-	var Secret = Math.floor((stime / 8) % 4) * 128;
-	ctx.save();
-	ctx.translate(rx + 128 - 16, ry + (256 - 32 - 40) / 2 + 40);
-	ctx.drawImage(Img.silver, spx, Secret, 128, 128, -64, -64, 128, 128);
-	ctx.restore();
 }
 function rConfirm() {
 	ctx.fillStyle = 'cyan';
