@@ -118,7 +118,7 @@ var messages = {};
 for (var i = 0; i < chatLength; i++)
 	messages[i] = "";
 preProcessChat();
-var raidTimer = -1, raidRed = 0, raidBlue = 0, points = 0;
+var raidTimer = -1, raidRed = 0, raidBlue = 0, raidGreen = 0, points = 0;
 var shift = false, shield = false, autopilot = false;
 var seller = 0, sectorMap = 0, worth = 0, ship = 0;
 var empTimer = -1, dmgTimer = -1, gyroTimer = 0, afkTimer = 45000;
@@ -754,7 +754,7 @@ function r3DMap(xp, yp) {
 			avgZ+=cz;
 			avgi++;
 
-			if(i == sx && j == sy){
+			if((i == sx && j == sy) || (i == quest.sx && j == quest.sy) || (i == quest.dsx && j == quest.dsy)){
 
 				//Render wormhole
 				/*
@@ -777,21 +777,23 @@ function r3DMap(xp, yp) {
 
 				//Highlight the player's sector
 				ctx.lineWidth = 3;
-				ctx.strokeStyle = ctx.fillStyle = brighten(pc);
+				ctx.strokeStyle = ctx.fillStyle = (i == sx && j == sy) ? brighten(pc) : "yellow";
 				ctx.stroke();
 				ctx.lineWidth = .35;
 				ctx.strokeStyle = 'gray';
 
-				var xxp1 = lerp(xx1,xx4,(px/sectorWidth+py/sectorWidth)/2)-cx; // these are just clever ways of using linear interpolation in a skew vector space
-				var yyp1 = lerp(yy1,yy4,(px/sectorWidth+py/sectorWidth)/2)-cy; // the same can be done for the wormhole when i get to it
-				//var zzp1 = lerp(zz1,zz4,(px/sectorWidth+py/sectorWidth)/2)-cz;
-				var xxp2 = lerp(xx3,xx2,(-px/sectorWidth+1+py/sectorWidth)/2)-cx;
-				var yyp2 = lerp(yy3,yy2,(-px/sectorWidth+1+py/sectorWidth)/2)-cy;
-				//var zzp2 = lerp(zz3,zz2,(-px/sectorWidth+1+py/sectorWidth)/2)-cz;
-				c3dx = cx+xxp1+xxp2;
-				c3dy = cy+yyp1+yyp2;
-				//c3dz = cz+zzp1+zzp2;
-				ctx.fillRect(xp+c3dx-2, yp+c3dy-2, 4, 4);
+				if (i == sx && j == sy) {
+					var xxp1 = lerp(xx1,xx4,(px/sectorWidth+py/sectorWidth)/2)-cx; // these are just clever ways of using linear interpolation in a skew vector space
+					var yyp1 = lerp(yy1,yy4,(px/sectorWidth+py/sectorWidth)/2)-cy; // the same can be done for the wormhole when i get to it
+					//var zzp1 = lerp(zz1,zz4,(px/sectorWidth+py/sectorWidth)/2)-cz;
+					var xxp2 = lerp(xx3,xx2,(-px/sectorWidth+1+py/sectorWidth)/2)-cx;
+					var yyp2 = lerp(yy3,yy2,(-px/sectorWidth+1+py/sectorWidth)/2)-cy;
+					//var zzp2 = lerp(zz3,zz2,(-px/sectorWidth+1+py/sectorWidth)/2)-cz;
+					c3dx = cx+xxp1+xxp2;
+					c3dy = cy+yyp1+yyp2;
+					//c3dz = cz+zzp1+zzp2;
+					ctx.fillRect(xp+c3dx-2, yp+c3dy-2, 4, 4);
+				}
 			}
 			else ctx.stroke();
 
@@ -972,7 +974,7 @@ function techPrice(x){ // money required to upgrade Tech
 	return techEnergy(nextTechLevel(x))-techEnergy(x);
 }
 function techPriceForDowngrade(x){ // money required to upgrade Tech
-	return techEnergy(lastTechLevel(x))-techEnergy(x);
+	return Math.max(techEnergy(lastTechLevel(x))-techEnergy(x), -300000000);
 }
 function techEnergy(x){ // Net price of some tech level
 	return Math.round(Math.pow(1024, x) / 1000) * 500;
@@ -1897,6 +1899,7 @@ socket.on('heatmap', function (data) {
 	lb = data.lb;
 	raidRed = data.raidRed;
 	raidBlue = data.raidBlue;
+	raidGreen = data.raidGreen;
 	youi = parseInt(data.youi);
 	if (data.youi > 15)
 		lb[16] = { id: data.youi, name: myName, exp: experience, color: pc, rank: rank };
@@ -3301,15 +3304,20 @@ function rRaid() {
 		write(mEng[201] + points, w / 2, h - 80);
 
 		ctx.font = "14px ShareTech";
-		write("-", w / 2, h - 100);
+		write("/   /", w / 2, h - 100);
 
-		ctx.fillStyle = "pink"; // GREENTODO
+		ctx.fillStyle = "pink";
 		ctx.textAlign = 'right';
-		write(raidRed, w / 2 - 8, h - 100);
+		write(raidRed, w / 2 - 24, h - 100);
+
+		ctx.fillStyle = "lime";
+		ctx.textAlign = "center";
+		write(raidGreen, w / 2, h - 100);
 
 		ctx.fillStyle = "cyan";
 		ctx.textAlign = 'left';
-		write(raidBlue, w / 2 + 8, h - 100);
+		write(raidBlue, w / 2 + 24, h - 100);
+
 	} else if (docked && minutes > 5) write(mEng[202] + (minutes - 10) + ":" + seconds, w / 2, h - 120);
 	ctx.restore();
 }
@@ -3811,9 +3819,9 @@ function rEdgePointer() {
 	}
 	var text = '';
 	if (angle == 0) text = sectorWidth - px;
-	else if (angle == 1) text = py;
+	else if (angle == 3) text = py;
 	else if (angle == 2) text = px;
-	else if (angle == 3) text = sectorWidth - py;
+	else if (angle == 1) text = sectorWidth - py;
 	rPointerArrow(Img.yellowArrow,angle*Math.PI/2,text,'yellow');
 }
 function rBasePointer(nearB) {

@@ -31,8 +31,8 @@ module.exports = function Package(ownr, i, type) {
 			p.moneyAchs[8] = true; // Thief: steal a package
 			p.sendAchievementsCash(true);
 
-			var possible = ['money', 'ore', 'upgrade'];
-			var contents = possible[Math.floor(Math.random() * 2.05)]; // figure out what reward to give
+			var possible = ['money', 'ore'];
+			var contents = possible[Math.floor(Math.random() * 2)]; // figure out what reward to give
 
 			var amt = Math.floor(Math.random() * 2000) + 2000; // how much ore we're gonna give
 			if (contents == 'ore') {
@@ -49,11 +49,9 @@ module.exports = function Package(ownr, i, type) {
 			}
 
 			else if (contents == 'money') p.spoils("money", 20000);
-			else if (contents == 'upgrade') { p.radar2 += .2; }
 
 			var title = "Package collected: "; // the message we're going to send them
 			if (contents == 'ore') title += (amt * 4) + ' ore!';
-			if (contents == 'upgrade') title += 'New radar!';
 			if (contents == 'money') title += '20000 money!';
 			p.strongLocal(title, p.x, p.y - 192); // send it
 		}
