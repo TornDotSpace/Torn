@@ -604,106 +604,127 @@
 		{
 			"nameA":"Scout",
 			"nameH":"Minnow",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Private",
 			"nameH":"Piranha",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Mastodon",
 			"nameH":"Freighter",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Nymph",
 			"nameH":"Strider",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Bomber",
 			"nameH":"Lancer",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Scythe",
 			"nameH":"Hammerhead",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Dragonfly",
 			"nameH":"Swordfish",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Sentry",
 			"nameH":"Battleship",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Eagle",
 			"nameH":"Stingray",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Phoenix",
 			"nameH":"Orca",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Wasp",
 			"nameH":"Manta",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Swift",
 			"nameH":"Sailfish",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Quarrier",
 			"nameH":"Beluga",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Destroyer",
 			"nameH":"Taurus",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Falcon",
 			"nameH":"Wyvern",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Interceptor",
 			"nameH":"Leviathan",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Swift",
 			"nameH":"Elite Sailfish",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Quarrier",
 			"nameH":"Elite Beluga",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Destroyer",
 			"nameH":"Elite Taurus",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Falcon",
 			"nameH":"Elite Wyvern",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Interceptor",
 			"nameH":"Elite Leviathan",
+			"nameC":"???",
 			"desc":""
 		}
 	]
