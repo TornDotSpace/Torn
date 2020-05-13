@@ -161,7 +161,7 @@ body, #a {
 	border:2px solid green;
 }
 
-#registerA, #registerH, .overlay-button{
+#registerR, #registerG, #registerB, .overlay-button{
 	font-family: 'ShareTech';
 	width:190px;
 	font-size: 16px;
@@ -169,20 +169,21 @@ body, #a {
 	margin-top: 4px;
 	margin-bottom: 4px;
 	float: center;
-}
-
-#registerA, #registerH, .overlay-button{
 	background-color: rgb(80, 80, 80);
 	color: white;
 	cursor: pointer;
 	border:2px solid #404040;
 }
 
-#registerA{
+#registerR{
 	border:2px solid red;
 }
 
-#registerH{
+#registerG{
+	border:2px solid green;
+}
+
+#registerB{
 	border:2px solid blue;
 }
 

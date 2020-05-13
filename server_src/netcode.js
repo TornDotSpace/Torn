@@ -160,8 +160,9 @@ module.exports = function initNetcode() {
         };
 
         socket.on('lore', function (data) { //player is requesting lore screen.
-            if (typeof data === "undefined" || typeof data.alien !== "boolean") return;
-            socket_color = data.alien; // note whether they want to be alien for when they spawn
+            if (typeof data === "undefined" || typeof data.team !== "string") return;
+            if (data.team !== "red" && data.team !== "blue" && data.team !== "green") return;
+            socket_color = data.team;
             socket.emit("lored", { pc: socket_color });
         });
 
@@ -186,7 +187,7 @@ module.exports = function initNetcode() {
             console.log(player.ip + " logged in as " + player.name);
             guestCount++;
 
-            player.color = socket_color ? "red" : "blue";
+            player.color = socket_color;
             player.sx = baseMap[player.color][0];
             player.sy = baseMap[player.color][1];
             for (var i = 0; i < ships[player.ship].weapons; i++) player.weapons[i] = -1;

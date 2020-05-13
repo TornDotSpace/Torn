@@ -1091,11 +1091,11 @@ broadcastInfo();
 function broadcastInfo(){
 	randomMsgs = [
 		"Never give anyone your password, for any reason!",
-		"Let us know if you want to run a torn youtube channel!",
 		"Support the game by buying a VIP pass in the store!",
 		"Join the torn.space discord in the 'more' tab!",
 		"If you find a bug, report it in the 'more' menu!",
-		"Mute bothersome players with /mute username",
+		"Type /changeteam to switch teams!",
+		"Mute bothersome players with /mute username"
 	]
 	chatAll("~`#ff0000~`SERVER: "+randomMsgs[broadcastMsg%randomMsgs.length]);
 	broadcastMsg++
