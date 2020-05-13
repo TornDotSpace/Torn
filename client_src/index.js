@@ -3688,14 +3688,15 @@ function rPlayers() {
 		write(selfo.name, rendX, rendY - ships[selfo.ship].width * .5);
 		ctx.textAlign = "left";
 
-		for(var i = 0; i<3; i++){
+		if (selfo.name === myName){
+			if(selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];)
+		} else for(var i = 0; i<3; i++){
 			if (selfo.color===teamColors[i]) {
 				if (pointers[i]===0) pointers[i] = selfo;
 				else if (square(selfo.x - px) + square(selfo.y - py) < square(pointers[i].x - px) + square(pointers[i].y - py)) pointers[i] = selfo;
 			}
 		}
 
-		if (selfo.name === myName && selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];
 		if (selfo.hasPackage) rBackPack(selfo);
 		ctx.lineWidth = 6;
 		if (selfo.shield) {
