@@ -3689,7 +3689,7 @@ function rPlayers() {
 		ctx.textAlign = "left";
 
 		if (selfo.name === myName){
-			if(selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];)
+			if(selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];
 		} else for(var i = 0; i<3; i++){
 			if (selfo.color===teamColors[i]) {
 				if (pointers[i]===0) pointers[i] = selfo;
