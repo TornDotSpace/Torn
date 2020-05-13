@@ -167,7 +167,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 
 		//Or a player...
 		if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-			self.sendDeathMsg("~`" + b.color + "~`" + b.owner.name + "~`yellow~`'s `~" + b.wepnID + "`~");
+			self.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
 			b.owner.spoils("experience", baseKillExp); // reward them
 			b.owner.spoils("money", baseKillMoney);
@@ -187,7 +187,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		saveTurret(self);
 	}
 	self.sendDeathMsg = function (killedBy) {
-		chatAll("The " + (self.isBase ? "base" : "turret") + " at sector ~`" + col + "~`" + self.getSectorName() + "~`yellow~` was destroyed by " + killedBy + ".");
+		chatAll("The " + (self.isBase ? "base" : "turret") + " at sector " + self.nameWithColor() + " was destroyed by " + killedBy + ".");
 	}
 	self.getSectorName = function () {
 		return String.fromCharCode(97 + sxx).toUpperCase() + "" + (syy + 1);
@@ -208,6 +208,9 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 	self.spoils = function (type, amt) {
 		if (type === "experience") self.experience += amt;
 		if (type === "money") self.money += amt;
+	}
+	self.nameWithColor = function(){ // returns something like "~`green~`B6~`yellow~`"
+		return "~`"+self.color+"~`"+self.getSectorName()+"~`yellow~`";
 	}
 	return self;
 };

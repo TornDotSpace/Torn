@@ -810,7 +810,7 @@ function r3DMap(xp, yp) {
 			ctx.fill();
 		}
 	}
-	center3D((avgX/avgi+c3dx)/2,(avgY/avgi+c3dy)/2,avgZ/avgi);
+	//center3D((avgX/avgi+c3dx)/2,(avgY/avgi+c3dy)/2,avgZ/avgi);
 	ctx.globalAlpha = 1;
 }
 function rBuyShipWindow(){
@@ -3071,7 +3071,7 @@ function rLB() {
 	}
 }
 function rRadar() {
-	if (va2 < 1.1) return;
+	if (va2 < 1.12) return;
 	ctx.fillStyle = "white";
 	ctx.globalAlpha = 0.5;
 	ctx.drawImage(Img.grid, 16, 32 + 214);
@@ -3084,18 +3084,19 @@ function rRadar() {
 	ctx.drawImage(Img.spin, -96, -96);
 	ctx.restore();
 	ctx.globalAlpha = ctx.lineWidth = 1;
-	var r = 5120 * (1 + (va2 - 1) * 1.5);
+	var r = va2*3840 - 1280;
+	var r2 = square(r);
 	if (basesInfo !== undefined) {
 		var dx = basesInfo.x - px;
 		var dy = basesInfo.y - py;
-		if (square(dx) + square(dy) < square(r)) {
+		if (square(dx) + square(dy) < r2) {
 			var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
 			var rx = dx / r * 96 + 96 + 16, ry = dy / r * 96 + 96 + 214 + 32;
 			ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 			ctx.beginPath();
-			ctx.arc(rx, ry, (va2 > 1.3) ? 5 : 3, 0, 2 * Math.PI, false);
+			ctx.arc(rx, ry, (va2 > 1.24) ? 5 : 3, 0, 2 * Math.PI, false);
 			ctx.fillStyle = "lightgray";
-			if (va2 > 1.3) ctx.fillStyle = brighten(basesInfo.color);
+			if (va2 > 1.36) ctx.fillStyle = brighten(basesInfo.color);
 			ctx.fill();
 		}
 	}
@@ -3104,21 +3105,21 @@ function rRadar() {
 		var p = playersInfo[p_pack];
 		var dx = p.x - px;
 		var dy = p.y - py;
-		if (square(dx) + square(dy) > square(r)) continue;
+		if (square(dx) + square(dy) > r2) continue;
 		var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
 		var rx = dx / r * 96 + 16 + 96, ry = dy / r * 96 + 96 + 214 + 32;
 		ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 		ctx.beginPath();
 		ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
-		if (va2 > 1.3) ctx.fillStyle = brighten(p.color);
+		if (va2 > 1.36) ctx.fillStyle = brighten(p.color);
 		ctx.fill();
 	}
-	if (va2 > 2.5)
+	if (va2 > 2.49)
 		for (var p_pack in playersInfo) {
 			var p = playersInfo[p_pack];
 			var dx = p.x - px;
 			var dy = p.y - py;
-			if (square(dx) + square(dy) > square(r)) continue;
+			if (square(dx) + square(dy) > r2) continue;
 			var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
 			var rx = dx / r * 96 + 16 + 96, ry = dy / r * 96 + 96 + 214 + 32;
 			ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
@@ -3133,21 +3134,28 @@ function rRadar() {
 
 		var dx = a.x - px;
 		var dy = a.y - py;
-		if (square(dx) + square(dy) > square(r)) continue;
+		if (square(dx) + square(dy) > r2) continue;
 		var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-		var rx = dx / r * 96 + 16 + 96, ry = dy / r * 96 + 96 + 214 + 32;
+		var rx = dx / r * 96 + 112, ry = dy / r * 96 + 342;
 		ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 		ctx.beginPath();
 		ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
-		if (va2 > 1.3) ctx.strokeStyle = ctx.fillStyle = 'orange';
-		if (va2 > 1.7) {
+		if (va2 > 1.36) ctx.strokeStyle = ctx.fillStyle = 'orange';
+		if (va2 > 1.74) {
 			if (a.metal == 0) ctx.strokeStyle = ctx.fillStyle = '#d44';
 			else if (a.metal == 1) ctx.strokeStyle = ctx.fillStyle = '#eef';
 			else if (a.metal == 2) ctx.strokeStyle = ctx.fillStyle = '#9a9';
 			else if (a.metal == 3) ctx.strokeStyle = ctx.fillStyle = '#90f';
 		}
-		if (va2 > 1.5) ctx.stroke();
+		if (va2 > 1.62) ctx.stroke();
 		else ctx.fill();
+	}
+	ctx.globalAlpha = .5;
+	if (va2>1.8) {
+		ctx.beginPath();
+		ctx.arc(112, 342, wepns[equipped[scroll]].range*960/r, 0, 2 * Math.PI, false);
+		ctx.strokeStyle = brighten(pc);
+		ctx.stroke();
 	}
 	ctx.globalAlpha = 1;
 	ctx.lineWidth = 3;
@@ -3866,11 +3874,11 @@ function rBlackHoleWarning() {
 	var angle = Math.atan2(dy, dx);
 	rPointerArrow(Img.blackArrow,angle,Math.hypot(dx,dy),'white');
 }
-function rPointerArrow(img, angle, text, textColor){
-	text = Math.floor(text / 10);
+function rPointerArrow(img, angle, dist, textColor){
+	if (dist < 100 || dist > va2*3840 - 1280) return;
+	dist = Math.floor(dist / 10);
 	ctx.fillStyle = textColor;
 	var pw = ships[ship].width;
-	if (text < 10 || text > 500 * va2) return;
 	var rendX = w / 2 + pw * 1 * cosLow(angle) + scrx;
 	var rendY = h / 2 + pw * 1 * sinLow(angle) + scry;
 	var rendXt = w / 2 + pw * 1.3 * cosLow(angle) + scrx;
@@ -3882,6 +3890,6 @@ function rPointerArrow(img, angle, text, textColor){
 	ctx.drawImage(img, -hw, -hw);
 	ctx.restore();
 	ctx.textAlign = "center";
-	write(text, rendXt, rendYt + 6);
+	write(dist, rendXt, rendYt + 6);
 	ctx.textAlign = "left";
 }
