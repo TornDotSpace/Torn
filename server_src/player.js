@@ -670,7 +670,7 @@ function Player(sock) {
 		for (var p in players[self.sy][self.sx]) {
 			var player = players[self.sy][self.sx][p];
 			if (self.id == player.id || player.disguise > 0) continue;
-			if (player.color === self.color) { if (friendlies++ > 3) anyFriend = player; continue; }
+			if (player.color === self.color) { friendlies++; continue; }
 			enemies++;
 			var dist2 = hypot2(player.x, self.x, player.y, self.y);
 			if (dist2 < close) {
