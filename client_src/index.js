@@ -2649,9 +2649,9 @@ function updateBooms() {
 }
 function rLore() {
 	textIn = 1000;
-	ctx.fillStyle = pc==="red"?'pink':(pc==="blue"?'cyan':"lime");
+	ctx.fillStyle = brighten(pc);
 	ctx.font = "22px ShareTech";
-	wrapText(jsn.lore[pc ? 0 : 1], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
+	wrapText(jsn.lore[colorSelect(pc,0,1,2)], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
 	ctx.textAlign = 'center';
 	ctx.fillStyle = 'yellow';
 	var t = (new Date()).getTime() / 6000;

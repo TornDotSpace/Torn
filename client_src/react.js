@@ -182,15 +182,23 @@ class LoginOverlay extends Component {
 			: (<iframe width="368" height="207" src="https://www.youtube.com/embed/44MIPle7pwQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>);
 		*/}
 
-		const buttonOrder = (this.state.seed < 0.5) ? (
-			<div>
-				<button id="registerA" onClick={this.registerA}>Join Alien Team!</button>
-				<button id="registerH" onClick={this.registerH}>Join Human Team!</button>
-			</div>
-		) : (
+		const buttonOrder = (this.state.seed < 0.66) ? ((this.state.seed < 0.33) ? (
 				<div>
-					<button id="registerH" onClick={this.registerH}>Join Human Team!</button>
-					<button id="registerA" onClick={this.registerA}>Join Alien Team!</button>
+					<button id="registerR" onClick={this.registerR}>Join Alien Team!</button>
+					<button id="registerB" onClick={this.registerB}>Join Human Team!</button>
+					<button id="registerG" onClick={this.registerG}>Join Cyborg Team!</button>
+				</div>
+			) : (
+				<div>
+					<button id="registerG" onClick={this.registerG}>Join Cyborg Team!</button>
+					<button id="registerR" onClick={this.registerR}>Join Alien Team!</button>
+					<button id="registerB" onClick={this.registerB}>Join Human Team!</button>
+				</div>
+			)) : (
+				<div>
+					<button id="registerB" onClick={this.registerB}>Join Human Team!</button>
+					<button id="registerG" onClick={this.registerG}>Join Cyborg Team!</button>
+					<button id="registerR" onClick={this.registerR}>Join Alien Team!</button>
 				</div>
 			);
 
@@ -245,15 +253,20 @@ class LoginOverlay extends Component {
 		if (typeof ReactRoot.socket !== "undefined")
 			ReactRoot.socket.emit('login', { user: user, pass: pass, amNew: false , version: VERSION });
 	}
-	registerH = () => {
+	registerB = () => {
 		connect();
 		if (typeof ReactRoot.socket !== "undefined")
-			ReactRoot.socket.emit('lore', { alien: false });
+			ReactRoot.socket.emit('lore', { team: "blue" });
 	}
-	registerA = () => {
+	registerG = () => {
 		connect();
 		if (typeof ReactRoot.socket !== "undefined")
-			ReactRoot.socket.emit('lore', { alien: true });
+			ReactRoot.socket.emit('lore', { team: "green" });
+	}
+	registerR = () => {
+		connect();
+		if (typeof ReactRoot.socket !== "undefined")
+			ReactRoot.socket.emit('lore', { team: "red" });
 	}
 
 	langEng = () => {
