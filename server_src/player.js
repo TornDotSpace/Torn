@@ -854,7 +854,7 @@ function Player(sock) {
 
 		p.color = self.color; // claim
 		p.owner = self.name;
-		chatAll('Planet ' + p.name + ' claimed by ' + self.nameWithColor() + "!");
+		//chatAll('Planet ' + p.name + ' claimed by ' + self.nameWithColor() + "!"); This gets bothersome and spammy
 
 		for (var i in players[self.sy][self.sx]) players[self.sy][self.sx][i].getAllPlanets();//send them new planet data
 
@@ -1209,10 +1209,12 @@ function Player(sock) {
 		//TODO Chris
 		if (!self.isBot) {
 			self.health = self.maxHealth;
+			self.x = self.y = sectorWidth / 2;
+			var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
+			self.sx = baseMap[self.color][whereToRespawn];
+			self.sy = baseMap[self.color][whereToRespawn+1];
 			if (self.guest) {
 				self.lives--;
-				self.sx = self.sy = (self.color == 'red' ? 2 : 4);
-				self.x = self.y = sectorWidth / 2;
 				self.dead = true;
 				if (self.lives <= 0) self.kick("Goodbye captain: no more lives remaining!");
 				self.sendStatus();
@@ -1223,12 +1225,6 @@ function Player(sock) {
 			
 			await handlePlayerDeath(self);
 			self.dead = true;
-
-			var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
-			self.sx = baseMap[self.color][whereToRespawn];
-			self.sy = baseMap[self.color][whereToRespawn+1];
-			self.x = self.y = sectorWidth/2;
-
 
 			if (self.lives <= 0) {
 				self.save();
