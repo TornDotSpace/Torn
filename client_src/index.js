@@ -3152,8 +3152,10 @@ function rRadar() {
 	}
 	ctx.globalAlpha = .5;
 	if (va2>1.8) {
+		var radius = wepns[equipped[scroll]].range*960/r;
+		if (radius <= 3 || radius>96) return;
 		ctx.beginPath();
-		ctx.arc(112, 342, wepns[equipped[scroll]].range*960/r, 0, 2 * Math.PI, false);
+		ctx.arc(112, 342, radius, 0, 2 * Math.PI, false);
 		ctx.strokeStyle = brighten(pc);
 		ctx.stroke();
 	}
