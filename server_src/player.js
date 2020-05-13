@@ -597,7 +597,7 @@ function Player(sock) {
 		self.jukeTimer = (self.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
 	}
 	self.mute = function (minutes) {
-		chatAll("~`violet~`" + self.name + "~`yellow~` has been " + (minutes > 0 ? "muted for " + minutes + " minutes!" : "unmuted!"));
+		chatAll(self.nameWithColor() + " has been " + (minutes > 0 ? "muted for " + minutes + " minutes!" : "unmuted!"));
 	}
 	self.onChangeSectors = function () {
 		//track my touched corners
@@ -854,7 +854,7 @@ function Player(sock) {
 
 		p.color = self.color; // claim
 		p.owner = self.name;
-		chatAll('Planet ' + p.name + ' claimed by ~`' + self.color + '~`' + self.name + "~`yellow~`!");
+		chatAll('Planet ' + p.name + ' claimed by ' + self.nameWithColor() + "!");
 
 		for (var i in players[self.sy][self.sx]) players[self.sy][self.sx][i].getAllPlanets();//send them new planet data
 
@@ -979,7 +979,7 @@ function Player(sock) {
 		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
 		if (!self.isBot && self.rank > prerank && self.rank > 5){
 			self.socket.emit('rank', {}); //congratulations!
-			chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` just leveled up to rank " + self.rank + "!");
+			chatAll(self.nameWithColor() + " just leveled up to rank " + self.rank + "!");
 		}
 	}
 	self.sellOre = function(oretype){
@@ -1166,7 +1166,7 @@ function Player(sock) {
 				self.socket.emit('quest', { quest: 0, complete: false});//reset quest and update client
 
 				if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-					chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + b.owner.name + "~`yellow~`'s `~" + b.wepnID + "`~!");
+					chatAll(self.nameWithColor() + " was destroyed by " + b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~!");
 
 					if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
 						b.owner.driftAchs[9] = true;
@@ -1175,9 +1175,9 @@ function Player(sock) {
 				}
 
 				//send msg
-				else if (b.type === "Vortex") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!");
-				else if (b.type === "Planet" || b.type === "Asteroid") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!");
-				else if (b.owner !== undefined && b.owner.type === "Base") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base in sector " + b.owner.getSectorName() + "!");
+				else if (b.type === "Vortex") chatAll(self.nameWithColor() + " crashed into a black hole!");
+				else if (b.type === "Planet" || b.type === "Asteroid") chatAll(self.nameWithColor() + " crashed into an asteroid!");
+				else if (b.owner !== undefined && b.owner.type === "Base") chatAll(self.nameWithColor() + " was destroyed by base " + b.owner.nameWithColor() + "!");
 			}
 
 			//drop a package
@@ -1437,7 +1437,7 @@ function Player(sock) {
 			return;
 		}
 		self.tentativePassword = pass;
-		self.socket.emit("chat", { msg: "~`lime~`Type \"/confirm your_new_password\" to complete the change." });
+		self.socket.emit("chat", { msg: "~`red~`Type \"/confirm your_new_password\" to complete the change." });
 	}
 	self.confirmPass = function (pass) { // /confirm
 		// TODO chris
@@ -1464,13 +1464,7 @@ function Player(sock) {
 	self.spoils = function (type, amt) { // gives you something. Called wenever you earn money / exp / w/e
 		if (typeof amt === "undefined") return;
 		if (type === "experience") {
-			//var oldPosition = lbIndex(self.experience);
 			self.experience += amt;
-			//var newPosition = lbIndex(self.experience);
-			//if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
-			//	if (newPosition < 100) chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!");
-			//	else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
-			//}
 			self.updateRank();
 		}
 		else if (type === "money") self.money += amt * ((amt > 0 && self.trail % 16 == 2) ? 1.05 : 1);
@@ -1504,7 +1498,7 @@ function Player(sock) {
 			for (var p in players[j][i]) {
 				var player = players[j][i][p];
 				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
+					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + self.name + "]: " + raw });
 					self.socket.emit("chat", { msg: "Message sent!" });
 					self.reply = player.name;
 					player.reply = self.name;
@@ -1513,7 +1507,7 @@ function Player(sock) {
 			} for (var p in dockers) {
 				var player = dockers[p];
 				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
+					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + self.name + "]: " + raw });
 					self.socket.emit("chat", { msg: "Message sent!" });
 					self.reply = player.name;
 					player.reply = self.name;
@@ -1522,7 +1516,7 @@ function Player(sock) {
 			} for (var p in deads) {
 				var player = deads[p];
 				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
+					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + self.name + "]: " + raw });
 					self.socket.emit("chat", { msg: "Message sent!" });
 					self.reply = player.name;
 					player.reply = self.name;
@@ -1534,6 +1528,9 @@ function Player(sock) {
 	self.nameWithoutTag = function(){
 		if(self.name.includes(" ")) return self.name.split(" ")[1];
 		return self.name;
+	}
+	self.nameWithColor = function(){ // returns something like "~`green~`[O] 2swap~`yellow~`"
+		return "~`"+self.color+"~`"+self.name+"~`yellow~`";
 	}
 	self.swap = function (msg) { // msg looks like "/swap 2 5". Swaps two weapons.
 		if (!self.docked) {

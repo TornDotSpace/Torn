@@ -3,7 +3,7 @@
 		{
 			"name":"Stock Gun",
 			"range":250,
-			"damage":30,
+			"damage":20,
 			"speed":50,
 			"charge":8,
 			"price":0,
@@ -781,9 +781,9 @@
 			"capacity":999999
 		},
 		{
-			"thrust":0.32,
+			"thrust":0.4,
 			"health":500,
-			"agility":0.3,
+			"agility":0.35,
 			"width":192,
 			"price":3000000,
 			"weapons":10,
@@ -791,7 +791,7 @@
 		},
 		{
 			"thrust":0.4,
-			"health":300,
+			"health":350,
 			"agility":0.5,
 			"width":128,
 			"price":5000000,
