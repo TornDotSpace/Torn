@@ -986,16 +986,16 @@ function Player(sock) {
 	self.sellOre = function(oretype){
             //pay them appropriately
               if (oretype == 'iron' || oretype == 'all') {
-                self.spoils("money", self.iron * (self.color == "red" ? 1 : 2));
+                self.spoils("money", self.iron);
                 self.iron = 0;
             } if (oretype == 'silver' || oretype == 'all') {
-                self.spoils("money", self.silver * 1.5);
+                self.spoils("money", self.silver);
                 self.silver = 0;
             } if (oretype == 'platinum' || oretype == 'all') {
-                self.spoils("money", self.platinum * (self.color == "blue" ? 1 : 2));
+                self.spoils("money", self.platinum);
                 self.platinum = 0;
             } if (oretype == 'aluminium' || oretype == 'all') {
-                self.spoils("money", self.aluminium * 1.5);
+                self.spoils("money", self.aluminium);
                 self.aluminium = 0;
             }
             self.save();
