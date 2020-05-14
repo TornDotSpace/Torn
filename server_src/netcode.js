@@ -18,16 +18,6 @@ global.muteTable = {};
 
 global.protocolVersion = undefined;
 
-function flood(ip) {
-    var safe = false;
-    for (var i = 0; i < 20; i++) if (ip !== IPSpam[i]) {
-        IPSpam[i] = ip;
-        safe = true;
-        break;
-    }
-    return safe;
-}
-
 global.hash = function (str) { // ass. TODO chris
     var hash = 0;
     if (str.length == 0) return hash;
@@ -63,14 +53,7 @@ function runCommand(player, msg) { // player just sent msg in chat and msg start
             return;
         }
 
-        // Commands are probably one of the more bug-prone activities as they involve changing game state, et. al
-        // Wrap their invocation in a try/catch block to avoid shard death on error
-        try {
-            command.invoke(player, msg);
-        } catch (e) {
-            player.socket.emit("chat", { msg: "~`red~`An internal error occurred while running this command, please report this to a developer ~`red~`" });
-            console.error(e);
-        }
+        command.invoke(player, msg);
     }
 }
 
@@ -128,8 +111,6 @@ module.exports = function initNetcode() {
             ? socket.handshake.headers['x-real-ip']
             : socket.handshake.address;
 
-        if (!flood(ip)) return;
-
         var player = 0;
 
         var socket_color = 0; // the color of this socket, only used for when spawning a guest for the first time.
@@ -167,7 +148,6 @@ module.exports = function initNetcode() {
         });
 
         socket.on('guest', function (data) { // TODO Chris
-            if (!flood(ip)) return;
             if (instance) return;
 
             if (global.protocolVersion !== undefined) {
@@ -212,7 +192,6 @@ module.exports = function initNetcode() {
         socket.on('register', function (data) { // TODO Chris
             console.log("Registration attempted...");
             if (typeof data === "undefined") return;
-            if (!flood(ip)) return;
             // Block registrations being triggered from non-guests or unconnected accounts
             // Fixes some registration spam and crash exploits
 
@@ -269,7 +248,6 @@ module.exports = function initNetcode() {
         socket.on('login', function (data) {
             if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
 
-            if (!flood(ip)) return;
             if (instance) return;
 
             if (global.protocolVersion !== undefined) {

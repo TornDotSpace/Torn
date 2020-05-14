@@ -157,7 +157,6 @@ global.botCount = 0;
 global.guestCount = 0; // blue/red players/guests/bots
 global.raidTimer = 50000;
 var raidRed = 0, raidBlue = 0, raidGreen = 0; // Timer and points
-global.IPSpam = {}; // Keeps track of ips flooding server.
 global.teamQuests = {"blue":[], "red":[], "green":[]};//A list of the 10 available quests for humans and aliens
 
 var broadcastMsg=0;
@@ -472,7 +471,6 @@ function update() {
 	ops++;
 	if (ops < 2) setTimeout(update, tickRate);
 	tick++;
-	if (Math.random() < 0.0001) IPSpam[Math.floor(Math.random())] = 0;
 	var d = new Date();
 	var lagTimer = d.getTime();
 	updateQuests();
