@@ -558,6 +558,19 @@
 			"order":16,
 			"type":"Orb",
 			"bot":true
+		},
+		{
+			"name":"Teleport Orb",
+			"range":125,
+			"damage":18,
+			"speed":8,
+			"charge":12,
+			"price":10000,
+			"ammo":-1,
+			"level":6,
+			"order":16,
+			"type":"Orb",
+			"bot":true
 		}
 	],
 	"planets":[
