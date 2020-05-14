@@ -1,4 +1,3 @@
-
 function printStartup() {
 	console.log("************************************************************************************************************************");
 	console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
@@ -74,6 +73,8 @@ var socket = io(GAMESERVER_URL,
  	});
 // Just to make socket accessible in react.js
 ReactRoot.socket = socket;
+
+"use strict";
 
 global.connect = function () {
 	if (socket.connected) {
@@ -1257,8 +1258,7 @@ function wrapText(text, x, y, maxWidth, lineHeight) {
 }
 
 function clearBullets() {
-	for (var i in bullets) delete bullets[i];
-	for (var i in data.pack) bullets[data.pack[i].id] = data.pack[i];
+	bullets = { };
 }
 
 // socket error handling
