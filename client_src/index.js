@@ -248,6 +248,7 @@ function loadAllAudio() {
 	loadAudio("money", '/aud/money.wav');
 	loadAudio("button2", '/aud/button2.wav');
 	loadAudio("noammo", '/aud/noammo.wav');
+	loadAudio("music1", '/aud/music1.mp3');
 }
 
 var muted = false, musicMuted = false;
@@ -1962,8 +1963,8 @@ function loop() {
 			return;
 		} else ReactRoot.turnOnDisplay("LoginOverlay");
 
-		if(homepageTimer++ == 0) loadAudio("music1", '/aud/music1.mp3');
-
+		++homepageTimer;
+		
 		canvas.width = canvas.width;
 		ctx.fillStyle = "black";
 		ctx.fillRect(0, 0, w, h);
