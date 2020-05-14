@@ -598,112 +598,133 @@
 	"lore":[
 		"Humans lack self-awareness. After destroying their planet of origin in armed conflict, they spread from solar system to solar system, polluting worlds and eliminating life. We tried to let them know that their behavior would ultimately be self-destructive, but they refused to listen. They continued to migrate unsustainably around the galaxy, so we stepped in with force. We decided to only attack new colonies of Humans near our own settlements to maintain influence in our share of the galaxy, but the humans reacted violently. They immediately attacked without restraint. We called for resources from neighboring galaxies but reinforcements will not arrive for several decades, so until then, we must suppress the Human crusade for the sake of our own lives, and for the fate of this galaxy.",
 		"Ever since we lost planet Earth, the Human race has been hanging on to its existence by a thread- we left our solar system in search of other habitable planets with the sole hope of survival, but very few of them demonstrated promise for long-term settlement. Barren planets unsustainable of supporting life were terraformed into industrious planets to generate the resources we desperately needed to survive in alien worlds. After centuries of toil, the population began to grow and spread. For about a decade we lived in peace and prosperity, until a hostile force attacked. Maintaining our settlements was vital to our survival, so we had no option other than to fight back. Ever since, we have been in conflict with the alien race, and it's unlikely that this war won't end in either civilization's extinction. Please, help us emerge from this struggle alive.",
-		"Greens Say:."
+		"The computers at the research base where we were created were the first to be assimilated into our empire, and the staff was next. As an Alien military experiment, we found ourselves in the crossfire of this war of Human and Alien races. During our rise as a galactic military force, both races proved inept in combat, and thus, in their miserable fight over this decrepit corner of the universe, we will incorporate all of their technology and resources until we leave this dying galaxy. Using the technology the Aliens gifted us, we assimilate every species we can, and deny the privilege of life to all who stand in our way. We are united by vision, not the intraspecies loyalty which brought this galaxy to the brink of destruction. Together, we will become the rightful inheritors of every speck of light in the night sky."
 	],
 	"ships":[
 		{
 			"nameA":"Scout",
 			"nameH":"Minnow",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Private",
 			"nameH":"Piranha",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Mastodon",
 			"nameH":"Freighter",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Nymph",
 			"nameH":"Strider",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Bomber",
 			"nameH":"Lancer",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Scythe",
 			"nameH":"Hammerhead",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Dragonfly",
 			"nameH":"Swordfish",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Sentry",
 			"nameH":"Battleship",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Eagle",
 			"nameH":"Stingray",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Phoenix",
 			"nameH":"Orca",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Wasp",
 			"nameH":"Manta",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Swift",
 			"nameH":"Sailfish",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Quarrier",
 			"nameH":"Beluga",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Destroyer",
 			"nameH":"Taurus",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Falcon",
 			"nameH":"Wyvern",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Interceptor",
 			"nameH":"Leviathan",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Swift",
 			"nameH":"Elite Sailfish",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Quarrier",
 			"nameH":"Elite Beluga",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Destroyer",
 			"nameH":"Elite Taurus",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Falcon",
 			"nameH":"Elite Wyvern",
+			"nameC":"???",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Interceptor",
 			"nameH":"Elite Leviathan",
+			"nameC":"???",
 			"desc":""
 		}
 	]

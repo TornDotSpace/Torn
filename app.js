@@ -130,6 +130,7 @@ global.baseMap=	{
 //some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
 var mineLifetime = 3; // mines despawn after this many minutes
+global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
 global.baseHealth = 1300; // max base health
 global.baseKillExp = 1300; // Exp reward for killing a base
 global.baseKillMoney = 100000; // ditto but money
@@ -151,7 +152,9 @@ global.ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 
 //administrative-y variables
 global.tick = 0;
 var lag = 0, ops = 0; // ticks elapsed since boot, lag, count of number of instances of update() running at once
-var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0; // blue/red players/guests/bots
+global.playerCount = 0;
+global.botCount = 0;
+global.guestCount = 0; // blue/red players/guests/bots
 global.raidTimer = 50000;
 var raidRed = 0, raidBlue = 0, raidGreen = 0; // Timer and points
 global.teamQuests = {"blue":[], "red":[], "green":[]};//A list of the 10 available quests for humans and aliens
@@ -941,7 +944,7 @@ function update() {
 			var player = players[y][x][i];
 			if (player.isBot) continue;
 			if (tick % 12 == 0) { // LAG CONTROL
-				player.socket.emit('online', { lag: lag, bp: bp, rp: rp, bg: bg, rg: rg, bb: bb, rb: rb });
+				player.socket.emit('online', { lag: lag });
 				player.socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
 			}
 
@@ -972,7 +975,7 @@ function update() {
 	for (var i in deads) {
 		var player = deads[i];
 		if (tick % 12 == 0) // LAG CONTROL
-			player.socket.emit('online', { lag: lag, bb: bb, rb: rb, bp: bp, rp: rp, rg: rg, bg: bg });
+			player.socket.emit('online', { lag: lag });
 	}
 	for (var i in dockers) {
 		var player = dockers[i];
@@ -998,34 +1001,43 @@ function updateHeatmap() {
 		for (var j = 0; j < mapSz; j++) hmap[i][j] = 0;
 	}
 	var j = 0;
-	raidRed = raidBlue = raidGreen = 0;
+	raidRed = raidBlue = raidGreen = playerCount = botCount = guestCount = 0;
 
 	for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) {
 		for (var i in players[y][x]) {
 			var p = players[y][x][i];
 			if (p.color === "red") raidRed += p.points;
-			else if (p.color === "red") raidBlue += p.points;
-			else if (p.color === "red") raidGreen += p.points;
+			else if (p.color === "blue") raidBlue += p.points;
+			else if (p.color === "green") raidGreen += p.points;
 			if (p.name !== "" && !p.isBot) {
 				lb[j] = p;
 				j++;
 			}
+			if(p.isBot) botCount++;
+			else if(p.guest) botCount++;
+			else playerCount++;
 			hmap[p.sx][p.sy] += .1 + colorSelect(p.color, 1<<16, 1, 1<<8); // this is not supposed to be x-y order. TODO fix
 		}
 	}
 	for (var i in dockers) {
 		var p = dockers[i];
 		if (p.color === "red") raidRed += p.points;
-		else if (p.color === "red") raidBlue += p.points;
-		else if (p.color === "red") raidGreen += p.points;
+		else if (p.color === "blue") raidBlue += p.points;
+		else if (p.color === "green") raidGreen += p.points;
+		if(p.isBot) botCount++;
+		else if(p.guest) botCount++;
+		else playerCount++;
 		lb[j] = p;
 		j++;
 	}
 	for (var i in deads) {
 		var p = deads[i];
 		if (p.color === "red") raidRed += p.points;
-		else if (p.color === "red") raidBlue += p.points;
-		else if (p.color === "red") raidGreen += p.points;
+		else if (p.color === "blue") raidBlue += p.points;
+		else if (p.color === "green") raidGreen += p.points;
+		if(p.isBot) botCount++;
+		else if(p.guest) botCount++;
+		else playerCount++;
 		lb[j] = p;
 		j++;
 	}

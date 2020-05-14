@@ -3,7 +3,7 @@
 		{
 			"name":"Stock Gun",
 			"range":250,
-			"damage":30,
+			"damage":20,
 			"speed":50,
 			"charge":8,
 			"price":0,
@@ -198,7 +198,7 @@
 		{
 			"name":"Mine",
 			"range":16,
-			"damage":60,
+			"damage":80,
 			"speed":-1,
 			"charge":25,
 			"price":1000,
@@ -211,7 +211,7 @@
 		{
 			"name":"Laser Mine",
 			"range":64,
-			"damage":40,
+			"damage":50,
 			"speed":-1,
 			"charge":80,
 			"price":6000,
@@ -224,7 +224,7 @@
 		{
 			"name":"EMP Mine",
 			"range":24,
-			"damage":30,
+			"damage":40,
 			"speed":-1,
 			"charge":100,
 			"price":10000,
@@ -382,9 +382,9 @@
 			"range":-1,
 			"damage":-1,
 			"speed":500,
-			"charge":60,
-			"price":200000,
-			"ammo":2,
+			"charge":130,
+			"price":150000,
+			"ammo":1,
 			"level":7,
 			"order":34,
 			"type":"Misc",
@@ -432,7 +432,7 @@
 		{
 			"name":"Grenades",
 			"range":16,
-			"damage":70,
+			"damage":80,
 			"speed":30,
 			"charge":25,
 			"price":8000,
@@ -736,9 +736,9 @@
 			"capacity":50000
 		},
 		{
-			"thrust":0.35,
-			"health":300,
-			"agility":0.3,
+			"thrust":0.4,
+			"health":400,
+			"agility":0.35,
 			"width":192,
 			"price":500000,
 			"weapons":9,
@@ -746,11 +746,11 @@
 		},
 		{
 			"thrust":0.4,
-			"health":250,
+			"health":300,
 			"agility":0.5,
 			"width":128,
 			"price":1000000,
-			"weapons":9,
+			"weapons":10,
 			"capacity":2000
 		},
 		{
@@ -781,9 +781,9 @@
 			"capacity":999999
 		},
 		{
-			"thrust":0.32,
+			"thrust":0.4,
 			"health":500,
-			"agility":0.3,
+			"agility":0.35,
 			"width":192,
 			"price":3000000,
 			"weapons":10,
@@ -791,7 +791,7 @@
 		},
 		{
 			"thrust":0.4,
-			"health":300,
+			"health":350,
 			"agility":0.5,
 			"width":128,
 			"price":5000000,

@@ -94,8 +94,8 @@ var login = false, lore = false, afk = false;
 var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
 var phealth = 0;
 var energy = 0;
+var mapZoom = 1;
 var bxo = 0, byo = 0, bx = 0, by = 0;
-var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0, bs = 0, rs = 0;
 var iron = 0, silver = 0, platinum = 0, aluminium = 0;
 var kills = 0, baseKills = 0, money = 0, experience = 0, rank = 0;
 var sx = 0, sy = 0;
@@ -157,7 +157,7 @@ for (var i = 0; i < 30; i++) stars[i] = { x: Math.random() * w, y: Math.random()
 
 var myId = undefined;
 
-var dots = [];
+/*var dots = [];
 for (var i = 0; i < 2; i++) {
 	var a = Math.random() * 6.28318;
 	var rnd = Math.random() * 128;
@@ -166,7 +166,7 @@ for (var i = 0; i < 2; i++) {
 	var yy = sinLow(a) * rnd;
 	var zz = sinLow(Math.random() * 100) * 16 / (1 + rnd * rnd / 1024);
 	dots[i] = { x: Math.floor(xx), y: Math.floor(yy), z: Math.floor(zz) };
-}
+}*/
 
 var killStreak = 0, killStreakTimer = -1;
 var badWeapon = 0;
@@ -196,8 +196,8 @@ var sectorPoints = {};
 for (var i = 0; i < mapSz + 1; i++) { // Old Map
 	sectorPoints[i] = {};
 	for (var j = 0; j < mapSz + 1; j++) {
-		var xx = (i - mapSz / 2) * 256 / mapSz;
-		var yy = (j - mapSz / 2) * 256 / mapSz;
+		var xx = (i - mapSz / 2) * 192 / mapSz;
+		var yy = (j - mapSz / 2) * 192 / mapSz;
 		sectorPoints[i][j] = { x: xx, y: yy, z: 0 };
 	}
 }
@@ -430,7 +430,7 @@ var achs = [false, false, false, false, false, false, false, false, false, false
 var bigNotes = [-1, -1, -1, -1];
 
 function roll(v) {
-	for (var i in dots) {
+	/*for (var i in dots) {
 		var dot = dots[i];
 		var dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
 		var ang = Math.atan2(dot.z, dot.y) + v / 28;
@@ -438,7 +438,7 @@ function roll(v) {
 		var sin = Math.sin(ang) * dist;
 		dot.y = cos;
 		dot.z = sin;
-	}
+	}*/
 	for (var i = 0; i < mapSz+1; i++) {
 		for (var j = 0; j < mapSz+1; j++) {
 			var dot = sectorPoints[i][j];
@@ -452,7 +452,7 @@ function roll(v) {
 	}
 }
 function spin(v) {
-	for (var i in dots) {
+	/*for (var i in dots) {
 		var dot = dots[i];
 		var dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
 		var ang = Math.atan2(dot.z, dot.x) + v / 28;
@@ -460,7 +460,7 @@ function spin(v) {
 		var sin = Math.sin(ang) * dist;
 		dot.x = cos;
 		dot.z = sin;
-	}
+	}*/
 	for (var i = 0; i < mapSz+1; i++) {
 		for (var j = 0; j < mapSz+1; j++) {
 			var dot = sectorPoints[i][j];
@@ -474,7 +474,7 @@ function spin(v) {
 	}
 }
 function rotate(v) {
-	for (var i in dots) {
+	/*for (var i in dots) {
 		var dot = dots[i];
 		var dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
 		var ang = Math.atan2(dot.y, dot.x) + v / 28;
@@ -482,7 +482,7 @@ function rotate(v) {
 		var sin = Math.sin(ang) * dist;
 		dot.x = cos;
 		dot.y = sin;
-	}
+	}*/
 	for (var i = 0; i < mapSz+1; i++) {
 		for (var j = 0; j < mapSz+1; j++) {
 			var dot = sectorPoints[i][j];
@@ -496,11 +496,11 @@ function rotate(v) {
 	}
 }
 function center3D(xxp,yyp,zzp) {
-	for (var i in dots) {
+	/*for (var i in dots) {
 		dots[i].x-=xxp;
 		dots[i].y-=yyp;
 		dots[i].z-=zzp;
-	}
+	}*/
 	for (var i = 0; i < mapSz+1; i++) {
 		for (var j = 0; j < mapSz+1; j++) {
 			sectorPoints[i][j].x-=xxp;
@@ -693,12 +693,12 @@ function r3DMap(xp, yp) {
 	ctx.strokeRect(xp - 104, yp - 104, 208, 208); // Draw map
 	ctx.fillStyle = 'white';
 	ctx.globalAlpha = 1;
-	for (var i in dots) {
+	/*for (var i in dots) {
 		var dot = dots[i];
-		var xx = xp + dot.x / 1.33;
-		var yy = yp + dot.y / 1.33;
+		var xx = xp + dot.x / mapZoom;
+		var yy = yp + dot.y / mapZoom;
 		ctx.fillRect(xx, yy, 1, 1);
-	}
+	}*/
 	if (hmap == 0 || typeof hmap[sx] === "undefined") return;
 
 	//if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO
@@ -726,18 +726,18 @@ function r3DMap(xp, yp) {
 			//render lines
 			var dot2 = sectorPoints[i][j+1];
 			var dot3 = sectorPoints[i+1][j];
-			var xx1 = dot1.x / 1.33;
-			var yy1 = dot1.y / 1.33;
-			var zz1 = dot1.z / 1.33;
-			var xx2 = dot2.x / 1.33;
-			var yy2 = dot2.y / 1.33;
-			var zz2 = dot2.z / 1.33;
-			var xx3 = dot3.x / 1.33;
-			var yy3 = dot3.y / 1.33;
-			var zz3 = dot3.z / 1.33;
-			var xx4 = dot4.x / 1.33;
-			var yy4 = dot4.y / 1.33;
-			var zz4 = dot4.z / 1.33;
+			var xx1 = dot1.x / mapZoom;
+			var yy1 = dot1.y / mapZoom;
+			var zz1 = dot1.z / mapZoom;
+			var xx2 = dot2.x / mapZoom;
+			var yy2 = dot2.y / mapZoom;
+			var zz2 = dot2.z / mapZoom;
+			var xx3 = dot3.x / mapZoom;
+			var yy3 = dot3.y / mapZoom;
+			var zz3 = dot3.z / mapZoom;
+			var xx4 = dot4.x / mapZoom;
+			var yy4 = dot4.y / mapZoom;
+			var zz4 = dot4.z / mapZoom;
 			ctx.beginPath();
 			ctx.moveTo(xp+xx3, yp+yy3);
 			ctx.lineTo(xp+xx1, yp+yy1);
@@ -810,7 +810,7 @@ function r3DMap(xp, yp) {
 			ctx.fill();
 		}
 	}
-	center3D((avgX/avgi+c3dx)/2,(avgY/avgi+c3dy)/2,avgZ/avgi);
+	//center3D((avgX/avgi+c3dx)/2,(avgY/avgi+c3dy)/2,avgZ/avgi);
 	ctx.globalAlpha = 1;
 }
 function rBuyShipWindow(){
@@ -821,11 +821,12 @@ function rBuyShipWindow(){
 	var t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
 	var rendX = rx + 128 + 16;
 	var rendY = ry + 128 * 3 - 16;
-	var img = (pc==="red"?redShips:(pc==="blue"?blueShips:greenShips))[shipView];
+	var img = colorSelect(pc,redShips,blueShips,greenShips)[shipView];
 	ctx.save();
 	ctx.translate(rendX, rendY);
 	ctx.rotate(-3 * t);
 	if (shipView > rank) img = Img.q;
+	ctx.drawImage(colorSelect(pc, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -img.width/2, -img.height/2, img.width, img.height);
 	ctx.drawImage(img, -img.width / 2, -img.height / 2);
 	ctx.restore();
 
@@ -1617,6 +1618,7 @@ function rInBase() {
 	rRaid();
 	updateBullets();
 	rTut();
+	rVolumeBar();
 	rBigNotes();
 }
 socket.on('chat', function (data) {
@@ -1819,12 +1821,6 @@ socket.on('spoils', function (data) {
 	notes[Math.random()] = { spoils: true, msg: msg, x: x, y: y, time: 0, strong: true, local: data.local };
 });
 socket.on('online', function (data) {
-	bb = data.bb;
-	rb = data.rb;
-	bp = data.bp;
-	rp = data.rp;
-	bg = data.bg;
-	rg = data.rg;
 	sLag = data.lag;
 });
 socket.on('emp', function (data) {
@@ -2412,6 +2408,11 @@ document.addEventListener('mouseup', function (evt) {
 }, false);
 document.addEventListener('mousewheel', function (evt) {
 	var d = Math.sign(evt.wheelDelta);
+	if (mx < 256 && my < 450) {
+		mapZoom*=d>0?.97:1.03;
+		mapZoom = 1;//Math.min(mapZoom,1); uncomment to allow zooming
+		return;
+	}
 	if (mx < 512 + 32 && my > h - 216) {
 		chatScroll = Math.max(0, Math.min(chatLength - 10, chatScroll + d));
 		return;
@@ -2648,9 +2649,9 @@ function updateBooms() {
 }
 function rLore() {
 	textIn = 1000;
-	ctx.fillStyle = pc==="red"?'pink':(pc==="blue"?'cyan':"lime");
+	ctx.fillStyle = brighten(pc);
 	ctx.font = "22px ShareTech";
-	wrapText(jsn.lore[pc ? 0 : 1], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
+	wrapText(jsn.lore[colorSelect(pc,0,1,2)], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
 	ctx.textAlign = 'center';
 	ctx.fillStyle = 'yellow';
 	var t = (new Date()).getTime() / 6000;
@@ -3070,7 +3071,7 @@ function rLB() {
 	}
 }
 function rRadar() {
-	if (va2 < 1.1) return;
+	if (va2 < 1.12) return;
 	ctx.fillStyle = "white";
 	ctx.globalAlpha = 0.5;
 	ctx.drawImage(Img.grid, 16, 32 + 214);
@@ -3078,23 +3079,25 @@ function rRadar() {
 	var stime = d.getTime() / (35 * 16);
 	ctx.globalAlpha = 0.5;
 	ctx.save();
-	ctx.translate(16 + 96, 32 + 96 + 214);
+	ctx.translate(112, 342);
 	ctx.rotate(stime % (2 * Math.PI) + Math.PI / 2);
 	ctx.drawImage(Img.spin, -96, -96);
 	ctx.restore();
 	ctx.globalAlpha = ctx.lineWidth = 1;
-	var r = 5120 * (1 + (va2 - 1) * 1.5);
+	var r = va2*3840 - 1280;
+	var r2 = square(r);
+	var distFactor = 96/r/mapZoom;
 	if (basesInfo !== undefined) {
 		var dx = basesInfo.x - px;
 		var dy = basesInfo.y - py;
-		if (square(dx) + square(dy) < square(r)) {
+		if (square(dx) + square(dy) < r2) {
 			var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-			var rx = dx / r * 96 + 96 + 16, ry = dy / r * 96 + 96 + 214 + 32;
+			var rx = dx * distFactor + 112, ry = dy * distFactor + 342;
 			ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 			ctx.beginPath();
-			ctx.arc(rx, ry, (va2 > 1.3) ? 5 : 3, 0, 2 * Math.PI, false);
+			ctx.arc(rx, ry, (va2 > 1.24) ? 5 : 3, 0, 2 * Math.PI, false);
 			ctx.fillStyle = "lightgray";
-			if (va2 > 1.3) ctx.fillStyle = brighten(basesInfo.color);
+			if (va2 > 1.36) ctx.fillStyle = brighten(basesInfo.color);
 			ctx.fill();
 		}
 	}
@@ -3103,23 +3106,23 @@ function rRadar() {
 		var p = playersInfo[p_pack];
 		var dx = p.x - px;
 		var dy = p.y - py;
-		if (square(dx) + square(dy) > square(r)) continue;
+		if (square(dx) + square(dy) > r2) continue;
 		var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-		var rx = dx / r * 96 + 16 + 96, ry = dy / r * 96 + 96 + 214 + 32;
+		var rx = dx * distFactor + 112, ry = dy * distFactor + 342;
 		ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 		ctx.beginPath();
 		ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
-		if (va2 > 1.3) ctx.fillStyle = brighten(p.color);
+		if (va2 > 1.36) ctx.fillStyle = brighten(p.color);
 		ctx.fill();
 	}
-	if (va2 > 2.5)
+	if (va2 > 2.49)
 		for (var p_pack in playersInfo) {
 			var p = playersInfo[p_pack];
 			var dx = p.x - px;
 			var dy = p.y - py;
-			if (square(dx) + square(dy) > square(r)) continue;
+			if (square(dx) + square(dy) > r2) continue;
 			var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-			var rx = dx / r * 96 + 16 + 96, ry = dy / r * 96 + 96 + 214 + 32;
+			var rx = dx * distFactor + 112, ry = dy * distFactor + 342;
 			ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 			ctx.beginPath();
 			ctx.arc(rx, ry, 2, 0, 2 * Math.PI, false);
@@ -3132,21 +3135,29 @@ function rRadar() {
 
 		var dx = a.x - px;
 		var dy = a.y - py;
-		if (square(dx) + square(dy) > square(r)) continue;
+		if (square(dx) + square(dy) > r2) continue;
 		var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-		var rx = dx / r * 96 + 16 + 96, ry = dy / r * 96 + 96 + 214 + 32;
+		var rx = dx * distFactor + 112, ry = dy * distFactor + 342;
 		ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 		ctx.beginPath();
 		ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
-		if (va2 > 1.3) ctx.strokeStyle = ctx.fillStyle = 'orange';
-		if (va2 > 1.7) {
+		if (va2 > 1.36) ctx.strokeStyle = ctx.fillStyle = 'orange';
+		if (va2 > 1.74) {
 			if (a.metal == 0) ctx.strokeStyle = ctx.fillStyle = '#d44';
 			else if (a.metal == 1) ctx.strokeStyle = ctx.fillStyle = '#eef';
 			else if (a.metal == 2) ctx.strokeStyle = ctx.fillStyle = '#9a9';
 			else if (a.metal == 3) ctx.strokeStyle = ctx.fillStyle = '#90f';
 		}
-		if (va2 > 1.5) ctx.stroke();
+		if (va2 > 1.62) ctx.stroke();
 		else ctx.fill();
+	}
+	ctx.globalAlpha = .5;
+	var radius = wepns[equipped[scroll]].range*960/r;
+	if (va2>1.8 && radius/mapZoom > 3 && radius/mapZoom<96) {
+		ctx.beginPath();
+		ctx.arc(112, 342, radius/mapZoom, 0, 2 * Math.PI, false);
+		ctx.strokeStyle = brighten(pc);
+		ctx.stroke();
 	}
 	ctx.globalAlpha = 1;
 	ctx.lineWidth = 3;
@@ -3687,14 +3698,15 @@ function rPlayers() {
 		write(selfo.name, rendX, rendY - ships[selfo.ship].width * .5);
 		ctx.textAlign = "left";
 
-		for(var i = 0; i<3; i++){
+		if (selfo.name === myName){
+			if(selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];
+		} else for(var i = 0; i<3; i++){
 			if (selfo.color===teamColors[i]) {
 				if (pointers[i]===0) pointers[i] = selfo;
 				else if (square(selfo.x - px) + square(selfo.y - py) < square(pointers[i].x - px) + square(pointers[i].y - py)) pointers[i] = selfo;
 			}
 		}
 
-		if (selfo.name === myName && selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];
 		if (selfo.hasPackage) rBackPack(selfo);
 		ctx.lineWidth = 6;
 		if (selfo.shield) {
@@ -3864,11 +3876,12 @@ function rBlackHoleWarning() {
 	var angle = Math.atan2(dy, dx);
 	rPointerArrow(Img.blackArrow,angle,Math.hypot(dx,dy),'white');
 }
-function rPointerArrow(img, angle, text, textColor){
-	text = Math.floor(text / 10);
+function rPointerArrow(img, angle, dist, textColor){
+	if(!(guest && (textColor === 'lightgray' || textColor === 'orange')))
+		if (dist < 100 || dist > va2*3840 - 1280) return;
+	dist = Math.floor(dist / 10);
 	ctx.fillStyle = textColor;
 	var pw = ships[ship].width;
-	if (text < 10 || text > 500 * va2) return;
 	var rendX = w / 2 + pw * 1 * cosLow(angle) + scrx;
 	var rendY = h / 2 + pw * 1 * sinLow(angle) + scry;
 	var rendXt = w / 2 + pw * 1.3 * cosLow(angle) + scrx;
@@ -3880,6 +3893,6 @@ function rPointerArrow(img, angle, text, textColor){
 	ctx.drawImage(img, -hw, -hw);
 	ctx.restore();
 	ctx.textAlign = "center";
-	write(text, rendXt, rendYt + 6);
+	write(dist, rendXt, rendYt + 6);
 	ctx.textAlign = "left";
 }

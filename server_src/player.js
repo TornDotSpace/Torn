@@ -83,7 +83,6 @@ function Player(sock) {
 
 		//bot stuff
 		brainwashedBy: 0, // for enslaved bots
-		deleteRate: .0005,
 		net: 0, // where the neural network is stored
 		isBot: false,
 		isNNBot: false,
@@ -597,7 +596,7 @@ function Player(sock) {
 		self.jukeTimer = (self.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
 	}
 	self.mute = function (minutes) {
-		chatAll("~`violet~`" + self.name + "~`yellow~` has been " + (minutes > 0 ? "muted for " + minutes + " minutes!" : "unmuted!"));
+		chatAll(self.nameWithColor() + " has been " + (minutes > 0 ? "muted for " + minutes + " minutes!" : "unmuted!"));
 	}
 	self.onChangeSectors = function () {
 		//track my touched corners
@@ -655,6 +654,7 @@ function Player(sock) {
 
 	}
 	self.botPlay = function () { // don't mess with this pls
+		if (tick % 2 != Math.floor(self.id * 2)) return; // Lag prevention.
 		if (self.empTimer > 0) return;//cant move if i'm emp'd
 
 		self.equipped = 0;
@@ -670,7 +670,7 @@ function Player(sock) {
 		for (var p in players[self.sy][self.sx]) {
 			var player = players[self.sy][self.sx][p];
 			if (self.id == player.id || player.disguise > 0) continue;
-			if (player.color === self.color) { if (friendlies++ > 3) anyFriend = player; continue; }
+			if (player.color === self.color) { friendlies++; continue; }
 			enemies++;
 			var dist2 = hypot2(player.x, self.x, player.y, self.y);
 			if (dist2 < close) {
@@ -701,7 +701,7 @@ function Player(sock) {
 
 		//at random, fill my ammo or die if there are no enemies to fight
 		if (enemies == 0 && Math.random() < .001) self.refillAllAmmo();
-		if (enemies == 0 && Math.random() < self.deleteRate) self.die();
+		if (enemies == 0 && Math.random() < botDespawnRate) self.die();
 
 		if (target == 0) target = anyFriend;
 
@@ -725,7 +725,7 @@ function Player(sock) {
 			self.a = turn > self.cva * self.cva * 10;
 			self.d = turn < -self.cva * self.cva * 10;
 			self.w = true;
-		} else if (anyFriend != 0 || (self.health < self.maxHealth / 3)) {//fleeing
+		} else if (anyFriend != 0 || (self.health < self.maxHealth / 3.5)) {//fleeing
 			var turn = -(self.angle - Math.atan2(target.y - self.y, target.x - self.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
 			self.a = turn > self.cva * self.cva * 10;
 			self.d = turn < -self.cva * self.cva * 10;
@@ -777,7 +777,7 @@ function Player(sock) {
 
 		//same as in botPlay
 		if (totalEnemies == 0 && Math.random() < .005) self.refillAllAmmo();
-		if (totalEnemies == 0 && Math.random() < self.deleteRate) self.die();
+		if (totalEnemies == 0 && Math.random() < botDespawnRate) self.die();
 
 		//make input array (into neural net). Normalize the variables to prevent overflow
 		var input = {};
@@ -854,7 +854,7 @@ function Player(sock) {
 
 		p.color = self.color; // claim
 		p.owner = self.name;
-		chatAll('Planet ' + p.name + ' claimed by ~`' + self.color + '~`' + self.name + "~`yellow~`!");
+		//chatAll('Planet ' + p.name + ' claimed by ' + self.nameWithColor() + "!"); This gets bothersome and spammy
 
 		for (var i in players[self.sy][self.sx]) players[self.sy][self.sx][i].getAllPlanets();//send them new planet data
 
@@ -979,7 +979,7 @@ function Player(sock) {
 		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
 		if (!self.isBot && self.rank > prerank && self.rank > 5){
 			self.socket.emit('rank', {}); //congratulations!
-			chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` just leveled up to rank " + self.rank + "!");
+			chatAll(self.nameWithColor() + " just leveled up to rank " + self.rank + "!");
 		}
 	}
 	self.sellOre = function(oretype){
@@ -1166,7 +1166,7 @@ function Player(sock) {
 				self.socket.emit('quest', { quest: 0, complete: false});//reset quest and update client
 
 				if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-					chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by ~`" + b.owner.color + "~`" + b.owner.name + "~`yellow~`'s `~" + b.wepnID + "`~!");
+					chatAll(self.nameWithColor() + " was destroyed by " + b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~!");
 
 					if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
 						b.owner.driftAchs[9] = true;
@@ -1175,9 +1175,9 @@ function Player(sock) {
 				}
 
 				//send msg
-				else if (b.type === "Vortex") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into a black hole!");
-				else if (b.type === "Planet" || b.type === "Asteroid") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` crashed into an asteroid!");
-				else if (b.owner !== undefined && b.owner.type === "Base") chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` was destroyed by an enemy base in sector " + b.owner.getSectorName() + "!");
+				else if (b.type === "Vortex") chatAll(self.nameWithColor() + " crashed into a black hole!");
+				else if (b.type === "Planet" || b.type === "Asteroid") chatAll(self.nameWithColor() + " crashed into an asteroid!");
+				else if (b.owner !== undefined && b.owner.type === "Base") chatAll(self.nameWithColor() + " was destroyed by base " + b.owner.nameWithColor() + "!");
 			}
 
 			//drop a package
@@ -1209,10 +1209,12 @@ function Player(sock) {
 		//TODO Chris
 		if (!self.isBot) {
 			self.health = self.maxHealth;
+			self.x = self.y = sectorWidth / 2;
+			var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
+			self.sx = baseMap[self.color][whereToRespawn];
+			self.sy = baseMap[self.color][whereToRespawn+1];
 			if (self.guest) {
 				self.lives--;
-				self.sx = self.sy = (self.color == 'red' ? 2 : 4);
-				self.x = self.y = sectorWidth / 2;
 				self.dead = true;
 				if (self.lives <= 0) self.kick("Goodbye captain: no more lives remaining!");
 				self.sendStatus();
@@ -1223,12 +1225,6 @@ function Player(sock) {
 			
 			await handlePlayerDeath(self);
 			self.dead = true;
-
-			var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
-			self.sx = baseMap[self.color][whereToRespawn];
-			self.sy = baseMap[self.color][whereToRespawn+1];
-			self.x = self.y = sectorWidth/2;
-
 
 			if (self.lives <= 0) {
 				self.save();
@@ -1437,7 +1433,7 @@ function Player(sock) {
 			return;
 		}
 		self.tentativePassword = pass;
-		self.socket.emit("chat", { msg: "~`lime~`Type \"/confirm your_new_password\" to complete the change." });
+		self.socket.emit("chat", { msg: "~`red~`Type \"/confirm your_new_password\" to complete the change." });
 	}
 	self.confirmPass = function (pass) { // /confirm
 		// TODO chris
@@ -1464,13 +1460,7 @@ function Player(sock) {
 	self.spoils = function (type, amt) { // gives you something. Called wenever you earn money / exp / w/e
 		if (typeof amt === "undefined") return;
 		if (type === "experience") {
-			//var oldPosition = lbIndex(self.experience);
 			self.experience += amt;
-			//var newPosition = lbIndex(self.experience);
-			//if (newPosition < oldPosition && newPosition != -1 && !self.guest && !self.isBot) {
-			//	if (newPosition < 100) chatAll("~`" + self.color + "~`" + self.name + "~`yellow~` is now ranked #" + newPosition + " in the universe!");
-			//	else self.socket.emit({ msg: "~`yellow~` Your global rank is now #" + newPosition + "!" });
-			//}
 			self.updateRank();
 		}
 		else if (type === "money") self.money += amt * ((amt > 0 && self.trail % 16 == 2) ? 1.05 : 1);
@@ -1504,7 +1494,7 @@ function Player(sock) {
 			for (var p in players[j][i]) {
 				var player = players[j][i][p];
 				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
+					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + self.name + "]: " + raw });
 					self.socket.emit("chat", { msg: "Message sent!" });
 					self.reply = player.name;
 					player.reply = self.name;
@@ -1513,7 +1503,7 @@ function Player(sock) {
 			} for (var p in dockers) {
 				var player = dockers[p];
 				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
+					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + self.name + "]: " + raw });
 					self.socket.emit("chat", { msg: "Message sent!" });
 					self.reply = player.name;
 					player.reply = self.name;
@@ -1522,7 +1512,7 @@ function Player(sock) {
 			} for (var p in deads) {
 				var player = deads[p];
 				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`lime~`[PM] [" + self.name + "]: " + raw });
+					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + self.name + "]: " + raw });
 					self.socket.emit("chat", { msg: "Message sent!" });
 					self.reply = player.name;
 					player.reply = self.name;
@@ -1534,6 +1524,9 @@ function Player(sock) {
 	self.nameWithoutTag = function(){
 		if(self.name.includes(" ")) return self.name.split(" ")[1];
 		return self.name;
+	}
+	self.nameWithColor = function(){ // returns something like "~`green~`[O] 2swap~`yellow~`"
+		return "~`"+self.color+"~`"+self.name+"~`yellow~`";
 	}
 	self.swap = function (msg) { // msg looks like "/swap 2 5". Swaps two weapons.
 		if (!self.docked) {
@@ -1596,8 +1589,11 @@ var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString()
 
 global.spawnBot = function (sx, sy, col) {
 	if (!Config.getValue("want-bots", true)) return;
+
+	if(playerCount + botCount + guestCount > 100) return;
 	
 	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
+
 	if (trainingMode && Math.random() < .5) {
 		spawnNNBot(sx, sy, col);
 		return;
