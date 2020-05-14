@@ -42,6 +42,10 @@ cmds["/me"] = new Command("/me <msg>", EVERYONE, function (player, msg) {
     chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4));
 });
 
+cmds["/playerstats"] = new Command("/playerstats - See how many players are online", EVERYONE, function (player, msg) {
+    player.socket.emit("chat", { msg: "~`orange~`" + guestCount + "guests, " + playerCount + "players, " + botCount + "bots." });
+});
+
 // PLAYER COMMANDS
 // These commands are restricted to players that have registered their accounts
 // This restriction is done for either technical reasons or anti-spam protection
@@ -80,7 +84,7 @@ cmds["/changeteam"] = new Command("/changeteam", REGISTERED, function (player, m
 });
 
 cmds["/nameturret"] = new Command("/nameturret <name>", REGISTERED, function (player, msg) {
-	var num = 0;
+    var num = 0;
     var base = bases[player.sy][player.sx];
     if(base != 0 && base.owner == player.name) { base.name = msg.substring(12); num++; }
     player.socket.emit("chat", { msg: num + " turret(s) renamed." });
