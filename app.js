@@ -151,7 +151,9 @@ global.ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 
 //administrative-y variables
 global.tick = 0;
 var lag = 0, ops = 0; // ticks elapsed since boot, lag, count of number of instances of update() running at once
-var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0; // blue/red players/guests/bots
+global.playerCount = 0;
+global.botCount = 0;
+global.guestCount = 0; // blue/red players/guests/bots
 global.raidTimer = 50000;
 var raidRed = 0, raidBlue = 0, raidGreen = 0; // Timer and points
 global.IPSpam = {}; // Keeps track of ips flooding server.
@@ -1000,34 +1002,43 @@ function updateHeatmap() {
 		for (var j = 0; j < mapSz; j++) hmap[i][j] = 0;
 	}
 	var j = 0;
-	raidRed = raidBlue = raidGreen = 0;
+	raidRed = raidBlue = raidGreen = playerCount = botCount = guestCount = 0;
 
 	for (var x = 0; x < mapSz; x++) for (var y = 0; y < mapSz; y++) {
 		for (var i in players[y][x]) {
 			var p = players[y][x][i];
 			if (p.color === "red") raidRed += p.points;
-			else if (p.color === "red") raidBlue += p.points;
-			else if (p.color === "red") raidGreen += p.points;
+			else if (p.color === "blue") raidBlue += p.points;
+			else if (p.color === "green") raidGreen += p.points;
 			if (p.name !== "" && !p.isBot) {
 				lb[j] = p;
 				j++;
 			}
+			if(p.isBot) botCount++;
+			else if(p.guest) botCount++;
+			else playerCount++;
 			hmap[p.sx][p.sy] += .1 + colorSelect(p.color, 1<<16, 1, 1<<8); // this is not supposed to be x-y order. TODO fix
 		}
 	}
 	for (var i in dockers) {
 		var p = dockers[i];
 		if (p.color === "red") raidRed += p.points;
-		else if (p.color === "red") raidBlue += p.points;
-		else if (p.color === "red") raidGreen += p.points;
+		else if (p.color === "blue") raidBlue += p.points;
+		else if (p.color === "green") raidGreen += p.points;
+		if(p.isBot) botCount++;
+		else if(p.guest) botCount++;
+		else playerCount++;
 		lb[j] = p;
 		j++;
 	}
 	for (var i in deads) {
 		var p = deads[i];
 		if (p.color === "red") raidRed += p.points;
-		else if (p.color === "red") raidBlue += p.points;
-		else if (p.color === "red") raidGreen += p.points;
+		else if (p.color === "blue") raidBlue += p.points;
+		else if (p.color === "green") raidGreen += p.points;
+		if(p.isBot) botCount++;
+		else if(p.guest) botCount++;
+		else playerCount++;
 		lb[j] = p;
 		j++;
 	}

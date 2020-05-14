@@ -83,7 +83,6 @@ function Player(sock) {
 
 		//bot stuff
 		brainwashedBy: 0, // for enslaved bots
-		deleteRate: .0005,
 		net: 0, // where the neural network is stored
 		isBot: false,
 		isNNBot: false,
@@ -701,7 +700,7 @@ function Player(sock) {
 
 		//at random, fill my ammo or die if there are no enemies to fight
 		if (enemies == 0 && Math.random() < .001) self.refillAllAmmo();
-		if (enemies == 0 && Math.random() < self.deleteRate) self.die();
+		if (enemies == 0 && Math.random() < 0.002) self.die();
 
 		if (target == 0) target = anyFriend;
 
@@ -725,7 +724,7 @@ function Player(sock) {
 			self.a = turn > self.cva * self.cva * 10;
 			self.d = turn < -self.cva * self.cva * 10;
 			self.w = true;
-		} else if (anyFriend != 0 || (self.health < self.maxHealth / 3)) {//fleeing
+		} else if (anyFriend != 0 || (self.health < self.maxHealth / 3.5)) {//fleeing
 			var turn = -(self.angle - Math.atan2(target.y - self.y, target.x - self.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
 			self.a = turn > self.cva * self.cva * 10;
 			self.d = turn < -self.cva * self.cva * 10;
@@ -777,7 +776,7 @@ function Player(sock) {
 
 		//same as in botPlay
 		if (totalEnemies == 0 && Math.random() < .005) self.refillAllAmmo();
-		if (totalEnemies == 0 && Math.random() < self.deleteRate) self.die();
+		if (totalEnemies == 0 && Math.random() < 0.002) self.die();
 
 		//make input array (into neural net). Normalize the variables to prevent overflow
 		var input = {};
@@ -1589,8 +1588,11 @@ var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString()
 
 global.spawnBot = function (sx, sy, col) {
 	if (!Config.getValue("want-bots", true)) return;
+
+	if(playerCount + botCount + guestCount > 75) return;
 	
 	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
+
 	if (trainingMode && Math.random() < .5) {
 		spawnNNBot(sx, sy, col);
 		return;

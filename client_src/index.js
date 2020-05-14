@@ -3884,7 +3884,7 @@ function rBlackHoleWarning() {
 	rPointerArrow(Img.blackArrow,angle,Math.hypot(dx,dy),'white');
 }
 function rPointerArrow(img, angle, dist, textColor){
-	if(!(guest && textColor === 'lightgray'))
+	if(!(guest && (textColor === 'lightgray' || textColor === 'orange')))
 		if (dist < 100 || dist > va2*3840 - 1280) return;
 	dist = Math.floor(dist / 10);
 	ctx.fillStyle = textColor;
