@@ -45,8 +45,9 @@ function Player(sock) {
 		charge: 0,
 
 		chatTimer: 100,
-		muteCap: 250,
+		muteCap: 750,
 		globalChat: 0,
+		lastmsg:"",
 
 		weapons: {}, // my equipped weapons and ammo counts
 		ammos: {},
@@ -1587,10 +1588,10 @@ module.exports = Player;
 
 var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");
 
-global.spawnBot = function (sx, sy, col) {
+global.spawnBot = function (sx, sy, col, force) {
 	if (!Config.getValue("want-bots", true)) return;
 
-	if(playerCount + botCount + guestCount > 100) return;
+	if(playerCount + botCount + guestCount > 90 && !force) return;
 	
 	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 
