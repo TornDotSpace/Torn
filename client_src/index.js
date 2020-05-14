@@ -96,7 +96,6 @@ var phealth = 0;
 var energy = 0;
 var mapZoom = 1;
 var bxo = 0, byo = 0, bx = 0, by = 0;
-var bp = 0, rp = 0, bg = 0, rg = 0, bb = 0, rb = 0, bs = 0, rs = 0;
 var iron = 0, silver = 0, platinum = 0, aluminium = 0;
 var kills = 0, baseKills = 0, money = 0, experience = 0, rank = 0;
 var sx = 0, sy = 0;
@@ -1822,12 +1821,6 @@ socket.on('spoils', function (data) {
 	notes[Math.random()] = { spoils: true, msg: msg, x: x, y: y, time: 0, strong: true, local: data.local };
 });
 socket.on('online', function (data) {
-	bb = data.bb;
-	rb = data.rb;
-	bp = data.bp;
-	rp = data.rp;
-	bg = data.bg;
-	rg = data.rg;
 	sLag = data.lag;
 });
 socket.on('emp', function (data) {

@@ -43,7 +43,7 @@ cmds["/me"] = new Command("/me <msg>", EVERYONE, function (player, msg) {
 });
 
 cmds["/playerstats"] = new Command("/playerstats - See how many players are online", EVERYONE, function (player, msg) {
-    player.socket.emit("chat", { msg: "~`orange~`" + guestCount + "guests, " + playerCount + "players, " + botCount + "bots." });
+    player.socket.emit("chat", { msg: "~`orange~`" + guestCount + " guests, " + playerCount + " players, " + botCount + " bots." });
 });
 
 // PLAYER COMMANDS

@@ -654,6 +654,7 @@ function Player(sock) {
 
 	}
 	self.botPlay = function () { // don't mess with this pls
+		if (tick % 2 != Math.floor(self.id * 2)) return; // Lag prevention.
 		if (self.empTimer > 0) return;//cant move if i'm emp'd
 
 		self.equipped = 0;
@@ -700,7 +701,7 @@ function Player(sock) {
 
 		//at random, fill my ammo or die if there are no enemies to fight
 		if (enemies == 0 && Math.random() < .001) self.refillAllAmmo();
-		if (enemies == 0 && Math.random() < 0.002) self.die();
+		if (enemies == 0 && Math.random() < botDespawnRate) self.die();
 
 		if (target == 0) target = anyFriend;
 
@@ -776,7 +777,7 @@ function Player(sock) {
 
 		//same as in botPlay
 		if (totalEnemies == 0 && Math.random() < .005) self.refillAllAmmo();
-		if (totalEnemies == 0 && Math.random() < 0.002) self.die();
+		if (totalEnemies == 0 && Math.random() < botDespawnRate) self.die();
 
 		//make input array (into neural net). Normalize the variables to prevent overflow
 		var input = {};
@@ -1589,7 +1590,7 @@ var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString()
 global.spawnBot = function (sx, sy, col) {
 	if (!Config.getValue("want-bots", true)) return;
 
-	if(playerCount + botCount + guestCount > 75) return;
+	if(playerCount + botCount + guestCount > 100) return;
 	
 	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 

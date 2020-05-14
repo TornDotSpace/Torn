@@ -130,6 +130,7 @@ global.baseMap=	{
 //some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
 var mineLifetime = 3; // mines despawn after this many minutes
+global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
 global.baseHealth = 1300; // max base health
 global.baseKillExp = 1300; // Exp reward for killing a base
 global.baseKillMoney = 100000; // ditto but money
@@ -945,7 +946,7 @@ function update() {
 			var player = players[y][x][i];
 			if (player.isBot) continue;
 			if (tick % 12 == 0) { // LAG CONTROL
-				player.socket.emit('online', { lag: lag, bp: bp, rp: rp, bg: bg, rg: rg, bb: bb, rb: rb });
+				player.socket.emit('online', { lag: lag });
 				player.socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
 			}
 
@@ -976,7 +977,7 @@ function update() {
 	for (var i in deads) {
 		var player = deads[i];
 		if (tick % 12 == 0) // LAG CONTROL
-			player.socket.emit('online', { lag: lag, bb: bb, rb: rb, bp: bp, rp: rp, rg: rg, bg: bg });
+			player.socket.emit('online', { lag: lag });
 	}
 	for (var i in dockers) {
 		var player = dockers[i];
