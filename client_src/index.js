@@ -248,6 +248,7 @@ function loadAllAudio() {
 	loadAudio("money", '/aud/money.wav');
 	loadAudio("button2", '/aud/button2.wav');
 	loadAudio("noammo", '/aud/noammo.wav');
+	loadAudio("music1", '/aud/music1.mp3');
 }
 
 var muted = false, musicMuted = false;
@@ -269,7 +270,7 @@ function toggleMusic() {
 
 // Use this function to play any sound from the Aud object
 function playAudio(name, vol) {
-	if (muted) return;
+	if (muted || !soundAllowed) return;
 	var audio = Aud[name];
 	if (!audio) { console.error("Unknown sound " + name); }
 	var id = audio.play();
@@ -1962,8 +1963,8 @@ function loop() {
 			return;
 		} else ReactRoot.turnOnDisplay("LoginOverlay");
 
-		if(homepageTimer++ == 0) loadAudio("music1", '/aud/music1.mp3');
-
+		++homepageTimer;
+		
 		canvas.width = canvas.width;
 		ctx.fillStyle = "black";
 		ctx.fillRect(0, 0, w, h);
@@ -1995,7 +1996,7 @@ function loop() {
 		var rnd = Math.random();
 		var angleNow = -Math.atan2(5 * Math.sin(5 * t), 4 * Math.cos(4 * t));
 		if (rnd < .05) {
-			if(soundAllowed) playAudio("minigun", .1);
+			playAudio("minigun", .1);
 			bullets[rnd] = { x: px, y: py, vx: 12800 / 6000 * 20 * Math.cos(4 * t) + 40 * Math.cos(angleNow), vy: -16000 / 6000 * 20 * Math.sin(5 * t) + 40 * Math.sin(angleNow), id: rnd, angle: angleNow, wepnID: 0, color: 'red' };
 		}
 
@@ -2030,7 +2031,7 @@ function loop() {
 					delete bullets[i];
 					booms[Math.random()] = { x: b.x, y: b.y, time: 0, shockwave: false };
 					//for (var i = 0; i < 5; i++) boomParticles[Math.random()] = { x: b.x, y: b.y, angle: Math.random() * 6.28, time: -1, dx: b.vx / 1.5, dy: b.vy / 1.5 };
-					if(soundAllowed) playAudio("boom", .35);
+					playAudio("boom", .35);
 				}
 			}
 
