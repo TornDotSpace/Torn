@@ -24,6 +24,9 @@ console.log("*******************************************************************
 // Load config 
 var configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
 require('./server_src/config.js')(configEnvironment);
+// Hack for strict mode - we define IO later
+global.io = { }
+io.emit = function(a,b) { };
 
 var fs = require('fs');
 
