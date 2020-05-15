@@ -1,3 +1,5 @@
+"use strict";
+
 function printStartup() {
 	console.log("************************************************************************************************************************");
 	console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
@@ -73,8 +75,6 @@ var socket = io(GAMESERVER_URL,
  	});
 // Just to make socket accessible in react.js
 ReactRoot.socket = socket;
-
-"use strict";
 
 global.connect = function () {
 	if (socket.connected) {
