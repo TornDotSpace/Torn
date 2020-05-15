@@ -249,7 +249,6 @@ function loadAllAudio() {
 	loadAudio("money", '/aud/money.wav');
 	loadAudio("button2", '/aud/button2.wav');
 	loadAudio("noammo", '/aud/noammo.wav');
-	loadAudio("music1", '/aud/music1.mp3');
 }
 
 var muted = false, musicMuted = false;
@@ -421,11 +420,6 @@ function loadAllImages() {
 	for(var i = 0; i < 21; i++) loadShipImg("red", i);
 	for(var i = 0; i < 21; i++) loadShipImg("green", i);
 	loadImageEnd();
-
-	for (var i = 1; i < 6; i++) {
-		planetImgs[i] = new Image();
-		planetImgs[i].src = '/img/space/planets/pt' + i + '.jpg';	
-	}
 }
 
 var achs = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
@@ -1958,7 +1952,13 @@ function loop() {
 			return;
 		} else ReactRoot.turnOnDisplay("LoginOverlay");
 
-		++homepageTimer;
+		if(++homepageTimer == 1) {
+			loadAudio("music1", '/aud/music1.mp3');
+			for (var i = 1; i < 6; i++) {
+				planetImgs[i] = new Image();
+				planetImgs[i].src = '/img/space/planets/pt' + i + '.jpg';
+			}
+		}
 		
 		canvas.width = canvas.width;
 		ctx.fillStyle = "black";

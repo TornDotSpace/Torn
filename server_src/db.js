@@ -67,7 +67,7 @@ global.loadPlayerData = async function (playerName, passwordHash, socket) {
 
     var player = new Player(socket);
 
-    for (key in record) {
+    for (var key in record) {
         player[key] = record[key];
     }
 

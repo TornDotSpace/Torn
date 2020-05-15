@@ -1599,7 +1599,7 @@ global.spawnBot = function (sx, sy, col, force) {
 		spawnNNBot(sx, sy, col);
 		return;
 	}
-	id = Math.random();
+	var id = Math.random();
 	var bot = new Player({ id: id, emit: function () { } });
 	bot.isBot = true;
 	bot.sx = sx;
