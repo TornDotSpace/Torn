@@ -45,8 +45,9 @@ function Player(sock) {
 		charge: 0,
 
 		chatTimer: 100,
-		muteCap: 250,
+		muteCap: 750,
 		globalChat: 0,
+		lastmsg:"",
 
 		weapons: {}, // my equipped weapons and ammo counts
 		ammos: {},
@@ -215,7 +216,7 @@ function Player(sock) {
 			//Traditional missiles
 			else if (wepId <= 14 || wep.name === "Proximity Fuze") self.shootMissile();
 			// <= 17: Traditional Mines
-			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades") self.shootMine();
+			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades" || wep.name === "Pulse Mine") self.shootMine();
 			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") self.shootOrb();
 			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast(wepId);
 
@@ -985,16 +986,16 @@ function Player(sock) {
 	self.sellOre = function(oretype){
             //pay them appropriately
               if (oretype == 'iron' || oretype == 'all') {
-                self.spoils("money", self.iron * (self.color == "red" ? 1 : 2));
+                self.spoils("money", self.iron);
                 self.iron = 0;
             } if (oretype == 'silver' || oretype == 'all') {
-                self.spoils("money", self.silver * 1.5);
+                self.spoils("money", self.silver);
                 self.silver = 0;
             } if (oretype == 'platinum' || oretype == 'all') {
-                self.spoils("money", self.platinum * (self.color == "blue" ? 1 : 2));
+                self.spoils("money", self.platinum);
                 self.platinum = 0;
             } if (oretype == 'aluminium' || oretype == 'all') {
-                self.spoils("money", self.aluminium * 1.5);
+                self.spoils("money", self.aluminium);
                 self.aluminium = 0;
             }
             self.save();
@@ -1587,10 +1588,10 @@ module.exports = Player;
 
 var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");
 
-global.spawnBot = function (sx, sy, col) {
+global.spawnBot = function (sx, sy, col, force) {
 	if (!Config.getValue("want-bots", true)) return;
 
-	if(playerCount + botCount + guestCount > 100) return;
+	if(playerCount + botCount + guestCount > 90 && !force) return;
 	
 	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 

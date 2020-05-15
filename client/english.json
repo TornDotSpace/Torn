@@ -430,6 +430,10 @@
 		{
 			"name":"Photon Orb",
 			"desc":"Tracks players with Photon Cloak, but does not do as much damage as most other weapons."
+		},
+		{
+			"name":"Pulse Mine",
+			"desc":"Repeatedly fires a damaging shockwave while other players are in range."
 		}
 	],
 	"splashes":[

@@ -35,7 +35,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		//spawn a bot if we need more bots
 		var botSpawn = Math.random();
 		if (botSpawn < botFrequency) {
-			spawnBot(self.sx, self.sy, self.color);
+			spawnBot(self.sx, self.sy, self.color, false);
 		}
 
 		if (!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) self.turretLive = true; // revive. TODO: add a timer
@@ -156,7 +156,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 			self.die = function() { };
 		} else {
 			var numBotsToSpawn = 2+4*Math.random()*Math.random();
-			for(var i = 0; i < numBotsToSpawn; i++) spawnBot(self.sx, self.sy, self.color, 0, 0);
+			for(var i = 0; i < numBotsToSpawn; i++) spawnBot(self.sx, self.sy, self.color, true);
 		}
 
 		//If I was killed by an asteroid...

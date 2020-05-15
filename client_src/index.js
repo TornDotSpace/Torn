@@ -865,16 +865,11 @@ function rBuyShipWindow(){
 function rOreShop(){
 	var info = {};
 	var mult1 = (myTrail % 16 == 2)?1.05:1;
-	var mult1point5 = (myTrail % 16 == 2)?1.575:1.5;
-	var mult2 = (myTrail % 16 == 2)?2.1:2;
-	var allIronPrice = iron * (pc === "red" ? mult1 : mult2);
-	var allSilverPrice = silver * mult1point5;
-	var allPlatinumPrice = platinum * (pc === "blue" ? mult1 : mult2);
-	var allAluminiumPrice = aluminium * mult1point5;
-	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + allIronPrice + " ($" + (pc === "red" ? mult1 : mult2) + " " + mEng[155] + ")";
-	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + allSilverPrice + " ($"+mult1point5+" " + mEng[155] + ")";
-	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + allPlatinumPrice + " ($" + (pc === "blue" ? mult1 : mult2) + " " + mEng[155] + ")";
-	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + allAluminiumPrice + " ($"+mult1point5+" " + mEng[155] + ")";
+	var allIronPrice = iron * mult1, allSilverPrice = silver * mult1, allPlatinumPrice = platinum * mult1, allAluminiumPrice = aluminium * mult1;
+	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + allIronPrice + " ($"+mult1+" " + mEng[155] + ")";
+	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + allSilverPrice + " ($"+mult1+" " + mEng[155] + ")";
+	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + allPlatinumPrice + " ($"+mult1+" " + mEng[155] + ")";
+	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + allAluminiumPrice + " ($"+mult1+" " + mEng[155] + ")";
 
 	ctx.strokeStyle = 'white';
 	ctx.lineWidth = 1;
@@ -3583,9 +3578,7 @@ function rAsteroids() {
 		ctx.restore();
 
 		if (selfo.color != pc) { // update nearest enemy for pointer
-			if (nearA == 0)
-				nearA = selfo;
-			else if ((selfo.x - px) * (selfo.x - px) + (selfo.y - py) * (selfo.y - py) < (nearA.x - px) * (nearA.x - px) + (nearA.y - py) * (nearA.y - py))
+			if (nearA == 0 || square(selfo.x - px) + square(selfo.y - py) < square(nearA.x - px) + square(nearA.y - py))
 				nearA = selfo;
 		}
 	}
