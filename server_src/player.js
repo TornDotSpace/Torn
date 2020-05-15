@@ -1229,7 +1229,7 @@ function Player(sock) {
 			self.sx = baseMap[self.color][whereToRespawn];
 			self.sy = baseMap[self.color][whereToRespawn+1];
 
-			if (self.lives <= 0) {
+			if (self.lives-- <= 0) {
 				self.save();
 				self.kick("Goodbye captain: no more lives remaining!");
 			}
