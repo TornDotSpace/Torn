@@ -1210,10 +1210,6 @@ function Player(sock) {
 		//TODO Chris
 		if (!self.isBot) {
 			self.health = self.maxHealth;
-			self.x = self.y = sectorWidth / 2;
-			var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
-			self.sx = baseMap[self.color][whereToRespawn];
-			self.sy = baseMap[self.color][whereToRespawn+1];
 			if (self.guest) {
 				self.lives--;
 				self.dead = true;
@@ -1224,8 +1220,14 @@ function Player(sock) {
 				return;
 			}
 			
-			await handlePlayerDeath(self);
 			self.dead = true;
+
+			await handlePlayerDeath(self);
+
+			self.x = self.y = sectorWidth / 2;
+			var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
+			self.sx = baseMap[self.color][whereToRespawn];
+			self.sy = baseMap[self.color][whereToRespawn+1];
 
 			if (self.lives <= 0) {
 				self.save();
