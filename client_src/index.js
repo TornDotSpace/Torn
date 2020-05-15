@@ -1,3 +1,4 @@
+"use strict";
 
 function printStartup() {
 	console.log("************************************************************************************************************************");
@@ -1257,8 +1258,7 @@ function wrapText(text, x, y, maxWidth, lineHeight) {
 }
 
 function clearBullets() {
-	for (var i in bullets) delete bullets[i];
-	for (var i in data.pack) bullets[data.pack[i].id] = data.pack[i];
+	bullets = { };
 }
 
 // socket error handling
