@@ -6,6 +6,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		time: 0, // time since spawned
 		color: ownr.color, // what team owns me
 		dmg: wepns[weaponID].damage,
+		range: wepns[weaponID].range,
 
 		x: ownr.x,
 		y: ownr.y,
@@ -21,8 +22,29 @@ module.exports = function Mine(ownr, i, weaponID) {
 		self.x += self.vx; // move
 		self.y += self.vy;
 		if (self.time == 0) self.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
-		if (self.wepnID > 25 && self.time++ > 25) self.die(); // pulse wave and grenade blow up after 1 second
+		if ((self.wepnID == 33 || self.wepnID == 32) && self.time++ > 25) self.die(); // grenade and impulse mine blow up after 1 second
 		if (self.time++ > 25 * 3 * 60) self.die(); // all mines die after 3 minutes
+
+		if (self.wepnID == 43 && self.time % 8 == 0) { // pulse
+			if (self.time > 25 * 60) self.die(); // pulse has a 1-minute lifespan
+			var playerFound = false;
+			for (var i in players[self.sy][self.sx]) {
+				var p = players[self.sy][self.sx][i];
+				if (p.color !== self.color && squaredDist(p, self) < square(self.range * 10)) {
+					var mult = 400 / Math.max(10, .001 + Math.hypot(p.x - self.x, p.y - self.y)); // not sure what's going on here but it works
+					p.vx = mult * (Math.cbrt(p.x - self.x));
+					p.vy = mult * (Math.cbrt(p.y - self.y)); // push the player
+					p.updatePolars();//we edited rectangulars
+					p.angle = p.driftAngle; // turn them away from the mine
+					p.dmg(self.dmg, self);
+					playerFound = true;
+				}
+			}
+			if(playerFound){
+				sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
+				self.time += 8;
+			}
+		}
 	}
 	self.collideWithMines = function(){ // When the mine is created, make sure it isn't placed on top of any other mines.
 		for (var m in mines[self.sy][self.sx]) {
@@ -53,7 +75,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		if (self.wepnID == 33) // if i'm a grenade
 			for (var i in players[self.sy][self.sx]) {
 				var p = players[self.sy][self.sx][i];
-				if (squaredDist(p, self) < square(wepns[33].range * 10)) p.dmg(self.dmg, self); // if i'm in range of a player on explosion, damage them
+				if (squaredDist(p, self) < square(self.range * 40)) p.dmg(self.dmg, self); // if i'm in range of a player on explosion, damage them
 			}
 		sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
 		delete mines[self.sy][self.sx][self.id];
