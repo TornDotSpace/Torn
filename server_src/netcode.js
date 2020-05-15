@@ -244,7 +244,7 @@ module.exports = function initNetcode() {
                 player.save();
             });
         });
-
+        
         socket.on('login', function (data) {
             if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
 
@@ -285,78 +285,81 @@ module.exports = function initNetcode() {
 
                 player = ret.player;
 
+                var wait_time = 0;
+
                 for (var p in sockets) {
                     if (sockets[p].player !== undefined) {
                         if (sockets[p].player.name === player.name) {
                             sockets[p].player.kick("A user has logged into this account from another location.");
+                            wait_time = 6000;
+                            break;
                         }
                     }
                 }
-    
-                socket.player = player;
-                player.ip = ip;
 
-                socket.emit("loginSuccess", {id: player.id});
-
-                if (player.sx >= mapSz) player.sx--;
-                if (player.sy >= mapSz) player.sy--;
+                setTimeout(function() {               
+                    socket.player = player;
+                    player.ip = ip;
     
-                players[player.sy][player.sx][socket.id] = player;
-                
-                player.calculateGenerators();
-                socket.emit("raid", { raidTimer: raidTimer })
-                player.checkTrailAchs();
-                player.sendAchievementsKill(false);
-                player.sendAchievementsCash(false);
-                player.sendAchievementsDrift(false);
-                player.sendAchievementsMisc(false);
-                player.sendStatus();
+                    socket.emit("loginSuccess", {id: player.id});
     
-                player.getAllPlanets();
-                player.refillAllAmmo();
-                console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
-                var text = "~`" + player.color + "~`" + player.name + '~`yellow~` logged in!';
-                chatAll(text);
-
-                // Update last login
-                player.lastLogin = Date.now();
-                player.va = ships[player.ship].agility * .08 * player.agility2;
-                player.thrust = ships[player.ship].thrust * player.thrust2;
-                player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
-                player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-                sendWeapons(player);
-                socket.emit('baseMap', {baseMap: baseMap});
+                    if (player.sx >= mapSz) player.sx--;
+                    if (player.sy >= mapSz) player.sy--;
+        
+                    players[player.sy][player.sx][socket.id] = player;
+                    
+                    player.calculateGenerators();
+                    socket.emit("raid", { raidTimer: raidTimer })
+                    player.checkTrailAchs();
+                    player.sendAchievementsKill(false);
+                    player.sendAchievementsCash(false);
+                    player.sendAchievementsDrift(false);
+                    player.sendAchievementsMisc(false);
+                    player.sendStatus();
+        
+                    player.getAllPlanets();
+                    player.refillAllAmmo();
+                    console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
+                    var text = "~`" + player.color + "~`" + player.name + '~`yellow~` logged in!';
+                    chatAll(text);
+    
+                    // Update last login
+                    player.lastLogin = Date.now();
+                    player.va = ships[player.ship].agility * .08 * player.agility2;
+                    player.thrust = ships[player.ship].thrust * player.thrust2;
+                    player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
+                    player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
+                    sendWeapons(player);
+                    socket.emit('baseMap', {baseMap: baseMap});
+                }, wait_time);
             });
         });
         socket.on('disconnect', function (data) { // Emitted by socket.IO when connection is terminated or ping timeout
             if (!player) return; // Don't allow unauthenticated clients to crash the server
 
-            // Cleanup
-            delete dockers[player.id];
-            delete deads[player.id];
-            delete sockets[socket.id];
-
-            //If the player is indeed found
-            var reason = player.kickMsg;
-
-            if (reason === undefined || !reason.localeCompare("")) {
-                reason = data;
-            }
-
-            var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game (reason: " + reason + ")"; // write a message about the player leaving
-
-            console.log(text); // print in terminal
-            chatAll(text); // send it to all the players
-            //DO NOT save the player's game data.
-
-            // Kill socket
-            socket.disconnect();
-
-            // Delay deletion for 5 seconds
             setTimeout(function() {
+                // Cleanup
+                // Kill socket
+                socket.disconnect();
+                delete dockers[player.id];
+                delete deads[player.id];
+                delete sockets[socket.id];
                 delete players[player.sy][player.sx][player.id];
                 delete socket;
-                delete player; }, 6000);
+                delete player; 
+
+                //If the player is indeed found
+                var reason = player.kickMsg;
+
+                if (reason === undefined || !reason.localeCompare("")) {
+                    reason = data;
+                }
+
+                var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game (reason: " + reason + ")"; // write a message about the player leaving
+
+                console.log(text); // print in terminal
+                chatAll(text); // send it to all the players
+            }, 6000);
         });
 
         socket.on('key', function (data) { // on client keypress or key release
