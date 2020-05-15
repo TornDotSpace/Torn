@@ -24,6 +24,9 @@ console.log("*******************************************************************
 // Load config 
 var configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
 require('./server_src/config.js')(configEnvironment);
+// Hack for strict mode - we define IO later
+global.io = { }
+io.emit = function(a,b) { };
 
 var fs = require('fs');
 
@@ -1079,12 +1082,12 @@ function idleSocketCheck() {
 	var time = Date.now();
 	const timeout = 1000 * 60 * 5;
 
-	for (var s in sockets) {
-		var sock = sockets[s];
+	for (var x in sockets) {
+		s = sockets[x];
 
-		if (sock.player === undefined && (time - sock.start) >= timeout) {
-			sock.disconnect();
-			delete sockets[s];
+		if (s.player === undefined && (time - s.start) >= timeout) {
+			s.disconnect();
+			delete sockets[x];
 		}
 	}
 
