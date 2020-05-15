@@ -345,8 +345,6 @@ module.exports = function initNetcode() {
                 delete deads[player.id];
                 delete sockets[socket.id];
                 delete players[player.sy][player.sx][player.id];
-                delete socket;
-                delete player; 
 
                 //If the player is indeed found
                 var reason = player.kickMsg;

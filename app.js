@@ -387,6 +387,7 @@ function init() { // start the server!
 	//start ticking
 
 	setTimeout(update, tickRate);
+	broadcastInfo();
 
 	var netcode = require('./server_src/netcode.js');
 	netcode();
@@ -1079,11 +1080,11 @@ function idleSocketCheck() {
 	const timeout = 1000 * 60 * 5;
 
 	for (var s in sockets) {
-		s = sockets[s];
+		var sock = sockets[s];
 
-		if (s.player === undefined && (time - s.start) >= timeout) {
-			s.disconnect();
-			delete s;
+		if (sock.player === undefined && (time - sock.start) >= timeout) {
+			sock.disconnect();
+			delete sockets[s];
 		}
 	}
 
@@ -1097,7 +1098,6 @@ function shutdown() {
 	process.exit();
 }
 
-broadcastInfo();
 function broadcastInfo(){
 	randomMsgs = [
 		"Never give anyone your password, for any reason!",
