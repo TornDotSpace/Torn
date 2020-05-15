@@ -2,8 +2,9 @@
 echo Starting mongod with journaling disabled on port 27017&
 mongod --port 27017 --dbpath ./db --nojournal --bind_ip localhost&
 echo Building client
-npm install && npm run dev
-echo
+npm install && npm run dev&
+echo Starting Account Server
+./account/account_server.py&
 echo
 echo
 echo
@@ -19,3 +20,4 @@ echo Press any key to kill all instances
 read -n1 -r -p "Press any key to continue..." key
 killall node
 killall mongod
+killall account_server.py
