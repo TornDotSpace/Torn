@@ -422,11 +422,12 @@ module.exports = function initNetcode() {
             
             if (data.msg.startsWith("/")) runCommand(player, data.msg); // spammable commands
 
-            player.chatTimer += 100; // note this as potential spam
+            var repeat = data.msg === player.lastmsg;
+            player.chatTimer += repeat?300:150; // note this as potential spam
             if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
                 socket.emit('chat', { msg: ("~`red~`You have been muted for " + Math.floor(player.muteCap / 25) + " seconds!") });
                 muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
-                player.muteCap *= 2; // their next mute will be twice as long
+                player.muteCap *= repeat?4:2; // their next mute will be twice as long
                 return;
             }
 
