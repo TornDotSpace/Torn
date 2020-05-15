@@ -42,7 +42,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 			}
 			if(playerFound){
 				sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
-				self.time += 25;
+				self.time += 25*3;
 			}
 		}
 	}
