@@ -564,7 +564,7 @@
 			"range":50,
 			"damage":8,
 			"speed":0,
-			"charge":12,
+			"charge":30,
 			"price":8000,
 			"ammo":3,
 			"level":4,
