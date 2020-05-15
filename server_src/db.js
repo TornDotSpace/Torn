@@ -84,11 +84,6 @@ global.loadPlayerData = async function (playerName, passwordHash, socket) {
     return {error: 0, player : player};
 }
 
-global.resetPassword = function (player) {
-    var temp = debug(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
-    var hash = passwor
-};
-
 global.saveTurret = function (turret) {
     var record = {
         id : turret.id,
