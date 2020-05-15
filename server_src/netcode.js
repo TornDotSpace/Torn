@@ -187,7 +187,7 @@ module.exports = function initNetcode() {
             socket.emit("raid", { raidTimer: raidTimer });
             socket.emit('baseMap', {baseMap: baseMap});
 
-            chatAll("Welcome " + player.name + " to the universe!");
+            chatAll("Welcome " + player.nameWithColor() + " to the universe!");
         });
         socket.on('register', function (data) { // TODO Chris
             console.log("Registration attempted...");
@@ -237,7 +237,7 @@ module.exports = function initNetcode() {
                 player.password = hash(pass);
                 player.permissionLevels=[0];
                 socket.emit("registered", { user: data.user, pass: data.pass });
-                var text = user + ' registered!';
+                var text = player.nameWithColor() + ' registered!';
                 console.log(text);
                 chatAll(text);
     
@@ -320,7 +320,7 @@ module.exports = function initNetcode() {
                     player.getAllPlanets();
                     player.refillAllAmmo();
                     console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
-                    var text = "~`" + player.color + "~`" + player.name + '~`yellow~` logged in!';
+                    var text = player.nameWithColor() + ' logged in!';
                     chatAll(text);
     
                     // Update last login
@@ -353,7 +353,7 @@ module.exports = function initNetcode() {
                     reason = data;
                 }
 
-                var text = "~`" + player.color + "~`" + player.name + "~`yellow~` left the game (reason: " + reason + ")"; // write a message about the player leaving
+                var text = player.nameWithColor() + " left the game (reason: " + reason + ")"; // write a message about the player leaving
 
                 console.log(text); // print in terminal
                 chatAll(text); // send it to all the players
@@ -432,7 +432,7 @@ module.exports = function initNetcode() {
             if(!data.msg.startsWith("/")) { // otherwise send the text
                 var spaces = "";
                 for (var i = player.name.length; i < 16; i++) spaces += " "; // align the message
-                const finalMsg = "~`" + player.color + "~`" + spaces + player.name + "~`yellow~`: " + data.msg;
+                const finalMsg = spaces + player.nameWithColor() + ": " + data.msg;
                 if (player.globalChat == 0) chatAll(finalMsg);//sendTeam(player.color, 'chat', {msg:finalMsg});
             }
         });
