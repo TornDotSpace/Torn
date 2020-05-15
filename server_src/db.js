@@ -45,7 +45,7 @@ global.handlePlayerDeath = async function (player) {
     var login = player.lastLogin;
     var lives = player.lives - 1;
 
-    for (key in record) {
+    for (var key in record) {
         player[key] = record[key];
     }
 
