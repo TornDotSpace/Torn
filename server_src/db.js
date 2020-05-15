@@ -41,9 +41,7 @@ global.handlePlayerDeath = async function (player) {
     var record = await PLAYER_DATABASE.findOne({_id: player._id});
 
     if (record == null) return;
-
-    var login = player.lastLogin;
-
+    
     // Certain variables should NOT be reverted
     const persist = [ "lastLogin", "randAchs", "killAchs", "moneyAchs", "driftAchs", "planetsClaimed", "lives", "experience", "rank" ];
     for (var key in record) {
