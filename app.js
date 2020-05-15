@@ -1083,7 +1083,7 @@ function idleSocketCheck() {
 	const timeout = 1000 * 60 * 5;
 
 	for (var x in sockets) {
-		s = sockets[x];
+		var s = sockets[x];
 
 		if (s.player === undefined && (time - s.start) >= timeout) {
 			s.disconnect();
@@ -1102,7 +1102,7 @@ function shutdown() {
 }
 
 function broadcastInfo(){
-	randomMsgs = [
+	var randomMsgs = [
 		"Never give anyone your password, for any reason!",
 		"Support the game by buying a VIP pass in the store!",
 		"Join the torn.space discord in the 'more' tab!",

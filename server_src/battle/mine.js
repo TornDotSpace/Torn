@@ -26,7 +26,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		if (self.time++ > 25 * 3 * 60) self.die(); // all mines die after 3 minutes
 
 		if (self.wepnID == 43 && self.time % 8 == 0) { // pulse
-			if (self.time > 25 * 60) self.die(); // pulse has a 1-minute lifespan
+			if (self.time > 25 * 40) self.die(); // pulse has a shorter lifespan
 			var playerFound = false;
 			for (var i in players[self.sy][self.sx]) {
 				var p = players[self.sy][self.sx][i];
@@ -42,7 +42,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 			}
 			if(playerFound){
 				sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
-				self.time += 8;
+				self.time += 25;
 			}
 		}
 	}
