@@ -1078,12 +1078,12 @@ function idleSocketCheck() {
 	var time = Date.now();
 	const timeout = 1000 * 60 * 5;
 
-	for (var s in sockets) {
-		s = sockets[s];
+	for (var x in sockets) {
+		s = sockets[x];
 
 		if (s.player === undefined && (time - s.start) >= timeout) {
 			s.disconnect();
-			delete s;
+			delete sockets[x];
 		}
 	}
 
