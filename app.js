@@ -76,13 +76,13 @@ global.readMuteTable = function(){
 	console.log(muteTable);
 }
 
-require('./server_src/netcode.js');
 require('./server_src/math.js');
 
 var Base = require('./server_src/universe/base.js');
 var Asteroid = require("./server_src/universe/asteroid.js");
 var Planet = require("./server_src/universe/planet.js");
 var Vortex = require("./server_src/universe/vortex.js");
+var netcode = require('./server_src/netcode.js');
 
 require('./server_src/db.js');
 connectToDB();
@@ -394,12 +394,10 @@ function init() { // start the server!
 	vorts[v.sy][v.sx][id] = v;
 
 	//start ticking
+	netcode();
 
 	setTimeout(update, tickRate);
 	broadcastInfo();
-
-	var netcode = require('./server_src/netcode.js');
-	netcode();
 
 	console.log("Server initialized successfully. Game log below.\n");
 }
