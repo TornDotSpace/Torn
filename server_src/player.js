@@ -655,7 +655,7 @@ function Player(sock) {
 
 	}
 	self.botPlay = function () { // don't mess with this pls
-		if (tick % 2 != Math.floor(self.id * 2)) return; // Lag prevention.
+		if (tick % 8 != Math.floor(self.id * 8)) return; // Lag prevention, also makes the bots a bit easier
 		if (self.empTimer > 0) return;//cant move if i'm emp'd
 
 		self.equipped = 0;
@@ -742,7 +742,7 @@ function Player(sock) {
 	}
 	self.nnBotPlay = function () {
 		//Play for a neural network bot
-		if (tick % 5 != Math.floor(self.id * 5)) return; //Don't go too crazy running the whole network each tick. Lag prevention.
+		if (tick % 8 != Math.floor(self.id * 8)) return; //Don't go too crazy running the whole network each tick. Lag prevention.
 
 		if (self.net === 1) { // If we haven't yet initialized a neural net
 			self.net = new NeuralNet();
@@ -1255,7 +1255,9 @@ function Player(sock) {
 		//blood trail: less damage
 		if (self.trail % 16 == 1) d /= 1.05;
 
-		self.health -= d * (self.shield ? .25 : 1); // Shield- 1/4th damage
+		d *= (self.shield ? .25 : 1); // Shield- 1/4th damage
+
+		self.health -= d;
 		if (self.health < 0) self.die(origin);
 
 		note('-' + Math.floor(d), self.x, self.y - 64, self.sx, self.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
@@ -1591,7 +1593,7 @@ var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString()
 global.spawnBot = function (sx, sy, col, force) {
 	if (!Config.getValue("want-bots", true)) return;
 
-	if(playerCount + botCount + guestCount > 90 && !force) return;
+	if (playerCount + botCount + guestCount > 85 && !force) return;
 	
 	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 

@@ -3141,7 +3141,7 @@ function rRadar() {
 		if (va2 > 1.74) {
 			if (a.metal == 0) ctx.strokeStyle = ctx.fillStyle = '#d44';
 			else if (a.metal == 1) ctx.strokeStyle = ctx.fillStyle = '#eef';
-			else if (a.metal == 2) ctx.strokeStyle = ctx.fillStyle = '#9a9';
+			else if (a.metal == 2) ctx.strokeStyle = ctx.fillStyle = '#777';
 			else if (a.metal == 3) ctx.strokeStyle = ctx.fillStyle = '#90f';
 		}
 		if (va2 > 1.62) ctx.stroke();

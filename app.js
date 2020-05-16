@@ -108,25 +108,31 @@ global.planetNames = jsn.planets;
 
 
 // bases
-global.basesPerTeam = 4;
+global.basesPerTeam = 6;
 global.baseMap=	{
 					"red":[	//x, y
-					0, 0,
-					2, 0,
+					3, 0,
+					1, 1,
+					2, 3,
 					0, 4,
-					1, 2
+					1, 6,
+					0, 8
 					],
 					"blue":[
 					6, 0,
-					4, 0,
-					6, 4,
-					5, 2
+					4, 1,
+					5, 3,
+					3, 4,
+					4, 6,
+					3, 8
 					],
 					"green":[
-					1, 5,
-					2, 6,
-					4, 6,
-					5, 5
+					0, 0,
+					7, 1,
+					8, 3,
+					6, 4,
+					7, 6,
+					6, 8
 					],
 				};
 
@@ -137,7 +143,7 @@ global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies desp
 global.baseHealth = 1300; // max base health
 global.baseKillExp = 1300; // Exp reward for killing a base
 global.baseKillMoney = 100000; // ditto but money
-global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
+global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
 
 //Machine Learning
