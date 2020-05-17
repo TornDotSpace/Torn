@@ -677,6 +677,7 @@ function ammoCodeToString(code) {
 }
 function r3DMap() {
 	if(sectorPoints == 0) return;
+
 	minimapcanvas.width = minimapcanvas.width;
 	minictx.globalAlpha = 0.4;
 	minictx.strokeStyle = 'white';
@@ -689,6 +690,11 @@ function r3DMap() {
 	if (hmap == 0 || typeof hmap[sx] === "undefined") return;
 
 	//if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO
+
+	if(pscx == 0){
+		roll(40);
+		spin(-(sx+5)*20);
+	}
 
 	var c3dx, c3dy, c3dz;
 	
