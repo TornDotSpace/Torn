@@ -160,7 +160,7 @@
 		" for further instructions.",
 		"Eliminate all enemy players and turrets in ",
 		" and visit planet ",
-		"Deliver package to sector D4.",
+		"Deliver package to a permanent black hole.",
 		"To change your password, visit torn.space/help",
 		"Active Generators: ",
 		"x",
@@ -434,6 +434,10 @@
 		{
 			"name":"Pulse Mine",
 			"desc":"Repeatedly fires a damaging shockwave while other players are in range."
+		},
+		{
+			"name":"Campfire",
+			"desc":"Quickly heals nearby players, as long as there are at least 2 of them."
 		}
 	],
 	"splashes":[

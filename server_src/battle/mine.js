@@ -25,26 +25,46 @@ module.exports = function Mine(ownr, i, weaponID) {
 		if ((self.wepnID == 33 || self.wepnID == 32) && self.time++ > 25) self.die(); // grenade and impulse mine blow up after 1 second
 		if (self.time++ > 25 * 3 * 60) self.die(); // all mines die after 3 minutes
 
-		if (self.wepnID == 43 && self.time % 8 == 0) { // pulse
-			if (self.time > 25 * 40) self.die(); // pulse has a shorter lifespan
-			var playerFound = false;
-			for (var i in players[self.sy][self.sx]) {
-				var p = players[self.sy][self.sx][i];
-				if (p.color !== self.color && squaredDist(p, self) < square(self.range * 10)) {
-					var mult = 400 / Math.max(10, .001 + Math.hypot(p.x - self.x, p.y - self.y)); // not sure what's going on here but it works
-					p.vx = mult * (Math.cbrt(p.x - self.x));
-					p.vy = mult * (Math.cbrt(p.y - self.y)); // push the player
-					p.updatePolars();//we edited rectangulars
-					p.angle = p.driftAngle; // turn them away from the mine
-					p.dmg(self.dmg, self);
-					playerFound = true;
-				}
-			}
-			if(playerFound){
-				sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
-				self.time += 25*3;
+		if (self.wepnID == 43 && self.time % 8 == 0) self.doPulse(); // pulse
+		if (self.wepnID == 44 && self.time % 25 == 0) self.doHeal(); // campfire
+	}
+	self.doPulse = function(){
+		if (self.time > 25 * 40) self.die(); // pulse has a shorter lifespan
+		var playerFound = false;
+		for (var i in players[self.sy][self.sx]) {
+			var p = players[self.sy][self.sx][i];
+			if (p.color !== self.color && squaredDist(p, self) < square(self.range * 10)) {
+				var mult = 400 / Math.max(10, .001 + Math.hypot(p.x - self.x, p.y - self.y)); // not sure what's going on here but it works
+				p.vx = mult * (Math.cbrt(p.x - self.x));
+				p.vy = mult * (Math.cbrt(p.y - self.y)); // push the player
+				p.updatePolars();//we edited rectangulars
+				p.angle = p.driftAngle; // turn them away from the mine
+				p.dmg(self.dmg, self);
+				playerFound = true;
 			}
 		}
+		if(playerFound){
+			sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
+			self.time += 25*3;
+		}
+	}
+	self.doHeal = function(){
+		if (self.time > 25 * 10) self.die(); // campfire has a shorter lifespan
+		var playerFound = 0;
+
+		//check there's 2 people
+		for (var i in players[self.sy][self.sx]) {
+			var p = players[self.sy][self.sx][i];
+			if (squaredDist(p, self) < square(self.range * 10)) playerFound++;
+		}
+		if (playerFound < 2) return;
+
+		//heal them
+		for (var i in players[self.sy][self.sx]) {
+			var p = players[self.sy][self.sx][i];
+			if (squaredDist(p, self) < square(self.range * 10)) p.health-=self.dmg; // heal them
+		}
+		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
 	self.collideWithMines = function(){ // When the mine is created, make sure it isn't placed on top of any other mines.
 		for (var m in mines[self.sy][self.sx]) {

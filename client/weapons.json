@@ -198,7 +198,7 @@
 		{
 			"name":"Mine",
 			"range":32,
-			"damage":80,
+			"damage":100,
 			"speed":-1,
 			"charge":25,
 			"price":1000,
@@ -211,7 +211,7 @@
 		{
 			"name":"Laser Mine",
 			"range":96,
-			"damage":75,
+			"damage":80,
 			"speed":-1,
 			"charge":80,
 			"price":6000,
@@ -243,7 +243,7 @@
 			"price":50000,
 			"ammo":3,
 			"level":8,
-			"order":36,
+			"order":37,
 			"type":"Misc",
 			"bot":false
 		},
@@ -256,7 +256,7 @@
 			"price":30000,
 			"ammo":2,
 			"level":4,
-			"order":37,
+			"order":38,
 			"type":"Misc",
 			"bot":false
 		},
@@ -269,7 +269,7 @@
 			"price":60000,
 			"ammo":-1,
 			"level":9,
-			"order":39,
+			"order":40,
 			"type":"Misc",
 			"bot":false
 		},
@@ -282,7 +282,7 @@
 			"price":15000,
 			"ammo":-1,
 			"level":2,
-			"order":33,
+			"order":34,
 			"type":"Misc",
 			"bot":false
 		},
@@ -295,7 +295,7 @@
 			"price":6000,
 			"ammo":-2,
 			"level":5,
-			"order":34,
+			"order":35,
 			"type":"Misc",
 			"bot":false
 		},
@@ -308,7 +308,7 @@
 			"price":25000,
 			"ammo":1,
 			"level":7,
-			"order":38,
+			"order":39,
 			"type":"Misc",
 			"bot":false
 		},
@@ -321,7 +321,7 @@
 			"price":40000,
 			"ammo":-1,
 			"level":8,
-			"order":40,
+			"order":41,
 			"type":"Misc",
 			"bot":false
 		},
@@ -360,7 +360,7 @@
 			"price":750000,
 			"ammo":-2,
 			"level":10,
-			"order":42,
+			"order":43,
 			"type":"Misc",
 			"bot":false
 		},
@@ -373,7 +373,7 @@
 			"price":2000000,
 			"ammo":-2,
 			"level":10,
-			"order":43,
+			"order":44,
 			"type":"Misc",
 			"bot":false
 		},
@@ -386,7 +386,7 @@
 			"price":150000,
 			"ammo":1,
 			"level":7,
-			"order":35,
+			"order":36,
 			"type":"Misc",
 			"bot":false
 		},
@@ -477,7 +477,7 @@
 			"price":100000,
 			"ammo":-2,
 			"level":11,
-			"order":41,
+			"order":42,
 			"type":"Misc",
 			"bot":false
 		},
@@ -569,6 +569,19 @@
 			"ammo":3,
 			"level":4,
 			"order":32,
+			"type":"Mine",
+			"bot":false
+		},
+		{
+			"name":"Campfire",
+			"range":50,
+			"damage":-20,
+			"speed":0,
+			"charge":60,
+			"price":5000,
+			"ammo":3,
+			"level":5,
+			"order":33,
 			"type":"Mine",
 			"bot":false
 		}
