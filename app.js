@@ -247,7 +247,7 @@ function updateQuests() {
 			if (teamQuests[teamColor][i] !== 0) continue;
 			var r = Math.random();
 			var r2 = Math.random();
-			var whatTeam = i==8?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
+			var whatTeam = (Math.random()<.5)?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
 			var metals = ["aluminium", "silver", "platinum", "iron"];
 			var nm = 0;
 			if (i < 4) {
@@ -388,10 +388,13 @@ function init() { // start the server!
 	var v = new Vortex(id, Math.random() * sectorWidth, Math.random() * sectorWidth, Math.floor(Math.random() * mapSz), Math.floor(Math.random() * mapSz), .5, 0, true);
 	vorts[v.sy][v.sx][id] = v;
 
-	//Black Hole in D4
-	id = Math.random();
-	v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, 3, 3, .15, 0, false);
-	vorts[v.sy][v.sx][id] = v;
+	//6 Black Holes
+	for(var vortno = 0; vortno < 9; vortno++){
+		if(vortno % 3 == 0) continue;
+		id = Math.random();
+		v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, vortno, 8, .15, 0, false);
+		vorts[v.sy][v.sx][id] = v;
+	}
 
 	//start ticking
 	netcode();

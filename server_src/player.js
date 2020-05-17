@@ -216,7 +216,7 @@ function Player(sock) {
 			//Traditional missiles
 			else if (wepId <= 14 || wep.name === "Proximity Fuze") self.shootMissile();
 			// <= 17: Traditional Mines
-			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades" || wep.name === "Pulse Mine") self.shootMine();
+			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades" || wep.name === "Pulse Mine" || wep.name === "Campfire") self.shootMine();
 			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") self.shootOrb();
 			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast(wepId);
 
@@ -613,7 +613,7 @@ function Player(sock) {
 			self.sendAchievementsMisc(true);
 		}
 
-		if (self.sx == 3 && self.sy == 3 && self.quest.type === "Secret3") {
+		if ((self.sx % 3 != 0 && self.sy == 8) && self.quest.type === "Secret3") {
 			self.spoils("money", self.quest.exp); // reward the player
 			self.spoils("experience", Math.floor(self.quest.exp / 4000));
 

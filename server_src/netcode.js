@@ -330,7 +330,7 @@ module.exports = function initNetcode() {
                     player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
                     player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
                     sendWeapons(player);
-                    socket.emit('baseMap', {baseMap: baseMap});
+                    socket.emit('baseMap', {baseMap: baseMap, mapSz: mapSz});
                 }, wait_time);
             });
         });
