@@ -70,6 +70,11 @@ global.loadPlayerData = async function (playerName, passwordHash, socket) {
         player[key] = record[key];
     }
 
+    if(bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx].color != player.color) {
+        player.sx = baseMap[player.color][0];
+        player.sy = baseMap[player.color][1];
+    }
+
     player.lastLogin = new Date(player.lastLogin);
     
     player.permissionLevels = [0];
