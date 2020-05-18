@@ -146,6 +146,7 @@ global.baseKillMoney = 100000; // ditto but money
 global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
 global.moneyPerRaidPoint = 75000;
+global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
 
 //Machine Learning
 global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.

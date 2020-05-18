@@ -743,7 +743,7 @@ function r3DMap() {
 			minictx.closePath();
 
 			//render sector labels
-			if(mapZoom<.4 && ga > .4){
+			if(mapZoom<.9 && ga > .3){
 				var fontsz = Math.hypot(xx3-xx2,yy3-yy2)/3;
 				minictx.font = fontsz+"px ShareTech";
 				minictx.fillStyle = "white";
@@ -781,7 +781,7 @@ function r3DMap() {
 					psga = ga;
 				}
 			}
-			else minictx.stroke();
+			//else minictx.stroke();
 
 			if(baseMap2D[i][j]!==0){
 				var img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss);
