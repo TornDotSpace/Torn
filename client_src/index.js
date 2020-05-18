@@ -175,8 +175,17 @@ for (var i = 1; i < 1000; i++) {
 	var zz = square(dist)*(Math.random()-.5)*0.02;
 	var xx = dist*cosLow(a)*2;
 	var yy = dist*sinLow(a)*2;
-	dots[i] = { x: Math.floor(xx), y: Math.floor(yy), z: Math.floor(zz) };
+	dots[i] = { x: xx, y: yy, z: zz };
 }
+
+var quasar = [];
+/*for (var i = 0; i < 30; i++) {
+	var dist = Math.random()*.8;
+	var a = Math.random()*Math.PI*2;
+	var xx = dist*cosLow(a);
+	var yy = dist*sinLow(a);
+	quasar[i] = { x: xx, y: yy, z: Math.min(1/(dist-.4), 20)};
+}*/
 
 var killStreak = 0, killStreakTimer = -1;
 var badWeapon = 0;
@@ -431,6 +440,15 @@ function roll(v) {
 		dot.y = cos;
 		dot.z = sin;
 	}
+	for (var i in quasar) {
+		var dot = quasar[i];
+		var dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
+		var ang = Math.atan2(dot.z, dot.y) + v / 28;
+		var cos = Math.cos(ang) * dist;
+		var sin = Math.sin(ang) * dist;
+		dot.y = cos;
+		dot.z = sin;
+	}
 	for (var i = 0; i < mapSz+1; i++) {
 		for (var j = 0; j < mapSz+1; j++) {
 			var dot = sectorPoints[i][j];
@@ -446,6 +464,15 @@ function roll(v) {
 function spin(v) {
 	for (var i in dots) {
 		var dot = dots[i];
+		var dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
+		var ang = Math.atan2(dot.z, dot.x) + v / 28;
+		var cos = Math.cos(ang) * dist;
+		var sin = Math.sin(ang) * dist;
+		dot.x = cos;
+		dot.z = sin;
+	}
+	for (var i in quasar) {
+		var dot = quasar[i];
 		var dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
 		var ang = Math.atan2(dot.z, dot.x) + v / 28;
 		var cos = Math.cos(ang) * dist;
@@ -475,6 +502,15 @@ function rotate(v) {
 		dot.x = cos;
 		dot.y = sin;
 	}
+	for (var i in quasar) {
+		var dot = quasar[i];
+		var dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
+		var ang = Math.atan2(dot.y, dot.x) + v / 28;
+		var cos = Math.cos(ang) * dist;
+		var sin = Math.sin(ang) * dist;
+		dot.x = cos;
+		dot.y = sin;
+	}
 	for (var i = 0; i < mapSz+1; i++) {
 		for (var j = 0; j < mapSz+1; j++) {
 			var dot = sectorPoints[i][j];
@@ -492,6 +528,11 @@ function center3D(xxp,yyp,zzp) {
 		dots[i].x-=xxp;
 		dots[i].y-=yyp;
 		dots[i].z-=zzp;
+	}
+	for (var i in quasar) {
+		quasar[i].x-=xxp;
+		quasar[i].y-=yyp;
+		quasar[i].z-=zzp;
 	}
 	for (var i = 0; i < mapSz+1; i++) {
 		for (var j = 0; j < mapSz+1; j++) {
@@ -743,7 +784,7 @@ function r3DMap() {
 			minictx.closePath();
 
 			//render sector labels
-			if(mapZoom<.4 && ga > .4){
+			if(mapZoom<.9 && ga > .3){
 				var fontsz = Math.hypot(xx3-xx2,yy3-yy2)/3;
 				minictx.font = fontsz+"px ShareTech";
 				minictx.fillStyle = "white";
@@ -781,7 +822,7 @@ function r3DMap() {
 					psga = ga;
 				}
 			}
-			else minictx.stroke();
+			//else minictx.stroke();
 
 			if(baseMap2D[i][j]!==0){
 				var img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss);
@@ -858,6 +899,27 @@ function r3DMap() {
 }
 function paste3DMap(xp,yp) {
 	if(sectorPoints == 0) return;
+	/*let d = new Date();
+	var t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
+	t/=1000;
+	ctx.globalAlpha=.8;
+	var bhx = dots[0].x, bhy = dots[0].y, bhz = dots[0].z;
+	render quasar jet
+	for (var i in quasar) {
+		var dot = quasar[i];
+		var dt = t*Math.sqrt(square(dot.z-bhz)+square(dot.y-bhy)+square(dot.x-bhx))%100/10;
+		var x1 = xp+104 + ((dot.x-bhx)*dt+bhx) / mapZoom;
+		var y1 = yp+104 + ((dot.y-bhy)*dt+bhy) / mapZoom;
+		var x2 = xp+104 + ((dot.x-bhx)*dt*2+bhx) / mapZoom;
+		var y2 = yp+104 + ((dot.y-bhy)*dt*2+bhy) / mapZoom;
+		var sz = i/500+.5
+		ctx.strokeStyle = "#"+(((0 + Math.floor(Math.abs(CoherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(CoherentNoise(17*i+79)) * 128) << 8) + Math.floor(128+Math.abs(CoherentNoise(7*i+107)) * 128)).toString(16);
+		ctx.beginPath();
+		ctx.moveTo(x1,y1);
+		ctx.lineTo(x2,y2);
+		ctx.closePath();
+		ctx.stroke();
+	}*/
 	ctx.drawImage(minimapcanvas,xp,yp);
 	var xxp1 = lerp(myxx1,myxx4,(px/sectorWidth+py/sectorWidth)/2)-pscx; // these are just clever ways of using linear interpolation in a skew vector space
 	var yyp1 = lerp(myyy1,myyy4,(px/sectorWidth+py/sectorWidth)/2)-pscy;
@@ -3170,6 +3232,7 @@ function rLB() {
 }
 function rRadar() {
 	if (va2 < 1.12) return;
+	var radarZoom = 1;
 	ctx.fillStyle = "white";
 	ctx.globalAlpha = 0.5;
 	ctx.drawImage(Img.grid, 16, 32 + 214);
@@ -3184,8 +3247,8 @@ function rRadar() {
 	ctx.globalAlpha = ctx.lineWidth = 1;
 	var r = va2*3840 - 1280;
 	var r2 = square(r);
-	var r2z2 = square(r*mapZoom);
-	var distFactor = 96/r/mapZoom;
+	var r2z2 = square(r*radarZoom);
+	var distFactor = 96/r/radarZoom;
 	if (basesInfo !== undefined) {
 		var dx = basesInfo.x - px;
 		var dy = basesInfo.y - py;
@@ -3256,9 +3319,9 @@ function rRadar() {
 	}
 	ctx.globalAlpha = .5;
 	var radius = wepns[equipped[scroll]].range*960/r;
-	if (va2>1.8 && radius/mapZoom > 3 && radius/mapZoom<96) {
+	if (va2>1.8 && radius/radarZoom > 3 && radius/radarZoom<96) {
 		ctx.beginPath();
-		ctx.arc(112, 342, radius/mapZoom, 0, 2 * Math.PI, false);
+		ctx.arc(112, 342, radius/radarZoom, 0, 2 * Math.PI, false);
 		ctx.strokeStyle = brighten(pc);
 		ctx.stroke();
 		ctx.closePath();

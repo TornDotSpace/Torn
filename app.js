@@ -140,11 +140,13 @@ global.baseMap=	{
 global.bulletWidth = 16; // collision radius
 var mineLifetime = 3; // mines despawn after this many minutes
 global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
-global.baseHealth = 1300; // max base health
-global.baseKillExp = 1300; // Exp reward for killing a base
-global.baseKillMoney = 100000; // ditto but money
+global.baseHealth = 1500; // max base health
+global.baseKillExp = 3000; // Exp reward for killing a base
+global.baseKillMoney = 200000; // ditto but money
 global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
+global.moneyPerRaidPoint = 100000;
+global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
 
 //Machine Learning
 global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
@@ -254,11 +256,11 @@ function updateQuests() {
 				var dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
 				var sxv = Math.floor(r2 * mapSz), syv = Math.floor(r2 * 10 % 1 * mapSz);
 				if (dsxv == sxv && dsyv == syv) return;
-				nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
+				nm = { type: "Delivery", metal: metals[Math.floor(r * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 20000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
 			}
-			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * basesPerTeam) * 2], sy: thisMap[Math.floor(r2 * basesPerTeam) * 2 + 1] };
-			else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
-			else 			nm = { type: "Secret", 	exp: 400000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
+			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 65000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * basesPerTeam) * 2], sy: thisMap[Math.floor(r2 * basesPerTeam) * 2 + 1] };
+			else if (i < 9) nm = { type: "Base", 	exp: 250000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
+			else 			nm = { type: "Secret", 	exp: 500000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
 			teamQuests[teamColor][i] = nm;
 		}
 	}
@@ -467,15 +469,16 @@ function endRaid() {
 	if (raidRed > raidBlue && raidRed > raidGreen) winners = "red";
 	else if (raidBlue > raidRed && raidBlue > raidGreen) winners = "blue";
 	else if (raidGreen > raidRed && raidGreen > raidBlue) winners = "green";
-	raidTimer = 360000;
+	raidTimer = 240000;
+	var winnerPoints = Math.max(raidGreen, Math.max(raidBlue, raidRed));
 	for (var i in sockets) {
 		var p = getPlayer(i);
 		if (p === undefined) continue;
+		if (p.color === winners) p.spoils("money", p.points * moneyPerRaidPoint);
 		p.points = 0;
-		if (p.color !== winners) continue;
-		p.spoils("money", p.points * 75000);
 	}
 	sendRaidData();
+	if(winners !== "yellow") chatAll("~`" + winners + "~`" + winners + "~`yellow~` team won the raid, and made $"+(winnerPoints*moneyPerRaidPoint)+"!");
 }
 
 function update() {

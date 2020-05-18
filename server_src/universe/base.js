@@ -34,8 +34,9 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 	self.tick = function () {
 		//spawn a bot if we need more bots
 		var botSpawn = Math.random();
-		if (botSpawn < botFrequency) {
-			spawnBot(self.sx, self.sy, self.color, false);
+		var healthPercent = Math.max(self.health/self.maxHealth,.1);
+		if (botSpawn*healthPercent < botFrequency) {
+			spawnBot(self.sx, self.sy, self.color, healthPercent < .9);
 		}
 
 		if (!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) self.turretLive = true; // revive. TODO: add a timer
@@ -177,7 +178,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 
 				for (var i in players[self.sy][self.sx]) { // as well as all other players in that sector
 					var p = players[self.sy][self.sx][i];
-					if (p.color !== self.color) p.points++;
+					if (p.color !== self.color) p.points+=2;
 				}
 			}
 		}
