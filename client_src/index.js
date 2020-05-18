@@ -899,12 +899,12 @@ function r3DMap() {
 }
 function paste3DMap(xp,yp) {
 	if(sectorPoints == 0) return;
-	let d = new Date();
+	/*let d = new Date();
 	var t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
 	t/=1000;
 	ctx.globalAlpha=.8;
 	var bhx = dots[0].x, bhy = dots[0].y, bhz = dots[0].z;
-	/*render quasar jet
+	render quasar jet
 	for (var i in quasar) {
 		var dot = quasar[i];
 		var dt = t*Math.sqrt(square(dot.z-bhz)+square(dot.y-bhy)+square(dot.x-bhx))%100/10;
