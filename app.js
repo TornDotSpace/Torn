@@ -145,6 +145,7 @@ global.baseKillExp = 1300; // Exp reward for killing a base
 global.baseKillMoney = 100000; // ditto but money
 global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
+global.moneyPerRaidPoint = 75000;
 
 //Machine Learning
 global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
@@ -467,15 +468,16 @@ function endRaid() {
 	if (raidRed > raidBlue && raidRed > raidGreen) winners = "red";
 	else if (raidBlue > raidRed && raidBlue > raidGreen) winners = "blue";
 	else if (raidGreen > raidRed && raidGreen > raidBlue) winners = "green";
-	raidTimer = 360000;
+	raidTimer = 240000;
+	var winnerPoints = Math.max(raidGreen, Math.max(raidBlue, raidRed));
 	for (var i in sockets) {
 		var p = getPlayer(i);
 		if (p === undefined) continue;
+		if (p.color === winners) p.spoils("money", p.points * moneyPerRaidPoint);
 		p.points = 0;
-		if (p.color !== winners) continue;
-		p.spoils("money", p.points * 75000);
 	}
 	sendRaidData();
+	if(winners !== "yellow") chatAll("~`" + winners + "~`" + winners + "~`yellow~` team won the raid, and made $"+(winnerPoints*moneyPerRaidPoint)+"!");
 }
 
 function update() {
