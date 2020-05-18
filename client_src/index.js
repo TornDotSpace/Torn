@@ -3170,6 +3170,7 @@ function rLB() {
 }
 function rRadar() {
 	if (va2 < 1.12) return;
+	var radarZoom = 1;
 	ctx.fillStyle = "white";
 	ctx.globalAlpha = 0.5;
 	ctx.drawImage(Img.grid, 16, 32 + 214);
@@ -3184,8 +3185,8 @@ function rRadar() {
 	ctx.globalAlpha = ctx.lineWidth = 1;
 	var r = va2*3840 - 1280;
 	var r2 = square(r);
-	var r2z2 = square(r*mapZoom);
-	var distFactor = 96/r/mapZoom;
+	var r2z2 = square(r*radarZoom);
+	var distFactor = 96/r/radarZoom;
 	if (basesInfo !== undefined) {
 		var dx = basesInfo.x - px;
 		var dy = basesInfo.y - py;
@@ -3256,9 +3257,9 @@ function rRadar() {
 	}
 	ctx.globalAlpha = .5;
 	var radius = wepns[equipped[scroll]].range*960/r;
-	if (va2>1.8 && radius/mapZoom > 3 && radius/mapZoom<96) {
+	if (va2>1.8 && radius/radarZoom > 3 && radius/radarZoom<96) {
 		ctx.beginPath();
-		ctx.arc(112, 342, radius/mapZoom, 0, 2 * Math.PI, false);
+		ctx.arc(112, 342, radius/radarZoom, 0, 2 * Math.PI, false);
 		ctx.strokeStyle = brighten(pc);
 		ctx.stroke();
 		ctx.closePath();
