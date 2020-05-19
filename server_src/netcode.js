@@ -185,7 +185,7 @@ module.exports = function initNetcode() {
             player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
             sendWeapons(player);
             socket.emit("raid", { raidTimer: raidTimer });
-            socket.emit('baseMap', {baseMap: baseMap});
+            socket.emit('baseMap', {baseMap: baseMap, mapSz: mapSz});
 
             chatAll("Welcome " + player.nameWithColor() + " to the universe!");
         });

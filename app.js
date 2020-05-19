@@ -133,7 +133,7 @@ global.baseKillExp = 3000; // Exp reward for killing a base
 global.baseKillMoney = 200000; // ditto but money
 global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
-global.moneyPerRaidPoint = 100000;
+global.moneyPerRaidPoint = 120000;
 global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
 
 //Machine Learning
@@ -457,7 +457,7 @@ function endRaid() {
 	if (raidRed > raidBlue && raidRed > raidGreen) winners = "red";
 	else if (raidBlue > raidRed && raidBlue > raidGreen) winners = "blue";
 	else if (raidGreen > raidRed && raidGreen > raidBlue) winners = "green";
-	raidTimer = 240000;
+	raidTimer = 120*1000;
 	var winnerPoints = Math.max(raidGreen, Math.max(raidBlue, raidRed));
 	for (var i in sockets) {
 		var p = getPlayer(i);

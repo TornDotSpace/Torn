@@ -2027,8 +2027,8 @@ socket.on('planets', function (data) {
 		secret2PlanetName = planets.name;
 });
 socket.on('baseMap', function(data) {
-	console.log("Got basemap");
 	mapSz = data.mapSz;
+	console.log("Got basemap of size " + mapSz);
 	var baseMap = data.baseMap;
 	for(var i = 0; i < mapSz; i++){
 		baseMap2D[i] = {};
@@ -3784,7 +3784,10 @@ function rPlanets() {
 	var stime = d.getTime() / 150000;
 
 	var imgi = (sx + sy * mapSz) % 5 + 1;
+	console.log(sx + " " + sy + " " + mapSz);
 	var img = planetImgs[imgi];
+
+	if(typeof img === "undefined") return;
 
 	var ox = (sinLow(stime * 5) / 2 + .5) * (img.width - 256) + 128;//error on t05 width of undefined
 	var oy = (cosLow(stime * 4) / 2 + .5) * (img.height - 256) + 128;
