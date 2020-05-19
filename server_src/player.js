@@ -1184,7 +1184,7 @@ function Player(sock) {
 			//drop a package
 			var r = Math.random();
 			if (self.hasPackage && !self.isBot) packs[self.sy][self.sx][r] = Package(self, r, 0); // an actual package (courier)
-			else if (Math.random() < .004 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
+			else if (Math.random() < .012 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
 			else if (Math.random() < .1 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 3);//ammo
 			else if (!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
 
