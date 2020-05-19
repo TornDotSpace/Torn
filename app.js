@@ -89,18 +89,6 @@ connectToDB();
 
 var tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 
-global.createAsteroid = function () {
-	var sx = Math.floor(Math.random() * mapSz);
-	var sy = Math.floor(Math.random() * mapSz);
-	var vert = (sy + 1) / (mapSz + 1);
-	var hor = (sx + 1) / (mapSz + 1);
-	var metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
-	var randA = Math.random();
-	var h = Math.ceil(Math.random() * 1200 + 200);
-	var ast = Asteroid(randA, h, sx, sy, metal);
-	asts[ast.sy][ast.sx][randA] = ast;
-}
-
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
@@ -376,7 +364,7 @@ function init() { // start the server!
 	spawnBases();
 
 	//make asteroids. Make 10 times the number of sectors.
-	for (var i = 0; i < mapSz * mapSz * 10; i++) createAsteroid();
+	for (var i = 0; i < mapSz * mapSz * 8; i++) createAsteroid(Math.floor(i/mapSz), i%mapSz);
 
 	//Make exactly one planet in each sector.
 	for (var s = 0; s < mapSz * mapSz; s++) {

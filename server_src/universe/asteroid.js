@@ -2,7 +2,7 @@ function isOutOfBounds(obj) { // TODO this works but I'm not even using it anywh
 	return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 }
 
-module.exports = function Asteroid(i, h, sxx, syy, metal) {
+function Asteroid(i, h, sxx, syy, metal) {
 	var self = {
 		type: "Asteroid",
 		id: i, // unique identifier
@@ -61,7 +61,7 @@ module.exports = function Asteroid(i, h, sxx, syy, metal) {
 	self.die = function (b) {
 		// Bugfix for ion beam destroying multiple times
 		self.die = function () { };
-		createAsteroid();
+		createAsteroid(self.sx, self.sy);
 		delete asts[self.sy][self.sx][self.id];
 		if (b == 0) return;
 
@@ -116,3 +116,17 @@ module.exports = function Asteroid(i, h, sxx, syy, metal) {
 	}
 	return self;
 };
+
+module.exports = Asteroid;
+
+global.createAsteroid = function (sx, sy) {
+	var sx = Math.floor(Math.random() * mapSz);
+	var sy = Math.floor(Math.random() * mapSz);
+	var vert = (sy + 1) / (mapSz + 1);
+	var hor = (sx + 1) / (mapSz + 1);
+	var metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
+	var randA = Math.random();
+	var h = Math.ceil(Math.random() * 1200 + 200);
+	var ast = Asteroid(randA, h, sx, sy, metal);
+	asts[ast.sy][ast.sx][randA] = ast;
+}

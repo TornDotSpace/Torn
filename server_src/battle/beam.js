@@ -12,7 +12,7 @@ module.exports = function Beam(ownr, i, weaponID, enemy, orign) {
 		time: 0, // since spawn
 	}
 	self.tick = function () {
-		if (self.time == 0){
+		if (self.time == 0 && self.wepnID != 44){ // don't do this for Campfire beams
 			var divideBy = self.enemy.ship == 17 && (self.wepnID == 30 || self.wepnID == 26) ? 2 : 1; // i think this is about mining lasers shooting elite quarrier?
 			self.enemy.dmg(self.dmg / divideBy, self);
 			if (enemy.type === "Asteroid") enemy.hit = false; // Note that the asteroid is hit for elite quarrier branching

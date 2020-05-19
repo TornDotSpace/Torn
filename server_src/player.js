@@ -228,7 +228,7 @@ function Player(sock) {
 				if (wep.name === "Supercharger") self.superchargerTimer = 1500;//1 min
 				else if (wep.name === "Hull Nanobots") self.health += Math.min(self.maxHealth*.2, self.maxHealth - self.health); // min prevents overflow
 				else if (wep.name === "Photon Cloak") self.disguise = 200;//6s
-				else if (wep.name === "Warp Drive") self.speed = self.thrust * (self.ship == 16 ? 1000 : 750);
+				else if (wep.name === "Warp Drive") self.speed = self.ship == 16 ? 1500 : 1000;
 			}
 
 
@@ -1184,7 +1184,7 @@ function Player(sock) {
 			//drop a package
 			var r = Math.random();
 			if (self.hasPackage && !self.isBot) packs[self.sy][self.sx][r] = Package(self, r, 0); // an actual package (courier)
-			else if (Math.random() < .004 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
+			else if (Math.random() < .012 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
 			else if (Math.random() < .1 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 3);//ammo
 			else if (!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
 

@@ -612,127 +612,127 @@
 		{
 			"nameA":"Scout",
 			"nameH":"Minnow",
-			"nameC":"???",
+			"nameC":"Gnat",
 			"desc":""
 		},
 		{
 			"nameA":"Private",
 			"nameH":"Piranha",
-			"nameC":"???",
+			"nameC":"Flea",
 			"desc":""
 		},
 		{
 			"nameA":"Mastodon",
 			"nameH":"Freighter",
-			"nameC":"???",
+			"nameC":"Eristalis",
 			"desc":""
 		},
 		{
 			"nameA":"Nymph",
 			"nameH":"Strider",
-			"nameC":"???",
+			"nameC":"Cloudhop",
 			"desc":""
 		},
 		{
 			"nameA":"Bomber",
 			"nameH":"Lancer",
-			"nameC":"???",
+			"nameC":"Scarab",
 			"desc":""
 		},
 		{
 			"nameA":"Scythe",
 			"nameH":"Hammerhead",
-			"nameC":"???",
+			"nameC":"Nephila",
 			"desc":""
 		},
 		{
 			"nameA":"Dragonfly",
 			"nameH":"Swordfish",
-			"nameC":"???",
+			"nameC":"Ladybug",
 			"desc":""
 		},
 		{
 			"nameA":"Sentry",
 			"nameH":"Battleship",
-			"nameC":"???",
+			"nameC":"Metralla",
 			"desc":""
 		},
 		{
 			"nameA":"Eagle",
 			"nameH":"Stingray",
-			"nameC":"???",
+			"nameC":"Sceptre",
 			"desc":""
 		},
 		{
 			"nameA":"Phoenix",
 			"nameH":"Orca",
-			"nameC":"???",
+			"nameC":"Centipede",
 			"desc":""
 		},
 		{
 			"nameA":"Wasp",
 			"nameH":"Manta",
-			"nameC":"???",
+			"nameC":"Hornet",
 			"desc":""
 		},
 		{
 			"nameA":"Swift",
 			"nameH":"Sailfish",
-			"nameC":"???",
+			"nameC":"Alcubierre",
 			"desc":""
 		},
 		{
 			"nameA":"Quarrier",
 			"nameH":"Beluga",
-			"nameC":"???",
+			"nameC":"Honeypot",
 			"desc":""
 		},
 		{
 			"nameA":"Destroyer",
 			"nameH":"Taurus",
-			"nameC":"???",
+			"nameC":"Galley",
 			"desc":""
 		},
 		{
 			"nameA":"Falcon",
 			"nameH":"Wyvern",
-			"nameC":"???",
+			"nameC":"Defiant",
 			"desc":""
 		},
 		{
 			"nameA":"Interceptor",
 			"nameH":"Leviathan",
-			"nameC":"???",
+			"nameC":"Maser",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Swift",
 			"nameH":"Elite Sailfish",
-			"nameC":"???",
+			"nameC":"Elite Alcubierre",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Quarrier",
 			"nameH":"Elite Beluga",
-			"nameC":"???",
+			"nameC":"Elite Honeypot",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Destroyer",
 			"nameH":"Elite Taurus",
-			"nameC":"???",
+			"nameC":"Elite Galley",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Falcon",
 			"nameH":"Elite Wyvern",
-			"nameC":"???",
+			"nameC":"Elite Defiant",
 			"desc":""
 		},
 		{
 			"nameA":"Elite Interceptor",
 			"nameH":"Elite Leviathan",
-			"nameC":"???",
+			"nameC":"Elite Maser",
 			"desc":""
 		}
 	]
