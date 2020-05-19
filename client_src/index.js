@@ -119,6 +119,7 @@ global.stopTyping = () => { typing = false }
 var centered = false;
 
 var baseMap2D = {}
+var useOldMap = false;
 
 var chatLength = 20, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
 var lorePage = 0, homepageTimer = 0, loreTimer = 0;
@@ -751,30 +752,40 @@ function r3DMap() {
 	for (var i = 0; i < mapSz; i++) {
 		for (var j = 0; j < mapSz; j++) {
 
-			var dot1 = sectorPoints[i][j];
+			var dot1 = sectorPoints[i  ][j  ];
+			var dot2 = sectorPoints[i  ][j+1];
+			var dot3 = sectorPoints[i+1][j  ];
 			var dot4 = sectorPoints[i+1][j+1];
+			if (useOldMap) { // Override if the user is using the square map
+				var dot1 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
+				var dot2 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
+				var dot3 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
+				var dot4 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
+			}
 
 			var cz = (dot1.z+dot4.z)/2;
 
-			var ga = Math.min(1,48*square(square(square(-cz/400+.5))));
+			var ga = .75;
+			if (!useOldMap) // Sectors dynamically transparent
+				ga = Math.min(1,48*square(square(square(-cz/400+.5))));
 			//if(ga<.1) continue; dunno why this doesnt work
 			minictx.globalAlpha=ga;
 
+			var appliedZoom = useOldMap?1:mapZoom;
+
 			//render lines
-			var dot2 = sectorPoints[i][j+1];
-			var dot3 = sectorPoints[i+1][j];
-			var xx1 = dot1.x / mapZoom;
-			var yy1 = dot1.y / mapZoom;
-			var zz1 = dot1.z / mapZoom;
-			var xx2 = dot2.x / mapZoom;
-			var yy2 = dot2.y / mapZoom;
-			var zz2 = dot2.z / mapZoom;
-			var xx3 = dot3.x / mapZoom;
-			var yy3 = dot3.y / mapZoom;
-			var zz3 = dot3.z / mapZoom;
-			var xx4 = dot4.x / mapZoom;
-			var yy4 = dot4.y / mapZoom;
-			var zz4 = dot4.z / mapZoom;
+			var xx1 = dot1.x / appliedZoom;
+			var yy1 = dot1.y / appliedZoom;
+			var zz1 = dot1.z / appliedZoom;
+			var xx2 = dot2.x / appliedZoom;
+			var yy2 = dot2.y / appliedZoom;
+			var zz2 = dot2.z / appliedZoom;
+			var xx3 = dot3.x / appliedZoom;
+			var yy3 = dot3.y / appliedZoom;
+			var zz3 = dot3.z / appliedZoom;
+			var xx4 = dot4.x / appliedZoom;
+			var yy4 = dot4.y / appliedZoom;
+			var zz4 = dot4.z / appliedZoom;
 			minictx.beginPath();
 			minictx.moveTo(104+xx3, 104+yy3);
 			minictx.lineTo(104+xx1, 104+yy1);
@@ -784,8 +795,8 @@ function r3DMap() {
 			minictx.closePath();
 
 			//render sector labels
-			if(mapZoom<.9 && ga > .3){
-				var fontsz = Math.hypot(xx3-xx2,yy3-yy2)/3;
+			var fontsz = Math.hypot(xx3-xx2,yy3-yy2)/3;
+			if(ga > .3 && fontsz > 5 && baseMap2D[i][j]===0 && !(useOldMap && i*j!=0)){
 				minictx.font = fontsz+"px ShareTech";
 				minictx.fillStyle = "white";
 				minictx.fillText(getSectorName(i,j), (xx2+xx3)/2+104, (yy2+yy3+fontsz*.65)/2+104);
@@ -876,25 +887,27 @@ function r3DMap() {
 		centered = true;
 	}
 
-
 	//render stars
-	for (var i = 1; i < 1000; i++) {
-		var dot = dots[i];
-		var xx = 104 + dot.x / mapZoom;
-		var yy = 104 + dot.y / mapZoom;
-		var sz = i/500+.5
-		minictx.fillStyle = "#"+(((128 + Math.floor(Math.abs(CoherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(CoherentNoise(17*i+79)) * 128) << 8) + Math.floor(Math.abs(CoherentNoise(7*i+107)) * 128)).toString(16);
-		minictx.globalAlpha=Math.min(1,48*square(square(square(-dot.z/400+.5))));
-		minictx.fillRect(xx-sz/2, yy-sz/2, sz, sz);
+	if (!useOldMap) {
+		for (var i = 1; i < 1000; i++) {
+			var dot = dots[i];
+			var xx = 104 + dot.x / mapZoom;
+			var yy = 104 + dot.y / mapZoom;
+			var sz = i/500+.5
+			minictx.fillStyle = "#"+(((128 + Math.floor(Math.abs(CoherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(CoherentNoise(17*i+79)) * 128) << 8) + Math.floor(Math.abs(CoherentNoise(7*i+107)) * 128)).toString(16);
+			minictx.globalAlpha=Math.min(1,48*square(square(square(-dot.z/400+.5))));
+			minictx.fillRect(xx-sz/2, yy-sz/2, sz, sz);
+		}
+		minictx.globalAlpha=Math.min(1,48*square(square(square(-dots[0].z/400+.5))));
+		minictx.fillStyle = 'black';
+		minictx.strokeStyle = 'white';
+		minictx.beginPath();
+		minictx.arc(104 + dots[0].x / mapZoom,104 + dots[0].y / mapZoom,10,0,Math.PI*2,false);
+		minictx.fill();
+		minictx.stroke();
+		minictx.closePath();
 	}
-	minictx.globalAlpha=Math.min(1,48*square(square(square(-dots[0].z/400+.5))));
-	minictx.fillStyle = 'black';
-	minictx.strokeStyle = 'white';
-	minictx.beginPath();
-	minictx.arc(104 + dots[0].x / mapZoom,104 + dots[0].y / mapZoom,10,0,Math.PI*2,false);
-	minictx.fill();
-	minictx.stroke();
-	minictx.closePath();
+
 	minictx.globalAlpha = 1;
 }
 function paste3DMap(xp,yp) {
@@ -928,7 +941,10 @@ function paste3DMap(xp,yp) {
 	ctx.fillStyle = brighten(pc);
 	ctx.globalAlpha = psga;
 	ctx.fillRect(xp+104+pscx+xxp1+xxp2-2, yp+104+pscy+yyp1+yyp2-2, 4, 4);
+	ctx.fillStyle = "yellow";
 	ctx.globalAlpha = 1;
+	ctx.font = "12px ShareTech";
+	write("Press M to use the "+(useOldMap?"3D":"flat")+" map", 8, 232);
 }
 function rBuyShipWindow(){
 	ctx.fillStyle = 'white';
@@ -953,7 +969,7 @@ function rBuyShipWindow(){
 	write(mEng[24], rx + 128 + 16, ry + 256 + 16);
 	ctx.font = '14px ShareTech';
 	write(mEng[25] + " " + shipView, rx + 128 + 16, ry + 256 + 56);
-	write(pc === "red" ? ships[shipView].nameA : ships[shipView].nameH, rx + 128 + 16, ry + 256 + 40);
+	write(colorSelect(pc, ships[shipView].nameA, ships[shipView].nameH, ships[shipView].nameC), rx + 128 + 16, ry + 256 + 40);
 	if (shipView > rank) ctx.fillStyle = "red";
 	ctx.fillStyle = 'yellow';
 	if (ships[shipView].price > money + worth || shipView > rank) ctx.fillStyle = "red";
@@ -2040,14 +2056,6 @@ socket.on('baseMap', function(data) {
 			sectorPoints[i][j] = { x: xx/2, y: yy/2, z: zz/2 };
 		}
 	}
-	/*for (var i = 0; i < mapSz + 1; i++) { // Old Map
-		sectorPoints[i] = {};
-		for (var j = 0; j < mapSz + 1; j++) {
-			var xx = (i - mapSz / 2) * 192 / mapSz;
-			var yy = (j - mapSz / 2) * 192 / mapSz;
-			sectorPoints[i][j] = { x: xx, y: yy, z: 0 };
-		}
-	}*/
 });
 socket.on('heatmap', function (data) {
 	hmap = data.hmap;
@@ -2282,6 +2290,10 @@ document.onkeydown = function (event) {
 		}
 		else if (event.keyCode === 192)//`
 			dev = !dev;
+		else if (event.keyCode === 77) {//m
+			useOldMap = !useOldMap;
+			r3DMap();
+		}
 		else if (event.keyCode === 69) {//e
 			if (keys[2] != true) socket.emit('key', { inputId: 'e', state: true });
 			keys[2] = true;

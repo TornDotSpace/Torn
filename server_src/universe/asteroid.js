@@ -2,7 +2,7 @@ function isOutOfBounds(obj) { // TODO this works but I'm not even using it anywh
 	return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 }
 
-module.exports = function Asteroid(i, h, sxx, syy, metal) {
+function Asteroid(i, h, sxx, syy, metal) {
 	var self = {
 		type: "Asteroid",
 		id: i, // unique identifier
@@ -116,6 +116,8 @@ module.exports = function Asteroid(i, h, sxx, syy, metal) {
 	}
 	return self;
 };
+
+module.exports = Asteroid;
 
 global.createAsteroid = function (sx, sy) {
 	var sx = Math.floor(Math.random() * mapSz);

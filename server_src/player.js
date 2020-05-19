@@ -228,7 +228,7 @@ function Player(sock) {
 				if (wep.name === "Supercharger") self.superchargerTimer = 1500;//1 min
 				else if (wep.name === "Hull Nanobots") self.health += Math.min(self.maxHealth*.2, self.maxHealth - self.health); // min prevents overflow
 				else if (wep.name === "Photon Cloak") self.disguise = 200;//6s
-				else if (wep.name === "Warp Drive") self.speed = self.thrust * (self.ship == 16 ? 1000 : 750);
+				else if (wep.name === "Warp Drive") self.speed = self.ship == 16 ? 1500 : 1000;
 			}
 
 

@@ -1,3 +1,4 @@
+var Beam = require('./beam.js');
 
 module.exports = function Mine(ownr, i, weaponID) {
 	var self = {
@@ -66,7 +67,13 @@ module.exports = function Mine(ownr, i, weaponID) {
 		//heal them
 		for (var i in players[self.sy][self.sx]) {
 			var p = players[self.sy][self.sx][i];
-			if (squaredDist(p, self) < square(self.range * 10)) p.health=Math.min(p.health-self.dmg, p.maxHealth); // heal them
+			if (squaredDist(p, self) < square(self.range * 10)) {
+				p.health=Math.min(p.health-self.dmg, p.maxHealth); // heal them
+
+				var r = Math.random(); // Laser Mine
+				var beam = Beam(self, r, self.wepnID, p, self); // m.owner is the owner, m is the origin location
+				beams[self.sy][self.sx][r] = beam;
+			}
 		}
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
