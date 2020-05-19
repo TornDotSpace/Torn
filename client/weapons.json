@@ -392,7 +392,7 @@
 		},
 		{
 			"name":"Ore Cannon",
-			"range":200,
+			"range":250,
 			"damage":60,
 			"speed":-1,
 			"charge":5,
