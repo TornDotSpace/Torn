@@ -10,8 +10,8 @@ module.exports = function Mine(ownr, i, weaponID) {
 
 		x: ownr.x,
 		y: ownr.y,
-		vx: weaponID != 33 ? 0 : Math.cos(ownr.angle) * 30, // grenades are the only mines that move
-		vy: weaponID != 33 ? 0 : Math.sin(ownr.angle) * 30,
+		vx: Math.cos(ownr.angle), // grenades are the only mines that move
+		vy: Math.sin(ownr.angle),
 		sx: ownr.sx,
 		sy: ownr.sy,
 
@@ -19,14 +19,18 @@ module.exports = function Mine(ownr, i, weaponID) {
 		wepnID: weaponID,
 	}
 	self.tick = function () {
-		self.x += self.vx; // move
-		self.y += self.vy;
 		if (self.time == 0) self.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
 		if ((self.wepnID == 33 || self.wepnID == 32) && self.time++ > 25) self.die(); // grenade and impulse mine blow up after 1 second
 		if (self.time++ > 25 * 3 * 60) self.die(); // all mines die after 3 minutes
 
+		if (self.wepnID == 33) self.move(); // grenade
 		if (self.wepnID == 43 && self.time % 8 == 0) self.doPulse(); // pulse
 		if (self.wepnID == 44 && self.time % 25 == 0) self.doHeal(); // campfire
+	}
+	self.move = function() {
+		var speed = wepns[weaponID].speed;
+		self.x += self.vx * speed;
+		self.y += self.vy * speed;
 	}
 	self.doPulse = function(){
 		if (self.time > 25 * 40) self.die(); // pulse has a shorter lifespan
@@ -62,7 +66,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		//heal them
 		for (var i in players[self.sy][self.sx]) {
 			var p = players[self.sy][self.sx][i];
-			if (squaredDist(p, self) < square(self.range * 10)) p.health-=self.dmg; // heal them
+			if (squaredDist(p, self) < square(self.range * 10)) p.health=Math.min(p.health-self.dmg, p.maxHealth); // heal them
 		}
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
