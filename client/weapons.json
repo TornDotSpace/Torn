@@ -575,7 +575,7 @@
 		{
 			"name":"Campfire",
 			"range":50,
-			"damage":-20,
+			"damage":-30,
 			"speed":0,
 			"charge":60,
 			"price":5000,
