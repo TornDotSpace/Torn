@@ -20,7 +20,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		wepnID: weaponID,
 	}
 	self.tick = function () {
-		if (self.time == 0) self.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
+		if (self.time == 0 && self.wepnID < 32) self.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
 		if ((self.wepnID == 33 || self.wepnID == 32) && self.time++ > 25) self.die(); // grenade and impulse mine blow up after 1 second
 		if (self.time++ > 25 * 3 * 60) self.die(); // all mines die after 3 minutes
 
@@ -54,7 +54,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 		}
 	}
 	self.doHeal = function(){
-		if (self.time > 25 * 10) self.die(); // campfire has a shorter lifespan
+		if (self.time > 25 * 20) self.die(); // campfire has a shorter lifespan
 		var playerFound = 0;
 
 		//check there's 2 people
