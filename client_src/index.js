@@ -649,6 +649,7 @@ function render() {
 	var time9 = -performance.now();
 	time8 -= time9;
 	rRadar();//Tolerable lag
+	rCargo();
 
 	var timeA = -performance.now();
 	time9 -= timeA;
@@ -1364,6 +1365,7 @@ function rBaseGui() {
 	ctx.textAlign = "left";
 	//ctx.drawImage(Img.baseOutline, rx - 4, ry - 4);
 	paste3DMap(8,8);
+	rCargo();
 }
 function wrapText(text, x, y, maxWidth, lineHeight) {
 	var words = text.split(' ');
@@ -1882,12 +1884,12 @@ socket.on('you', function (data) {
 	experience = data.experience;
 	rank = data.rank;
 	myTrail = data.trail;
-	t2 = Math.round(1000 * data.t2) / 1000;
-	va2 = Math.round(1000 * data.va2) / 1000;
-	ag2 = Math.round(1000 * data.ag2) / 1000;
-	c2 = Math.round(1000 * data.c2) / 1000;
-	mh2 = Math.round(1000 * data.mh2) / 1000;
-	e2 = Math.round(1000 * data.e2) / 1000;
+	if(typeof data.t2  !== "undefined") t2 = Math.round(1000 * data.t2) / 1000;
+	if(typeof data.va2 !== "undefined") va2 = Math.round(1000 * data.va2) / 1000;
+	if(typeof data.ag2 !== "undefined") ag2 = Math.round(1000 * data.ag2) / 1000;
+	if(typeof data.c2  !== "undefined") c2 = Math.round(1000 * data.c2) / 1000;
+	if(typeof data.mh2 !== "undefined") mh2 = Math.round(1000 * data.mh2) / 1000;
+	if(typeof data.e2  !== "undefined") e2 = Math.round(1000 * data.e2) / 1000;
 	if (data.points >= 0 && data.points < 1000) // prevents undefined on base
 		points = data.points;
 });
@@ -2993,33 +2995,32 @@ function rTexts(lag, arr) {
 	info[0] = mEng[149] + Math.round(experience);
 	info[1] = mEng[5] + Math.floor(money);
 	info[2] = mEng[6] + kills;
-	info[3] = mEng[147] + ore;
-	info[4] = mEng[148] + rank;
-	info[5] = '';
-	info[6] = isChrome ? "" : mEng[81];
-	info[7] = isChrome ? "" : mEng[82];
-	info[8] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
-	info[9] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
-	info[10] = mEng[85] + nLag + " ms " + mEng[194] + Number(meanNLag).toPrecision(3) + " ms" + ")";
-	info[11] = mEng[86] + fps;
-	info[12] = mEng[87] + ups;
+	info[3] = mEng[148] + rank;
+	info[4] = '';
+	info[5] = isChrome ? "" : mEng[81];
+	info[6] = isChrome ? "" : mEng[82];
+	info[7] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
+	info[8] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
+	info[9] = mEng[85] + nLag + " ms " + mEng[194] + Number(meanNLag).toPrecision(3) + " ms" + ")";
+	info[10] = mEng[86] + fps;
+	info[11] = mEng[87] + ups;
 	if (lag > 50) {
-		info[5] = mEng[88];
-		info[6] = mEng[89];
-		info[7] = "";
+		info[4] = mEng[88];
+		info[5] = mEng[89];
+		info[6] = "";
 	}
 	else if (nLag > 100) {
-		info[5] = mEng[90];
-		info[6] = mEng[91];
-		info[7] = mEng[92];
+		info[4] = mEng[90];
+		info[5] = mEng[91];
+		info[6] = mEng[92];
 	}
 	else if (sLag > 50) {
-		info[5] = mEng[95];
-		info[6] = mEng[92]
-		info[7] = "";
+		info[4] = mEng[95];
+		info[5] = mEng[92]
+		info[6] = "";
 	}
-	for (var i = 0; i < (dev ? 15 + lagArr.length : 5); i++)
-		write(i < 15 ? info[i] : (lagNames[i - 15] + mEng[195] + parseFloat(Math.round(lagArr[i - 15] * 100) / 100).toFixed(2)), w - lbShift - 32, 64 + i * 16);
+	for (var i = 0; i < (dev ? 14 + lagArr.length : 4); i++)
+		write(i < 14 ? info[i] : (lagNames[i - 14] + mEng[195] + parseFloat(Math.round(lagArr[i - 14] * 100) / 100).toFixed(2)), w - lbShift - 32, 64 + i * 16);
 	ctx.textAlign = 'left';
 }
 function rCurrQuest() {
@@ -3242,6 +3243,40 @@ function rLB() {
 		write(lb[i].rank, w - 16, (i + 4) * 16);
 	}
 }
+function rCargo() {
+	ctx.globalAlpha = .5;
+
+	ctx.strokeStyle = "white";
+	ctx.fillStyle = "black";
+	ctx.lineWidth = .45;
+	ctx.strokeRect(224,8,16,208);
+	ctx.fillRect(224,8,16,208);
+
+	var myCapacity = ships[ship].capacity * c2;
+	if(ship == 17) myCapacity = iron+platinum+silver+aluminium; // because it has infinite cargo
+
+	console.log(myCapacity);
+
+	var ironBarHeight =      iron*208/myCapacity;
+	var silvBarHeight =    silver*208/myCapacity;
+	var alumBarHeight = aluminium*208/myCapacity;
+	var platBarHeight =  platinum*208/myCapacity;
+
+	var runningY = 216-ironBarHeight;
+	ctx.fillStyle = "#d44";
+	ctx.fillRect(224,runningY,16,ironBarHeight);
+	runningY -= alumBarHeight;
+	ctx.fillStyle = "#eef";
+	ctx.fillRect(224,runningY,16,alumBarHeight);
+	runningY -= silvBarHeight;
+	ctx.fillStyle = "#777";
+	ctx.fillRect(224,runningY,16,silvBarHeight);
+	runningY -= platBarHeight;
+	ctx.fillStyle = "#90f";
+	ctx.fillRect(224,runningY,16,platBarHeight);
+	
+	ctx.globalAlpha = 1;
+}
 function rRadar() {
 	if (va2 < 1.12) return;
 	var radarZoom = 1;
@@ -3256,11 +3291,56 @@ function rRadar() {
 	ctx.rotate(stime % (2 * Math.PI) + Math.PI / 2);
 	ctx.drawImage(Img.spin, -96, -96);
 	ctx.restore();
-	ctx.globalAlpha = ctx.lineWidth = 1;
 	var r = va2*3840 - 1280;
 	var r2 = square(r);
 	var r2z2 = square(r*radarZoom);
 	var distFactor = 96/r/radarZoom;
+	ctx.globalAlpha = ctx.lineWidth = .5;
+	if (px+r>sectorWidth){
+		var dx = sectorWidth - px;
+		var dy = 0;
+		var rx = dx * distFactor, ry = dy * distFactor;
+		var l = 96*Math.sqrt(1-square(rx/96))-2;
+		ctx.beginPath();
+		ctx.moveTo(112+rx,ry-l + 342);
+		ctx.lineTo(112+rx,ry+l + 342);
+		ctx.closePath();
+		ctx.stroke();
+	}
+	if (px-r<0){
+		var dx = 0 - px;
+		var dy = 0;
+		var rx = dx * distFactor, ry = dy * distFactor;
+		var l = 96*Math.sqrt(1-square(rx/96))-2;
+		ctx.beginPath();
+		ctx.moveTo(112+rx,ry-l + 342);
+		ctx.lineTo(112+rx,ry+l + 342);
+		ctx.closePath();
+		ctx.stroke();
+	}
+	if (py+r>sectorWidth){
+		var dx = 0;
+		var dy = sectorWidth - py;
+		var rx = dx * distFactor, ry = dy * distFactor;
+		var l = 96*Math.sqrt(1-square(ry/96))-2;
+		ctx.beginPath();
+		ctx.moveTo(112+rx-l,ry + 342);
+		ctx.lineTo(112+rx+l,ry + 342);
+		ctx.closePath();
+		ctx.stroke();
+	}
+	if (py-r<0){
+		var dx = 0;
+		var dy = 0 - py;
+		var rx = dx * distFactor, ry = dy * distFactor;
+		var l = 96*Math.sqrt(1-square(ry/96))-2;
+		ctx.beginPath();
+		ctx.moveTo(112+rx-l,ry + 342);
+		ctx.lineTo(112+rx+l,ry + 342);
+		ctx.closePath();
+		ctx.stroke();
+	}
+	ctx.globalAlpha = ctx.lineWidth = 1;
 	if (basesInfo !== undefined) {
 		var dx = basesInfo.x - px;
 		var dy = basesInfo.y - py;
@@ -3291,9 +3371,10 @@ function rRadar() {
 		ctx.fill();
 		ctx.closePath();
 	}
-	if (va2 > 2.49)
-		for (var p_pack in playersInfo) {
-			var p = playersInfo[p_pack];
+	if (va2 > 2.2) {
+		ctx.fillStyle = "gold";
+		for (var p_pack in packsInfo) {
+			var p = packsInfo[p_pack];
 			var dx = p.x - px;
 			var dy = p.y - py;
 			if (square(dx) + square(dy) > r2z2) continue;
@@ -3302,10 +3383,10 @@ function rRadar() {
 			ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 			ctx.beginPath();
 			ctx.arc(rx, ry, 2, 0, 2 * Math.PI, false);
-			ctx.fillStyle = "gold";
 			ctx.fill();
 			ctx.closePath();
 		}
+	}
 	ctx.lineWidth = 2;
 	for (var a in astsInfo) {
 		a = astsInfo[a];
@@ -3784,7 +3865,6 @@ function rPlanets() {
 	var stime = d.getTime() / 150000;
 
 	var imgi = (sx + sy * mapSz) % 5 + 1;
-	console.log(sx + " " + sy + " " + mapSz);
 	var img = planetImgs[imgi];
 
 	if(typeof img === "undefined") return;

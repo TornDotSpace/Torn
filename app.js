@@ -99,24 +99,24 @@ global.planetNames = jsn.planets;
 global.basesPerTeam = 6;
 global.baseMap=	{
 					"red":[	//x, y
-					3, 0,
 					1, 1,
+					2, 8,
 					2, 3,
 					0, 4,
 					1, 6,
 					0, 8
 					],
 					"blue":[
-					6, 0,
 					4, 1,
+					5, 8,
 					5, 3,
 					3, 4,
 					4, 6,
 					3, 8
 					],
 					"green":[
-					0, 0,
 					7, 1,
+					8, 8,
 					8, 3,
 					6, 4,
 					7, 6,
@@ -378,9 +378,9 @@ function init() { // start the server!
 	var v = new Vortex(id, Math.random() * sectorWidth, Math.random() * sectorWidth, Math.floor(Math.random() * mapSz), Math.floor(Math.random() * mapSz), .5, 0, true);
 	vorts[v.sy][v.sx][id] = v;
 
-	//6 Black Holes
+	//3 Black Holes
 	for(var vortno = 0; vortno < 9; vortno++){
-		if(vortno % 3 == 0) continue;
+		if(vortno % 3 != 1) continue;
 		id = Math.random();
 		v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, vortno, 8, .15, 0, false);
 		vorts[v.sy][v.sx][id] = v;

@@ -1610,7 +1610,7 @@ global.spawnBot = function (sx, sy, col, force) {
 	bot.sx = sx;
 	bot.sy = sy;
 	var rand = 4.2 * Math.random();
-	bot.experience = 550*Math.sqrt(Math.pow(2, Math.pow(2, rand))) + 3 * rand;
+	bot.experience = 10*Math.sqrt(Math.pow(2, Math.pow(2, rand))-2)*sy*sy + 3 * rand;
 	bot.updateRank();
 	bot.ship = bot.rank;
 	bot.x = bot.y = sectorWidth / 2;
