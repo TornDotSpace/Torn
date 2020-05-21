@@ -3255,8 +3255,6 @@ function rCargo() {
 	var myCapacity = ships[ship].capacity * c2;
 	if(ship == 17) myCapacity = iron+platinum+silver+aluminium; // because it has infinite cargo
 
-	console.log(myCapacity);
-
 	var ironBarHeight =      iron*208/myCapacity;
 	var silvBarHeight =    silver*208/myCapacity;
 	var alumBarHeight = aluminium*208/myCapacity;
