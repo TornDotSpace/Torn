@@ -170,8 +170,8 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
 			self.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
-			b.owner.spoils("experience", baseKillExp); // reward them
-			b.owner.spoils("money", baseKillMoney);
+			b.owner.spoils("experience", baseKillExp*self.sy); // reward them
+			b.owner.spoils("money", baseKillMoney*self.sy);
 
 			if (raidTimer < 15000) { // during a raid
 				b.owner.points++; // give a point to the killer
