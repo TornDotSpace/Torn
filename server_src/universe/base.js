@@ -85,7 +85,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 
 		var shouldMuon = self.reload < 0 && Math.random()<.015;
 		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, shouldMuon?1000:wepns[3].speed);
-		self.angle = (self.angle*2+newAngle)/3;
+		self.angle = (self.angle+newAngle*2)/3;
 
 		if (self.reload < 0) {
 			if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {self.shootMuon(); return;}

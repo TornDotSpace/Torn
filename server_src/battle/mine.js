@@ -11,8 +11,8 @@ module.exports = function Mine(ownr, i, weaponID) {
 
 		x: ownr.x,
 		y: ownr.y,
-		vx: Math.cos(ownr.angle), // grenades are the only mines that move
-		vy: Math.sin(ownr.angle),
+		vx: Math.cos(ownr.angle)*wepns[weaponID].speed, // grenades are the only mines that move
+		vy: Math.sin(ownr.angle)*wepns[weaponID].speed,
 		sx: ownr.sx,
 		sy: ownr.sy,
 
@@ -24,14 +24,13 @@ module.exports = function Mine(ownr, i, weaponID) {
 		if ((self.wepnID == 33 || self.wepnID == 32) && self.time++ > 25) self.die(); // grenade and impulse mine blow up after 1 second
 		if (self.time++ > 25 * 3 * 60) self.die(); // all mines die after 3 minutes
 
-		if (self.wepnID == 33) self.move(); // grenade
+		self.move(); // not only grenade, anything EM'ed
 		if (self.wepnID == 43 && self.time % 8 == 0) self.doPulse(); // pulse
 		if (self.wepnID == 44 && self.time % 25 == 0) self.doHeal(); // campfire
 	}
 	self.move = function() {
-		var speed = wepns[weaponID].speed;
-		self.x += self.vx * speed;
-		self.y += self.vy * speed;
+		self.x += self.vx;
+		self.y += self.vy;
 	}
 	self.doPulse = function(){
 		if (self.time > 25 * 40) self.die(); // pulse has a shorter lifespan
