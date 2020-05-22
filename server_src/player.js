@@ -1095,9 +1095,9 @@ function Player(sock) {
 
 		//base
 		if (!restricted)
-			if (self.weapons[self.equipped] == 7 || self.weapons[self.equipped] == 8 || self.weapons[self.equipped] == 9) {
+			if (self.weapons[self.equipped] == 7 || self.weapons[self.equipped] == 8 || self.weapons[self.equipped] == 9 || self.weapons[self.equipped] == 45) {
 				var b = bases[self.sy][self.sx];
-				if (b != 0 && (b.color == self.color) != (self.weapons[self.equipped] == 45) && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
+				if (b != 0 && ((b.color == self.color) == (self.weapons[self.equipped] == 45)) && !(self.weapons[self.equipped] == 45 && b.health > baseHealth*.9995) && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
 			}
 
 		//search players
@@ -1105,8 +1105,8 @@ function Player(sock) {
 			for (var i in players[self.sy][self.sx]) {
 				var p = players[self.sy][self.sx][i];
 				if (p.ship != 17 && (self.weapons[self.equipped] == 26 || self.weapons[self.equipped] == 30)) continue; // elite quarrier is affected
-				if ((p.color == self.color) != (self.weapons[self.equipped] == 45) || p.disguise > 0 || self.id == p.id) continue;
-				if (self.weapons[self.equipped] == 45 && p.health > p.maxHealth*.995) continue;
+				if (((p.color == self.color) != (self.weapons[self.equipped] == 45)) || p.disguise > 0 || self.id == p.id) continue;
+				if (self.weapons[self.equipped] == 45 && p.health > p.maxHealth*.9995) continue;
 				var dx = p.x - ox, dy = p.y - oy;
 				var dist2 = dx * dx + dy * dy;
 				if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = p;
