@@ -434,12 +434,14 @@ module.exports = function initNetcode() {
                 var spaces = "";
                 for (var i = player.name.length; i < 16; i++) spaces += " "; // align the message
                 const finalMsg = spaces + player.nameWithColor() + ": " + data.msg;
-                if (player.globalChat == 0) chatAll(finalMsg);//sendTeam(player.color, 'chat', {msg:finalMsg});
+
+                // Send it to the client up to what chat room theyre in
+                playerChat(finalMsg, player.globalChat, player.color, player.sx, player.sy);
             }
         });
         socket.on('toggleGlobal', function (data) { // player wants to switch what chat room they're in
             if (player == 0) return;
-            player.globalChat = (player.globalChat + 1) % 2;
+            player.globalChat = (player.globalChat + 1) % 3;
         });
         socket.on('sell', function (data) { // selling ore
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'string') return;

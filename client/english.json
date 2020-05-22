@@ -438,6 +438,10 @@
 		{
 			"name":"Campfire",
 			"desc":"Quickly heals nearby players, as long as there are at least 2 of them."
+		},
+		{
+			"name":"Healing Beam",
+			"desc":"Heals nearby players and bases."
 		}
 	],
 	"splashes":[
