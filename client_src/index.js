@@ -3811,6 +3811,7 @@ function rBeams() {
 		if (selfo.wepnID == 7) ctx.strokeStyle = 'mediumpurple';
 		else if (selfo.wepnID == 9) ctx.strokeStyle = 'lime';
 		else if (selfo.wepnID == 24) ctx.strokeStyle = 'yellow';
+		else if (selfo.wepnID == 45) ctx.strokeStyle = 'cyan';
 		else if (selfo.wepnID == 33 || selfo.wepnID == 26 || selfo.wepnID == 30) ctx.strokeStyle = '#d0c090';
 		else ctx.strokeStyle = 'red';
 		var bx = selfo.bx - px + w / 2 + scrx;
