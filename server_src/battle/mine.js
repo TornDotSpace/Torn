@@ -59,14 +59,14 @@ module.exports = function Mine(ownr, i, weaponID) {
 		//check there's 2 people
 		for (var i in players[self.sy][self.sx]) {
 			var p = players[self.sy][self.sx][i];
-			if (squaredDist(p, self) < square(self.range * 10)) playerFound++;
+			if (p.color == self.color && squaredDist(p, self) < square(self.range * 10)) playerFound++;
 		}
 		if (playerFound < 2) return;
 
 		//heal them
 		for (var i in players[self.sy][self.sx]) {
 			var p = players[self.sy][self.sx][i];
-			if (squaredDist(p, self) < square(self.range * 10)) {
+			if (p.color == self.color && squaredDist(p, self) < square(self.range * 10)) {
 				p.health=Math.min(p.health-self.dmg, p.maxHealth); // heal them
 
 				var r = Math.random(); // Laser Mine

@@ -121,11 +121,11 @@ var centered = false;
 var baseMap2D = {}
 var useOldMap = false;
 
-var chatLength = 20, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
+var chatLength = 40, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
 var lorePage = 0, homepageTimer = 0, loreTimer = 0;
+var chatRooms = [mEng[197], "Team Chat", "Sector Chat"];
 var messages = {};
-for (var i = 0; i < chatLength; i++)
-	messages[i] = "";
+clearChat();
 preProcessChat();
 var raidTimer = -1, raidRed = 0, raidBlue = 0, raidGreen = 0, points = 0;
 var shift = false, shield = false, autopilot = false;
@@ -2411,6 +2411,10 @@ document.addEventListener('mousemove', function (evt) {
 		r3DMap();
 	}
 
+	//Global Chat Button
+	else if (mx < 512 + 16 && mx > 512 - 96 && my > h - 32)
+		seller = 800;
+
 	//Shop
 	else if(docked && tab == 0){
 			 if (mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
@@ -2476,11 +2480,9 @@ document.addEventListener('mousemove', function (evt) {
 		else seller = 500 + ticX + ticY * 2;
 	}
 
-	//Global Chat Button
-	else if (mx < 512 + 32 && mx > 512 - 64 && my > h - 32) seller = 800;
-
 	else seller = 0;
 	if (seller != 0 && seller != preSeller) playAudio("button2", .2);
+	if (preSeller*seller==0 && preSeller+seller==800) rChat();
 }, false);
 
 document.addEventListener('mousedown', function (evt) {
@@ -2532,9 +2534,11 @@ document.addEventListener('mousedown', function (evt) {
 	} if (i >= 700 && i < 705)
 		socket.emit('trail', { trail: i - 700 });
 	if (i == 800) {
-		globalChat = (globalChat + 1) % 2;
+		globalChat = (globalChat + 1) % 3;
+		clearChat();
 		socket.emit("toggleGlobal", {});
 		preProcessChat();
+		rChat();
 	}
 	if (docked && mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
 		var item = '';
@@ -3144,6 +3148,10 @@ function preProcessChat() {
 	}
 	chati--;
 }
+function clearChat() {
+	for (var i = 0; i < chatLength; i++)
+		messages[i] = "";
+}
 function rChat() {
 	chatcanvas.width = chatcanvas.width;
 	chatctx.font = "14px ShareTech";
@@ -3157,11 +3165,9 @@ function rChat() {
 
 	chatctx.globalAlpha = 1;
 	chatctx.textAlign = "right";
-	chatctx.fillStyle = (seller != 800 ? (globalChat != 1 ? "violet" : pc==="red"?'pink':(pc==="blue"?'cyan':"lime")) : "yellow");
-	chatctx.fillText(globalChat == 0 ? mEng[197] : mEng[199], 512, chatcanvas.height - 16);
+	chatctx.fillStyle = (seller != 800 ? (globalChat != 1 ? "violet" : brighten(pc)) : "yellow");
+	chatctx.fillText(chatRooms[globalChat], 512, chatcanvas.height - 16);
 	chatctx.restore();
-
-	if (globalChat == 1) return;
 
 	chatctx.textAlign = "left";
 
@@ -3244,13 +3250,21 @@ function rLB() {
 	}
 }
 function rCargo() {
+
+	if (quest.type === 'Mining') {
+		ctx.fillStyle = "#d44";
+		var metalWeHave = iron;
+		     if(quest.metal === "aluminium") { ctx.fillStyle = "#999"; metalWeHave = aluminium; }
+		else if(quest.metal ===  "platinum") { ctx.fillStyle = "#90f"; metalWeHave = platinum; }
+		else if(quest.metal ===    "silver") { ctx.fillStyle = "#eef"; metalWeHave = silver; }
+		write(metalWeHave + "/" + quest.amt + " " + quest.metal,248,16);
+	}
+
 	ctx.globalAlpha = .5;
 
 	ctx.strokeStyle = "white";
-	ctx.fillStyle = "black";
 	ctx.lineWidth = .45;
 	ctx.strokeRect(224,8,16,208);
-	ctx.fillRect(224,8,16,208);
 
 	var myCapacity = ships[ship].capacity * c2;
 	if(ship == 17) myCapacity = iron+platinum+silver+aluminium; // because it has infinite cargo
@@ -3260,18 +3274,24 @@ function rCargo() {
 	var alumBarHeight = aluminium*208/myCapacity;
 	var platBarHeight =  platinum*208/myCapacity;
 
-	var runningY = 216-ironBarHeight;
-	ctx.fillStyle = "#d44";
-	ctx.fillRect(224,runningY,16,ironBarHeight);
-	runningY -= alumBarHeight;
-	ctx.fillStyle = "#eef";
-	ctx.fillRect(224,runningY,16,alumBarHeight);
-	runningY -= silvBarHeight;
+	var runningY = 216-alumBarHeight;
 	ctx.fillStyle = "#777";
-	ctx.fillRect(224,runningY,16,silvBarHeight);
+	ctx.fillRect(224,runningY,16,alumBarHeight);
+	
 	runningY -= platBarHeight;
 	ctx.fillStyle = "#90f";
 	ctx.fillRect(224,runningY,16,platBarHeight);
+
+	runningY -= silvBarHeight;
+	ctx.fillStyle = "#eef";
+	ctx.fillRect(224,runningY,16,silvBarHeight);
+
+	runningY -= ironBarHeight;
+	ctx.fillStyle = "#d44";
+	ctx.fillRect(224,runningY,16,ironBarHeight);
+
+	ctx.fillStyle = "black";
+	ctx.fillRect(224,8,16,runningY-8);
 	
 	ctx.globalAlpha = 1;
 }

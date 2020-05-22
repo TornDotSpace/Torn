@@ -156,7 +156,7 @@ function Player(sock) {
 
 		var amDrifting = self.e || self.gyroTimer > 0;
 		self.shield = (self.s && !amDrifting && self.gyroTimer < 1) || self.leaveBaseShield > 0;
-		if(self.disguise>0 || (self.shield && self.weapons[self.equipped]>0 && wepns[self.weapons[self.equipped]].type !== "Misc" && self.space))self.charge=Math.min(self.charge,0);
+		if(self.disguise>0 || (self.shield && self.weapons[self.equipped]>0 && wepns[self.weapons[self.equipped]].type !== "Misc" && wepns[self.weapons[self.equipped]].type !== "Mine" && self.space))self.charge=Math.min(self.charge,0);
 		self.leaveBaseShield--;
 
 		if (!self.isBot) {
@@ -212,7 +212,7 @@ function Player(sock) {
 			// <= 6 are traditional guns.
 			if (wepId <= 6 || wep.name === "Gravity Bomb" || wep.name === "Spreadshot") self.shootBullet(wepId);
 			// <= 9 are plasma, laser, hadron beams.
-			else if (wepId <= 9 || wep.name === "Jammer" || wep.name === "Mining Laser" || wep.name === "Ore Cannon" || wep.name === "Destabilizer") self.shootBeam(self, false);
+			else if (wepId <= 9 || wep.name === "Jammer" || wep.name === "Mining Laser" || wep.name === "Ore Cannon" || wep.name === "Destabilizer" || wep.name === "Healing Beam") self.shootBeam(self, false);
 			//Traditional missiles
 			else if (wepId <= 14 || wep.name === "Proximity Fuze") self.shootMissile();
 			// <= 17: Traditional Mines
@@ -1097,7 +1097,7 @@ function Player(sock) {
 		if (!restricted)
 			if (self.weapons[self.equipped] == 7 || self.weapons[self.equipped] == 8 || self.weapons[self.equipped] == 9) {
 				var b = bases[self.sy][self.sx];
-				if (b != 0 && b.color != self.color && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
+				if (b != 0 && (b.color == self.color) != (self.weapons[self.equipped] == 45) && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
 			}
 
 		//search players
@@ -1105,14 +1105,15 @@ function Player(sock) {
 			for (var i in players[self.sy][self.sx]) {
 				var p = players[self.sy][self.sx][i];
 				if (p.ship != 17 && (self.weapons[self.equipped] == 26 || self.weapons[self.equipped] == 30)) continue; // elite quarrier is affected
-				if (p.color == self.color || p.disguise > 0) continue;
+				if ((p.color == self.color) != (self.weapons[self.equipped] == 45) || p.disguise > 0 || self.id == p.id) continue;
+				if (self.weapons[self.equipped] == 45 && p.health > p.maxHealth*.995) continue;
 				var dx = p.x - ox, dy = p.y - oy;
 				var dist2 = dx * dx + dy * dy;
 				if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = p;
 			}
 
 		//search asteroids
-		if (nearP == 0 && self.weapons[self.equipped] != 35 && self.weapons[self.equipped] != 31)
+		if (nearP == 0 && self.weapons[self.equipped] != 35 && self.weapons[self.equipped] != 31 && self.weapons[self.equipped] != 45)
 			for (var i in asts[self.sy][self.sx]) {
 				var a = asts[self.sy][self.sx][i];
 				if (a.sx != self.sx || a.sy != self.sy || a.hit) continue;
@@ -1260,6 +1261,7 @@ function Player(sock) {
 		d *= (self.shield ? .25 : 1); // Shield- 1/4th damage
 
 		self.health -= d;
+		if (self.health > self.maxHealth) self.health = self.maxHealth;
 		if (self.health < 0) self.die(origin);
 
 		note('-' + Math.floor(d), self.x, self.y - 64, self.sx, self.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
@@ -1610,7 +1612,7 @@ global.spawnBot = function (sx, sy, col, force) {
 	bot.sx = sx;
 	bot.sy = sy;
 	var rand = 4.2 * Math.random();
-	bot.experience = 10*Math.sqrt(Math.pow(2, Math.pow(2, rand))-2)*sy*sy + 3 * rand;
+	bot.experience = Math.sqrt(Math.pow(2, Math.pow(2, rand))-2)*sy*sy*sy + 3 * rand;
 	bot.updateRank();
 	bot.ship = bot.rank;
 	bot.x = bot.y = sectorWidth / 2;
