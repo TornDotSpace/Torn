@@ -90,6 +90,7 @@ connectToDB();
 var tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
+global.eng = JSON.parse(fs.readFileSync('client/english.json', 'utf8'));
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 global.planetNames = jsn.planets;

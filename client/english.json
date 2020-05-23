@@ -261,75 +261,151 @@
 	"weapons":[
 		{
 			"name":"Stock Gun",
-			"desc":"A basic, medium range gun."
+			"desc":"A basic, medium range gun.",
+			"killmessages":[
+				"P1 stock-gunned P2!",
+				"P1 capped P2!"
+			]
 		},
 		{
 			"name":"Plasma Gun",
-			"desc":"Short in range, slow to shoot and slow to recharge, but packs one hell of a punch."
+			"desc":"Short in range, slow to shoot and slow to recharge, but packs one hell of a punch.",
+			"killmessages":[
+				"P1 vaporized P2 with a plasma gun!"
+			]
 		},
 		{
 			"name":"Reverse Gun",
-			"desc":"Get off my tail! Basic gun that shoots backwards."
+			"desc":"Get off my tail! Basic gun that shoots backwards.",
+			"killmessages":[
+				"P1 got P2 from behind!"
+			]
 		},
 		{
 			"name":"Rifle",
-			"desc":"Powerful, long-range, fast bullets. Does a lot of damage. Perfect for shooting at a large swarm of distant enemies."
+			"desc":"Powerful, long-range, fast bullets. Does a lot of damage. Perfect for shooting at a large swarm of distant enemies.",
+			"killmessages":[
+				"P1 long-ranged P2!",
+				"P1 noscoped P2!"
+			]
 		},
 		{
 			"name":"Shotgun",
-			"desc":"This will come in handy in an ambush. Sprays a lot of bullets around where you shoot. Powerful but hard to control."
+			"desc":"This will come in handy in an ambush. Sprays a lot of bullets around where you shoot. Powerful but hard to control.",
+			"killmessages":[
+				"P1 double-barreled P2!",
+				"P1 turned P2 into buckshot!",
+				"P1 mistook P2 for a quail!",
+				"P1 shotgunned P2!"
+			]
 		},
 		{
 			"name":"Machine Gun",
-			"desc":"Rapid-fire! Ammunition is a bit weak, but that's no matter if you're shooting 13 rounds per second!"
+			"desc":"Rapid-fire! Ammunition is a bit weak, but that's no matter if you're shooting 13 rounds per second!",
+			"killmessages":[
+				"P1 unloaded on P2!",
+				"P1 machine-gunned P2!"
+			]
 		},
 		{
 			"name":"Minigun",
-			"desc":"Similar to the machine gun, with two active barrels instead of one. Great weapon if you can aim it quickly."
+			"desc":"Similar to the machine gun, with two active barrels instead of one. Great weapon if you can aim it quickly.",
+			"killmessages":[
+				"P1 minigunned P2!"
+			]
 		},
 		{
 			"name":"Plasma Beam",
-			"desc":"Automatically aims at the nearest enemy within a small range and fires a beam of plasma."
+			"desc":"Automatically aims at the nearest enemy within a small range and fires a beam of plasma.",
+			"killmessages":[
+				"P1 evaporated P2 with plasma!",
+				"P1 melted P2 with plasma!"
+			]
 		},
 		{
 			"name":"Laser Beam",
-			"desc":"Automatically aims at the nearest enemy within a medium range."
+			"desc":"Automatically aims at the nearest enemy within a medium range.",
+			"killmessages":[
+				"P1 evaporated P2 with a laser!",
+				"P1 lasered a hole through P2!",
+				"P1 burned a hole through P2!",
+				"P1 melted P2 with a laser!"
+			]
 		},
 		{
 			"name":"Hadron Beam",
-			"desc":"Short-range particle beam accelerator. Does a lot of damage, but takes a while to recharge. Can be used as a quick trump card for close calls."
+			"desc":"Short-range particle beam accelerator. Does a lot of damage, but takes a while to recharge. Can be used as a quick trump card for close calls.",
+			"killmessages":[
+				"P1 scattered P2's particles!",
+				"P1 disintegrated P2's nuclei!",
+				"P1 melted P2's atoms!"
+			]
 		},
 		{
 			"name":"Missile",
-			"desc":"This missile will follow the nearest enemy and explode on impact. If there is no enemy in range, it will simply go straight. Be careful, though: it is relatively slow and can be outrun by quick enemies."
+			"desc":"This missile will follow the nearest enemy and explode on impact. If there is no enemy in range, it will simply go straight. Be careful, though: it is relatively slow and can be outrun by quick enemies.",
+			"killmessages":[
+				"P1 heat-seeked P2!",
+				"P1 missiled P2!"
+			]
 		},
 		{
 			"name":"Heavy Missile",
-			"desc":"A slower missile that does more damage. Good tool against slower, stronger ships."
+			"desc":"A slower missile that does more damage. Good tool against slower, stronger ships.",
+			"killmessages":[
+				"P1 heat-seeked P2 with a heavy missile!",
+				"P1 heavy-missiled P2!"
+			]
 		},
 		{
 			"name":"EMP Missile",
-			"desc":"Short-range missile that both damages the enemy and paralyzes them. Use one when attacking a fast enemy head-on to stun them before they can dodge any guided projectiles."
+			"desc":"Short-range missile that both damages the enemy and paralyzes them. Use one when attacking a fast enemy head-on to stun them before they can dodge any guided projectiles.",
+			"killmessages":[
+				"P1 scattered P2's electrons!",
+				"P1 heat-seeked P2 with an EMP missile!",
+				"P1 EMP-missiled P2!"
+			]
 		},
 		{
 			"name":"Missile Swarm",
-			"desc":"Fires a single missile which splits into a swarm of missiles which will attack a large horde of enemies. Great tool to use against a large ambush."
+			"desc":"Fires a single missile which splits into a swarm of missiles which will attack a large horde of enemies. Great tool to use against a large ambush.",
+			"killmessages":[
+				"P1 swarmed P2 with missiles!",
+				"P1 missile-swarmed P2!",
+				"P1 overwhelmed P2 with missiles!"
+			]
 		},
 		{
 			"name":"Torpedo",
-			"desc":"Ultra long-range fast missile."
+			"desc":"Ultra long-range fast missile.",
+			"killmessages":[
+				"P1 mistook P2 for a submarine!",
+				"P1 blew P2 out of the water!"
+			]
 		},
 		{
 			"name":"Mine",
-			"desc":"A simple mine. It's hard for an enemy to follow you with these. Explodes on impact with an enemy ship."
+			"desc":"A simple mine. It's hard for an enemy to follow you with these. Explodes on impact with an enemy ship.",
+			"killmessages":[
+				"P2 walked into P1's minefield!"
+			]
 		},
 		{
 			"name":"Laser Mine",
-			"desc":"Fires high-power laser at enemies that get too close."
+			"desc":"Fires high-power laser at enemies that get too close.",
+			"killmessages":[
+				"P1's laser mine evaporated P2!",
+				"P1's laser mine burned a hole through P2!",
+				"P1's laser mine melted P2!"
+			]
 		},
 		{
 			"name":"EMP Mine",
-			"desc":"Mine that does damage and also paralyzes enemies for a short time on collision. Useful when you are being chased."
+			"desc":"Mine that does damage and also paralyzes enemies for a short time on collision. Useful when you are being chased.",
+			"killmessages":[
+				"P1's EMP mine scattered P2's electrons!",
+				"P1 EMP-mined P2!"
+			]
 		},
 		{
 			"name":"Hull Nanobots",
@@ -365,7 +441,10 @@
 		},
 		{
 			"name":"Mining Laser",
-			"desc":"Similar to the Laser Beam but only attacks asteroids and does more damage."
+			"desc":"Similar to the Laser Beam but only attacks asteroids and does more damage.",
+			"killmessages":[
+				"P1 mistook P2 for an asteroid!"
+			]
 		},
 		{
 			"name":"Turret",
@@ -373,7 +452,10 @@
 		},
 		{
 			"name":"Gravity Bomb",
-			"desc":"Creates a small temporary black hole upon explosion. Be cautious with this weapon- you need to get far enough away before it implodes. The vortex will wait until it is at least 500 units from a base before deploying. Single-use."
+			"desc":"Creates a small temporary black hole upon explosion. Be cautious with this weapon- you need to get far enough away before it implodes. The vortex will wait until it is at least 500 units from a base before deploying. Single-use.",
+			"killmessages":[
+				"P1 spaghettified P2!"
+			]
 		},
 		{
 			"name":"Warp Drive",
@@ -381,7 +463,10 @@
 		},
 		{
 			"name":"Ore Cannon",
-			"desc":"Stronger than mining laser!"
+			"desc":"Stronger than mining laser!",
+			"killmessages":[
+				"P1 mistook P2 for an asteroid!"
+			]
 		},
 		{
 			"name":"Destabilizer",
@@ -393,11 +478,19 @@
 		},
 		{
 			"name":"Grenades",
-			"desc":"Throw this at an enemy and it will explode soon (or as soon as it collides with an enemy), damaging their ship and knocking them back!"
+			"desc":"Throw this at an enemy and it will explode soon (or as soon as it collides with an enemy), damaging their ship and knocking them back!",
+			"killmessages":[
+				"P1 pistoled P2!",
+				"P1 killed P2!"
+			]
 		},
 		{
 			"name":"Muon Ray",
-			"desc":"An extremely powerful beam weapon that must be aimed. Fires a high energy particle beam in the direction that your ship is facing which will do extremely heavy damage to anything it contacts. Can pass through multiple ships."
+			"desc":"An extremely powerful beam weapon that must be aimed. Fires a high energy particle beam in the direction that your ship is facing which will do extremely heavy damage to anything it contacts. Can pass through multiple ships.",
+			"killmessages":[
+				"P1 leptoned P2!",
+				"P1 muoned P2!"
+			]
 		},
 		{
 			"name":"Jammer",
@@ -421,11 +514,20 @@
 		},
 		{
 			"name":"Submachinegun",
-			"desc":"Fires similarly to Minigun, but in 5-round bursts."
+			"desc":"Fires similarly to Minigun, but in 5-round bursts.",
+			"killmessages":[
+				"P1 unloaded on P2!",
+				"P1 SMG'd P2!",
+				"P1 submachinegunned P2!"
+			]
 		},
 		{
 			"name":"Hypno Ray",
-			"desc":"Fire this beam at a drone and it will follow you until it dies. Single-use."
+			"desc":"Fire this beam at a drone and it will follow you until it dies. Single-use.",
+			"killmessages":[
+				"P1 pistoled P2!",
+				"P1 killed P2!"
+			]
 		},
 		{
 			"name":"Photon Orb",
@@ -433,7 +535,10 @@
 		},
 		{
 			"name":"Pulse Mine",
-			"desc":"Repeatedly fires a damaging shockwave while other players are in range."
+			"desc":"Repeatedly fires a damaging shockwave while other players are in range.",
+			"killmessages":[
+				"P1 pulse-mined P2!"
+			]
 		},
 		{
 			"name":"Campfire",
