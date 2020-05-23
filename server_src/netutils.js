@@ -56,9 +56,8 @@ global.playerChat = function (msg, gc, team, sx, sy) { // chat in whatever chat 
 	for (var i in sockets) {
 		var player = sockets[i].player;
 		if (typeof player === "undefined") continue;
-		if (player.globalChat != gc) continue; // they arent in the same chatroom
 		if (gc == 1 && player.color != team) continue; // they arent on the same team
 		if (gc == 2 && (sx != player.sx || sy != player.sy)) continue; // they arent in the same sector
-		sockets[i].emit("chat", {msg:msg});
+		sockets[i].emit("chat", {msg:msg, gc:gc});
 	}
 }
