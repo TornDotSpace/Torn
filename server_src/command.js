@@ -39,7 +39,7 @@ cmds["/help"] = new Command("/help - Displays commands & usages", EVERYONE, func
 });
 
 cmds["/me"] = new Command("/me <msg>", EVERYONE, function (player, msg) {
-    chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4));
+	playerChat("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4), player.globalChat, player.color, player.sx, player.sy);
 });
 
 cmds["/playerstats"] = new Command("/playerstats - See how many players are online", EVERYONE, function (player, msg) {

@@ -294,7 +294,7 @@
 			"desc":"This will come in handy in an ambush. Sprays a lot of bullets around where you shoot. Powerful but hard to control.",
 			"killmessages":[
 				"P1 double-barreled P2!",
-				"P1 turned P2 into buckshot!",
+				"P1 filled P2 with buckshot!",
 				"P1 mistook P2 for a quail!",
 				"P1 shotgunned P2!"
 			]

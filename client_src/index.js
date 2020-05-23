@@ -124,7 +124,7 @@ var useOldMap = false;
 var chatLength = 40, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
 var lorePage = 0, homepageTimer = 0, loreTimer = 0;
 var chatRooms = [mEng[197], "Team Chat", "Sector Chat"];
-var messages = {};
+var messages = [{},{},{}];
 clearChat();
 preProcessChat();
 var raidTimer = -1, raidRed = 0, raidBlue = 0, raidGreen = 0, points = 0;
@@ -1789,9 +1789,13 @@ function _chat(data) {
 		data.msg = data.msg.replace("`~" + num + "`~", wepns[num].name);
 	}
 
-	for (var i = chatLength; i > 0; i--) messages[i] = messages[i - 1];
+	for (var room = 0; room < 3; room++)
+		if(room == data.gc || typeof data.gc === "undefined"){
+			for (var i = chatLength; i > 0; i--)
+				messages[room][i] = messages[room][i - 1];
+			messages[room][0] = data.msg;
+		}
 
-	messages[0] = data.msg;
 	chatScroll = 0;
 	preProcessChat();
 	rChat();
@@ -2535,7 +2539,6 @@ document.addEventListener('mousedown', function (evt) {
 		socket.emit('trail', { trail: i - 700 });
 	if (i == 800) {
 		globalChat = (globalChat + 1) % 3;
-		clearChat();
 		socket.emit("toggleGlobal", {});
 		preProcessChat();
 		rChat();
@@ -3125,7 +3128,7 @@ function rSectorEdge() {
 	ctx.setLineDash([]);
 }
 function preProcessChat() {
-	var chatList = messages;
+	var chatList = messages[globalChat];
 	preChatArr = {};
 	chati = 0;
 	var regex = new RegExp(key + ".*?" + key, "g");
@@ -3149,8 +3152,9 @@ function preProcessChat() {
 	chati--;
 }
 function clearChat() {
-	for (var i = 0; i < chatLength; i++)
-		messages[i] = "";
+	for (var i = 0; i < 3; i++)
+		for (var j = 0; j < chatLength; j++)
+			messages[i][j] = "";
 }
 function rChat() {
 	chatcanvas.width = chatcanvas.width;
