@@ -43,7 +43,7 @@ minimapcanvas.width = minimapcanvas.height = 208;
 var minictx = minimapcanvas.getContext("2d", { alpha: true });
 
 var chatcanvas = document.createElement('canvas');
-chatcanvas.width = 600
+chatcanvas.width = 650
 chatcanvas.height = 200;
 var chatctx = chatcanvas.getContext("2d", { alpha: true });
 
@@ -135,7 +135,7 @@ var t2 = 1, mh2 = 1, c2 = 1, va2 = 1, e2 = 1, ag2 = 1;
 var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops = 0, frames = 0, uframes = 0, ups = 0, dev = false;
 var credentialState = 0, textIn = 0, savedNote = 0;
 var key = '~`';
-var myName = "GUEST", currAlert = '', disguise = 0;
+var myName = "GUEST", currAlert = '', bigAlert = '', disguise = 0;
 var soundAllowed = false;
 var currLoading = "";
 var secret2PlanetName = "";
@@ -663,8 +663,8 @@ function render() {
 	if (undoing && hyperdriveTimer <= 0) undoDmg(r);
 	if (afk) rAfk();
 	if (isLocked) currAlert = mEng[132];
-	if (currAlert !== '') rAlert();
-	currAlert = '';
+	rAlert();
+	currAlert = bigAlert = '';
 	rBigNotes();
 
 	d = new Date();
@@ -732,7 +732,7 @@ function r3DMap() {
 
 	if (hmap == 0 || typeof hmap[sx] === "undefined") return;
 
-	//if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO
+	//if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO enemy swarm
 
 	if(pscx == 0){
 		roll(40);
@@ -1332,9 +1332,7 @@ function rBaseGui() {
 	ctx.textAlign = "right";
 	ctx.fillStyle = 'yellow';
 	var info = {};
-	info[0] = mEng[3] + getSectorName(sx, sy);
-	info[1] = mEng[5] + Math.floor(money);
-	for (var i = 0; i < 2; i++) write(info[i], w - (guest ? 16 : 278), 16 + i * 16);
+	rTexts(-1);
 
 	ctx.font = '14px ShareTech';
 	ctx.lineWidth = 2;
@@ -2416,8 +2414,10 @@ document.addEventListener('mousemove', function (evt) {
 	}
 
 	//Global Chat Button
-	else if (mx < 512 + 16 && mx > 512 - 96 && my > h - 32)
-		seller = 800;
+	else if (mx < 640 && mx > 512 && my > h - 64){
+		seller = 800 + Math.floor((my-h+61)/18);
+		if(seller > 802 || seller < 800) seller = 0;
+	}
 
 	//Shop
 	else if(docked && tab == 0){
@@ -2486,7 +2486,7 @@ document.addEventListener('mousemove', function (evt) {
 
 	else seller = 0;
 	if (seller != 0 && seller != preSeller) playAudio("button2", .2);
-	if (preSeller*seller==0 && preSeller+seller==800) rChat();
+	if (preSeller!=seller && (Math.abs(preSeller-801)<=1 || Math.abs(seller-801)<=1)) rChat();
 }, false);
 
 document.addEventListener('mousedown', function (evt) {
@@ -2537,9 +2537,9 @@ document.addEventListener('mousedown', function (evt) {
 		tab = Math.floor((mx - rx) / (768/5));
 	} if (i >= 700 && i < 705)
 		socket.emit('trail', { trail: i - 700 });
-	if (i == 800) {
-		globalChat = (globalChat + 1) % 3;
-		socket.emit("toggleGlobal", {});
+	if (i >= 800 && i < 803) {
+		globalChat = i-800;
+		socket.emit("toggleGlobal", {gc:globalChat});
 		preProcessChat();
 		rChat();
 	}
@@ -2605,9 +2605,10 @@ $(window).bind('mousewheel DOMMouseScroll', function (event) {
 
 //random
 function write(str, x, y) {
-	if (str === undefined) return;
-	if (str.length > textIn) ctx.fillText(str.substring(0, textIn), x, y);
-	else ctx.fillText(str, x, y);
+	//if (str === undefined) return;
+	//if (str.length > textIn) ctx.fillText(str.substring(0, textIn), x, y);
+	//else
+	ctx.fillText(str, x, y);
 }
 
 function getMousePos(canvas, evt) {
@@ -2989,11 +2990,12 @@ function drawStar(ox, oy, spikes, outerRadius, innerRadius) {
 }
 function rTexts(lag, arr) {
 	var ore = iron + silver + platinum + aluminium;
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'right';
 	ctx.fillStyle = 'yellow';
 	var lagNames = [mEng[182], mEng[183], mEng[184], mEng[185], mEng[186], mEng[187], mEng[188], mEng[189], mEng[190], mEng[191], mEng[192]];
 	var info = {};
-	var lbShift = !guest ? 240 : 0;
+	var lbShift = guest ? 8:266;
 	meanNLag *= nLagCt;
 	meanNLag += nLag;
 	nLagCt++;
@@ -3003,31 +3005,39 @@ function rTexts(lag, arr) {
 	info[1] = mEng[5] + Math.floor(money);
 	info[2] = mEng[6] + kills;
 	info[3] = mEng[148] + rank;
-	info[4] = '';
-	info[5] = isChrome ? "" : mEng[81];
-	info[6] = isChrome ? "" : mEng[82];
-	info[7] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
-	info[8] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
-	info[9] = mEng[85] + nLag + " ms " + mEng[194] + Number(meanNLag).toPrecision(3) + " ms" + ")";
-	info[10] = mEng[86] + fps;
-	info[11] = mEng[87] + ups;
-	if (lag > 50) {
-		info[4] = mEng[88];
-		info[5] = mEng[89];
-		info[6] = "";
+	info[4] = mEng[3] + getSectorName(sx, sy);
+
+	info[5] = '';
+	info[6] = isChrome?"":mEng[81];
+	info[7] = isChrome?"":mEng[82];
+
+	if (dev) {
+		info[8] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
+		info[9] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
+		info[10] = mEng[85] + nLag + " ms " + mEng[194] + Number(meanNLag).toPrecision(3) + " ms" + ")";
+		info[11] = mEng[86] + fps;
+		info[12] = mEng[87] + ups;
+		if (lag > 50) {
+			info[5] = mEng[88];
+			info[6] = mEng[89];
+			info[7] = "";
+		}
+		else if (nLag > 100) {
+			info[5] = mEng[90];
+			info[6] = mEng[91];
+			info[7] = mEng[92];
+		}
+		else if (sLag > 50) {
+			info[5] = mEng[95];
+			info[6] = mEng[92]
+			info[7] = "";
+		}
 	}
-	else if (nLag > 100) {
-		info[4] = mEng[90];
-		info[5] = mEng[91];
-		info[6] = mEng[92];
-	}
-	else if (sLag > 50) {
-		info[4] = mEng[95];
-		info[5] = mEng[92]
-		info[6] = "";
-	}
-	for (var i = 0; i < (dev ? 14 + lagArr.length : 4); i++)
-		write(i < 14 ? info[i] : (lagNames[i - 14] + mEng[195] + parseFloat(Math.round(lagArr[i - 14] * 100) / 100).toFixed(2)), w - lbShift - 32, 64 + i * 16);
+
+	var il = 13
+
+	for (var i = 0; i < ((dev && lag!=-1) ? il + lagArr.length : 8); i++)
+		write(i < il? info[i] : (lagNames[i - il] + mEng[195] + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
 	ctx.textAlign = 'left';
 }
 function rCurrQuest() {
@@ -3044,33 +3054,23 @@ function rCurrQuest() {
 	ctx.textAlign = 'left';
 }
 function rEMP() {
+	ctx.font = '24px ShareTech';
+	ctx.textAlign = 'center';
+	ctx.fillStyle = 'orange';
 	if (empTimer > 0) {
-		ctx.font = '24px ShareTech';
-		ctx.textAlign = 'center';
-		ctx.fillStyle = 'orange';
 		write(mEng[96] + Math.round(empTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '14px ShareTech';
-		ctx.textAlign = 'left';
 		currAlert = mEng[98];
 	}
 	if (gyroTimer > 0) {
-		ctx.font = '24px ShareTech';
-		ctx.textAlign = 'center';
-		ctx.fillStyle = 'orange';
 		write(mEng[99] + Math.round(gyroTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '14px ShareTech';
-		ctx.textAlign = 'left';
 		currAlert = mEng[100];
 	}
 	if (!afk && afkTimer < 90 * 25) {
-		ctx.font = '24px ShareTech';
-		ctx.textAlign = 'center';
-		ctx.fillStyle = 'orange';
 		write(mEng[102] + Math.round(afkTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '14px ShareTech';
-		ctx.textAlign = 'left';
 		currAlert = mEng[101];
 	}
+	ctx.font = '14px ShareTech';
+	ctx.textAlign = 'left';
 }
 function rStars() {
 	var mirrors = 3;
@@ -3168,12 +3168,13 @@ function rChat() {
 	roundRect(chatctx, 0, chatcanvas.height - 64 - 154 * (chatScroll / chatLength), 6, 24, 2, true, false);
 
 	chatctx.globalAlpha = 1;
-	chatctx.textAlign = "right";
-	chatctx.fillStyle = (seller != 800 ? (globalChat != 1 ? "violet" : brighten(pc)) : "yellow");
-	chatctx.fillText(chatRooms[globalChat], 512, chatcanvas.height - 16);
-	chatctx.restore();
-
 	chatctx.textAlign = "left";
+
+	for (var i = 0; i < 3; i++) {
+		chatctx.fillStyle = ((seller != 800 + i) ? "violet" : "yellow");
+		chatctx.fillText((i==globalChat?">":" ")+chatRooms[i], 532, chatcanvas.height - 48+16*i);
+	}
+	chatctx.restore();
 
 	chatctx.save();
 	for (var ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
@@ -3188,7 +3189,7 @@ function rChat() {
 				curx += chatctx.measureText(splitStr[j]).width;
 			}
 			else
-				chatctx.fillStyle = (splitStr[j] === "blue" ? "cyan" : (splitStr[j] === "red" ? "pink" : (splitStr[j] === "green" ? "lime" : splitStr[j])));
+				chatctx.fillStyle = brighten(splitStr[j]);
 		}
 	}
 	chatctx.restore();
@@ -3525,14 +3526,20 @@ function undoDmg(r) {
 	dmgTimer--;
 }
 function rAlert() {
-	ctx.save();
-	ctx.font = '20px ShareTech';
 	ctx.fillStyle = tick % 6 < 3 ? 'orange' : 'yellow';
-	ctx.textAlign = 'right';
-	if (self.lives < 3) currAlert = "Low Lives";
-	if (self.lives == 1) currAlert = "ONE LIFE LEFT";
-	write(mEng[125] + currAlert, w - 16, h - 320);
-	ctx.restore();
+	if (lives < 5) currAlert = "Low Lives";
+	if (lives == 2) bigAlert = "TWO LIVES LEFT";
+	if (lives == 1) bigAlert = "ONE LIFE LEFT";
+	if (currAlert !== '') {
+		ctx.font = '20px ShareTech';
+		ctx.textAlign = 'right';
+		write(mEng[125] + currAlert, w - 16, h - 320);
+	}
+	if (bigAlert !== '') {
+		ctx.font = '30px ShareTech';
+		ctx.textAlign = "center";
+		write(mEng[125] + bigAlert, w/2, h/4);
+	}
 }
 function rSavedNote() {
 	ctx.save();
@@ -3948,7 +3955,8 @@ function rVorts() {
 		ctx.rotate(-.5 * angleT % (Math.PI * 2));
 		ctx.drawImage(img, -size * 3 / 4, -size * 3 / 4, 1.5 * size, 1.5 * size);
 		ctx.restore();
-		currAlert = selfo.isWorm ? mEng[128] : mEng[129];
+		if(selfo.isWorm) currAlert = mEng[128];
+		else bigAlert = mEng[129];
 		rBlackHoleWarning(selfo.x, selfo.y);
 	}
 }

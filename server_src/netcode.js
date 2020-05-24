@@ -440,8 +440,8 @@ module.exports = function initNetcode() {
             }
         });
         socket.on('toggleGlobal', function (data) { // player wants to switch what chat room they're in
-            if (player == 0) return;
-            player.globalChat = (player.globalChat + 1) % 3;
+            if (player == 0 || typeof data.gc !== "number" || data.gc != Math.floor(data.gc) || data.gc < 0 || data.gc >= 3) return;
+            player.globalChat = data.gc;
         });
         socket.on('sell', function (data) { // selling ore
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'string') return;
