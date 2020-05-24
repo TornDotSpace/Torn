@@ -43,7 +43,7 @@ minimapcanvas.width = minimapcanvas.height = 208;
 var minictx = minimapcanvas.getContext("2d", { alpha: true });
 
 var chatcanvas = document.createElement('canvas');
-chatcanvas.width = 600
+chatcanvas.width = 650
 chatcanvas.height = 200;
 var chatctx = chatcanvas.getContext("2d", { alpha: true });
 
@@ -663,7 +663,7 @@ function render() {
 	if (undoing && hyperdriveTimer <= 0) undoDmg(r);
 	if (afk) rAfk();
 	if (isLocked) currAlert = mEng[132];
-	if (currAlert !== '' || bigAlert !== '') rAlert();
+	rAlert();
 	currAlert = bigAlert = '';
 	rBigNotes();
 
@@ -2416,8 +2416,10 @@ document.addEventListener('mousemove', function (evt) {
 	}
 
 	//Global Chat Button
-	else if (mx < 512 + 16 && mx > 512 - 96 && my > h - 32)
-		seller = 800;
+	else if (mx < 640 && mx > 512 && my > h - 64){
+		seller = 800 + Math.floor((my-h+61)/18);
+		if(seller > 802 || seller < 800) seller = 0;
+	}
 
 	//Shop
 	else if(docked && tab == 0){
@@ -2486,7 +2488,7 @@ document.addEventListener('mousemove', function (evt) {
 
 	else seller = 0;
 	if (seller != 0 && seller != preSeller) playAudio("button2", .2);
-	if (preSeller*seller==0 && preSeller+seller==800) rChat();
+	if (preSeller!=seller && (Math.abs(preSeller-801)<=1 || Math.abs(seller-801)<=1)) rChat();
 }, false);
 
 document.addEventListener('mousedown', function (evt) {
@@ -2537,9 +2539,9 @@ document.addEventListener('mousedown', function (evt) {
 		tab = Math.floor((mx - rx) / (768/5));
 	} if (i >= 700 && i < 705)
 		socket.emit('trail', { trail: i - 700 });
-	if (i == 800) {
-		globalChat = (globalChat + 1) % 3;
-		socket.emit("toggleGlobal", {});
+	if (i >= 800 && i < 803) {
+		globalChat = i-800;
+		socket.emit("toggleGlobal", {gc:globalChat});
 		preProcessChat();
 		rChat();
 	}
@@ -2605,9 +2607,10 @@ $(window).bind('mousewheel DOMMouseScroll', function (event) {
 
 //random
 function write(str, x, y) {
-	if (str === undefined) return;
-	if (str.length > textIn) ctx.fillText(str.substring(0, textIn), x, y);
-	else ctx.fillText(str, x, y);
+	//if (str === undefined) return;
+	//if (str.length > textIn) ctx.fillText(str.substring(0, textIn), x, y);
+	//else
+	ctx.fillText(str, x, y);
 }
 
 function getMousePos(canvas, evt) {
@@ -2989,6 +2992,7 @@ function drawStar(ox, oy, spikes, outerRadius, innerRadius) {
 }
 function rTexts(lag, arr) {
 	var ore = iron + silver + platinum + aluminium;
+	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'right';
 	ctx.fillStyle = 'yellow';
 	var lagNames = [mEng[182], mEng[183], mEng[184], mEng[185], mEng[186], mEng[187], mEng[188], mEng[189], mEng[190], mEng[191], mEng[192]];
@@ -3158,12 +3162,13 @@ function rChat() {
 	roundRect(chatctx, 0, chatcanvas.height - 64 - 154 * (chatScroll / chatLength), 6, 24, 2, true, false);
 
 	chatctx.globalAlpha = 1;
-	chatctx.textAlign = "right";
-	chatctx.fillStyle = (seller != 800 ? (globalChat != 1 ? "violet" : brighten(pc)) : "yellow");
-	chatctx.fillText(chatRooms[globalChat], 512, chatcanvas.height - 16);
-	chatctx.restore();
-
 	chatctx.textAlign = "left";
+
+	for (var i = 0; i < 3; i++) {
+		chatctx.fillStyle = ((seller != 800 + i) ? (i != 1 ? "violet" : brighten(pc)) : "yellow");
+		chatctx.fillText((i==globalChat?">":" ")+chatRooms[i], 532, chatcanvas.height - 48+16*i);
+	}
+	chatctx.restore();
 
 	chatctx.save();
 	for (var ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
@@ -3515,16 +3520,20 @@ function undoDmg(r) {
 	dmgTimer--;
 }
 function rAlert() {
-	ctx.save();
-	ctx.font = '20px ShareTech';
 	ctx.fillStyle = tick % 6 < 3 ? 'orange' : 'yellow';
-	ctx.textAlign = 'right';
-	if (self.lives < 3) currAlert = "Low Lives";
-	if (self.lives == 1) bigAlert = "ONE LIFE LEFT";
-	write(mEng[125] + currAlert, w - 16, h - 320);
-	ctx.textAlign = "center";
-	write(mEng[125] + currAlert, w/2, h - 320);
-	ctx.restore();
+	if (lives < 5) currAlert = "Low Lives";
+	if (lives == 2) bigAlert = "TWO LIVES LEFT";
+	if (lives == 1) bigAlert = "ONE LIFE LEFT";
+	if (currAlert !== '') {
+		ctx.font = '20px ShareTech';
+		ctx.textAlign = 'right';
+		write(mEng[125] + currAlert, w - 16, h - 320);
+	}
+	if (bigAlert !== '') {
+		ctx.font = '30px ShareTech';
+		ctx.textAlign = "center";
+		write(mEng[125] + bigAlert, w/2, h/4);
+	}
 }
 function rSavedNote() {
 	ctx.save();
