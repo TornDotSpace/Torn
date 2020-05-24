@@ -1332,9 +1332,7 @@ function rBaseGui() {
 	ctx.textAlign = "right";
 	ctx.fillStyle = 'yellow';
 	var info = {};
-	info[0] = mEng[3] + getSectorName(sx, sy);
-	info[1] = mEng[5] + Math.floor(money);
-	for (var i = 0; i < 2; i++) write(info[i], w - (guest ? 16 : 278), 16 + i * 16);
+	rTexts(-1);
 
 	ctx.font = '14px ShareTech';
 	ctx.lineWidth = 2;
@@ -2997,7 +2995,7 @@ function rTexts(lag, arr) {
 	ctx.fillStyle = 'yellow';
 	var lagNames = [mEng[182], mEng[183], mEng[184], mEng[185], mEng[186], mEng[187], mEng[188], mEng[189], mEng[190], mEng[191], mEng[192]];
 	var info = {};
-	var lbShift = !guest ? 240 : 0;
+	var lbShift = guest ? 8:266;
 	meanNLag *= nLagCt;
 	meanNLag += nLag;
 	nLagCt++;
@@ -3007,31 +3005,39 @@ function rTexts(lag, arr) {
 	info[1] = mEng[5] + Math.floor(money);
 	info[2] = mEng[6] + kills;
 	info[3] = mEng[148] + rank;
-	info[4] = '';
-	info[5] = isChrome ? "" : mEng[81];
-	info[6] = isChrome ? "" : mEng[82];
-	info[7] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
-	info[8] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
-	info[9] = mEng[85] + nLag + " ms " + mEng[194] + Number(meanNLag).toPrecision(3) + " ms" + ")";
-	info[10] = mEng[86] + fps;
-	info[11] = mEng[87] + ups;
-	if (lag > 50) {
-		info[4] = mEng[88];
-		info[5] = mEng[89];
-		info[6] = "";
+	info[4] = mEng[3] + getSectorName(sx, sy);
+
+	info[5] = '';
+	info[6] = isChrome?"":mEng[81];
+	info[7] = isChrome?"":mEng[82];
+
+	if (dev) {
+		info[8] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
+		info[9] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
+		info[10] = mEng[85] + nLag + " ms " + mEng[194] + Number(meanNLag).toPrecision(3) + " ms" + ")";
+		info[11] = mEng[86] + fps;
+		info[12] = mEng[87] + ups;
+		if (lag > 50) {
+			info[5] = mEng[88];
+			info[6] = mEng[89];
+			info[7] = "";
+		}
+		else if (nLag > 100) {
+			info[5] = mEng[90];
+			info[6] = mEng[91];
+			info[7] = mEng[92];
+		}
+		else if (sLag > 50) {
+			info[5] = mEng[95];
+			info[6] = mEng[92]
+			info[7] = "";
+		}
 	}
-	else if (nLag > 100) {
-		info[4] = mEng[90];
-		info[5] = mEng[91];
-		info[6] = mEng[92];
-	}
-	else if (sLag > 50) {
-		info[4] = mEng[95];
-		info[5] = mEng[92]
-		info[6] = "";
-	}
-	for (var i = 0; i < (dev ? 14 + lagArr.length : 4); i++)
-		write(i < 14 ? info[i] : (lagNames[i - 14] + mEng[195] + parseFloat(Math.round(lagArr[i - 14] * 100) / 100).toFixed(2)), w - lbShift - 32, 64 + i * 16);
+
+	var il = 13
+
+	for (var i = 0; i < ((dev && lag!=-1) ? il + lagArr.length : 8); i++)
+		write(i < il? info[i] : (lagNames[i - il] + mEng[195] + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
 	ctx.textAlign = 'left';
 }
 function rCurrQuest() {
@@ -3165,7 +3171,7 @@ function rChat() {
 	chatctx.textAlign = "left";
 
 	for (var i = 0; i < 3; i++) {
-		chatctx.fillStyle = ((seller != 800 + i) ? (i != 1 ? "violet" : brighten(pc)) : "yellow");
+		chatctx.fillStyle = ((seller != 800 + i) ? "violet" : "yellow");
 		chatctx.fillText((i==globalChat?">":" ")+chatRooms[i], 532, chatcanvas.height - 48+16*i);
 	}
 	chatctx.restore();
@@ -3183,7 +3189,7 @@ function rChat() {
 				curx += chatctx.measureText(splitStr[j]).width;
 			}
 			else
-				chatctx.fillStyle = (splitStr[j] === "blue" ? "cyan" : (splitStr[j] === "red" ? "pink" : (splitStr[j] === "green" ? "lime" : splitStr[j])));
+				chatctx.fillStyle = brighten(splitStr[j]);
 		}
 	}
 	chatctx.restore();
