@@ -135,7 +135,7 @@ var t2 = 1, mh2 = 1, c2 = 1, va2 = 1, e2 = 1, ag2 = 1;
 var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops = 0, frames = 0, uframes = 0, ups = 0, dev = false;
 var credentialState = 0, textIn = 0, savedNote = 0;
 var key = '~`';
-var myName = "GUEST", currAlert = '', disguise = 0;
+var myName = "GUEST", currAlert = '', bigAlert = '', disguise = 0;
 var soundAllowed = false;
 var currLoading = "";
 var secret2PlanetName = "";
@@ -663,8 +663,8 @@ function render() {
 	if (undoing && hyperdriveTimer <= 0) undoDmg(r);
 	if (afk) rAfk();
 	if (isLocked) currAlert = mEng[132];
-	if (currAlert !== '') rAlert();
-	currAlert = '';
+	if (currAlert !== '' || bigAlert !== '') rAlert();
+	currAlert = bigAlert = '';
 	rBigNotes();
 
 	d = new Date();
@@ -732,7 +732,7 @@ function r3DMap() {
 
 	if (hmap == 0 || typeof hmap[sx] === "undefined") return;
 
-	//if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO
+	//if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO enemy swarm
 
 	if(pscx == 0){
 		roll(40);
@@ -3044,33 +3044,23 @@ function rCurrQuest() {
 	ctx.textAlign = 'left';
 }
 function rEMP() {
+	ctx.font = '24px ShareTech';
+	ctx.textAlign = 'center';
+	ctx.fillStyle = 'orange';
 	if (empTimer > 0) {
-		ctx.font = '24px ShareTech';
-		ctx.textAlign = 'center';
-		ctx.fillStyle = 'orange';
 		write(mEng[96] + Math.round(empTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '14px ShareTech';
-		ctx.textAlign = 'left';
 		currAlert = mEng[98];
 	}
 	if (gyroTimer > 0) {
-		ctx.font = '24px ShareTech';
-		ctx.textAlign = 'center';
-		ctx.fillStyle = 'orange';
 		write(mEng[99] + Math.round(gyroTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '14px ShareTech';
-		ctx.textAlign = 'left';
 		currAlert = mEng[100];
 	}
 	if (!afk && afkTimer < 90 * 25) {
-		ctx.font = '24px ShareTech';
-		ctx.textAlign = 'center';
-		ctx.fillStyle = 'orange';
 		write(mEng[102] + Math.round(afkTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		ctx.font = '14px ShareTech';
-		ctx.textAlign = 'left';
 		currAlert = mEng[101];
 	}
+	ctx.font = '14px ShareTech';
+	ctx.textAlign = 'left';
 }
 function rStars() {
 	var mirrors = 3;
@@ -3530,8 +3520,10 @@ function rAlert() {
 	ctx.fillStyle = tick % 6 < 3 ? 'orange' : 'yellow';
 	ctx.textAlign = 'right';
 	if (self.lives < 3) currAlert = "Low Lives";
-	if (self.lives == 1) currAlert = "ONE LIFE LEFT";
+	if (self.lives == 1) bigAlert = "ONE LIFE LEFT";
 	write(mEng[125] + currAlert, w - 16, h - 320);
+	ctx.textAlign = "center";
+	write(mEng[125] + currAlert, w/2, h - 320);
 	ctx.restore();
 }
 function rSavedNote() {
@@ -3948,7 +3940,8 @@ function rVorts() {
 		ctx.rotate(-.5 * angleT % (Math.PI * 2));
 		ctx.drawImage(img, -size * 3 / 4, -size * 3 / 4, 1.5 * size, 1.5 * size);
 		ctx.restore();
-		currAlert = selfo.isWorm ? mEng[128] : mEng[129];
+		if(selfo.isWorm) currAlert = mEng[128];
+		else bigAlert = mEng[129];
 		rBlackHoleWarning(selfo.x, selfo.y);
 	}
 }
