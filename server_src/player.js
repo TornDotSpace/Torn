@@ -823,7 +823,7 @@ function Player(sock) {
 
 		//cooldown to prevent chat spam when 2 people are on the planet
 		var cool = p.cooldown;
-		if (cool < 0) { self.refillAllAmmo(); p.cooldown = 150; }
+		if (cool < 0) { self.refillAllAmmo(); p.cooldown = 50; }
 
 		self.checkQuestStatus(true); // lots of quests are planet based
 
@@ -1201,7 +1201,7 @@ function Player(sock) {
 				b.owner.onKill(self);
 				b.owner.spoils("experience", !self.guest ? (10 + diff * (self.color === b.owner.color ? -1 : 1)) : 0);
 				// Prevent farming and disincentivize targetting guests
-				b.owner.spoils("money", 1000 * (b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak) : 1));
+				b.owner.spoils("money", b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak*playerKillMoney) : playerKillMoney);
 
 				if (self.points > 0) { // raid points
 					b.owner.points++;
