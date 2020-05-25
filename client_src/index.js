@@ -369,8 +369,6 @@ function loadAllImages() {
 	loadImage("planetUG", '/img/space/planetUnderlayGreen.png');
 	
 	//HUD
-	loadImage("grid", '/img/hud/grid.png');
-	loadImage("spin", '/img/hud/spin.png');
 	loadImage("bar1", '/img/hud/bar1.png');
 	loadImage("bar2", '/img/hud/bar2.png');
 
@@ -1194,12 +1192,12 @@ function rStats() {
 	ctx.save();
 	ctx.translate(rendX, rendY);
 	ctx.rotate(-3 * t);
-	var img = (pc==="red"?redShips:(pc==="blue"?blueShips:greenShips))[ship];
+	var img = colorSelect(pc,redShips,blueShips,greenShips)[ship];
 
 	ctx.drawImage(img, -img.width / 2, -img.height / 2);
 	ctx.restore();
 
-	//Upgrades
+	//techs
 	ctx.fillStyle = "yellow";
 	ctx.textAlign = "left";
 	ctx.font = "24px ShareTech";
