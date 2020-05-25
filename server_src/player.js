@@ -16,6 +16,7 @@ function Player(sock) {
 		type: "Player",
 
 		name: "ERR0",
+		guild: "",
 		id: sock.id, // unique identifier
 		socket: sock,
 		password: "password",

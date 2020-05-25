@@ -742,7 +742,7 @@ function r3DMap() {
 	var c3dx, c3dy, c3dz;
 	
 	minictx.strokeStyle = 'gray';
-	minictx.lineWidth = .5;
+	minictx.lineWidth = 1;
 	minictx.textAlign = "center";
 
 	var avgX = 0;
@@ -3268,7 +3268,7 @@ function rCargo() {
 	ctx.globalAlpha = .5;
 
 	ctx.strokeStyle = "white";
-	ctx.lineWidth = .45;
+	ctx.lineWidth = 1;
 	ctx.strokeRect(224,8,16,208);
 
 	var myCapacity = ships[ship].capacity * c2;
@@ -3304,16 +3304,26 @@ function rRadar() {
 	if (va2 < 1.12) return;
 	var radarZoom = 1;
 	ctx.fillStyle = "white";
-	ctx.globalAlpha = 0.5;
-	ctx.drawImage(Img.grid, 16, 32 + 214);
 	let d = new Date();
 	var stime = d.getTime() / (35 * 16);
+
+	//darken circle and make outline
+	ctx.strokeStyle = "white";
+	ctx.fillStyle = "black";
+	ctx.lineWidth = 1;
 	ctx.globalAlpha = 0.5;
-	ctx.save();
-	ctx.translate(112, 342);
-	ctx.rotate(stime % (2 * Math.PI) + Math.PI / 2);
-	ctx.drawImage(Img.spin, -96, -96);
-	ctx.restore();
+	ctx.beginPath();
+	ctx.arc(112,342,96,0,Math.PI*2,false);
+	ctx.closePath();
+	ctx.fill();
+	ctx.stroke();
+	ctx.beginPath();
+	var lineAngle = stime % (2 * Math.PI);
+	ctx.moveTo(112,342);
+	ctx.lineTo(112+Math.cos(lineAngle)*96,342+Math.sin(lineAngle)*96);
+	ctx.closePath();
+	ctx.stroke();
+
 	var r = va2*3840 - 1280;
 	var r2 = square(r);
 	var r2z2 = square(r*radarZoom);
