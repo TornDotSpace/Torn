@@ -140,14 +140,14 @@ global.baseMap=	{
 global.bulletWidth = 16; // collision radius
 var mineLifetime = 3; // mines despawn after this many minutes
 global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
-global.baseHealth = 4200; // max base health
-global.baseKillExp = 6000; // Exp reward for killing a base
-global.baseKillMoney = 200000; // ditto but money
+global.baseHealth = 4500; // max base health
+global.baseKillExp = 7500; // Exp reward for killing a base
+global.baseKillMoney = 250000; // ditto but money
 global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
 global.moneyPerRaidPoint = 300000;
 global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
-global.playerKillMoney = 2000;
+global.playerKillMoney = 2500;
 
 //Machine Learning
 global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.

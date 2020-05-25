@@ -68,9 +68,9 @@
 		{
 			"name":"Machine Gun",
 			"range":300,
-			"damage":12,
+			"damage":15,
 			"speed":80,
-			"charge":4,
+			"charge":5,
 			"price":6000,
 			"ammo":500,
 			"level":4,
@@ -81,9 +81,9 @@
 		{
 			"name":"Minigun",
 			"range":250,
-			"damage":8,
+			"damage":10,
 			"speed":60,
-			"charge":4,
+			"charge":5,
 			"price":30000,
 			"ammo":500,
 			"level":6,
@@ -167,7 +167,7 @@
 			"level":7,
 			"order":12,
 			"type":"Missile",
-			"bot":false
+			"bot":true
 		},
 		{
 			"name":"Missile Swarm",
