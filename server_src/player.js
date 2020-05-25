@@ -865,6 +865,8 @@ function Player(sock) {
 			self.sendAchievementsMisc(true);
 		}
 
+		self.socket.emit("planetMap", { x:p.x, y:p.y, sx:p.sx, sy:p.sy });
+
 		//Update list of claimed planets.
 		var index = self.sx + self.sy * mapSz;
 		var prevStr = self.planetsClaimed.substring(0, index);

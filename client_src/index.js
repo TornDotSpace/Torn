@@ -119,6 +119,7 @@ global.stopTyping = () => { typing = false }
 var centered = false;
 
 var baseMap2D = {}
+var planetMap2D = {}
 var useOldMap = false;
 
 var chatLength = 40, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
@@ -725,7 +726,7 @@ function r3DMap() {
 	minictx.globalAlpha = 0.4;
 	minictx.strokeStyle = 'white';
 	minictx.fillStyle = 'black';
-	minictx.lineWidth = 1;
+	minictx.lineWidth = 2;
 	minictx.fillRect(0, 0, 208, 208); // Draw map
 	minictx.strokeRect(0, 0, 208, 208); // Draw map
 
@@ -834,11 +835,22 @@ function r3DMap() {
 					psga = ga;
 				}
 			}
-			//else minictx.stroke();
+			//else minictx.stroke(); <-- Renders borders around the sectors
 
 			if(baseMap2D[i][j]!==0){
 				var img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss);
 				minictx.drawImage(img, 104+cx-7, 104+cy-7, 15, 15);
+			}
+
+			if(planetMap2D[i][j]!==0){
+				var planX = planetMap2D[i][j].x/sectorWidth;
+				var planY = planetMap2D[i][j].y/sectorWidth;
+				var xxp1 = lerp(xx1,xx4,(planX+planY)/2)-cx;
+				var yyp1 = lerp(yy1,yy4,(planX+planY)/2)-cy;
+				var xxp2 = lerp(xx3,xx2,(-planX+1+planY)/2)-cx;
+				var yyp2 = lerp(yy3,yy2,(-planX+1+planY)/2)-cy;
+				minictx.fillStyle = 'white';
+				minictx.fillRect(104+cx+xxp1+xxp2-2,104+cy+yyp1+yyp2-2,4,4);
 			}
 
 			if(va2 > 1.9){
@@ -2030,6 +2042,10 @@ socket.on('planets', function (data) {
 	if (quest != 0 && quest.type === "Secret2" && sx == quest.sx && sy == quest.sy)
 		secret2PlanetName = planets.name;
 });
+socket.on('planetMap', function(data) {
+	planetMap2D[data.sx][data.sy] = data;
+	console.log(planetMap2D);
+});
 socket.on('baseMap', function(data) {
 	mapSz = data.mapSz;
 	console.log("Got basemap of size " + mapSz);
@@ -2038,6 +2054,12 @@ socket.on('baseMap', function(data) {
 		baseMap2D[i] = {};
 		for(var j = 0; j < mapSz; j++){
 			baseMap2D[i][j] = 0;
+		}
+	}
+	for(var i = 0; i < mapSz; i++){
+		planetMap2D[i] = {};
+		for(var j = 0; j < mapSz; j++){
+			planetMap2D[i][j] = 0;
 		}
 	}
 	for (var teamColor in baseMap){
@@ -3265,7 +3287,7 @@ function rCargo() {
 		write(metalWeHave + "/" + quest.amt + " " + quest.metal,248,16);
 	}
 
-	ctx.globalAlpha = .5;
+	ctx.globalAlpha = .4;
 
 	ctx.strokeStyle = "white";
 	ctx.lineWidth = 1;
@@ -3311,7 +3333,7 @@ function rRadar() {
 	ctx.strokeStyle = "white";
 	ctx.fillStyle = "black";
 	ctx.lineWidth = 1;
-	ctx.globalAlpha = 0.5;
+	ctx.globalAlpha = 0.4;
 	ctx.beginPath();
 	ctx.arc(112,342,96,0,Math.PI*2,false);
 	ctx.closePath();
