@@ -134,7 +134,7 @@ var seller = 0, sectorMap = 0, worth = 0, ship = 0;
 var empTimer = -1, dmgTimer = -1, gyroTimer = 0, afkTimer = 45000;
 var t2 = 1, mh2 = 1, c2 = 1, va2 = 1, e2 = 1, ag2 = 1;
 var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops = 0, frames = 0, uframes = 0, ups = 0, dev = false;
-var credentialState = 0, textIn = 0, savedNote = 0;
+var credentialState = 0, savedNote = 0;
 var key = '~`';
 var myName = "GUEST", currAlert = '', bigAlert = '', disguise = 0;
 var soundAllowed = false;
@@ -367,10 +367,6 @@ function loadAllImages() {
 	loadImage("planetUB", '/img/space/planetUnderlayBlue.png');
 	loadImage("planetUR", '/img/space/planetUnderlayRed.png');
 	loadImage("planetUG", '/img/space/planetUnderlayGreen.png');
-	
-	//HUD
-	loadImage("bar1", '/img/hud/bar1.png');
-	loadImage("bar2", '/img/hud/bar2.png');
 
 	//weapons
 	loadImage("redbullet", "/img/weapons/rb.png");
@@ -1245,6 +1241,17 @@ function rStats() {
 	if(e2 >1) write("[-] $" + -techPriceForDowngrade(e2)*8, rx + 320 + 54, ry + 416 - 64 + 42);
 	ctx.fillStyle = (seller == 211) ? "lime" : "white";
 	if(ag2>1) write("[-] $" + -techPriceForDowngrade(ag2), rx + 320 + 54, ry + 416 + 42);
+
+	/*description for radar
+	ctx.textAlign = "left";
+	if (seller==201 || seller==207){
+		var txt = jsn.techs.radar[(va2-1)*8+(seller==201?1:-1)];
+		if(typeof txt !== "undefined")
+			write((seller==201?"Up":"Down")+"grade: " + txt, rx+512, ry+400);
+		txt = jsn.techs.radar[(va2-1)*8];
+		if(typeof txt !== "undefined")
+			write("Current: " + txt, rx+512, ry+384);
+	}*/
 }
 function rAchievements() {
 	ctx.save();
@@ -1858,7 +1865,6 @@ socket.on('registered', function (data) {
 	credentialState = 0;
 	ReactRoot.turnOffRegister("LoginOverlay");
 	guest = false;
-	textIn = 0;
 	autopilot = false;
 	tab = 0
 });
@@ -2029,7 +2035,6 @@ socket.on('achievementsMisc', function (data) {
 socket.on('status', function (data) {
 	shipView = ship;
 	if (!docked && data.docked) savedNote = 40;
-	if (docked != data.docked) textIn = 0;
 	if(data.docked && !docked && guest && rank>0) {ReactRoot.turnOnRegister(""); tab = -1; keys[8] = false;}
 	docked = data.docked;
 	dead = data.state;
@@ -2131,7 +2136,6 @@ window.requestAnimationFrame(loop);
 
 function loop() {
 	render();
-	textIn++;
 	if (!login) {
 		if (!EVERYTHING_LOADED) {
 			ReactRoot.turnOffDisplay("LoginOverlay");
@@ -2295,12 +2299,10 @@ document.onkeydown = function (event) {
 		else if (event.keyCode == 89 && docked && tab == 8) { // y
 			socket.emit('sellW', { slot: confirmer });
 			confirmer = -1;
-			textIn = 0;
 			tab = 0;
 		}
 		else if (event.keyCode == 66 && docked && tab == 7 && seller != 0 && actuallyBuying) { // b
 			socket.emit('buyW', { slot: scroll, weapon: seller - 20 });
-			textIn = 0;
 			tab = 0;
 		}
 		else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] != -2)
@@ -2356,7 +2358,6 @@ document.onkeydown = function (event) {
 			if (dead) return;
 			if (keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
 			keys[8] = true;
-			if (textIn > 300) textIn = 0;
 			ReactRoot.turnOffRegister("");
 			afkTimer = 45000;
 			socket.emit('equip', { scroll: scroll });
@@ -2543,7 +2544,6 @@ document.addEventListener('mousedown', function (evt) {
 	if (i == 505) window.open('https://discord.gg/wFsdUcY', '_blank');
 	if (i == 506) window.open('/credits', '_blank');
 	if (i == 601) {
-		textIn = 0;
 		tab = 7;
 		actuallyBuying = false;
 	}
@@ -2552,10 +2552,8 @@ document.addEventListener('mousedown', function (evt) {
 	if (i >= 300 && i < 310 && quest == 0) socket.emit('quest', { quest: i - 300 });
 	if (docked && tab == 2 && i > 199 && i < 206) socket.emit('upgrade', { item: i - 200 });
 	if (docked && tab == 2 && i > 205 && i < 212) socket.emit('downgrade', { item: i - 206 });
-	if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40) {
-		textIn = 0;
-		tab = Math.floor((mx - rx) / (768/5));
-	} if (i >= 700 && i < 705)
+	if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40) tab = Math.floor((mx - rx) / (768/5));
+	if (i >= 700 && i < 705)
 		socket.emit('trail', { trail: i - 700 });
 	if (i >= 800 && i < 803) {
 		globalChat = i-800;
@@ -2572,13 +2570,11 @@ document.addEventListener('mousedown', function (evt) {
 		socket.emit('sell', { item: item });
 	} else if (docked && tab == 0 && my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) {
 		if (equipped[i - 10] == -1) {
-			textIn = 0;
 			tab = 7;
 			actuallyBuying = true;
 			scroll = i - 10;
 		}
 		else if (equipped[i - 10] > -1) {
-			textIn = 0;
 			tab = 8;
 			confirmer = i - 10;
 		}
@@ -2625,9 +2621,6 @@ $(window).bind('mousewheel DOMMouseScroll', function (event) {
 
 //random
 function write(str, x, y) {
-	//if (str === undefined) return;
-	//if (str.length > textIn) ctx.fillText(str.substring(0, textIn), x, y);
-	//else
 	ctx.fillText(str, x, y);
 }
 
@@ -2842,7 +2835,6 @@ function updateBooms() {
 	}
 }
 function rLore() {
-	textIn = 1000;
 	ctx.fillStyle = brighten(pc);
 	ctx.font = "22px ShareTech";
 	wrapText(jsn.lore[colorSelect(pc,0,1,2)], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
@@ -2900,24 +2892,39 @@ function rVolumeBar() {
 }
 function rExpBar() {
 	if(guest) return;
-	var dec = 256 * (experience - r2x(rank - 1)) / (r2x(rank) - r2x(rank - 1));
+
+	ctx.lineWidth = .5;
+	ctx.fillStyle = "black";
+	ctx.strokeStyle = "white";
+	ctx.globalAlpha = .4;
+
+	//Background rectangle
+	ctx.fillRect  (w / 2 - 128, h - 28, 256, 16);
+	ctx.strokeRect(w / 2 - 128, h - 28, 256, 16);
+
+	//foreground rectangle
+	var dec = 252 * (experience - r2x(rank - 1)) / (r2x(rank) - r2x(rank - 1));
 	if (dec < 0)
 		dec = 0;
-	ctx.drawImage(Img.bar1, w / 2 - 128, h - 28);
-	ctx.fillStyle = '#000000';
-	ctx.fillRect(w / 2 - 126 + dec, h - 22, 248 - dec, 10);
-	ctx.drawImage(Img.bar2, w / 2 - 128, h - 28);
-	ctx.fillStyle = "#ffffff";
+	ctx.fillStyle = "white";
+	ctx.fillRect(w / 2 - 124, h - 24, dec, 8);
+
+	//Write right and left xp requirements
 	ctx.textAlign = "right";
 	write("" + Math.max(r2x(rank - 1), 0), w / 2 - 140, h - 14);
 	ctx.textAlign = "left";
 	write("" + r2x(rank), w / 2 + 140, h - 14);
+
+	//write current xp
 	ctx.font = "11px ShareTech";
-	ctx.textAlign = (dec > 128) ? "right" : "left";
-	ctx.fillStyle = (dec > 128) ? "black" : "white";
-	write("" + Math.round(experience), w / 2 - 128 + dec + (dec > 128 ? -8 : 8), h - 14);
+	ctx.textAlign = (dec > 126) ? "right" : "left";
+	ctx.fillStyle = (dec > 126) ? "black" : "white";
+	write("" + Math.round(experience), w / 2 - 128 + dec + (dec > 126 ? -8 : 8), h - 16);
+
+	//revert canvas state
 	ctx.font = "14px ShareTech";
 	ctx.textAlign = "left";
+	ctx.globalAlpha = 1;
 }
 function rNotes() {
 	ctx.textAlign = "center";
@@ -3452,7 +3459,7 @@ function rRadar() {
 		ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 		ctx.beginPath();
 		ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
-		if (va2 > 1.36) ctx.strokeStyle = ctx.fillStyle = 'orange';
+		if (va2 > 1.24) ctx.strokeStyle = ctx.fillStyle = 'orange';
 		if (va2 > 1.74) {
 			if (a.metal == 0) ctx.strokeStyle = ctx.fillStyle = '#d44';
 			else if (a.metal == 1) ctx.strokeStyle = ctx.fillStyle = '#eef';
@@ -4202,7 +4209,7 @@ function rBlackHoleWarning(x, y) {
 	rPointerArrow(Img.blackArrow,angle,Math.hypot(dx,dy),'white');
 }
 function rPointerArrow(img, angle, dist, textColor){
-	if(!(guest && (textColor === 'lightgray' || textColor === 'orange')))
+	if(textColor !== 'lightgray' && textColor !== 'orange')
 		if (dist < 100 || dist > va2*3840 - 1280) return;
 	dist = Math.floor(dist / 10);
 	ctx.fillStyle = textColor;
