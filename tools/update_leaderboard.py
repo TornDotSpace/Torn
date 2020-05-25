@@ -35,11 +35,12 @@ def updateLB(conn_str, path):
     # Grab needed data
     i = 0
     for player in players.find().sort("experience", pymongo.DESCENDING):
-        i = i + 1
-
         name = player['name']
         if "O" in name:
             continue
+        i = i + 1
+        if i>3000:
+            break
         kills = player['kills']
         rank = player['rank']
         tech = int(((player['thrust2'] + player['radar2'] + player['capacity2'] + player['agility2'] + player['maxHealth2'] + player['energy2'])/6-1)*8*100)/100
