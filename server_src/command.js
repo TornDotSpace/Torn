@@ -90,6 +90,24 @@ cmds["/nameturret"] = new Command("/nameturret <name>", REGISTERED, function (pl
     player.socket.emit("chat", { msg: num + " turret(s) renamed." });
 });
 
+cmds["/joinguild"] = new Command("/joinguild <guildName>", REGISTERED, function (player, msg) {
+    if(msg.length < 12){
+        player.socket.emit("chat", { msg: "You must specify a guild name." });
+        return;
+    }
+    var guildName = msg.substring(11);
+    if(typeof guildList[guildName] === "undefined") {
+        player.socket.emit("chat", { msg: guildName + " is not a real guild!" });
+        return;
+    }
+    if(guildList[guildName].public !== "public") {
+        player.socket.emit("chat", { msg: "That guild is private- you must be invited!" });
+        return;
+    }
+    player.guild = guildName;
+    player.socket.emit("chat", { msg: "Joined guild " + guildName + "!" });
+});
+
 cmds["/pm"] = new Command("/pm <player> <msg>", REGISTERED, function (player, msg) {
     player.pm(msg);
 });

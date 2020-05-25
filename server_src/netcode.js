@@ -414,7 +414,11 @@ module.exports = function initNetcode() {
 
             if (data.msg.startsWith("/") && !data.msg.startsWith("/me") && !data.msg.startsWith("/r") && !data.msg.startsWith("/pm ")) { runCommand(player, data.msg); return; } // non spammable commands
 
-            if (muteTable[player.name] > time) return;
+            if (muteTable[player.name] > time) {
+                var secondsLeft = Math.floor((muteTable[player.name]-time)/1000);
+                socket.emit('chat', { msg: ("~`#ff0000~`You are muted for " + Math.floor(secondsLeft/60) + " minutes and " + secondsLeft%60 + " seconds!") });
+                return;
+            }
             delete muteTable[player.name];
 
             data.msg = filter.clean(data.msg); // censor

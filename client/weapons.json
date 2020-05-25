@@ -880,5 +880,16 @@
 			"weapons":10,
 			"capacity":20000
 		}
-	]
+	],
+	"techs":{
+		"radar":[
+			"No radar visible",
+			"Radar Visible",
+			"D",
+			"Determine ",
+			"No radar visible",
+			"No radar visible",
+			"No radar visible"
+		]
+	}
 }

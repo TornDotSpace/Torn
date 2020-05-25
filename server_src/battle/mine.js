@@ -92,14 +92,16 @@ module.exports = function Mine(ownr, i, weaponID) {
 		var power = 0; // how strongly this mine pushes people away on explosion
 		if (self.wepnID == 15 || self.wepnID == 33) power = 400; //mine, grenade
 		else if (self.wepnID == 32) power = 2000;
-		for (var i in players[self.sy][self.sx]) {
-			var p = players[self.sy][self.sx][i];
-			if (squaredDist(p, self) < square(1024)) {
-				var mult = power / Math.max(10, .001 + Math.hypot(p.x - self.x, p.y - self.y)); // not sure what's going on here but it works
-				p.vx = mult * (Math.cbrt(p.x - self.x));
-				p.vy = mult * (Math.cbrt(p.y - self.y)); // push the player
-				p.updatePolars();//we edited rectangulars
-				p.angle = p.driftAngle; // turn them away from the mine
+		if(power != 0){
+			for (var i in players[self.sy][self.sx]) {
+				var p = players[self.sy][self.sx][i];
+				if (squaredDist(p, self) < square(1024)) {
+					var mult = power / Math.max(10, .001 + Math.hypot(p.x - self.x, p.y - self.y)); // not sure what's going on here but it works
+					p.vx = mult * (Math.cbrt(p.x - self.x));
+					p.vy = mult * (Math.cbrt(p.y - self.y)); // push the player
+					p.updatePolars();//we edited rectangulars
+					p.angle = p.driftAngle; // turn them away from the mine
+				}
 			}
 		}
 		if (self.wepnID == 33) // if i'm a grenade

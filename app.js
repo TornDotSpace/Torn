@@ -70,10 +70,21 @@ global.readMuteTable = function(){
 	var source = "server/permamute";
 	var data = fs.readFileSync(source, 'utf8');
 	var split = data.split(":");
-	for(var i = 0; i < split.length; i++){
+	for(var i = 0; i < split.length; i++)
 		muteTable[split[i]] = 10000000000000;
-	}
 	console.log(muteTable);
+}
+
+global.guildList = {};
+
+global.readGuildList = function(){
+	var source = "server/guildnames";
+	var data = fs.readFileSync(source, 'utf8');
+	var split = data.split(":");
+	console.log(split);
+	for(var i = 0; i+4 < split.length; i+=5)
+		guildList[split[i]] = {owner:split[i+1], team:split[i+2], public:split[i+3], rank:split[i+4]};
+	console.log(guildList);
 }
 
 require('./server_src/math.js');
@@ -136,6 +147,7 @@ global.mapSz = 9; // How many sectors across the server is. If changed, see plan
 global.sectorWidth = 14336; // must be divisible by 2048.
 global.moneyPerRaidPoint = 300000;
 global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
+global.playerKillMoney = 2000;
 
 //Machine Learning
 global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
@@ -361,6 +373,7 @@ function init() { // start the server!
 	}
 
 	readMuteTable();
+	readGuildList();
 
 	spawnBases();
 
@@ -411,7 +424,6 @@ function buildFileSystem() { // create the server files/folders
 		}
 	}
 
-
 	var mutesource = "server/permamute";
 	if (!fs.existsSync(mutesource)) {
 		fs.writeFileSync(mutesource,"");
@@ -419,7 +431,14 @@ function buildFileSystem() { // create the server files/folders
 		allGood = false;
 	}
 
-	if (allGood) console.log("All server directories were already present!");
+	var guildsource = "server/guildnames";
+	if (!fs.existsSync(guildsource)) {
+		fs.writeFileSync(guildsource,"");
+		console.log("Creating guild file...");
+		allGood = false;
+	}
+
+	if (allGood) console.log("All server directories and files were already present!");
 
 }
 function spawnBases() {

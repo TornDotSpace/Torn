@@ -16,6 +16,7 @@ function Player(sock) {
 		type: "Player",
 
 		name: "ERR0",
+		guild: "",
 		id: sock.id, // unique identifier
 		socket: sock,
 		password: "password",
@@ -822,7 +823,7 @@ function Player(sock) {
 
 		//cooldown to prevent chat spam when 2 people are on the planet
 		var cool = p.cooldown;
-		if (cool < 0) { self.refillAllAmmo(); p.cooldown = 150; }
+		if (cool < 0) { self.refillAllAmmo(); p.cooldown = 50; }
 
 		self.checkQuestStatus(true); // lots of quests are planet based
 
@@ -863,6 +864,8 @@ function Player(sock) {
 			self.randmAchs[8] = true;
 			self.sendAchievementsMisc(true);
 		}
+
+		self.socket.emit("planetMap", { x:p.x, y:p.y, sx:p.sx, sy:p.sy });
 
 		//Update list of claimed planets.
 		var index = self.sx + self.sy * mapSz;
@@ -1198,7 +1201,7 @@ function Player(sock) {
 				b.owner.onKill(self);
 				b.owner.spoils("experience", !self.guest ? (10 + diff * (self.color === b.owner.color ? -1 : 1)) : 0);
 				// Prevent farming and disincentivize targetting guests
-				b.owner.spoils("money", 1000 * (b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak) : 1));
+				b.owner.spoils("money", b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak*playerKillMoney) : playerKillMoney);
 
 				if (self.points > 0) { // raid points
 					b.owner.points++;

@@ -119,6 +119,7 @@ global.stopTyping = () => { typing = false }
 var centered = false;
 
 var baseMap2D = {}
+var planetMap2D = {}
 var useOldMap = false;
 
 var chatLength = 40, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
@@ -368,8 +369,6 @@ function loadAllImages() {
 	loadImage("planetUG", '/img/space/planetUnderlayGreen.png');
 	
 	//HUD
-	loadImage("grid", '/img/hud/grid.png');
-	loadImage("spin", '/img/hud/spin.png');
 	loadImage("bar1", '/img/hud/bar1.png');
 	loadImage("bar2", '/img/hud/bar2.png');
 
@@ -725,7 +724,7 @@ function r3DMap() {
 	minictx.globalAlpha = 0.4;
 	minictx.strokeStyle = 'white';
 	minictx.fillStyle = 'black';
-	minictx.lineWidth = 1;
+	minictx.lineWidth = 2;
 	minictx.fillRect(0, 0, 208, 208); // Draw map
 	minictx.strokeRect(0, 0, 208, 208); // Draw map
 
@@ -742,7 +741,7 @@ function r3DMap() {
 	var c3dx, c3dy, c3dz;
 	
 	minictx.strokeStyle = 'gray';
-	minictx.lineWidth = .5;
+	minictx.lineWidth = 1;
 	minictx.textAlign = "center";
 
 	var avgX = 0;
@@ -834,11 +833,22 @@ function r3DMap() {
 					psga = ga;
 				}
 			}
-			//else minictx.stroke();
+			//else minictx.stroke(); <-- Renders borders around the sectors
 
 			if(baseMap2D[i][j]!==0){
 				var img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss);
 				minictx.drawImage(img, 104+cx-7, 104+cy-7, 15, 15);
+			}
+
+			if(planetMap2D[i][j]!==0){
+				var planX = planetMap2D[i][j].x/sectorWidth;
+				var planY = planetMap2D[i][j].y/sectorWidth;
+				var xxp1 = lerp(xx1,xx4,(planX+planY)/2)-cx;
+				var yyp1 = lerp(yy1,yy4,(planX+planY)/2)-cy;
+				var xxp2 = lerp(xx3,xx2,(-planX+1+planY)/2)-cx;
+				var yyp2 = lerp(yy3,yy2,(-planX+1+planY)/2)-cy;
+				minictx.fillStyle = 'white';
+				minictx.fillRect(104+cx+xxp1+xxp2-2,104+cy+yyp1+yyp2-2,4,4);
 			}
 
 			if(va2 > 1.9){
@@ -1182,12 +1192,12 @@ function rStats() {
 	ctx.save();
 	ctx.translate(rendX, rendY);
 	ctx.rotate(-3 * t);
-	var img = (pc==="red"?redShips:(pc==="blue"?blueShips:greenShips))[ship];
+	var img = colorSelect(pc,redShips,blueShips,greenShips)[ship];
 
 	ctx.drawImage(img, -img.width / 2, -img.height / 2);
 	ctx.restore();
 
-	//Upgrades
+	//techs
 	ctx.fillStyle = "yellow";
 	ctx.textAlign = "left";
 	ctx.font = "24px ShareTech";
@@ -2030,6 +2040,10 @@ socket.on('planets', function (data) {
 	if (quest != 0 && quest.type === "Secret2" && sx == quest.sx && sy == quest.sy)
 		secret2PlanetName = planets.name;
 });
+socket.on('planetMap', function(data) {
+	planetMap2D[data.sx][data.sy] = data;
+	console.log(planetMap2D);
+});
 socket.on('baseMap', function(data) {
 	mapSz = data.mapSz;
 	console.log("Got basemap of size " + mapSz);
@@ -2038,6 +2052,12 @@ socket.on('baseMap', function(data) {
 		baseMap2D[i] = {};
 		for(var j = 0; j < mapSz; j++){
 			baseMap2D[i][j] = 0;
+		}
+	}
+	for(var i = 0; i < mapSz; i++){
+		planetMap2D[i] = {};
+		for(var j = 0; j < mapSz; j++){
+			planetMap2D[i][j] = 0;
 		}
 	}
 	for (var teamColor in baseMap){
@@ -3265,10 +3285,10 @@ function rCargo() {
 		write(metalWeHave + "/" + quest.amt + " " + quest.metal,248,16);
 	}
 
-	ctx.globalAlpha = .5;
+	ctx.globalAlpha = .4;
 
 	ctx.strokeStyle = "white";
-	ctx.lineWidth = .45;
+	ctx.lineWidth = 1;
 	ctx.strokeRect(224,8,16,208);
 
 	var myCapacity = ships[ship].capacity * c2;
@@ -3304,16 +3324,26 @@ function rRadar() {
 	if (va2 < 1.12) return;
 	var radarZoom = 1;
 	ctx.fillStyle = "white";
-	ctx.globalAlpha = 0.5;
-	ctx.drawImage(Img.grid, 16, 32 + 214);
 	let d = new Date();
 	var stime = d.getTime() / (35 * 16);
-	ctx.globalAlpha = 0.5;
-	ctx.save();
-	ctx.translate(112, 342);
-	ctx.rotate(stime % (2 * Math.PI) + Math.PI / 2);
-	ctx.drawImage(Img.spin, -96, -96);
-	ctx.restore();
+
+	//darken circle and make outline
+	ctx.strokeStyle = "white";
+	ctx.fillStyle = "black";
+	ctx.lineWidth = 1;
+	ctx.globalAlpha = 0.4;
+	ctx.beginPath();
+	ctx.arc(112,342,96,0,Math.PI*2,false);
+	ctx.closePath();
+	ctx.fill();
+	ctx.stroke();
+	ctx.beginPath();
+	var lineAngle = stime % (2 * Math.PI);
+	ctx.moveTo(112,342);
+	ctx.lineTo(112+Math.cos(lineAngle)*96,342+Math.sin(lineAngle)*96);
+	ctx.closePath();
+	ctx.stroke();
+
 	var r = va2*3840 - 1280;
 	var r2 = square(r);
 	var r2z2 = square(r*radarZoom);
