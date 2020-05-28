@@ -310,10 +310,23 @@ function Player(sock) {
 					return;
 				}
 				var r = Math.random();
-				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y);
+				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y, false);
 				b.owner = self.name;
 				bases[self.sy][self.sx] = b;
 				self.socket.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
+			}
+
+			else if (wep.name === "Sentry") {
+				if (bases[self.sy][self.sx] != 0) {
+					self.socket.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
+					self.space = false;
+					return;
+				}
+				var r = Math.random();
+				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y, true);
+				b.owner = self.name;
+				bases[self.sy][self.sx] = b;
+				self.socket.emit("chat", { msg: 'You placed a sentry! Name it with "/nameturret <name>".', color: 'yellow' });
 			}
 
 			else if (wep.name === "Turbo") {

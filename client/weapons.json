@@ -353,7 +353,7 @@
 		},
 		{
 			"name":"Turret",
-			"range":1000,
+			"range":750,
 			"damage":30,
 			"speed":-1,
 			"charge":8,
@@ -370,10 +370,10 @@
 			"damage":300,
 			"speed":10,
 			"charge":0,
-			"price":2000000,
+			"price":4000000,
 			"ammo":-2,
 			"level":10,
-			"order":45,
+			"order":46,
 			"type":"Misc",
 			"bot":false
 		},
@@ -596,6 +596,19 @@
 			"level":8,
 			"order":20,
 			"type":"Beam",
+			"bot":false
+		},
+		{
+			"name":"Sentry",
+			"range":300,
+			"damage":15,
+			"speed":80,
+			"charge":5,
+			"price":75000,
+			"ammo":-2,
+			"level":8,
+			"order":45,
+			"type":"Misc",
 			"bot":false
 		}
 	],

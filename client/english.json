@@ -547,6 +547,10 @@
 		{
 			"name":"Healing Beam",
 			"desc":"Heals nearby players and bases."
+		},
+		{
+			"name":"Sentry",
+			"desc":"A small turret which fires a machine gun."
 		}
 	],
 	"splashes":[
