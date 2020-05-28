@@ -202,7 +202,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y, m) {
 		if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
 			self.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
-			var multiplier = isMini?.2:self.sy;
+			var multiplier = self.isMini?.2:self.sy;
 			b.owner.spoils("experience", baseKillExp*multiplier); // reward them
 			b.owner.spoils("money", baseKillMoney*multiplier);
 
