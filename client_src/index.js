@@ -351,6 +351,9 @@ function loadAllImages() {
 	loadImage("rt", '/img/red/rt.png');
 	loadImage("bt", '/img/blue/bt.png');
 	loadImage("gt", '/img/green/gt.png');
+	loadImage("rsentry", '/img/red/rsentry.png');
+	loadImage("bsentry", '/img/blue/bsentry.png');
+	loadImage("gsentry", '/img/green/gsentry.png');
 
 	// asteroids
 	loadImage("iron", '/img/space/iron.png');
@@ -4101,7 +4104,7 @@ function rSelfCloaked() {
 function rBases() {
 	if (basesInfo !== undefined) { // render bases
 
-		var image = basesInfo.color == 'red' ? Img.rss : (basesInfo.color == 'blue' ? Img.bss : Img.gss);
+		var image = colorSelect(basesInfo.color, Img.rss, Img.bss, Img.gss);
 		var pw = image.width;
 		var ph = image.height;
 		var rendX = basesInfo.x - px + w / 2 + scrx;
@@ -4131,7 +4134,9 @@ function rBases() {
 		}
 
 		if (basesInfo.turretLive) {
-			var timage = basesInfo.color === 'red' ? Img.rt : (basesInfo.color === 'blue' ? Img.bt : Img.gt);
+			var timage = 0;
+			if(basesInfo.isMini) timage = colorSelect(basesInfo.color, Img.rsentry, Img.bsentry, Img.gsentry);
+			else timage = colorSelect(basesInfo.color, Img.rt, Img.bt, Img.gt);
 			pw = timage.width; // render turrets
 			ph = timage.height;
 			ctx.save();

@@ -448,7 +448,7 @@ function spawnBases() {
 		for (var i = 0; i < thisMap.length; i += 2) {
 			//make a base at these coords
 			var randBase = Math.random();
-			var thisBase = Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2);
+			var thisBase = Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2, false);
 			bases[thisMap[i + 1]][thisMap[i]] = thisBase;
 		}
 	}
@@ -764,7 +764,7 @@ function update() {
 
 			// Check for creation (only happens once, on first tick, or when a turret is placd)
 			if (pack === undefined) {
-				pack = basePack[y][x] = { id: base.id, turretLive: base.turretLive, isBase: base.isBase, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, name: base.name };
+				pack = basePack[y][x] = { id: base.id, turretLive: base.turretLive, isBase: base.isBase, isMini:base.isMini, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, name: base.name };
 				sendAllSector('base_create', pack, x, y);
 				continue;
 			}

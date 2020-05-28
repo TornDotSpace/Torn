@@ -6,7 +6,7 @@ var Beam = require('../battle/beam.js');
 
 var fs = require('fs');
 
-module.exports = function Base(i, b, sxx, syy, col, x, y) {
+module.exports = function Base(i, b, sxx, syy, col, x, y, m) {
 	var self = {
 		type: "Base",
 		kills: 0,
@@ -17,6 +17,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		owner: 0,
 		name: "",
 		isBase: b, // This differentiates between turrets and turrets connected to bases
+		isMini: m, // This differentiates between mini turrets and normal turrets
 		turretLive: true, // When killed, this becomes false and turret vanishes
 		angle: 0, // angle of the turret
 
@@ -26,17 +27,18 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		sy: syy,
 
 		reload: 0, // timer for shooting
-		health: baseHealth,
-		maxHealth: baseHealth,
+		health: (m?.5:1)*baseHealth,
+		maxHealth: (m?.5:1)*baseHealth,
 		empTimer: -1,
 		speed: 0,//vs unused but there for bullets,
 	}
 	self.tick = function () {
 		//spawn a bot if we need more bots
-		var botSpawn = Math.random();
-		var healthPercent = Math.max(self.health/self.maxHealth,.1);
-		if (botSpawn*healthPercent < botFrequency) {
-			spawnBot(self.sx, self.sy, self.color, healthPercent < .9);
+		if(!self.isMini){
+			var botSpawn = Math.random();
+			var healthPercent = Math.max(self.health/self.maxHealth,.1);
+			if (botSpawn*healthPercent < botFrequency)
+				spawnBot(self.sx, self.sy, self.color, healthPercent < .9);
 		}
 
 		if (!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) self.turretLive = true; // revive. TODO: add a timer
@@ -72,6 +74,10 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 
 		if (self.empTimer > 0) return; // can't do anything if emp'd
 
+		if(self.isMini)self.fireMini();
+		else self.fire();
+	}
+	self.fire = function () {
 		var c = 0; // nearest player
 		var cDist2 = 1000000000; // min dist to player
 		for (var i in players[self.sy][self.sx]) {
@@ -84,7 +90,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		if (c == 0) return;
 
 		var shouldMuon = self.reload < 0 && Math.random()<.015;
-		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, shouldMuon?1000:wepns[3].speed);
+		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, shouldMuon?10000:wepns[3].speed);
 		self.angle = (self.angle+newAngle*2)/3;
 
 		if (self.reload < 0) {
@@ -93,6 +99,25 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 			else if (cDist2 < square(wepns[37].range * 10)) self.shootOrb();//range:125
 			else if (cDist2 < square(175 * 10)) self.shootMissile();//range:175
 			else if (cDist2 < square(wepns[3].range * 10)) self.shootRifle();//range:750
+		}
+	}
+	self.fireMini = function () {
+		var c = 0; // nearest player
+		var cDist2 = 1000000000; // min dist to player
+		for (var i in players[self.sy][self.sx]) {
+			var player = players[self.sy][self.sx][i];
+			if (player.color == self.color || player.disguise > 0) continue; // don't shoot at friendlies
+			var dist2 = squaredDist(player, self);
+			if (dist2 < cDist2) { c = player; cDist2 = dist2; } // update nearest player
+		}
+
+		if (c == 0) return;
+
+		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, wepns[5].speed);
+		self.angle = (self.angle+newAngle*2)/3;
+
+		if (self.reload < 0) {
+			if (cDist2 < square(wepns[5].range * 10)) self.shootMachineGun();//range:???
 		}
 	}
 	self.shootOrb = function () {
@@ -113,6 +138,13 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		self.reload = wepns[3].charge / 2;
 		var r = Math.random();
 		var bullet = Bullet(self, r, 3, self.angle, 0);
+		bullets[self.sy][self.sx][r] = bullet;
+		sendAllSector('sound', { file: "shot", x: self.x, y: self.y }, self.sx, self.sy);
+	}
+	self.shootMachineGun = function () {
+		self.reload = wepns[5].charge/2;
+		var r = Math.random();
+		var bullet = Bullet(self, r, 5, self.angle, 0);
 		bullets[self.sy][self.sx][r] = bullet;
 		sendAllSector('sound', { file: "shot", x: self.x, y: self.y }, self.sx, self.sy);
 	}
@@ -170,10 +202,11 @@ module.exports = function Base(i, b, sxx, syy, col, x, y) {
 		if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
 			self.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
-			b.owner.spoils("experience", baseKillExp*self.sy); // reward them
-			b.owner.spoils("money", baseKillMoney*self.sy);
+			var multiplier = isMini?.2:self.sy;
+			b.owner.spoils("experience", baseKillExp*multiplier); // reward them
+			b.owner.spoils("money", baseKillMoney*multiplier);
 
-			if (raidTimer < 15000) { // during a raid
+			if (raidTimer < 15000 && !self.isMini) { // during a raid
 				b.owner.points++; // give a point to the killer
 
 				for (var i in players[self.sy][self.sx]) { // as well as all other players in that sector
