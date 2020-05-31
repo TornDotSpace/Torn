@@ -70,19 +70,30 @@ global.readMuteTable = function(){
 	var source = "server/permamute";
 	var data = fs.readFileSync(source, 'utf8');
 	var split = data.split(":");
-	for(var i = 0; i < split.length; i++){
+	for(var i = 0; i < split.length; i++)
 		muteTable[split[i]] = 10000000000000;
-	}
 	console.log(muteTable);
 }
 
-require('./server_src/netcode.js');
+global.guildList = {};
+
+global.readGuildList = function(){
+	var source = "server/guildnames";
+	var data = fs.readFileSync(source, 'utf8');
+	var split = data.split(":");
+	console.log(split);
+	for(var i = 0; i+4 < split.length; i+=5)
+		guildList[split[i]] = {owner:split[i+1], team:split[i+2], public:split[i+3], rank:split[i+4]};
+	console.log(guildList);
+}
+
 require('./server_src/math.js');
 
 var Base = require('./server_src/universe/base.js');
 var Asteroid = require("./server_src/universe/asteroid.js");
 var Planet = require("./server_src/universe/planet.js");
 var Vortex = require("./server_src/universe/vortex.js");
+var netcode = require('./server_src/netcode.js');
 
 require('./server_src/db.js');
 connectToDB();
@@ -90,44 +101,39 @@ require('./server_src/services/account_rpc.js');
 
 var tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 
-global.createAsteroid = function () {
-	var sx = Math.floor(Math.random() * mapSz);
-	var sy = Math.floor(Math.random() * mapSz);
-	var vert = (sy + 1) / (mapSz + 1);
-	var hor = (sx + 1) / (mapSz + 1);
-	var metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
-	var randA = Math.random();
-	var h = Math.ceil(Math.random() * 1200 + 200);
-	var ast = Asteroid(randA, h, sx, sy, metal);
-	asts[ast.sy][ast.sx][randA] = ast;
-}
-
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
+global.eng = JSON.parse(fs.readFileSync('client/english.json', 'utf8'));
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 global.planetNames = jsn.planets;
 
 
 // bases
-global.basesPerTeam = 4;
+global.basesPerTeam = 6;
 global.baseMap=	{
 					"red":[	//x, y
-					0, 0,
-					2, 0,
+					1, 1,
+					2, 8,
+					2, 3,
 					0, 4,
-					1, 2
+					1, 6,
+					0, 8
 					],
 					"blue":[
-					6, 0,
-					4, 0,
-					6, 4,
-					5, 2
+					4, 1,
+					5, 8,
+					5, 3,
+					3, 4,
+					4, 6,
+					3, 8
 					],
 					"green":[
-					1, 5,
-					2, 6,
-					4, 6,
-					5, 5
+					7, 1,
+					8, 8,
+					8, 3,
+					6, 4,
+					7, 6,
+					6, 8
 					],
 				};
 
@@ -135,11 +141,14 @@ global.baseMap=	{
 global.bulletWidth = 16; // collision radius
 var mineLifetime = 3; // mines despawn after this many minutes
 global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
-global.baseHealth = 1300; // max base health
-global.baseKillExp = 1300; // Exp reward for killing a base
-global.baseKillMoney = 100000; // ditto but money
-global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
+global.baseHealth = 4700; // max base health
+global.baseKillExp = 7500; // Exp reward for killing a base
+global.baseKillMoney = 250000; // ditto but money
+global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
+global.moneyPerRaidPoint = 300000;
+global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
+global.playerKillMoney = 2500;
 
 //Machine Learning
 global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
@@ -242,18 +251,18 @@ function updateQuests() {
 			if (teamQuests[teamColor][i] !== 0) continue;
 			var r = Math.random();
 			var r2 = Math.random();
-			var whatTeam = i==8?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
+			var whatTeam = (Math.random()<.5)?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
 			var metals = ["aluminium", "silver", "platinum", "iron"];
 			var nm = 0;
 			if (i < 4) {
 				var dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
 				var sxv = Math.floor(r2 * mapSz), syv = Math.floor(r2 * 10 % 1 * mapSz);
 				if (dsxv == sxv && dsyv == syv) return;
-				nm = { type: "Delivery", metal: metals[Math.floor((r * 4 - 2.8) * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 16000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
+				nm = { type: "Delivery", metal: metals[Math.floor(r * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 20000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
 			}
-			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 50000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * basesPerTeam) * 2], sy: thisMap[Math.floor(r2 * basesPerTeam) * 2 + 1] };
-			else if (i < 9) nm = { type: "Base", 	exp: 200000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
-			else 			nm = { type: "Secret", 	exp: 400000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
+			else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 65000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * basesPerTeam) * 2], sy: thisMap[Math.floor(r2 * basesPerTeam) * 2 + 1] };
+			else if (i < 9) nm = { type: "Base", 	exp: 500000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
+			else 			nm = { type: "Secret", 	exp: 1000000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
 			teamQuests[teamColor][i] = nm;
 		}
 	}
@@ -365,11 +374,12 @@ function init() { // start the server!
 	}
 
 	readMuteTable();
+	readGuildList();
 
 	spawnBases();
 
 	//make asteroids. Make 10 times the number of sectors.
-	for (var i = 0; i < mapSz * mapSz * 10; i++) createAsteroid();
+	for (var i = 0; i < mapSz * mapSz * 8; i++) createAsteroid(Math.floor(i/mapSz), i%mapSz);
 
 	//Make exactly one planet in each sector.
 	for (var s = 0; s < mapSz * mapSz; s++) {
@@ -383,18 +393,19 @@ function init() { // start the server!
 	var v = new Vortex(id, Math.random() * sectorWidth, Math.random() * sectorWidth, Math.floor(Math.random() * mapSz), Math.floor(Math.random() * mapSz), .5, 0, true);
 	vorts[v.sy][v.sx][id] = v;
 
-	//Black Hole in D4
-	id = Math.random();
-	v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, 3, 3, .15, 0, false);
-	vorts[v.sy][v.sx][id] = v;
+	//3 Black Holes
+	for(var vortno = 0; vortno < 9; vortno++){
+		if(vortno % 3 != 1) continue;
+		id = Math.random();
+		v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, vortno, 8, .15, 0, false);
+		vorts[v.sy][v.sx][id] = v;
+	}
 
 	//start ticking
+	netcode();
 
 	setTimeout(update, tickRate);
 	broadcastInfo();
-
-	var netcode = require('./server_src/netcode.js');
-	netcode();
 
 	console.log("Server initialized successfully. Game log below.\n");
 }
@@ -414,7 +425,6 @@ function buildFileSystem() { // create the server files/folders
 		}
 	}
 
-
 	var mutesource = "server/permamute";
 	if (!fs.existsSync(mutesource)) {
 		fs.writeFileSync(mutesource,"");
@@ -422,7 +432,14 @@ function buildFileSystem() { // create the server files/folders
 		allGood = false;
 	}
 
-	if (allGood) console.log("All server directories were already present!");
+	var guildsource = "server/guildnames";
+	if (!fs.existsSync(guildsource)) {
+		fs.writeFileSync(guildsource,"");
+		console.log("Creating guild file...");
+		allGood = false;
+	}
+
+	if (allGood) console.log("All server directories and files were already present!");
 
 }
 function spawnBases() {
@@ -432,7 +449,7 @@ function spawnBases() {
 		for (var i = 0; i < thisMap.length; i += 2) {
 			//make a base at these coords
 			var randBase = Math.random();
-			var thisBase = Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2);
+			var thisBase = Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2, false);
 			bases[thisMap[i + 1]][thisMap[i]] = thisBase;
 		}
 	}
@@ -461,15 +478,16 @@ function endRaid() {
 	if (raidRed > raidBlue && raidRed > raidGreen) winners = "red";
 	else if (raidBlue > raidRed && raidBlue > raidGreen) winners = "blue";
 	else if (raidGreen > raidRed && raidGreen > raidBlue) winners = "green";
-	raidTimer = 360000;
+	raidTimer = 100*1000;
+	var winnerPoints = Math.max(raidGreen, Math.max(raidBlue, raidRed));
 	for (var i in sockets) {
 		var p = getPlayer(i);
 		if (p === undefined) continue;
+		if (p.color === winners) p.spoils("money", p.points * moneyPerRaidPoint);
 		p.points = 0;
-		if (p.color !== winners) continue;
-		p.spoils("money", p.points * 75000);
 	}
 	sendRaidData();
+	if(winners !== "yellow") chatAll("~`" + winners + "~`" + winners + "~`yellow~` team won the raid, and made $"+(winnerPoints*moneyPerRaidPoint)+"!");
 }
 
 function update() {
@@ -747,7 +765,7 @@ function update() {
 
 			// Check for creation (only happens once, on first tick, or when a turret is placd)
 			if (pack === undefined) {
-				pack = basePack[y][x] = { id: base.id, turretLive: base.turretLive, isBase: base.isBase, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, name: base.name };
+				pack = basePack[y][x] = { id: base.id, turretLive: base.turretLive, isBase: base.isBase, isMini:base.isMini, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, name: base.name };
 				sendAllSector('base_create', pack, x, y);
 				continue;
 			}

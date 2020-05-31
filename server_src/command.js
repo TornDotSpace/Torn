@@ -39,7 +39,7 @@ cmds["/help"] = new Command("/help - Displays commands & usages", EVERYONE, func
 });
 
 cmds["/me"] = new Command("/me <msg>", EVERYONE, function (player, msg) {
-    chatAll("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4));
+	playerChat("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4), player.globalChat, player.color, player.sx, player.sy);
 });
 
 cmds["/playerstats"] = new Command("/playerstats - See how many players are online", EVERYONE, function (player, msg) {
@@ -88,6 +88,24 @@ cmds["/nameturret"] = new Command("/nameturret <name>", REGISTERED, function (pl
     var base = bases[player.sy][player.sx];
     if(base != 0 && base.owner == player.name) { base.name = msg.substring(12); num++; }
     player.socket.emit("chat", { msg: num + " turret(s) renamed." });
+});
+
+cmds["/joinguild"] = new Command("/joinguild <guildName>", REGISTERED, function (player, msg) {
+    if(msg.length < 12){
+        player.socket.emit("chat", { msg: "You must specify a guild name." });
+        return;
+    }
+    var guildName = msg.substring(11);
+    if(typeof guildList[guildName] === "undefined") {
+        player.socket.emit("chat", { msg: guildName + " is not a real guild!" });
+        return;
+    }
+    if(guildList[guildName].public !== "public") {
+        player.socket.emit("chat", { msg: "That guild is private- you must be invited!" });
+        return;
+    }
+    player.guild = guildName;
+    player.socket.emit("chat", { msg: "Joined guild " + guildName + "!" });
 });
 
 cmds["/pm"] = new Command("/pm <player> <msg>", REGISTERED, function (player, msg) {

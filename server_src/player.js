@@ -16,6 +16,7 @@ function Player(sock) {
 		type: "Player",
 
 		name: "ERR0",
+		guild: "",
 		id: sock.id, // unique identifier
 		socket: sock,
 		password: "password",
@@ -156,7 +157,7 @@ function Player(sock) {
 
 		var amDrifting = self.e || self.gyroTimer > 0;
 		self.shield = (self.s && !amDrifting && self.gyroTimer < 1) || self.leaveBaseShield > 0;
-		if(self.disguise>0 || (self.shield && self.weapons[self.equipped]>0 && wepns[self.weapons[self.equipped]].type !== "Misc" && self.space))self.charge=Math.min(self.charge,0);
+		if(self.disguise>0 || (self.shield && self.weapons[self.equipped]>0 && wepns[self.weapons[self.equipped]].type !== "Misc" && wepns[self.weapons[self.equipped]].type !== "Mine" && self.space))self.charge=Math.min(self.charge,0);
 		self.leaveBaseShield--;
 
 		if (!self.isBot) {
@@ -212,11 +213,11 @@ function Player(sock) {
 			// <= 6 are traditional guns.
 			if (wepId <= 6 || wep.name === "Gravity Bomb" || wep.name === "Spreadshot") self.shootBullet(wepId);
 			// <= 9 are plasma, laser, hadron beams.
-			else if (wepId <= 9 || wep.name === "Jammer" || wep.name === "Mining Laser" || wep.name === "Ore Cannon" || wep.name === "Destabilizer") self.shootBeam(self, false);
+			else if (wepId <= 9 || wep.name === "Jammer" || wep.name === "Mining Laser" || wep.name === "Ore Cannon" || wep.name === "Destabilizer" || wep.name === "Healing Beam") self.shootBeam(self, false);
 			//Traditional missiles
 			else if (wepId <= 14 || wep.name === "Proximity Fuze") self.shootMissile();
 			// <= 17: Traditional Mines
-			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades" || wep.name === "Pulse Mine") self.shootMine();
+			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades" || wep.name === "Pulse Mine" || wep.name === "Campfire") self.shootMine();
 			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") self.shootOrb();
 			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast(wepId);
 
@@ -228,7 +229,7 @@ function Player(sock) {
 				if (wep.name === "Supercharger") self.superchargerTimer = 1500;//1 min
 				else if (wep.name === "Hull Nanobots") self.health += Math.min(self.maxHealth*.2, self.maxHealth - self.health); // min prevents overflow
 				else if (wep.name === "Photon Cloak") self.disguise = 200;//6s
-				else if (wep.name === "Warp Drive") self.speed = self.thrust * (self.ship == 16 ? 1000 : 750);
+				else if (wep.name === "Warp Drive") self.speed = self.ship == 16 ? 1500 : 1000;
 			}
 
 
@@ -309,10 +310,23 @@ function Player(sock) {
 					return;
 				}
 				var r = Math.random();
-				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y);
+				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y, false);
 				b.owner = self.name;
 				bases[self.sy][self.sx] = b;
 				self.socket.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
+			}
+
+			else if (wep.name === "Sentry") {
+				if (bases[self.sy][self.sx] != 0) {
+					self.socket.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
+					self.space = false;
+					return;
+				}
+				var r = Math.random();
+				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y, true);
+				b.owner = self.name;
+				bases[self.sy][self.sx] = b;
+				self.socket.emit("chat", { msg: 'You placed a sentry! Name it with "/nameturret <name>".', color: 'yellow' });
 			}
 
 			else if (wep.name === "Turbo") {
@@ -613,7 +627,7 @@ function Player(sock) {
 			self.sendAchievementsMisc(true);
 		}
 
-		if (self.sx == 3 && self.sy == 3 && self.quest.type === "Secret3") {
+		if ((self.sx % 3 != 0 && self.sy == 8) && self.quest.type === "Secret3") {
 			self.spoils("money", self.quest.exp); // reward the player
 			self.spoils("experience", Math.floor(self.quest.exp / 4000));
 
@@ -655,7 +669,7 @@ function Player(sock) {
 
 	}
 	self.botPlay = function () { // don't mess with this pls
-		if (tick % 2 != Math.floor(self.id * 2)) return; // Lag prevention.
+		if (tick % 8 != Math.floor(self.id * 8)) return; // Lag prevention, also makes the bots a bit easier
 		if (self.empTimer > 0) return;//cant move if i'm emp'd
 
 		self.equipped = 0;
@@ -742,7 +756,7 @@ function Player(sock) {
 	}
 	self.nnBotPlay = function () {
 		//Play for a neural network bot
-		if (tick % 5 != Math.floor(self.id * 5)) return; //Don't go too crazy running the whole network each tick. Lag prevention.
+		if (tick % 8 != Math.floor(self.id * 8)) return; //Don't go too crazy running the whole network each tick. Lag prevention.
 
 		if (self.net === 1) { // If we haven't yet initialized a neural net
 			self.net = new NeuralNet();
@@ -822,7 +836,7 @@ function Player(sock) {
 
 		//cooldown to prevent chat spam when 2 people are on the planet
 		var cool = p.cooldown;
-		if (cool < 0) { self.refillAllAmmo(); p.cooldown = 150; }
+		if (cool < 0) { self.refillAllAmmo(); p.cooldown = 50; }
 
 		self.checkQuestStatus(true); // lots of quests are planet based
 
@@ -863,6 +877,8 @@ function Player(sock) {
 			self.randmAchs[8] = true;
 			self.sendAchievementsMisc(true);
 		}
+
+		self.socket.emit("planetMap", { x:p.x, y:p.y, sx:p.sx, sy:p.sy });
 
 		//Update list of claimed planets.
 		var index = self.sx + self.sy * mapSz;
@@ -1095,9 +1111,9 @@ function Player(sock) {
 
 		//base
 		if (!restricted)
-			if (self.weapons[self.equipped] == 7 || self.weapons[self.equipped] == 8 || self.weapons[self.equipped] == 9) {
+			if (self.weapons[self.equipped] == 7 || self.weapons[self.equipped] == 8 || self.weapons[self.equipped] == 9 || self.weapons[self.equipped] == 45) {
 				var b = bases[self.sy][self.sx];
-				if (b != 0 && b.color != self.color && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
+				if (b != 0 && ((b.color == self.color) == (self.weapons[self.equipped] == 45)) && !(self.weapons[self.equipped] == 45 && b.health > baseHealth*.9995) && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
 			}
 
 		//search players
@@ -1105,14 +1121,15 @@ function Player(sock) {
 			for (var i in players[self.sy][self.sx]) {
 				var p = players[self.sy][self.sx][i];
 				if (p.ship != 17 && (self.weapons[self.equipped] == 26 || self.weapons[self.equipped] == 30)) continue; // elite quarrier is affected
-				if (p.color == self.color || p.disguise > 0) continue;
+				if (((p.color == self.color) != (self.weapons[self.equipped] == 45)) || p.disguise > 0 || self.id == p.id) continue;
+				if (self.weapons[self.equipped] == 45 && p.health > p.maxHealth*.9995) continue;
 				var dx = p.x - ox, dy = p.y - oy;
 				var dist2 = dx * dx + dy * dy;
 				if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = p;
 			}
 
 		//search asteroids
-		if (nearP == 0 && self.weapons[self.equipped] != 35 && self.weapons[self.equipped] != 31)
+		if (nearP == 0 && self.weapons[self.equipped] != 35 && self.weapons[self.equipped] != 31 && self.weapons[self.equipped] != 45)
 			for (var i in asts[self.sy][self.sx]) {
 				var a = asts[self.sy][self.sx][i];
 				if (a.sx != self.sx || a.sy != self.sy || a.hit) continue;
@@ -1167,7 +1184,11 @@ function Player(sock) {
 				self.socket.emit('quest', { quest: 0, complete: false});//reset quest and update client
 
 				if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-					chatAll(self.nameWithColor() + " was destroyed by " + b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~!");
+					var customMessageArr = eng.weapons[b.wepnID].killmessages;
+					var useCustomKillMessage = Math.random() < .5 && typeof customMessageArr !== "undefined" && customMessageArr.length > 0;
+
+					if(useCustomKillMessage) chatAll(customMessageArr[Math.floor(Math.random()*customMessageArr.length)].replace("P1", b.owner.nameWithColor()).replace("P2", self.nameWithColor()));
+					else chatAll(self.nameWithColor() + " was destroyed by " + b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~!");
 
 					if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
 						b.owner.driftAchs[9] = true;
@@ -1184,7 +1205,7 @@ function Player(sock) {
 			//drop a package
 			var r = Math.random();
 			if (self.hasPackage && !self.isBot) packs[self.sy][self.sx][r] = Package(self, r, 0); // an actual package (courier)
-			else if (Math.random() < .004 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
+			else if (Math.random() < .012 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
 			else if (Math.random() < .1 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 3);//ammo
 			else if (!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
 
@@ -1193,7 +1214,7 @@ function Player(sock) {
 				b.owner.onKill(self);
 				b.owner.spoils("experience", !self.guest ? (10 + diff * (self.color === b.owner.color ? -1 : 1)) : 0);
 				// Prevent farming and disincentivize targetting guests
-				b.owner.spoils("money", 1000 * (b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak) : 1));
+				b.owner.spoils("money", b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak*playerKillMoney) : playerKillMoney);
 
 				if (self.points > 0) { // raid points
 					b.owner.points++;
@@ -1229,7 +1250,7 @@ function Player(sock) {
 			self.sx = baseMap[self.color][whereToRespawn];
 			self.sy = baseMap[self.color][whereToRespawn+1];
 
-			if (self.lives <= 0) {
+			if (self.lives-- <= 0) {
 				self.save();
 				self.kick("Goodbye captain: no more lives remaining!");
 			}
@@ -1257,7 +1278,10 @@ function Player(sock) {
 		//blood trail: less damage
 		if (self.trail % 16 == 1) d /= 1.05;
 
-		self.health -= d * (self.shield ? .25 : 1); // Shield- 1/4th damage
+		d *= (self.shield ? .25 : 1); // Shield- 1/4th damage
+
+		self.health -= d;
+		if (self.health > self.maxHealth) self.health = self.maxHealth;
 		if (self.health < 0) self.die(origin);
 
 		note('-' + Math.floor(d), self.x, self.y - 64, self.sx, self.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
@@ -1593,7 +1617,7 @@ var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString()
 global.spawnBot = function (sx, sy, col, force) {
 	if (!Config.getValue("want-bots", true)) return;
 
-	if(playerCount + botCount + guestCount > 90 && !force) return;
+	if (playerCount + botCount + guestCount > playerLimit && !force) return;
 	
 	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 
@@ -1603,11 +1627,12 @@ global.spawnBot = function (sx, sy, col, force) {
 	}
 	var id = Math.random();
 	var bot = new Player({ id: id, emit: function () { } });
+	bot.angle = Math.random()*Math.PI*2;
 	bot.isBot = true;
 	bot.sx = sx;
 	bot.sy = sy;
-	var rand = .33 + 3.67 * Math.random();
-	bot.experience = 550*Math.sqrt(Math.pow(2, Math.pow(2, rand))) + 3 * rand;
+	var rand = 4.2 * Math.random();
+	bot.experience = Math.sqrt(Math.pow(2, Math.pow(2, rand))-2)*sy*sy*sy + 3 * rand;
 	bot.updateRank();
 	bot.ship = bot.rank;
 	bot.x = bot.y = sectorWidth / 2;

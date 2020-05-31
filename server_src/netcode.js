@@ -185,7 +185,7 @@ module.exports = function initNetcode() {
             player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
             sendWeapons(player);
             socket.emit("raid", { raidTimer: raidTimer });
-            socket.emit('baseMap', {baseMap: baseMap});
+            socket.emit('baseMap', {baseMap: baseMap, mapSz: mapSz});
 
             chatAll("Welcome " + player.nameWithColor() + " to the universe!");
         });
@@ -330,7 +330,8 @@ module.exports = function initNetcode() {
                     player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
                     player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
                     sendWeapons(player);
-                    socket.emit('baseMap', {baseMap: baseMap});
+                    socket.emit('baseMap', {baseMap: baseMap, mapSz: mapSz});
+                    socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
                 }, wait_time);
             });
         });
@@ -413,7 +414,11 @@ module.exports = function initNetcode() {
 
             if (data.msg.startsWith("/") && !data.msg.startsWith("/me") && !data.msg.startsWith("/r") && !data.msg.startsWith("/pm ")) { runCommand(player, data.msg); return; } // non spammable commands
 
-            if (muteTable[player.name] > time) return;
+            if (muteTable[player.name] > time) {
+                var secondsLeft = Math.floor((muteTable[player.name]-time)/1000);
+                socket.emit('chat', { msg: ("~`#ff0000~`You are muted for " + Math.floor(secondsLeft/60) + " minutes and " + secondsLeft%60 + " seconds!") });
+                return;
+            }
             delete muteTable[player.name];
 
             data.msg = filter.clean(data.msg); // censor
@@ -433,12 +438,14 @@ module.exports = function initNetcode() {
                 var spaces = "";
                 for (var i = player.name.length; i < 16; i++) spaces += " "; // align the message
                 const finalMsg = spaces + player.nameWithColor() + ": " + data.msg;
-                if (player.globalChat == 0) chatAll(finalMsg);//sendTeam(player.color, 'chat', {msg:finalMsg});
+
+                // Send it to the client up to what chat room theyre in
+                playerChat(finalMsg, player.globalChat, player.color, player.sx, player.sy);
             }
         });
         socket.on('toggleGlobal', function (data) { // player wants to switch what chat room they're in
-            if (player == 0) return;
-            player.globalChat = (player.globalChat + 1) % 2;
+            if (player == 0 || typeof data.gc !== "number" || data.gc != Math.floor(data.gc) || data.gc < 0 || data.gc >= 3) return;
+            player.globalChat = data.gc;
         });
         socket.on('sell', function (data) { // selling ore
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'string') return;

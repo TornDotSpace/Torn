@@ -74,6 +74,7 @@ global.loadLang = function (name) {
     for (var i = 0; i < jsn.ships.length; i++) {
         jsn.ships[i].nameA = languagejson.ships[i].nameA;
         jsn.ships[i].nameH = languagejson.ships[i].nameH;
+        jsn.ships[i].nameC = languagejson.ships[i].nameC;
         jsn.ships[i].desc = languagejson.ships[i].desc;
     }
     global.mEng = jsn.messages;

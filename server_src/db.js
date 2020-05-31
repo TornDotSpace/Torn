@@ -41,18 +41,17 @@ global.handlePlayerDeath = async function (player) {
     var record = await PLAYER_DATABASE.findOne({_id: player._id});
 
     if (record == null) return;
-
-    var login = player.lastLogin;
-    var lives = player.lives - 1;
-
+    
+    // Certain variables should NOT be reverted
+    const persist = [ "lastLogin", "randAchs", "killAchs", "moneyAchs", "driftAchs", "planetsClaimed", "lives", "experience", "rank" ];
     for (var key in record) {
+        if (key in persist) continue;
+
         player[key] = record[key];
     }
 
-    player.lastLogin = login;
     player.experience *= .98;
-    player.randmAchs[1] = true; // Death Achievement
-    player.lives = lives;
+    player.randmAchs[1] = true; // Death Achievement;
 }
 
 global.loadPlayerData = async function (playerName, passwordHash, socket) {
@@ -69,6 +68,11 @@ global.loadPlayerData = async function (playerName, passwordHash, socket) {
 
     for (var key in record) {
         player[key] = record[key];
+    }
+
+    if(bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx].color != player.color) {
+        player.sx = baseMap[player.color][0];
+        player.sy = baseMap[player.color][1];
     }
 
     player.lastLogin = new Date(player.lastLogin);
