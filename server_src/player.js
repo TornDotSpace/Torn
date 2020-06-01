@@ -1202,12 +1202,14 @@ function Player(sock) {
 				else if (b.owner !== undefined && b.owner.type === "Base") chatAll(self.nameWithColor() + " was destroyed by base " + b.owner.nameWithColor() + "!");
 			}
 
-			//drop a package
-			var r = Math.random();
-			if (self.hasPackage && !self.isBot) packs[self.sy][self.sx][r] = Package(self, r, 0); // an actual package (courier)
-			else if (Math.random() < .012 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
-			else if (Math.random() < .1 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 3);//ammo
-			else if (!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
+			if (b.type !== "Vortex"){
+				//drop a package
+				var r = Math.random();
+				if (self.hasPackage && !self.isBot) packs[self.sy][self.sx][r] = Package(self, r, 0); // an actual package (courier)
+				else if (Math.random() < .012 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
+				else if (Math.random() < .1 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 3);//ammo
+				else if (!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
+			}
 
 			//give the killer stuff
 			if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
