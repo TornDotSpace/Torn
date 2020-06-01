@@ -569,7 +569,7 @@ module.exports = function initNetcode() {
 
             switch (item) {
                 case 1: // radar
-                	if (player.radar2 < 1) break;
+                	if (player.radar2 <= 1) break;
             		var price = techPriceForDowngrade(player.radar2);
                     if (player.money >= price) {
                         player.money -= price;
@@ -577,7 +577,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 case 2: // cargo
-                	if (player.capacity2 < 1) break;
+                	if (player.capacity2 <= 1) break;
             		var price = techPriceForDowngrade(player.capacity2);
                     if (player.money >= price) {
                         player.money -= price;
@@ -586,7 +586,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 case 3: //hull
-                	if (player.maxHealth2 < 1) break;
+                	if (player.maxHealth2 <= 1) break;
             		var price = techPriceForDowngrade(player.maxHealth2);
                     if (player.money >= price) {
                         player.money -= price;
@@ -595,7 +595,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 case 4: // energy
-                	if (player.energy2 < 1) break;
+                	if (player.energy2 <= 1) break;
             		var price = techPriceForDowngrade(player.energy2)*8;
                     if (player.money >= price) {
                         player.money -= price;
@@ -603,7 +603,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 case 5: // agility
-                	if (player.agility2 < 1) break;
+                	if (player.agility2 <= 1) break;
             		var price = techPriceForDowngrade(player.agility2);
                     if (player.money >= price) {
                         player.money -= price;
@@ -612,7 +612,7 @@ module.exports = function initNetcode() {
                     }
                     break;
                 default: //0: thrust
-                	if (player.thrust2 < 1) break;
+                	if (player.thrust2 <= 1) break;
             		var price = techPriceForDowngrade(player.thrust2);
                     if (player.money >= price) {
                         player.money -= price;
@@ -644,7 +644,7 @@ module.exports = function initNetcode() {
             //You need to have unlocked this quest type.
             if (quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;
 
-            if (((quest.dsx == 3 && quest.dsy == 3) || (quest.sx == 3 && quest.sy == 3)) && !player.randmAchs[2]) { // risky business
+            if (((quest.dsx % 3 == 1 && quest.dsy == 8) || (quest.sx % 3 == 1 && quest.sy == 8)) && !player.randmAchs[2]) { // risky business
                 player.randmAchs[2] = true;
                 player.sendAchievementsMisc(true);
             }

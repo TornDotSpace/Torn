@@ -497,6 +497,14 @@ function update() {
 	var lagTimer = d.getTime();
 	updateQuests();
 
+	for(var i = 0; i < mapSz; i++)
+		for(var j = 0; j < mapSz; j++)
+			if (bases[i][j] == 0 && Math.random() < .000004) {
+				var r = Math.random();
+				var b = Base(r, false, j, i, j<3?"red":(j<6?"blue":"green"), sectorWidth*Math.random(), sectorWidth*Math.random(), true);
+				bases[i][j] = b;
+			}
+
 	for (var i in dockers) {
 		var player = dockers[i];
 		if (player.dead) continue;
