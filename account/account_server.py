@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import utils
 import db
 import endpoint

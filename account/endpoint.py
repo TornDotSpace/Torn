@@ -8,15 +8,29 @@ from utils import Hash
 
 class TornLoginEndpoint:
     async def handle_recv(self, request):
-        return web.Response(text="Hello!")
+        user_data = (await request.content.read()).decode('utf-8')
+
+        username = user_data[:user_data.find('&')]
+        password = user_data[user_data.find('&') + 1:]
+
+        valid_auth = await db.authenticate_player(username, password)
+
+        if not valid_auth:
+            return web.Response(status=403, text="Forbidden")
+        
+        # Generate playcookie
+        cookie = utils.generate_playcookie()
+
+        return web.Response(text=f"Hello {username}!\nYour password is {password}\nYour play cookie is {cookie}")
 
     def __init__(self, cache):
         self.app = web.Application()
-        self.app.add_routes([web.get("/api/login/", self.handle_recv)])
+        self.app.add_routes([web.post("/api/login/", self.handle_recv)])
         self.cache = cache
 
     def get_app(self):
         return self.app
+
 class TornRPCEndpoint:
     def __init__(self, cache):
         self.cache = cache

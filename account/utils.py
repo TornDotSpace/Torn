@@ -13,7 +13,7 @@ class Hash:
         for i in range(0, len(password)):
             ch = password[i:i+1]
             hash = ((hash << 5) - hash) + ord(ch)
-        return str(hash)
+        return str(hash).encode('utf-8')
     '''
     Secure Torn hash
     '''
