@@ -214,7 +214,6 @@ module.exports = function Base(i, b, sxx, syy, col, x, y, m) {
 				if (squaredDist(p, self) < square(baseClaimRange) && p.color === b.owner.color) {
 					p.spoils("experience", baseKillExp*multiplier); // reward them
 					p.spoils("money", baseKillMoney*multiplier);
-					console.log(p.name + " killed a base!");
 				}
 			}
 

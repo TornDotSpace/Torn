@@ -99,7 +99,7 @@ var mx = 0, my = 0, mb = 0;
 var tick = 0, baseTick = 0;
 var scrx = 0, scry = 0;
 var mapSz = -1;
-var quests = 0, quest = 0;
+var quests = 0, quest = 0, qsy = -1, qsx = -1, qdsy = -1, qdsx = -1;
 var login = false, lore = false, afk = false;
 var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
 var phealth = 0;
@@ -809,7 +809,7 @@ function r3DMap() {
 			avgZ+=cz;
 			avgi++;
 
-			if((i == sx && j == sy) || (i == quest.sx && j == quest.sy) || (i == quest.dsx && j == quest.dsy)){
+			if((i == sx && j == sy) || (i === qsx && j === qsy) || (i === qdsx && j === qdsy)){
 
 				//Highlight the player's sector
 				minictx.lineWidth = 3;
@@ -1996,8 +1996,12 @@ socket.on('rank', function (data) {
 	addBigNote([256,"Rank Up!","",""]);
 });
 socket.on('quest', function (data) {
-	if(data.complete) addBigNote([256,"Quest Complete!","",""]);
 	quest = data.quest;
+	if(data.complete) addBigNote([256,"Quest Complete!","",""]);
+	qsx = quest.sx;
+	qsy = quest.sy;
+	qdsx = quest.dsx;
+	qdsy = quest.dsy;
 });
 socket.on('achievementsKill', function (data) {
 	for (var a in data.achs){
@@ -2470,6 +2474,14 @@ document.addEventListener('mousemove', function (evt) {
 	else if (docked && tab == 1 && mx > 16 + rx && mx < rx + 128 * 6 - 16 && my > ry + 40 + 32 && my < ry + 512 - 48 && quest == 0) {
 		seller = Math.floor((my - ry - 40 - 32) / 80) + 300;
 		if (mx > rx + 128 * 3) seller += 5;
+		if (preSeller != seller) {
+			var questi = quests[seller-300];
+			qsx = questi.sx;
+			qsy = questi.sy;
+			qdsx = questi.dsx;
+			qdsy = questi.dsy;
+			r3DMap();
+		}
 	}
 
 	//Stats
@@ -2516,6 +2528,13 @@ document.addEventListener('mousemove', function (evt) {
 	else seller = 0;
 	if (seller != 0 && seller != preSeller) playAudio("button2", .2);
 	if (preSeller!=seller && (Math.abs(preSeller-801)<=1 || Math.abs(seller-801)<=1)) rChat();
+	if (quest == 0 && (seller < 300 || seller >= 400)) {
+		qsx = -1;
+		qsy = -1;
+		qdsx = -1;
+		qdsy = -1;
+		r3DMap();
+	}
 }, false);
 
 document.addEventListener('mousedown', function (evt) {
