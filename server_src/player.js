@@ -171,7 +171,7 @@ function Player(sock) {
 		self.fire();
 
 		var chargeVal = (self.energy2 + 1)/1.8; //charge speed scales with energy tech
-		for (var i = 0; i < self.generators; i++) chargeVal *= 1.04;
+		for (var i = 0; i < self.generators; i++) chargeVal *= 1.035;
 		if(self.charge < 0 || self.space || self.c) self.charge+=chargeVal;
 		else if(self.charge > 0 && !self.space && !self.c) self.charge = 0;
 	}
@@ -1067,7 +1067,7 @@ function Player(sock) {
 			//find the angle of the bullets. Manipulate if one of the multi-bullet weapons.
 			var bAngle = self.angle;
 			if (currWep == 2) bAngle -= 3.1415; // reverse gun
-			if (currWep == 39) bAngle += ((i - 1) / 4); // spreadshot
+			if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
 			if (currWep == 4) bAngle += Math.random() - .5; // shotgun
 
 			var bullet = Bullet(self, r, currWep, bAngle, i * 2 - 1);
@@ -1202,12 +1202,14 @@ function Player(sock) {
 				else if (b.owner !== undefined && b.owner.type === "Base") chatAll(self.nameWithColor() + " was destroyed by base " + b.owner.nameWithColor() + "!");
 			}
 
-			//drop a package
-			var r = Math.random();
-			if (self.hasPackage && !self.isBot) packs[self.sy][self.sx][r] = Package(self, r, 0); // an actual package (courier)
-			else if (Math.random() < .012 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
-			else if (Math.random() < .1 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 3);//ammo
-			else if (!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
+			if (b.type !== "Vortex"){
+				//drop a package
+				var r = Math.random();
+				if (self.hasPackage && !self.isBot) packs[self.sy][self.sx][r] = Package(self, r, 0); // an actual package (courier)
+				else if (Math.random() < .012 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
+				else if (Math.random() < .1 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 3);//ammo
+				else if (!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
+			}
 
 			//give the killer stuff
 			if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {

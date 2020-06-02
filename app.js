@@ -144,6 +144,7 @@ global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies desp
 global.baseHealth = 4700; // max base health
 global.baseKillExp = 7500; // Exp reward for killing a base
 global.baseKillMoney = 250000; // ditto but money
+global.baseClaimRange = 1200; // How far you must be from a base (times ten) to get rewards
 global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
 global.moneyPerRaidPoint = 300000;
@@ -497,6 +498,14 @@ function update() {
 	var d = new Date();
 	var lagTimer = d.getTime();
 	updateQuests();
+
+	for(var i = 0; i < mapSz; i++)
+		for(var j = 0; j < mapSz; j++)
+			if (bases[i][j] == 0 && Math.random() < .000004) {
+				var r = Math.random();
+				var b = Base(r, false, j, i, j<3?"red":(j<6?"blue":"green"), sectorWidth*Math.random(), sectorWidth*Math.random(), true);
+				bases[i][j] = b;
+			}
 
 	for (var i in dockers) {
 		var player = dockers[i];
