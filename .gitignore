@@ -11,6 +11,10 @@ client/leaderboard/
 client/accountusage/data.json
 client/*.js
 
+# Python
+*/__pycache__/
+*.pyc
+
 # Server Logs (production)
 logs/
 error_logs/
