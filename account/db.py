@@ -20,9 +20,13 @@ async def authenticate_player(username: str, password: str) -> bool:
     if (bcrypt.checkpw(Hash.hontza_hash(password), passwd)):
         # Legacy account - bcrypt the password
         hash = Hash.bcrypt_hash(password)
-        players.update_one({"_id" : username}, { "$set": { "password" : hash}})
+        await players.update_one({"_id" : username}, { "$set": { "password" : hash}})
         return True
     elif bcrypt.checkpw(password, passwd):
         return True
     else:
         return False
+
+async def change_password(username : str, new_password : str) -> bool:
+    hash = Hash.bcrypt_hash(new_password)
+    await players.update_one({"_id" : username}, { "$set": { "password" : hash}})
