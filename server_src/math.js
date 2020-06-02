@@ -22,12 +22,6 @@ global.colorSelect = function(col, red, blue, green){
 	return green;
 }
 
-global.pdist = function (x, sx, sy) { // used in blast collision algorithm
-	var i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
-	var i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
-	return (Math.cbrt(Math.abs(Math.tan(x))) % i2) * 3500 * i2 + 800 * i1 + 600;
-}
-
 global.findBisector = function (a1, a2) { // finds the angle bisector of a1 and a2
 	a1 = a1 * 180 / Math.PI;
 	a2 = a2 * 180 / Math.PI;

@@ -2437,6 +2437,11 @@ document.addEventListener('mousemove', function (evt) {
 		r3DMap();
 	}
 
+	//Cargo
+	else if (mx > 224 && mx < 240 && my < 216 && my > 8) {
+		seller = 900;
+	}
+
 	//Global Chat Button
 	else if (mx < 640 && mx > 512 && my > h - 64){
 		seller = 800 + Math.floor((my-h+61)/18);
@@ -2556,8 +2561,8 @@ document.addEventListener('mousedown', function (evt) {
 	if (docked && tab == 2 && i > 199 && i < 206) socket.emit('upgrade', { item: i - 200 });
 	if (docked && tab == 2 && i > 205 && i < 212) socket.emit('downgrade', { item: i - 206 });
 	if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40) tab = Math.floor((mx - rx) / (768/5));
-	if (i >= 700 && i < 705)
-		socket.emit('trail', { trail: i - 700 });
+	if (i >= 700 && i < 705) socket.emit('trail', { trail: i - 700 });
+	if (i == 900) socket.emit('jettison', {});
 	if (i >= 800 && i < 803) {
 		globalChat = i-800;
 		socket.emit("toggleGlobal", {gc:globalChat});
@@ -3294,11 +3299,15 @@ function rCargo() {
 		else if(quest.metal ===    "silver") { ctx.fillStyle = "#eef"; metalWeHave = silver; }
 		write(metalWeHave + "/" + quest.amt + " " + quest.metal,248,16);
 	}
+	if(seller == 900){
+		ctx.fillStyle = "white";
+		write("JETTISON CARGO",248,32);
+	}
 
 	ctx.globalAlpha = .4;
 
 	ctx.strokeStyle = "white";
-	ctx.lineWidth = 1;
+	ctx.lineWidth = seller == 900?2:1;
 	ctx.strokeRect(224,8,16,208);
 
 	var myCapacity = ships[ship].capacity * c2;

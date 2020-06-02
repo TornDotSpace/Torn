@@ -439,13 +439,16 @@ module.exports = function initNetcode() {
                 for (var i = player.name.length; i < 16; i++) spaces += " "; // align the message
                 const finalMsg = spaces + player.nameWithColor() + ": " + data.msg;
 
-                // Send it to the client up to what chat room theyre in
+                // Send it to the client up to what chat room theyre inxx
                 playerChat(finalMsg, player.globalChat, player.color, player.sx, player.sy);
             }
         });
         socket.on('toggleGlobal', function (data) { // player wants to switch what chat room they're in
             if (player == 0 || typeof data.gc !== "number" || data.gc != Math.floor(data.gc) || data.gc < 0 || data.gc >= 3) return;
             player.globalChat = data.gc;
+        });
+        socket.on('jettison', function (data) { // Drop all ores
+            player.iron = player.silver = player.platinum = player.aluminium = 0;
         });
         socket.on('sell', function (data) { // selling ore
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'string') return;
