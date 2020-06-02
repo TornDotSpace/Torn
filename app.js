@@ -143,6 +143,7 @@ global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies desp
 global.baseHealth = 4700; // max base health
 global.baseKillExp = 7500; // Exp reward for killing a base
 global.baseKillMoney = 250000; // ditto but money
+global.baseClaimRange = 1200; // How far you must be from a base (times ten) to get rewards
 global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
 global.moneyPerRaidPoint = 300000;

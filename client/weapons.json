@@ -447,7 +447,7 @@
 			"range":10000,
 			"damage":300,
 			"speed":-1,
-			"charge":200,
+			"charge":100,
 			"price":1000000,
 			"ammo":1,
 			"level":10,
@@ -510,9 +510,9 @@
 		{
 			"name":"Spreadshot",
 			"range":250,
-			"damage":8,
+			"damage":10,
 			"speed":60,
-			"charge":4,
+			"charge":5,
 			"price":30000,
 			"ammo":200,
 			"level":6,
@@ -577,7 +577,7 @@
 			"range":100,
 			"damage":-30,
 			"speed":0,
-			"charge":60,
+			"charge":90,
 			"price":5000,
 			"ammo":4,
 			"level":5,
@@ -822,7 +822,7 @@
 			"capacity":50000
 		},
 		{
-			"thrust":0.4,
+			"thrust":0.35,
 			"health":400,
 			"agility":0.35,
 			"width":192,
@@ -867,7 +867,7 @@
 			"capacity":999999
 		},
 		{
-			"thrust":0.4,
+			"thrust":0.35,
 			"health":500,
 			"agility":0.35,
 			"width":192,

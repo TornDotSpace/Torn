@@ -99,7 +99,7 @@ var mx = 0, my = 0, mb = 0;
 var tick = 0, baseTick = 0;
 var scrx = 0, scry = 0;
 var mapSz = -1;
-var quests = 0, quest = 0;
+var quests = 0, quest = 0, qsy = -1, qsx = -1, qdsy = -1, qdsx = -1;
 var login = false, lore = false, afk = false;
 var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
 var phealth = 0;
@@ -809,7 +809,7 @@ function r3DMap() {
 			avgZ+=cz;
 			avgi++;
 
-			if((i == sx && j == sy) || (i == quest.sx && j == quest.sy) || (i == quest.dsx && j == quest.dsy)){
+			if((i == sx && j == sy) || (i === qsx && j === qsy) || (i === qdsx && j === qdsy)){
 
 				//Highlight the player's sector
 				minictx.lineWidth = 3;
@@ -1996,8 +1996,12 @@ socket.on('rank', function (data) {
 	addBigNote([256,"Rank Up!","",""]);
 });
 socket.on('quest', function (data) {
-	if(data.complete) addBigNote([256,"Quest Complete!","",""]);
 	quest = data.quest;
+	if(data.complete) addBigNote([256,"Quest Complete!","",""]);
+	qsx = quest.sx;
+	qsy = quest.sy;
+	qdsx = quest.dsx;
+	qdsy = quest.dsy;
 });
 socket.on('achievementsKill', function (data) {
 	for (var a in data.achs){
@@ -2437,6 +2441,11 @@ document.addEventListener('mousemove', function (evt) {
 		r3DMap();
 	}
 
+	//Cargo
+	else if (mx > 224 && mx < 240 && my < 216 && my > 8) {
+		seller = 900;
+	}
+
 	//Global Chat Button
 	else if (mx < 640 && mx > 512 && my > h - 64){
 		seller = 800 + Math.floor((my-h+61)/18);
@@ -2465,6 +2474,14 @@ document.addEventListener('mousemove', function (evt) {
 	else if (docked && tab == 1 && mx > 16 + rx && mx < rx + 128 * 6 - 16 && my > ry + 40 + 32 && my < ry + 512 - 48 && quest == 0) {
 		seller = Math.floor((my - ry - 40 - 32) / 80) + 300;
 		if (mx > rx + 128 * 3) seller += 5;
+		if (preSeller != seller) {
+			var questi = quests[seller-300];
+			qsx = questi.sx;
+			qsy = questi.sy;
+			qdsx = questi.dsx;
+			qdsy = questi.dsy;
+			r3DMap();
+		}
 	}
 
 	//Stats
@@ -2511,6 +2528,13 @@ document.addEventListener('mousemove', function (evt) {
 	else seller = 0;
 	if (seller != 0 && seller != preSeller) playAudio("button2", .2);
 	if (preSeller!=seller && (Math.abs(preSeller-801)<=1 || Math.abs(seller-801)<=1)) rChat();
+	if (quest == 0 && (seller < 300 || seller >= 400)) {
+		qsx = -1;
+		qsy = -1;
+		qdsx = -1;
+		qdsy = -1;
+		r3DMap();
+	}
 }, false);
 
 document.addEventListener('mousedown', function (evt) {
@@ -2556,8 +2580,8 @@ document.addEventListener('mousedown', function (evt) {
 	if (docked && tab == 2 && i > 199 && i < 206) socket.emit('upgrade', { item: i - 200 });
 	if (docked && tab == 2 && i > 205 && i < 212) socket.emit('downgrade', { item: i - 206 });
 	if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40) tab = Math.floor((mx - rx) / (768/5));
-	if (i >= 700 && i < 705)
-		socket.emit('trail', { trail: i - 700 });
+	if (i >= 700 && i < 705) socket.emit('trail', { trail: i - 700 });
+	if (i == 900) socket.emit('jettison', {});
 	if (i >= 800 && i < 803) {
 		globalChat = i-800;
 		socket.emit("toggleGlobal", {gc:globalChat});
@@ -3294,11 +3318,15 @@ function rCargo() {
 		else if(quest.metal ===    "silver") { ctx.fillStyle = "#eef"; metalWeHave = silver; }
 		write(metalWeHave + "/" + quest.amt + " " + quest.metal,248,16);
 	}
+	if(seller == 900){
+		ctx.fillStyle = "white";
+		write("JETTISON CARGO",248,32);
+	}
 
 	ctx.globalAlpha = .4;
 
 	ctx.strokeStyle = "white";
-	ctx.lineWidth = 1;
+	ctx.lineWidth = seller == 900?2:1;
 	ctx.strokeRect(224,8,16,208);
 
 	var myCapacity = ships[ship].capacity * c2;

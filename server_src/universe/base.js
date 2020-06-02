@@ -203,8 +203,19 @@ module.exports = function Base(i, b, sxx, syy, col, x, y, m) {
 			self.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
 			var multiplier = self.isMini?.2:self.sy;
-			b.owner.spoils("experience", baseKillExp*multiplier); // reward them
-			b.owner.spoils("money", baseKillMoney*multiplier);
+			var numInRange = 0;
+			for (var i in players[self.sy][self.sx]) { // Count all players in range
+				var p = players[self.sy][self.sx][i];
+				if (squaredDist(p, self) < square(baseClaimRange) && p.color === b.owner.color) numInRange++;
+			}
+			multiplier/=numInRange;
+			for (var i in players[self.sy][self.sx]) { // Reward appropriately
+				var p = players[self.sy][self.sx][i];
+				if (squaredDist(p, self) < square(baseClaimRange) && p.color === b.owner.color) {
+					p.spoils("experience", baseKillExp*multiplier); // reward them
+					p.spoils("money", baseKillMoney*multiplier);
+				}
+			}
 
 			if (raidTimer < 15000 && !self.isMini) { // during a raid
 				b.owner.points++; // give a point to the killer
@@ -221,7 +232,7 @@ module.exports = function Base(i, b, sxx, syy, col, x, y, m) {
 		saveTurret(self);
 	}
 	self.sendDeathMsg = function (killedBy) {
-		chatAll("The " + (self.isBase ? "base" : "turret") + " at sector " + self.nameWithColor() + " was destroyed by " + killedBy + ".");
+		chatAll("The " + (self.isBase ? "base" : (self.isMini?"Sentry":"Turret")) + " at sector " + self.nameWithColor() + " was destroyed by " + killedBy + ".");
 	}
 	self.getSectorName = function () {
 		return String.fromCharCode(97 + sxx).toUpperCase() + "" + (syy + 1);
