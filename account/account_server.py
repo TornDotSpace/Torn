@@ -10,13 +10,18 @@ def __init__():
     print("Torn Account Server: Init")
     cache = utils.TimedCache()
 
-    print("*** Creating WebSocket RPC server ***")
-    login_server = websockets.serve(endpoint.TornRPCEndpoint(cache).handle_recv, "localhost", 8765)
-    print("*** Creating HTTP endpoint ***")
-    api_endpoint = endpoint.TornLoginEndpoint(cache).get_app()
-    print("*** Initialization Done ***")
+    print("*** Creating Internal RPC endpoint ***")
+    login_server = endpoint.TornRPCEndpoint(cache)
+    print("*** Creating External API endpoint ***")
+    api_endpoint = endpoint.TornLoginEndpoint(cache)
 
-    asyncio.get_event_loop().run_until_complete(login_server)
-    asyncio.get_event_loop().run_until_complete(web.run_app(api_endpoint))
+    app = web.Application()
+    app.add_routes([web.post("/api/login/", api_endpoint.handle_recv),
+                    web.post("/rpc/login/", login_server.handle_login),
+                    web.post("/rpc/register/", login_server.handle_register),
+                    web.post("/rpc/reset/", login_server.handle_reset)
+    ])
+    print("*** Initialization Done ***")
+    asyncio.get_event_loop().run_until_complete(web.run_app(app))
     asyncio.get_event_loop().run_forever()
 __init__()

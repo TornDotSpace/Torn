@@ -4,7 +4,16 @@ import asyncio
 import websockets
 from pymongo import MongoClient
 import db
-from utils import Hash
+from utils import Hash, TimedCacheEntry
+from datetime import datetime
+
+class PlayerCookie(TimedCacheEntry):
+    def __init__(self, expir : datetime, username : str):
+        super().__init__(expir)
+        self.username = username
+    
+    def get_username(self) -> str:
+        return self.username
 
 class TornLoginEndpoint:
     async def handle_recv(self, request):
@@ -18,28 +27,37 @@ class TornLoginEndpoint:
         if not valid_auth:
             return web.Response(status=403, text="Forbidden")
         
-        # Generate playcookie
+        # Generate playcookie + store it
         cookie = utils.generate_playcookie()
-
+        self.cache.add(cookie, PlayerCookie(None, username))
+    
         return web.Response(text=f"Hello {username}!\nYour password is {password}\nYour play cookie is {cookie}")
 
     def __init__(self, cache):
-        self.app = web.Application()
-        self.app.add_routes([web.post("/api/login/", self.handle_recv)])
         self.cache = cache
-
-    def get_app(self):
-        return self.app
 
 class TornRPCEndpoint:
     def __init__(self, cache):
         self.cache = cache
+    
+    async def handle_login(self, request):
+        pass
 
+    async def handle_register(self, request):
+        pass
+
+    async def handle_reset(self, request):
+        pass
+    
+    '''
     async def handle_login(self, websocket, playcookie):
         username = self.cache.get(playcookie)
 
         if (username == None):
             username = "0"
+        else:
+            self.cache.remove(playcookie)
+
         await websocket.send(f"{playcookie}%{username}")
 
     async def handle_password_reset(self, websocket, password_packet):
@@ -69,3 +87,4 @@ class TornRPCEndpoint:
             await self.handle_password_reset(websocket, login_packet[1:])
         else:
             await self.handle_register(websocket, login_packet[1:])
+    '''
