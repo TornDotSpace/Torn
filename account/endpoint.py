@@ -20,7 +20,7 @@ class TornLoginEndpoint:
         username = user_data[:user_data.find('%')]
         password = user_data[user_data.find('%') + 1:]
 
-        valid_auth = db.authenticate_player(username, password)
+        valid_auth = await db.authenticate_player(username, password)
 
         if not valid_auth:
             return web.Response(status=403)
@@ -55,7 +55,7 @@ class TornRPCEndpoint:
         register_username = register_packet[0:split]
         register_password = register_packet[split+1]
 
-        if (db.user_exists(register_username)):
+        if (await db.user_exists(register_username)):
             return web.Response(status=403)
         return web.Response(text=f"{Hash.bcrypt_hash(register_password)}")
 
@@ -65,5 +65,5 @@ class TornRPCEndpoint:
         player_username = password_packet[0:split]
         player_password = password_packet[split+1:]
 
-        db.change_password(player_username, player_password)
+        await db.change_password(player_username, player_password)
         return web.Response()
