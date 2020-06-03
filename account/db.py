@@ -15,7 +15,14 @@ def authenticate_player(username: str, password: str) -> bool:
     if (player == None):
         return False
 
-    passwd = player['password'].encode('utf-8')
+    passwd = player['password']
+
+    if (isinstance(passwd, int)):
+        passwd = str(passwd)
+    
+
+    password = password.encode('utf-8')
+    passwd = passwd.encode('utf-8')
 
     if (bcrypt.checkpw(Hash.hontza_hash(password), passwd)):
         # Legacy account - bcrypt the password

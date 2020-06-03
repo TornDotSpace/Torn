@@ -256,11 +256,10 @@ class LoginOverlay extends Component {
 				alert("Invalid username / password");
 				return;
 			}
-			console.log(playcookie);
-			playcookie = playcookie.text();
+			playcookie = await playcookie.text();
 			connect();
 			console.log("====> PLAYCOOKIE: " + playcookie);
-			ReactRoot.socket.emit('login', { playcookie : playcookie, version: VERSION });
+			ReactRoot.socket.emit('login', { cookie : playcookie, version: VERSION });
 		}
 	}
 	registerB = () => {

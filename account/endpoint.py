@@ -2,7 +2,7 @@ from aiohttp import web
 
 import asyncio
 import db
-from utils import Hash, TimedCacheEntry
+from utils import Hash, TimedCacheEntry, generate_playcookie
 from datetime import datetime
 
 class PlayerCookie(TimedCacheEntry):
@@ -17,8 +17,8 @@ class TornLoginEndpoint:
     async def handle_recv(self, request):
         user_data = str(await request.content.read(), encoding='utf-8')
 
-        username = user_data[:user_data.find('&')]
-        password = user_data[user_data.find('&') + 1:]
+        username = user_data[:user_data.find('%')]
+        password = user_data[user_data.find('%') + 1:]
 
         valid_auth = db.authenticate_player(username, password)
 
@@ -26,10 +26,10 @@ class TornLoginEndpoint:
             return web.Response(status=403)
         
         # Generate playcookie + store it
-        cookie = utils.generate_playcookie()
+        cookie = generate_playcookie()
         self.cache.add(cookie, PlayerCookie(None, username))
     
-        return web.Response(text=f"Hello {username}!\nYour password is {password}\nYour play cookie is {cookie}")
+        return web.Response(text=cookie)
 
     def __init__(self, cache):
         self.cache = cache
@@ -39,7 +39,8 @@ class TornRPCEndpoint:
         self.cache = cache
     
     async def handle_login(self, request):
-        playcookie = str(await request.content.read()).encode('utf-8')
+        playcookie = str(await request.content.read(), encoding='utf-8')
+        print(playcookie)
         username = self.cache.get(playcookie)
 
         if (username == None):

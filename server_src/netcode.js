@@ -262,11 +262,12 @@ module.exports = function initNetcode() {
             
             if (!response.ok) {
                 ///> @TODO: Implement rejection for "invalid playcookie"
+                console.log("BAD COOKIE");
                 return; 
             }
 
-            var name = response.text();
-
+            var name = await response.text();
+            console.log(name);
             instance = true;
 
             //Load account

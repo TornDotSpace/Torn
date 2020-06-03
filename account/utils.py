@@ -32,14 +32,15 @@ class TimedCacheEntry:
         self.expiration = expr
 
     def has_expired(self):
-        return datetime.now() <= self.expiration
+        return False
+        #return datetime.now() <= self.expiration
 
 class TimedCache:
     def __init__(self):
         self.entries = { }
     
     def add(self, key: str, entry : TimedCacheEntry):
-        if (entry.has_expired): return
+        if (entry.has_expired()): return
         self.entries[key] = entry
 
     def get(self, key : str):
