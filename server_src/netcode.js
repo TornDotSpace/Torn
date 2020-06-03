@@ -245,7 +245,7 @@ module.exports = function initNetcode() {
             });
         });
         
-        socket.on('login', function (data) {
+        socket.on('login', async function (data) {
             if (typeof data === "undefined" || data.cookie == undefined) return;
 
             if (instance) return;

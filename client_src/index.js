@@ -51,7 +51,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
 const io = require('socket.io-client');
-
 const { Howl, Howler } = require('howler'); // audio
 const msgpack = require('socket.io-msgpack-parser');
 
@@ -220,6 +219,14 @@ var musicAudio = 0;
 
 var Aud = {};
 var Aud_prgs = [0, 0];
+
+global.send_api = async function(endpoint, data) {
+	return await fetch("http://localhost:8080/api" + endpoint, {
+		method: 'post',
+		body: data,
+		headers: { 'Content-Type': 'x-www-form-urlencoded'}
+	});
+}
 
 function loadAudio(name, _src) {
 	if (Aud[name]) { console.error("Loading audio twice: " + name) }

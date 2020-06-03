@@ -1,4 +1,4 @@
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
 //Miscellaneous Networking
 global.sendWeapons = function (player) { // tells a client what weapons that player has;
 	if (player == 0) return;

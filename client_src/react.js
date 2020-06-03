@@ -241,7 +241,7 @@ class LoginOverlay extends Component {
 				</div>
 			</div>)
 	}
-	login = () => {
+	login = async () => {
 		var user = this.state.user;
 		var pass = this.state.pass;
 
@@ -249,9 +249,19 @@ class LoginOverlay extends Component {
 			return;
 		}
 
-		connect();
-		if (typeof ReactRoot.socket !== "undefined")
-			ReactRoot.socket.emit('login', { user: user, pass: pass, version: VERSION });
+		if (typeof ReactRoot.socket !== "undefined") {
+			var playcookie = await send_api("/login/", user + "%" + pass);
+
+			if (playcookie.status == 403) {
+				alert("Invalid username / password");
+				return;
+			}
+			console.log(playcookie);
+			playcookie = playcookie.text();
+			connect();
+			console.log("====> PLAYCOOKIE: " + playcookie);
+			ReactRoot.socket.emit('login', { playcookie : playcookie, version: VERSION });
+		}
 	}
 	registerB = () => {
 		connect();

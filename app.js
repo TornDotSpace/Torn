@@ -97,7 +97,6 @@ var netcode = require('./server_src/netcode.js');
 
 require('./server_src/db.js');
 connectToDB();
-require('./server_src/services/account_rpc.js');
 
 var tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 
