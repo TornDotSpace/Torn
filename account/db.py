@@ -8,7 +8,7 @@ client = MongoClient(MONGO_CONNECTION_STR)
 db = client.torn
 players = db.players
 
-async def authenticate_player(username: str, password: str) -> bool:
+def authenticate_player(username: str, password: str) -> bool:
     player = players.find_one({"_id": username})
 
     # Player doesn't exist
@@ -27,6 +27,9 @@ async def authenticate_player(username: str, password: str) -> bool:
     else:
         return False
 
-async def change_password(username : str, new_password : str) -> bool:
+def change_password(username : str, new_password : str) -> bool:
     hash = Hash.bcrypt_hash(new_password)
     players.update_one({"_id" : username}, { "$set": { "password" : hash}})
+
+def user_exists(username : str) -> bool:
+    return players.find_one({"_id":username}) != None

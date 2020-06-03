@@ -22,10 +22,10 @@ class TornLoginEndpoint:
         username = user_data[:user_data.find('&')]
         password = user_data[user_data.find('&') + 1:]
 
-        valid_auth = await db.authenticate_player(username, password)
+        valid_auth = db.authenticate_player(username, password)
 
         if not valid_auth:
-            return web.Response(status=403, text="Forbidden")
+            return web.Response(status=403)
         
         # Generate playcookie + store it
         cookie = utils.generate_playcookie()
@@ -41,50 +41,30 @@ class TornRPCEndpoint:
         self.cache = cache
     
     async def handle_login(self, request):
-        pass
-
-    async def handle_register(self, request):
-        pass
-
-    async def handle_reset(self, request):
-        pass
-    
-    '''
-    async def handle_login(self, websocket, playcookie):
+        playcookie = str(await request.content.read()).encode('utf-8')
         username = self.cache.get(playcookie)
 
         if (username == None):
-            username = "0"
-        else:
-            self.cache.remove(playcookie)
+            return web.Response(status=403)
 
-        await websocket.send(f"{playcookie}%{username}")
+        self.cache.remove(playcookie)
+        return web.Response(text=f"{username}")
 
-    async def handle_password_reset(self, websocket, password_packet):
+    async def handle_register(self, request):
+        register_packet = str(await request.content.read(), encoding='utf-8')
+        split = register_packet.find('%')
+        register_username = register_packet[0:split]
+        register_password = register_packet[split+1]
+
+        if (db.user_exists(register_username)):
+            return web.Response(status=403, text="Forbidden")
+        return web.Response(text=f"{Hash.bcrypt_hash(register_password)}")
+
+    async def handle_reset(self, request):
+        password_packet = str(await request.content.read(), encoding='utf-8')
         split = password_packet.find('%')
         player_username = password_packet[0:split]
         player_password = password_packet[split+1:]
 
-        await db.change_password(player_username, player_password)
-        await websocket.send(f"{player_username}%1")
-
-    async def handle_register(self,websocket, register_packet):
-        split = register_packet.find('%')
-        register_username = register_packet[0:split]
-        register_password = register_packet[split+1:]
-
-        await websocket.send(f"{register_username}%{Hash.bcrypt_hash(register_password)}")
-
-    async def handle_recv(self, websocket, path):
-        login_packet = await websocket.recv()
-
-        # Read in request (0 = login, 1 = password change, 2 = register)
-        request = login_packet[0:1]
-
-        if (request == '0'):
-            await self.handle_login(websocket, login_packet[1:])
-        elif (request == '1'):
-            await self.handle_password_reset(websocket, login_packet[1:])
-        else:
-            await self.handle_register(websocket, login_packet[1:])
-    '''
+        db.change_password(player_username, player_password)
+        return web.Response()

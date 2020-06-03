@@ -19,8 +19,9 @@ class Hash:
     '''
     @staticmethod
     def bcrypt_hash(password):
+        password = password.encode('utf-8')
         salt = bcrypt.gensalt()
-        return bcrypt.hashpw(password, salt)
+        return str(bcrypt.hashpw(password, salt), encoding='utf-8')
 
 def generate_playcookie() -> str:
     # Playcookies are 32-byte strings
