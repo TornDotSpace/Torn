@@ -39,10 +39,10 @@
     "bad-words": "^3.0.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "fetch": "^1.1.0",
     "howler": "^2.2.0",
     "mongodb": "^3.5.8",
     "socket.io": "^2.3.0",
-    "socket.io-msgpack-parser": "^2.2.0",
-    "ws": "^7.3.0"
+    "socket.io-msgpack-parser": "^2.2.0"
   }
 }

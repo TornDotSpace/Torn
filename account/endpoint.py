@@ -1,8 +1,6 @@
 from aiohttp import web
 
 import asyncio
-import websockets
-from pymongo import MongoClient
 import db
 from utils import Hash, TimedCacheEntry
 from datetime import datetime

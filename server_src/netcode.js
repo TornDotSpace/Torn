@@ -246,7 +246,7 @@ module.exports = function initNetcode() {
         });
         
         socket.on('login', function (data) {
-            if (typeof data === "undefined" || typeof data.amNew !== "boolean") return;
+            if (typeof data === "undefined" || data.cookie == undefined) return;
 
             if (instance) return;
 
@@ -258,31 +258,20 @@ module.exports = function initNetcode() {
                 }
             }
 
-            //Validate and save IP
-            var name = data.user, pass = data.pass;
-
-            if (typeof name !== "string" || name.length > 16 || name.length < 4 || /[^a-zA-Z0-9_]/.test(name)) {
-                socket.emit("invalidCredentials", {});
-                return;
-            }
-            if (typeof pass !== "string" || pass.length > 32 || pass.length < 1) {
-                socket.emit("invalidCredentials", {});
-                return;
+            var response = await send_rpc("/login/", data.cookie);
+            
+            if (!response.ok) {
+                ///> @TODO: Implement rejection for "invalid playcookie"
+                return; 
             }
 
-            name = name.toLowerCase();
+            var name = response.text();
 
             instance = true;
 
             //Load account
-            var retCode = loadPlayerData(name, hash(data.pass), socket);
+            var retCode = loadPlayerData(name, socket);
             retCode.then(function(ret) {
-                if (ret.error != 0) {
-                    if (ret.error == -1) socket.emit("invalidCredentials", {});
-                    instance = false;
-                    return;
-                }
-
                 player = ret.player;
 
                 var wait_time = 0;
