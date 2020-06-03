@@ -17,7 +17,7 @@ class PlayerCookie(TimedCacheEntry):
 
 class TornLoginEndpoint:
     async def handle_recv(self, request):
-        user_data = (await request.content.read()).decode('utf-8')
+        user_data = str(await request.content.read(), encoding='utf-8')
 
         username = user_data[:user_data.find('&')]
         password = user_data[user_data.find('&') + 1:]
@@ -57,7 +57,7 @@ class TornRPCEndpoint:
         register_password = register_packet[split+1]
 
         if (db.user_exists(register_username)):
-            return web.Response(status=403, text="Forbidden")
+            return web.Response(status=403)
         return web.Response(text=f"{Hash.bcrypt_hash(register_password)}")
 
     async def handle_reset(self, request):
