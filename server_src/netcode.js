@@ -190,6 +190,9 @@ module.exports = function initNetcode() {
                 return;
             }
 
+            var playerDocked = dockers[socket.id];
+            if (typeof playerDocked === "undefined") return;
+
             var user = data.user, pass = data.pass;
 
             if (typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)) {
@@ -216,9 +219,6 @@ module.exports = function initNetcode() {
                 socket.emit("invalidReg", { reason: 4});
                 return;
             }
-            var playerDocked = dockers[socket.id];
-            if (typeof playerDocked === "undefined") return;
-                
             player._id = user;
             player.name = user;
 
