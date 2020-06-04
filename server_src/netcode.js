@@ -18,18 +18,6 @@ global.muteTable = {};
 
 global.protocolVersion = undefined;
 
-global.hash = function (str) { // ass. TODO chris
-    var hash = 0;
-    if (str.length == 0) return hash;
-    for (var i = 0; i < str.length; i++) {
-        var ch = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + ch;
-        hash &= hash;
-    }
-    return hash;
-}
-
-
 function expToLife(exp, guest) { // how much a life costs, given your exp and whether you're logged in
     return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-exp / 15000.)) + Math.atan(exp / 150000.) - .5)) + 500;
 }
@@ -234,7 +222,7 @@ module.exports = function initNetcode() {
                     
                 player._id = user;
                 player.name = user;
-                player.password = hash(pass);
+
                 player.permissionLevels=[0];
                 socket.emit("registered", { user: data.user, pass: data.pass });
                 var text = player.nameWithColor() + ' registered!';
@@ -249,10 +237,12 @@ module.exports = function initNetcode() {
             if (typeof data === "undefined" || data.cookie == undefined) return;
 
             if (instance) return;
+            instance = true;
 
             if (global.protocolVersion !== undefined) {
                 // Verify client is running the same protocol implementation
                 if (typeof data.version !== "string" || global.protocolVersion !== data.version.trim()) {
+                    instance = false;
                     socket.emit('outdated', 0);
                     return;
                 }
@@ -263,67 +253,60 @@ module.exports = function initNetcode() {
             if (!response.ok) {
                 ///> @TODO: Implement rejection for "invalid playcookie"
                 console.log("BAD COOKIE");
+                instance = false;
                 return; 
             }
 
             var name = await response.text();
-            console.log(name);
-            instance = true;
+            player = await loadPlayerData(name, socket);
 
-            //Load account
-            var retCode = loadPlayerData(name, socket);
-            retCode.then(function(ret) {
-                player = ret.player;
-
-                var wait_time = 0;
-
-                for (var p in sockets) {
-                    if (sockets[p].player !== undefined) {
-                        if (sockets[p].player.name === player.name) {
-                            sockets[p].player.kick("A user has logged into this account from another location.");
-                            wait_time = 6000;
-                            break;
-                        }
+            var wait_time = 0;
+            for (var p in sockets) {
+                if (sockets[p].player !== undefined) {
+                    if (sockets[p].player.name === player.name) {
+                        sockets[p].player.kick("A user has logged into this account from another location.");
+                        wait_time = 6000;
+                        break;
                     }
                 }
+            }
 
-                setTimeout(function() {               
-                    socket.player = player;
-                    player.ip = ip;
+            setTimeout(function() {               
+                socket.player = player;
+                player.ip = ip;
+
+                socket.emit("loginSuccess", {id: player.id});
+
+                if (player.sx >= mapSz) player.sx--;
+                if (player.sy >= mapSz) player.sy--;
     
-                    socket.emit("loginSuccess", {id: player.id});
+                players[player.sy][player.sx][socket.id] = player;
+                
+                player.calculateGenerators();
+                socket.emit("raid", { raidTimer: raidTimer })
+                player.checkTrailAchs();
+                player.sendAchievementsKill(false);
+                player.sendAchievementsCash(false);
+                player.sendAchievementsDrift(false);
+                player.sendAchievementsMisc(false);
+                player.sendStatus();
     
-                    if (player.sx >= mapSz) player.sx--;
-                    if (player.sy >= mapSz) player.sy--;
-        
-                    players[player.sy][player.sx][socket.id] = player;
-                    
-                    player.calculateGenerators();
-                    socket.emit("raid", { raidTimer: raidTimer })
-                    player.checkTrailAchs();
-                    player.sendAchievementsKill(false);
-                    player.sendAchievementsCash(false);
-                    player.sendAchievementsDrift(false);
-                    player.sendAchievementsMisc(false);
-                    player.sendStatus();
-        
-                    player.getAllPlanets();
-                    player.refillAllAmmo();
-                    console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
-                    var text = player.nameWithColor() + ' logged in!';
-                    chatAll(text);
-    
-                    // Update last login
-                    player.lastLogin = Date.now();
-                    player.va = ships[player.ship].agility * .08 * player.agility2;
-                    player.thrust = ships[player.ship].thrust * player.thrust2;
-                    player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
-                    player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-                    sendWeapons(player);
-                    socket.emit('baseMap', {baseMap: baseMap, mapSz: mapSz});
-                    socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
-                }, wait_time);
-            });
+                player.getAllPlanets();
+                player.refillAllAmmo();
+                console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
+                var text = player.nameWithColor() + ' logged in!';
+                chatAll(text);
+
+                // Update last login
+                player.lastLogin = Date.now();
+                player.va = ships[player.ship].agility * .08 * player.agility2;
+                player.thrust = ships[player.ship].thrust * player.thrust2;
+                player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
+                player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
+                sendWeapons(player);
+                socket.emit('baseMap', {baseMap: baseMap, mapSz: mapSz});
+                socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
+            }, wait_time);
         });
         socket.on('disconnect', function (data) { // Emitted by socket.IO when connection is terminated or ping timeout
             if (!player) return; // Don't allow unauthenticated clients to crash the server

@@ -19,7 +19,6 @@ function Player(sock) {
 		guild: "",
 		id: sock.id, // unique identifier
 		socket: sock,
-		password: "password",
 		ip: 0,
 		trail: 0,
 		color: sock.id > .5 ? 'red' : 'blue',

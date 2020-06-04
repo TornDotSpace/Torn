@@ -40,14 +40,13 @@ class TornRPCEndpoint:
     
     async def handle_login(self, request):
         playcookie = str(await request.content.read(), encoding='utf-8')
-        print(playcookie)
         username = self.cache.get(playcookie)
 
         if (username == None):
             return web.Response(status=403)
 
         self.cache.remove(playcookie)
-        return web.Response(text=f"{username}")
+        return web.Response(text=f"{username.get_username()}")
 
     async def handle_register(self, request):
         register_packet = str(await request.content.read(), encoding='utf-8')
