@@ -31,12 +31,6 @@ global.connectToDB = function () {
     });
 }
 
-global.checkRegistered = async function (name) {
-    var record = await PLAYER_DATABASE.findOne({_id : name });
-    
-    return record == null;
-}
-
 global.handlePlayerDeath = async function (player) {
     var record = await PLAYER_DATABASE.findOne({_id: player._id});
 

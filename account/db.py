@@ -11,8 +11,8 @@ players = db.players
 async def authenticate_player(username: str, password: str) -> bool:
     player = await players.find_one({"_id": username})
 
-    # Player doesn't exist
-    if (player == None):
+    # Player doesn't exist (or is dead)
+    if (player == None or player['lives'] <= 0):
         return False
 
     passwd = player['password']
@@ -20,7 +20,6 @@ async def authenticate_player(username: str, password: str) -> bool:
     if (isinstance(passwd, int)):
         passwd = str(passwd)
     
-
     password = password.encode('utf-8')
     passwd = passwd.encode('utf-8')
 
@@ -40,3 +39,9 @@ async def change_password(username : str, new_password : str) -> bool:
 
 async def user_exists(username : str) -> bool:
     return await players.find_one({"_id":username}) != None
+
+async def create_account(username : str, password : str) -> bool:
+    if (await user_exists(username)):
+        return False
+    await players.insert_one({"_id" : username, "password": Hash.bcrypt_hash(password), "lives" : 20})
+    return True

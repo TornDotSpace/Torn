@@ -177,7 +177,7 @@ module.exports = function initNetcode() {
 
             chatAll("Welcome " + player.nameWithColor() + " to the universe!");
         });
-        socket.on('register', function (data) { // TODO Chris
+        socket.on('register', async function (data) { // TODO Chris
             console.log("Registration attempted...");
             if (typeof data === "undefined") return;
             // Block registrations being triggered from non-guests or unconnected accounts
@@ -209,28 +209,26 @@ module.exports = function initNetcode() {
             }
             
             player.guest = false;
+            var response = await send_rpc("/register/", user + "%" + pass);
 
-            checkRegistered(user).then(function(ret) {
+            if (!response.ok) {
+                player.guest = true;
+                socket.emit("invalidReg", { reason: 4});
+                return;
+            }
+            var playerDocked = dockers[socket.id];
+            if (typeof playerDocked === "undefined") return;
+                
+            player._id = user;
+            player.name = user;
 
-                if (!ret) {
-                    player.guest = true;
-                    socket.emit("invalidReg", { reason: 4});
-                    return;
-                }
-                var playerDocked = dockers[socket.id];
-                if (typeof playerDocked === "undefined") return;
-                    
-                player._id = user;
-                player.name = user;
+            player.permissionLevels=[0];
+            socket.emit("registered", { user: data.user, pass: data.pass });
+            var text = player.nameWithColor() + ' registered!';
+            console.log(text);
+            chatAll(text);
 
-                player.permissionLevels=[0];
-                socket.emit("registered", { user: data.user, pass: data.pass });
-                var text = player.nameWithColor() + ' registered!';
-                console.log(text);
-                chatAll(text);
-    
-                player.save();
-            });
+            player.save();
         });
         
         socket.on('login', async function (data) {

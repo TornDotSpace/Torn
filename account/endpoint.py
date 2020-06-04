@@ -52,11 +52,11 @@ class TornRPCEndpoint:
         register_packet = str(await request.content.read(), encoding='utf-8')
         split = register_packet.find('%')
         register_username = register_packet[0:split]
-        register_password = register_packet[split+1]
+        register_password = register_packet[split+1:]
 
-        if (await db.user_exists(register_username)):
+        if not (await db.create_account(register_username, register_password)):
             return web.Response(status=403)
-        return web.Response(text=f"{Hash.bcrypt_hash(register_password)}")
+        return web.Response()
 
     async def handle_reset(self, request):
         password_packet = str(await request.content.read(), encoding='utf-8')
