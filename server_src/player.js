@@ -1463,7 +1463,7 @@ function Player(sock) {
 		self.tentativePassword = pass;
 		self.socket.emit("chat", { msg: "~`red~`Type \"/confirm your_new_password\" to complete the change." });
 	}
-	self.confirmPass = function (pass) { // /confirm
+	self.confirmPass = async function (pass) { // /confirm
 		// TODO chris
 		if (!self.docked) {
 			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
@@ -1471,12 +1471,17 @@ function Player(sock) {
 		}
 		if (pass !== self.tentativePassword) {
 			self.socket.emit("chat", { msg: "~`red~`Passwords do not match! Start over from /password." });
+			self.tentativePassword = undefined;
 			return;
 		}
-		var currSource = 'server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt';
-		if (fs.existsSync(currSource)) fs.unlinkSync(currSource);
-		self.password = hash(self.tentativePassword);
-		self.save();
+		var response = await send_rpc("/reset/", self._id + "%" + pass);
+
+		if (!response.ok) {
+			self.socket.emit("chat", { msg : "ERROR"});
+			return;
+		}
+
+		self.tentativePassword = undefined;
 		self.socket.emit("chat", { msg: "~`lime~`Password changed successfully." });
 	}
 	self.calculateGenerators = function () { // count how many gens I have
