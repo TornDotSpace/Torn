@@ -64,7 +64,7 @@ global.playerChat = function (msg, gc, team, sx, sy) { // chat in whatever chat 
 }
 
 global.send_rpc = async function(endpoint, data) {
-	return await fetch("http://localhost:8080/rpc" + endpoint, {
+	return await fetch(Config.getValue("rpc_server", undefined) + "/rpc" + endpoint, {
 		method: 'post',
 		body: data,
 		headers: { 'Content-Type': 'x-www-form-urlencoded'}

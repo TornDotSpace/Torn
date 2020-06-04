@@ -29,7 +29,7 @@ function printStartup() {
 
 printStartup();
 
-window.document.title = "Torn " + VERSION;
+window.document.title = "torn.space";
 
 var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 
@@ -74,8 +74,11 @@ for (var i = 0; i < 1571; i++)//500pi
 require("./localizer.js");
 loadLang();
 
-//Normal, on server: torn.space:443
-//dev: localhost:7300
+global.API_URL = TORN_API_URL + "/api";
+global.GAMESERVER_URL = TORN_GAMESERVER_URL;
+console.log(":TornNetworkRepository: Setting API_URL to " + API_URL);
+console.log(":TornNetworkRepository: Setting GAMESERVER_URL to " + GAMESERVER_URL);
+
 var socket = io(GAMESERVER_URL,
 	{
 		autoConnect: false,
@@ -166,6 +169,7 @@ for (var i = 0; i < 30; i++) stars[i] = { x: Math.random() * w, y: Math.random()
 
 var myId = undefined;
 
+
 var dots = [];
 dots[0] = {x:0,y:0,z:0};
 for (var i = 1; i < 1000; i++) {
@@ -221,7 +225,7 @@ var Aud = {};
 var Aud_prgs = [0, 0];
 
 global.send_api = async function(endpoint, data) {
-	return await fetch("http://localhost:8080/api" + endpoint, {
+	return await fetch(API_URL + endpoint, {
 		method: 'post',
 		body: data,
 		headers: { 'Content-Type': 'x-www-form-urlencoded'}

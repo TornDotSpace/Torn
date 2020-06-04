@@ -6,7 +6,8 @@ module.exports = merge(common, {
 	// devtool: 'inline-source-map', -- disabled due to bug	
 	plugins: [
 		new webpack.DefinePlugin({
-			GAMESERVER_URL: '"test.torn.space:8080"'
+			TORN_GAMESERVER_URL: '"test.torn.space:8080"',
+			TORN_API_URL: 		'' ///> @TODO: add API_URL for test
 		}),
 	]
 });
