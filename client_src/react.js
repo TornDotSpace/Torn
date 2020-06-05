@@ -253,12 +253,12 @@ class LoginOverlay extends Component {
 			var playcookie = await send_api("/login/", user + "%" + pass);
 
 			if (playcookie.status == 403) {
-				alert("Invalid username / password");
+				credentialState = 1;
 				return;
 			}
 			playcookie = await playcookie.text();
 			connect();
-			console.log("====> PLAYCOOKIE: " + playcookie);
+			console.log(":TornNetRepository: Got PLAYCOOKIE: " + playcookie);
 			ReactRoot.socket.emit('login', { cookie : playcookie, version: VERSION });
 		}
 	}
