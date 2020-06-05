@@ -13,13 +13,13 @@ class Hash:
         for i in range(0, len(password)):
             ch = password[i:i+1]
             hash = ((hash << 5) - hash) + ord(ch)
+        hash %= 0x100000000
         return str(hash).encode('utf-8')
     '''
     Secure Torn hash
     '''
     @staticmethod
-    def bcrypt_hash(password):
-        password = password.encode('utf-8')
+    def bcrypt_hash(password: str) -> str:
         salt = bcrypt.gensalt()
         return str(bcrypt.hashpw(password, salt), encoding='utf-8')
 

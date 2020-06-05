@@ -20,14 +20,18 @@ def filefix():
     players = db.players
 
     for player in players.find():
-        print(f"Processing: {player['_id']}")
-        
-        # Avoid being run accidentally
-        if isinstance(player['password'], int): continue
-        
-        old_password = str(player['password'])
-        hash = bcrypt_hash(old_password)
-        players.update_one({"_id" : player['_id']}, { "$set": { "password" : hash}})
+        try:
+            print(f"Processing: {player['_id']}")
+            
+            # Avoid being run accidentally
+            if not isinstance(player['password'], int): continue
+
+            old_password = str(player['password'])
+            hash = bcrypt_hash(old_password)
+            print(hash)
+            players.update_one({"_id" : player['_id']}, { "$set": { "password" : hash}})
+        except:
+            pass
     print("*** END ***")
 
 filefix()
