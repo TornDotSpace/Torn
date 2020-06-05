@@ -21,6 +21,10 @@ def filefix():
 
     for player in players.find():
         print(f"Processing: {player['_id']}")
+        
+        # Avoid being run accidentally
+        if isinstance(player['password'], int): continue
+        
         old_password = str(player['password'])
         hash = bcrypt_hash(old_password)
         players.update_one({"_id" : player['_id']}, { "$set": { "password" : hash}})
