@@ -241,7 +241,7 @@ class LoginOverlay extends Component {
 				</div>
 			</div>)
 	}
-	login = () => {
+	login = async () => {
 		var user = this.state.user;
 		var pass = this.state.pass;
 
@@ -249,9 +249,21 @@ class LoginOverlay extends Component {
 			return;
 		}
 
-		connect();
-		if (typeof ReactRoot.socket !== "undefined")
-			ReactRoot.socket.emit('login', { user: user, pass: pass, amNew: false , version: VERSION });
+		if (typeof ReactRoot.socket !== "undefined") {
+			var playcookie = await send_api("/login/", user + "%" + pass);
+
+			if (playcookie.status == 403) {
+				credentialState = 1;
+				return;
+			} else if (playcookie.status != 200) {
+				alert("Failed to connect to Torn Account Services");
+				return;
+			}
+			playcookie = await playcookie.text();
+			connect();
+			console.log(":TornNetRepository: Got PLAYCOOKIE: " + playcookie);
+			ReactRoot.socket.emit('login', { cookie : playcookie, version: VERSION });
+		}
 	}
 	registerB = () => {
 		connect();

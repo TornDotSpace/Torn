@@ -31,12 +31,6 @@ global.connectToDB = function () {
     });
 }
 
-global.checkRegistered = async function (name) {
-    var record = await PLAYER_DATABASE.findOne({_id : name });
-    
-    return record == null;
-}
-
 global.handlePlayerDeath = async function (player) {
     var record = await PLAYER_DATABASE.findOne({_id: player._id});
 
@@ -54,19 +48,13 @@ global.handlePlayerDeath = async function (player) {
     player.randmAchs[1] = true; // Death Achievement;
 }
 
-global.loadPlayerData = async function (playerName, passwordHash, socket) {
-    if (!playerName || !passwordHash) return;
-
-    // Check if player exists in MongoDB (if we're using MongoDB)
+global.loadPlayerData = async function (playerName, socket) {
+    
     var record = await PLAYER_DATABASE.findOne({ _id: playerName });
-
-    if (record == null || record["password"] !== passwordHash || record["lives"] <= 0) {
-        return { error: -1}; // Invalid credentials
-    }
-
     var player = new Player(socket);
 
     for (var key in record) {
+        if (key === "password") continue; // don't load passwords into memory
         player[key] = record[key];
     }
 
@@ -85,13 +73,8 @@ global.loadPlayerData = async function (playerName, passwordHash, socket) {
     if (player.name.includes("V")) player.permissionLevels.push(5);
     if (player.name.includes("Y")) player.permissionLevels.push(3);
 
-    return {error: 0, player : player};
+    return player;
 }
-
-global.resetPassword = function (player) {
-    var temp = debug(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
-    var hash = passwor
-};
 
 global.saveTurret = function (turret) {
     var record = {
@@ -130,7 +113,6 @@ global.loadTurretData = async function() {
 
 global.savePlayerData = function (player) {
     var record = {
-        _id: player._id,
         color: player.color,
         ship : player.ship,
         weapons : player.weapons,
@@ -161,10 +143,7 @@ global.savePlayerData = function (player) {
         cornersTouched : player.cornersTouched,
         lastLogin : player.lastLogin,
         randmAchs : player.randmAchs,
-        lives : player.lives,
-        password : player.password,
-        sx : player.sx,
-        sy : player.sy
+        lives : player.lives
     };
-    PLAYER_DATABASE.replaceOne( { _id: player._id }, record, { upsert: true });
+    PLAYER_DATABASE.updateOne( { _id: player._id }, {$set : record}, { upsert: true });
 }
