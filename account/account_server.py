@@ -3,7 +3,6 @@ import utils
 import db
 import endpoint
 import asyncio
-import websockets
 
 from aiohttp import web
 
