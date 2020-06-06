@@ -9,6 +9,7 @@ db = client.torn
 players = db.players
 
 async def authenticate_player(username: str, password: str) -> bool:
+    username = username.lower()
     player = await players.find_one({"_id": username})
 
     # Player doesn't exist (or is dead)
