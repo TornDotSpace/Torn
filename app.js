@@ -334,7 +334,7 @@ function onCrash(err) {
 
 	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
 
-	sendAll("kick", {msg: ":( The server you are playing on has encountered a problem and needs to reset. Please tell a developer that this happened. You should be able to log back into the game and start exploring the universe almost immediately. :("});
+	sendAll("kick", {msg: "The server you are playing on has encountered a problem and needs to reset. You should be able to log back into the game and start exploring the universe almost immediately. :("});
 
 	var plyrs = '';
 
@@ -343,6 +343,7 @@ function onCrash(err) {
 			for (var id in players[y][x]) {
 				// Save & kick out
 				var player = players[y][x][id];
+				if (player.isBot) continue;
 				player.save();
 				plyrs = plyrs + player.name + ', ';
 			}
