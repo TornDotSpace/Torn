@@ -6,6 +6,13 @@ import asyncio
 import websockets
 
 from aiohttp import web
+
+async def do_expire_task(cache):
+    while True:
+        # Run every 5 minutes
+        await asyncio.sleep(60 * 5)
+        cache.expire()
+
 def __init__():
     print("Torn Account Server: Init")
     cache = utils.TimedCache()
@@ -22,6 +29,7 @@ def __init__():
                     web.post("/rpc/reset/", login_server.handle_reset)
     ])
     print("*** Initialization Done ***")
+    asyncio.get_event_loop().create_task(do_expire_task(cache))
     asyncio.get_event_loop().run_until_complete(web.run_app(app))
     asyncio.get_event_loop().run_forever()
 __init__()

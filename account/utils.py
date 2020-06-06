@@ -1,6 +1,6 @@
 from secrets import token_urlsafe
 import bcrypt
-import datetime
+from datetime import datetime
 
 class Hash:
     '''
@@ -32,8 +32,7 @@ class TimedCacheEntry:
         self.expiration = expr
 
     def has_expired(self):
-        return False
-        #return datetime.now() <= self.expiration
+        return datetime.now() > self.expiration
 
 class TimedCache:
     def __init__(self):

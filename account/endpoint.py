@@ -3,7 +3,7 @@ from aiohttp import web
 import asyncio
 import db
 from utils import Hash, TimedCacheEntry, generate_playcookie
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class PlayerCookie(TimedCacheEntry):
     def __init__(self, expir : datetime, username : str):
@@ -27,7 +27,8 @@ class TornLoginEndpoint:
         
         # Generate playcookie + store it
         cookie = generate_playcookie()
-        self.cache.add(cookie, PlayerCookie(None, username))
+        expire = datetime.now() + timedelta(minutes=5)
+        self.cache.add(cookie, PlayerCookie(expire, username))
     
         return web.Response(text=cookie)
 
