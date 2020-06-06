@@ -17,7 +17,7 @@ class TornLoginEndpoint:
     async def handle_recv(self, request):
         user_data = str(await request.content.read(), encoding='utf-8')
 
-        username = user_data[:user_data.find('%')]
+        username = user_data[:user_data.find('%')].lower()
         password = user_data[user_data.find('%') + 1:]
 
         valid_auth = await db.authenticate_player(username, password)
