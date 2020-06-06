@@ -1,6 +1,7 @@
 from secrets import token_urlsafe
 import bcrypt
 from datetime import datetime
+from numpy import int32
 
 class Hash:
     '''
@@ -8,12 +9,12 @@ class Hash:
     '''
     @staticmethod
     def hontza_hash(password: str) -> str:
-        hash = 0 
+        hash = int32(0)
 
         for i in range(0, len(password)):
             ch = password[i:i+1]
-            hash = ((hash << 5) - hash) + ord(ch)
-        hash %= 0x100000000
+            hash = ((hash << int32(5)) - hash) + int32(ord(ch))
+
         return str(hash).encode('utf-8')
     '''
     Secure Torn hash
