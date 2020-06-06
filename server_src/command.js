@@ -144,9 +144,16 @@ cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the pla
     ply.socket.emit("chat", { msg: "Unmuted "+name+"." });
 });
 
-cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", ADMINPLUS, function (player, msg) {
-    debug("EMAIL!");
-    player.setEmail(msg);
+const valid_email_regex = new RegExp("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$");
+cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", REGISTERED, function (player, msg) {
+    var email = msg.substring(7);
+	if (!valid_email_regex.test(email)) {
+        player.socket.emit("chat", { msg: "Invalid Email!" });
+        return;
+    }
+
+    savePlayerEmail(player, email);
+    player.socket.emit("chat", { msg : "Registered Email Successfully!"});
 });
 
 cmds["/green"] = new Command("/green Join green team", ADMINPLUS, function (player, msg) {

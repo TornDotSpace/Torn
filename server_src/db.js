@@ -94,7 +94,7 @@ global.saveTurret = function (turret) {
 }
 
 global.deleteTurret = function (turret) {
-    TURRET_DATABASE.remove( {_id: turret._id });
+    TURRET_DATABASE.deleteOne( {_id: turret._id });
 }
 
 global.loadTurretData = async function() {
@@ -111,6 +111,9 @@ global.loadTurretData = async function() {
     });
 }
 
+global.savePlayerEmail = function(player, email) {
+    PLAYER_DATABASE.updateOne( {_id : player._id}, {$set : { "email" : email }}, {upsert : true});
+}
 global.savePlayerData = function (player) {
     var record = {
         color: player.color,
