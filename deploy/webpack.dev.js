@@ -9,7 +9,8 @@ module.exports = merge(common, {
 	},
 	plugins: [
 		new webpack.DefinePlugin({
-			GAMESERVER_URL: '"localhost:7300"'
+			TORN_GAMESERVER_URL: '"localhost:7300"',
+			TORN_API_URL: '"http://localhost:8080"'
 		}),
 	]
 });

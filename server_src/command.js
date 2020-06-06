@@ -53,8 +53,8 @@ cmds["/password"] = new Command("/password <newPassword>", REGISTERED, function 
     player.changePass(msg.substring(10));
 });
 
-cmds["/confirm"] = new Command("/confirm <newPassword>", REGISTERED, function (player, msg) {
-    player.confirmPass(msg.substring(9));
+cmds["/confirm"] = new Command("/confirm <newPassword>", REGISTERED, async function (player, msg) {
+    await player.confirmPass(msg.substring(9));
 }, false);
 
 cmds["/changeteam"] = new Command("/changeteam", REGISTERED, function (player, msg) {

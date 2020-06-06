@@ -29,7 +29,7 @@ function printStartup() {
 
 printStartup();
 
-window.document.title = "Torn " + VERSION;
+window.document.title = "torn.space";
 
 var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 
@@ -51,7 +51,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import ReactRoot from "./react.js";
 const io = require('socket.io-client');
-
 const { Howl, Howler } = require('howler'); // audio
 const msgpack = require('socket.io-msgpack-parser');
 
@@ -75,8 +74,11 @@ for (var i = 0; i < 1571; i++)//500pi
 require("./localizer.js");
 loadLang();
 
-//Normal, on server: torn.space:443
-//dev: localhost:7300
+global.API_URL = TORN_API_URL + "/api";
+global.GAMESERVER_URL = TORN_GAMESERVER_URL;
+console.log(":TornNetworkRepository: Setting API_URL to " + API_URL);
+console.log(":TornNetworkRepository: Setting GAMESERVER_URL to " + GAMESERVER_URL);
+
 var socket = io(GAMESERVER_URL,
 	{
 		autoConnect: false,
@@ -134,7 +136,8 @@ var seller = 0, sectorMap = 0, worth = 0, ship = 0;
 var empTimer = -1, dmgTimer = -1, gyroTimer = 0, afkTimer = 45000;
 var t2 = 1, mh2 = 1, c2 = 1, va2 = 1, e2 = 1, ag2 = 1;
 var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops = 0, frames = 0, uframes = 0, ups = 0, dev = false;
-var credentialState = 0, savedNote = 0;
+global.credentialState = 0;
+var savedNote = 0;
 var key = '~`';
 var myName = "GUEST", currAlert = '', bigAlert = '', disguise = 0;
 var soundAllowed = false;
@@ -166,6 +169,7 @@ var stars = [];
 for (var i = 0; i < 30; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
 
 var myId = undefined;
+
 
 var dots = [];
 dots[0] = {x:0,y:0,z:0};
@@ -220,6 +224,14 @@ var musicAudio = 0;
 
 var Aud = {};
 var Aud_prgs = [0, 0];
+
+global.send_api = async function(endpoint, data) {
+	return await fetch(API_URL + endpoint, {
+		method: 'post',
+		body: data,
+		headers: { 'Content-Type': 'x-www-form-urlencoded'}
+	});
+}
 
 function loadAudio(name, _src) {
 	if (Aud[name]) { console.error("Loading audio twice: " + name) }
@@ -1849,6 +1861,10 @@ socket.on('invalidCredentials', function (data) {
 
 socket.on('outdated', function() {
 	credentialState = 20;
+});
+
+socket.on('badcookie', function (data) {
+	credentialState = 30;
 });
 socket.on('loginSuccess', function (data) {
 	// Cleanup bullets from homepage
@@ -3544,6 +3560,7 @@ function rCreds() {
 	if (credentialState == 5) str = "Username is profane!";
 	if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
 	if (credentialState == 8) str = "You must be rank 1 to create an account!";
+	if (credentialState == 30) str = "Invalid playcookie";
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';
 	ctx.font = '14px ShareTech';
