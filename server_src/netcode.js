@@ -115,7 +115,7 @@ module.exports = function initNetcode() {
 
                     console.error("Exception caught in player event " + the_event);
 
-                    console.error("==== TORN.SPACE ERROR REPORT ====\n");
+                    console.error("==== TORN.SPACE ERROR REPORT ====\n"); 
                     console.error("Error Time: " + new Date() + "\n");
                     console.error("Event: " + the_event + "\n");
                     console.error("Exception information: " + err + "\n");
