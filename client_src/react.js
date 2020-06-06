@@ -255,6 +255,9 @@ class LoginOverlay extends Component {
 			if (playcookie.status == 403) {
 				credentialState = 1;
 				return;
+			} else if (playcookie.status != 200) {
+				alert("Failed to connect to Torn Account Services");
+				return;
 			}
 			playcookie = await playcookie.text();
 			connect();

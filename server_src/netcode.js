@@ -241,7 +241,7 @@ module.exports = function initNetcode() {
                 // Verify client is running the same protocol implementation
                 if (typeof data.version !== "string" || global.protocolVersion !== data.version.trim()) {
                     instance = false;
-                    socket.emit('outdated', 0);
+                    socket.emit('outdated');
                     return;
                 }
             }
@@ -249,8 +249,7 @@ module.exports = function initNetcode() {
             var response = await send_rpc("/login/", data.cookie);
             
             if (!response.ok) {
-                ///> @TODO: Implement rejection for "invalid playcookie"
-                console.log("BAD COOKIE");
+                socket.emit('badcookie');
                 instance = false;
                 return; 
             }
