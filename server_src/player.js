@@ -1451,7 +1451,6 @@ function Player(sock) {
 		return false;
 	}
 	self.changePass = function (pass) { // /password
-		// TODO chris
 		if (!self.docked) {
 			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
 			return;
@@ -1464,7 +1463,6 @@ function Player(sock) {
 		self.socket.emit("chat", { msg: "~`red~`Type \"/confirm your_new_password\" to complete the change." });
 	}
 	self.confirmPass = async function (pass) { // /confirm
-		// TODO chris
 		if (!self.docked) {
 			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
 			return;
