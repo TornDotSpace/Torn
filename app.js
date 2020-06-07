@@ -1046,7 +1046,7 @@ function updateHeatmap() {
 				j++;
 			}
 			if(p.isBot) botCount++;
-			else if(p.guest) botCount++;
+			else if(p.guest) guestCount++;
 			else playerCount++;
 			hmap[p.sx][p.sy] += .1 + colorSelect(p.color, 1<<16, 1, 1<<8); // this is not supposed to be x-y order. TODO fix
 		}

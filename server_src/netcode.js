@@ -4,14 +4,13 @@ var Filter = require('bad-words'); // bad-words node package
 var filter = new Filter();
 
 filter.removeWords('god', 'hell', 'crap', 'flipping the bird', 'Lipshitz', 'Lipshits', 'polack', 'screwing', 'slut', 'sluts', 'hui', 'poop', 'screw');
-
 var Player = require('./player.js');
 require('./netutils.js');
 require("./command.js");
 var exec = require('child_process').execSync;
 const msgpack = require('socket.io-msgpack-parser');
 
-var guestCount = 0; // Enumerate guests since server boot
+var guestNumber = 0; // Enumerate guests since server boot
 
 // Global mute table 
 global.muteTable = {};
@@ -146,15 +145,14 @@ module.exports = function initNetcode() {
                     return;
                 }
             }
-
+            
             player = new Player(socket);
             socket.player = player;
             player.guest = true;
             instance = true;
             player.ip = ip;
-            player.name = "GUEST" + guestCount;
+            player.name = "GUEST" + guestNumber++;
             console.log(player.ip + " logged in as " + player.name);
-            guestCount++;
 
             player.color = socket_color;
             player.sx = baseMap[player.color][0];
@@ -622,13 +620,6 @@ module.exports = function initNetcode() {
             socket.emit('quest', { quest: quest });
 
         });
-        /*socket.on('cancelquest',function(data){ // THIS IS NO LONGER ALLOWED.
-            var player = dockers[socket.id];
-            if(typeof player === "undefined")
-                return;
-            player.quest = 0;
-            socket.emit('quest', {quest: player.quest});
-        }); // no longer allowed.*/
         socket.on('equip', function (data) { // Player wants to select a new weapon to hold
             if (player == 0 || typeof data === "undefined" || typeof player === "undefined" || typeof data.scroll !== 'number' || data.scroll >= ships[player.ship].weapons) return;
 
