@@ -135,7 +135,7 @@ module.exports = function initNetcode() {
             socket.emit("lored", { pc: socket_color });
         });
 
-        socket.on('guest', function (data) { // TODO Chris
+        socket.on('guest', function (data) {
             if (instance) return;
 
             if (global.protocolVersion !== undefined) {
@@ -177,7 +177,7 @@ module.exports = function initNetcode() {
 
             chatAll("Welcome " + player.nameWithColor() + " to the universe!");
         });
-        socket.on('register', async function (data) { // TODO Chris
+        socket.on('register', async function (data) {
             console.log("Registration attempted...");
             if (typeof data === "undefined") return;
             // Block registrations being triggered from non-guests or unconnected accounts

@@ -139,7 +139,6 @@ function Player(sock) {
 		lastLogin: "A long, long time ago :(",
 		points: 0,
 
-		email: "",
 		permissionLevels: [-1],
 		equipped: 0,
 		kickMsg: ""
@@ -1451,7 +1450,6 @@ function Player(sock) {
 		return false;
 	}
 	self.changePass = function (pass) { // /password
-		// TODO chris
 		if (!self.docked) {
 			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
 			return;
@@ -1464,7 +1462,6 @@ function Player(sock) {
 		self.socket.emit("chat", { msg: "~`red~`Type \"/confirm your_new_password\" to complete the change." });
 	}
 	self.confirmPass = async function (pass) { // /confirm
-		// TODO chris
 		if (!self.docked) {
 			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
 			return;
@@ -1504,16 +1501,6 @@ function Player(sock) {
 	self.r = function (msg) { // pm reply
 		if (self.reply.includes(" ")) self.reply = self.reply.split(" ")[1];
 		self.pm("/pm " + self.reply + " " + msg.substring(3));
-	}
-	self.setEmail = function (msg) { //  |               |
-		var email = msg.substring(7); // V what the fuck V
-		var regex = new RegExp("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$");
-		if (regex.test(email)) {
-			self.email = email;
-			self.save();
-		} else {
-			self.socket.emit("chat", { msg: "Invalid Email!" });
-		}
 	}
 	self.pm = function (msg) { // msg looks like "/pm luunch hey there pal". If a moderator, you use "2swap" not "[O] 2swap".
 		if (msg.split(" ").length < 3) { // gotta have pm, name, then message
