@@ -17,6 +17,7 @@ var guestCount = 0; // Enumerate guests since server boot
 global.muteTable = {};
 
 global.protocolVersion = undefined;
+var loginTable = { };
 
 function expToLife(exp, guest) { // how much a life costs, given your exp and whether you're logged in
     return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-exp / 15000.)) + Math.atan(exp / 150000.) - .5)) + 500;
@@ -253,57 +254,49 @@ module.exports = function initNetcode() {
                 instance = false;
                 return; 
             }
-
             var name = await response.text();
-            player = await loadPlayerData(name, socket);
 
-            var wait_time = 0;
-            for (var p in sockets) {
-                if (sockets[p].player !== undefined) {
-                    if (sockets[p].player.name === player.name) {
-                        sockets[p].player.kick("A user has logged into this account from another location.");
-                        wait_time = 6000;
-                        break;
-                    }
-                }
+            if (name in loginTable) {
+                socket.emit('inUse');
+                instance = false;
+                return;
             }
 
-            setTimeout(function() {               
-                socket.player = player;
-                player.ip = ip;
+            loginTable[name] = 1;
+            player = await loadPlayerData(name, socket);
+            socket.player = player;           
+            player.ip = ip;
+            socket.emit("loginSuccess", {id: player.id});
 
-                socket.emit("loginSuccess", {id: player.id});
+            if (player.sx >= mapSz) player.sx--;
+            if (player.sy >= mapSz) player.sy--;
 
-                if (player.sx >= mapSz) player.sx--;
-                if (player.sy >= mapSz) player.sy--;
-    
-                players[player.sy][player.sx][socket.id] = player;
-                
-                player.calculateGenerators();
-                socket.emit("raid", { raidTimer: raidTimer })
-                player.checkTrailAchs();
-                player.sendAchievementsKill(false);
-                player.sendAchievementsCash(false);
-                player.sendAchievementsDrift(false);
-                player.sendAchievementsMisc(false);
-                player.sendStatus();
-    
-                player.getAllPlanets();
-                player.refillAllAmmo();
-                console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
-                var text = player.nameWithColor() + ' logged in!';
-                chatAll(text);
+            players[player.sy][player.sx][socket.id] = player;
+            
+            player.calculateGenerators();
+            socket.emit("raid", { raidTimer: raidTimer })
+            player.checkTrailAchs();
+            player.sendAchievementsKill(false);
+            player.sendAchievementsCash(false);
+            player.sendAchievementsDrift(false);
+            player.sendAchievementsMisc(false);
+            player.sendStatus();
 
-                // Update last login
-                player.lastLogin = Date.now();
-                player.va = ships[player.ship].agility * .08 * player.agility2;
-                player.thrust = ships[player.ship].thrust * player.thrust2;
-                player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
-                player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
-                sendWeapons(player);
-                socket.emit('baseMap', {baseMap: baseMap, mapSz: mapSz});
-                socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
-            }, wait_time);
+            player.getAllPlanets();
+            player.refillAllAmmo();
+            console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
+            var text = player.nameWithColor() + ' logged in!';
+            chatAll(text);
+
+            // Update last login
+            player.lastLogin = Date.now();
+            player.va = ships[player.ship].agility * .08 * player.agility2;
+            player.thrust = ships[player.ship].thrust * player.thrust2;
+            player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
+            player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
+            sendWeapons(player);
+            socket.emit('baseMap', {baseMap: baseMap, mapSz: mapSz});
+            socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
         });
         socket.on('disconnect', function (data) { // Emitted by socket.IO when connection is terminated or ping timeout
             if (!player) return; // Don't allow unauthenticated clients to crash the server
@@ -325,6 +318,8 @@ module.exports = function initNetcode() {
                 }
 
                 var text = player.nameWithColor() + " left the game (reason: " + reason + ")"; // write a message about the player leaving
+
+                delete loginTable[player._id];
 
                 console.log(text); // print in terminal
                 chatAll(text); // send it to all the players
