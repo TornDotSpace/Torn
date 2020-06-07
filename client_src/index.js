@@ -1866,6 +1866,11 @@ socket.on('outdated', function() {
 socket.on('badcookie', function (data) {
 	credentialState = 30;
 });
+
+socket.on('inUse', function () {
+	credentialState = 31;
+});
+
 socket.on('loginSuccess', function (data) {
 	// Cleanup bullets from homepage
 	for (var i in bullets) delete bullets[i];
@@ -3561,6 +3566,7 @@ function rCreds() {
 	if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
 	if (credentialState == 8) str = "You must be rank 1 to create an account!";
 	if (credentialState == 30) str = "Invalid playcookie";
+	if (credentialState == 31) str = "Account already in use!";
 	write(str, w / 2, h - 64);
 	ctx.textAlign = 'left';
 	ctx.font = '14px ShareTech';
