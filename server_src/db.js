@@ -54,7 +54,7 @@ global.loadPlayerData = async function (playerName, socket) {
     var player = new Player(socket);
 
     for (var key in record) {
-        if (key === "password") continue; // don't load passwords into memory
+        if (key === "password" || key === "email") continue; // don't load passwords into memory
         player[key] = record[key];
     }
 
