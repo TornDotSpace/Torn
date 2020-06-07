@@ -330,7 +330,7 @@ module.exports = function initNetcode() {
             if (typeof data === "undefined" || typeof data.inputId === 'undefined' || typeof data.state === 'undefined') return;
             if (player == 0) return;
 
-            player.afkTimer = 20 * 25 * 60; // 20 minutes till we kick them for being afk
+            player.afkTimer = 10 * 25 * 60; // 10 minutes till we kick them for being afk
 
             //if they want to be revived after dying
             if (player.dead && data.inputId === 'e') {

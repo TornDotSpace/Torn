@@ -32,7 +32,7 @@ function Player(sock) {
 
 		//misc timers
 		noDrift: 50, // A timer used for decelerating angular momentum
-		afkTimer: 25 * 60 * 30, // check for afk
+		afkTimer: 10 * 60 * 30, // check for afk
 		jukeTimer: 0,
 		hyperdriveTimer: -1,
 		borderJumpTimer: 0, // for deciding whether to hurt the player
@@ -1442,7 +1442,7 @@ function Player(sock) {
 		if (self.isBot) return false;
 
 		if (self.afkTimer-- < 0) {
-			self.socket.emit("AFK", { t: 0 });
+			self.socket.emit("AFK");
 			self.kick("AFK!");
 			self.testAfk = function() { return false; };
 			return true;
