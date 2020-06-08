@@ -383,9 +383,14 @@ module.exports = function initNetcode() {
 
             if (data.msg.startsWith("/") && !data.msg.startsWith("/me") && !data.msg.startsWith("/r") && !data.msg.startsWith("/pm ")) { runCommand(player, data.msg); return; } // non spammable commands
 
-            var biggerMute = Math.max(muteTable[player.name], ipMuteTable[player.ip]);
-            if (biggerMute > time) {
-                var secondsLeft = Math.floor((biggerMute-time)/1000);
+            //todo: combine these IFs (Has to support NaN mute durations)
+            if (muteTable[player.name] > time) {
+                var secondsLeft = Math.floor((muteTable[player.name]-time)/1000);
+                socket.emit('chat', { msg: ("~`#ff0000~`You are muted for " + Math.floor(secondsLeft/60) + " minutes and " + secondsLeft%60 + " seconds!") });
+                return;
+            }
+            if (ipMuteTable[player.ip] > time) {
+                var secondsLeft = Math.floor((ipMuteTable[player.ip]-time)/1000);
                 socket.emit('chat', { msg: ("~`#ff0000~`You are muted for " + Math.floor(secondsLeft/60) + " minutes and " + secondsLeft%60 + " seconds!") });
                 return;
             }
@@ -397,7 +402,8 @@ module.exports = function initNetcode() {
             if (data.msg.startsWith("/")) runCommand(player, data.msg); // spammable commands
 
             var repeat = data.msg === player.lastmsg;
-            player.chatTimer += repeat?300:150; // note this as potential spam
+            player.chatTimer += 150; // note this as potential spam
+            if(repeat) player.chatTimer*=2.5;
             if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
                 socket.emit('chat', { msg: ("~`red~`You have been muted for " + Math.floor(player.muteCap / 25) + " seconds!") });
                 muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
@@ -410,8 +416,9 @@ module.exports = function initNetcode() {
                 for (var i = player.name.length; i < 16; i++) spaces += " "; // align the message
                 const finalMsg = spaces + player.nameWithColor() + ": " + data.msg;
 
-                // Send it to the client up to what chat room theyre inxx
-                playerChat(finalMsg, player.globalChat, player.color, player.sx, player.sy);
+                // Send it to the client up to what chat room theyre in
+                if(player.globalChat == 2 && player.guild === '') socket.emit('chat', { msg: ("~`#ff0000~`You are not in a guild!") });
+                else playerChat(finalMsg, player.globalChat, player.color, player.sx, player.sy, player.guild);
             }
         });
         socket.on('toggleGlobal', function (data) { // player wants to switch what chat room they're in

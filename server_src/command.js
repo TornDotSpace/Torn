@@ -195,7 +195,7 @@ cmds["/ipmute"] = new Command("/ipmute <player> <minutesToMute> - Mutes the spec
     if (typeof minutes !== "number") return;
 
     if (minutes < 0) return;
-
+    
     ipMuteTable[player.ip] = (Date.now() + (minutes * 60 * 1000));
     chatAll("~`violet~`" + player.name + "~`yellow~` has been muted for "+minutes+" minutes!");
 });
