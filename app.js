@@ -315,7 +315,7 @@ init();
 function sigHandle() {
 	console.log("[SERVER] Caught termination signal...");
 
-	sendAll("kick", { msg: "You have been logged out by an adminstrator working on the servers." });
+	sendAll("kick", { msg: "You have been logged out by an administrator working on the servers." });
 
 	for (var y in players) {
 		for (var x in players[y]) {

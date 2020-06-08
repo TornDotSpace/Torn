@@ -254,21 +254,21 @@ module.exports = function initNetcode() {
 
             var name = await response.text();
             player = await loadPlayerData(name, socket);
+            player.ip = ip;
 
             var wait_time = 0;
+            
             for (var p in sockets) {
-                if (sockets[p].player !== undefined) {
-                    if (sockets[p].player.name === player.name) {
-                        sockets[p].player.kick("A user has logged into this account from another location.");
+                var curr_socket = sockets[p];
+                if (curr_socket.player !== undefined && curr_socket.id != socket.id) {
+                    if (curr_socket.player._id == player._id) {
+                        curr_socket.player.kick("A user has logged into this account from another location.");
                         wait_time = 6000;
-                        break;
                     }
                 }
             }
 
             setTimeout(function() {               
-                socket.player = player;
-                player.ip = ip;
 
                 socket.emit("loginSuccess", {id: player.id});
 
