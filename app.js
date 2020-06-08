@@ -315,7 +315,7 @@ init();
 function sigHandle() {
 	console.log("[SERVER] Caught termination signal...");
 
-	sendAll("kick", { msg: "You have been logged out by an adminstrator working on the servers." });
+	sendAll("kick", { msg: "You have been logged out by an administrator working on the servers." });
 
 	for (var y in players) {
 		for (var x in players[y]) {
@@ -334,7 +334,7 @@ function onCrash(err) {
 
 	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
 
-	sendAll("kick", {msg: ":( The server you are playing on has encountered a problem and needs to reset. Please tell a developer that this happened. You should be able to log back into the game and start exploring the universe almost immediately. :("});
+	sendAll("kick", {msg: "The server you are playing on has encountered a problem and needs to reset. You should be able to log back into the game and start exploring the universe almost immediately. :("});
 
 	var plyrs = '';
 
@@ -343,6 +343,7 @@ function onCrash(err) {
 			for (var id in players[y][x]) {
 				// Save & kick out
 				var player = players[y][x][id];
+				if (player.isBot) continue;
 				player.save();
 				plyrs = plyrs + player.name + ', ';
 			}
@@ -1045,7 +1046,7 @@ function updateHeatmap() {
 				j++;
 			}
 			if(p.isBot) botCount++;
-			else if(p.guest) botCount++;
+			else if(p.guest) guestCount++;
 			else playerCount++;
 			hmap[p.sx][p.sy] += .1 + colorSelect(p.color, 1<<16, 1, 1<<8); // this is not supposed to be x-y order. TODO fix
 		}

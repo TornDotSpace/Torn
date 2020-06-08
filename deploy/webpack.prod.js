@@ -6,7 +6,8 @@ module.exports = merge(common, {
 	mode: 'production',
 	plugins: [
 		new webpack.DefinePlugin({
-			GAMESERVER_URL: '"torn.space:8887"',
+			TORN_GAMESERVER_URL: '"https://torn.space"',
+			TORN_API_URL: 		'"https://torn.space"'
 		}),
 	]
 	

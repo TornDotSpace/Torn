@@ -1,3 +1,4 @@
+const fetch = require('node-fetch');
 //Miscellaneous Networking
 global.sendWeapons = function (player) { // tells a client what weapons that player has;
 	if (player == 0) return;
@@ -66,4 +67,12 @@ global.playerChat = function (msg, gc, team, sx, sy) { // chat in whatever chat 
 		if (gc == 2 && (sx != player.sx || sy != player.sy)) continue; // they arent in the same sector
 		sockets[i].emit("chat", {msg:msg, gc:gc});
 	}
+}
+
+global.send_rpc = async function(endpoint, data) {
+	return await fetch(Config.getValue("rpc_server", undefined) + "/rpc" + endpoint, {
+		method: 'post',
+		body: data,
+		headers: { 'Content-Type': 'x-www-form-urlencoded'}
+	});
 }

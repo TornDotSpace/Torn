@@ -53,8 +53,8 @@ cmds["/password"] = new Command("/password <newPassword>", REGISTERED, function 
     player.changePass(msg.substring(10));
 });
 
-cmds["/confirm"] = new Command("/confirm <newPassword>", REGISTERED, function (player, msg) {
-    player.confirmPass(msg.substring(9));
+cmds["/confirm"] = new Command("/confirm <newPassword>", REGISTERED, async function (player, msg) {
+    await player.confirmPass(msg.substring(9));
 }, false);
 
 cmds["/changeteam"] = new Command("/changeteam", REGISTERED, function (player, msg) {
@@ -144,9 +144,16 @@ cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the pla
     ply.socket.emit("chat", { msg: "Unmuted "+name+"." });
 });
 
-cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", ADMINPLUS, function (player, msg) {
-    debug("EMAIL!");
-    player.setEmail(msg);
+const valid_email_regex = new RegExp("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$");
+cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", REGISTERED, function (player, msg) {
+    var email = msg.substring(7);
+	if (!valid_email_regex.test(email)) {
+        player.socket.emit("chat", { msg: "Invalid Email!" });
+        return;
+    }
+
+    savePlayerEmail(player, email);
+    player.socket.emit("chat", { msg : "Registered Email Successfully!"});
 });
 
 cmds["/green"] = new Command("/green Join green team", ADMINPLUS, function (player, msg) {

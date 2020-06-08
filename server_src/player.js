@@ -19,7 +19,6 @@ function Player(sock) {
 		guild: "",
 		id: sock.id, // unique identifier
 		socket: sock,
-		password: "password",
 		ip: 0,
 		trail: 0,
 		color: sock.id > .5 ? 'red' : 'blue',
@@ -33,7 +32,7 @@ function Player(sock) {
 
 		//misc timers
 		noDrift: 50, // A timer used for decelerating angular momentum
-		afkTimer: 25 * 60 * 30, // check for afk
+		afkTimer: 10 * 60 * 30, // check for afk
 		jukeTimer: 0,
 		hyperdriveTimer: -1,
 		borderJumpTimer: 0, // for deciding whether to hurt the player
@@ -140,7 +139,6 @@ function Player(sock) {
 		lastLogin: "A long, long time ago :(",
 		points: 0,
 
-		email: "",
 		permissionLevels: [-1],
 		equipped: 0,
 		kickMsg: ""
@@ -1444,7 +1442,7 @@ function Player(sock) {
 		if (self.isBot) return false;
 
 		if (self.afkTimer-- < 0) {
-			self.socket.emit("AFK", { t: 0 });
+			self.socket.emit("AFK");
 			self.kick("AFK!");
 			self.testAfk = function() { return false; };
 			return true;
@@ -1452,7 +1450,6 @@ function Player(sock) {
 		return false;
 	}
 	self.changePass = function (pass) { // /password
-		// TODO chris
 		if (!self.docked) {
 			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
 			return;
@@ -1464,20 +1461,24 @@ function Player(sock) {
 		self.tentativePassword = pass;
 		self.socket.emit("chat", { msg: "~`red~`Type \"/confirm your_new_password\" to complete the change." });
 	}
-	self.confirmPass = function (pass) { // /confirm
-		// TODO chris
+	self.confirmPass = async function (pass) { // /confirm
 		if (!self.docked) {
 			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
 			return;
 		}
 		if (pass !== self.tentativePassword) {
 			self.socket.emit("chat", { msg: "~`red~`Passwords do not match! Start over from /password." });
+			self.tentativePassword = undefined;
 			return;
 		}
-		var currSource = 'server/players/' + (self.name.startsWith("[") ? self.name.split(" ")[1] : self.name) + "[" + self.password + '.txt';
-		if (fs.existsSync(currSource)) fs.unlinkSync(currSource);
-		self.password = hash(self.tentativePassword);
-		self.save();
+		var response = await send_rpc("/reset/", self._id + "%" + pass);
+
+		if (!response.ok) {
+			self.socket.emit("chat", { msg : "ERROR"});
+			return;
+		}
+
+		self.tentativePassword = undefined;
 		self.socket.emit("chat", { msg: "~`lime~`Password changed successfully." });
 	}
 	self.calculateGenerators = function () { // count how many gens I have
@@ -1500,16 +1501,6 @@ function Player(sock) {
 	self.r = function (msg) { // pm reply
 		if (self.reply.includes(" ")) self.reply = self.reply.split(" ")[1];
 		self.pm("/pm " + self.reply + " " + msg.substring(3));
-	}
-	self.setEmail = function (msg) { //  |               |
-		var email = msg.substring(7); // V what the fuck V
-		var regex = new RegExp("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$");
-		if (regex.test(email)) {
-			self.email = email;
-			self.save();
-		} else {
-			self.socket.emit("chat", { msg: "Invalid Email!" });
-		}
 	}
 	self.pm = function (msg) { // msg looks like "/pm luunch hey there pal". If a moderator, you use "2swap" not "[O] 2swap".
 		if (msg.split(" ").length < 3) { // gotta have pm, name, then message
