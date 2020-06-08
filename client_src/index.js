@@ -124,7 +124,7 @@ var useOldMap = false;
 
 var chatLength = 40, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
 var lorePage = 0, homepageTimer = 0, loreTimer = 0;
-var chatRooms = [mEng[197], "Team Chat", "Sector Chat"];
+var chatRooms = [mEng[197], "Team Chat", "Guild Chat"];
 var messages = [{},{},{}];
 clearChat();
 preProcessChat();

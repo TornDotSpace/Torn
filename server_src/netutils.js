@@ -5,6 +5,13 @@ global.sendWeapons = function (player) { // tells a client what weapons that pla
 	player.socket.emit('weapons', { weapons: player.weapons, worth: worth, ammos: player.ammos });
 }
 
+global.sendAllGuild = function (out, data, guild) {
+	for (var i in sockets) {
+		var p = sockets[i].player;
+		if(p.guild === guild) p.socket.emit(out, data);
+	}
+}
+
 global.sendAllSector = function (out, data, sx, sy) {
 	for (var p in players[sy][sx]) {
 		p = players[sy][sx][p];
@@ -15,8 +22,7 @@ global.sendAllSector = function (out, data, sx, sy) {
 global.sendAllGlobal = function (out, data) {
 	for (var i in sockets) {
 		var p = sockets[i].player;
-		if(p.globalChat != 0) continue;
-		p.socket.emit(out, data);
+		if(p.globalChat == 0) p.socket.emit(out, data);
 	}
 }
 
