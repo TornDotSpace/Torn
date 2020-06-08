@@ -1600,6 +1600,7 @@ function Player(sock) {
 	self.strongLocal = function (msg, x, y) {
 		self.socket.emit('strong', { msg: msg, x: x, y: y, local: true });
 	}
+	sock.player = self;
 	return self;
 };
 

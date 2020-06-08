@@ -3,6 +3,7 @@ import utils
 import db
 import endpoint
 import asyncio
+import aiohttp_cors
 
 from aiohttp import web
 
@@ -27,6 +28,18 @@ def __init__():
                     web.post("/rpc/register/", login_server.handle_register),
                     web.post("/rpc/reset/", login_server.handle_reset)
     ])
+
+    # Configure default CORS settings.
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+                allow_credentials=True,
+                expose_headers="*",
+                allow_headers="*",
+            )
+    })
+
+    for route in list(app.router.routes()):
+        cors.add(route)
     print("*** Initialization Done ***")
     asyncio.get_event_loop().create_task(do_expire_task(cache))
     asyncio.get_event_loop().run_until_complete(web.run_app(app))
