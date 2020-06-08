@@ -98,14 +98,13 @@ global.connect = function () {
 var teamColors = ["red","blue","green"];
 var sectorWidth = 14336;
 var mx = 0, my = 0, mb = 0;
-var tick = 0, baseTick = 0;
+var tick = 0;
 var scrx = 0, scry = 0;
 var mapSz = -1;
 var quests = 0, quest = 0, qsy = -1, qsx = -1, qdsy = -1, qdsx = -1;
-var login = false, lore = false, afk = false;
+var login = false, lore = false;
 var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
 var phealth = 0;
-var energy = 0;
 var mapZoom = 1;
 var myxx1 = 0, myxx2 = 0, myxx3 = 0, myxx4 = 0;
 var myyy1 = 0, myyy2 = 0, myyy3 = 0, myyy4 = 0;
@@ -119,6 +118,7 @@ var tab = 0, confirmer = -1, shipView = 0, volTransparency = 0, gVol = .5;
 global.typing = false;
 global.stopTyping = () => { typing = false }
 var centered = false;
+var afk = false;
 
 var baseMap2D = {}
 var planetMap2D = {}
@@ -131,9 +131,9 @@ var messages = [{},{},{}];
 clearChat();
 preProcessChat();
 var raidTimer = -1, raidRed = 0, raidBlue = 0, raidGreen = 0, points = 0;
-var shift = false, shield = false, autopilot = false;
-var seller = 0, sectorMap = 0, worth = 0, ship = 0;
-var empTimer = -1, dmgTimer = -1, gyroTimer = 0, afkTimer = 45000;
+var shield = false, autopilot = false;
+var seller = 0, worth = 0, ship = 0;
+var empTimer = -1, dmgTimer = -1, gyroTimer = 0;
 var t2 = 1, mh2 = 1, c2 = 1, va2 = 1, e2 = 1, ag2 = 1;
 var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops = 0, frames = 0, uframes = 0, ups = 0, dev = false;
 global.credentialState = 0;
@@ -304,7 +304,6 @@ var greenShips = [];
 var planetImgs = [];
 var Img = {};
 var Img_prgs = [0 /* Count of loaded images */, 0 /* Count of all images */]
-var Img_loaded = false;
 loadAllImages();
 loadAllAudio();
 
@@ -320,7 +319,6 @@ function loadImage(name, src) {
 function loadImageEnd() {
 	let loaded = () => {
 		if (Img_prgs[0] === Img_prgs[1]) {
-			Img_loaded = true;
 			EVERYTHING_LOADED = true
 			return true
 		} else
@@ -643,6 +641,7 @@ function render() {
 	rEdgePointer();//Fast
 	rNotes();//Fast
 	rKillStreak();
+	if (afk) rAfk();
 	if (self.quests != 0) rCurrQuest();
 	rRaid();
 	rWeapons();//fast
@@ -671,7 +670,6 @@ function render() {
 	if (flash > 0) rFlash();
 	rTut();
 	if (undoing && hyperdriveTimer <= 0) undoDmg(r);
-	if (afk) rAfk();
 	if (isLocked) currAlert = mEng[132];
 	rAlert();
 	currAlert = bigAlert = '';
@@ -1368,9 +1366,7 @@ function rBaseGui() {
 
 	ctx.font = '14px ShareTech';
 	ctx.lineWidth = 2;
-	baseTick++;
-	//roll(sinLow((baseTick % 3142) / 100.) / 16);
-	//spin(cosLow((baseTick % 3142) / Math.PI / 50) / 16);
+
 	var tabs = {};
 	tabs[0] = mEng[142];
 	tabs[1] = mEng[143];
@@ -1434,7 +1430,6 @@ socket.on('connect_error', function (error) {
 //packet handling
 socket.on('posUp', function (data) {
 	planetTimerSec = data.planetTimer / 25;
-	energy = data.energy;
 	px = data.x;
 	py = data.y;
 	phealth = data.health;
@@ -1449,7 +1444,6 @@ socket.on('posUp', function (data) {
 	if (docked) playAudio("sector", 1);
 	empTimer--;
 	gyroTimer--;
-	afkTimer--;
 	killStreakTimer--;
 	docked = false;
 	packsInfo = data.packs;
@@ -1474,7 +1468,6 @@ socket.on('posUp', function (data) {
 socket.on('update', function(data) {
 	++uframes;
 	++tick;
-	energy = data.energy;
 	isLocked = data.isLocked;
 	charge = data.charge;
 
@@ -1528,7 +1521,6 @@ socket.on('update', function(data) {
 	updateTrails();
 	empTimer--;
 	gyroTimer--;
-	afkTimer--;
 	killStreakTimer--;
 });
 
@@ -1774,7 +1766,6 @@ function rInBase() {
 	if (savedNote-- > 0 && !guest)
 		rSavedNote();
 	if (tab == -1) rCreds();
-	if (afk) rAfk();
 	if (self.quests != 0) rCurrQuest();
 	if (lb != 0) rLB();
 	rRaid();
@@ -1849,12 +1840,6 @@ socket.on('delBullet', function (data) {
 	delete bullets[data.id];
 });
 
-socket.on('AFK', function (data) {
-	if (data.t == 0) {
-		afk = true;
-		rAfk();
-	} else if (data.t == 25 * 90) afkTimer = 25 * 90;
-});
 socket.on('invalidCredentials', function (data) {
 	credentialState = 1;
 });
@@ -2139,6 +2124,9 @@ socket.on('kick', function (data) {
 	socket.disconnect();
 });
 
+socket.on('AFK', function () {
+	afk = true;
+});
 
 setInterval(function () {
 	fps = frames;
@@ -2304,8 +2292,6 @@ document.onkeydown = function (event) {
 	if (event.keyCode === 16) {
 		if (keys[0] != true) socket.emit('key', { inputId: 'shift', state: true });
 		keys[0] = true;
-		afkTimer = 45000;
-		shift = true;
 		return;
 	}
 	if (typing) {
@@ -2340,7 +2326,6 @@ document.onkeydown = function (event) {
 		else if (event.keyCode === 83 || event.keyCode === 40) {//s
 			if (keys[1] != true) socket.emit('key', { inputId: 's', state: true });
 			keys[1] = true;
-			afkTimer = 45000;
 		}
 		else if (event.keyCode === 192)//`
 			dev = !dev;
@@ -2351,50 +2336,42 @@ document.onkeydown = function (event) {
 		else if (event.keyCode === 69) {//e
 			if (keys[2] != true) socket.emit('key', { inputId: 'e', state: true });
 			keys[2] = true;
-			afkTimer = 45000;
 		}
 		else if (event.keyCode === 87 || event.keyCode === 38) {//w
 			if (keys[3] != true) socket.emit('key', { inputId: 'w', state: true });
 			keys[3] = true;
 			didW = true;
-			afkTimer = 45000;
 		}
 		else if (event.keyCode === 65 || event.keyCode === 37) {//a
 			if (keys[4] != true) socket.emit('key', { inputId: 'a', state: true });
 			keys[4] = true;
 			didSteer = true;
-			afkTimer = 45000;
 		}
 		else if (event.keyCode === 68 || event.keyCode === 39) {//d
 			if (keys[5] != true) socket.emit('key', { inputId: 'd', state: true });
 			keys[5] = true;
 			didSteer = true;
-			afkTimer = 45000;
 		}
 		else if (event.keyCode === 32) {//space
 			if (keys[6] != true) socket.emit('key', { inputId: ' ', state: true });
 			keys[6] = true;
 			if (equipped[scroll] < 0) badWeapon = 20;
-			afkTimer = 45000;
 		}
 		else if (event.keyCode === 81) {//q
 			if (keys[7] != true) socket.emit('key', { inputId: 'q', state: true });
 			keys[7] = true;
-			afkTimer = 45000;
 		}
 		else if (event.keyCode === 88 || event.keyCode === 27) {//x
 			if (dead) return;
 			if (keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
 			keys[8] = true;
 			ReactRoot.turnOffRegister("");
-			afkTimer = 45000;
 			socket.emit('equip', { scroll: scroll });
 		}
 		else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
 			if (dead) return;
 			if (keys[9] != true) socket.emit('key', { inputId: 'c', state: true });
 			keys[9] = true;
-			afkTimer = 45000;
 		}
 	}
 }
@@ -2408,7 +2385,6 @@ document.onkeyup = function (event) {
 		return;
 	if (!login || tab == -1)
 		return;
-	var resetAfk = true;
 	if (event.keyCode === 83 || event.keyCode === 40) {//s
 		keys[1] = false;
 		socket.emit('key', { inputId: 's', state: false });
@@ -2436,12 +2412,8 @@ document.onkeyup = function (event) {
 	}
 	else if (event.keyCode === 16) {
 		keys[0] = false;
-		shift = false;
 		socket.emit('key', { inputId: 'shift', state: false });
-	} else
-		resetAfk = false;
-	if (resetAfk)
-		afkTimer = 45000;
+	}
 }
 document.addEventListener('mousemove', function (evt) {
 	var omx = mx;
@@ -2578,7 +2550,6 @@ document.addEventListener('mousedown', function (evt) {
 		mouseDown = true;
 		if ((mx < w - 32 - 20 - 128 - 16 || my < h - 92) && (mx > 512 + 32 || my < h - 216) && !(mx < 256 && my < 450)) {//not in vol section or chat section or map
 			socket.emit('key', { inputId: ' ', state: true });
-			afkTimer = 45000;
 		}
 		if (equipped[scroll] < 0) badWeapon = 20;
 	}
@@ -2637,7 +2608,6 @@ document.addEventListener('mouseup', function (evt) {
 	mb = 0;
 	if (mouseDown) {
 		socket.emit('key', { inputId: ' ', state: false });
-		afkTimer = 45000;
 		mouseDown = false;
 	}
 }, false);
@@ -3139,10 +3109,6 @@ function rEMP() {
 	if (gyroTimer > 0) {
 		write(mEng[99] + Math.round(gyroTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
 		currAlert = mEng[100];
-	}
-	if (!afk && afkTimer < 90 * 25) {
-		write(mEng[102] + Math.round(afkTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-		currAlert = mEng[101];
 	}
 	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
