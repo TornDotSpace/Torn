@@ -509,7 +509,7 @@ function Player(sock) {
 	self.checkMineCollision = function () {
 		for (var i in mines[self.sy][self.sx]) {
 			var m = mines[self.sy][self.sx][i];
-			if (m.color != self.color && m.wepnID != 32) { // enemy mine and not 
+			if (m.color != self.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
 				if (m.wepnID != 16 && squaredDist(m, self) < square(16 + ships[self.ship].width)) {
 					self.dmg(m.dmg, m); // damage me
 					if (m.wepnID == 17) self.EMP(50); // emp mine
