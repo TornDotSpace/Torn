@@ -1,4 +1,5 @@
 var Player = require('./player.js');
+var Package = require("./universe/package.js");
 var fs = require('fs');
 
 class Bot extends Player {
@@ -93,6 +94,34 @@ class Bot extends Player {
             this.w = Math.abs(turn) < Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
         }
     }
+
+    die = async function (b) {
+        delete players[this.sy][this.sx][this.id];
+        if (b === undefined) {
+            return;
+        }
+        var diff = .02 * this.experience;
+		if (b.type !== "Vortex"){
+			//drop a package
+			var r = Math.random();
+			if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier)
+			else if (Math.random() < .012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);//life
+			else if (Math.random() < .1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);//ammo
+			else packs[this.sy][this.sx][r] = new Package(this, r, 1);//coin
+		}
+	
+		//give the killer stuff
+		if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
+			b.owner.onKill(this);
+			b.owner.spoils("experience", (10 + diff * (this.color === b.owner.color ? -1 : 1)));
+			// Prevent farming and disincentivize targetting guests
+			b.owner.spoils("money", b.owner.type === "Player" ? (b.owner.killStreak*playerKillMoney) : playerKillMoney);
+	
+			if (this.points > 0) { // raid points
+				b.owner.points++;
+			}
+		}
+	}
 }
 
 class NeuralNetBot extends Bot {

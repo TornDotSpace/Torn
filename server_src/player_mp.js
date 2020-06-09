@@ -1,4 +1,5 @@
 var Player = require('./player.js');
+var Package = require("./universe/package.js");
 
 class PlayerMP extends Player {
     constructor(socket) {
@@ -19,6 +20,7 @@ class PlayerMP extends Player {
 
         this.permissionLevels = [-1];
         this.kickMsg = "";
+        this.afkTimer = 10 * 60 * 30; // check for afk
     }
 
     kick(msg) {
@@ -160,6 +162,93 @@ testAfk() {
 emit(a, b) {
     this.socket.emit(a, b);
 }
+die = async function (b) { // b: bullet object or other object which killed us
+    delete players[this.sy][this.sx][this.id];
+
+    this.empTimer = -1;
+    this.killStreak = 0;
+    var diff = .02 * this.experience;
+    this.leaveBaseShield = 25;
+    this.refillAllAmmo();
+
+    sendAllSector('sound', { file: "bigboom", x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
+
+    //clear quest
+    this.quest = 0;
+    this.emit('quest', { quest: 0, complete: false});//reset quest and update client
+
+    if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
+        var customMessageArr = eng.weapons[b.wepnID].killmessages;
+        var useCustomKillMessage = Math.random() < .5 && typeof customMessageArr !== "undefined" && customMessageArr.length > 0;
+
+        if(useCustomKillMessage) chatAll(customMessageArr[Math.floor(Math.random()*customMessageArr.length)].replace("P1", b.owner.nameWithColor()).replace("P2", this.nameWithColor()));
+        else chatAll(this.nameWithColor() + " was destroyed by " + b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~!");
+
+        if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
+                b.owner.driftAchs[9] = true;
+                b.owner.sendAchievementsDrift(true);
+        }
+    }
+    //send msg
+    else if (b.type === "Vortex") chatAll(this.nameWithColor() + " crashed into a black hole!");
+    else if (b.type === "Planet" || b.type === "Asteroid") chatAll(this.nameWithColor() + " crashed into an asteroid!");
+    else if (b.owner !== undefined && b.owner.type === "Base") chatAll(this.nameWithColor() + " was destroyed by base " + b.owner.nameWithColor() + "!");
+
+    if (b.type !== "Vortex"){
+        //drop a package
+        var r = Math.random();
+        if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier)
+        else if (Math.random() < .012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);//life
+        else if (Math.random() < .1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);//ammo
+        else if (!this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 1);//coin
+    }
+
+        //give the killer stuff
+    if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
+        b.owner.onKill(this);
+        b.owner.spoils("experience", !this.guest ? (10 + diff * (this.color === b.owner.color ? -1 : 1)) : 0);
+        // Prevent farming and disincentivize targetting guests
+        b.owner.spoils("money", b.owner.type === "Player" ? (this.guest ? 0 : b.owner.killStreak*playerKillMoney) : playerKillMoney);
+
+        if (this.points > 0) { // raid points
+            b.owner.points++;
+            this.points--;
+        }
+    }
+
+    this.hasPackage = false; // Maintained for onKill above
+
+    this.health = this.maxHealth;
+    this.dead = true;
+
+    await handlePlayerDeath(this);
+
+    this.x = this.y = sectorWidth / 2;
+    var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
+    this.sx = baseMap[this.color][whereToRespawn];
+    this.sy = baseMap[this.color][whereToRespawn+1];
+
+    this.lives--;
+    this.save();
+    if (this.lives <= 0) {
+        this.kick("Goodbye captain: no more lives remaining!");
+        return;
+    }   
+
+    this.sendStatus();
+    this.sendAchievementsMisc(true);
+
+    //put this player in the dead list
+    deads[this.id] = this;
+
+    sendWeapons(this);
+}
+
+save() {
+    if (this.guest) return;
+    savePlayerData(this);
+}
+
 };
 
 module.exports = PlayerMP;

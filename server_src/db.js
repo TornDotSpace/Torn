@@ -32,6 +32,9 @@ global.connectToDB = function () {
 }
 
 global.handlePlayerDeath = async function (player) {
+
+    if (player.guest) return;
+    
     var record = await PLAYER_DATABASE.findOne({_id: player._id});
 
     if (record == null) return;
