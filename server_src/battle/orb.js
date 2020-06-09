@@ -1,22 +1,22 @@
 module.exports = class Orb {
-	constructor(ownr, i, weaponID) {//currently the only orb is energy disk
+	constructor(ownr, i, wepnID) {//currently the only orb is energy disk
 		this.type = "Orb",
 		this.id = i, // unique identifier
 		this.color = ownr.color, // owned by which team
-		this.dmg = wepns[weaponID].damage,
+		this.dmg = wepns[wepnID].damage,
 
 		this.owner = ownr,
 		this.x = ownr.x,
 		this.y = ownr.y, // spawn where its owner is
 		this.sx = ownr.sx,
 		this.sy = ownr.sy,
-		this.vx = wepns[weaponID].speed * Math.cos(ownr.angle) * 2,
-		this.vy = wepns[weaponID].speed * Math.sin(ownr.angle) * 2,
+		this.vx = wepns[wepnID].speed * Math.cos(ownr.angle) * 2,
+		this.vy = wepns[wepnID].speed * Math.sin(ownr.angle) * 2,
 
 		this.locked = 0, // the id of the player I'm locked on to
 		this.timer = 0, // how long this orb has existed
 		this.lockedTimer = 0, // timer of how long it's been locked onto a player
-		this.wepnID = weaponID;
+		this.wepnID = wepnID;
 	}
 	tick() {
 		if (this.timer++ > 3 * wepns[this.wepnID].range / wepns[this.wepnID].speed) this.die();
@@ -73,8 +73,8 @@ module.exports = class Orb {
 					this.die();
 					return;
 				}
-				this.vx += wepns[weaponID].speed * (target.x - this.x) / dist; // accelerate towards target
-				this.vy += wepns[weaponID].speed * (target.y - this.y) / dist;
+				this.vx += wepns[wepnID].speed * (target.x - this.x) / dist; // accelerate towards target
+				this.vy += wepns[wepnID].speed * (target.y - this.y) / dist;
 				this.vx *= .9; // air resistance
 				this.vy *= .9;
 			}
