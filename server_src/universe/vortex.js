@@ -21,10 +21,9 @@ module.exports = class Vortex {
 		this.sy = syy,
 
 		this.size = size;
-		this.currTick = 0;
 	}
 	tick() {
-		this.currTick++;
+
 		this.move();
 
 		if (this.owner != 0) { // if I'm a gravity bomb
@@ -38,7 +37,7 @@ module.exports = class Vortex {
 	move() {
 		if (this.isWorm) {
 
-			var t = this.currTick / 40000;
+			var t = tick / 40000;
 
 			//the doubles in here are just random numbers for chaotic motion. Don't mind them.
 
@@ -69,7 +68,7 @@ module.exports = class Vortex {
 			this.yo = ((byo * mapSz) % 1) * sectorWidth;
 
 			// every 2 seconds, tell the players where I am (for radar only, I think)
-			if (this.currTick % 50 == 0) sendAll('worm', { bx: bx, by: by, bxo: bxo, byo: byo });
+			if (tick % 50 == 0) sendAll('worm', { bx: bx, by: by, bxo: bxo, byo: byo });
 
 		}
 
