@@ -66,7 +66,7 @@ class Asteroid {
 		if (b == 0) return;
 
 		if (b.owner.type == "Player") {
-			switch (metal) {
+			switch (this.metal) {
 				case 0:
 					b.owner.iron += this.maxHealth;
 					if (b.owner.platinum + b.owner.iron + b.owner.aluminium + b.owner.silver > b.owner.capacity) { // TODO represent player.ores as an array to make this much less stupid
