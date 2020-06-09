@@ -1,4 +1,4 @@
-var Player = require("./player.js");
+var PlayerMP = require("./player_mp.js");
 var MONGO_CONNECTION_STR = Config.getValue("mongo_connection_string", "mongodb://localhost:27017/torn");
 var PLAYER_DATABASE = null;
 var TURRET_DATABASE = null;
@@ -51,7 +51,7 @@ global.handlePlayerDeath = async function (player) {
 global.loadPlayerData = async function (playerName, socket) {
     
     var record = await PLAYER_DATABASE.findOne({ _id: playerName });
-    var player = new Player(socket);
+    var player = new PlayerMP(socket);
 
     for (var key in record) {
         if (key === "password" || key === "email") continue; // don't load passwords into memory

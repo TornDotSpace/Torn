@@ -1,28 +1,22 @@
-var fs = require('fs');
 var Blast = require('./battle/blast.js');
 var Bullet = require('./battle/bullet.js');
 var Asteroid = require("./universe/asteroid.js");
 var Package = require("./universe/package.js");
 var Missile = require("./battle/missile.js");
-var NeuralNet = require('./neuralnet.js');
 var Base = require('./universe/base.js');
 var Orb = require('./battle/orb.js');
 var Mine = require('./battle/mine.js');
 var Beam = require('./battle/beam.js');
 
 class Player {
-	constructor(sock) {
-		sock.player = this;
+	constructor(id) {
 		this._id = "",
 		this.type = "Player",
 
 		this.name = "ERR0",
-		this.guild = "",
-		this.id = sock.id, // unique identifier
-		this.socket = sock,
-		this.ip = 0,
+		this.id = id, // unique identifier
 		this.trail = 0,
-		this.color = sock.id > .5 ? 'red' : 'blue',
+		this.color = id > .5 ? 'red' : 'blue',
 		this.ship = 0,
 		this.experience = 0,
 		this.rank = 0,
@@ -44,11 +38,6 @@ class Player {
 		this.timer = 0,
 		this.gyroTimer = 0,
 		this.charge = 0,
-
-		this.chatTimer = 100,
-		this.muteCap = 750,
-		this.globalChat = 0,
-		this.lastmsg ="",
 
 		this.weapons = {}, // my equipped weapons and ammo counts
 		this.ammos = {},
@@ -84,7 +73,6 @@ class Player {
 		this.aluminium = 0,
 
 		//bot stuff
-		this.brainwashedBy = 0, // for enslaved bots
 		this.net = 0, // where the neural network is stored
 		this.isBot = false,
 		this.isNNBot = false,
@@ -124,8 +112,6 @@ class Player {
 		this.c = false,
 		this.space = false,
 
-		this.reply = "nobody", // last person to pm / who pmed me
-
 		this.killsAchs = {}, // 13 of em
 		this.moneyAchs = {}, // 12
 		this.driftAchs = {}, // 12
@@ -137,12 +123,9 @@ class Player {
 		this.oresMined = 0, // bitmask
 		this.questsDone = 0, // bitmask
 		this.planetsClaimed = "0000000000000000000000000000000000000000000000000",
-		this.lastLogin = new Date(),
 		this.points = 0,
 
-		this.permissionLevels = [-1],
-		this.equipped = 0,
-		this.kickMsg = "";
+		this.equipped = 0;
 	}
 
 	tick() {
@@ -183,7 +166,7 @@ class Player {
 		//In case of insufficient ammo
 		if (this.ammos[this.equipped] == 0 && this.charge > 10) {
 			this.charge = 0;
-			this.socket.emit("sound", { file: "noammo", x: this.x, y: this.y });
+			this.emit("sound", { file: "noammo", x: this.x, y: this.y });
 			return;
 		} 
 
@@ -192,7 +175,7 @@ class Player {
 			if (this.ammos[this.equipped] == 0) return;
 
 			if (wep.level > this.ship) {
-				this.socket.emit("chat", { msg: 'This weapon is incompatible with your current ship!', color: 'yellow' });
+				this.emit("chat", { msg: 'This weapon is incompatible with your current ship!', color: 'yellow' });
 				return;
 			}
 
@@ -299,12 +282,12 @@ class Player {
 
 			else if (wep.name === "Turret") {
 				if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
-					this.socket.emit("chat", { msg: 'Your turret must be closer to the center of the sector!', color: 'yellow' });
+					this.emit("chat", { msg: 'Your turret must be closer to the center of the sector!', color: 'yellow' });
 					this.space = false;
 					return;
 				}
 				if (bases[this.sy][this.sx] != 0) {
-					this.socket.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
+					this.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
 					this.space = false;
 					return;
 				}
@@ -312,12 +295,12 @@ class Player {
 				var b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, false);
 				b.owner = this.name;
 				bases[this.sy][this.sx] = b;
-				this.socket.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
+				this.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
 			}
 
 			else if (wep.name === "Sentry") {
 				if (bases[this.sy][this.sx] != 0) {
-					this.socket.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
+					this.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
 					this.space = false;
 					return;
 				}
@@ -325,7 +308,7 @@ class Player {
 				var b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, true);
 				b.owner = this.name;
 				bases[this.sy][this.sx] = b;
-				this.socket.emit("chat", { msg: 'You placed a sentry! Name it with "/nameturret <name>".', color: 'yellow' });
+				this.emit("chat", { msg: 'You placed a sentry! Name it with "/nameturret <name>".', color: 'yellow' });
 			}
 
 			else if (wep.name === "Turbo") {
@@ -349,7 +332,7 @@ class Player {
 
 			else if (wep.name === "Hyperdrive") {
 				var isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
-				this.socket.emit("sound", { file: "hyperspace", x: this.x, y: this.y });
+				this.emit("sound", { file: "hyperspace", x: this.x, y: this.y });
 				this.hyperdriveTimer = 200;
 				if (isDrifting && this.w && !this.driftAchs[6]) { // Hyper-drift
 					this.driftAchs[6] = true;
@@ -582,7 +565,7 @@ class Player {
 			}
 		}
 		if (giveBounce && !this.randmAchs[5]) {
-			if (this.guest) this.socket.emit("chat", { msg: "~`orange~`You must create an account to explore the universe!" });
+			if (this.guest) this.emit("chat", { msg: "~`orange~`You must create an account to explore the universe!" });
 			else {
 				this.randmAchs[5] = true;
 				this.sendAchievementsMisc(true);
@@ -632,7 +615,7 @@ class Player {
 			if ((this.questsDone & 8) == 0) this.questsDone += 8;
 
 			this.quest = 0; // reset quest and tell the client
-			this.socket.emit('quest', { quest: this.quest, complete: true});
+			this.emit('quest', { quest: this.quest, complete: true});
 
 			if (!this.moneyAchs[9]) { // Questor
 				this.moneyAchs[9] = true;
@@ -646,7 +629,7 @@ class Player {
 
 		if (this.quest != 0 && this.quest.type === "Secret" && this.sx == this.quest.sx && this.sy == this.quest.sy) { // advance in secret quest to phase 2
 			this.quest = { type: "Secret2", exp: this.quest.exp, sx: this.quest.sx, sy: this.quest.sy };
-			this.socket.emit('quest', { quest: this.quest, complete: false});
+			this.emit('quest', { quest: this.quest, complete: false});
 		}
 
 		//tell client what's in this sector
@@ -679,7 +662,7 @@ class Player {
 		this.checkQuestStatus(true); // lots of quests are planet based
 
 		if (this.guest) {
-			this.socket.emit("chat", { msg: 'You must create an account in the base before you can claim planets!', color: 'yellow' });
+			this.emit("chat", { msg: 'You must create an account in the base before you can claim planets!', color: 'yellow' });
 			return;
 		}
 
@@ -699,7 +682,7 @@ class Player {
 			if (cleared) { // 2 ifs needed, don't merge this one with the last one
 				this.hasPackage = true;
 				this.quest = { type: "Secret3", exp: this.quest.exp };
-				this.socket.emit('quest', { quest: this.quest, complete:false}); //notify client
+				this.emit('quest', { quest: this.quest, complete:false}); //notify client
 			}
 		}
 
@@ -716,7 +699,7 @@ class Player {
 			this.sendAchievementsMisc(true);
 		}
 
-		this.socket.emit("planetMap", { x:p.x, y:p.y, sx:p.sx, sy:p.sy });
+		this.emit("planetMap", { x:p.x, y:p.y, sx:p.sx, sy:p.sy });
 
 		//Update list of claimed planets.
 		var index = this.sx + this.sy * mapSz;
@@ -748,7 +731,7 @@ class Player {
 			this.spoils("experience", Math.floor(this.quest.exp / 1500));
 
 			this.quest = 0;
-			this.socket.emit('quest', { quest: this.quest, complete:true}); // tell client quest is over
+			this.emit('quest', { quest: this.quest, complete:true}); // tell client quest is over
 
 			if (!this.moneyAchs[9]) { // Questor
 				this.moneyAchs[9] = true;
@@ -773,7 +756,7 @@ class Player {
 
 				this.hasPackage = false;
 				this.quest = 0;
-				this.socket.emit('quest', { quest: this.quest, complete:true}); // tell client it's over
+				this.emit('quest', { quest: this.quest, complete:true}); // tell client it's over
 				if ((this.questsDone & 2) == 0) this.questsDone += 2;
 
 				if (!this.moneyAchs[9]) { // Questor
@@ -811,7 +794,7 @@ class Player {
 				this.spoils("experience", Math.floor(this.quest.exp / 4000));
 
 				this.quest = 0; //tell client it's done
-				this.socket.emit('quest', { quest: this.quest, complete: true});
+				this.emit('quest', { quest: this.quest, complete: true});
 				if ((this.questsDone & 4) == 0) this.questsDone += 4;
 
 				if (!this.moneyAchs[9]) { // Questor
@@ -833,7 +816,7 @@ class Player {
 		this.rank = 0;
 		while (this.experience > ranks[this.rank]) this.rank++; //increment until we're in the right rank's range
 		if (!this.isBot && this.rank > prerank && this.rank > 5){
-			this.socket.emit('rank', {}); //congratulations!
+			this.emit('rank', {}); //congratulations!
 			chatAll(this.nameWithColor() + " just leveled up to rank " + this.rank + "!");
 		}
 	}
@@ -929,12 +912,12 @@ class Player {
 	shootMine() {
 		if (Object.keys(mines[this.sy][this.sx]).length >= 20 && this.weapons[this.equipped] < 30) {
 			this.ammos[this.equipped]++;
-			this.socket.emit("chat", { msg: "This sector has reached its limit of 20 mines." });
+			this.emit("chat", { msg: "This sector has reached its limit of 20 mines." });
 			return;
 		}
 		if (square(this.sx - sectorWidth / 2) + square(this.sy - sectorWidth / 2) < square(600 * 10)) {
 			this.ammos[this.equipped]++;
-			this.socket.emit("chat", { msg: "You may not place a mine here." });
+			this.emit("chat", { msg: "You may not place a mine here." });
 			return;
 		}
 		var r = Math.random();
@@ -982,7 +965,7 @@ class Player {
 		//gyrodynamite
 		if (this.weapons[this.equipped] == 31 && nearP.sx == this.sx && nearP.sy == this.sy && nearP.color != this.color) {
 			nearP.gyroTimer = 250;
-			nearP.socket.emit("gyro", { t: 250 });
+			nearP.emit("gyro", { t: 250 });
 		}
 
 		//elite quarrier
@@ -1019,7 +1002,7 @@ class Player {
 
 				//clear quest
 				this.quest = 0;
-				this.socket.emit('quest', { quest: 0, complete: false});//reset quest and update client
+				this.emit('quest', { quest: 0, complete: false});//reset quest and update client
 
 				if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
 					var customMessageArr = eng.weapons[b.wepnID].killmessages;
@@ -1125,7 +1108,7 @@ class Player {
 		if (this.health < 0) this.die(origin);
 
 		note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-		this.socket.emit('dmg', {});
+		this.emit('dmg', {});
 		return this.health < 0;
 	}
 	EMP(t) {
@@ -1135,7 +1118,7 @@ class Player {
 
 		//turn off all keys
 		this.w = this.e = this.a = this.s = this.d = this.c = this.space = false;
-		if (!this.isBot) this.socket.emit('emp', { t: t });
+		if (!this.isBot) this.emit('emp', { t: t });
 	}
 	save() {
 		if (this.guest || this.isBot) return;
@@ -1189,23 +1172,23 @@ class Player {
 	}
 	sendAchievementsKill(note) {
 		if (this.isBot) return;
-		this.socket.emit("achievementsKill", { note: note, achs: this.killsAchs });
+		this.emit("achievementsKill", { note: note, achs: this.killsAchs });
 	}
 	sendAchievementsCash(note) {
 		if (this.isBot) return;
-		this.socket.emit("achievementsCash", { note: note, achs: this.moneyAchs });
+		this.emit("achievementsCash", { note: note, achs: this.moneyAchs });
 	}
 	sendAchievementsDrift(note) {
 		if (this.isBot) return;
-		this.socket.emit("achievementsDrift", { note: note, achs: this.driftAchs });
+		this.emit("achievementsDrift", { note: note, achs: this.driftAchs });
 	}
 	sendAchievementsMisc(note) {
 		this.randmAchs[9] = !this.planetsClaimed.includes("0") && !this.planetsClaimed.includes("1"); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
 		if (this.isBot) return;
-		this.socket.emit("achievementsMisc", { note: note, achs: this.randmAchs });
+		this.emit("achievementsMisc", { note: note, achs: this.randmAchs });
 	}
 	sendStatus() {
-		if (!this.isBot) this.socket.emit("status", { docked: this.docked, state: this.dead, lives: this.lives });
+		if (!this.isBot) this.emit("status", { docked: this.docked, state: this.dead, lives: this.lives });
 	}
 	checkMoneyAchievements() {
 		if (this.isBot) return;
@@ -1264,7 +1247,7 @@ class Player {
 		var packHere = 0;
 		var planet = planets[this.sy][this.sx];
 		packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color };
-		this.socket.emit('planets', { pack: packHere });
+		this.emit('planets', { pack: packHere });
 	}
 	updatePolars() { // Convert my rectangular motion/position data to polar
 		this.driftAngle = Math.atan2(this.vy, this.vx);
@@ -1279,47 +1262,7 @@ class Player {
 		this.strongLocal("Ammo Replenished!", this.x, this.y + 256);
 	}
 	testAfk() {
-		if (this.isBot) return false;
-
-		if (this.afkTimer-- < 0) {
-			this.socket.emit("AFK");
-			this.kick("AFK!");
-			this.testAfk = function() { return false; };
-			return true;
-		}
 		return false;
-	}
-	changePass(pass) { // /password
-		if (!this.docked) {
-			this.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
-			return;
-		}
-		if (pass.length > 128 || pass.length < 6) {
-			this.socket.emit("chat", { msg: "~`red~`Password must be 6-128 characters." });
-			return;
-		}
-		this.tentativePassword = pass;
-		this.socket.emit("chat", { msg: "~`red~`Type \"/confirm your_new_password\" to complete the change." });
-	}
-	confirmPass = async function (pass) { // /confirm
-		if (!this.docked) {
-			this.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
-			return;
-		}
-		if (pass !== this.tentativePassword) {
-			this.socket.emit("chat", { msg: "~`red~`Passwords do not match! Start over from /password." });
-			this.tentativePassword = undefined;
-			return;
-		}
-		var response = await send_rpc("/reset/", this._id + "%" + pass);
-
-		if (!response.ok) {
-			this.socket.emit("chat", { msg : "ERROR"});
-			return;
-		}
-
-		this.tentativePassword = undefined;
-		this.socket.emit("chat", { msg: "~`lime~`Password changed successfully." });
 	}
 	calculateGenerators() { // count how many gens I have
 		this.generators = 0;
@@ -1336,50 +1279,7 @@ class Player {
 		else if (type === "money") this.money += amt * ((amt > 0 && this.trail % 16 == 2) ? 1.05 : 1);
 		else if (type === "life" && this.lives < 20) this.lives += amt;
 		this.experience = Math.max(this.experience, 0);
-		this.socket.emit("spoils", { type: type, amt: amt });
-	}
-	r(msg) { // pm reply
-		if (this.reply.includes(" ")) this.reply = this.reply.split(" ")[1];
-		this.pm("/pm " + this.reply + " " + msg.substring(3));
-	}
-	pm(msg) { // msg looks like "/pm luunch hey there pal". If a moderator, you use "2swap" not "[O] 2swap".
-		if (msg.split(" ").length < 3) { // gotta have pm, name, then message
-			this.socket.emit("chat", { msg: "Invalid Syntax!" });
-			return;
-		}
-		var name = msg.split(" ")[1];
-		var raw = msg.substring(name.length + 5);
-		this.socket.emit("chat", { msg: "Sending private message to " + name + "..." });
-		for (var i = 0; i < mapSz; i++) for (var j = 0; j < mapSz; j++)
-			for (var p in players[j][i]) {
-				var player = players[j][i][p];
-				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + this.name + "]: " + raw });
-					this.socket.emit("chat", { msg: "Message sent!" });
-					this.reply = player.name;
-					player.reply = this.name;
-					return;
-				}
-			} for (var p in dockers) {
-				var player = dockers[p];
-				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + this.name + "]: " + raw });
-					this.socket.emit("chat", { msg: "Message sent!" });
-					this.reply = player.name;
-					player.reply = this.name;
-					return;
-				}
-			} for (var p in deads) {
-				var player = deads[p];
-				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + this.name + "]: " + raw });
-					this.socket.emit("chat", { msg: "Message sent!" });
-					this.reply = player.name;
-					player.reply = this.name;
-					return;
-				}
-			}
-		this.socket.emit("chat", { msg: "Player not found!" });
+		this.emit("spoils", { type: type, amt: amt });
 	}
 	nameWithoutTag(){
 		if(this.name.includes(" ")) return this.name.split(" ")[1];
@@ -1388,61 +1288,15 @@ class Player {
 	nameWithColor(){ // returns something like "~`green~`[O] 2swap~`yellow~`"
 		return "~`"+this.color+"~`"+this.name+"~`yellow~`";
 	}
-	swap(msg) { // msg looks like "/swap 2 5". Swaps two weapons.
-		if (!this.docked) {
-			this.socket.emit("chat", { msg: "You must be docked to use that command!" });
-			return;
-		}
-		var spl = msg.split(" ");
-		if (spl.length != 3) { // not enough arguments
-			this.socket.emit("chat", { msg: "Invalid Syntax!" });
-			return;
-		}
-		var slot1 = parseFloat(spl[1]), slot2 = parseFloat(spl[2]);
-		if (slot1 == 0) slot1 = 10;
-		if (slot2 == 0) slot2 = 10;
-		if (slot1 > 10 || slot2 > 10 || slot1 < 1 || slot2 < 1 || !slot1 || !slot2 || !Number.isInteger(slot1) || !Number.isInteger(slot2)) {
-			this.socket.emit("chat", { msg: "Invalid Syntax!" });
-			return;
-		}
-		if (this.weapons[slot1] == -2 || this.weapons[slot2] == -2) {
-			this.socket.emit("chat", { msg: "You haven't unlocked that slot yet!" });
-			return;
-		}
-
-		slot1--; slot2--;//done later for NaN checking above: "!slot1"
-
-		var temp = this.weapons[slot1];
-		this.weapons[slot1] = this.weapons[slot2];
-		this.weapons[slot2] = temp;
-		temp = this.ammos[slot1];
-		this.ammos[slot1] = this.ammos[slot2];
-		this.ammos[slot2] = temp;
-
-		if(this.equipped == slot1) this.equipped = slot2;
-		else if(this.equipped == slot2) this.equipped = slot1;
-
-		sendWeapons(this);
-        this.socket.emit('equip', { scroll: this.equipped });
-		this.socket.emit("chat", { msg: "Weapons swapped!" });
-	}
-	kick(msg) {
-		this.kickMsg = msg;
-		this.socket.emit("kick", { msg: msg });
-		this.socket.disconnect();
-
-		// HACK: Block crash on "double-death"
-		this.die = function() { };
-	}
 	noteLocal(msg, x, y) {
-		this.socket.emit('note', { msg: msg, x: x, y: y, local: true })
+		this.emit('note', { msg: msg, x: x, y: y, local: true })
 	}
 	strongLocal(msg, x, y) {
-		this.socket.emit('strong', { msg: msg, x: x, y: y, local: true });
+		this.emit('strong', { msg: msg, x: x, y: y, local: true });
 	}
-	botPlay() {
-		Error("THIS SHOULD NOT BE CALLED!");
-	}
+	
+	botPlay() {}
+	emit(a,b) {}
 };
 
 module.exports = Player;

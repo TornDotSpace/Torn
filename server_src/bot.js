@@ -3,8 +3,9 @@ var fs = require('fs');
 
 class Bot extends Player {
     constructor(id) {
-        super({ id: id, emit: function () { } });
+        super(id);
         this.isBot = true;
+        this.brainwashedBy = 0; // for enslaved bots
     }
     botPlay() { // don't mess with this pls
         if (tick % 8 != Math.floor(this.id * 8)) return; // Lag prevention, also makes the bots a bit easier
