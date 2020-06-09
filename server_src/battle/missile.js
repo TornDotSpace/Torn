@@ -25,7 +25,7 @@ module.exports = class Missile {
 	tick() {
 
 		this.move();
-		if (this.timer++ > 10 * wepns[wepnID].range / wepns[wepnID].speed) this.die(); // out of range -> die
+		if (this.timer++ > 10 * wepns[this.wepnID].range / wepns[this.wepnID].speed) this.die(); // out of range -> die
 		if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die();//out of sector
 
 		if (this.timer == 20 && this.wepnID == 13) { // missile swarm
@@ -101,8 +101,8 @@ module.exports = class Missile {
 					if (this.timer == 1 || tick % 4 == 0) this.goalAngle = angleBetween(target, this);
 					this.angle = findBisector(findBisector(this.goalAngle, this.angle), this.angle);// turn towards goal
 				}
-				this.vx = Math.cos(this.angle) * wepns[wepnID].speed; // update velocity
-				this.vy = Math.sin(this.angle) * wepns[wepnID].speed;
+				this.vx = Math.cos(this.angle) * wepns[this.wepnID].speed; // update velocity
+				this.vy = Math.sin(this.angle) * wepns[this.wepnID].speed;
 			}
 		}
 
