@@ -450,7 +450,7 @@ function spawnBases() {
 		for (var i = 0; i < thisMap.length; i += 2) {
 			//make a base at these coords
 			var randBase = Math.random();
-			var thisBase = Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2, false);
+			var thisBase = new Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2, false);
 			bases[thisMap[i + 1]][thisMap[i]] = thisBase;
 		}
 	}
@@ -503,7 +503,7 @@ function update() {
 		for(var j = 0; j < mapSz; j++)
 			if (bases[i][j] == 0 && Math.random() < .000004) {
 				var r = Math.random();
-				var b = Base(r, false, j, i, j<3?"red":(j<6?"blue":"green"), sectorWidth*Math.random(), sectorWidth*Math.random(), true);
+				var b = new Base(r, false, j, i, j<3?"red":(j<6?"blue":"green"), sectorWidth*Math.random(), sectorWidth*Math.random(), true);
 				bases[i][j] = b;
 			}
 

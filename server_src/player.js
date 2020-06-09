@@ -308,7 +308,7 @@ function Player(sock) {
 					return;
 				}
 				var r = Math.random();
-				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y, false);
+				var b = new Base(r, false, self.sx, self.sy, self.color, self.x, self.y, false);
 				b.owner = self.name;
 				bases[self.sy][self.sx] = b;
 				self.socket.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
@@ -321,7 +321,7 @@ function Player(sock) {
 					return;
 				}
 				var r = Math.random();
-				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y, true);
+				var b = new Base(r, false, self.sx, self.sy, self.color, self.x, self.y, true);
 				b.owner = self.name;
 				bases[self.sy][self.sx] = b;
 				self.socket.emit("chat", { msg: 'You placed a sentry! Name it with "/nameturret <name>".', color: 'yellow' });
@@ -517,7 +517,7 @@ function Player(sock) {
 					break;
 				} else if (m.wepnID == 16 && squaredDist(m, self) < square(wepns[m.wepnID].range + ships[self.ship].width)) { // TODO range * 10?
 					var r = Math.random(); // Laser Mine
-					var beam = Beam(m.owner, r, m.wepnID, self, m); // m.owner is the owner, m is the origin location
+					var beam = new Beam(m.owner, r, m.wepnID, self, m); // m.owner is the owner, m is the origin location
 					beams[self.sy][self.sx][r] = beam;
 					sendAllSector('sound', { file: "beam", x: m.x, y: m.y }, m.sx, m.sy);
 					m.die();

@@ -70,7 +70,7 @@ module.exports = function Mine(ownr, i, weaponID) {
 				p.health=Math.min(p.health-self.dmg, p.maxHealth); // heal them
 
 				var r = Math.random(); // Laser Mine
-				var beam = Beam(self, r, self.wepnID, p, self); // m.owner is the owner, m is the origin location
+				var beam = new Beam(self, r, self.wepnID, p, self); // m.owner is the owner, m is the origin location
 				beams[self.sy][self.sx][r] = beam;
 			}
 		}
