@@ -1,86 +1,85 @@
 var Vortex = require("../universe/vortex.js");
 
-module.exports = function Bullet(ownr, i, weaponID, angl, info) {
-	var self = {
-		type: "Bullet",
-		id: i, // unique identifier
-		time: 0, // time since spawn
-		color: ownr.color, // whose team
-		dist: 0, // TRACKS distance. Doesn't control it.
-		dmg: wepns[weaponID].damage,
+module.exports = class Bullet {
+	constructor(ownr, i, wepnID, angl, info) {
+		this.type = "Bullet",
+		this.id = i, // unique identifier
+		this.time = 0, // time since spawn
+		this.color = ownr.color, // whose team
+		this.dist = 0, // TRACKS distance. Doesn't control it.
+		this.dmg = wepns[wepnID].damage,
 
-		x: ownr.x + (weaponID == 6 ? Math.sin(angl) * 16 * info : 0), // spawn where my owner was
-		y: ownr.y - (weaponID == 6 ? Math.cos(angl) * 16 * info : 0), // if minigun, move left or right based on which bullet I am
-		sx: ownr.sx,
-		sy: ownr.sy,
-		vx: Math.cos(angl) * wepns[weaponID].speed,
-		vy: Math.sin(angl) * wepns[weaponID].speed,
+		this.x = ownr.x + (wepnID == 6 ? Math.sin(angl) * 16 * info : 0), // spawn where my owner was
+		this.y = ownr.y - (wepnID == 6 ? Math.cos(angl) * 16 * info : 0), // if minigun, move left or right based on which bullet I am
+		this.sx = ownr.sx,
+		this.sy = ownr.sy,
+		this.vx = Math.cos(angl) * wepns[wepnID].speed,
+		this.vy = Math.sin(angl) * wepns[wepnID].speed,
 
-		owner: ownr,
-		angle: angl, // has to be a parameter since not all bullets shoot straight
-		info: info, // used to differentiate left and right minigun bullets
-		wepnID: weaponID,
+		this.owner = ownr,
+		this.angle = angl, // has to be a parameter since not all bullets shoot straight
+		this.info = info, // used to differentiate left and right minigun bullets
+		this.wepnID = wepnID;
 	}
-	self.tick = function () {
-		if (self.time++ == 0) { // if this was just spawned
-			sendAllSector("newBullet", { x: self.x, y: self.y, vx: self.vx, vy: self.vy, id: self.id, angle: self.angle, wepnID: self.wepnID, color: self.color }, self.sx, self.sy);
-			//self.x -= self.vx; //These were here before Alex's refactor. Not sure if they should exist.
-			//self.y -= self.vy;
+	tick() {
+		if (this.time++ == 0) { // if this was just spawned
+			sendAllSector("newBullet", { x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color }, this.sx, this.sy);
+			//this.x -= this.vx; //These were here before Alex's refactor. Not sure if they should exist.
+			//this.y -= this.vy;
 		}
-		self.move();
-		self.dist += wepns[weaponID].speed / 10;
-		if (self.wepnID == 28 && self.time > 25 * 3) { // gravity bomb has 3 seconds to explode
-			var base = bases[self.sy][self.sx];
-			if (squaredDist(base, self) < square(3500)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 350 units away
-			self.dieAndMakeVortex(); // collapse into black hole
+		this.move();
+		this.dist += wepns[this.wepnID].speed / 10;
+		if (this.wepnID == 28 && this.time > 25 * 3) { // gravity bomb has 3 seconds to explode
+			var base = bases[this.sy][this.sx];
+			if (squaredDist(base, this) < square(3500)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 350 units away
+			this.dieAndMakeVortex(); // collapse into black hole
 		}
-		else if (self.dist > wepns[weaponID].range) self.die(); // out of range
+		else if (this.dist > wepns[this.wepnID].range) this.die(); // out of range
 	}
-	self.move = function () {
-		self.x += self.vx;
-		self.y += self.vy; // move on tick
-		if (self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();
+	move() {
+		this.x += this.vx;
+		this.y += this.vy; // move on tick
+		if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die();
 
-		var b = bases[self.sy][self.sx];
-		if (b != 0 && b.turretLive && b.color != self.color && squaredDist(b, self) < square(16 + 32)) {
-			b.dmg(self.dmg, self);
-			self.die();
+		var b = bases[this.sy][this.sx];
+		if (b != 0 && b.turretLive && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
+			b.dmg(this.dmg, this);
+			this.die();
 		}
 
-		for (var i in players[self.sy][self.sx]) {
-			var p = players[self.sy][self.sx][i];
-			if (p.color != self.color && squaredDist(p, self) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
-				if (self.wepnID == 28) // if a grav bomb hits a player, just die
+		for (var i in players[this.sy][this.sx]) {
+			var p = players[this.sy][this.sx][i];
+			if (p.color != this.color && squaredDist(p, this) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
+				if (this.wepnID == 28) // if a grav bomb hits a player, just die
 					return;
-				p.dmg(self.dmg, self); // damage the enemy
-				self.die();//despawn this bullet
+				p.dmg(this.dmg, this); // damage the enemy
+				this.die();//despawn this bullet
 				break;
 			}
 		}
-		if (self.time % 2 == 0 || wepns[self.wepnID].speed > 75) { // Only check for collisions once every 2 ticks, unless this weapon is really fast (in which case the bullet would skip over it)
-			for (var i in asts[self.sy][self.sx]) {
-				var a = asts[self.sy][self.sx][i];
-				if (squaredDist(a, self) < square(bulletWidth + 64)) { // if we collide
-					a.dmg(self.dmg * (self.weaponID == 0 ? 2 : 1), self); // hurt the asteroid. ternary: stock gun does double damage
-					a.vx += self.vx / 256; // push the asteroid
-					a.vy += self.vy / 256;
-					self.die(); // delete this bullet
+		if (this.time % 2 == 0 || wepns[this.wepnID].speed > 75) { // Only check for collisions once every 2 ticks, unless this weapon is really fast (in which case the bullet would skip over it)
+			for (var i in asts[this.sy][this.sx]) {
+				var a = asts[this.sy][this.sx][i];
+				if (squaredDist(a, this) < square(bulletWidth + 64)) { // if we collide
+					a.dmg(this.dmg * (this.wepnID == 0 ? 2 : 1), this); // hurt the asteroid. ternary: stock gun does double damage
+					a.vx += this.vx / 256; // push the asteroid
+					a.vy += this.vy / 256;
+					this.die(); // delete this bullet
 					break;
 				}
 			}
 		}
 	}
-	self.die = function () {
-		sendAllSector("delBullet", { id: self.id }, self.sx, self.sy);
-		var reverse = weaponID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
-		sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: reverse * self.vx, dy: reverse * self.vy }, self.sx, self.sy);
-		delete bullets[self.sy][self.sx][self.id];
+	die () {
+		sendAllSector("delBullet", { id: this.id }, this.sx, this.sy);
+		var reverse = this.wepnID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
+		sendAllSector('sound', { file: "boom", x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy }, this.sx, this.sy);
+		delete bullets[this.sy][this.sx][this.id];
 	}
-	self.dieAndMakeVortex = function () {
+	dieAndMakeVortex() {
 		var r = Math.random();
-		var vort = Vortex(r, self.x, self.y, self.sx, self.sy, 3000, self.owner, false); // 3000 is the size of a grav bomb vortex
-		vorts[self.sy][self.sx][r] = vort;
-		self.die();
+		var vort = new Vortex(r, this.x, this.y, this.sx, this.sy, 3000, this.owner, false); // 3000 is the size of a grav bomb vortex
+		vorts[this.sy][this.sx][r] = vort;
+		this.die();
 	}
-	return self;
-};
+}

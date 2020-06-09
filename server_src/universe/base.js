@@ -137,14 +137,14 @@ module.exports = class Base {
 	shootRifle() {
 		this.reload = wepns[3].charge / 2;
 		var r = Math.random();
-		var bullet = Bullet(this, r, 3, this.angle, 0);
+		var bullet = new Bullet(this, r, 3, this.angle, 0);
 		bullets[this.sy][this.sx][r] = bullet;
 		sendAllSector('sound', { file: "shot", x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	shootMachineGun() {
 		this.reload = wepns[5].charge/2;
 		var r = Math.random();
-		var bullet = Bullet(this, r, 5, this.angle, 0);
+		var bullet = new Bullet(this, r, 5, this.angle, 0);
 		bullets[this.sy][this.sx][r] = bullet;
 		sendAllSector('sound', { file: "shot", x: this.x, y: this.y }, this.sx, this.sy);
 	}

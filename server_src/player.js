@@ -1068,7 +1068,7 @@ function Player(sock) {
 			if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
 			if (currWep == 4) bAngle += Math.random() - .5; // shotgun
 
-			var bullet = Bullet(self, r, currWep, bAngle, i * 2 - 1);
+			var bullet = new Bullet(self, r, currWep, bAngle, i * 2 - 1);
 			bullets[self.sy][self.sx][r] = bullet;
 			sendAllSector('sound', { file: (currWep == 5 || currWep == 6 || currWep == 39) ? "minigun" : "shot", x: self.x, y: self.y }, self.sx, self.sy);
 		}
