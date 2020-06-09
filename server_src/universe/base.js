@@ -7,7 +7,7 @@ var Beam = require('../battle/beam.js');
 var fs = require('fs');
 
 module.exports = class Base {
-	constructor(i, b, sxx, syy, col, x, y, m) {
+	constructor(i, b, sx, syy, col, x, y, m) {
 		this.type = "Base",
 		this.kills = 0,
 		this.experience = 0,
@@ -23,7 +23,7 @@ module.exports = class Base {
 
 		this.x = x,
 		this.y = y,
-		this.sx = sxx,
+		this.sx = sx,
 		this.sy = syy,
 
 		this.reload = 0, // timer for shooting
@@ -235,7 +235,7 @@ module.exports = class Base {
 		chatAll("The " + (this.isBase ? "base" : (this.isMini?"Sentry":"Turret")) + " at sector " + this.nameWithColor() + " was destroyed by " + killedBy + ".");
 	}
 	getSectorName() {
-		return String.fromCharCode(97 + sxx).toUpperCase() + "" + (syy + 1);
+		return String.fromCharCode(97 + sx).toUpperCase() + "" + (syy + 1);
 	}
 	EMP(t) {
 		this.empTimer = t;
