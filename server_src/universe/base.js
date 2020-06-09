@@ -152,7 +152,7 @@ module.exports = class Base {
 		this.reload = wepns[14].charge/2;
 		var r = Math.random();
 		var bAngle = this.angle;
-		var missile = Missile(this, r, 14, bAngle);
+		var missile = new Missile(this, r, 14, bAngle);
 		missiles[this.sy][this.sx][r] = missile;
 		sendAllSector('sound', { file: "missile", x: this.x, y: this.y }, this.sx, this.sy);
 	}

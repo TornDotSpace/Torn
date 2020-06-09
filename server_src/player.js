@@ -1076,7 +1076,7 @@ function Player(sock) {
 	self.shootMissile = function () {
 		var r = Math.random();
 		var bAngle = self.angle;
-		var missile = Missile(self, r, self.weapons[self.equipped], bAngle);
+		var missile = new Missile(self, r, self.weapons[self.equipped], bAngle);
 		missiles[self.sy][self.sx][r] = missile;
 		sendAllSector('sound', { file: "missile", x: self.x, y: self.y }, self.sx, self.sy);
 	}
