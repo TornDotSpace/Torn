@@ -465,7 +465,7 @@ function kill() {
 
 function createPlanet(name, sx, sy) {
 	var randA = Math.random();
-	var planet = Planet(randA, name);
+	var planet = new Planet(randA, name);
 	planet.sx = sx;
 	planet.sy = sy;
 	while (square(planet.x - sectorWidth / 2) + square(planet.y - sectorWidth / 2) < 3000000) {
