@@ -1152,7 +1152,7 @@ function Player(sock) {
 		}
 
 		var r = Math.random();
-		var beam = Beam(self, r, self.weapons[self.equipped], nearP, origin);
+		var beam = new Beam(self, r, self.weapons[self.equipped], nearP, origin);
 		beams[self.sy][self.sx][r] = beam;
 		sendAllSector('sound', { file: "beam", x: ox, y: oy }, self.sx, self.sy);
 	}
