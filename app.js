@@ -98,6 +98,8 @@ var netcode = require('./server_src/netcode.js');
 require('./server_src/db.js');
 connectToDB();
 
+require('./server_src/bot.js');
+
 var tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
