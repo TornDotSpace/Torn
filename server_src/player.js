@@ -1098,7 +1098,7 @@ function Player(sock) {
 			return;
 		}
 		var r = Math.random();
-		var mine = Mine(self, r, self.weapons[self.equipped]);
+		var mine = new Mine(self, r, self.weapons[self.equipped]);
 		mines[self.sy][self.sx][r] = mine;
 		sendAllSector('mine', { x: self.x, y: self.y }, self.sx, self.sy);
 	}
