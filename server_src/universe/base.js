@@ -235,7 +235,7 @@ module.exports = class Base {
 		chatAll("The " + (this.isBase ? "base" : (this.isMini?"Sentry":"Turret")) + " at sector " + this.nameWithColor() + " was destroyed by " + killedBy + ".");
 	}
 	getSectorName() {
-		return String.fromCharCode(97 + sx).toUpperCase() + "" + (syy + 1);
+		return String.fromCharCode(97 + this.sx).toUpperCase() + "" + (this.sy + 1);
 	}
 	EMP(t) {
 		this.empTimer = t;
