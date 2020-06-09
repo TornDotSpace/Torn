@@ -1,32 +1,34 @@
-module.exports = function Package(ownr, i, type) {
-	var self = {
-		id: i, // unique identifier
-		type: type, // ammo? coin? lives? actual courier package?
-		x: ownr.x,
-		y: ownr.y,
-		sx: ownr.sx,
-		sy: ownr.sy,
-		time: 0, // since spawn
+module.exports = class Package {
+	constructor(ownr, i, type) {
+		this.id = i, // unique identifier
+		this.type = type, // ammo? coin? lives? actual courier package?
+		this.x = ownr.x,
+		this.y = ownr.y,
+		this.sx = ownr.sx,
+		this.sy = ownr.sy,
+		this.time = 0; // since spawn
 	}
-	self.tick = function () {
-		if (self.time++ > 25 * 60) { // 1 minute despawn
-			sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
-			delete packs[self.sy][self.sx][self.id];
+	
+	tick() {
+		if (this.time++ > 25 * 60) { // 1 minute despawn
+			sendAllSector('sound', { file: "boom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+			delete packs[this.sy][this.sx][this.id];
 		}
-		for (var i in players[self.sy][self.sx]) { // loop for collision
-			var p = players[self.sy][self.sx][i];
-			if (squaredDist(p, self) < square(16 + ships[p.ship].width)) { // someone hit me
+		for (var i in players[this.sy][this.sx]) { // loop for collision
+			var p = players[this.sy][this.sx][i];
+			if (squaredDist(p, this) < square(16 + ships[p.ship].width)) { // someone hit me
 
-				self.onCollide(p);
+				this.onCollide(p);
 
-				delete packs[self.sy][self.sx][self.id]; // despawn
+				delete packs[this.sy][this.sx][this.id]; // despawn
 				break; // stop looping thru players
 			}
 		}
 	}
-	self.onCollide = function (p) {
+	
+	onCollide(p) {
 
-		if (self.type == 0) {
+		if (this.type == 0) {
 
 			p.moneyAchs[8] = true; // Thief: steal a package
 			p.sendAchievementsCash(true);
@@ -56,10 +58,9 @@ module.exports = function Package(ownr, i, type) {
 			p.strongLocal(title, p.x, p.y - 192); // send it
 		}
 
-		else if (self.type == 1) p.spoils("money", 5000); // coin
-		else if (self.type == 2) p.spoils("life", 1); // floating life
-		else if (self.type == 3) p.refillAllAmmo(); // ammo package
+		else if (this.type == 1) p.spoils("money", 5000); // coin
+		else if (this.type == 2) p.spoils("life", 1); // floating life
+		else if (this.type == 3) p.refillAllAmmo(); // ammo package
 
 	}
-	return self;
 }
