@@ -1,233 +1,215 @@
-var fs = require('fs');
 var Blast = require('./battle/blast.js');
 var Bullet = require('./battle/bullet.js');
 var Asteroid = require("./universe/asteroid.js");
-var Package = require("./universe/package.js");
 var Missile = require("./battle/missile.js");
-var NeuralNet = require('./neuralnet.js');
 var Base = require('./universe/base.js');
 var Orb = require('./battle/orb.js');
 var Mine = require('./battle/mine.js');
 var Beam = require('./battle/beam.js');
 
-function Player(sock) {
-	var self = {
-		_id: "",
-		type: "Player",
+class Player {
+	constructor(id) {
+		this._id = "",
+		this.type = "Player",
 
-		name: "ERR0",
-		guild: "",
-		id: sock.id, // unique identifier
-		socket: sock,
-		ip: 0,
-		trail: 0,
-		color: sock.id > .5 ? 'red' : 'blue',
-		ship: 0,
-		experience: 0,
-		rank: 0,
+		this.name = "ERR0",
+		this.id = id, // unique identifier
+		this.trail = 0,
+		this.color = id > .5 ? 'red' : 'blue',
+		this.ship = 0,
+		this.experience = 0,
+		this.rank = 0,
 
-		guest: false,
-		dead: false,
-		docked: false,
+		this.guest = false,
+		this.dead = false,
+		this.docked = false,
 
 		//misc timers
-		noDrift: 50, // A timer used for decelerating angular momentum
-		afkTimer: 10 * 60 * 30, // check for afk
-		jukeTimer: 0,
-		hyperdriveTimer: -1,
-		borderJumpTimer: 0, // for deciding whether to hurt the player
-		planetTimer: 0,
-		leaveBaseShield: 0,
-		empTimer: -1,
-		disguise: -1,
-		timer: 0,
-		gyroTimer: 0,
-		charge: 0,
+		this.noDrift = 50, // A timer used for decelerating angular momentum
+		this.jukeTimer = 0,
+		this.hyperdriveTimer = -1,
+		this.borderJumpTimer = 0, // for deciding whether to hurt the player
+		this.planetTimer = 0,
+		this.leaveBaseShield = 0,
+		this.empTimer = -1,
+		this.disguise = -1,
+		this.timer = 0,
+		this.gyroTimer = 0,
+		this.charge = 0,
 
-		chatTimer: 100,
-		muteCap: 750,
-		globalChat: 0,
-		lastmsg:"",
+		this.weapons = {}, // my equipped weapons and ammo counts
+		this.ammos = {},
+		this.bulletQueue = 0, // For submachinegun (5 bullet bursts)
 
-		weapons: {}, // my equipped weapons and ammo counts
-		ammos: {},
-		bulletQueue: 0, // For submachinegun (5 bullet bursts)
+		this.sx = 0, // sector
+		this.sy = 0,
+		this.x = sectorWidth / 2,
+		this.y = sectorWidth / 2,
+		this.vx = 0,
+		this.vy = 0,
+		this.cva = 0,
+		this.angle = 0,
+		this.speed = 0,
+		this.driftAngle = 0,
 
-		sx: 0, // sector
-		sy: 0,
-		x: sectorWidth / 2,
-		y: sectorWidth / 2,
-		vx: 0,
-		vy: 0,
-		cva: 0,
-		angle: 0,
-		speed: 0,
-		driftAngle: 0,
+		this.money = 8000,
+		this.kills = 0,
+		this.killStreakTimer = -1,
+		this.killStreak = 0,
+		this.baseKills = 0,
 
-		money: 8000,
-		kills: 0,
-		killStreakTimer: -1,
-		killStreak: 0,
-		baseKills: 0,
+		this.shield = false,
+		this.generators = 0,
+		this.isLocked = false,
+		this.lives = 20,
+		this.quest = 0,
+		this.health = 1,
 
-		shield: false,
-		generators: 0,
-		isLocked: false,
-		lives: 20,
-		quest: 0,
-		health: 1,
-
-		iron: 0,
-		silver: 0,
-		platinum: 0,
-		aluminium: 0,
+		this.iron = 0,
+		this.silver = 0,
+		this.platinum = 0,
+		this.aluminium = 0,
 
 		//bot stuff
-		brainwashedBy: 0, // for enslaved bots
-		net: 0, // where the neural network is stored
-		isBot: false,
-		isNNBot: false,
+		this.net = 0, // where the neural network is stored
+		this.isBot = false,
+		this.isNNBot = false,
 
 		/* please don't touch these
-		nearestEnemyDist: 0,//for nnBots
-		nearestFriendDist: 0,
-		nearestBulletDist: 0,
-		nearestEnemyAngle: 0,
-		nearestFriendAngle: 0,
-		nearestBulletAngle: 0,
-		nearestEnemyDistV: 0,//velocities
-		nearestFriendDistV: 0,
-		nearestBulletDistV: 0,
-		nearestEnemyAngleV: 0,
-		nearestFriendAngleV: 0,
-		nearestBulletAngleV: 0,
+		nearestEnemyDist = 0,//for nnBots
+		nearestFriendDist = 0,
+		nearestBulletDist = 0,
+		nearestEnemyAngle = 0,
+		nearestFriendAngle = 0,
+		nearestBulletAngle = 0,
+		nearestEnemyDistV = 0,//velocities
+		nearestFriendDistV = 0,
+		nearestBulletDistV = 0,
+		nearestEnemyAngleV = 0,
+		nearestFriendAngleV = 0,
+		nearestBulletAngleV = 0,
 		*/
 
-		thrust: 1, // These are techs multiplied by ship stats, used for actual physics
-		va: 1,
-		capacity: 1,
-		maxHealth: 2,
+		this.thrust = 1, // These are techs multiplied by ship stats, used for actual physics
+		this.va = 1,
+		this.capacity = 1,
+		this.maxHealth = 2,
 
-		thrust2: 1, // these just track the player tech levels
-		radar2: 1,
-		agility2: 1,
-		capacity2: 1,
-		maxHealth2: 1,
-		energy2: 1,
+		this.thrust2 = 1, // these just track the player tech levels
+		this.radar2 = 1,
+		this.agility2 = 1,
+		this.capacity2 = 1,
+		this.maxHealth2 = 1,
+		this.energy2 = 1,
 
-		w: false, // what keys are pressed currently
-		s: false,
-		a: false,
-		d: false,
-		e: false,
-		c: false,
-		space: false,
+		this.w = false, // what keys are pressed currently
+		this.s = false,
+		this.a = false,
+		this.d = false,
+		this.e = false,
+		this.c = false,
+		this.space = false,
 
-		reply: "nobody", // last person to pm / who pmed me
-
-		killsAchs: {}, // 13 of em
-		moneyAchs: {}, // 12
-		driftAchs: {}, // 12
-		randmAchs: {}, // 12
+		this.killsAchs = {}, // 13 of em
+		this.moneyAchs = {}, // 12
+		this.driftAchs = {}, // 12
+		this.randmAchs = {}, // 12
 
 		//various achievement stuff
-		driftTimer: 0, // How many ticks this account has been drifting.
-		cornersTouched: 0, // bitmask
-		oresMined: 0, // bitmask
-		questsDone: 0, // bitmask
-		planetsClaimed: "0000000000000000000000000000000000000000000000000",
-		lastLogin: "A long, long time ago :(",
-		points: 0,
+		this.driftTimer = 0, // How many ticks this account has been drifting.
+		this.cornersTouched = 0, // bitmask
+		this.oresMined = 0, // bitmask
+		this.questsDone = 0, // bitmask
+		this.planetsClaimed = "0000000000000000000000000000000000000000000000000",
+		this.points = 0,
 
-		permissionLevels: [-1],
-		equipped: 0,
-		kickMsg: ""
+		this.equipped = 0;
 	}
 
-	self.tick = function () {
+	tick() {
 
 		//timer business
-		if (self.killStreakTimer-- < 0) self.killStreak = 0; // EDIT AT YOUR PERIL. Sensitive to off-by-ones.
-		if (self.borderJumpTimer > 0) self.borderJumpTimer--;
-		self.superchargerTimer--;
-		self.empTimer--;
-		self.disguise--;
+		if (this.killStreakTimer-- < 0) this.killStreak = 0; // EDIT AT YOUR PERIL. Sensitive to off-by-ones.
+		if (this.borderJumpTimer > 0) this.borderJumpTimer--;
+		this.superchargerTimer--;
+		this.empTimer--;
+		this.disguise--;
 
-		var amDrifting = self.e || self.gyroTimer > 0;
-		self.shield = (self.s && !amDrifting && self.gyroTimer < 1) || self.leaveBaseShield > 0;
-		if(self.disguise>0 || (self.shield && self.weapons[self.equipped]>0 && wepns[self.weapons[self.equipped]].type !== "Misc" && wepns[self.weapons[self.equipped]].type !== "Mine" && self.space))self.charge=Math.min(self.charge,0);
-		self.leaveBaseShield--;
+		var amDrifting = this.e || this.gyroTimer > 0;
+		this.shield = (this.s && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
+		if(this.disguise>0 || (this.shield && this.weapons[this.equipped]>0 && wepns[this.weapons[this.equipped]].type !== "Misc" && wepns[this.weapons[this.equipped]].type !== "Mine" && this.space))this.charge=Math.min(this.charge,0);
+		this.leaveBaseShield--;
 
-		if (!self.isBot) {
-			self.checkPlanetCollision();
-			if (tick % 50 == 0 && planets[self.sy][self.sx].color === self.color && !self.guest) self.money++; // Earn $.5/sec for being in a sector w/ your color planet
+		if (!this.isBot) {
+			this.checkPlanetCollision();
+			if (tick % 50 == 0 && planets[this.sy][this.sx].color === this.color && !this.guest) this.money++; // Earn $.5/sec for being in a sector w/ your color planet
 		}
 
-		self.move();
-		if (self.health < self.maxHealth && !self.shield) self.health += playerHeal;
+		this.move();
+		if (this.health < this.maxHealth && !this.shield) this.health += playerHeal;
 
-		self.fire();
+		this.fire();
 
-		var chargeVal = (self.energy2 + 1)/1.8; //charge speed scales with energy tech
-		for (var i = 0; i < self.generators; i++) chargeVal *= 1.035;
-		if(self.charge < 0 || self.space || self.c) self.charge+=chargeVal;
-		else if(self.charge > 0 && !self.space && !self.c) self.charge = 0;
+		var chargeVal = (this.energy2 + 1)/1.8; //charge speed scales with energy tech
+		for (var i = 0; i < this.generators; i++) chargeVal *= 1.035;
+		if(this.charge < 0 || this.space || this.c) this.charge+=chargeVal;
+		else if(this.charge > 0 && !this.space && !this.c) this.charge = 0;
 	}
-	self.fire = function () {
-		if (self.c && self.charge > 0) self.shootEliteWeapon();
-		if (self.bulletQueue > 0) self.shootBullet(40); // SMG
-		var wepId = self.weapons[self.equipped];
+	fire() {
+		if (this.c && this.charge > 0) this.shootEliteWeapon();
+		if (this.bulletQueue > 0) this.shootBullet(40); // SMG
+		var wepId = this.weapons[this.equipped];
 		var wep = wepns[wepId];
 
 		//In case of insufficient ammo
-		if (self.ammos[self.equipped] == 0 && self.charge > 10) {
-			self.charge = 0;
-			self.socket.emit("sound", { file: "noammo", x: self.x, y: self.y });
+		if (this.ammos[this.equipped] == 0 && this.charge > 10) {
+			this.charge = 0;
+			this.emit("sound", { file: "noammo", x: this.x, y: this.y });
 			return;
 		} 
 
-		if (self.canShoot(wepId)) {
+		if (this.canShoot(wepId)) {
 
-			if (self.ammos[self.equipped] == 0) return;
+			if (this.ammos[this.equipped] == 0) return;
 
-			if (wep.level > self.ship) {
-				self.socket.emit("chat", { msg: 'This weapon is incompatible with your current ship!', color: 'yellow' });
+			if (wep.level > this.ship) {
+				this.emit("chat", { msg: 'This weapon is incompatible with your current ship!', color: 'yellow' });
 				return;
 			}
 
 			if (wep.name === "Submachinegun") { // Submachinegun physics
-				if(self.bulletQueue == 0){
-					self.bulletQueue += 5;
-					self.ammos[self.equipped] -= 5;
-					self.reload(false, wepId);
-					sendWeapons(self);
+				if(this.bulletQueue == 0){
+					this.bulletQueue += 5;
+					this.ammos[this.equipped] -= 5;
+					this.reload(false, wepId);
+					sendWeapons(this);
 				}
 				return;
 			}
 
-			if (self.ammos[self.equipped] > 0) self.ammos[self.equipped]--;
+			if (this.ammos[this.equipped] > 0) this.ammos[this.equipped]--;
 
 			//Traditional Weapons
 			// <= 6 are traditional guns.
-			if (wepId <= 6 || wep.name === "Gravity Bomb" || wep.name === "Spreadshot") self.shootBullet(wepId);
+			if (wepId <= 6 || wep.name === "Gravity Bomb" || wep.name === "Spreadshot") this.shootBullet(wepId);
 			// <= 9 are plasma, laser, hadron beams.
-			else if (wepId <= 9 || wep.name === "Jammer" || wep.name === "Mining Laser" || wep.name === "Ore Cannon" || wep.name === "Destabilizer" || wep.name === "Healing Beam") self.shootBeam(self, false);
+			else if (wepId <= 9 || wep.name === "Jammer" || wep.name === "Mining Laser" || wep.name === "Ore Cannon" || wep.name === "Destabilizer" || wep.name === "Healing Beam") this.shootBeam(this, false);
 			//Traditional missiles
-			else if (wepId <= 14 || wep.name === "Proximity Fuze") self.shootMissile();
+			else if (wepId <= 14 || wep.name === "Proximity Fuze") this.shootMissile();
 			// <= 17: Traditional Mines
-			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades" || wep.name === "Pulse Mine" || wep.name === "Campfire") self.shootMine();
-			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") self.shootOrb();
-			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") self.shootBlast(wepId);
+			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades" || wep.name === "Pulse Mine" || wep.name === "Campfire") this.shootMine();
+			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") this.shootOrb();
+			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") this.shootBlast(wepId);
 
 
 
 			//Timery Weapons
 
 			else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-				if (wep.name === "Supercharger") self.superchargerTimer = 1500;//1 min
-				else if (wep.name === "Hull Nanobots") self.health += Math.min(self.maxHealth*.2, self.maxHealth - self.health); // min prevents overflow
-				else if (wep.name === "Photon Cloak") self.disguise = 200;//6s
-				else if (wep.name === "Warp Drive") self.speed = self.ship == 16 ? 1500 : 1000;
+				if (wep.name === "Supercharger") this.superchargerTimer = 1500;//1 min
+				else if (wep.name === "Hull Nanobots") this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
+				else if (wep.name === "Photon Cloak") this.disguise = 200;//6s
+				else if (wep.name === "Warp Drive") this.speed = this.ship == 16 ? 1500 : 1000;
 			}
 
 
@@ -235,13 +217,13 @@ function Player(sock) {
 			//Movey Weapons
 
 			else if (wep.name === "Pulse Wave") {
-				sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: Math.cos(self.angle) * self.speed, dy: Math.sin(self.angle) * self.speed }, self.sx, self.sy);
-				for (var i in players[self.sy][self.sx]) {
-					var p = players[self.sy][self.sx][i];
-					if (p.color !== self.color) { // only enemies
-						var d2 = squaredDist(self, p); // distance squared between me and them
+				sendAllSector('sound', { file: "bigboom", x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
+				for (var i in players[this.sy][this.sx]) {
+					var p = players[this.sy][this.sx][i];
+					if (p.color !== this.color) { // only enemies
+						var d2 = squaredDist(this, p); // distance squared between me and them
 						if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
-						var ang = angleBetween(self, p); // angle from the horizontal
+						var ang = angleBetween(this, p); // angle from the horizontal
 						var vel = -10000 / Math.log(d2); // compute how fast to accelerate by
 						p.vx += Math.cos(ang) * vel; // actually accelerate them
 						p.vy += Math.sin(ang) * vel;
@@ -253,38 +235,38 @@ function Player(sock) {
 
 			else if (wep.name === "Electromagnet") { // identical structurally to pulse wave, see above for comments.
 				if(global.tick % 2 == 0){
-					for (var i in asts[self.sy][self.sx]) {
-						var a = asts[self.sy][self.sx][i];
-						var d2 = squaredDist(self, a);
+					for (var i in asts[this.sy][this.sx]) {
+						var a = asts[this.sy][this.sx][i];
+						var d2 = squaredDist(this, a);
 						if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
-						var ang = angleBetween(self, a);
+						var ang = angleBetween(this, a);
 						var vel = -1000000 / Math.max(d2, 200000);
 						a.vx += Math.cos(ang) * vel;
 						a.vy += Math.sin(ang) * vel;
 					}
-					for (var i in missiles[self.sy][self.sx]) {
-						var m = missiles[self.sy][self.sx][i];
-						var d2 = squaredDist(self, m);
+					for (var i in missiles[this.sy][this.sx]) {
+						var m = missiles[this.sy][this.sx][i];
+						var d2 = squaredDist(this, m);
 						if (d2 > square(10 * wep.range)) continue;
-						var ang = angleBetween(self, m);
+						var ang = angleBetween(this, m);
 						var vel = -10000000 / Math.max(d2, 2000000);
 						m.emvx += Math.cos(ang) * vel;
 						m.emvy += Math.sin(ang) * vel;
 					}
-					for (var i in orbs[self.sy][self.sx]) {
-						var o = orbs[self.sy][self.sx][i];
-						var d2 = squaredDist(self, o);
+					for (var i in orbs[this.sy][this.sx]) {
+						var o = orbs[this.sy][this.sx][i];
+						var d2 = squaredDist(this, o);
 						if (d2 > square(10 * wep.range)) continue;
-						var ang = angleBetween(self, o);
+						var ang = angleBetween(this, o);
 						var vel = -25000000 / Math.max(d2, 2000000);
 						o.vx += Math.cos(ang) * vel;
 						o.vy += Math.sin(ang) * vel;
 					}
-					for (var i in mines[self.sy][self.sx]) {
-						var m = mines[self.sy][self.sx][i];
-						var d2 = squaredDist(self, m);
+					for (var i in mines[this.sy][this.sx]) {
+						var m = mines[this.sy][this.sx][i];
+						var d2 = squaredDist(this, m);
 						if (d2 > square(10 * wep.range)) continue;
-						var ang = angleBetween(self, m);
+						var ang = angleBetween(this, m);
 						var vel = -5000000 / Math.max(d2, 2000000);
 						m.vx += Math.cos(ang) * vel;
 						m.vy += Math.sin(ang) * vel;
@@ -297,759 +279,598 @@ function Player(sock) {
 			//Misc
 
 			else if (wep.name === "Turret") {
-				if (self.x < sectorWidth / 4 || self.x > 3 * sectorWidth / 4 || self.y < sectorWidth / 4 || self.y > 3 * sectorWidth / 4) {
-					self.socket.emit("chat", { msg: 'Your turret must be closer to the center of the sector!', color: 'yellow' });
-					self.space = false;
+				if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
+					this.emit("chat", { msg: 'Your turret must be closer to the center of the sector!', color: 'yellow' });
+					this.space = false;
 					return;
 				}
-				if (bases[self.sy][self.sx] != 0) {
-					self.socket.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
-					self.space = false;
+				if (bases[this.sy][this.sx] != 0) {
+					this.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
+					this.space = false;
 					return;
 				}
 				var r = Math.random();
-				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y, false);
-				b.owner = self.name;
-				bases[self.sy][self.sx] = b;
-				self.socket.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
+				var b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, false);
+				b.owner = this.name;
+				bases[this.sy][this.sx] = b;
+				this.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
 			}
 
 			else if (wep.name === "Sentry") {
-				if (bases[self.sy][self.sx] != 0) {
-					self.socket.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
-					self.space = false;
+				if (bases[this.sy][this.sx] != 0) {
+					this.emit("chat", { msg: 'There can only be one turret in any sector!', color: 'yellow' });
+					this.space = false;
 					return;
 				}
 				var r = Math.random();
-				var b = Base(r, false, self.sx, self.sy, self.color, self.x, self.y, true);
-				b.owner = self.name;
-				bases[self.sy][self.sx] = b;
-				self.socket.emit("chat", { msg: 'You placed a sentry! Name it with "/nameturret <name>".', color: 'yellow' });
+				var b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, true);
+				b.owner = this.name;
+				bases[this.sy][this.sx] = b;
+				this.emit("chat", { msg: 'You placed a sentry! Name it with "/nameturret <name>".', color: 'yellow' });
 			}
 
 			else if (wep.name === "Turbo") {
-				var isDrifting = (self.e || self.gyroTimer > 0) && (self.a != self.d);
+				var isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
 				var mult = isDrifting ? 1.025 : 1.017; // Faster when drifting.
 
-				self.speed *= mult;
-				self.vx *= mult;
-				self.vy *= mult;
+				this.speed *= mult;
+				this.vx *= mult;
+				this.vy *= mult;
 				//no need to updatePolars, since force is parallel with the player... i think? is that the case when drifting?
 
-				if (isDrifting && !self.driftAchs[5] && self.w) { // Forced Induction
-					self.driftAchs[5] = true;
-					self.sendAchievementsDrift(true);
+				if (isDrifting && !this.driftAchs[5] && this.w) { // Forced Induction
+					this.driftAchs[5] = true;
+					this.sendAchievementsDrift(true);
 				}
-				else if (isDrifting && self.s && !self.driftAchs[10]) { // Reverse Turbo Drift
-					self.driftAchs[10] = true;
-					self.sendAchievementsDrift(true);
+				else if (isDrifting && this.s && !this.driftAchs[10]) { // Reverse Turbo Drift
+					this.driftAchs[10] = true;
+					this.sendAchievementsDrift(true);
 				}
 			}
 
 			else if (wep.name === "Hyperdrive") {
-				var isDrifting = (self.e || self.gyroTimer > 0) && (self.a != self.d);
-				self.socket.emit("sound", { file: "hyperspace", x: self.x, y: self.y });
-				self.hyperdriveTimer = 200;
-				if (isDrifting && self.w && !self.driftAchs[6]) { // Hyper-drift
-					self.driftAchs[6] = true;
-					self.sendAchievementsDrift(true);
+				var isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
+				this.emit("sound", { file: "hyperspace", x: this.x, y: this.y });
+				this.hyperdriveTimer = 200;
+				if (isDrifting && this.w && !this.driftAchs[6]) { // Hyper-drift
+					this.driftAchs[6] = true;
+					this.sendAchievementsDrift(true);
 				}
 			}
 
 			//If we run out of ammo on a one-use weapon, delete that weapon.
-			if (self.ammos[self.equipped] == -2) {
-				self.weapons[self.equipped] = -1;
-				self.save(); // And save, to prevent people from shooting then logging out if they don't succeed with it.
+			if (this.ammos[this.equipped] == -2) {
+				this.weapons[this.equipped] = -1;
+				this.save(); // And save, to prevent people from shooting then logging out if they don't succeed with it.
 			}
 
-			sendWeapons(self);
-			self.reload(false, wepId);
+			sendWeapons(this);
+			this.reload(false, wepId);
 		}
 	}
-	self.shootEliteWeapon = function () {
-		if(self.rank < self.ship) return;
-		if (self.ship == 16) { // Elite Raider
-			if(self.disguise > 0) return;
+	shootEliteWeapon() {
+		if(this.rank < this.ship) return;
+		if (this.ship == 16) { // Elite Raider
+			if(this.disguise > 0) return;
 			//This effectively just shoots turbo.
-			var mult = ((self.e || self.gyroTimer > 0) && self.w && (self.a != self.d)) ? 1.025 : 1.017;
-			self.speed *= mult;
-			self.vx *= mult;
-			self.vy *= mult;
-		} else if (self.ship == 17 && self.iron >= 250 && self.silver >= 250 && self.aluminium >= 250 && self.platinum >= 250) { // Quarrier
-			if(self.disguise > 0 || self.shield) return;
-			self.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
-			self.silver -= 250;
-			self.aluminium -= 250;
-			self.platinum -= 250;
+			var mult = ((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.025 : 1.017;
+			this.speed *= mult;
+			this.vx *= mult;
+			this.vy *= mult;
+		} else if (this.ship == 17 && this.iron >= 250 && this.silver >= 250 && this.aluminium >= 250 && this.platinum >= 250) { // Quarrier
+			if(this.disguise > 0 || this.shield) return;
+			this.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
+			this.silver -= 250;
+			this.aluminium -= 250;
+			this.platinum -= 250;
 			var r = Math.random();
-			var a = new Asteroid(r, 1000, self.sx, self.sy, Math.floor(Math.random() * 4));
-			a.x = self.x + Math.cos(self.angle) * 256;
-			a.y = self.y + Math.sin(self.angle) * 256;
-			a.vx = Math.cos(self.angle) * 15;
-			a.vy = Math.sin(self.angle) * 15;
-			asts[self.sy][self.sx][r] = a;
-		} else if (self.ship == 18) {
-			if(self.disguise > 0 || self.shield) return;
-			self.shootBullet(39);
+			var a = new Asteroid(r, 1000, this.sx, this.sy, Math.floor(Math.random() * 4));
+			a.x = this.x + Math.cos(this.angle) * 256;
+			a.y = this.y + Math.sin(this.angle) * 256;
+			a.vx = Math.cos(this.angle) * 15;
+			a.vy = Math.sin(this.angle) * 15;
+			asts[this.sy][this.sx][r] = a;
+		} else if (this.ship == 18) {
+			if(this.disguise > 0 || this.shield) return;
+			this.shootBullet(39);
 		} // Built in spreadshot
-		else if (self.ship == 19) {
-			if(self.disguise > 0) return;
-			if (self.health < self.maxHealth) self.health++;
+		else if (this.ship == 19) {
+			if(this.disguise > 0) return;
+			if (this.health < this.maxHealth) this.health++;
 		} // Heals you
-		else if (self.ship == 20) {
-			self.shootBlast(41);
-			self.save();
+		else if (this.ship == 20) {
+			this.shootBlast(41);
+			this.save();
 		} // Built in Hypno
-		self.reload(true, 0);
+		this.reload(true, 0);
 	}
-	self.reload = function(elite, wepId){
+	reload(elite, wepId){
 		if(elite){
-			if(self.ship == 20) self.charge = -2000;
-			if(self.ship == 18) self.charge = -wepns[39].charge;
-			if(self.ship == 19 && self.charge > -200) self.charge-=10;
-			if(self.ship == 17) self.charge = -150;
+			if(this.ship == 20) this.charge = -2000;
+			if(this.ship == 18) this.charge = -wepns[39].charge;
+			if(this.ship == 19 && this.charge > -200) this.charge-=10;
+			if(this.ship == 17) this.charge = -150;
 			return;
 		}
-		if(wepns[wepId].charge > 12) self.charge = 0;
-		else self.charge = -wepns[wepId].charge;
+		if(wepns[wepId].charge > 12) this.charge = 0;
+		else this.charge = -wepns[wepId].charge;
 	}
-	self.canShoot = function(wepId){
+	canShoot(wepId){
 		if(typeof wepns[wepId] === "undefined") return false;
-		if(self.disguise > 0 || (self.shield && wepns[wepId].type !== "Misc")) return false;
-		var sufficientCharge = self.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
-		return self.space && sufficientCharge;
+		if(this.disguise > 0 || (this.shield && wepns[wepId].type !== "Misc")) return false;
+		var sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
+		return this.space && sufficientCharge;
 	}
+	move() {
 
-	self.move = function () {
-
-		if (self.hyperdriveTimer > 0) {
-			self.hyperdriveTimer--;
-			self.speed = (10000 - square(100 - self.hyperdriveTimer)) / (self.ship == 16 ? 7 : 10);
+		if (this.hyperdriveTimer > 0) {
+			this.hyperdriveTimer--;
+			this.speed = (10000 - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
 		}
 
-		if (self.isNNBot) self.nnBotPlay();
-		else if (self.isBot) self.botPlay(); // simulates a player and presses keys.
+		this.botPlay(); // simulates a player and presses keys.
 
-		var amDrifting = self.e || self.gyroTimer > 0;
-		var ore = self.iron + self.silver + self.platinum + self.aluminium;
+		var amDrifting = this.e || this.gyroTimer > 0;
+		var ore = this.iron + this.silver + this.platinum + this.aluminium;
 
-		//In english, your thrust is (self.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
-		var newThrust = self.thrust * (self.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / self.capacity + 3) / 3.5) * ((amDrifting && self.w && (self.a != self.d)) ? (self.ship == 16 ? 1.6 : 1.45) : 1);
+		//In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
+		var newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1);
 
 		//Reusable Trig
-		var ssa = Math.sin(self.angle), ssd = Math.sin(self.driftAngle), csa = Math.cos(self.angle), csd = Math.cos(self.driftAngle);
+		var ssa = Math.sin(this.angle), ssd = Math.sin(this.driftAngle), csa = Math.cos(this.angle), csd = Math.cos(this.driftAngle);
 
-		self.vx = csd * self.speed; // convert polars to rectangulars
-		self.vy = ssd * self.speed;
-		self.vx *= (amDrifting && self.w && (Math.abs(self.cva) > self.va * .999)) ? .94 : .92;
-		self.vy *= (amDrifting && self.w && (Math.abs(self.cva) > self.va * .999)) ? .94 : .92; //Air resistance
+		this.vx = csd * this.speed; // convert polars to rectangulars
+		this.vy = ssd * this.speed;
+		this.vx *= (amDrifting && this.w && (Math.abs(this.cva) > this.va * .999)) ? .94 : .92;
+		this.vy *= (amDrifting && this.w && (Math.abs(this.cva) > this.va * .999)) ? .94 : .92; //Air resistance
 
-		if (self.w) { // Accelerate!
-			self.vx += csa * newThrust;
-			self.vy += ssa * newThrust;
+		if (this.w) { // Accelerate!
+			this.vx += csa * newThrust;
+			this.vy += ssa * newThrust;
 		}
-		if (self.s && amDrifting) { // Accelerate backwards, at half speed!
-			self.vx -= csa * newThrust / 2;
-			self.vy -= ssa * newThrust / 2;
+		if (this.s && amDrifting) { // Accelerate backwards, at half speed!
+			this.vx -= csa * newThrust / 2;
+			this.vy -= ssa * newThrust / 2;
 		}
 
-		self.updatePolars();//convert back to polars
+		this.updatePolars();//convert back to polars
 
 
 		if (!amDrifting) { // Terraced angular decelerationy stuff to continuously match driftAngle (angle of motion) to the actual angle the ship is pointing
-			self.noDrift++;
-			if (self.noDrift > 18) self.driftAngle = self.angle;
-			else if (self.noDrift > 12) self.driftAngle = findBisector(self.driftAngle, self.angle);
-			else if (self.noDrift > 7) self.driftAngle = findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle);
-			else if (self.noDrift > 3) self.driftAngle = findBisector(findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle), self.driftAngle);
-			else self.driftAngle = findBisector(findBisector(findBisector(findBisector(self.driftAngle, self.angle), self.driftAngle), self.driftAngle), self.driftAngle);//This happens immediately after shift released, noDrift increases with time.
+			this.noDrift++;
+			if (this.noDrift > 18) this.driftAngle = this.angle;
+			else if (this.noDrift > 12) this.driftAngle = findBisector(this.driftAngle, this.angle);
+			else if (this.noDrift > 7) this.driftAngle = findBisector(findBisector(this.driftAngle, this.angle), this.driftAngle);
+			else if (this.noDrift > 3) this.driftAngle = findBisector(findBisector(findBisector(this.driftAngle, this.angle), this.driftAngle), this.driftAngle);
+			else this.driftAngle = findBisector(findBisector(findBisector(findBisector(this.driftAngle, this.angle), this.driftAngle), this.driftAngle), this.driftAngle);//This happens immediately after shift released, noDrift increases with time.
 		} else { // In drift.
-			self.gyroTimer--;
-			if (self.a != self.d) {
-				if (self.w) self.driftTimer++;
-				else if (self.s && !self.driftAchs[7]) { // I can go backwards!?!
-					self.driftAchs[7] = true;
-					self.sendAchievementsDrift(true);
+			this.gyroTimer--;
+			if (this.a != this.d) {
+				if (this.w) this.driftTimer++;
+				else if (this.s && !this.driftAchs[7]) { // I can go backwards!?!
+					this.driftAchs[7] = true;
+					this.sendAchievementsDrift(true);
 				}
 			}
-			self.noDrift = 0; // Time elapsed since last drift
+			this.noDrift = 0; // Time elapsed since last drift
 		}
 
-		self.x += self.vx; // Update position from velocity
-		self.y += self.vy;
-		if (self.jukeTimer > 1 || self.jukeTimer < -1) { // Q or E keys. Juke mechanics.
-			self.x += self.jukeTimer * Math.sin(self.angle);
-			self.y -= self.jukeTimer * Math.cos(self.angle);
-			self.jukeTimer *= .8;
+		this.x += this.vx; // Update position from velocity
+		this.y += this.vy;
+		if (this.jukeTimer > 1 || this.jukeTimer < -1) { // Q or E keys. Juke mechanics.
+			this.x += this.jukeTimer * Math.sin(this.angle);
+			this.y -= this.jukeTimer * Math.cos(this.angle);
+			this.jukeTimer *= .8;
 		}
 
 		var angAccel = 0; // angular acceleration
-		if (self.a) angAccel -= (self.va + self.cva / (amDrifting ? 1.5 : 1)) / 3;
-		if (self.d) angAccel += (self.va - self.cva / (amDrifting ? 1.5 : 1)) / 3; // ternary reduces angular air resistance while drifting
-		if (self.superchargerTimer > 0) angAccel *= 2;
-		self.cva += angAccel; // update angular velofity from thrust
-		if (!self.d && !self.a && !amDrifting) self.cva /= 2; // When not drifting, apply air resistance to angular velocity.
+		if (this.a) angAccel -= (this.va + this.cva / (amDrifting ? 1.5 : 1)) / 3;
+		if (this.d) angAccel += (this.va - this.cva / (amDrifting ? 1.5 : 1)) / 3; // ternary reduces angular air resistance while drifting
+		if (this.superchargerTimer > 0) angAccel *= 2;
+		this.cva += angAccel; // update angular velofity from thrust
+		if (!this.d && !this.a && !amDrifting) this.cva /= 2; // When not drifting, apply air resistance to angular velocity.
 
 		//If we have a drift trail, we turn faster. Generators reduce turning speed.
-		self.angle += self.cva * (1 - self.generators / 10) * (self.trail % 16 == 3 ? 1.05 : 1) / 1.5;
+		this.angle += this.cva * (1 - this.generators / 10) * (this.trail % 16 == 3 ? 1.05 : 1) / 1.5;
 
 		//Make sure everything is in the range 0-2pi
-		self.driftAngle += Math.PI * 4;
-		self.angle += Math.PI * 4;
-		self.driftAngle %= Math.PI * 2;
-		self.angle %= Math.PI * 2;
+		this.driftAngle += Math.PI * 4;
+		this.angle += Math.PI * 4;
+		this.driftAngle %= Math.PI * 2;
+		this.angle %= Math.PI * 2;
 
-		self.testSectorChange();
+		this.testSectorChange();
 
-		if (tick % 15 == 0) self.checkQuestStatus(false);
+		if (tick % 15 == 0) this.checkQuestStatus(false);
 		if (tick % 2 == 0) return;
 
-		self.checkMineCollision();
+		this.checkMineCollision();
 	}
-	self.checkMineCollision = function () {
-		for (var i in mines[self.sy][self.sx]) {
-			var m = mines[self.sy][self.sx][i];
-			if (m.color != self.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
-				if (m.wepnID != 16 && squaredDist(m, self) < square(16 + ships[self.ship].width)) {
-					self.dmg(m.dmg, m); // damage me
-					if (m.wepnID == 17) self.EMP(50); // emp mine
+	checkMineCollision() {
+		for (var i in mines[this.sy][this.sx]) {
+			var m = mines[this.sy][this.sx][i];
+			if (m.color != this.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
+				if (m.wepnID != 16 && squaredDist(m, this) < square(16 + ships[this.ship].width)) {
+					this.dmg(m.dmg, m); // damage me
+					if (m.wepnID == 17) this.EMP(50); // emp mine
 					m.die();
 					break;
-				} else if (m.wepnID == 16 && squaredDist(m, self) < square(wepns[m.wepnID].range + ships[self.ship].width)) { // TODO range * 10?
+				} else if (m.wepnID == 16 && squaredDist(m, this) < square(wepns[m.wepnID].range + ships[this.ship].width)) { // TODO range * 10?
 					var r = Math.random(); // Laser Mine
-					var beam = Beam(m.owner, r, m.wepnID, self, m); // m.owner is the owner, m is the origin location
-					beams[self.sy][self.sx][r] = beam;
+					var beam = new Beam(m.owner, r, m.wepnID, this, m); // m.owner is the owner, m is the origin location
+					beams[this.sy][this.sx][r] = beam;
 					sendAllSector('sound', { file: "beam", x: m.x, y: m.y }, m.sx, m.sy);
 					m.die();
 				}
 			}
 		}
 	}
-	self.testSectorChange = function () {
-		var old_sx = self.sx;
-		var old_sy = self.sy;
+	testSectorChange() {
+		var old_sx = this.sx;
+		var old_sy = this.sy;
 
 		var giveBounce = false; // did they bounce on a galaxy edge?
-		if (self.x > sectorWidth) {//check each edge of the 4 they could bounce on
-			self.x = 1;
-			if (self.guest || (trainingMode && self.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
+		if (this.x > sectorWidth) {//check each edge of the 4 they could bounce on
+			this.x = 1;
+			if (this.guest || (trainingMode && this.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
 				giveBounce = true;
-				self.x = (sectorWidth - 5);
-				self.driftAngle = self.angle = 3.1415 - self.angle;
-				self.vx *= -1;
+				this.x = (sectorWidth - 5);
+				this.driftAngle = this.angle = 3.1415 - this.angle;
+				this.vx *= -1;
 			}
 			else {
-				self.sx = (self.sx+1+mapSz)%mapSz;
-				self.borderJumpTimer += 100;
+				this.sx = (this.sx+1+mapSz)%mapSz;
+				this.borderJumpTimer += 100;
 			}
 		}
-		else if (self.y > sectorWidth) {
-			self.y = 1;
-			if (self.sy == mapSz-1 || self.guest || (trainingMode && self.isNNBot)) {
+		else if (this.y > sectorWidth) {
+			this.y = 1;
+			if (this.sy == mapSz-1 || this.guest || (trainingMode && this.isNNBot)) {
 				giveBounce = true;
-				self.y = (sectorWidth - 5);
-				self.driftAngle = self.angle = -self.angle;
-				self.vy *= -1;
+				this.y = (sectorWidth - 5);
+				this.driftAngle = this.angle = -this.angle;
+				this.vy *= -1;
 			}
 			else {
-				self.sy++;
-				self.borderJumpTimer += 100;
+				this.sy++;
+				this.borderJumpTimer += 100;
 			}
 		}
-		else if (self.x < 0) {
-			self.x = (sectorWidth - 1);
-			if (self.guest || (trainingMode && self.isNNBot)) {
+		else if (this.x < 0) {
+			this.x = (sectorWidth - 1);
+			if (this.guest || (trainingMode && this.isNNBot)) {
 				giveBounce = true;
-				self.x = 5;
-				self.driftAngle = self.angle = 3.1415 - self.angle;
-				self.vx *= -1;
+				this.x = 5;
+				this.driftAngle = this.angle = 3.1415 - this.angle;
+				this.vx *= -1;
 			}
 			else {
-				self.sx = (self.sx-1+mapSz)%mapSz;
-				self.borderJumpTimer += 100;
+				this.sx = (this.sx-1+mapSz)%mapSz;
+				this.borderJumpTimer += 100;
 			}
 		}
-		else if (self.y < 0) {
-			self.y = (sectorWidth - 1);
-			if (self.sy == 0 || self.guest || (trainingMode && self.isNNBot)) {
+		else if (this.y < 0) {
+			this.y = (sectorWidth - 1);
+			if (this.sy == 0 || this.guest || (trainingMode && this.isNNBot)) {
 				giveBounce = true;
-				self.y = 5;
-				self.driftAngle = self.angle = -self.angle;
-				self.vy *= -1;
+				this.y = 5;
+				this.driftAngle = this.angle = -this.angle;
+				this.vy *= -1;
 			}
 			else {
-				self.sy--;
-				self.borderJumpTimer += 100;
+				this.sy--;
+				this.borderJumpTimer += 100;
 			}
 		}
-		if (giveBounce && !self.randmAchs[5]) {
-			if (self.guest) self.socket.emit("chat", { msg: "~`orange~`You must create an account to explore the universe!" });
+		if (giveBounce && !this.randmAchs[5]) {
+			if (this.guest) this.emit("chat", { msg: "~`orange~`You must create an account to explore the universe!" });
 			else {
-				self.randmAchs[5] = true;
-				self.sendAchievementsMisc(true);
+				this.randmAchs[5] = true;
+				this.sendAchievementsMisc(true);
 			}
 		}
 
-		if (self.borderJumpTimer > 100) { // damage for running away from fights
-			self.health = (self.health - 1) * .9 + 1;
-			self.borderJumpTimer = 50;
+		if (this.borderJumpTimer > 100) { // damage for running away from fights
+			this.health = (this.health - 1) * .9 + 1;
+			this.borderJumpTimer = 50;
 		}
 
-		if (old_sx !== self.sx || old_sy !== self.sy) {
-			delete players[old_sy][old_sx][self.id];
+		if (old_sx !== this.sx || old_sy !== this.sy) {
+			delete players[old_sy][old_sx][this.id];
 
-			players[self.sy][self.sx][self.id] = self;
-			self.onChangeSectors();
+			players[this.sy][this.sx][this.id] = this;
+			this.onChangeSectors();
 		}
 
 	}
-	self.juke = function (left) {
-		if (self.charge < 0) return;
-		self.charge = -20;
-		self.jukeTimer = (self.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
+	juke(left) {
+		if (this.charge < 0) return;
+		this.charge = -20;
+		this.jukeTimer = (this.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
 	}
-	self.mute = function (minutes) {
-		chatAll(self.nameWithColor() + " has been " + (minutes > 0 ? "muted for " + minutes + " minutes!" : "unmuted!"));
+	mute(minutes) {
+		chatAll(this.nameWithColor() + " has been " + (minutes > 0 ? "muted for " + minutes + " minutes!" : "unmuted!"));
 	}
-	self.onChangeSectors = function () {
+	onChangeSectors() {
 		//track my touched corners
-		if (self.sx == 0) {
-			if (self.sy == 0 && (self.cornersTouched & 1) != 1) self.cornersTouched++;
-			else if (self.sy == mapSz - 1 && (self.cornersTouched & 2) != 2) self.cornersTouched += 2;
-		} else if (self.sx == mapSz - 1) {
-			if (self.sy == 0 && (self.cornersTouched & 4) != 4) self.cornersTouched += 4;
-			else if (self.sy == mapSz - 1 && (self.cornersTouched & 8) != 8) self.cornersTouched += 8;
+		if (this.sx == 0) {
+			if (this.sy == 0 && (this.cornersTouched & 1) != 1) this.cornersTouched++;
+			else if (this.sy == mapSz - 1 && (this.cornersTouched & 2) != 2) this.cornersTouched += 2;
+		} else if (this.sx == mapSz - 1) {
+			if (this.sy == 0 && (this.cornersTouched & 4) != 4) this.cornersTouched += 4;
+			else if (this.sy == mapSz - 1 && (this.cornersTouched & 8) != 8) this.cornersTouched += 8;
 		}
-		if (self.cornersTouched == 15) {
-			self.randmAchs[7] = true;
-			self.sendAchievementsMisc(true);
+		if (this.cornersTouched == 15) {
+			this.randmAchs[7] = true;
+			this.sendAchievementsMisc(true);
 		}
 
-		if ((self.sx % 3 != 0 && self.sy == 8) && self.quest.type === "Secret3") {
-			self.spoils("money", self.quest.exp); // reward the player
-			self.spoils("experience", Math.floor(self.quest.exp / 4000));
+		if ((this.sx % 3 != 0 && this.sy == 8) && this.quest.type === "Secret3") {
+			this.spoils("money", this.quest.exp); // reward the player
+			this.spoils("experience", Math.floor(this.quest.exp / 4000));
 
-			self.hasPackage = false;
-			if ((self.questsDone & 8) == 0) self.questsDone += 8;
+			this.hasPackage = false;
+			if ((this.questsDone & 8) == 0) this.questsDone += 8;
 
-			self.quest = 0; // reset quest and tell the client
-			self.socket.emit('quest', { quest: self.quest, complete: true});
+			this.quest = 0; // reset quest and tell the client
+			this.emit('quest', { quest: this.quest, complete: true});
 
-			if (!self.moneyAchs[9]) { // Questor
-				self.moneyAchs[9] = true;
-				self.sendAchievementsCash(true);
+			if (!this.moneyAchs[9]) { // Questor
+				this.moneyAchs[9] = true;
+				this.sendAchievementsCash(true);
 			}
-			if (self.questsDone == 15 && !self.moneyAchs[10]) { // Adventurer
-				self.moneyAchs[10] = true;
-				self.sendAchievementsCash(true);
+			if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
+				this.moneyAchs[10] = true;
+				this.sendAchievementsCash(true);
 			}
 		}
 
-		if (self.quest != 0 && self.quest.type === "Secret" && self.sx == self.quest.sx && self.sy == self.quest.sy) { // advance in secret quest to phase 2
-			self.quest = { type: "Secret2", exp: self.quest.exp, sx: self.quest.sx, sy: self.quest.sy };
-			self.socket.emit('quest', { quest: self.quest, complete: false});
+		if (this.quest != 0 && this.quest.type === "Secret" && this.sx == this.quest.sx && this.sy == this.quest.sy) { // advance in secret quest to phase 2
+			this.quest = { type: "Secret2", exp: this.quest.exp, sx: this.quest.sx, sy: this.quest.sy };
+			this.emit('quest', { quest: this.quest, complete: false});
 		}
 
 		//tell client what's in this sector
-		self.getAllPlanets();
+		this.getAllPlanets();
 
 		//update list of visited sectors.
-		var index = self.sx + self.sy * mapSz;
-		var prevStr = self.planetsClaimed.substring(0, index);
-		var checkStr = self.planetsClaimed.substring(index, index + 1);
-		var postStr = self.planetsClaimed.substring(index + 1, mapSz * mapSz);
-		if (checkStr !== "2") self.planetsClaimed = prevStr + "1" + postStr;
+		var index = this.sx + this.sy * mapSz;
+		var prevStr = this.planetsClaimed.substring(0, index);
+		var checkStr = this.planetsClaimed.substring(index, index + 1);
+		var postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
+		if (checkStr !== "2") this.planetsClaimed = prevStr + "1" + postStr;
 
-		if (!self.planetsClaimed.includes("0") && !self.randmAchs[6]) {
-			self.randmAchs[6] = true;
-			self.sendAchievementsMisc(true);
+		if (!this.planetsClaimed.includes("0") && !this.randmAchs[6]) {
+			this.randmAchs[6] = true;
+			this.sendAchievementsMisc(true);
 		}
 
 	}
-	self.botPlay = function () { // don't mess with this pls
-		if (tick % 8 != Math.floor(self.id * 8)) return; // Lag prevention, also makes the bots a bit easier
-		if (self.empTimer > 0) return;//cant move if i'm emp'd
+	checkPlanetCollision() {
 
-		self.equipped = 0;
-		while (self.ammos[self.equipped] == 0) self.equipped++; // select the first available weapon with ammo
-		var range = square(wepns[self.equipped].range * 10);
-
-		self.w = self.e = self.s = self.c = self.space = false; // release all keys
-
-		//Find closest enemy and any friendly in the sector
-		var target = 0, close = 100000000;
-		var anyFriend = 0;
-		var friendlies = 0, enemies = 0;//keep track of the player counts in the sector
-		for (var p in players[self.sy][self.sx]) {
-			var player = players[self.sy][self.sx][p];
-			if (self.id == player.id || player.disguise > 0) continue;
-			if (player.color === self.color) { friendlies++; continue; }
-			enemies++;
-			var dist2 = hypot2(player.x, self.x, player.y, self.y);
-			if (dist2 < close) {
-
-				// Nerf bots 
-				// Allow only low bots (0-3) to attack guests
-				// Bots will avoid attack players where the player is 7 or more levels lower than it
-				var nerfAmt = (player.guest) ? -4 : -7;
-
-				if (player.rank - self.rank <= nerfAmt) continue;
-
-				target = player; close = dist2;
-
-			}
-
-		}
-
-		//Move towards the enemy
-		var movex = 0, movey = 0;
-		if (target != 0) { movex = target.x - self.x; movey = target.y - self.y; }
-
-		var base = bases[self.sy][self.sx];
-		if (base != 0 && base.color != self.color) {
-			var dist2 = hypot2(base.x, self.x, base.y, self.y);
-			if (friendlies > 0 && enemies == 0) target = base;
-			else if (dist2 < square(10 * sectorWidth / 2)) { movex = self.x - base.x; movey = self.y - base.y; }
-		}
-
-		//at random, fill my ammo or die if there are no enemies to fight
-		if (enemies == 0 && Math.random() < .001) self.refillAllAmmo();
-		if (enemies == 0 && Math.random() < botDespawnRate) self.die();
-
-		if (target == 0) target = anyFriend;
-
-		if (movex == 0 && movey == 0 && anyFriend == 0) {//flocking
-			self.d = Math.random() < .1;
-			self.a = Math.random() < .1;
-			self.w = true;
-			if (self.brainwashedBy != 0) {
-				var player = players[self.sy][self.sx][self.brainwashedBy];
-				if (typeof player === "undefined") return;
-				var myX = self.x + self.sx * sectorWidth;
-				var myY = self.y + self.sy * sectorWidth;
-				var theirX = player.x + player.sx * sectorWidth;
-				var theirY = player.y + player.sy * sectorWidth;
-				var turn = -(self.angle - Math.atan2(theirY - myY, theirX - myX) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
-				self.d = turn > self.cva * self.cva * 10;
-				self.a = turn < -self.cva * self.cva * 10;
-			}
-		} else if (target == 0) {//escaping base
-			var turn = -(self.angle - Math.atan2(base.y - self.y, base.x - self.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
-			self.a = turn > self.cva * self.cva * 10;
-			self.d = turn < -self.cva * self.cva * 10;
-			self.w = true;
-		} else if (anyFriend != 0 || (self.health < self.maxHealth / 3.5)) {//fleeing
-			var turn = -(self.angle - Math.atan2(target.y - self.y, target.x - self.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
-			self.a = turn > self.cva * self.cva * 10;
-			self.d = turn < -self.cva * self.cva * 10;
-			self.w = self.s = true;
-		} else {//fighting
-			self.space = self.e = close < range * 1.2;
-			var turn = -(self.angle - calculateInterceptionAngle(target.x, target.y, target.vx, target.vy, self.x, self.y, wepns[self.equipped].speed) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
-			self.d = turn > self.cva * self.cva * 10;
-			self.a = turn < -self.cva * self.cva * 10;
-			self.s = self.space && Math.abs(turn) > Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
-			self.w = Math.abs(turn) < Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
-		}
-	}
-	self.nnBotPlay = function () {
-		//Play for a neural network bot
-		if (tick % 8 != Math.floor(self.id * 8)) return; //Don't go too crazy running the whole network each tick. Lag prevention.
-
-		if (self.net === 1) { // If we haven't yet initialized a neural net
-			self.net = new NeuralNet();
-			self.net.load();
-		}
-
-		if (self.empTimer > 0) return;//cant move if i'm emp'd
-
-		self.equipped = 0; // select first weapon with ammo
-		while (self.ammos[self.equipped] == 0) self.equipped++;
-		var range = square(wepns[self.equipped].range * 10);
-
-		var totalFriends = 0; // in sector
-		var totalEnemies = 0;
-		var sumFriendRank = 0; // sum of ranks of all friends in this sector. Not using yet.
-		var sumEnemyRank = 0;
-
-		//Find the closest friend and enemy
-		var target = 0, friend = 0, closeE = 100000000, closeF = 100000000;
-		for (var p in players[self.sy][self.sx]) {
-			var player = players[self.sy][self.sx][p];
-			if (self.id == player.id || player.disguise > 0) continue;
-			if (player.color === self.color) {
-				totalFriends++;
-				var dist2 = squaredDist(player, self);
-				if (dist2 < closeF) { friend = player; closeF = dist2; }
-			} else {
-				totalEnemies++;
-				var dist2 = squaredDist(player, self);
-				if (dist2 < closeE) { target = player; closeE = dist2; }
-			}
-		}
-
-		//same as in botPlay
-		if (totalEnemies == 0 && Math.random() < .005) self.refillAllAmmo();
-		if (totalEnemies == 0 && Math.random() < botDespawnRate) self.die();
-
-		//make input array (into neural net). Normalize the variables to prevent overflow
-		var input = {};
-		input[0] = self.rank / 8.;
-		input[1] = self.ammos[self.equipped] / 50;
-		input[2] = self.health / self.maxHealth;
-		input[3] = 1; // energy used to be here
-		input[4] = self.charge / 50;
-		input[5] = self.speed / 100;
-		input[6] = self.cva;
-
-		input[7] = target == 0 ? 0 : 1;
-		input[8] = target == 0 ? 0 : Math.atan2(target.y - self.y, target.x - self.x) - self.angle;
-		input[9] = Math.sqrt(closeE) / 100;
-
-		input[10] = friend == 0 ? 0 : 1;
-		input[11] = friend == 0 ? 0 : Math.atan2(friend.y - self.y, friend.x - self.x) - self.angle;
-		input[12] = Math.sqrt(closeF) / 100;
-
-		input[13] = target == 0 ? 0 : target.angle;
-		input[14] = target == 0 ? 0 : target.speed;
-		input[15] = target == 0 ? 0 : target.ship;
-
-		//forward NN
-		var out = self.net.passThrough(input);
-
-		//Set controls to output array
-		self.space = out[0];
-		self.e = out[1];
-		self.w = out[2];
-		self.s = out[3];
-		self.a = out[4];
-		self.d = out[5];
-	}
-	self.checkPlanetCollision = function () {
-
-		var p = planets[self.sy][self.sx];
+		var p = planets[this.sy][this.sx];
 
 		//if out of range, return. Only try this once a second.
-		if (tick % 10 != 0 || squaredDist(p, self) > square(512)) return;
+		if (tick % 10 != 0 || squaredDist(p, this) > square(512)) return;
 
 		//cooldown to prevent chat spam when 2 people are on the planet
 		var cool = p.cooldown;
-		if (cool < 0) { self.refillAllAmmo(); p.cooldown = 50; }
+		if (cool < 0) { this.refillAllAmmo(); p.cooldown = 50; }
 
-		self.checkQuestStatus(true); // lots of quests are planet based
+		this.checkQuestStatus(true); // lots of quests are planet based
 
-		if (self.guest) {
-			self.socket.emit("chat", { msg: 'You must create an account in the base before you can claim planets!', color: 'yellow' });
+		if (this.guest) {
+			this.emit("chat", { msg: 'You must create an account in the base before you can claim planets!', color: 'yellow' });
 			return;
 		}
 
-		if (typeof self.quest !== "undefined" && self.quest != 0 && self.quest.type === "Secret2" && self.quest.sx == self.sx && self.quest.sy == self.sy) { // move on to last secret stage
+		if (typeof this.quest !== "undefined" && this.quest != 0 && this.quest.type === "Secret2" && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
 
 			//compute whether there are any unkilled enemies in this sector
 			var cleared = true;
-			for (var i in players[self.sy][self.sx]) {
-				var player = players[self.sy][self.sx][i];
-				if (player.color !== self.color) {
+			for (var i in players[this.sy][this.sx]) {
+				var player = players[this.sy][this.sx][i];
+				if (player.color !== this.color) {
 					cleared = false;
 					break;
 				}
 			}
-			if (bases[self.sy][self.sx] != 0 && bases[self.sy][self.sx].turretLive) cleared = false;//also check base is dead
+			if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].turretLive) cleared = false;//also check base is dead
 
 			if (cleared) { // 2 ifs needed, don't merge this one with the last one
-				self.hasPackage = true;
-				self.quest = { type: "Secret3", exp: self.quest.exp };
-				self.socket.emit('quest', { quest: self.quest, complete:false}); //notify client
+				this.hasPackage = true;
+				this.quest = { type: "Secret3", exp: this.quest.exp };
+				this.emit('quest', { quest: this.quest, complete:false}); //notify client
 			}
 		}
 
-		if (p.color === self.color || cool > 0) return;
+		if (p.color === this.color || cool > 0) return;
 
-		p.color = self.color; // claim
-		p.owner = self.name;
-		//chatAll('Planet ' + p.name + ' claimed by ' + self.nameWithColor() + "!"); This gets bothersome and spammy
+		p.color = this.color; // claim
+		p.owner = this.name;
+		//chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy
 
-		for (var i in players[self.sy][self.sx]) players[self.sy][self.sx][i].getAllPlanets();//send them new planet data
+		for (var i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();//send them new planet data
 
-		if (!self.randmAchs[8]) { // Astronaut
-			self.randmAchs[8] = true;
-			self.sendAchievementsMisc(true);
+		if (!this.randmAchs[8]) { // Astronaut
+			this.randmAchs[8] = true;
+			this.sendAchievementsMisc(true);
 		}
 
-		self.socket.emit("planetMap", { x:p.x, y:p.y, sx:p.sx, sy:p.sy });
+		this.emit("planetMap", { x:p.x, y:p.y, sx:p.sx, sy:p.sy });
 
 		//Update list of claimed planets.
-		var index = self.sx + self.sy * mapSz;
-		var prevStr = self.planetsClaimed.substring(0, index);
-		var postStr = self.planetsClaimed.substring(index + 1, mapSz * mapSz);
-		self.planetsClaimed = prevStr + "2" + postStr;
+		var index = this.sx + this.sy * mapSz;
+		var prevStr = this.planetsClaimed.substring(0, index);
+		var postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
+		this.planetsClaimed = prevStr + "2" + postStr;
 
 	}
-	self.checkQuestStatus = function (touchingPlanet) {
+	checkQuestStatus(touchingPlanet) {
 
-		if (self.quest == 0 || self.isBot) return;// no point if the person hasn't got a quest rn.
+		if (this.quest == 0 || this.isBot) return;// no point if the person hasn't got a quest rn.
 
-		if (self.quest.type === 'Mining' && self.sx == self.quest.sx && self.sy == self.quest.sy) {
+		if (this.quest.type === 'Mining' && this.sx == this.quest.sx && this.sy == this.quest.sy) {
 
 			//check the player has sufficient metal according to quest
-			if (self.quest.metal == 'aluminium' && self.aluminium < self.quest.amt) return;
-			if (self.quest.metal == 'iron' && self.iron < self.quest.amt) return;
-			if (self.quest.metal == 'silver' && self.silver < self.quest.amt) return;
-			if (self.quest.metal == 'platinum' && self.platinum < self.quest.amt) return;
+			if (this.quest.metal == 'aluminium' && this.aluminium < this.quest.amt) return;
+			if (this.quest.metal == 'iron' && this.iron < this.quest.amt) return;
+			if (this.quest.metal == 'silver' && this.silver < this.quest.amt) return;
+			if (this.quest.metal == 'platinum' && this.platinum < this.quest.amt) return;
 
 			//take the amount from them
-			if (self.quest.metal == 'aluminium') self.aluminium -= self.quest.amt;
-			if (self.quest.metal == 'iron') self.iron -= self.quest.amt;
-			if (self.quest.metal == 'silver') self.silver -= self.quest.amt;
-			if (self.quest.metal == 'platinum') self.platinum -= self.quest.amt;
+			if (this.quest.metal == 'aluminium') this.aluminium -= this.quest.amt;
+			if (this.quest.metal == 'iron') this.iron -= this.quest.amt;
+			if (this.quest.metal == 'silver') this.silver -= this.quest.amt;
+			if (this.quest.metal == 'platinum') this.platinum -= this.quest.amt;
 
 			//reward them
-			self.spoils("money", self.quest.exp);
-			self.spoils("experience", Math.floor(self.quest.exp / 1500));
+			this.spoils("money", this.quest.exp);
+			this.spoils("experience", Math.floor(this.quest.exp / 1500));
 
-			self.quest = 0;
-			self.socket.emit('quest', { quest: self.quest, complete:true}); // tell client quest is over
+			this.quest = 0;
+			this.emit('quest', { quest: this.quest, complete:true}); // tell client quest is over
 
-			if (!self.moneyAchs[9]) { // Questor
-				self.moneyAchs[9] = true;
-				self.sendAchievementsCash(true);
+			if (!this.moneyAchs[9]) { // Questor
+				this.moneyAchs[9] = true;
+				this.sendAchievementsCash(true);
 			}
 
-			if ((self.questsDone & 1) == 0) self.questsDone += 1;
+			if ((this.questsDone & 1) == 0) this.questsDone += 1;
 
-		} else if (self.quest.type === 'Delivery' && touchingPlanet) {
+		} else if (this.quest.type === 'Delivery' && touchingPlanet) {
 
 			//pickup
-			if (self.sx == self.quest.sx && self.sy == self.quest.sy && !self.hasPackage) {
-				self.hasPackage = true;
-				self.strongLocal("Package obtained!", self.x, self.y - 192);
+			if (this.sx == this.quest.sx && this.sy == this.quest.sy && !this.hasPackage) {
+				this.hasPackage = true;
+				this.strongLocal("Package obtained!", this.x, this.y - 192);
 			}
 
 			//dropoff
-			if (self.hasPackage && self.sx == self.quest.dsx && self.sy == self.quest.dsy) {
+			if (this.hasPackage && this.sx == this.quest.dsx && this.sy == this.quest.dsy) {
 
-				self.spoils("money", self.quest.exp);//reward
-				self.spoils("experience", Math.floor(self.quest.exp / 1500));
+				this.spoils("money", this.quest.exp);//reward
+				this.spoils("experience", Math.floor(this.quest.exp / 1500));
 
-				self.hasPackage = false;
-				self.quest = 0;
-				self.socket.emit('quest', { quest: self.quest, complete:true}); // tell client it's over
-				if ((self.questsDone & 2) == 0) self.questsDone += 2;
+				this.hasPackage = false;
+				this.quest = 0;
+				this.emit('quest', { quest: this.quest, complete:true}); // tell client it's over
+				if ((this.questsDone & 2) == 0) this.questsDone += 2;
 
-				if (!self.moneyAchs[9]) { // Questor
-					self.moneyAchs[9] = true;
-					self.sendAchievementsCash(true);
+				if (!this.moneyAchs[9]) { // Questor
+					this.moneyAchs[9] = true;
+					this.sendAchievementsCash(true);
 				}
 
 			}
 
 		}
 
-		if (self.questsDone == 15 && !self.moneyAchs[10]) { // Adventurer
-			self.moneyAchs[10] = true;
-			self.sendAchievementsCash(true);
+		if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
+			this.moneyAchs[10] = true;
+			this.sendAchievementsCash(true);
 		}
 
 	}
-	self.baseKilled = function () {
+	baseKilled() {
 
-		if (self.isBot) return;
+		if (this.isBot) return;
 
-		self.baseKills++;
+		this.baseKills++;
 
 		//achievementy stuff
-		self.killsAchs[7] = self.baseKills >= 1;
-		self.killsAchs[8] = self.baseKills >= 100;
-		self.sendAchievementsKill(true);
+		this.killsAchs[7] = this.baseKills >= 1;
+		this.killsAchs[8] = this.baseKills >= 100;
+		this.sendAchievementsKill(true);
 
 		//base quest checking
-		if (self.quest != 0 && self.quest.type == 'Base') {
-			if (self.sx == self.quest.sx && self.sy == self.quest.sy) {
+		if (this.quest != 0 && this.quest.type == 'Base') {
+			if (this.sx == this.quest.sx && this.sy == this.quest.sy) {
 
 				// reward player
-				self.spoils("money", self.quest.exp);
-				self.spoils("experience", Math.floor(self.quest.exp / 4000));
+				this.spoils("money", this.quest.exp);
+				this.spoils("experience", Math.floor(this.quest.exp / 4000));
 
-				self.quest = 0; //tell client it's done
-				self.socket.emit('quest', { quest: self.quest, complete: true});
-				if ((self.questsDone & 4) == 0) self.questsDone += 4;
+				this.quest = 0; //tell client it's done
+				this.emit('quest', { quest: this.quest, complete: true});
+				if ((this.questsDone & 4) == 0) this.questsDone += 4;
 
-				if (!self.moneyAchs[9]) { // Questor
-					self.moneyAchs[9] = true;
-					self.sendAchievementsCash(true);
+				if (!this.moneyAchs[9]) { // Questor
+					this.moneyAchs[9] = true;
+					this.sendAchievementsCash(true);
 				}
 
 			}
 		}
 
-		if (self.questsDone == 15 && !self.moneyAchs[10]) { // Adventurer
-			self.moneyAchs[10] = true;
-			self.sendAchievementsCash(true);
+		if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
+			this.moneyAchs[10] = true;
+			this.sendAchievementsCash(true);
 		}
 
 	}
-	self.updateRank = function () {
-		var prerank = self.rank;
-		self.rank = 0;
-		while (self.experience > ranks[self.rank]) self.rank++; //increment until we're in the right rank's range
-		if (!self.isBot && self.rank > prerank && self.rank > 5){
-			self.socket.emit('rank', {}); //congratulations!
-			chatAll(self.nameWithColor() + " just leveled up to rank " + self.rank + "!");
+	updateRank() {
+		var prerank = this.rank;
+		this.rank = 0;
+		while (this.experience > ranks[this.rank]) this.rank++; //increment until we're in the right rank's range
+		if (!this.isBot && this.rank > prerank && this.rank > 5){
+			this.emit('rank', {}); //congratulations!
+			chatAll(this.nameWithColor() + " just leveled up to rank " + this.rank + "!");
 		}
 	}
-	self.sellOre = function(oretype){
+	sellOre(oretype){
             //pay them appropriately
               if (oretype == 'iron' || oretype == 'all') {
-                self.spoils("money", self.iron);
-                self.iron = 0;
+                this.spoils("money", this.iron);
+                this.iron = 0;
             } if (oretype == 'silver' || oretype == 'all') {
-                self.spoils("money", self.silver);
-                self.silver = 0;
+                this.spoils("money", this.silver);
+                this.silver = 0;
             } if (oretype == 'platinum' || oretype == 'all') {
-                self.spoils("money", self.platinum);
-                self.platinum = 0;
+                this.spoils("money", this.platinum);
+                this.platinum = 0;
             } if (oretype == 'aluminium' || oretype == 'all') {
-                self.spoils("money", self.aluminium);
-                self.aluminium = 0;
+                this.spoils("money", this.aluminium);
+                this.aluminium = 0;
             }
-            self.save();
+            this.save();
 	}
-	self.dock = function () {
+	dock() {
 
-		if (self.isBot) return; // can bots even get to this point in code?
+		if (this.isBot) return; // can bots even get to this point in code?
 
-		if (self.docked) { // undock if already docked. This toggles the player's dock status
-			self.getAllPlanets(); // tell client what's out in the sector
-			self.docked = false;
-			players[self.sy][self.sx][self.id] = self;
-			delete dockers[self.id];
-			self.leaveBaseShield = 25;
-			self.health = self.maxHealth;
+		if (this.docked) { // undock if already docked. This toggles the player's dock status
+			this.getAllPlanets(); // tell client what's out in the sector
+			this.docked = false;
+			players[this.sy][this.sx][this.id] = this;
+			delete dockers[this.id];
+			this.leaveBaseShield = 25;
+			this.health = this.maxHealth;
 			return;
 		}
 
-		self.checkTrailAchs();
+		this.checkTrailAchs();
 
 		var base = 0;
-		var b = bases[self.sy][self.sx];
-		if (b.isBase && b.color == self.color && squaredDist(self, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
+		var b = bases[this.sy][this.sx];
+		if (b.isBase && b.color == this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
 		if (base == 0) return;
 
-		self.refillAllAmmo();
-		self.x = self.y = sectorWidth / 2;
-		self.save();
-		self.docked = true;
+		this.refillAllAmmo();
+		this.x = this.y = sectorWidth / 2;
+		this.save();
+		this.docked = true;
 
-		dockers[self.id] = self;
-		delete players[self.sy][self.sx][self.id];
+		dockers[this.id] = this;
+		delete players[this.sy][this.sx][this.id];
 
-		self.sendStatus();
+		this.sendStatus();
 	}
-	self.shootBullet = function (currWep) {
-		if (self.bulletQueue > 0) { // Submachinegun
-			if (self.ammos[self.equipped] <= 0) return;
-			self.bulletQueue--;
-			self.reload(false, currWep);
+	shootBullet(currWep) {
+		if (this.bulletQueue > 0) { // Submachinegun
+			if (this.ammos[this.equipped] <= 0) return;
+			this.bulletQueue--;
+			this.reload(false, currWep);
 			currWep = 40;
 		}
 
@@ -1063,74 +884,74 @@ function Player(sock) {
 			var r = Math.random();
 
 			//find the angle of the bullets. Manipulate if one of the multi-bullet weapons.
-			var bAngle = self.angle;
+			var bAngle = this.angle;
 			if (currWep == 2) bAngle -= 3.1415; // reverse gun
 			if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
 			if (currWep == 4) bAngle += Math.random() - .5; // shotgun
 
-			var bullet = Bullet(self, r, currWep, bAngle, i * 2 - 1);
-			bullets[self.sy][self.sx][r] = bullet;
-			sendAllSector('sound', { file: (currWep == 5 || currWep == 6 || currWep == 39) ? "minigun" : "shot", x: self.x, y: self.y }, self.sx, self.sy);
+			var bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
+			bullets[this.sy][this.sx][r] = bullet;
+			sendAllSector('sound', { file: (currWep == 5 || currWep == 6 || currWep == 39) ? "minigun" : "shot", x: this.x, y: this.y }, this.sx, this.sy);
 		}
 	}
-	self.shootMissile = function () {
+	shootMissile() {
 		var r = Math.random();
-		var bAngle = self.angle;
-		var missile = Missile(self, r, self.weapons[self.equipped], bAngle);
-		missiles[self.sy][self.sx][r] = missile;
-		sendAllSector('sound', { file: "missile", x: self.x, y: self.y }, self.sx, self.sy);
+		var bAngle = this.angle;
+		var missile = new Missile(this, r, this.weapons[this.equipped], bAngle);
+		missiles[this.sy][this.sx][r] = missile;
+		sendAllSector('sound', { file: "missile", x: this.x, y: this.y }, this.sx, this.sy);
 	}
-	self.shootOrb = function () {
+	shootOrb() {
 		var r = Math.random();
-		var orb = Orb(self, r, self.weapons[self.equipped]);
-		orbs[self.sy][self.sx][r] = orb;
-		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
+		var orb = new Orb(this, r, this.weapons[this.equipped]);
+		orbs[this.sy][this.sx][r] = orb;
+		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
-	self.shootMine = function () {
-		if (Object.keys(mines[self.sy][self.sx]).length >= 20 && self.weapons[self.equipped] < 30) {
-			self.ammos[self.equipped]++;
-			self.socket.emit("chat", { msg: "This sector has reached its limit of 20 mines." });
+	shootMine() {
+		if (Object.keys(mines[this.sy][this.sx]).length >= 20 && this.weapons[this.equipped] < 30) {
+			this.ammos[this.equipped]++;
+			this.emit("chat", { msg: "This sector has reached its limit of 20 mines." });
 			return;
 		}
-		if (square(self.sx - sectorWidth / 2) + square(self.sy - sectorWidth / 2) < square(600 * 10)) {
-			self.ammos[self.equipped]++;
-			self.socket.emit("chat", { msg: "You may not place a mine here." });
+		if (square(this.sx - sectorWidth / 2) + square(this.sy - sectorWidth / 2) < square(600 * 10)) {
+			this.ammos[this.equipped]++;
+			this.emit("chat", { msg: "You may not place a mine here." });
 			return;
 		}
 		var r = Math.random();
-		var mine = Mine(self, r, self.weapons[self.equipped]);
-		mines[self.sy][self.sx][r] = mine;
-		sendAllSector('mine', { x: self.x, y: self.y }, self.sx, self.sy);
+		var mine = new Mine(this, r, this.weapons[this.equipped]);
+		mines[this.sy][this.sx][r] = mine;
+		sendAllSector('mine', { x: this.x, y: this.y }, this.sx, this.sy);
 	}
-	self.shootBeam = function (origin, restricted) {// restricted is for recursive calls from quarriers
+	shootBeam(origin, restricted) {// restricted is for recursive calls from quarriers
 		var ox = origin.x, oy = origin.y;
 		var nearP = 0; // target, which we will compute
-		var range2 = square(wepns[self.weapons[self.equipped]].range * 10);
+		var range2 = square(wepns[this.weapons[this.equipped]].range * 10);
 
 		//base
 		if (!restricted)
-			if (self.weapons[self.equipped] == 7 || self.weapons[self.equipped] == 8 || self.weapons[self.equipped] == 9 || self.weapons[self.equipped] == 45) {
-				var b = bases[self.sy][self.sx];
-				if (b != 0 && ((b.color == self.color) == (self.weapons[self.equipped] == 45)) && !(self.weapons[self.equipped] == 45 && b.health > baseHealth*.9995) && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
+			if (this.weapons[this.equipped] == 7 || this.weapons[this.equipped] == 8 || this.weapons[this.equipped] == 9 || this.weapons[this.equipped] == 45) {
+				var b = bases[this.sy][this.sx];
+				if (b != 0 && ((b.color == this.color) == (this.weapons[this.equipped] == 45)) && !(this.weapons[this.equipped] == 45 && b.health > baseHealth*.9995) && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
 			}
 
 		//search players
 		if (!restricted)
-			for (var i in players[self.sy][self.sx]) {
-				var p = players[self.sy][self.sx][i];
-				if (p.ship != 17 && (self.weapons[self.equipped] == 26 || self.weapons[self.equipped] == 30)) continue; // elite quarrier is affected
-				if (((p.color == self.color) != (self.weapons[self.equipped] == 45)) || p.disguise > 0 || self.id == p.id) continue;
-				if (self.weapons[self.equipped] == 45 && p.health > p.maxHealth*.9995) continue;
+			for (var i in players[this.sy][this.sx]) {
+				var p = players[this.sy][this.sx][i];
+				if (p.ship != 17 && (this.weapons[this.equipped] == 26 || this.weapons[this.equipped] == 30)) continue; // elite quarrier is affected
+				if (((p.color == this.color) != (this.weapons[this.equipped] == 45)) || p.disguise > 0 || this.id == p.id) continue;
+				if (this.weapons[this.equipped] == 45 && p.health > p.maxHealth*.9995) continue;
 				var dx = p.x - ox, dy = p.y - oy;
 				var dist2 = dx * dx + dy * dy;
 				if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = p;
 			}
 
 		//search asteroids
-		if (nearP == 0 && self.weapons[self.equipped] != 35 && self.weapons[self.equipped] != 31 && self.weapons[self.equipped] != 45)
-			for (var i in asts[self.sy][self.sx]) {
-				var a = asts[self.sy][self.sx][i];
-				if (a.sx != self.sx || a.sy != self.sy || a.hit) continue;
+		if (nearP == 0 && this.weapons[this.equipped] != 35 && this.weapons[this.equipped] != 31 && this.weapons[this.equipped] != 45)
+			for (var i in asts[this.sy][this.sx]) {
+				var a = asts[this.sy][this.sx][i];
+				if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
 				var dx = a.x - ox, dy = a.y - oy;
 				var dist2 = dx * dx + dy * dy;
 				if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = a;
@@ -1140,541 +961,238 @@ function Player(sock) {
 		if (nearP == 0) return;
 
 		//gyrodynamite
-		if (self.weapons[self.equipped] == 31 && nearP.sx == self.sx && nearP.sy == self.sy && nearP.color != self.color) {
+		if (this.weapons[this.equipped] == 31 && nearP.sx == this.sx && nearP.sy == this.sy && nearP.color != this.color) {
 			nearP.gyroTimer = 250;
-			nearP.socket.emit("gyro", { t: 250 });
+			nearP.emit("gyro", { t: 250 });
 		}
 
 		//elite quarrier
-		if (self.ship == 17 && nearP != 0 && nearP.type === "Asteroid") {
+		if (this.ship == 17 && nearP != 0 && nearP.type === "Asteroid") {
 			nearP.hit = true;
-			for (var i = 0; i < 3; i++) self.shootBeam(nearP, true);
+			for (var i = 0; i < 3; i++) this.shootBeam(nearP, true);
 		}
 
 		var r = Math.random();
-		var beam = Beam(self, r, self.weapons[self.equipped], nearP, origin);
-		beams[self.sy][self.sx][r] = beam;
-		sendAllSector('sound', { file: "beam", x: ox, y: oy }, self.sx, self.sy);
+		var beam = new Beam(this, r, this.weapons[this.equipped], nearP, origin);
+		beams[this.sy][this.sx][r] = beam;
+		sendAllSector('sound', { file: "beam", x: ox, y: oy }, this.sx, this.sy);
 	}
-	self.shootBlast = function (currWep) {
+	shootBlast(currWep) {
 		var r = Math.random();
-		var blast = Blast(self, r, currWep);
-		blasts[self.sy][self.sx][r] = blast;
-		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
+		var blast = new Blast(this, r, currWep);
+		blasts[this.sy][this.sx][r] = blast;
+		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
-	self.die = async function (b) { // b: bullet object or other object which killed us
-		self.empTimer = -1;
-		self.killStreak = 0;
-		var diff = .02 * self.experience;
-		self.leaveBaseShield = 25;
-		self.refillAllAmmo();
-		if (typeof b === "undefined") {
-			delete players[self.sy][self.sx][self.id];
-			return;
-		}
-		sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: Math.cos(self.angle) * self.speed, dy: Math.sin(self.angle) * self.speed }, self.sx, self.sy);
-
-		if (b != 0) {
-			if (!self.isBot) {
-
-				//clear quest
-				self.quest = 0;
-				self.socket.emit('quest', { quest: 0, complete: false});//reset quest and update client
-
-				if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-					var customMessageArr = eng.weapons[b.wepnID].killmessages;
-					var useCustomKillMessage = Math.random() < .5 && typeof customMessageArr !== "undefined" && customMessageArr.length > 0;
-
-					if(useCustomKillMessage) chatAll(customMessageArr[Math.floor(Math.random()*customMessageArr.length)].replace("P1", b.owner.nameWithColor()).replace("P2", self.nameWithColor()));
-					else chatAll(self.nameWithColor() + " was destroyed by " + b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~!");
-
-					if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
-						b.owner.driftAchs[9] = true;
-						b.owner.sendAchievementsDrift(true);
-					}
-				}
-
-				//send msg
-				else if (b.type === "Vortex") chatAll(self.nameWithColor() + " crashed into a black hole!");
-				else if (b.type === "Planet" || b.type === "Asteroid") chatAll(self.nameWithColor() + " crashed into an asteroid!");
-				else if (b.owner !== undefined && b.owner.type === "Base") chatAll(self.nameWithColor() + " was destroyed by base " + b.owner.nameWithColor() + "!");
-			}
-
-			if (b.type !== "Vortex"){
-				//drop a package
-				var r = Math.random();
-				if (self.hasPackage && !self.isBot) packs[self.sy][self.sx][r] = Package(self, r, 0); // an actual package (courier)
-				else if (Math.random() < .012 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 2);//life
-				else if (Math.random() < .1 && !self.guest) packs[self.sy][self.sx][r] = Package(self, r, 3);//ammo
-				else if (!self.guest) packs[self.sy][self.sx][r] = Package(self, r, 1);//coin
-			}
-
-			//give the killer stuff
-			if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
-				b.owner.onKill(self);
-				b.owner.spoils("experience", !self.guest ? (10 + diff * (self.color === b.owner.color ? -1 : 1)) : 0);
-				// Prevent farming and disincentivize targetting guests
-				b.owner.spoils("money", b.owner.type === "Player" ? (self.guest ? 0 : b.owner.killStreak*playerKillMoney) : playerKillMoney);
-
-				if (self.points > 0) { // raid points
-					b.owner.points++;
-					self.points--;
-				}
-
-			}
-
-		}
-
-		self.hasPackage = false; // Maintained for onKill above
-		delete players[self.sy][self.sx][self.id];
-
-		//TODO Chris
-		if (!self.isBot) {
-			self.health = self.maxHealth;
-			if (self.guest) {
-				self.lives--;
-				self.dead = true;
-				if (self.lives <= 0) self.kick("Goodbye captain: no more lives remaining!");
-				self.sendStatus();
-				deads[self.id] = self;
-				sendWeapons(self);
-				return;
-			}
-			
-			self.dead = true;
-
-			await handlePlayerDeath(self);
-
-			self.x = self.y = sectorWidth / 2;
-			var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
-			self.sx = baseMap[self.color][whereToRespawn];
-			self.sy = baseMap[self.color][whereToRespawn+1];
-
-			if (self.lives-- <= 0) {
-				self.save();
-				self.kick("Goodbye captain: no more lives remaining!");
-			}
-			else self.save();
-			
-			self.sendStatus();
-			self.sendAchievementsMisc(true);
-
-			//put this player in the dead list
-			deads[self.id] = self;
-
-			sendWeapons(self);
-		}
+	// Bot specific
+	die = async function (b) {
 	}
-	self.dmg = function (d, origin) {
+	dmg(d, origin) {
 
-		if (!players[self.sy][self.sx][self.id]) return; //multi-kill bug
+		if (!players[this.sy][this.sx][this.id]) return; //multi-kill bug
 
 		//reward nn bots for hurting other players
-		if (self.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net != 0) {
-			origin.owner.net.save(self.isNNBot ? self.net.id : Math.floor(Math.random()));
-			self.health -= 10000;
+		if (this.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net != 0) {
+			origin.owner.net.save(this.isNNBot ? this.net.id : Math.floor(Math.random()));
+			this.health -= 10000;
 		}
 
 		//blood trail: less damage
-		if (self.trail % 16 == 1) d /= 1.05;
+		if (this.trail % 16 == 1) d /= 1.05;
 
-		d *= (self.shield ? .25 : 1); // Shield- 1/4th damage
+		d *= (this.shield ? .25 : 1); // Shield- 1/4th damage
 
-		self.health -= d;
-		if (self.health > self.maxHealth) self.health = self.maxHealth;
-		if (self.health < 0) self.die(origin);
+		this.health -= d;
+		if (this.health > this.maxHealth) this.health = this.maxHealth;
+		if (this.health < 0) this.die(origin);
 
-		note('-' + Math.floor(d), self.x, self.y - 64, self.sx, self.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-		self.socket.emit('dmg', {});
-		return self.health < 0;
+		note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+		this.emit('dmg', {});
+		return this.health < 0;
 	}
-	self.EMP = function (t) {
-		if (self.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
-		if (self.ship >= 16) t *= 1.5; // Emp works better on elites
-		self.empTimer = t;
+	EMP(t) {
+		if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
+		if (this.ship >= 16) t *= 1.5; // Emp works better on elites
+		this.empTimer = t;
 
 		//turn off all keys
-		self.w = self.e = self.a = self.s = self.d = self.c = self.space = false;
-		if (!self.isBot) self.socket.emit('emp', { t: t });
+		this.w = this.e = this.a = this.s = this.d = this.c = this.space = false;
+		if (!this.isBot) this.emit('emp', { t: t });
 	}
-	self.save = function () {
-		if (self.guest || self.isBot) return;
-		savePlayerData(self);
+	save() {
 	}
 
-	self.onKill = function (p) {
+	onKill(p) {
 
 		//kill streaks
 		// Don't award for guest kills
-		if (!p.guest && p.color !== self.color) {
-			self.killStreak++;
-			self.killStreakTimer = 750;//30s
+		if (!p.guest && p.color !== this.color) {
+			this.killStreak++;
+			this.killStreakTimer = 750;//30s
 		}
 		
-		if (self.ship == 19) for (var i in players[self.sy][self.sx]){
-			var p = players[self.sy][self.sx][i];
-			if(p.id !== self.id) p.EMP(15);
+		if (this.ship == 19) for (var i in players[this.sy][this.sx]){
+			var p = players[this.sy][this.sx][i];
+			if(p.id !== this.id) p.EMP(15);
 		}
 		
-		self.kills++;
+		this.kills++;
 
-		if (self.isBot) return;
+		if (this.isBot) return;
 
 		//achievementy stuff
-		self.killsAchs[0] = self.kills >= 1;
-		self.killsAchs[1] = self.kills >= 10;
-		self.killsAchs[2] = self.kills >= 100;
-		self.killsAchs[3] = self.kills >= 1000;
-		self.killsAchs[4] = self.kills >= 4000;
-		self.killsAchs[5] = self.kills >= 10000;
-		if (p.trail != 0) self.killsAchs[6] = true;
-		if (p.hasPackage) self.killsAchs[10] = true;
-		if (p.name === self.name) self.killsAchs[11] = true;
-		else if (p.color === self.color) self.killsAchs[9] = true;
-		self.sendAchievementsKill(true);
+		this.killsAchs[0] = this.kills >= 1;
+		this.killsAchs[1] = this.kills >= 10;
+		this.killsAchs[2] = this.kills >= 100;
+		this.killsAchs[3] = this.kills >= 1000;
+		this.killsAchs[4] = this.kills >= 4000;
+		this.killsAchs[5] = this.kills >= 10000;
+		if (p.trail != 0) this.killsAchs[6] = true;
+		if (p.hasPackage) this.killsAchs[10] = true;
+		if (p.name === this.name) this.killsAchs[11] = true;
+		else if (p.color === this.color) this.killsAchs[9] = true;
+		this.sendAchievementsKill(true);
 	}
-	self.onMined = function (a) {
-		if (self.isBot) return;
+	onMined(a) {
+		if (this.isBot) return;
 
 		//bitmask of what types of ores this player has mined
-		if ((self.oresMined & (1 << a)) == 0) self.oresMined += 1 << a;
+		if ((this.oresMined & (1 << a)) == 0) this.oresMined += 1 << a;
 
 		//achievementy stuff
-		if (self.oresMined == 15 && !self.moneyAchs[1]) self.moneyAchs[1] = true;
-		else if (!self.moneyAchs[0]) self.moneyAchs[0] = true;
-		else if (!self.moneyAchs[2] && 4000 <= self.iron + self.silver + self.aluminium + self.platinum) self.moneyAchs[2] = true;
-		else if (!self.moneyAchs[3] && 15000 <= self.iron + self.silver + self.aluminium + self.platinum) self.moneyAchs[3] = true;
+		if (this.oresMined == 15 && !this.moneyAchs[1]) this.moneyAchs[1] = true;
+		else if (!this.moneyAchs[0]) this.moneyAchs[0] = true;
+		else if (!this.moneyAchs[2] && 4000 <= this.iron + this.silver + this.aluminium + this.platinum) this.moneyAchs[2] = true;
+		else if (!this.moneyAchs[3] && 15000 <= this.iron + this.silver + this.aluminium + this.platinum) this.moneyAchs[3] = true;
 		else return;
-		self.sendAchievementsCash(true);
+		this.sendAchievementsCash(true);
 	}
-	self.sendAchievementsKill = function (note) {
-		if (self.isBot) return;
-		self.socket.emit("achievementsKill", { note: note, achs: self.killsAchs });
+	sendAchievementsKill(note) {
+		if (this.isBot) return;
+		this.emit("achievementsKill", { note: note, achs: this.killsAchs });
 	}
-	self.sendAchievementsCash = function (note) {
-		if (self.isBot) return;
-		self.socket.emit("achievementsCash", { note: note, achs: self.moneyAchs });
+	sendAchievementsCash(note) {
+		if (this.isBot) return;
+		this.emit("achievementsCash", { note: note, achs: this.moneyAchs });
 	}
-	self.sendAchievementsDrift = function (note) {
-		if (self.isBot) return;
-		self.socket.emit("achievementsDrift", { note: note, achs: self.driftAchs });
+	sendAchievementsDrift(note) {
+		if (this.isBot) return;
+		this.emit("achievementsDrift", { note: note, achs: this.driftAchs });
 	}
-	self.sendAchievementsMisc = function (note) {
-		self.randmAchs[9] = !self.planetsClaimed.includes("0") && !self.planetsClaimed.includes("1"); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
-		if (self.isBot) return;
-		self.socket.emit("achievementsMisc", { note: note, achs: self.randmAchs });
+	sendAchievementsMisc(note) {
+		this.randmAchs[9] = !this.planetsClaimed.includes("0") && !this.planetsClaimed.includes("1"); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
+		if (this.isBot) return;
+		this.emit("achievementsMisc", { note: note, achs: this.randmAchs });
 	}
-	self.sendStatus = function () {
-		if (!self.isBot) self.socket.emit("status", { docked: self.docked, state: self.dead, lives: self.lives });
+	sendStatus() {
+		if (!this.isBot) this.emit("status", { docked: this.docked, state: this.dead, lives: this.lives });
 	}
-	self.checkMoneyAchievements = function () {
-		if (self.isBot) return;
-		if (self.money >= 10000 && !self.moneyAchs[4]) self.moneyAchs[4] = true;
-		else if (self.money >= 100000 && !self.moneyAchs[5]) self.moneyAchs[5] = true;
-		else if (self.money >= 1000000 && !self.moneyAchs[6]) self.moneyAchs[6] = true;
-		else if (self.money >= 10000000 && !self.moneyAchs[7]) self.moneyAchs[7] = true;
+	checkMoneyAchievements() {
+		if (this.isBot) return;
+		if (this.money >= 10000 && !this.moneyAchs[4]) this.moneyAchs[4] = true;
+		else if (this.money >= 100000 && !this.moneyAchs[5]) this.moneyAchs[5] = true;
+		else if (this.money >= 1000000 && !this.moneyAchs[6]) this.moneyAchs[6] = true;
+		else if (this.money >= 10000000 && !this.moneyAchs[7]) this.moneyAchs[7] = true;
 		else return;
-		self.sendAchievementsCash(true);
+		this.sendAchievementsCash(true);
 	}
-	self.checkDriftAchs = function () {
-		if (self.isBot) return;
-		if (self.driftTimer >= 25 && !self.driftAchs[0]) self.driftAchs[0] = true; // drift 1sex
-		else if (self.driftTimer >= 25 * 60 && !self.driftAchs[1]) self.driftAchs[1] = true; // 1min
-		else if (self.driftTimer >= 25 * 60 * 10 && !self.driftAchs[2]) self.driftAchs[2] = true; // 10mins
-		else if (self.driftTimer >= 25 * 60 * 60 && !self.driftAchs[3]) self.driftAchs[3] = true; // 1hr
-		else if (self.driftTimer >= 25 * 60 * 60 * 10 && !self.driftAchs[4]) self.driftAchs[4] = true; // 10hrs
+	checkDriftAchs() {
+		if (this.isBot) return;
+		if (this.driftTimer >= 25 && !this.driftAchs[0]) this.driftAchs[0] = true; // drift 1sex
+		else if (this.driftTimer >= 25 * 60 && !this.driftAchs[1]) this.driftAchs[1] = true; // 1min
+		else if (this.driftTimer >= 25 * 60 * 10 && !this.driftAchs[2]) this.driftAchs[2] = true; // 10mins
+		else if (this.driftTimer >= 25 * 60 * 60 && !this.driftAchs[3]) this.driftAchs[3] = true; // 1hr
+		else if (this.driftTimer >= 25 * 60 * 60 * 10 && !this.driftAchs[4]) this.driftAchs[4] = true; // 10hrs
 		else return;
-		self.sendAchievementsDrift(true);
+		this.sendAchievementsDrift(true);
 	}
-	self.checkTrailAchs = function () {
+	checkTrailAchs() {
 
 		//Check if they have all achievements of a type. If so, give them the corresponding trail achievement of that type
 
 		var rAll = true;
-		for (var i = 0; i < 10; i++) if (!self.randmAchs[i]) rAll = false;
-		if (!self.randmAchs[10] && rAll) {
-			self.randmAchs[10] = true;
-			self.sendAchievementsMisc(false);
+		for (var i = 0; i < 10; i++) if (!this.randmAchs[i]) rAll = false;
+		if (!this.randmAchs[10] && rAll) {
+			this.randmAchs[10] = true;
+			this.sendAchievementsMisc(false);
 		}
 
 		rAll = true;
-		for (var i = 0; i < 12; i++) if (!self.killsAchs[i]) rAll = false;
-		if (!self.killsAchs[12] && rAll) {
-			self.killsAchs[12] = true;
-			self.sendAchievementsKill(false);
+		for (var i = 0; i < 12; i++) if (!this.killsAchs[i]) rAll = false;
+		if (!this.killsAchs[12] && rAll) {
+			this.killsAchs[12] = true;
+			this.sendAchievementsKill(false);
 		}
 
 		rAll = true;
-		for (var i = 0; i < 11; i++) if (!self.driftAchs[i]) rAll = false;
-		if (!self.driftAchs[11] && rAll) {
-			self.driftAchs[11] = true;
-			self.sendAchievementsDrift(false);
+		for (var i = 0; i < 11; i++) if (!this.driftAchs[i]) rAll = false;
+		if (!this.driftAchs[11] && rAll) {
+			this.driftAchs[11] = true;
+			this.sendAchievementsDrift(false);
 		}
 
 		rAll = true;
-		for (var i = 0; i < 11; i++) if (!self.moneyAchs[i]) rAll = false;
-		if (!self.moneyAchs[11] && rAll) {
-			self.moneyAchs[11] = true;
-			self.sendAchievementsCash(false);
+		for (var i = 0; i < 11; i++) if (!this.moneyAchs[i]) rAll = false;
+		if (!this.moneyAchs[11] && rAll) {
+			this.moneyAchs[11] = true;
+			this.sendAchievementsCash(false);
 		}
 	}
 	
-	self.getAllPlanets = function () { // same, but with planets
-		if (self.isBot) return;
+	getAllPlanets() { // same, but with planets
+		if (this.isBot) return;
 		var packHere = 0;
-		var planet = planets[self.sy][self.sx];
+		var planet = planets[this.sy][this.sx];
 		packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color };
-		self.socket.emit('planets', { pack: packHere });
+		this.emit('planets', { pack: packHere });
 	}
-	self.updatePolars = function () { // Convert my rectangular motion/position data to polar
-		self.driftAngle = Math.atan2(self.vy, self.vx);
-		self.speed = Math.sqrt(square(self.vy) + square(self.vx));
+	updatePolars() { // Convert my rectangular motion/position data to polar
+		this.driftAngle = Math.atan2(this.vy, this.vx);
+		this.speed = Math.sqrt(square(this.vy) + square(this.vx));
 	}
-	self.refillAmmo = function (i) {
-		if (typeof wepns[self.weapons[i]] !== "undefined") self.ammos[i] = wepns[self.weapons[i]].ammo;
+	refillAmmo(i) {
+		if (typeof wepns[this.weapons[i]] !== "undefined") this.ammos[i] = wepns[this.weapons[i]].ammo;
 	}
-	self.refillAllAmmo = function () {
-		for (var i = 0; i < 10; i++) self.refillAmmo(i);
-		sendWeapons(self);
-		self.strongLocal("Ammo Replenished!", self.x, self.y + 256);
+	refillAllAmmo() {
+		for (var i = 0; i < 10; i++) this.refillAmmo(i);
+		sendWeapons(this);
+		this.strongLocal("Ammo Replenished!", this.x, this.y + 256);
 	}
-	self.testAfk = function () {
-		if (self.isBot) return false;
-
-		if (self.afkTimer-- < 0) {
-			self.socket.emit("AFK");
-			self.kick("AFK!");
-			self.testAfk = function() { return false; };
-			return true;
-		}
+	testAfk() {
 		return false;
 	}
-	self.changePass = function (pass) { // /password
-		if (!self.docked) {
-			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
-			return;
-		}
-		if (pass.length > 128 || pass.length < 6) {
-			self.socket.emit("chat", { msg: "~`red~`Password must be 6-128 characters." });
-			return;
-		}
-		self.tentativePassword = pass;
-		self.socket.emit("chat", { msg: "~`red~`Type \"/confirm your_new_password\" to complete the change." });
+	calculateGenerators() { // count how many gens I have
+		this.generators = 0;
+		for (var slot = 0; slot < ships[this.ship].weapons; slot++)
+			if (this.weapons[slot] == 20) this.generators++;
+		if (this.ship <= wepns[20].level) this.generators = 0; // gotta have sufficiently high ship
 	}
-	self.confirmPass = async function (pass) { // /confirm
-		if (!self.docked) {
-			self.socket.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
-			return;
-		}
-		if (pass !== self.tentativePassword) {
-			self.socket.emit("chat", { msg: "~`red~`Passwords do not match! Start over from /password." });
-			self.tentativePassword = undefined;
-			return;
-		}
-		var response = await send_rpc("/reset/", self._id + "%" + pass);
-
-		if (!response.ok) {
-			self.socket.emit("chat", { msg : "ERROR"});
-			return;
-		}
-
-		self.tentativePassword = undefined;
-		self.socket.emit("chat", { msg: "~`lime~`Password changed successfully." });
-	}
-	self.calculateGenerators = function () { // count how many gens I have
-		self.generators = 0;
-		for (var slot = 0; slot < ships[self.ship].weapons; slot++)
-			if (self.weapons[slot] == 20) self.generators++;
-		if (self.ship <= wepns[20].level) self.generators = 0; // gotta have sufficiently high ship
-	}
-	self.spoils = function (type, amt) { // gives you something. Called wenever you earn money / exp / w/e
+	spoils(type, amt) { // gives you something. Called wenever you earn money / exp / w/e
 		if (typeof amt === "undefined") return;
 		if (type === "experience") {
-			self.experience += amt;
-			self.updateRank();
+			this.experience += amt;
+			this.updateRank();
 		}
-		else if (type === "money") self.money += amt * ((amt > 0 && self.trail % 16 == 2) ? 1.05 : 1);
-		else if (type === "life" && self.lives < 20) self.lives += amt;
-		self.experience = Math.max(self.experience, 0);
-		self.socket.emit("spoils", { type: type, amt: amt });
+		else if (type === "money") this.money += amt * ((amt > 0 && this.trail % 16 == 2) ? 1.05 : 1);
+		else if (type === "life" && this.lives < 20) this.lives += amt;
+		this.experience = Math.max(this.experience, 0);
+		this.emit("spoils", { type: type, amt: amt });
 	}
-	self.r = function (msg) { // pm reply
-		if (self.reply.includes(" ")) self.reply = self.reply.split(" ")[1];
-		self.pm("/pm " + self.reply + " " + msg.substring(3));
+	nameWithoutTag(){
+		if(this.name.includes(" ")) return this.name.split(" ")[1];
+		return this.name;
 	}
-	self.pm = function (msg) { // msg looks like "/pm luunch hey there pal". If a moderator, you use "2swap" not "[O] 2swap".
-		if (msg.split(" ").length < 3) { // gotta have pm, name, then message
-			self.socket.emit("chat", { msg: "Invalid Syntax!" });
-			return;
-		}
-		var name = msg.split(" ")[1];
-		var raw = msg.substring(name.length + 5);
-		self.socket.emit("chat", { msg: "Sending private message to " + name + "..." });
-		for (var i = 0; i < mapSz; i++) for (var j = 0; j < mapSz; j++)
-			for (var p in players[j][i]) {
-				var player = players[j][i][p];
-				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + self.name + "]: " + raw });
-					self.socket.emit("chat", { msg: "Message sent!" });
-					self.reply = player.name;
-					player.reply = self.name;
-					return;
-				}
-			} for (var p in dockers) {
-				var player = dockers[p];
-				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + self.name + "]: " + raw });
-					self.socket.emit("chat", { msg: "Message sent!" });
-					self.reply = player.name;
-					player.reply = self.name;
-					return;
-				}
-			} for (var p in deads) {
-				var player = deads[p];
-				if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-					player.socket.emit("chat", { msg: "~`orange~`[PM] [" + self.name + "]: " + raw });
-					self.socket.emit("chat", { msg: "Message sent!" });
-					self.reply = player.name;
-					player.reply = self.name;
-					return;
-				}
-			}
-		self.socket.emit("chat", { msg: "Player not found!" });
+	nameWithColor(){ // returns something like "~`green~`[O] 2swap~`yellow~`"
+		return "~`"+this.color+"~`"+this.name+"~`yellow~`";
 	}
-	self.nameWithoutTag = function(){
-		if(self.name.includes(" ")) return self.name.split(" ")[1];
-		return self.name;
+	noteLocal(msg, x, y) {
+		this.emit('note', { msg: msg, x: x, y: y, local: true })
 	}
-	self.nameWithColor = function(){ // returns something like "~`green~`[O] 2swap~`yellow~`"
-		return "~`"+self.color+"~`"+self.name+"~`yellow~`";
+	strongLocal(msg, x, y) {
+		this.emit('strong', { msg: msg, x: x, y: y, local: true });
 	}
-	self.swap = function (msg) { // msg looks like "/swap 2 5". Swaps two weapons.
-		if (!self.docked) {
-			self.socket.emit("chat", { msg: "You must be docked to use that command!" });
-			return;
-		}
-		var spl = msg.split(" ");
-		if (spl.length != 3) { // not enough arguments
-			self.socket.emit("chat", { msg: "Invalid Syntax!" });
-			return;
-		}
-		var slot1 = parseFloat(spl[1]), slot2 = parseFloat(spl[2]);
-		if (slot1 == 0) slot1 = 10;
-		if (slot2 == 0) slot2 = 10;
-		if (slot1 > 10 || slot2 > 10 || slot1 < 1 || slot2 < 1 || !slot1 || !slot2 || !Number.isInteger(slot1) || !Number.isInteger(slot2)) {
-			self.socket.emit("chat", { msg: "Invalid Syntax!" });
-			return;
-		}
-		if (self.weapons[slot1] == -2 || self.weapons[slot2] == -2) {
-			self.socket.emit("chat", { msg: "You haven't unlocked that slot yet!" });
-			return;
-		}
-
-		slot1--; slot2--;//done later for NaN checking above: "!slot1"
-
-		var temp = self.weapons[slot1];
-		self.weapons[slot1] = self.weapons[slot2];
-		self.weapons[slot2] = temp;
-		temp = self.ammos[slot1];
-		self.ammos[slot1] = self.ammos[slot2];
-		self.ammos[slot2] = temp;
-
-		if(self.equipped == slot1) self.equipped = slot2;
-		else if(self.equipped == slot2) self.equipped = slot1;
-
-		sendWeapons(self);
-        self.socket.emit('equip', { scroll: self.equipped });
-		self.socket.emit("chat", { msg: "Weapons swapped!" });
-	}
-	self.kick = function (msg) {
-		self.kickMsg = msg;
-		self.socket.emit("kick", { msg: msg });
-		self.socket.disconnect();
-
-		// HACK: Block crash on "double-death"
-		self.die = function() { };
-	}
-	self.noteLocal = function (msg, x, y) {
-		self.socket.emit('note', { msg: msg, x: x, y: y, local: true })
-	}
-	self.strongLocal = function (msg, x, y) {
-		self.socket.emit('strong', { msg: msg, x: x, y: y, local: true });
-	}
-	sock.player = self;
-	return self;
+	
+	botPlay() {}
+	emit(a,b) {}
 };
 
 module.exports = Player;
-
-var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");
-
-global.spawnBot = function (sx, sy, col, force) {
-	if (!Config.getValue("want-bots", true)) return;
-
-	if (playerCount + botCount + guestCount > playerLimit && !force) return;
-	
-	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
-
-	if (trainingMode && Math.random() < .5) {
-		spawnNNBot(sx, sy, col);
-		return;
-	}
-	var id = Math.random();
-	var bot = new Player({ id: id, emit: function () { } });
-	bot.angle = Math.random()*Math.PI*2;
-	bot.isBot = true;
-	bot.sx = sx;
-	bot.sy = sy;
-	var rand = 4.2 * Math.random();
-	bot.experience = Math.sqrt(Math.pow(2, Math.pow(2, rand))-2)*sy*sy*sy + 3 * rand;
-	bot.updateRank();
-	bot.ship = bot.rank;
-	bot.x = bot.y = sectorWidth / 2;
-	bot.color = col;
-	bot.name = Config.getValue("want_bot_names", false) ? "BOT " + botNames[Math.floor(Math.random() * (botNames.length))] : "DRONE";
-	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * .2) + .6);
-	bot.energy2 = Math.floor((bot.thrust2 - 1) * 5 / 2) / 5 + 1;
-	bot.va = ships[bot.ship].agility * .08 * bot.agility2;
-	bot.thrust = ships[bot.ship].thrust * bot.thrust2;
-	bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
-	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
-	for (var i = 0; i < 10; i++) {
-		do bot.weapons[i] = Math.floor(Math.random() * wepns.length);
-		while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot)
-	}
-	bot.refillAllAmmo();
-	players[bot.sy][bot.sx][id] = bot;
-}
-
-global.spawnNNBot = function (sx, sy, col) {
-	if (trainingMode) { sx = 2; sy = 4; }
-	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
-	id = Math.random();
-	var bot = new Player({ id: id, emit: function () { } });
-	bot.isNNBot = bot.isBot = true;
-	bot.sx = sx;
-	bot.sy = sy;
-	var rand = .33 + 3.67 * Math.random();
-	bot.experience = trainingMode ? 150 : (Math.floor(Math.pow(2, Math.pow(2, rand))) / 8 + 3 * rand);//TODO change /8 to /4
-	bot.updateRank();
-	bot.ship = bot.rank;
-	bot.x = trainingMode ? sectorWidth * Math.random() : (sectorWidth / 2);
-	bot.y = trainingMode ? sectorWidth * Math.random() : (sectorWidth / 2);
-	bot.color = col;
-	bot.net = 1;
-	bot.name = "BOT " + botNames[Math.floor(Math.random() * (botNames.length))];
-	bot.angle = Math.random() * Math.PI * 2;
-	bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * .2) + .6);
-	bot.energy2 = Math.floor((bot.thrust2 - 1) * 5 / 2) / 5 + 1;
-	bot.va = ships[bot.ship].agility * .08 * bot.agility2;
-	bot.thrust = ships[bot.ship].thrust * bot.thrust2;
-	bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
-	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
-	for (var i = 0; i < 10; i++) {
-		do bot.weapons[i] = Math.floor(Math.random() * wepns.length);
-		while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot)
-		if (trainingMode) bot.weapons[i] = 1;
-	}
-	bot.refillAllAmmo();
-	players[bot.sy][bot.sx][id] = bot;
-}

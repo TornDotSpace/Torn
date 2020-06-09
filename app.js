@@ -98,6 +98,8 @@ var netcode = require('./server_src/netcode.js');
 require('./server_src/db.js');
 connectToDB();
 
+require('./server_src/bot.js');
+
 var tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 
 var jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
@@ -450,7 +452,7 @@ function spawnBases() {
 		for (var i = 0; i < thisMap.length; i += 2) {
 			//make a base at these coords
 			var randBase = Math.random();
-			var thisBase = Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2, false);
+			var thisBase = new Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2, false);
 			bases[thisMap[i + 1]][thisMap[i]] = thisBase;
 		}
 	}
@@ -465,7 +467,7 @@ function kill() {
 
 function createPlanet(name, sx, sy) {
 	var randA = Math.random();
-	var planet = Planet(randA, name);
+	var planet = new Planet(randA, name);
 	planet.sx = sx;
 	planet.sy = sy;
 	while (square(planet.x - sectorWidth / 2) + square(planet.y - sectorWidth / 2) < 3000000) {
@@ -503,7 +505,7 @@ function update() {
 		for(var j = 0; j < mapSz; j++)
 			if (bases[i][j] == 0 && Math.random() < .000004) {
 				var r = Math.random();
-				var b = Base(r, false, j, i, j<3?"red":(j<6?"blue":"green"), sectorWidth*Math.random(), sectorWidth*Math.random(), true);
+				var b = new Base(r, false, j, i, j<3?"red":(j<6?"blue":"green"), sectorWidth*Math.random(), sectorWidth*Math.random(), true);
 				bases[i][j] = b;
 			}
 

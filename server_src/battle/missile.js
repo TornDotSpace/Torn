@@ -1,123 +1,122 @@
-module.exports = function Missile(ownr, i, weaponID, angl) {
-	var self = {
-		type: "Missile",
-		id: i, // unique identifier
-		color: ownr.color, // whose side i'm on
-		dmg: wepns[weaponID].damage,
+module.exports = class Missile {
+	constructor(ownr, i, wepnID, angl) {
+		this.type = "Missile",
+		this.id = i, // unique identifier
+		this.color = ownr.color, // whose side i'm on
+		this.dmg = wepns[wepnID].damage,
 
-		x: ownr.x,
-		y: ownr.y,
-		sx: ownr.sx,
-		sy: ownr.sy,
-		vx: Math.cos(angl) * wepns[weaponID].speed,
-		vy: Math.sin(angl) * wepns[weaponID].speed,
-		emvx:0,
-		emvy:0,
-		angle: angl,
+		this.x = ownr.x,
+		this.y = ownr.y,
+		this.sx = ownr.sx,
+		this.sy = ownr.sy,
+		this.vx = Math.cos(angl) * wepns[wepnID].speed,
+		this.vy = Math.sin(angl) * wepns[wepnID].speed,
+		this.emvx = 0,
+		this.emvy = 0,
+		this.angle = angl,
 
-		owner: ownr,
-		locked: 0, // player I'm locked onto
-		timer: 0, // since spawn
-		lockedTimer: 0, // since locking on to my current target (or is it since first locking onto anyone?)
-		wepnID: weaponID,
-		goalAngle: 0 // the angle I'm turning to match
+		this.owner = ownr,
+		this.locked = 0, // player I'm locked onto
+		this.timer = 0, // since spawn
+		this.lockedTimer = 0, // since locking on to my current target (or is it since first locking onto anyone?)
+		this.wepnID = wepnID,
+		this.goalAngle = 0; // the angle I'm turning to match
 	}
-	self.tick = function () {
+	tick() {
 
-		self.move();
-		if (self.timer++ > 10 * wepns[weaponID].range / wepns[weaponID].speed) self.die(); // out of range -> die
-		if (self.x > sectorWidth || self.x < 0 || self.y > sectorWidth || self.y < 0) self.die();//out of sector
+		this.move();
+		if (this.timer++ > 10 * wepns[this.wepnID].range / wepns[this.wepnID].speed) this.die(); // out of range -> die
+		if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die();//out of sector
 
-		if (self.timer == 20 && self.wepnID == 13) { // missile swarm
+		if (this.timer == 20 && this.wepnID == 13) { // missile swarm
 			for (var i = 0; i < 6; i++) { // spawn 6 missiles
 				var r = Math.random();
-				var bAngle = self.angle + r * 2 - 1;
-				var missile = Missile(self.owner, r, 10, bAngle);
-				missile.x = self.x;
-				missile.y = self.y;
-				missile.sx = self.sx; // this is crucial, otherwise rings of fire happen
-				missile.sy = self.sy; // because owner is not necessarily in the same sector as parent missile
-				missiles[self.sy][self.sx][r] = missile;
+				var bAngle = this.angle + r * 2 - 1;
+				var missile = new Missile(this.owner, r, 10, bAngle);
+				missile.x = this.x;
+				missile.y = this.y;
+				missile.sx = this.sx; // this is crucial, otherwise rings of fire happen
+				missile.sy = this.sy; // because owner is not necessarily in the same sector as parent missile
+				missiles[this.sy][this.sx][r] = missile;
 			}
-			self.die(); // and then die
+			this.die(); // and then die
 		}
 
 		
-		if (tick % 5 == 0 && self.locked == 0) {
+		if (tick % 5 == 0 && this.locked == 0) {
 			var closest = Number.MAX_SAFE_INTEGER;
 			//search players
-			for (var i in players[self.sy][self.sx]) {
-				var player = players[self.sy][self.sx][i];
+			for (var i in players[this.sy][this.sx]) {
+				var player = players[this.sy][this.sx][i];
 				if(player.disguise>0) continue;
-				var dist = squaredDist(player, self);
-				if ((player.color != self.color && dist < square(wepns[self.wepnID].range * 10)) && (self.locked == 0 || dist < closest)) {
-					self.locked = player.id;
+				var dist = squaredDist(player, this);
+				if ((player.color != this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked == 0 || dist < closest)) {
+					this.locked = player.id;
 					closest = dist;
 				}
 			}
-			if (self.locked != 0) return;
+			if (this.locked != 0) return;
 			
 			//check base
-			if (bases[self.sy][self.sx] != 0 && bases[self.sy][self.sx].color !== self.color && bases[self.sy][self.sx].turretLive && squaredDist(bases[self.sy][self.sx], self) < square(wepns[self.wepnID].range * 10)) {
-				self.locked = bases[self.sy][self.sx].id;
+			if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
+				this.locked = bases[this.sy][this.sx].id;
 				return;
 			}
 			
 
 			//search asteroids
-			for (var i in asts[self.sy][self.sx]) {
-				var ast = asts[self.sy][self.sx][i];
-				var dist = squaredDist(ast, self);
-				if (dist < square(wepns[self.wepnID].range * 10) && (self.locked == 0 || dist < closest)) {
-					self.locked = ast.id;
+			for (var i in asts[this.sy][this.sx]) {
+				var ast = asts[this.sy][this.sx][i];
+				var dist = squaredDist(ast, this);
+				if (dist < square(wepns[this.wepnID].range * 10) && (this.locked == 0 || dist < closest)) {
+					this.locked = ast.id;
 					closest = dist;
 				}
 			}
 		}
 	}
-	self.move = function () {
+	move() {
 
-		if (self.locked != 0)  {
-			if (self.lockedTimer++ > 7 * 25) self.die(); // if locked for >7s, die
+		if (this.locked != 0)  {
+			if (this.lockedTimer++ > 7 * 25) this.die(); // if locked for >7s, die
 
-			var target = players[self.sy][self.sx][self.locked]; // try 2 find the target object
-			if (typeof target === 'undefined' && bases[self.sy][self.sx].color != self.color) target = bases[self.sy][self.sx];
-			if (target == 0) target = asts[self.sy][self.sx][self.locked];
-			if (typeof target === 'undefined') self.locked = 0;
+			var target = players[this.sy][this.sx][this.locked]; // try 2 find the target object
+			if (typeof target === 'undefined' && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
+			if (target == 0) target = asts[this.sy][this.sx][this.locked];
+			if (typeof target === 'undefined') this.locked = 0;
 
 			else { // if we found it, then...
 
 				if (target.type === "Player") target.isLocked = true;
 
 				//on impact
-				if (target.sx == self.sx && target.sy == self.sy && squaredDist(target, self) < 10000 * (self.wepnID == 38 ? 5 : 1) && target.turretLive != false /*we don't know it's a base. can't just say ==true.*/) {
-					target.dmg(self.dmg, self);
-					self.die();
-					if (self.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(18); // emp missile
+				if (target.sx == this.sx && target.sy == this.sy && squaredDist(target, this) < 10000 * (this.wepnID == 38 ? 5 : 1) && target.turretLive != false /*we don't know it's a base. can't just say ==true.*/) {
+					target.dmg(this.dmg, this);
+					this.die();
+					if (this.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(18); // emp missile
 					return;
 				}
 
-				if (self.wepnID != 38) { // 38: proximity fuze
-					if (self.timer == 1 || tick % 4 == 0) self.goalAngle = angleBetween(target, self);
-					self.angle = findBisector(findBisector(self.goalAngle, self.angle), self.angle);// turn towards goal
+				if (this.wepnID != 38) { // 38: proximity fuze
+					if (this.timer == 1 || tick % 4 == 0) this.goalAngle = angleBetween(target, this);
+					this.angle = findBisector(findBisector(this.goalAngle, this.angle), this.angle);// turn towards goal
 				}
-				self.vx = Math.cos(self.angle) * wepns[weaponID].speed; // update velocity
-				self.vy = Math.sin(self.angle) * wepns[weaponID].speed;
+				this.vx = Math.cos(this.angle) * wepns[this.wepnID].speed; // update velocity
+				this.vy = Math.sin(this.angle) * wepns[this.wepnID].speed;
 			}
 		}
 
-		if (self.locked == 0) self.lockedTimer = 0;
+		if (this.locked == 0) this.lockedTimer = 0;
 
-		var accelMult = 1 - 25 / (self.timer + 25); // pick up speed w/ time
-		self.x += self.vx * accelMult + self.emvx;
-		self.y += self.vy * accelMult + self.emvy; // move on tick
-		self.emvx *= .95;
-		self.emvy *= .95;
+		var accelMult = 1 - 25 / (this.timer + 25); // pick up speed w/ time
+		this.x += this.vx * accelMult + this.emvx;
+		this.y += this.vy * accelMult + this.emvy; // move on tick
+		this.emvx *= .95;
+		this.emvy *= .95;
 
 	}
-	self.die = function () {
-		sendAllSector('sound', { file: "boom", x: self.x, y: self.y, dx: self.vx, dy: self.vy }, self.sx, self.sy);
-		delete missiles[self.sy][self.sx][self.id];
+	die() {
+		sendAllSector('sound', { file: "boom", x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
+		delete missiles[this.sy][this.sx][this.id];
 	}
-	return self;
-};
+}

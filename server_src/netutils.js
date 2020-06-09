@@ -3,20 +3,20 @@ const fetch = require('node-fetch');
 global.sendWeapons = function (player) { // tells a client what weapons that player has;
 	if (player == 0) return;
 	var worth = ships[player.ship].price * .75;
-	player.socket.emit('weapons', { weapons: player.weapons, worth: worth, ammos: player.ammos });
+	player.emit('weapons', { weapons: player.weapons, worth: worth, ammos: player.ammos });
 }
 
 global.sendAllSector = function (out, data, sx, sy) {
 	for (var p in players[sy][sx]) {
 		p = players[sy][sx][p];
-		p.socket.emit(out, data);
+		p.emit(out, data);
 	}
 }
 
 global.sendAllGlobal = function (out, data) {
 	for (var i in sockets) {
 		var p = sockets[i].player;
-		if(p.globalChat == 0) p.socket.emit(out, data);
+		if(p.globalChat == 0) p.emit(out, data);
 	}
 }
 

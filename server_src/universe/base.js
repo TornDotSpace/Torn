@@ -6,256 +6,255 @@ var Beam = require('../battle/beam.js');
 
 var fs = require('fs');
 
-module.exports = function Base(i, b, sxx, syy, col, x, y, m) {
-	var self = {
-		type: "Base",
-		kills: 0,
-		experience: 0,
-		money: 0,
-		id: i, // unique identifier
-		color: col,
-		owner: 0,
-		name: "",
-		isBase: b, // This differentiates between turrets and turrets connected to bases
-		isMini: m, // This differentiates between mini turrets and normal turrets
-		turretLive: true, // When killed, this becomes false and turret vanishes
-		angle: 0, // angle of the turret
+module.exports = class Base {
+	constructor(i, b, sx, syy, col, x, y, m) {
+		this.type = "Base",
+		this.kills = 0,
+		this.experience = 0,
+		this.money = 0,
+		this.id = i, // unique identifier
+		this.color = col,
+		this.owner = 0,
+		this.name = "",
+		this.isBase = b, // This differentiates between turrets and turrets connected to bases
+		this.isMini = m, // This differentiates between mini turrets and normal turrets
+		this.turretLive = true, // When killed, this becomes false and turret vanishes
+		this.angle = 0, // angle of the turret
 
-		x: x,
-		y: y,
-		sx: sxx,
-		sy: syy,
+		this.x = x,
+		this.y = y,
+		this.sx = sx,
+		this.sy = syy,
 
-		reload: 0, // timer for shooting
-		health: (m?.5:1)*baseHealth,
-		maxHealth: (m?.5:1)*baseHealth,
-		empTimer: -1,
-		speed: 0,//vs unused but there for bullets,
+		this.reload = 0, // timer for shooting
+		this.health = (m?.5:1)*baseHealth,
+		this.maxHealth = (m?.5:1)*baseHealth,
+		this.empTimer = -1,
+		this.speed = 0; //vs unused but there for bullets,
 	}
-	self.tick = function () {
+	tick() {
 		//spawn a bot if we need more bots
-		if(!self.isMini){
+		if(!this.isMini){
 			var botSpawn = Math.random();
-			var healthPercent = Math.max(self.health/self.maxHealth,.1);
+			var healthPercent = Math.max(this.health/this.maxHealth,.1);
 			if (botSpawn*healthPercent < botFrequency)
-				spawnBot(self.sx, self.sy, self.color, healthPercent < .9);
+				spawnBot(this.sx, this.sy, this.color, healthPercent < .9);
 		}
 
-		if (!self.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) self.turretLive = true; // revive. TODO: add a timer
+		if (!this.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) this.turretLive = true; // revive. TODO: add a timer
 
-		self.move(); // aim and fire
+		this.move(); // aim and fire
 
-		self.empTimer--;
-		self.reload--;
+		this.empTimer--;
+		this.reload--;
 
-		if (self.health < self.maxHealth) self.health += 2;
-		if (tick % 50 == 0 && !self.isBase) self.tryGiveToOwner();
+		if (this.health < this.maxHealth) this.health += 2;
+		if (tick % 50 == 0 && !this.isBase) this.tryGiveToOwner();
 	}
-	self.tryGiveToOwner = function () { // if a base's owner stands over it, they get the stuff it's earned from killing people
+	tryGiveToOwner() { // if a base's owner stands over it, they get the stuff it's earned from killing people
 
 		var player = 0; // find owner
-		for (var i in players[self.sy][self.sx])
-			if (players[self.sy][self.sx][i].name === self.owner) {
-				player = players[self.sy][self.sx][i];
+		for (var i in players[this.sy][this.sx])
+			if (players[this.sy][this.sx][i].name === this.owner) {
+				player = players[this.sy][this.sx][i];
 				break;
 			}
 		if (player == 0) return;//if we couldn't find them (they aren't in the sector)
 
-		if (squaredDist(player, self) > 40000) return;
+		if (squaredDist(player, this) > 40000) return;
 
-		player.kills += self.kills;//reward them with my earnings
-		player.spoils("experience", self.experience);
-		if (self.money > 0) player.spoils("money", self.money);
+		player.kills += this.kills;//reward them with my earnings
+		player.spoils("experience", this.experience);
+		if (this.money > 0) player.spoils("money", this.money);
 
-		self.experience = self.money = self.kills = 0; // and delete my earnings
+		this.experience = this.money = this.kills = 0; // and delete my earnings
 	}
-	self.move = function () { // aim and fire
-		if (!self.turretLive) return;
+	move() { // aim and fire
+		if (!this.turretLive) return;
 
-		if (self.empTimer > 0) return; // can't do anything if emp'd
+		if (this.empTimer > 0) return; // can't do anything if emp'd
 
-		if(self.isMini)self.fireMini();
-		else self.fire();
+		if(this.isMini)this.fireMini();
+		else this.fire();
 	}
-	self.fire = function () {
+	fire() {
 		var c = 0; // nearest player
 		var cDist2 = 1000000000; // min dist to player
-		for (var i in players[self.sy][self.sx]) {
-			var player = players[self.sy][self.sx][i];
-			if (player.color == self.color || player.disguise > 0) continue; // don't shoot at friendlies
-			var dist2 = squaredDist(player, self);
+		for (var i in players[this.sy][this.sx]) {
+			var player = players[this.sy][this.sx][i];
+			if (player.color == this.color || player.disguise > 0) continue; // don't shoot at friendlies
+			var dist2 = squaredDist(player, this);
 			if (dist2 < cDist2) { c = player; cDist2 = dist2; } // update nearest player
 		}
 
 		if (c == 0) return;
 
-		var shouldMuon = self.reload < 0 && Math.random()<.015;
-		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, shouldMuon?10000:wepns[3].speed);
-		self.angle = (self.angle+newAngle*2)/3;
+		var shouldMuon = this.reload < 0 && Math.random()<.015;
+		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, shouldMuon?10000:wepns[3].speed);
+		this.angle = (this.angle+newAngle*2)/3;
 
-		if (self.reload < 0) {
-			if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {self.shootMuon(); return;}
-			if (cDist2 < square(wepns[8].range * 10)) self.shootLaser();//range:60
-			else if (cDist2 < square(wepns[37].range * 10)) self.shootOrb();//range:125
-			else if (cDist2 < square(175 * 10)) self.shootMissile();//range:175
-			else if (cDist2 < square(wepns[3].range * 10)) self.shootRifle();//range:750
+		if (this.reload < 0) {
+			if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {this.shootMuon(); return;}
+			if (cDist2 < square(wepns[8].range * 10)) this.shootLaser();//range:60
+			else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb();//range:125
+			else if (cDist2 < square(175 * 10)) this.shootMissile();//range:175
+			else if (cDist2 < square(wepns[3].range * 10)) this.shootRifle();//range:750
 		}
 	}
-	self.fireMini = function () {
+	fireMini() {
 		var c = 0; // nearest player
 		var cDist2 = 1000000000; // min dist to player
-		for (var i in players[self.sy][self.sx]) {
-			var player = players[self.sy][self.sx][i];
-			if (player.color == self.color || player.disguise > 0) continue; // don't shoot at friendlies
-			var dist2 = squaredDist(player, self);
+		for (var i in players[this.sy][this.sx]) {
+			var player = players[this.sy][this.sx][i];
+			if (player.color == this.color || player.disguise > 0) continue; // don't shoot at friendlies
+			var dist2 = squaredDist(player, this);
 			if (dist2 < cDist2) { c = player; cDist2 = dist2; } // update nearest player
 		}
 
 		if (c == 0) return;
 
-		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, self.x, self.y, wepns[5].speed);
-		self.angle = (self.angle+newAngle*2)/3;
+		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, wepns[5].speed);
+		this.angle = (this.angle+newAngle*2)/3;
 
-		if (self.reload < 0) {
-			if (cDist2 < square(wepns[5].range * 10)) self.shootMachineGun();//range:???
+		if (this.reload < 0) {
+			if (cDist2 < square(wepns[5].range * 10)) this.shootMachineGun();//range:???
 		}
 	}
-	self.shootOrb = function () {
-		self.reload = wepns[37].charge / 2;
+	shootOrb() {
+		this.reload = wepns[37].charge / 2;
 		var r = Math.random();
-		var orb = Orb(self, r, 37);
-		orbs[self.sy][self.sx][r] = orb;
-		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
+		var orb = new Orb(this, r, 37);
+		orbs[this.sy][this.sx][r] = orb;
+		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
-	self.shootMuon = function () {
-		self.reload = wepns[34].charge / 2;
+	shootMuon() {
+		this.reload = wepns[34].charge / 2;
 		var r = Math.random();
-		var blast = Blast(self, r, 34);
-		blasts[self.sy][self.sx][r] = blast;
-		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
+		var blast = new Blast(this, r, 34);
+		blasts[this.sy][this.sx][r] = blast;
+		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
-	self.shootRifle = function () {
-		self.reload = wepns[3].charge / 2;
+	shootRifle() {
+		this.reload = wepns[3].charge / 2;
 		var r = Math.random();
-		var bullet = Bullet(self, r, 3, self.angle, 0);
-		bullets[self.sy][self.sx][r] = bullet;
-		sendAllSector('sound', { file: "shot", x: self.x, y: self.y }, self.sx, self.sy);
+		var bullet = new Bullet(this, r, 3, this.angle, 0);
+		bullets[this.sy][this.sx][r] = bullet;
+		sendAllSector('sound', { file: "shot", x: this.x, y: this.y }, this.sx, this.sy);
 	}
-	self.shootMachineGun = function () {
-		self.reload = wepns[5].charge/2;
+	shootMachineGun() {
+		this.reload = wepns[5].charge/2;
 		var r = Math.random();
-		var bullet = Bullet(self, r, 5, self.angle, 0);
-		bullets[self.sy][self.sx][r] = bullet;
-		sendAllSector('sound', { file: "shot", x: self.x, y: self.y }, self.sx, self.sy);
+		var bullet = new Bullet(this, r, 5, this.angle, 0);
+		bullets[this.sy][this.sx][r] = bullet;
+		sendAllSector('sound', { file: "shot", x: this.x, y: this.y }, this.sx, this.sy);
 	}
-	self.shootMissile = function () {//this is a torpedo
-		self.reload = wepns[14].charge/2;
+	shootMissile() {//this is a torpedo
+		this.reload = wepns[14].charge/2;
 		var r = Math.random();
-		var bAngle = self.angle;
-		var missile = Missile(self, r, 14, bAngle);
-		missiles[self.sy][self.sx][r] = missile;
-		sendAllSector('sound', { file: "missile", x: self.x, y: self.y }, self.sx, self.sy);
+		var bAngle = this.angle;
+		var missile = new Missile(this, r, 14, bAngle);
+		missiles[this.sy][this.sx][r] = missile;
+		sendAllSector('sound', { file: "missile", x: this.x, y: this.y }, this.sx, this.sy);
 	}
-	self.shootLaser = function () { // TODO merge this into Beam object, along with player.shootBeam()
+	shootLaser () { // TODO merge this into Beam object, along with player.shootBeam()
 		var nearP = 0;
-		for (var i in players[self.sy][self.sx]) {
-			var p = players[self.sy][self.sx][i];
-			if (p.color == self.color || p.sx != self.sx || p.sy != self.sy) continue;
+		for (var i in players[this.sy][this.sx]) {
+			var p = players[this.sy][this.sx][i];
+			if (p.color == this.color || p.sx != this.sx || p.sy != this.sy) continue;
 			if (nearP == 0) {
 				nearP = p;
 				continue;
 			}
-			var dx = p.x - self.x, dy = p.y - self.y;
-			if (dx * dx + dy * dy < squaredDist(nearP, self)) nearP = p;
+			var dx = p.x - this.x, dy = p.y - this.y;
+			if (dx * dx + dy * dy < squaredDist(nearP, this)) nearP = p;
 		}
 		if (nearP == 0) return;
 		var r = Math.random();
-		var beam = Beam(self, r, 8, nearP, self);
-		beams[self.sy][self.sx][r] = beam;
-		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
-		self.reload = wepns[8].charge / 2;
+		var beam = new Beam(this, r, 8, nearP, this);
+		beams[this.sy][this.sx][r] = beam;
+		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
+		this.reload = wepns[8].charge / 2;
 	}
-	self.die = function (b) {
-		if (!self.turretLive) return;
+	die (b) {
+		if (!this.turretLive) return;
 
-		deleteTurret(self);
+		deleteTurret(this);
 		
-		self.health = self.maxHealth;
-		self.turretLive = false;
-		sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
+		this.health = this.maxHealth;
+		this.turretLive = false;
+		sendAllSector('sound', { file: "bigboom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
-		if (!self.isBase) {
-			bases[self.sy][self.sx] = 0;
-			self.die = function() { };
+		if (!this.isBase) {
+			bases[this.sy][this.sx] = 0;
+			this.die = function() { };
 		} else {
 			var numBotsToSpawn = 2+4*Math.random()*Math.random();
-			for(var i = 0; i < numBotsToSpawn; i++) spawnBot(self.sx, self.sy, self.color, true);
+			for(var i = 0; i < numBotsToSpawn; i++) spawnBot(this.sx, this.sy, this.color, true);
 		}
 
 		//If I was killed by an asteroid...
 		if (b.type == 'Asteroid') {
-			self.sendDeathMsg("an asteroid");
+			this.sendDeathMsg("an asteroid");
 			return;
 		}
 
 		//Or a player...
 		if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-			self.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
+			this.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
-			var multiplier = self.isMini?.4:self.sy;
+			var multiplier = this.isMini?.4:this.sy;
 			var numInRange = 0;
-			for (var i in players[self.sy][self.sx]) { // Count all players in range
-				var p = players[self.sy][self.sx][i];
-				if (squaredDist(p, self) < square(baseClaimRange) && p.color === b.owner.color) numInRange++;
+			for (var i in players[this.sy][this.sx]) { // Count all players in range
+				var p = players[this.sy][this.sx][i];
+				if (squaredDist(p, this) < square(baseClaimRange) && p.color === b.owner.color) numInRange++;
 			}
 			multiplier/=numInRange;
-			for (var i in players[self.sy][self.sx]) { // Reward appropriately
-				var p = players[self.sy][self.sx][i];
-				if (squaredDist(p, self) < square(baseClaimRange) && p.color === b.owner.color) {
+			for (var i in players[this.sy][this.sx]) { // Reward appropriately
+				var p = players[this.sy][this.sx][i];
+				if (squaredDist(p, this) < square(baseClaimRange) && p.color === b.owner.color) {
 					p.spoils("experience", baseKillExp*multiplier); // reward them
 					p.spoils("money", baseKillMoney*multiplier);
 				}
 			}
 
-			if (raidTimer < 15000 && !self.isMini) { // during a raid
+			if (raidTimer < 15000 && !this.isMini) { // during a raid
 				b.owner.points++; // give a point to the killer
 
-				for (var i in players[self.sy][self.sx]) { // as well as all other players in that sector
-					var p = players[self.sy][self.sx][i];
-					if (p.color !== self.color) p.points+=2;
+				for (var i in players[this.sy][this.sx]) { // as well as all other players in that sector
+					var p = players[this.sy][this.sx][i];
+					if (p.color !== this.color) p.points+=2;
 				}
 			}
 		}
 	}
 
-	self.save = function () {
-		saveTurret(self);
+	save() {
+		saveTurret(this);
 	}
-	self.sendDeathMsg = function (killedBy) {
-		chatAll("The " + (self.isBase ? "base" : (self.isMini?"Sentry":"Turret")) + " at sector " + self.nameWithColor() + " was destroyed by " + killedBy + ".");
+	sendDeathMsg(killedBy) {
+		chatAll("The " + (this.isBase ? "base" : (this.isMini?"Sentry":"Turret")) + " at sector " + this.nameWithColor() + " was destroyed by " + killedBy + ".");
 	}
-	self.getSectorName = function () {
-		return String.fromCharCode(97 + sxx).toUpperCase() + "" + (syy + 1);
+	getSectorName() {
+		return String.fromCharCode(97 + this.sx).toUpperCase() + "" + (this.sy + 1);
 	}
-	self.EMP = function (t) {
-		self.empTimer = t;
+	EMP(t) {
+		this.empTimer = t;
 	}
 
-	self.onKill = function () {
-		self.kills++;
+	onKill() {
+		this.kills++;
 	}
-	self.dmg = function (d, origin) {
-		self.health -= d;
-		if (self.health < 0) self.die(origin);
-		note('-' + d, self.x, self.y - 64, self.sx, self.sy);
-		return self.health < 0;
+	dmg(d, origin) {
+		this.health -= d;
+		if (this.health < 0) this.die(origin);
+		note('-' + d, this.x, this.y - 64, this.sx, this.sy);
+		return this.health < 0;
 	}
-	self.spoils = function (type, amt) {
-		if (type === "experience") self.experience += amt;
-		if (type === "money") self.money += amt;
+	spoils(type, amt) {
+		if (type === "experience") this.experience += amt;
+		if (type === "money") this.money += amt;
 	}
-	self.nameWithColor = function(){ // returns something like "~`green~`B6~`yellow~`"
-		return "~`"+self.color+"~`"+self.getSectorName()+"~`yellow~`";
+	nameWithColor(){ // returns something like "~`green~`B6~`yellow~`"
+		return "~`"+this.color+"~`"+this.getSectorName()+"~`yellow~`";
 	}
-	return self;
-};
+}

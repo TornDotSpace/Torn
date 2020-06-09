@@ -4,7 +4,7 @@ var Filter = require('bad-words'); // bad-words node package
 var filter = new Filter();
 
 filter.removeWords('god', 'hell', 'crap', 'flipping the bird', 'Lipshitz', 'Lipshits', 'polack', 'screwing', 'slut', 'sluts', 'hui', 'poop', 'screw');
-var Player = require('./player.js');
+var PlayerMP = require('./player_mp.js');
 require('./netutils.js');
 require("./command.js");
 var exec = require('child_process').execSync;
@@ -146,7 +146,7 @@ module.exports = function initNetcode() {
                 }
             }
             
-            player = new Player(socket);
+            player = new PlayerMP(socket);
             socket.player = player;
             player.guest = true;
             instance = true;
