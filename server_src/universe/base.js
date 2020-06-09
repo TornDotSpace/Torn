@@ -123,7 +123,7 @@ module.exports = class Base {
 	shootOrb() {
 		this.reload = wepns[37].charge / 2;
 		var r = Math.random();
-		var orb = Orb(this, r, 37);
+		var orb = new Orb(this, r, 37);
 		orbs[this.sy][this.sx][r] = orb;
 		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}

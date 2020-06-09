@@ -1082,7 +1082,7 @@ function Player(sock) {
 	}
 	self.shootOrb = function () {
 		var r = Math.random();
-		var orb = Orb(self, r, self.weapons[self.equipped]);
+		var orb = new Orb(self, r, self.weapons[self.equipped]);
 		orbs[self.sy][self.sx][r] = orb;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}
