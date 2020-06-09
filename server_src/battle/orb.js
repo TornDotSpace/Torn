@@ -73,8 +73,8 @@ module.exports = class Orb {
 					this.die();
 					return;
 				}
-				this.vx += wepns[wepnID].speed * (target.x - this.x) / dist; // accelerate towards target
-				this.vy += wepns[wepnID].speed * (target.y - this.y) / dist;
+				this.vx += wepns[this.wepnID].speed * (target.x - this.x) / dist; // accelerate towards target
+				this.vy += wepns[this.wepnID].speed * (target.y - this.y) / dist;
 				this.vx *= .9; // air resistance
 				this.vy *= .9;
 			}
