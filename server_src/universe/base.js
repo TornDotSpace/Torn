@@ -48,8 +48,13 @@ module.exports = class Base {
 		this.empTimer--;
 		this.reload--;
 
+<<<<<<< HEAD
 		if (this.health < this.maxHealth) this.health += 1.5;
 		if (tick % 50 == 0 && !this.isBase) this.tryGiveToOwner();
+=======
+		if (self.health < self.maxHealth) self.health += 2;
+		if (tick % 50 == 0 && !self.isBase) self.tryGiveToOwner();
+>>>>>>> origin/master
 	}
 	tryGiveToOwner() { // if a base's owner stands over it, they get the stuff it's earned from killing people
 
@@ -202,7 +207,7 @@ module.exports = class Base {
 		if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
 			this.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
-			var multiplier = this.isMini?.2:this.sy;
+			var multiplier = this.isMini?.4:this.sy;
 			var numInRange = 0;
 			for (var i in players[this.sy][this.sx]) { // Count all players in range
 				var p = players[this.sy][this.sx][i];

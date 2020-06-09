@@ -38,7 +38,7 @@ def updateLB(conn_str, path):
         if "O" in name:
             continue
         i = i + 1
-        if i > 3000:
+        if i > 2000:
             break
         kills = player['kills']
         rank = player['rank']

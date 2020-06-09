@@ -16,8 +16,7 @@ global.sendAllSector = function (out, data, sx, sy) {
 global.sendAllGlobal = function (out, data) {
 	for (var i in sockets) {
 		var p = sockets[i].player;
-		if(p.globalChat != 0) continue;
-		p.socket.emit(out, data);
+		if(p.globalChat == 0) p.socket.emit(out, data);
 	}
 }
 
@@ -53,12 +52,12 @@ module.exports = function () {
 };
 
 
-global.playerChat = function (msg, gc, team, sx, sy) { // chat in whatever chat room the player is in
+global.playerChat = function (msg, gc, team, sx, sy, guild) { // chat in whatever chat room the player is in
 	for (var i in sockets) {
 		var player = sockets[i].player;
 		if (typeof player === "undefined") continue;
 		if (gc == 1 && player.color != team) continue; // they arent on the same team
-		if (gc == 2 && (sx != player.sx || sy != player.sy)) continue; // they arent in the same sector
+		if (gc == 2 && (player.guild !== guild || guild.length*player.guild.length == 0)) continue; // they arent in the same guild
 		sockets[i].emit("chat", {msg:msg, gc:gc});
 	}
 }
