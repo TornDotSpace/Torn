@@ -1158,7 +1158,7 @@ function Player(sock) {
 	}
 	self.shootBlast = function (currWep) {
 		var r = Math.random();
-		var blast = Blast(self, r, currWep);
+		var blast = new Blast(self, r, currWep);
 		blasts[self.sy][self.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: self.x, y: self.y }, self.sx, self.sy);
 	}

@@ -130,7 +130,7 @@ module.exports = class Base {
 	shootMuon() {
 		this.reload = wepns[34].charge / 2;
 		var r = Math.random();
-		var blast = Blast(this, r, 34);
+		var blast = new Blast(this, r, 34);
 		blasts[this.sy][this.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
