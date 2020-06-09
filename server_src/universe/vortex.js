@@ -1,41 +1,41 @@
-module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm) {
-	var self = {
+module.exports = class Vortex {
 
-		isWorm: isWorm, // am i a wormhole or black hole
+	constructor(i, x, y, sxx, syy, size, ownr, isWorm) {
 
-		sxo: Math.floor(Math.random() * mapSz), // output node location for wormhole
-		syo: Math.floor(Math.random() * mapSz),
-		xo: Math.random() * sectorWidth,
-		yo: Math.random() * sectorWidth,
+		this.isWorm = isWorm, // am i a wormhole or black hole
+		this.sxo = Math.floor(Math.random() * mapSz), // output node location for wormhole
+		this.syo = Math.floor(Math.random() * mapSz),
+		this.xo = Math.random() * sectorWidth,
+		this.yo = Math.random() * sectorWidth,
 
-		type: "Vortex",
-		wepnID: 28,
-		owner: ownr,
-		id: i, // unique identifier
+		this.type = "Vortex",
+		this.wepnID = 28,
+		this.owner = ownr,
+		this.id = i, // unique identifier
 
-		vx:0,
-		vy:0,
-		x: x, //input node or black hole location
-		y: y,
-		sx: sxx,
-		sy: syy,
+		this.vx = 0,
+		this.vy = 0,
+		this.x = x, //input node or black hole location
+		this.y = y,
+		this.sx = sxx,
+		this.sy = syy,
 
-		size: size,
+		this.size = size;
 	}
-	self.tick = function () {
+	tick() {
 
-		self.move();
+		this.move();
 
-		if (self.owner != 0) { // if I'm a gravity bomb
-			self.size -= 6; // shrink with time
-			if (self.size < 0) self.die();
+		if (this.owner != 0) { // if I'm a gravity bomb
+			this.size -= 6; // shrink with time
+			if (this.size < 0) this.die();
 		}
 
-		else self.size = 2500;
+		else this.size = 2500;
 	}
 
-	self.move = function () {
-		if (self.isWorm) {
+	move() {
+		if (this.isWorm) {
 
 			var t = tick / 40000;
 
@@ -45,27 +45,27 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm) {
 			var bx = Math.sin(7.197 * t) / 2 + .5;
 			var by = -Math.sin(5.019 * t) / 2 + .5;
 
-			var oldSx = self.sx;
-			var oldSy = self.sy;
+			var oldSx = this.sx;
+			var oldSy = this.sy;
 
-			self.sx = Math.floor(bx * mapSz);
-			self.sy = Math.floor(by * mapSz);
+			this.sx = Math.floor(bx * mapSz);
+			this.sy = Math.floor(by * mapSz);
 
-			if (oldSx != self.sx || oldSy != self.sy) {
-				vorts[self.sy][self.sx][self.id] = vorts[oldSy][oldSx][self.id];
-				delete vorts[oldSy][oldSx][self.id];
+			if (oldSx != this.sx || oldSy != this.sy) {
+				vorts[this.sy][this.sx][this.id] = vorts[oldSy][oldSx][this.id];
+				delete vorts[oldSy][oldSx][this.id];
 			}
 
-			self.x = ((bx * mapSz) % 1) * sectorWidth;
-			self.y = ((by * mapSz) % 1) * sectorWidth;
+			this.x = ((bx * mapSz) % 1) * sectorWidth;
+			this.y = ((by * mapSz) % 1) * sectorWidth;
 
 			//output node
 			var bxo = -Math.sin(9.180 * t) / 2 + .5;
 			var byo = Math.sin(10.3847 * t) / 2 + .5;
-			self.sxo = Math.floor(bxo * mapSz);
-			self.syo = Math.floor(byo * mapSz);
-			self.xo = ((bxo * mapSz) % 1) * sectorWidth;
-			self.yo = ((byo * mapSz) % 1) * sectorWidth;
+			this.sxo = Math.floor(bxo * mapSz);
+			this.syo = Math.floor(byo * mapSz);
+			this.xo = ((bxo * mapSz) % 1) * sectorWidth;
+			this.yo = ((byo * mapSz) % 1) * sectorWidth;
 
 			// every 2 seconds, tell the players where I am (for radar only, I think)
 			if (tick % 50 == 0) sendAll('worm', { bx: bx, by: by, bxo: bxo, byo: byo });
@@ -73,20 +73,20 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm) {
 		}
 
 
-		for (var i in players[self.sy][self.sx]) {
-			var p = players[self.sy][self.sx][i];
+		for (var i in players[this.sy][this.sx]) {
+			var p = players[this.sy][this.sx][i];
 
 			// compute distance and angle to players
-			var dist = Math.pow(squaredDist(self, p), 0.25);
-			var a = angleBetween(p, self);
+			var dist = Math.pow(squaredDist(this, p), 0.25);
+			var a = angleBetween(p, this);
 			//then move them.
 			var guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
-			p.x -= guestMult * .40 * self.size / dist * Math.cos(a);
-			p.y -= guestMult * .40 * self.size / dist * Math.sin(a);
+			p.x -= guestMult * .40 * this.size / dist * Math.cos(a);
+			p.y -= guestMult * .40 * this.size / dist * Math.sin(a);
 
-			if (dist < 15 && !self.isWorm) { // collision with black hole
+			if (dist < 15 && !this.isWorm) { // collision with black hole
 
-				p.die(self); // i think it's important that this happens before we give them the achievements
+				p.die(this); // i think it's important that this happens before we give them the achievements
 
 				if (p.e) {
 					p.driftAchs[8] = true; // drift into a black hole
@@ -96,16 +96,16 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm) {
 				p.randmAchs[4] = true; // fall into a black hole
 				p.sendAchievementsMisc(true);
 
-			} else if (dist < 15 && self.isWorm) { // collision with wormhole
+			} else if (dist < 15 && this.isWorm) { // collision with wormhole
 
 				p.randmAchs[3] = true; // fall into a wormhole
 				p.sendAchievementsMisc(true);
 
 				delete players[p.sy][p.sx][p.id];
-				p.sx = self.sxo;
-				p.sy = self.syo;
-				p.y = self.yo;
-				p.x = self.xo; // teleport them to the output node
+				p.sx = this.sxo;
+				p.sy = this.syo;
+				p.y = this.yo;
+				p.x = this.xo; // teleport them to the output node
 
 				p.onChangeSectors();
 
@@ -113,13 +113,12 @@ module.exports = function Vortex(i, x, y, sxx, syy, size, ownr, isWorm) {
 			}
 		}
 	}
-	self.die = function (b) {
-		sendAllSector('sound', { file: "bigboom", x: self.x, y: self.y, dx: 0, dy: 0 }, self.sx, self.sy);
-		delete vorts[self.sy][self.sx][self.id];
+	die(b) {
+		sendAllSector('sound', { file: "bigboom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+		delete vorts[this.sy][this.sx][this.id];
 	}
-	self.onKill = function () {
+	onKill() {
 	} // do we need these functions here? :thonk: I think we might be calling em
-	self.spoils = function (type, amt) {
+	spoils(type, amt) {
 	}
-	return self;
 };
