@@ -1,9 +1,9 @@
-var PlayerMP = require("./player_mp.js");
-var MONGO_CONNECTION_STR = Config.getValue("mongo_connection_string", "mongodb://localhost:27017/torn");
-var PLAYER_DATABASE = null;
-var TURRET_DATABASE = null;
-var Mongo = require('mongodb').MongoClient(MONGO_CONNECTION_STR, { useUnifiedTopology: true })
-var Base = require('./universe/base.js');
+let PlayerMP = require("./player_mp.js");
+let MONGO_CONNECTION_STR = Config.getValue("mongo_connection_string", "mongodb://localhost:27017/torn");
+let PLAYER_DATABASE = null;
+let TURRET_DATABASE = null;
+let Mongo = require('mongodb').MongoClient(MONGO_CONNECTION_STR, { useUnifiedTopology: true })
+let Base = require('./universe/base.js');
 
 // TODO: Implement failover in the event we lose connection
 // to MongoDB
@@ -21,7 +21,7 @@ global.connectToDB = function () {
             return;
         }
 
-        var db = client.db('torn');
+        let db = client.db('torn');
         PLAYER_DATABASE = db.collection('players');
         TURRET_DATABASE = db.collection('turrets');
 
@@ -35,13 +35,13 @@ global.handlePlayerDeath = async function (player) {
 
     if (player.guest) return;
     
-    var record = await PLAYER_DATABASE.findOne({_id: player._id});
+    let record = await PLAYER_DATABASE.findOne({_id: player._id});
 
     if (record == null) return;
     
     // Certain variables should NOT be reverted
     const persist = [ "lastLogin", "randAchs", "killAchs", "moneyAchs", "driftAchs", "planetsClaimed", "lives", "experience", "rank" ];
-    for (var key in record) {
+    for (let key in record) {
         if (key in persist) continue;
 
         player[key] = record[key];
@@ -53,10 +53,10 @@ global.handlePlayerDeath = async function (player) {
 
 global.loadPlayerData = async function (playerName, socket) {
     
-    var record = await PLAYER_DATABASE.findOne({ _id: playerName });
-    var player = new PlayerMP(socket);
+    let record = await PLAYER_DATABASE.findOne({ _id: playerName });
+    let player = new PlayerMP(socket);
 
-    for (var key in record) {
+    for (let key in record) {
         if (key === "password" || key === "email") continue; // don't load passwords into memory
         player[key] = record[key];
     }
@@ -80,7 +80,7 @@ global.loadPlayerData = async function (playerName, socket) {
 }
 
 global.saveTurret = function (turret) {
-    var record = {
+    let record = {
         id : turret.id,
         kills: turret.kills,
         experience: turret.experience,
@@ -102,11 +102,11 @@ global.deleteTurret = function (turret) {
 
 global.loadTurretData = async function() {
     console.log("\nLoading Turrets...");
-    var items = await TURRET_DATABASE.find();
+    let items = await TURRET_DATABASE.find();
 
     items.forEach(i => {
-        var b = new Base(0, false, 0, 0, 0, 0, 0);
-        for (var x in i) {
+        let b = new Base(0, false, 0, 0, 0, 0, 0);
+        for (let x in i) {
             b[x] = i[x];
         }
         bases[b.sy][b.sx] = b;
@@ -118,7 +118,7 @@ global.savePlayerEmail = function(player, email) {
     PLAYER_DATABASE.updateOne( {_id : player._id}, {$set : { "email" : email }}, {upsert : true});
 }
 global.savePlayerData = function (player) {
-    var record = {
+    let record = {
         color: player.color,
         ship : player.ship,
         weapons : player.weapons,

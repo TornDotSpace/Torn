@@ -1,6 +1,6 @@
-var Player = require('./player.js');
-var Package = require("./universe/package.js");
-var fs = require('fs');
+let Player = require('./player.js');
+let Package = require("./universe/package.js");
+let fs = require('fs');
 
 class Bot extends Player {
     constructor(id) {
@@ -14,26 +14,26 @@ class Bot extends Player {
 
         this.equipped = 0;
         while (this.ammos[this.equipped] == 0) this.equipped++; // select the first available weapon with ammo
-        var range = square(wepns[this.equipped].range * 10);
+        let range = square(wepns[this.equipped].range * 10);
 
         this.w = this.e = this.s = this.c = this.space = false; // release all keys
 
         //Find closest enemy and any friendly in the sector
-        var target = 0, close = 100000000;
-        var anyFriend = 0;
-        var friendlies = 0, enemies = 0;//keep track of the player counts in the sector
-        for (var p in players[this.sy][this.sx]) {
-            var player = players[this.sy][this.sx][p];
+        let target = 0, close = 100000000;
+        let anyFriend = 0;
+        let friendlies = 0, enemies = 0;//keep track of the player counts in the sector
+        for (let p in players[this.sy][this.sx]) {
+            let player = players[this.sy][this.sx][p];
             if (this.id == player.id || player.disguise > 0) continue;
             if (player.color === this.color) { friendlies++; continue; }
             enemies++;
-            var dist2 = hypot2(player.x, this.x, player.y, this.y);
+            let dist2 = hypot2(player.x, this.x, player.y, this.y);
             if (dist2 < close) {
 
                 // Nerf bots 
                 // Allow only low bots (0-3) to attack guests
                 // Bots will avoid attack players where the player is 7 or more levels lower than it
-                var nerfAmt = (player.guest) ? -4 : -7;
+                let nerfAmt = (player.guest) ? -4 : -7;
 
                 if (player.rank - this.rank <= nerfAmt) continue;
 
@@ -44,12 +44,12 @@ class Bot extends Player {
         }
 
         //Move towards the enemy
-        var movex = 0, movey = 0;
+        let movex = 0, movey = 0;
         if (target != 0) { movex = target.x - this.x; movey = target.y - this.y; }
 
-        var base = bases[this.sy][this.sx];
+        let base = bases[this.sy][this.sx];
         if (base != 0 && base.color != this.color) {
-            var dist2 = hypot2(base.x, this.x, base.y, this.y);
+            let dist2 = hypot2(base.x, this.x, base.y, this.y);
             if (friendlies > 0 && enemies == 0) target = base;
             else if (dist2 < square(10 * sectorWidth / 2)) { movex = this.x - base.x; movey = this.y - base.y; }
         }
@@ -65,29 +65,29 @@ class Bot extends Player {
             this.a = Math.random() < .1;
             this.w = true;
             if (this.brainwashedBy != 0) {
-                var player = players[this.sy][this.sx][this.brainwashedBy];
+                let player = players[this.sy][this.sx][this.brainwashedBy];
                 if (typeof player === "undefined") return;
-                var myX = this.x + this.sx * sectorWidth;
-                var myY = this.y + this.sy * sectorWidth;
-                var theirX = player.x + player.sx * sectorWidth;
-                var theirY = player.y + player.sy * sectorWidth;
-                var turn = -(this.angle - Math.atan2(theirY - myY, theirX - myX) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+                let myX = this.x + this.sx * sectorWidth;
+                let myY = this.y + this.sy * sectorWidth;
+                let theirX = player.x + player.sx * sectorWidth;
+                let theirY = player.y + player.sy * sectorWidth;
+                let turn = -(this.angle - Math.atan2(theirY - myY, theirX - myX) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
                 this.d = turn > this.cva * this.cva * 10;
                 this.a = turn < -this.cva * this.cva * 10;
             }
         } else if (target == 0) {//escaping base
-            var turn = -(this.angle - Math.atan2(base.y - this.y, base.x - this.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+            let turn = -(this.angle - Math.atan2(base.y - this.y, base.x - this.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
             this.a = turn > this.cva * this.cva * 10;
             this.d = turn < -this.cva * this.cva * 10;
             this.w = true;
         } else if (anyFriend != 0 || (this.health < this.maxHealth / 3.5)) {//fleeing
-            var turn = -(this.angle - Math.atan2(target.y - this.y, target.x - this.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+            let turn = -(this.angle - Math.atan2(target.y - this.y, target.x - this.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
             this.a = turn > this.cva * this.cva * 10;
             this.d = turn < -this.cva * this.cva * 10;
             this.w = this.s = true;
         } else {//fighting
             this.space = this.e = close < range * 1.2;
-            var turn = -(this.angle - calculateInterceptionAngle(target.x, target.y, target.vx, target.vy, this.x, this.y, wepns[this.equipped].speed) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+            let turn = -(this.angle - calculateInterceptionAngle(target.x, target.y, target.vx, target.vy, this.x, this.y, wepns[this.equipped].speed) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
             this.d = turn > this.cva * this.cva * 10;
             this.a = turn < -this.cva * this.cva * 10;
             this.s = this.space && Math.abs(turn) > Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
@@ -100,10 +100,10 @@ class Bot extends Player {
         if (b === undefined) {
             return;
         }
-        var diff = .02 * this.experience;
+        let diff = .02 * this.experience;
 		if (b.type !== "Vortex"){
 			//drop a package
-			var r = Math.random();
+			let r = Math.random();
 			if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier)
 			else if (Math.random() < .012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);//life
 			else if (Math.random() < .1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);//ammo
@@ -143,25 +143,25 @@ class NeuralNetBot extends Bot {
 
         this.equipped = 0; // select first weapon with ammo
         while (this.ammos[this.equipped] == 0) this.equipped++;
-        var range = square(wepns[this.equipped].range * 10);
+        let range = square(wepns[this.equipped].range * 10);
 
-        var totalFriends = 0; // in sector
-        var totalEnemies = 0;
-        var sumFriendRank = 0; // sum of ranks of all friends in this sector. Not using yet.
-        var sumEnemyRank = 0;
+        let totalFriends = 0; // in sector
+        let totalEnemies = 0;
+        let sumFriendRank = 0; // sum of ranks of all friends in this sector. Not using yet.
+        let sumEnemyRank = 0;
 
         //Find the closest friend and enemy
-        var target = 0, friend = 0, closeE = 100000000, closeF = 100000000;
-        for (var p in players[this.sy][this.sx]) {
-            var player = players[this.sy][this.sx][p];
+        let target = 0, friend = 0, closeE = 100000000, closeF = 100000000;
+        for (let p in players[this.sy][this.sx]) {
+            let player = players[this.sy][this.sx][p];
             if (this.id == player.id || player.disguise > 0) continue;
             if (player.color === this.color) {
                 totalFriends++;
-                var dist2 = squaredDist(player, this);
+                let dist2 = squaredDist(player, this);
                 if (dist2 < closeF) { friend = player; closeF = dist2; }
             } else {
                 totalEnemies++;
-                var dist2 = squaredDist(player, this);
+                let dist2 = squaredDist(player, this);
                 if (dist2 < closeE) { target = player; closeE = dist2; }
             }
         }
@@ -171,7 +171,7 @@ class NeuralNetBot extends Bot {
         if (totalEnemies == 0 && Math.random() < botDespawnRate) this.die();
 
         //make input array (into neural net). Normalize the variables to prevent overflow
-        var input = {};
+        let input = {};
         input[0] = this.rank / 8.;
         input[1] = this.ammos[this.equipped] / 50;
         input[2] = this.health / this.maxHealth;
@@ -193,7 +193,7 @@ class NeuralNetBot extends Bot {
         input[15] = target == 0 ? 0 : target.ship;
 
         //forward NN
-        var out = this.net.passThrough(input);
+        let out = this.net.passThrough(input);
 
         //Set controls to output array
         this.space = out[0];
@@ -204,7 +204,7 @@ class NeuralNetBot extends Bot {
         this.d = out[5];
     }
 }
-var botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");
+let botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");
 
 global.spawnBot = function (sx, sy, col, force) {
 	if (!Config.getValue("want-bots", true)) return;
@@ -217,12 +217,12 @@ global.spawnBot = function (sx, sy, col, force) {
 		spawnNNBot(sx, sy, col);
 		return;
 	}
-	var id = Math.random();
-	var bot = new Bot(id);
+	let id = Math.random();
+	let bot = new Bot(id);
 	bot.angle = Math.random()*Math.PI*2;
 	bot.sx = sx;
 	bot.sy = sy;
-	var rand = 4.2 * Math.random();
+	let rand = 4.2 * Math.random();
 	bot.experience = Math.sqrt(Math.pow(2, Math.pow(2, rand))-2)*sy*sy*sy + 3 * rand;
 	bot.updateRank();
 	bot.ship = bot.rank;
@@ -235,7 +235,7 @@ global.spawnBot = function (sx, sy, col, force) {
 	bot.thrust = ships[bot.ship].thrust * bot.thrust2;
 	bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
 	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
-	for (var i = 0; i < 10; i++) {
+	for (let i = 0; i < 10; i++) {
 		do bot.weapons[i] = Math.floor(Math.random() * wepns.length);
 		while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot)
 	}
@@ -247,10 +247,10 @@ global.spawnNNBot = function (sx, sy, col) {
 	if (trainingMode) { sx = 2; sy = 4; }
 	if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 	id = Math.random();
-	var bot = new NeuralNetBot(id);
+	let bot = new NeuralNetBot(id);
 	bot.sx = sx;
 	bot.sy = sy;
-	var rand = .33 + 3.67 * Math.random();
+	let rand = .33 + 3.67 * Math.random();
 	bot.experience = trainingMode ? 150 : (Math.floor(Math.pow(2, Math.pow(2, rand))) / 8 + 3 * rand);//TODO change /8 to /4
 	bot.updateRank();
 	bot.ship = bot.rank;
@@ -266,7 +266,7 @@ global.spawnNNBot = function (sx, sy, col) {
 	bot.thrust = ships[bot.ship].thrust * bot.thrust2;
 	bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
 	bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
-	for (var i = 0; i < 10; i++) {
+	for (let i = 0; i < 10; i++) {
 		do bot.weapons[i] = Math.floor(Math.random() * wepns.length);
 		while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot)
 		if (trainingMode) bot.weapons[i] = 1;

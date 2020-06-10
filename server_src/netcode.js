@@ -1,16 +1,16 @@
-var fs = require('fs');
+let fs = require('fs');
 
-var Filter = require('bad-words'); // bad-words node package
-var filter = new Filter();
+let Filter = require('bad-words'); // bad-words node package
+let filter = new Filter();
 
 filter.removeWords('god', 'hell', 'crap', 'flipping the bird', 'Lipshitz', 'Lipshits', 'polack', 'screwing', 'slut', 'sluts', 'hui', 'poop', 'screw');
-var PlayerMP = require('./player_mp.js');
+let PlayerMP = require('./player_mp.js');
 require('./netutils.js');
 require("./command.js");
-var exec = require('child_process').execSync;
+let exec = require('child_process').execSync;
 const msgpack = require('socket.io-msgpack-parser');
 
-var guestNumber = 0; // Enumerate guests since server boot
+let guestNumber = 0; // Enumerate guests since server boot
 
 // Global mute table 
 global.muteTable = {};
@@ -23,14 +23,14 @@ function expToLife(exp, guest) { // how much a life costs, given your exp and wh
 }
 
 function runCommand(player, msg) { // player just sent msg in chat and msg starts with a /
-    var toLower = msg.toLowerCase();
-    var command = cmds[toLower.split(" ")[0]];
+    let toLower = msg.toLowerCase();
+    let command = cmds[toLower.split(" ")[0]];
     if (command === undefined) {
         player.socket.emit("chat", { msg: "~`red~`Unknown Command. Use /help for a list of commands! ~`red~`" });
     } else {
         // Check for permissions
-        var permitted = false;
-        for(var p in player.permissionLevels){
+        let permitted = false;
+        for(let p in player.permissionLevels){
             if (command.permissions.includes(player.permissionLevels[p])) {
                 permitted = true;
                 break;
@@ -46,9 +46,9 @@ function runCommand(player, msg) { // player just sent msg in chat and msg start
 }
 
 module.exports = function initNetcode() {
-    var port = process.argv[2];
+    let port = process.argv[2];
     console.log("");
-    for (var i = 0; i < 5; i++) console.log("=== STARTING SERVER ON PORT " + port + " ===");
+    for (let i = 0; i < 5; i++) console.log("=== STARTING SERVER ON PORT " + port + " ===");
 
     const http = require("http");
     const https = require("https");
@@ -62,7 +62,7 @@ module.exports = function initNetcode() {
         cert: (cert != null) ? fs.readFileSync(cert) : cert
     } : {};
 
-    var server = (protocol == https) ?
+    let server = (protocol == https) ?
         protocol.createServer(options)
         : protocol.createServer();
 
@@ -80,7 +80,7 @@ module.exports = function initNetcode() {
         console.error("Failed to retrieve protocol version, all clients will be allowed!");
     }
 
-    var socketio = require('socket.io');
+    let socketio = require('socket.io');
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js    
     global.io = socketio(server, {
         serveClient: false,
@@ -92,16 +92,16 @@ module.exports = function initNetcode() {
 
     io.sockets.on('connection', function (socket) {
         socket.start = Date.now();
-        var instance = false;
+        let instance = false;
         sockets[socket.id] = socket;
 
-        var ip = Config.getValue("want-xreal-ip", true)
+        let ip = Config.getValue("want-xreal-ip", true)
             ? socket.handshake.headers['x-real-ip']
             : socket.handshake.address;
 
-        var player = 0;
+        let player = 0;
 
-        var socket_color = 0; // the color of this socket, only used for when spawning a guest for the first time.
+        let socket_color = 0; // the color of this socket, only used for when spawning a guest for the first time.
 
         socket.io_on = socket.on;
 
@@ -157,8 +157,8 @@ module.exports = function initNetcode() {
             player.color = socket_color;
             player.sx = baseMap[player.color][0];
             player.sy = baseMap[player.color][1];
-            for (var i = 0; i < ships[player.ship].weapons; i++) player.weapons[i] = -1;
-            for (var i = ships[player.ship].weapons; i < 10; i++) player.weapons[i] = -2;
+            for (let i = 0; i < ships[player.ship].weapons; i++) player.weapons[i] = -1;
+            for (let i = ships[player.ship].weapons; i < 10; i++) player.weapons[i] = -2;
             player.weapons[0] = 0;
             socket.emit("guested", {id: player.id});
             player.sendStatus();
@@ -189,10 +189,10 @@ module.exports = function initNetcode() {
                 return;
             }
 
-            var playerDocked = dockers[socket.id];
+            let playerDocked = dockers[socket.id];
             if (typeof playerDocked === "undefined") return;
 
-            var user = data.user, pass = data.pass;
+            let user = data.user, pass = data.pass;
 
             if (typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)) {
                 socket.emit("invalidReg", { reason: 2 });
@@ -211,7 +211,7 @@ module.exports = function initNetcode() {
             }
             
             player.guest = false;
-            var response = await send_rpc("/register/", user + "%" + pass);
+            let response = await send_rpc("/register/", user + "%" + pass);
 
             if (!response.ok) {
                 player.guest = true;
@@ -223,7 +223,7 @@ module.exports = function initNetcode() {
 
             player.permissionLevels=[0];
             socket.emit("registered", { user: data.user, pass: data.pass });
-            var text = player.nameWithColor() + ' registered!';
+            let text = player.nameWithColor() + ' registered!';
             console.log(text);
             chatAll(text);
 
@@ -245,7 +245,7 @@ module.exports = function initNetcode() {
                 }
             }
 
-            var response = await send_rpc("/login/", data.cookie);
+            let response = await send_rpc("/login/", data.cookie);
             
             if (!response.ok) {
                 socket.emit('badcookie');
@@ -253,14 +253,14 @@ module.exports = function initNetcode() {
                 return; 
             }
 
-            var name = await response.text();
+            let name = await response.text();
             player = await loadPlayerData(name, socket);
             player.ip = ip;
 
-            var wait_time = 0;
+            let wait_time = 0;
             
-            for (var p in sockets) {
-                var curr_socket = sockets[p];
+            for (let p in sockets) {
+                let curr_socket = sockets[p];
                 if (curr_socket.player !== undefined && curr_socket.id != socket.id) {
                     if (curr_socket.player._id == player._id) {
                         curr_socket.player.kick("A user has logged into this account from another location.");
@@ -290,7 +290,7 @@ module.exports = function initNetcode() {
                 player.getAllPlanets();
                 player.refillAllAmmo();
                 console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
-                var text = player.nameWithColor() + ' logged in!';
+                let text = player.nameWithColor() + ' logged in!';
                 chatAll(text);
 
                 // Update last login
@@ -317,13 +317,13 @@ module.exports = function initNetcode() {
                 delete players[player.sy][player.sx][player.id];
 
                 //If the player is indeed found
-                var reason = player.kickMsg;
+                let reason = player.kickMsg;
 
                 if (reason === undefined || !reason.localeCompare("")) {
                     reason = data;
                 }
 
-                var text = player.nameWithColor() + " left the game (reason: " + reason + ")"; // write a message about the player leaving
+                let text = player.nameWithColor() + " left the game (reason: " + reason + ")"; // write a message about the player leaving
 
                 console.log(text); // print in terminal
                 chatAll(text); // send it to all the players
@@ -379,18 +379,18 @@ module.exports = function initNetcode() {
             console.log("[CHAT] " + player.name + ": " + data.msg); // print their raw message
             if (!player.name.includes("[")) data.msg = data.msg.replace(/`/ig, ''); // Normies can't triforce
 
-            var time = Date.now();
+            let time = Date.now();
 
             if (data.msg.startsWith("/") && !data.msg.startsWith("/me") && !data.msg.startsWith("/r") && !data.msg.startsWith("/pm ")) { runCommand(player, data.msg); return; } // non spammable commands
 
             //todo: combine these IFs (Has to support NaN mute durations)
             if (muteTable[player.name] > time) {
-                var secondsLeft = Math.floor((muteTable[player.name]-time)/1000);
+                let secondsLeft = Math.floor((muteTable[player.name]-time)/1000);
                 socket.emit('chat', { msg: ("~`#ff0000~`You are muted for " + Math.floor(secondsLeft/60) + " minutes and " + secondsLeft%60 + " seconds!") });
                 return;
             }
             if (ipMuteTable[player.ip] > time) {
-                var secondsLeft = Math.floor((ipMuteTable[player.ip]-time)/1000);
+                let secondsLeft = Math.floor((ipMuteTable[player.ip]-time)/1000);
                 socket.emit('chat', { msg: ("~`#ff0000~`You are muted for " + Math.floor(secondsLeft/60) + " minutes and " + secondsLeft%60 + " seconds!") });
                 return;
             }
@@ -401,7 +401,7 @@ module.exports = function initNetcode() {
             
             if (data.msg.startsWith("/")) runCommand(player, data.msg); // spammable commands
 
-            var repeat = data.msg === player.lastmsg;
+            let repeat = data.msg === player.lastmsg;
             player.chatTimer += 150; // note this as potential spam
             if(repeat) player.chatTimer*=2.5;
             if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
@@ -412,8 +412,8 @@ module.exports = function initNetcode() {
             }
 
             if(!data.msg.startsWith("/")) { // otherwise send the text
-                var spaces = "";
-                for (var i = player.name.length; i < 16; i++) spaces += " "; // align the message
+                let spaces = "";
+                for (let i = player.name.length; i < 16; i++) spaces += " "; // align the message
                 const finalMsg = spaces + player.nameWithColor() + ": " + data.msg;
 
                 // Send it to the client up to what chat room theyre in
@@ -438,7 +438,7 @@ module.exports = function initNetcode() {
             data.ship = Math.floor(data.ship); // the ship index must be integer. It must be no higher than your rank, and cannot be your current ship or out of bounds.
             if (data.ship > player.rank || data.ship < 0 || data.ship > ships.length || data.ship == player.ship) return;
 
-            var price = ships[player.ship].price * -.75; // refund them .75x their own ship's price.
+            let price = ships[player.ship].price * -.75; // refund them .75x their own ship's price.
             price += ships[data.ship].price;
             if (player.money < price) return; // if it cannot be afforded
 
@@ -455,7 +455,7 @@ module.exports = function initNetcode() {
             player.equipped = 0; // set them as being equipped on their first weapon
             socket.emit('equip', { scroll: player.equipped });
 
-            for (var i = 0; i < 10; i++) if (player.weapons[i] == -2 && i < ships[player.ship].weapons) player.weapons[i] = -1; // unlock new possible weapon slots
+            for (let i = 0; i < 10; i++) if (player.weapons[i] == -2 && i < ships[player.ship].weapons) player.weapons[i] = -1; // unlock new possible weapon slots
             player.calculateGenerators();
             sendWeapons(player);
             player.save();
@@ -479,7 +479,7 @@ module.exports = function initNetcode() {
         });
         socket.on('buyLife', function (data) { // client wants to buy a life
             if (player == 0 || !player.docked || player.lives >= 20) return;
-            var price = expToLife(player.experience, player.guest); // compute how much the life costs them
+            let price = expToLife(player.experience, player.guest); // compute how much the life costs them
             if (player.money < price) return; // cant afford
 
             player.money -= price; // take money
@@ -490,117 +490,129 @@ module.exports = function initNetcode() {
         socket.on('upgrade', function (data) { // client wants to upgrade a tech
             //TODO im totally redoing this
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
-            var item = Math.floor(data.item);
+            let item = Math.floor(data.item);
 
 
             switch (item) {
-                case 1: // radar
-            		var price = techPrice(player.radar2);
+                case 1: { // radar 
+            		let price = techPrice(player.radar2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.radar2 = nextTechLevel(player.radar2);
                     }
                     break;
-                case 2: // cargo
-            		var price = techPrice(player.capacity2);
+                }
+                case 2: { // cargo
+            		let price = techPrice(player.capacity2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.capacity2 = nextTechLevel(player.capacity2);
                         player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
                     }
                     break;
-                case 3: //hull
-            		var price = techPrice(player.maxHealth2);
+                }
+                case 3: { //hull
+            		let price = techPrice(player.maxHealth2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.maxHealth2 = nextTechLevel(player.maxHealth2);
                         player.maxHealth = Math.round(ships[player.ship].health * player.maxHealth2);
                     }
                     break;
-                case 4: // energy
-            		var price = techPrice(player.energy2)*8;
+                }
+                case 4: { // energy
+            		let price = techPrice(player.energy2)*8;
                     if (player.money >= price) {
                         player.money -= price;
                         player.energy2 = nextTechLevel(player.energy2);
                     }
                     break;
-                case 5: // agility
-            		var price = techPrice(player.agility2);
+                }
+                case 5: { // agility
+            		let price = techPrice(player.agility2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.agility2 = nextTechLevel(player.agility2);
                         player.va = ships[player.ship].agility * .08 * player.agility2;
                     }
                     break;
-                default: //0: thrust
-            		var price = techPrice(player.thrust2);
+                }
+                default: { //0: thrust
+            		let price = techPrice(player.thrust2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.thrust2 = nextTechLevel(player.thrust2);
                         player.thrust = ships[player.ship].thrust * player.thrust2;
                     }
                     break;
+                }
             }
             player.save();
         });
         socket.on('downgrade', function (data) { // client wants to downgrade a tech
             if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== 'number' || data.item > 5 || data.item < 0) return;
-            var item = Math.floor(data.item);
+            let item = Math.floor(data.item);
 
 
             switch (item) {
-                case 1: // radar
+                case 1:{ // radar
                 	if (player.radar2 <= 1) break;
-            		var price = techPriceForDowngrade(player.radar2);
+            		let price = techPriceForDowngrade(player.radar2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.radar2 = lastTechLevel(player.radar2);
                     }
                     break;
-                case 2: // cargo
+                }
+                case 2: {// cargo
                 	if (player.capacity2 <= 1) break;
-            		var price = techPriceForDowngrade(player.capacity2);
+            		let price = techPriceForDowngrade(player.capacity2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.capacity2 = lastTechLevel(player.capacity2);
                         player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
                     }
                     break;
-                case 3: //hull
+                }
+                case 3: { //hull
                 	if (player.maxHealth2 <= 1) break;
-            		var price = techPriceForDowngrade(player.maxHealth2);
+            		let price = techPriceForDowngrade(player.maxHealth2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.maxHealth2 = lastTechLevel(player.maxHealth2);
                         player.maxHealth = Math.round(ships[player.ship].health * player.maxHealth2);
                     }
                     break;
-                case 4: // energy
+                }
+                case 4: { // energy
                 	if (player.energy2 <= 1) break;
-            		var price = techPriceForDowngrade(player.energy2)*8;
+            		let price = techPriceForDowngrade(player.energy2)*8;
                     if (player.money >= price) {
                         player.money -= price;
                         player.energy2 = lastTechLevel(player.energy2);
                     }
                     break;
-                case 5: // agility
+                }
+                case 5: { // agility
                 	if (player.agility2 <= 1) break;
-            		var price = techPriceForDowngrade(player.agility2);
+            		let price = techPriceForDowngrade(player.agility2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.agility2 = lastTechLevel(player.agility2);
                         player.va = ships[player.ship].agility * .08 * player.agility2;
                     }
                     break;
-                default: //0: thrust
+                }
+                default: { //0: thrust
                 	if (player.thrust2 <= 1) break;
-            		var price = techPriceForDowngrade(player.thrust2);
+            		let price = techPriceForDowngrade(player.thrust2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.thrust2 = lastTechLevel(player.thrust2);
                         player.thrust = ships[player.ship].thrust * player.thrust2;
                     }
                     break;
+                }
             }
             player.save();
         });
@@ -619,8 +631,8 @@ module.exports = function initNetcode() {
         socket.on('quest', function (data) { // wants to accept a quest
             if (typeof data === "undefined" || player == 0 || !player.docked || player.quest != 0 || typeof data.quest !== 'number' || data.quest < 0 || data.quest > 9) return;
 
-            var qid = Math.floor(data.quest); // Find the correct quest.
-            var quest = teamQuests[player.color][qid];
+            let qid = Math.floor(data.quest); // Find the correct quest.
+            let quest = teamQuests[player.color][qid];
 
             //You need to have unlocked this quest type.
             if (quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;

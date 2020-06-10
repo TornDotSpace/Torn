@@ -19,19 +19,19 @@ class Asteroid {
 		this.va = (Math.random() - .5) / 10;
 	}
 	tick() {
-		var asteroidsHere = Object.keys(asts[this.sy][this.sx]).length;
+		let asteroidsHere = Object.keys(asts[this.sy][this.sx]).length;
 		this.health-=asteroidsHere/200; // decay asteroids so they don't get too bunched up in any one area
 		if(this.health < -50)this.die(0);
 		this.move();
 		if (Math.abs(this.vx) + Math.abs(this.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players.
-			for (var i in players[this.sy][this.sx]) {
-				var p = players[this.sy][this.sx][i];
+			for (let i in players[this.sy][this.sx]) {
+				let p = players[this.sy][this.sx][i];
 				if (squaredDist(p, this) < square(32 + ships[p.ship].width) / 10) { // on collision,
 					p.dmg(5 * Math.hypot(p.vx - this.vx, p.vy - this.vy), this); // damage proportional to impact velocity
 					sendAllSector('sound', { file: "boom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
 					//bounce the player off. Same formula as used for mine impulse.
-					var mult = 200 / Math.max(1, .001 + Math.hypot(p.x - this.x, p.y - this.y))
+					let mult = 200 / Math.max(1, .001 + Math.hypot(p.x - this.x, p.y - this.y))
 					p.vx = mult * (Math.cbrt(p.x - this.x));
 					p.vy = mult * (Math.cbrt(p.y - this.y));
 
@@ -40,7 +40,7 @@ class Asteroid {
 				}
 			}
 
-			var b = bases[this.sy][this.sx];
+			let b = bases[this.sy][this.sx];
 			if (b != 0 && b.turretLive && squaredDist(this, b) < 3686.4) { // collision with base
 				b.dmg(10 * Math.hypot(this.vx, this.vy), this);
 				sendAllSector('sound', { file: "boom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
@@ -100,7 +100,7 @@ class Asteroid {
 			b.owner.spoils("ore", this.maxHealth);//just sends the message
 			b.owner.noteLocal('+' + this.maxHealth + ' ore', b.owner.x, b.owner.y - 64);
 		}
-		var expGained = 1;
+		let expGained = 1;
 		if (b.owner.type === "Player") expGained = b.owner.rank < 10?2-b.owner.rank/5:0;
 		if (b.owner.type === "Player" || b.owner.type === "Base") b.owner.spoils("experience", expGained);
 		sendAllSector('sound', { file: "bigboom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
@@ -119,13 +119,11 @@ class Asteroid {
 module.exports = Asteroid;
 
 global.createAsteroid = function (sx, sy) {
-	var sx = Math.floor(Math.random() * mapSz);
-	var sy = Math.floor(Math.random() * mapSz);
-	var vert = (sy + 1) / (mapSz + 1);
-	var hor = (sx + 1) / (mapSz + 1);
-	var metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
-	var randA = Math.random();
-	var h = Math.ceil(Math.random() * 1200 + 200);
-	var ast = new Asteroid(randA, h, sx, sy, metal);
+	let vert = (sy + 1) / (mapSz + 1);
+	let hor = (sx + 1) / (mapSz + 1);
+	let metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
+	let randA = Math.random();
+	let h = Math.ceil(Math.random() * 1200 + 200);
+	let ast = new Asteroid(randA, h, sx, sy, metal);
 	asts[ast.sy][ast.sx][randA] = ast;
 }

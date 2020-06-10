@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-var localizer = require("./localizer.js");
+let localizer = require("./localizer.js");
 
 export default class ReactRoot extends Component {
 	constructor(props) {
@@ -151,8 +151,8 @@ class Register extends Component {
 	}
 
 	register = () => {
-		var user = this.state.user;
-		var pass = this.state.pass;
+		let user = this.state.user;
+		let pass = this.state.pass;
 		if (typeof ReactRoot.socket !== "undefined")
 			ReactRoot.socket.emit('register', { user: user, pass: pass });
 	}
@@ -242,15 +242,15 @@ class LoginOverlay extends Component {
 			</div>)
 	}
 	login = async () => {
-		var user = this.state.user;
-		var pass = this.state.pass;
+		let user = this.state.user;
+		let pass = this.state.pass;
 
 		if (user == "" || pass == "") {
 			return;
 		}
 
 		if (typeof ReactRoot.socket !== "undefined") {
-			var playcookie = await send_api("/login/", user + "%" + pass);
+			let playcookie = await send_api("/login/", user + "%" + pass);
 
 			if (playcookie.status == 403) {
 				credentialState = 1;

@@ -1,8 +1,8 @@
-var eng = "english.json";
-var esp = "spanish.json";
-var pyc = "russian.json";
-var deu = "german.json";
-var frn = "french.json";
+let eng = "english.json";
+let esp = "spanish.json";
+let pyc = "russian.json";
+let deu = "german.json";
+let frn = "french.json";
 
 global.languagejson = null;
 
@@ -13,10 +13,10 @@ global.setLang = function (name) {
     loadLang(name);
 }
 function load(lang) {
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     request.open("GET", lang, false);
 
-    var data = "";
+    let data = "";
     request.onload = function (e) {
         if (request.readyState === 4) {
             data = request.responseText;
@@ -28,7 +28,7 @@ function load(lang) {
 }
 
 global.loadLang = function (name) {
-    var assigned = null;
+    let assigned = null;
     if (location.href.includes("eng") || name == "eng") assigned = languagejson = eng;
     if (location.href.includes("frn") || name === "frn") assigned = languagejson = frn;
     if (location.href.includes("esp") || name === "esp") assigned = languagejson = esp;
@@ -36,7 +36,7 @@ global.loadLang = function (name) {
     if (location.href.includes("deu") || name === "deu") assigned = languagejson = deu;
 
     if (!assigned) {
-        var lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
         //console.log(lang);
         if (lang == null) {
@@ -67,11 +67,11 @@ global.loadLang = function (name) {
     jsn.splashes = languagejson.splashes;
 
     jsn.lore = languagejson.lore;
-    for (var i = 0; i < jsn.weapons.length; i++) {
+    for (let i = 0; i < jsn.weapons.length; i++) {
         jsn.weapons[i].name = languagejson.weapons[i].name;
         jsn.weapons[i].desc = languagejson.weapons[i].desc;
     }
-    for (var i = 0; i < jsn.ships.length; i++) {
+    for (let i = 0; i < jsn.ships.length; i++) {
         jsn.ships[i].nameA = languagejson.ships[i].nameA;
         jsn.ships[i].nameH = languagejson.ships[i].nameH;
         jsn.ships[i].nameC = languagejson.ships[i].nameC;

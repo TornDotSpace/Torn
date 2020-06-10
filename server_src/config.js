@@ -1,4 +1,4 @@
-var fs = require('fs');
+let fs = require('fs');
 
 global.Config = {};
 
@@ -42,28 +42,28 @@ function parseValue(value) {
     return value;
 }
 module.exports = function loadConfig(environment) {
-    var config_file = './config/torn.cfg';
+    let config_file = './config/torn.cfg';
 
     if (!fs.existsSync(config_file)) {
         console.log("[CFG] WARNING! config/torn.cfg doesn't exist! Using hard-coded defaults");
         return;
     }
 
-    var cfgData = fs.readFileSync(config_file, 'utf8').split("\n");
+    let cfgData = fs.readFileSync(config_file, 'utf8').split("\n");
 
-    var index = 1;
+    let index = 1;
 
-    var env_start = "<" + environment + ">";
-    var env_end = "</" + environment + ">";
+    let env_start = "<" + environment + ">";
+    let env_end = "</" + environment + ">";
 
     while (index < cfgData.length) {
-        var line = cfgData[index++].trim();
+        let line = cfgData[index++].trim();
 
-        var skips = 0;
+        let skips = 0;
         if (line.startsWith("<") && line != (env_start)) {
             // skip to next stop
-            var copy = line;
-            var stop = "</" + line.substring(1);
+            let copy = line;
+            let stop = "</" + line.substring(1);
 
             while (index < cfgData.length) {
                 line = cfgData[index++].trim();
@@ -91,7 +91,7 @@ module.exports = function loadConfig(environment) {
             continue;
         }
 
-        var split = line.split(" ");
+        let split = line.split(" ");
         Config[split[0]] = parseValue(split[1]);
     }
     // Debug Handling
@@ -101,7 +101,7 @@ module.exports = function loadConfig(environment) {
             console.log("[DEBUG] " + str);
         }
         : function (str) { };
-    for (var key in Config) {
+    for (let key in Config) {
         debug(key + "=" + Config[key]);
     }
 };

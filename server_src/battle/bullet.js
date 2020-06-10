@@ -1,4 +1,4 @@
-var Vortex = require("../universe/vortex.js");
+let Vortex = require("../universe/vortex.js");
 
 module.exports = class Bullet {
 	constructor(ownr, i, wepnID, angl, info) {
@@ -30,7 +30,7 @@ module.exports = class Bullet {
 		this.move();
 		this.dist += wepns[this.wepnID].speed / 10;
 		if (this.wepnID == 28 && this.time > 25 * 3) { // gravity bomb has 3 seconds to explode
-			var base = bases[this.sy][this.sx];
+			let base = bases[this.sy][this.sx];
 			if (squaredDist(base, this) < square(3500)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 350 units away
 			this.dieAndMakeVortex(); // collapse into black hole
 		}
@@ -41,14 +41,14 @@ module.exports = class Bullet {
 		this.y += this.vy; // move on tick
 		if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die();
 
-		var b = bases[this.sy][this.sx];
+		let b = bases[this.sy][this.sx];
 		if (b != 0 && b.turretLive && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
 			b.dmg(this.dmg, this);
 			this.die();
 		}
 
-		for (var i in players[this.sy][this.sx]) {
-			var p = players[this.sy][this.sx][i];
+		for (let i in players[this.sy][this.sx]) {
+			let p = players[this.sy][this.sx][i];
 			if (p.color != this.color && squaredDist(p, this) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
 				if (this.wepnID == 28) // if a grav bomb hits a player, just die
 					return;
@@ -58,8 +58,8 @@ module.exports = class Bullet {
 			}
 		}
 		if (this.time % 2 == 0 || wepns[this.wepnID].speed > 75) { // Only check for collisions once every 2 ticks, unless this weapon is really fast (in which case the bullet would skip over it)
-			for (var i in asts[this.sy][this.sx]) {
-				var a = asts[this.sy][this.sx][i];
+			for (let i in asts[this.sy][this.sx]) {
+				let a = asts[this.sy][this.sx][i];
 				if (squaredDist(a, this) < square(bulletWidth + 64)) { // if we collide
 					a.dmg(this.dmg * (this.wepnID == 0 ? 2 : 1), this); // hurt the asteroid. ternary: stock gun does double damage
 					a.vx += this.vx / 256; // push the asteroid
@@ -72,13 +72,13 @@ module.exports = class Bullet {
 	}
 	die () {
 		sendAllSector("delBullet", { id: this.id }, this.sx, this.sy);
-		var reverse = this.wepnID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
+		let reverse = this.wepnID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
 		sendAllSector('sound', { file: "boom", x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy }, this.sx, this.sy);
 		delete bullets[this.sy][this.sx][this.id];
 	}
 	dieAndMakeVortex() {
-		var r = Math.random();
-		var vort = new Vortex(r, this.x, this.y, this.sx, this.sy, 3000, this.owner, false); // 3000 is the size of a grav bomb vortex
+		let r = Math.random();
+		let vort = new Vortex(r, this.x, this.y, this.sx, this.sy, 3000, this.owner, false); // 3000 is the size of a grav bomb vortex
 		vorts[this.sy][this.sx][r] = vort;
 		this.die();
 	}
