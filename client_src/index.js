@@ -3014,7 +3014,7 @@ function drawStar(ox, oy, spikes, outerRadius, innerRadius) {
 	let step = Math.PI / spikes;
 	ctx.beginPath();
 	ctx.moveTo(ox, oy - outerRadius)
-	for (i = 0; i < spikes; i++) {
+	for (let i = 0; i < spikes; i++) {
 		x = ox + cosLow(rot) * outerRadius;
 		y = oy + sinLow(rot) * outerRadius;
 		ctx.lineTo(x, y)
