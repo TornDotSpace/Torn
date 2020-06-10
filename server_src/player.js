@@ -1,11 +1,11 @@
-var Blast = require('./battle/blast.js');
-var Bullet = require('./battle/bullet.js');
-var Asteroid = require("./universe/asteroid.js");
-var Missile = require("./battle/missile.js");
-var Base = require('./universe/base.js');
-var Orb = require('./battle/orb.js');
-var Mine = require('./battle/mine.js');
-var Beam = require('./battle/beam.js');
+let Blast = require('./battle/blast.js');
+let Bullet = require('./battle/bullet.js');
+let Asteroid = require("./universe/asteroid.js");
+let Missile = require("./battle/missile.js");
+let Base = require('./universe/base.js');
+let Orb = require('./battle/orb.js');
+let Mine = require('./battle/mine.js');
+let Beam = require('./battle/beam.js');
 
 class Player {
 	constructor(id) {
@@ -135,7 +135,7 @@ class Player {
 		this.empTimer--;
 		this.disguise--;
 
-		var amDrifting = this.e || this.gyroTimer > 0;
+		let amDrifting = this.e || this.gyroTimer > 0;
 		this.shield = (this.s && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
 		if(this.disguise>0 || (this.shield && this.weapons[this.equipped]>0 && wepns[this.weapons[this.equipped]].type !== "Misc" && wepns[this.weapons[this.equipped]].type !== "Mine" && this.space))this.charge=Math.min(this.charge,0);
 		this.leaveBaseShield--;
@@ -150,16 +150,16 @@ class Player {
 
 		this.fire();
 
-		var chargeVal = (this.energy2 + 1)/1.8; //charge speed scales with energy tech
-		for (var i = 0; i < this.generators; i++) chargeVal *= 1.035;
+		let chargeVal = (this.energy2 + 1)/1.8; //charge speed scales with energy tech
+		for (let i = 0; i < this.generators; i++) chargeVal *= 1.035;
 		if(this.charge < 0 || this.space || this.c) this.charge+=chargeVal;
 		else if(this.charge > 0 && !this.space && !this.c) this.charge = 0;
 	}
 	fire() {
 		if (this.c && this.charge > 0) this.shootEliteWeapon();
 		if (this.bulletQueue > 0) this.shootBullet(40); // SMG
-		var wepId = this.weapons[this.equipped];
-		var wep = wepns[wepId];
+		let wepId = this.weapons[this.equipped];
+		let wep = wepns[wepId];
 
 		//In case of insufficient ammo
 		if (this.ammos[this.equipped] == 0 && this.charge > 10) {
@@ -218,13 +218,13 @@ class Player {
 
 			else if (wep.name === "Pulse Wave") {
 				sendAllSector('sound', { file: "bigboom", x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
-				for (var i in players[this.sy][this.sx]) {
-					var p = players[this.sy][this.sx][i];
+				for (let i in players[this.sy][this.sx]) {
+					let p = players[this.sy][this.sx][i];
 					if (p.color !== this.color) { // only enemies
-						var d2 = squaredDist(this, p); // distance squared between me and them
+						let d2 = squaredDist(this, p); // distance squared between me and them
 						if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
-						var ang = angleBetween(this, p); // angle from the horizontal
-						var vel = -10000 / Math.log(d2); // compute how fast to accelerate by
+						let ang = angleBetween(this, p); // angle from the horizontal
+						let vel = -10000 / Math.log(d2); // compute how fast to accelerate by
 						p.vx += Math.cos(ang) * vel; // actually accelerate them
 						p.vy += Math.sin(ang) * vel;
 						p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
@@ -235,39 +235,39 @@ class Player {
 
 			else if (wep.name === "Electromagnet") { // identical structurally to pulse wave, see above for comments.
 				if(global.tick % 2 == 0){
-					for (var i in asts[this.sy][this.sx]) {
-						var a = asts[this.sy][this.sx][i];
-						var d2 = squaredDist(this, a);
+					for (let i in asts[this.sy][this.sx]) {
+						let a = asts[this.sy][this.sx][i];
+						let d2 = squaredDist(this, a);
 						if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
-						var ang = angleBetween(this, a);
-						var vel = -1000000 / Math.max(d2, 200000);
+						let ang = angleBetween(this, a);
+						let vel = -1000000 / Math.max(d2, 200000);
 						a.vx += Math.cos(ang) * vel;
 						a.vy += Math.sin(ang) * vel;
 					}
-					for (var i in missiles[this.sy][this.sx]) {
-						var m = missiles[this.sy][this.sx][i];
-						var d2 = squaredDist(this, m);
+					for (let i in missiles[this.sy][this.sx]) {
+						let m = missiles[this.sy][this.sx][i];
+						let d2 = squaredDist(this, m);
 						if (d2 > square(10 * wep.range)) continue;
-						var ang = angleBetween(this, m);
-						var vel = -10000000 / Math.max(d2, 2000000);
+						let ang = angleBetween(this, m);
+						let vel = -10000000 / Math.max(d2, 2000000);
 						m.emvx += Math.cos(ang) * vel;
 						m.emvy += Math.sin(ang) * vel;
 					}
-					for (var i in orbs[this.sy][this.sx]) {
-						var o = orbs[this.sy][this.sx][i];
-						var d2 = squaredDist(this, o);
+					for (let i in orbs[this.sy][this.sx]) {
+						let o = orbs[this.sy][this.sx][i];
+						let d2 = squaredDist(this, o);
 						if (d2 > square(10 * wep.range)) continue;
-						var ang = angleBetween(this, o);
-						var vel = -25000000 / Math.max(d2, 2000000);
+						let ang = angleBetween(this, o);
+						let vel = -25000000 / Math.max(d2, 2000000);
 						o.vx += Math.cos(ang) * vel;
 						o.vy += Math.sin(ang) * vel;
 					}
-					for (var i in mines[this.sy][this.sx]) {
-						var m = mines[this.sy][this.sx][i];
-						var d2 = squaredDist(this, m);
+					for (let i in mines[this.sy][this.sx]) {
+						let m = mines[this.sy][this.sx][i];
+						let d2 = squaredDist(this, m);
 						if (d2 > square(10 * wep.range)) continue;
-						var ang = angleBetween(this, m);
-						var vel = -5000000 / Math.max(d2, 2000000);
+						let ang = angleBetween(this, m);
+						let vel = -5000000 / Math.max(d2, 2000000);
 						m.vx += Math.cos(ang) * vel;
 						m.vy += Math.sin(ang) * vel;
 					}
@@ -289,8 +289,8 @@ class Player {
 					this.space = false;
 					return;
 				}
-				var r = Math.random();
-				var b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, false);
+				let r = Math.random();
+				let b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, false);
 				b.owner = this.name;
 				bases[this.sy][this.sx] = b;
 				this.emit("chat", { msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow' });
@@ -302,16 +302,16 @@ class Player {
 					this.space = false;
 					return;
 				}
-				var r = Math.random();
-				var b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, true);
+				let r = Math.random();
+				let b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, true);
 				b.owner = this.name;
 				bases[this.sy][this.sx] = b;
 				this.emit("chat", { msg: 'You placed a sentry! Name it with "/nameturret <name>".', color: 'yellow' });
 			}
 
 			else if (wep.name === "Turbo") {
-				var isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
-				var mult = isDrifting ? 1.025 : 1.017; // Faster when drifting.
+				let isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
+				let mult = isDrifting ? 1.025 : 1.017; // Faster when drifting.
 
 				this.speed *= mult;
 				this.vx *= mult;
@@ -329,7 +329,7 @@ class Player {
 			}
 
 			else if (wep.name === "Hyperdrive") {
-				var isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
+				let isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
 				this.emit("sound", { file: "hyperspace", x: this.x, y: this.y });
 				this.hyperdriveTimer = 200;
 				if (isDrifting && this.w && !this.driftAchs[6]) { // Hyper-drift
@@ -353,7 +353,7 @@ class Player {
 		if (this.ship == 16) { // Elite Raider
 			if(this.disguise > 0) return;
 			//This effectively just shoots turbo.
-			var mult = ((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.025 : 1.017;
+			let mult = ((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.025 : 1.017;
 			this.speed *= mult;
 			this.vx *= mult;
 			this.vy *= mult;
@@ -363,8 +363,8 @@ class Player {
 			this.silver -= 250;
 			this.aluminium -= 250;
 			this.platinum -= 250;
-			var r = Math.random();
-			var a = new Asteroid(r, 1000, this.sx, this.sy, Math.floor(Math.random() * 4));
+			let r = Math.random();
+			let a = new Asteroid(r, 1000, this.sx, this.sy, Math.floor(Math.random() * 4));
 			a.x = this.x + Math.cos(this.angle) * 256;
 			a.y = this.y + Math.sin(this.angle) * 256;
 			a.vx = Math.cos(this.angle) * 15;
@@ -398,7 +398,7 @@ class Player {
 	canShoot(wepId){
 		if(typeof wepns[wepId] === "undefined") return false;
 		if(this.disguise > 0 || (this.shield && wepns[wepId].type !== "Misc")) return false;
-		var sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
+		let sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
 		return this.space && sufficientCharge;
 	}
 	move() {
@@ -410,14 +410,14 @@ class Player {
 
 		this.botPlay(); // simulates a player and presses keys.
 
-		var amDrifting = this.e || this.gyroTimer > 0;
-		var ore = this.iron + this.silver + this.platinum + this.aluminium;
+		let amDrifting = this.e || this.gyroTimer > 0;
+		let ore = this.iron + this.silver + this.platinum + this.aluminium;
 
 		//In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
-		var newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1);
+		let newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1);
 
 		//Reusable Trig
-		var ssa = Math.sin(this.angle), ssd = Math.sin(this.driftAngle), csa = Math.cos(this.angle), csd = Math.cos(this.driftAngle);
+		let ssa = Math.sin(this.angle), ssd = Math.sin(this.driftAngle), csa = Math.cos(this.angle), csd = Math.cos(this.driftAngle);
 
 		this.vx = csd * this.speed; // convert polars to rectangulars
 		this.vy = ssd * this.speed;
@@ -463,7 +463,7 @@ class Player {
 			this.jukeTimer *= .8;
 		}
 
-		var angAccel = 0; // angular acceleration
+		let angAccel = 0; // angular acceleration
 		if (this.a) angAccel -= (this.va + this.cva / (amDrifting ? 1.5 : 1)) / 3;
 		if (this.d) angAccel += (this.va - this.cva / (amDrifting ? 1.5 : 1)) / 3; // ternary reduces angular air resistance while drifting
 		if (this.superchargerTimer > 0) angAccel *= 2;
@@ -487,8 +487,8 @@ class Player {
 		this.checkMineCollision();
 	}
 	checkMineCollision() {
-		for (var i in mines[this.sy][this.sx]) {
-			var m = mines[this.sy][this.sx][i];
+		for (let i in mines[this.sy][this.sx]) {
+			let m = mines[this.sy][this.sx][i];
 			if (m.color != this.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
 				if (m.wepnID != 16 && squaredDist(m, this) < square(16 + ships[this.ship].width)) {
 					this.dmg(m.dmg, m); // damage me
@@ -496,8 +496,8 @@ class Player {
 					m.die();
 					break;
 				} else if (m.wepnID == 16 && squaredDist(m, this) < square(wepns[m.wepnID].range + ships[this.ship].width)) { // TODO range * 10?
-					var r = Math.random(); // Laser Mine
-					var beam = new Beam(m.owner, r, m.wepnID, this, m); // m.owner is the owner, m is the origin location
+					let r = Math.random(); // Laser Mine
+					let beam = new Beam(m.owner, r, m.wepnID, this, m); // m.owner is the owner, m is the origin location
 					beams[this.sy][this.sx][r] = beam;
 					sendAllSector('sound', { file: "beam", x: m.x, y: m.y }, m.sx, m.sy);
 					m.die();
@@ -506,10 +506,10 @@ class Player {
 		}
 	}
 	testSectorChange() {
-		var old_sx = this.sx;
-		var old_sy = this.sy;
+		let old_sx = this.sx;
+		let old_sy = this.sy;
 
-		var giveBounce = false; // did they bounce on a galaxy edge?
+		let giveBounce = false; // did they bounce on a galaxy edge?
 		if (this.x > sectorWidth) {//check each edge of the 4 they could bounce on
 			this.x = 1;
 			if (this.guest || (trainingMode && this.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
@@ -634,10 +634,10 @@ class Player {
 		this.getAllPlanets();
 
 		//update list of visited sectors.
-		var index = this.sx + this.sy * mapSz;
-		var prevStr = this.planetsClaimed.substring(0, index);
-		var checkStr = this.planetsClaimed.substring(index, index + 1);
-		var postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
+		let index = this.sx + this.sy * mapSz;
+		let prevStr = this.planetsClaimed.substring(0, index);
+		let checkStr = this.planetsClaimed.substring(index, index + 1);
+		let postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
 		if (checkStr !== "2") this.planetsClaimed = prevStr + "1" + postStr;
 
 		if (!this.planetsClaimed.includes("0") && !this.randmAchs[6]) {
@@ -648,13 +648,13 @@ class Player {
 	}
 	checkPlanetCollision() {
 
-		var p = planets[this.sy][this.sx];
+		let p = planets[this.sy][this.sx];
 
 		//if out of range, return. Only try this once a second.
 		if (tick % 10 != 0 || squaredDist(p, this) > square(512)) return;
 
 		//cooldown to prevent chat spam when 2 people are on the planet
-		var cool = p.cooldown;
+		let cool = p.cooldown;
 		if (cool < 0) { this.refillAllAmmo(); p.cooldown = 50; }
 
 		this.checkQuestStatus(true); // lots of quests are planet based
@@ -667,9 +667,9 @@ class Player {
 		if (typeof this.quest !== "undefined" && this.quest != 0 && this.quest.type === "Secret2" && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
 
 			//compute whether there are any unkilled enemies in this sector
-			var cleared = true;
-			for (var i in players[this.sy][this.sx]) {
-				var player = players[this.sy][this.sx][i];
+			let cleared = true;
+			for (let i in players[this.sy][this.sx]) {
+				let player = players[this.sy][this.sx][i];
 				if (player.color !== this.color) {
 					cleared = false;
 					break;
@@ -690,7 +690,7 @@ class Player {
 		p.owner = this.name;
 		//chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy
 
-		for (var i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();//send them new planet data
+		for (let i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();//send them new planet data
 
 		if (!this.randmAchs[8]) { // Astronaut
 			this.randmAchs[8] = true;
@@ -700,9 +700,9 @@ class Player {
 		this.emit("planetMap", { x:p.x, y:p.y, sx:p.sx, sy:p.sy });
 
 		//Update list of claimed planets.
-		var index = this.sx + this.sy * mapSz;
-		var prevStr = this.planetsClaimed.substring(0, index);
-		var postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
+		let index = this.sx + this.sy * mapSz;
+		let prevStr = this.planetsClaimed.substring(0, index);
+		let postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
 		this.planetsClaimed = prevStr + "2" + postStr;
 
 	}
@@ -810,7 +810,7 @@ class Player {
 
 	}
 	updateRank() {
-		var prerank = this.rank;
+		let prerank = this.rank;
 		this.rank = 0;
 		while (this.experience > ranks[this.rank]) this.rank++; //increment until we're in the right rank's range
 		if (!this.isBot && this.rank > prerank && this.rank > 5){
@@ -851,8 +851,8 @@ class Player {
 
 		this.checkTrailAchs();
 
-		var base = 0;
-		var b = bases[this.sy][this.sx];
+		let base = 0;
+		let b = bases[this.sy][this.sx];
 		if (b.isBase && b.color == this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
 		if (base == 0) return;
 
@@ -875,35 +875,35 @@ class Player {
 		}
 
 		//how many bullets are we firing?
-		var n = 1;
+		let n = 1;
 		if (currWep == 4) n = 4; // shotgun
 		if (currWep == 39) n = 3; // spreadshot
 		if (currWep == 6) n = 2; // minigun
 
-		for (var i = 0; i < n; i++) {
-			var r = Math.random();
+		for (let i = 0; i < n; i++) {
+			let r = Math.random();
 
 			//find the angle of the bullets. Manipulate if one of the multi-bullet weapons.
-			var bAngle = this.angle;
+			let bAngle = this.angle;
 			if (currWep == 2) bAngle -= 3.1415; // reverse gun
 			if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
 			if (currWep == 4) bAngle += Math.random() - .5; // shotgun
 
-			var bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
+			let bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
 			bullets[this.sy][this.sx][r] = bullet;
 			sendAllSector('sound', { file: (currWep == 5 || currWep == 6 || currWep == 39) ? "minigun" : "shot", x: this.x, y: this.y }, this.sx, this.sy);
 		}
 	}
 	shootMissile() {
-		var r = Math.random();
-		var bAngle = this.angle;
-		var missile = new Missile(this, r, this.weapons[this.equipped], bAngle);
+		let r = Math.random();
+		let bAngle = this.angle;
+		let missile = new Missile(this, r, this.weapons[this.equipped], bAngle);
 		missiles[this.sy][this.sx][r] = missile;
 		sendAllSector('sound', { file: "missile", x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	shootOrb() {
-		var r = Math.random();
-		var orb = new Orb(this, r, this.weapons[this.equipped]);
+		let r = Math.random();
+		let orb = new Orb(this, r, this.weapons[this.equipped]);
 		orbs[this.sy][this.sx][r] = orb;
 		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
@@ -918,42 +918,42 @@ class Player {
 			this.emit("chat", { msg: "You may not place a mine here." });
 			return;
 		}
-		var r = Math.random();
-		var mine = new Mine(this, r, this.weapons[this.equipped]);
+		let r = Math.random();
+		let mine = new Mine(this, r, this.weapons[this.equipped]);
 		mines[this.sy][this.sx][r] = mine;
 		sendAllSector('mine', { x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	shootBeam(origin, restricted) {// restricted is for recursive calls from quarriers
-		var ox = origin.x, oy = origin.y;
-		var nearP = 0; // target, which we will compute
-		var range2 = square(wepns[this.weapons[this.equipped]].range * 10);
+		let ox = origin.x, oy = origin.y;
+		let nearP = 0; // target, which we will compute
+		let range2 = square(wepns[this.weapons[this.equipped]].range * 10);
 
 		//base
 		if (!restricted)
 			if (this.weapons[this.equipped] == 7 || this.weapons[this.equipped] == 8 || this.weapons[this.equipped] == 9 || this.weapons[this.equipped] == 45) {
-				var b = bases[this.sy][this.sx];
+				let b = bases[this.sy][this.sx];
 				if (b != 0 && ((b.color == this.color) == (this.weapons[this.equipped] == 45)) && !(this.weapons[this.equipped] == 45 && b.health > baseHealth*.9995) && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
 			}
 
 		//search players
 		if (!restricted)
-			for (var i in players[this.sy][this.sx]) {
-				var p = players[this.sy][this.sx][i];
+			for (let i in players[this.sy][this.sx]) {
+				let p = players[this.sy][this.sx][i];
 				if (p.ship != 17 && (this.weapons[this.equipped] == 26 || this.weapons[this.equipped] == 30)) continue; // elite quarrier is affected
 				if (((p.color == this.color) != (this.weapons[this.equipped] == 45)) || p.disguise > 0 || this.id == p.id) continue;
 				if (this.weapons[this.equipped] == 45 && p.health > p.maxHealth*.9995) continue;
-				var dx = p.x - ox, dy = p.y - oy;
-				var dist2 = dx * dx + dy * dy;
+				let dx = p.x - ox, dy = p.y - oy;
+				let dist2 = dx * dx + dy * dy;
 				if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = p;
 			}
 
 		//search asteroids
 		if (nearP == 0 && this.weapons[this.equipped] != 35 && this.weapons[this.equipped] != 31 && this.weapons[this.equipped] != 45)
-			for (var i in asts[this.sy][this.sx]) {
-				var a = asts[this.sy][this.sx][i];
+			for (let i in asts[this.sy][this.sx]) {
+				let a = asts[this.sy][this.sx][i];
 				if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
-				var dx = a.x - ox, dy = a.y - oy;
-				var dist2 = dx * dx + dy * dy;
+				let dx = a.x - ox, dy = a.y - oy;
+				let dist2 = dx * dx + dy * dy;
 				if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = a;
 			}
 
@@ -969,17 +969,17 @@ class Player {
 		//elite quarrier
 		if (this.ship == 17 && nearP != 0 && nearP.type === "Asteroid") {
 			nearP.hit = true;
-			for (var i = 0; i < 3; i++) this.shootBeam(nearP, true);
+			for (let i = 0; i < 3; i++) this.shootBeam(nearP, true);
 		}
 
-		var r = Math.random();
-		var beam = new Beam(this, r, this.weapons[this.equipped], nearP, origin);
+		let r = Math.random();
+		let beam = new Beam(this, r, this.weapons[this.equipped], nearP, origin);
 		beams[this.sy][this.sx][r] = beam;
 		sendAllSector('sound', { file: "beam", x: ox, y: oy }, this.sx, this.sy);
 	}
 	shootBlast(currWep) {
-		var r = Math.random();
-		var blast = new Blast(this, r, currWep);
+		let r = Math.random();
+		let blast = new Blast(this, r, currWep);
 		blasts[this.sy][this.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
@@ -1030,8 +1030,8 @@ class Player {
 			this.killStreakTimer = 750;//30s
 		}
 		
-		if (this.ship == 19) for (var i in players[this.sy][this.sx]){
-			var p = players[this.sy][this.sx][i];
+		if (this.ship == 19) for (let i in players[this.sy][this.sx]){
+			let p = players[this.sy][this.sx][i];
 			if(p.id !== this.id) p.EMP(15);
 		}
 		
@@ -1109,29 +1109,29 @@ class Player {
 
 		//Check if they have all achievements of a type. If so, give them the corresponding trail achievement of that type
 
-		var rAll = true;
-		for (var i = 0; i < 10; i++) if (!this.randmAchs[i]) rAll = false;
+		let rAll = true;
+		for (let i = 0; i < 10; i++) if (!this.randmAchs[i]) rAll = false;
 		if (!this.randmAchs[10] && rAll) {
 			this.randmAchs[10] = true;
 			this.sendAchievementsMisc(false);
 		}
 
 		rAll = true;
-		for (var i = 0; i < 12; i++) if (!this.killsAchs[i]) rAll = false;
+		for (let i = 0; i < 12; i++) if (!this.killsAchs[i]) rAll = false;
 		if (!this.killsAchs[12] && rAll) {
 			this.killsAchs[12] = true;
 			this.sendAchievementsKill(false);
 		}
 
 		rAll = true;
-		for (var i = 0; i < 11; i++) if (!this.driftAchs[i]) rAll = false;
+		for (let i = 0; i < 11; i++) if (!this.driftAchs[i]) rAll = false;
 		if (!this.driftAchs[11] && rAll) {
 			this.driftAchs[11] = true;
 			this.sendAchievementsDrift(false);
 		}
 
 		rAll = true;
-		for (var i = 0; i < 11; i++) if (!this.moneyAchs[i]) rAll = false;
+		for (let i = 0; i < 11; i++) if (!this.moneyAchs[i]) rAll = false;
 		if (!this.moneyAchs[11] && rAll) {
 			this.moneyAchs[11] = true;
 			this.sendAchievementsCash(false);
@@ -1140,8 +1140,8 @@ class Player {
 	
 	getAllPlanets() { // same, but with planets
 		if (this.isBot) return;
-		var packHere = 0;
-		var planet = planets[this.sy][this.sx];
+		let packHere = 0;
+		let planet = planets[this.sy][this.sx];
 		packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color };
 		this.emit('planets', { pack: packHere });
 	}
@@ -1153,7 +1153,7 @@ class Player {
 		if (typeof wepns[this.weapons[i]] !== "undefined") this.ammos[i] = wepns[this.weapons[i]].ammo;
 	}
 	refillAllAmmo() {
-		for (var i = 0; i < 10; i++) this.refillAmmo(i);
+		for (let i = 0; i < 10; i++) this.refillAmmo(i);
 		sendWeapons(this);
 		this.strongLocal("Ammo Replenished!", this.x, this.y + 256);
 	}
@@ -1162,7 +1162,7 @@ class Player {
 	}
 	calculateGenerators() { // count how many gens I have
 		this.generators = 0;
-		for (var slot = 0; slot < ships[this.ship].weapons; slot++)
+		for (let slot = 0; slot < ships[this.ship].weapons; slot++)
 			if (this.weapons[slot] == 20) this.generators++;
 		if (this.ship <= wepns[20].level) this.generators = 0; // gotta have sufficiently high ship
 	}

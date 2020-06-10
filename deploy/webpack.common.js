@@ -2,7 +2,7 @@ const path = require("path")
 const webpack = require("webpack")
 
 const git = require('git-revision-webpack-plugin');
-var gitRevisionPlugin = new git({
+let gitRevisionPlugin = new git({
 	lightweightTags: true
 	});
 

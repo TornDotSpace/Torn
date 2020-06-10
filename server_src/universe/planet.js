@@ -14,8 +14,8 @@ module.exports = class Planet {
 	
 	tick() {
 		this.cooldown--;
-		if (tick % 12 == 6 && this.owner != 0) for (var i in players[this.sy][this.sx]) {
-			var p = players[this.sy][this.sx][i];
+		if (tick % 12 == 6 && this.owner != 0) for (let i in players[this.sy][this.sx]) {
+			let p = players[this.sy][this.sx][i];
 			if (this.owner === p.name) p.money++; // give money to owner
 		}
 	}

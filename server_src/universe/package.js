@@ -14,8 +14,8 @@ module.exports = class Package {
 			sendAllSector('sound', { file: "boom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 			delete packs[this.sy][this.sx][this.id];
 		}
-		for (var i in players[this.sy][this.sx]) { // loop for collision
-			var p = players[this.sy][this.sx][i];
+		for (let i in players[this.sy][this.sx]) { // loop for collision
+			let p = players[this.sy][this.sx][i];
 			if (squaredDist(p, this) < square(16 + ships[p.ship].width)) { // someone hit me
 
 				this.onCollide(p);
@@ -33,12 +33,12 @@ module.exports = class Package {
 			p.moneyAchs[8] = true; // Thief: steal a package
 			p.sendAchievementsCash(true);
 
-			var possible = ['money', 'ore'];
-			var contents = possible[Math.floor(Math.random() * 2)]; // figure out what reward to give
+			let possible = ['money', 'ore'];
+			let contents = possible[Math.floor(Math.random() * 2)]; // figure out what reward to give
 
-			var amt = Math.floor(Math.random() * 2000) + 2000; // how much ore we're gonna give
+			let amt = Math.floor(Math.random() * 2000) + 2000; // how much ore we're gonna give
 			if (contents == 'ore') {
-				var left = p.capacity - p.iron - p.aluminium - p.silver - p.platinum; // how much more cargo space they have
+				let left = p.capacity - p.iron - p.aluminium - p.silver - p.platinum; // how much more cargo space they have
 				if (amt > left) { // if they don't have enough cargo space for the ore we're about to give
 					amt = left; // give them as much as they can take
 					p.strongLocal("Cargo Bay Full", p.x, p.y + 256); //tell them they have no room left
@@ -52,7 +52,7 @@ module.exports = class Package {
 
 			else if (contents == 'money') p.spoils("money", 20000);
 
-			var title = "Package collected: "; // the message we're going to send them
+			let title = "Package collected: "; // the message we're going to send them
 			if (contents == 'ore') title += (amt * 4) + ' ore!';
 			if (contents == 'money') title += '20000 money!';
 			p.strongLocal(title, p.x, p.y - 192); // send it

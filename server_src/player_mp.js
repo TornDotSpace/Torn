@@ -1,5 +1,5 @@
-var Player = require('./player.js');
-var Package = require("./universe/package.js");
+let Player = require('./player.js');
+let Package = require("./universe/package.js");
 
 class PlayerMP extends Player {
     constructor(socket) {
@@ -37,12 +37,12 @@ class PlayerMP extends Player {
         this.emit("chat", { msg: "You must be docked to use that command!" });
         return;
     }
-    var spl = msg.split(" ");
+    let spl = msg.split(" ");
     if (spl.length != 3) { // not enough arguments
         this.emit("chat", { msg: "Invalid Syntax!" });
         return;
     }
-    var slot1 = parseFloat(spl[1]), slot2 = parseFloat(spl[2]);
+    let slot1 = parseFloat(spl[1]), slot2 = parseFloat(spl[2]);
     if (slot1 == 0) slot1 = 10;
     if (slot2 == 0) slot2 = 10;
     if (slot1 > 10 || slot2 > 10 || slot1 < 1 || slot2 < 1 || !slot1 || !slot2 || !Number.isInteger(slot1) || !Number.isInteger(slot2)) {
@@ -56,7 +56,7 @@ class PlayerMP extends Player {
 
     slot1--; slot2--;//done later for NaN checking above: "!slot1"
 
-    var temp = this.weapons[slot1];
+    let temp = this.weapons[slot1];
     this.weapons[slot1] = this.weapons[slot2];
     this.weapons[slot2] = temp;
     temp = this.ammos[slot1];
@@ -80,12 +80,12 @@ pm(msg) { // msg looks like "/pm luunch hey there pal". If a moderator, you use 
         this.emit("chat", { msg: "Invalid Syntax!" });
         return;
     }
-    var name = msg.split(" ")[1];
-    var raw = msg.substring(name.length + 5);
+    let name = msg.split(" ")[1];
+    let raw = msg.substring(name.length + 5);
     this.emit("chat", { msg: "Sending private message to " + name + "..." });
-    for (var i = 0; i < mapSz; i++) for (var j = 0; j < mapSz; j++)
-        for (var p in players[j][i]) {
-            var player = players[j][i][p];
+    for (let i = 0; i < mapSz; i++) for (let j = 0; j < mapSz; j++)
+        for (let p in players[j][i]) {
+            let player = players[j][i][p];
             if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
                 player.emit("chat", { msg: "~`orange~`[PM] [" + this.name + "]: " + raw });
                 this.emit("chat", { msg: "Message sent!" });
@@ -93,8 +93,8 @@ pm(msg) { // msg looks like "/pm luunch hey there pal". If a moderator, you use 
                 player.reply = this.name;
                 return;
             }
-        } for (var p in dockers) {
-            var player = dockers[p];
+        } for (let p in dockers) {
+            let player = dockers[p];
             if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
                 player.emit("chat", { msg: "~`orange~`[PM] [" + this.name + "]: " + raw });
                 this.emit("chat", { msg: "Message sent!" });
@@ -102,8 +102,8 @@ pm(msg) { // msg looks like "/pm luunch hey there pal". If a moderator, you use 
                 player.reply = this.name;
                 return;
             }
-        } for (var p in deads) {
-            var player = deads[p];
+        } for (let p in deads) {
+            let player = deads[p];
             if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
                 player.emit("chat", { msg: "~`orange~`[PM] [" + this.name + "]: " + raw });
                 this.emit("chat", { msg: "Message sent!" });
@@ -138,7 +138,7 @@ confirmPass = async function (pass) { // /confirm
         this.tentativePassword = undefined;
         return;
     }
-    var response = await send_rpc("/reset/", this._id + "%" + pass);
+    let response = await send_rpc("/reset/", this._id + "%" + pass);
 
     if (!response.ok) {
         this.emit("chat", { msg : "ERROR"});
@@ -167,7 +167,7 @@ die = async function (b) { // b: bullet object or other object which killed us
 
     this.empTimer = -1;
     this.killStreak = 0;
-    var diff = .02 * this.experience;
+    let diff = .02 * this.experience;
     this.leaveBaseShield = 25;
     this.refillAllAmmo();
 
@@ -178,8 +178,8 @@ die = async function (b) { // b: bullet object or other object which killed us
     this.emit('quest', { quest: 0, complete: false});//reset quest and update client
 
     if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
-        var customMessageArr = eng.weapons[b.wepnID].killmessages;
-        var useCustomKillMessage = Math.random() < .5 && typeof customMessageArr !== "undefined" && customMessageArr.length > 0;
+        let customMessageArr = eng.weapons[b.wepnID].killmessages;
+        let useCustomKillMessage = Math.random() < .5 && typeof customMessageArr !== "undefined" && customMessageArr.length > 0;
 
         if(useCustomKillMessage) chatAll(customMessageArr[Math.floor(Math.random()*customMessageArr.length)].replace("P1", b.owner.nameWithColor()).replace("P2", this.nameWithColor()));
         else chatAll(this.nameWithColor() + " was destroyed by " + b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~!");
@@ -196,7 +196,7 @@ die = async function (b) { // b: bullet object or other object which killed us
 
     if (b.type !== "Vortex"){
         //drop a package
-        var r = Math.random();
+        let r = Math.random();
         if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier)
         else if (Math.random() < .012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);//life
         else if (Math.random() < .1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);//ammo
@@ -224,7 +224,7 @@ die = async function (b) { // b: bullet object or other object which killed us
     await handlePlayerDeath(this);
 
     this.x = this.y = sectorWidth / 2;
-    var whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
+    let whereToRespawn = Math.floor(Math.random()*basesPerTeam)*2
     this.sx = baseMap[this.color][whereToRespawn];
     this.sy = baseMap[this.color][whereToRespawn+1];
 

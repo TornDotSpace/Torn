@@ -37,16 +37,16 @@ module.exports = class Vortex {
 	move() {
 		if (this.isWorm) {
 
-			var t = tick / 40000;
+			let t = tick / 40000;
 
 			//the doubles in here are just random numbers for chaotic motion. Don't mind them.
 
 			//input node
-			var bx = Math.sin(7.197 * t) / 2 + .5;
-			var by = -Math.sin(5.019 * t) / 2 + .5;
+			let bx = Math.sin(7.197 * t) / 2 + .5;
+			let by = -Math.sin(5.019 * t) / 2 + .5;
 
-			var oldSx = this.sx;
-			var oldSy = this.sy;
+			let oldSx = this.sx;
+			let oldSy = this.sy;
 
 			this.sx = Math.floor(bx * mapSz);
 			this.sy = Math.floor(by * mapSz);
@@ -60,8 +60,8 @@ module.exports = class Vortex {
 			this.y = ((by * mapSz) % 1) * sectorWidth;
 
 			//output node
-			var bxo = -Math.sin(9.180 * t) / 2 + .5;
-			var byo = Math.sin(10.3847 * t) / 2 + .5;
+			let bxo = -Math.sin(9.180 * t) / 2 + .5;
+			let byo = Math.sin(10.3847 * t) / 2 + .5;
 			this.sxo = Math.floor(bxo * mapSz);
 			this.syo = Math.floor(byo * mapSz);
 			this.xo = ((bxo * mapSz) % 1) * sectorWidth;
@@ -73,14 +73,14 @@ module.exports = class Vortex {
 		}
 
 
-		for (var i in players[this.sy][this.sx]) {
-			var p = players[this.sy][this.sx][i];
+		for (let i in players[this.sy][this.sx]) {
+			let p = players[this.sy][this.sx][i];
 
 			// compute distance and angle to players
-			var dist = Math.pow(squaredDist(this, p), 0.25);
-			var a = angleBetween(p, this);
+			let dist = Math.pow(squaredDist(this, p), 0.25);
+			let a = angleBetween(p, this);
 			//then move them.
-			var guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
+			let guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
 			p.x -= guestMult * .40 * this.size / dist * Math.cos(a);
 			p.y -= guestMult * .40 * this.size / dist * Math.sin(a);
 

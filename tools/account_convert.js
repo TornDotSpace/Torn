@@ -5,9 +5,9 @@
  * 
  ***********************************************************/
 
-var MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn";
-var Mongo = require('mongodb').MongoClient(MONGO_CONNECTION_STR, { useUnifiedTopology: true });
-var PLAYERS_DIR = "../server/players";
+let MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn";
+let Mongo = require('mongodb').MongoClient(MONGO_CONNECTION_STR, { useUnifiedTopology: true });
+let PLAYERS_DIR = "../server/players";
 
 global.parseBoolean = function (s) {
 	return (s === 'true');
@@ -16,7 +16,7 @@ global.parseBoolean = function (s) {
 
 // legacy loader
 async function writePlayer(player, _id, db) {
-    var record = {
+    let record = {
         _id: _id,
         color: player.color,
         ship: player.ship,
@@ -63,17 +63,17 @@ function loadPlayerData(playerName, passwordHash) {
     if (!playerName || !passwordHash) return;
 
     // Read the old fashion way 
-    var readSource = PLAYERS_DIR + "/" + playerName + "[" + passwordHash + ".txt";
+    let readSource = PLAYERS_DIR + "/" + playerName + "[" + passwordHash + ".txt";
     if (!fs.existsSync(readSource))
         return null;
 
-    var player = new Player( { id: 0 });
+    let player = new Player( { id: 0 });
     player._id = playerName;
     player.password = passwordHash;
-    var fileData = fs.readFileSync(readSource, "utf8").split(':');
+    let fileData = fs.readFileSync(readSource, "utf8").split(':');
     player.color = fileData[0];
     player.ship = parseFloat(fileData[1]);
-    for (var i = 0; i < 9; i++) player.weapons[i] = parseFloat(fileData[3 + i]);
+    for (let i = 0; i < 9; i++) player.weapons[i] = parseFloat(fileData[3 + i]);
     player.weapons[9] = parseFloat(fileData[83]);
     player.sx = Math.floor(parseFloat(fileData[12]));
     player.sy = Math.floor(parseFloat(fileData[13]));
@@ -162,7 +162,7 @@ function loadPlayerData(playerName, passwordHash) {
 // Player object
 
 function Player(sock) {
-    var self = {
+    let self = {
 
         type: "Player",
 
@@ -302,23 +302,23 @@ const fs = require('fs');
 
 function main() {
     Mongo.connect(function (err, client) {
-        var db = client.db('torn');
-        var player_db = db.collection('players');
+        let db = client.db('torn');
+        let player_db = db.collection('players');
 
         fs.readdirSync(PLAYERS_DIR).forEach(file => {
-            var stat = fs.statSync(PLAYERS_DIR + "/" + file);
+            let stat = fs.statSync(PLAYERS_DIR + "/" + file);
 
             if (!stat.isDirectory()) {
                 console.log("Beginning conversion of: " + file);
 
-                var f_str = file.split("[");
+                let f_str = file.split("[");
     
-                var player_name = f_str[0];
-                var player_hash = parseInt(f_str[1].split(".txt")[0]);
+                let player_name = f_str[0];
+                let player_hash = parseInt(f_str[1].split(".txt")[0]);
     
                 console.log("Got player (" + player_name + "," + player_hash + ")");
 
-                var player = loadPlayerData(player_name, player_hash);
+                let player = loadPlayerData(player_name, player_hash);
 
                 if (player !== undefined) {
 

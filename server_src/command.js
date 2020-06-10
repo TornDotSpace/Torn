@@ -22,17 +22,17 @@ const MODPLUS = [MODERATOR, ADMIN, OWNER];
 const ADMINPLUS = [ADMIN, OWNER];
 
 const PERM_TABLE = [GUEST, PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
-var HELP_TABLE = {};
+let HELP_TABLE = {};
 
 global.cmds = {};
 
 // GUEST COMMANDS 
 // All players including guests have access to these
 cmds["/help"] = new Command("/help - Displays commands & usages", EVERYONE, function (plyr, msg) {
-	for (var p in plyr.permissionLevels) {
-		var lvl = plyr.permissionLevels[p];
-	    for (var x = 0; x < HELP_TABLE[lvl].length; ++x) {
-	        var cmd = HELP_TABLE[lvl][x];
+	for (let p in plyr.permissionLevels) {
+		let lvl = plyr.permissionLevels[p];
+	    for (let x = 0; x < HELP_TABLE[lvl].length; ++x) {
+	        let cmd = HELP_TABLE[lvl][x];
 	        plyr.socket.emit("chat", { msg: cmd.usage });
 	    }
 	}
@@ -58,7 +58,7 @@ cmds["/confirm"] = new Command("/confirm <newPassword>", REGISTERED, async funct
 }, false);
 
 cmds["/changeteam"] = new Command("/changeteam", REGISTERED, function (player, msg) {
-    var split = msg.split(" ");
+    let split = msg.split(" ");
     if (split.length > 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/changeteam'"});return;}
     if (split.length == 1) {
         player.socket.emit("chat", { msg: "Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type \"/changeteam <color>\" to continue. Make sure you aren't near any players or bases on your current team." });
@@ -84,8 +84,8 @@ cmds["/changeteam"] = new Command("/changeteam", REGISTERED, function (player, m
 });
 
 cmds["/nameturret"] = new Command("/nameturret <name>", REGISTERED, function (player, msg) {
-    var num = 0;
-    var base = bases[player.sy][player.sx];
+    let num = 0;
+    let base = bases[player.sy][player.sx];
     if(base != 0 && base.owner == player.name) { base.name = msg.substring(12); num++; }
     player.socket.emit("chat", { msg: num + " turret(s) renamed." });
 });
@@ -95,7 +95,7 @@ cmds["/joinguild"] = new Command("/joinguild <guildName>", REGISTERED, function 
         player.socket.emit("chat", { msg: "You must specify a guild name." });
         return;
     }
-    var guildName = msg.substring(11);
+    let guildName = msg.substring(11);
     if(typeof guildList[guildName] === "undefined") {
         player.socket.emit("chat", { msg: guildName + " is not a real guild!" });
         return;
@@ -122,8 +122,8 @@ cmds["/swap"] = new Command("/swap", REGISTERED, function (player, msg) {
 
 cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player's chat messages.", EVERYONE, function (ply, msg) {
     if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playernamewithouttag'"});return;} // split looks like {"/mute", "name"}
-    var name = msg.split(" ")[1];
-    var player = getPlayerFromName(name);
+    let name = msg.split(" ")[1];
+    let player = getPlayerFromName(name);
     if(player == -1){
 	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
 	    return;
@@ -134,8 +134,8 @@ cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player
 
 cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the player's chat messages again.", EVERYONE, function (ply, msg) {
     if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playernamewithouttag'"});return;} // split looks like {"/unmute", "name"}
-    var name = msg.split(" ")[1];
-    var player = getPlayerFromName(name);
+    let name = msg.split(" ")[1];
+    let player = getPlayerFromName(name);
     if(player == -1){
 	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
 	    return;
@@ -146,7 +146,7 @@ cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the pla
 
 const valid_email_regex = new RegExp("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$");
 cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", REGISTERED, function (player, msg) {
-    var email = msg.substring(7);
+    let email = msg.substring(7);
 	if (!valid_email_regex.test(email)) {
         player.socket.emit("chat", { msg: "Invalid Email!" });
         return;
@@ -168,13 +168,13 @@ cmds["/broadcast"] = new Command("/broadcast <msg> - Send a message to the whole
 
 cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the specified player server-wide.", MODPLUS, function (ply, msg) {
     if (msg.split(" ").length != 3) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/modmute playernamewithouttag minutes'"});return;} // split looks like {"/mute", "name", "minutesToMute"}
-    var name = msg.split(" ")[1];
-    var player = getPlayerFromName(name);
+    let name = msg.split(" ")[1];
+    let player = getPlayerFromName(name);
     if(player == -1){
         ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
         return;
     }
-    var minutes = parseFloat(msg.split(" ")[2]);
+    let minutes = parseFloat(msg.split(" ")[2]);
     if (typeof minutes !== "number") return;
 
     if (minutes < 0) return;
@@ -185,13 +185,13 @@ cmds["/modmute"] = new Command("/modmute <player> <minutesToMute> - Mutes the sp
 
 cmds["/ipmute"] = new Command("/ipmute <player> <minutesToMute> - Mutes the specified IP server-wide.", MODPLUS, function (ply, msg) {
     if (msg.split(" ").length != 3) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/ipmute playernamewithouttag minutes'"});return;} // split looks like {"/mute", "name", "minutesToMute"}
-    var name = msg.split(" ")[1];
-    var player = getPlayerFromName(name);
+    let name = msg.split(" ")[1];
+    let player = getPlayerFromName(name);
     if(player == -1){
         ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
         return;
     }
-    var minutes = parseFloat(msg.split(" ")[2]);
+    let minutes = parseFloat(msg.split(" ")[2]);
     if (typeof minutes !== "number") return;
 
     if (minutes < 0) return;
@@ -207,14 +207,14 @@ cmds["/reboot"] = new Command("/reboot - Schedules a restart of the shard", ADMI
 
 cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/tp playernamewithouttag'"});return;}
-    var name = msg.split(" ")[1];
-    var player = getPlayerFromName(name);
+    let name = msg.split(" ")[1];
+    let player = getPlayerFromName(name);
     if(player == -1){
         ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
         return;
     }
 
-    var old_sy = ply.sy, old_sx = ply.sx;
+    let old_sy = ply.sy, old_sx = ply.sx;
 
     ply.x = player.x;
     ply.y = player.y;
@@ -229,9 +229,9 @@ cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, f
 
 cmds["/settag"] = new Command("/settag <player> <tag> - Sets a player's tag. tag should not contain brackets.", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 3) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/settag playernamewithouttag tag'"});return;}
-    var name = msg.split(" ")[1];
-    var newTag = msg.split(" ")[2];
-    var player = getPlayerFromName(name);
+    let name = msg.split(" ")[1];
+    let newTag = msg.split(" ")[2];
+    let player = getPlayerFromName(name);
     if(player == -1){
         ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
         return;
@@ -244,8 +244,8 @@ cmds["/settag"] = new Command("/settag <player> <tag> - Sets a player's tag. tag
 
 cmds["/deltag"] = new Command("/deltag <player> <tag> - Removes a player's tag.", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/settag playernamewithouttag'"});return;}
-    var name = msg.split(" ")[1];
-    var player = getPlayerFromName(name);
+    let name = msg.split(" ")[1];
+    let player = getPlayerFromName(name);
     if(player == -1){
         ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
         return;
@@ -258,9 +258,9 @@ cmds["/deltag"] = new Command("/deltag <player> <tag> - Removes a player's tag."
 
 cmds["/smite"] = new Command("/smite <player> - Smites the specified player", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 2) return;
-    var name = msg.split(" ")[1];
+    let name = msg.split(" ")[1];
     
-    var player = getPlayerFromName(name);
+    let player = getPlayerFromName(name);
     if(player == -1){
 	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
 	    return;
@@ -271,9 +271,9 @@ cmds["/smite"] = new Command("/smite <player> - Smites the specified player", AD
 
 cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMINPLUS, function (ply, msg) {
     if (msg.split(" ").length != 2) return;
-    var name = msg.split(" ")[1];
+    let name = msg.split(" ")[1];
 
-    var player = getPlayerFromName(name);
+    let player = getPlayerFromName(name);
     if(player == -1){
 	    ply.socket.emit("chat", { msg: "Player '"+name+"' not found." });
 	    return;
@@ -303,11 +303,11 @@ if (Config.getValue("debug", false)) {
 }
 
 // Compute help menu
-for (var x in PERM_TABLE) {
+for (let x in PERM_TABLE) {
     HELP_TABLE[PERM_TABLE[x]] = []; // construct empty array
-    for (var c in cmds) {
-    	var cmd = cmds[c];
-    	for(var p in cmd.permissions)
+    for (let c in cmds) {
+    	let cmd = cmds[c];
+    	for(let p in cmd.permissions)
 	        if (cmd.permissions[p] == PERM_TABLE[x] && cmd.visible)
 	        	HELP_TABLE[PERM_TABLE[x]].push(cmd);
     }

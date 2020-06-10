@@ -1,4 +1,4 @@
-var Beam = require('./beam.js');
+let Beam = require('./beam.js');
 
 module.exports = class Mine {
 	constructor(ownr, i, weaponID) {
@@ -34,11 +34,11 @@ module.exports = class Mine {
 	}
 	doPulse(){
 		if (this.time > 25 * 40) this.die(); // pulse has a shorter lifespan
-		var playerFound = false;
-		for (var i in players[this.sy][this.sx]) {
-			var p = players[this.sy][this.sx][i];
+		let playerFound = false;
+		for (let i in players[this.sy][this.sx]) {
+			let p = players[this.sy][this.sx][i];
 			if (p.color !== this.color && squaredDist(p, this) < square(this.range * 10)) {
-				var mult = 400 / Math.max(10, .001 + Math.hypot(p.x - this.x, p.y - this.y)); // not sure what's going on here but it works
+				let mult = 400 / Math.max(10, .001 + Math.hypot(p.x - this.x, p.y - this.y)); // not sure what's going on here but it works
 				p.vx = mult * (Math.cbrt(p.x - this.x));
 				p.vy = mult * (Math.cbrt(p.y - this.y)); // push the player
 				p.updatePolars();//we edited rectangulars
@@ -54,31 +54,31 @@ module.exports = class Mine {
 	}
 	doHeal(){
 		if (this.time > 25 * 20) this.die(); // campfire has a shorter lifespan
-		var playerFound = 0;
+		let playerFound = 0;
 
 		//check there's 2 people
-		for (var i in players[this.sy][this.sx]) {
-			var p = players[this.sy][this.sx][i];
+		for (let i in players[this.sy][this.sx]) {
+			let p = players[this.sy][this.sx][i];
 			if (p.color == this.color && squaredDist(p, this) < square(this.range * 10)) playerFound++;
 		}
 		if (playerFound < 2) return;
 
 		//heal them
-		for (var i in players[this.sy][this.sx]) {
-			var p = players[this.sy][this.sx][i];
+		for (let i in players[this.sy][this.sx]) {
+			let p = players[this.sy][this.sx][i];
 			if (p.color == this.color && squaredDist(p, this) < square(this.range * 10)) {
 				p.health=Math.min(p.health-this.dmg, p.maxHealth); // heal them
 
-				var r = Math.random(); // Laser Mine
-				var beam = new Beam(this, r, this.wepnID, p, this); // m.owner is the owner, m is the origin location
+				let r = Math.random(); // Laser Mine
+				let beam = new Beam(this, r, this.wepnID, p, this); // m.owner is the owner, m is the origin location
 				beams[this.sy][this.sx][r] = beam;
 			}
 		}
 		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	collideWithMines(){ // When the mine is created, make sure it isn't placed on top of any other mines.
-		for (var m in mines[this.sy][this.sx]) {
-			var mine = mines[this.sy][this.sx][m];
+		for (let m in mines[this.sy][this.sx]) {
+			let mine = mines[this.sy][this.sx][m];
 			if (mine.id == this.id) continue; // ofc the mine is on top of itthis
 			if (squaredDist(mine, this) < square(wepns[this.wepnID].range)){ // if that mine is in this mine's "attack range"
 				mine.die(); // destroy both
@@ -89,14 +89,14 @@ module.exports = class Mine {
 	}
 	die() {
 		this.die = function() { }; // Purpose unclear, please comment
-		var power = 0; // how strongly this mine pushes people away on explosion
+		let power = 0; // how strongly this mine pushes people away on explosion
 		if (this.wepnID == 15 || this.wepnID == 33) power = 400; //mine, grenade
 		else if (this.wepnID == 32) power = 2000;
 		if(power != 0){
-			for (var i in players[this.sy][this.sx]) {
-				var p = players[this.sy][this.sx][i];
+			for (let i in players[this.sy][this.sx]) {
+				let p = players[this.sy][this.sx][i];
 				if (squaredDist(p, this) < square(1024)) {
-					var mult = power / Math.max(10, .001 + Math.hypot(p.x - this.x, p.y - this.y)); // not sure what's going on here but it works
+					let mult = power / Math.max(10, .001 + Math.hypot(p.x - this.x, p.y - this.y)); // not sure what's going on here but it works
 					p.vx = mult * (Math.cbrt(p.x - this.x));
 					p.vy = mult * (Math.cbrt(p.y - this.y)); // push the player
 					p.updatePolars();//we edited rectangulars
@@ -105,8 +105,8 @@ module.exports = class Mine {
 			}
 		}
 		if (this.wepnID == 33) // if i'm a grenade
-			for (var i in players[this.sy][this.sx]) {
-				var p = players[this.sy][this.sx][i];
+			for (let i in players[this.sy][this.sx]) {
+				let p = players[this.sy][this.sx][i];
 				if (squaredDist(p, this) < square(this.range * 40)) p.dmg(this.dmg, this); // if i'm in range of a player on explosion, damage them
 			}
 		sendAllSector('sound', { file: "boom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);

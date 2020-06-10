@@ -24,13 +24,13 @@ module.exports = class Orb {
 
 
 		// Find next target
-		var closest = -1;
+		let closest = -1;
 		if (tick % 5 == 0 && this.locked == 0) {
 			//search players
-			for (var i in players[this.sy][this.sx]) {
-				var player = players[this.sy][this.sx][i];
+			for (let i in players[this.sy][this.sx]) {
+				let player = players[this.sy][this.sx][i];
 				if(player.disguise>0 && this.wepnID != 42) continue;
-				var dist = squaredDist(player, this);
+				let dist = squaredDist(player, this);
 				if ((player.color != this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked == 0 || dist < closest)) {
 					this.locked = player.id;
 					closest = dist;
@@ -46,9 +46,9 @@ module.exports = class Orb {
 			
 
 			//search asteroids
-			for (var i in asts[this.sy][this.sx]) {
-				var ast = asts[this.sy][this.sx][i];
-				var dist = squaredDist(ast, this);
+			for (let i in asts[this.sy][this.sx]) {
+				let ast = asts[this.sy][this.sx][i];
+				let dist = squaredDist(ast, this);
 				if (dist < square(wepns[this.wepnID].range * 10) && (this.locked == 0 || dist < closest)) {
 					this.locked = ast.id;
 					closest = dist;
@@ -60,14 +60,14 @@ module.exports = class Orb {
 		if (this.locked != 0) {
 			if (this.lockedTimer++ > secs(2.5)) this.die(); // after 2.5 seconds of being locked on -> delete this
 
-			var baseHere = bases[this.sy][this.sx];
-			var target = players[this.sy][this.sx][this.locked];
+			let baseHere = bases[this.sy][this.sx];
+			let target = players[this.sy][this.sx][this.locked];
 			if (typeof target === 'undefined' && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
 			if (target == 0) target = asts[this.sy][this.sx][this.locked];
 			if (typeof target === 'undefined') this.locked = 0;
 			else { // if we are locked onto something
 				if (target.type === "Player") target.isLocked = true; // tell the player they're locked on so they will get an alert message
-				var dist = Math.hypot(target.x-this.x,target.y-this.y);
+				let dist = Math.hypot(target.x-this.x,target.y-this.y);
 				if (dist < 64 && target.turretLive !== false) { // if it's a base we can't attack when it's dead. !== false works in case of non-bases
 					target.dmg(this.dmg, this);
 					this.die();

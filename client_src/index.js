@@ -31,21 +31,21 @@ printStartup();
 
 window.document.title = "torn.space";
 
-var isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
+let isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
 
-var canvas = document.getElementById('ctx');
+let canvas = document.getElementById('ctx');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-var ctx = canvas.getContext("2d", { alpha: false });
+let ctx = canvas.getContext("2d", { alpha: false });
 
-var minimapcanvas = document.createElement('canvas');
+let minimapcanvas = document.createElement('canvas');
 minimapcanvas.width = minimapcanvas.height = 208;
-var minictx = minimapcanvas.getContext("2d", { alpha: true });
+let minictx = minimapcanvas.getContext("2d", { alpha: true });
 
-var chatcanvas = document.createElement('canvas');
+let chatcanvas = document.createElement('canvas');
 chatcanvas.width = 650
 chatcanvas.height = 200;
-var chatctx = chatcanvas.getContext("2d", { alpha: true });
+let chatctx = chatcanvas.getContext("2d", { alpha: true });
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -64,9 +64,9 @@ ReactDOM.render(
 );
 ReactRoot.turnOnDisplay("LoginOverlay");
 
-var sins = [];
+let sins = [];
 
-for (var i = 0; i < 1571; i++)//500pi
+for (let i = 0; i < 1571; i++)//500pi
 	sins[i] = Math.sin(i / 1000.);
 
 
@@ -79,7 +79,7 @@ global.GAMESERVER_URL = TORN_GAMESERVER_URL;
 console.log(":TornNetworkRepository: Setting API_URL to " + API_URL);
 console.log(":TornNetworkRepository: Setting GAMESERVER_URL to " + GAMESERVER_URL);
 
-var socket = io(GAMESERVER_URL,
+let socket = io(GAMESERVER_URL,
 	{
 		autoConnect: false,
 		parser: msgpack
@@ -95,122 +95,122 @@ global.connect = function () {
 	socket.open();
 }
 
-var teamColors = ["red","blue","green"];
-var sectorWidth = 14336;
-var mx = 0, my = 0, mb = 0;
-var tick = 0;
-var scrx = 0, scry = 0;
-var mapSz = -1;
-var quests = 0, quest = 0, qsy = -1, qsx = -1, qdsy = -1, qdsx = -1;
-var login = false, lore = false;
-var px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
-var phealth = 0;
-var mapZoom = 1;
-var myxx1 = 0, myxx2 = 0, myxx3 = 0, myxx4 = 0;
-var myyy1 = 0, myyy2 = 0, myyy3 = 0, myyy4 = 0;
-var pscx = 0, pscy = 0, psga = 0;
-var bxo = 0, byo = 0, bx = 0, by = 0;
-var iron = 0, silver = 0, platinum = 0, aluminium = 0;
-var kills = 0, baseKills = 0, money = 0, experience = 0, rank = 0;
-var sx = 0, sy = 0;
-var docked = false, actuallyBuying = true;
-var tab = 0, confirmer = -1, shipView = 0, volTransparency = 0, gVol = .5;
+let teamColors = ["red","blue","green"];
+let sectorWidth = 14336;
+let mx = 0, my = 0, mb = 0;
+let tick = 0;
+let scrx = 0, scry = 0;
+let mapSz = -1;
+let quests = 0, quest = 0, qsy = -1, qsx = -1, qdsy = -1, qdsx = -1;
+let login = false, lore = false;
+let px = 0, py = 0, pc = 0, pangle = 0, isLocked = false, pvx = 0, pvy = 0;
+let phealth = 0;
+let mapZoom = 1;
+let myxx1 = 0, myxx2 = 0, myxx3 = 0, myxx4 = 0;
+let myyy1 = 0, myyy2 = 0, myyy3 = 0, myyy4 = 0;
+let pscx = 0, pscy = 0, psga = 0;
+let bxo = 0, byo = 0, bx = 0, by = 0;
+let iron = 0, silver = 0, platinum = 0, aluminium = 0;
+let kills = 0, baseKills = 0, money = 0, experience = 0, rank = 0;
+let sx = 0, sy = 0;
+let docked = false, actuallyBuying = true;
+let tab = 0, confirmer = -1, shipView = 0, volTransparency = 0, gVol = .5;
 global.typing = false;
 global.stopTyping = () => { typing = false }
-var centered = false;
-var afk = false;
+let centered = false;
+let afk = false;
 
-var baseMap2D = {}
-var planetMap2D = {}
-var useOldMap = false;
+let baseMap2D = {}
+let planetMap2D = {}
+let useOldMap = false;
 
-var chatLength = 40, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
-var lorePage = 0, homepageTimer = 0, loreTimer = 0;
-var chatRooms = [mEng[197], "Team Chat", "Guild Chat"];
-var messages = [{},{},{}];
+let chatLength = 40, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
+let lorePage = 0, homepageTimer = 0, loreTimer = 0;
+let chatRooms = [mEng[197], "Team Chat", "Guild Chat"];
+let messages = [{},{},{}];
 clearChat();
 preProcessChat();
-var raidTimer = -1, raidRed = 0, raidBlue = 0, raidGreen = 0, points = 0;
-var shield = false, autopilot = false;
-var seller = 0, worth = 0, ship = 0;
-var empTimer = -1, dmgTimer = -1, gyroTimer = 0;
-var t2 = 1, mh2 = 1, c2 = 1, va2 = 1, e2 = 1, ag2 = 1;
-var dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops = 0, frames = 0, uframes = 0, ups = 0, dev = false;
+let raidTimer = -1, raidRed = 0, raidBlue = 0, raidGreen = 0, points = 0;
+let shield = false, autopilot = false;
+let seller = 0, worth = 0, ship = 0;
+let empTimer = -1, dmgTimer = -1, gyroTimer = 0;
+let t2 = 1, mh2 = 1, c2 = 1, va2 = 1, e2 = 1, ag2 = 1;
+let dead = false, lives = 50, sLag = 0, nLag = 0, clientLag = -40, fps = 0, ops = 0, frames = 0, uframes = 0, ups = 0, dev = false;
 global.credentialState = 0;
-var savedNote = 0;
-var key = '~`';
-var myName = "GUEST", currAlert = '', bigAlert = '', disguise = 0;
-var soundAllowed = false;
-var currLoading = "";
-var secret2PlanetName = "";
-var meanNLag = 0, nLagCt = 0;
+let savedNote = 0;
+let key = '~`';
+let myName = "GUEST", currAlert = '', bigAlert = '', disguise = 0;
+let soundAllowed = false;
+let currLoading = "";
+let secret2PlanetName = "";
+let meanNLag = 0, nLagCt = 0;
 
-var booms = {};
-var boomParticles = {};
-var trails = {};
-var myTrail = 0;
-var notes = {};
-var bullets = {};
-var planets = 0, hmap = 0, lb = 0, youi = 0;
-var keys = [], lagArr = 0;
+let booms = {};
+let boomParticles = {};
+let trails = {};
+let myTrail = 0;
+let notes = {};
+let bullets = {};
+let planets = 0, hmap = 0, lb = 0, youi = 0;
+let keys = [], lagArr = 0;
 
-var w = window.innerWidth;
-var h = window.innerHeight; // Canvas width and height
-var rx = w / 2 - 128 * 3, ry = h / 4 - 128;
-var basesInfo = undefined, playersInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
+let w = window.innerWidth;
+let h = window.innerHeight; // Canvas width and height
+let rx = w / 2 - 128 * 3, ry = h / 4 - 128;
+let basesInfo = undefined, playersInfo = { }, minesInfo = { }, orbsInfo = { }, missilesInfo = { }, vortsInfo = { }, beamsInfo = { }, blastsInfo = { }, astsInfo = { }, packsInfo = { };
 
-var clientmutes = { };
+let clientmutes = { };
 // for initial loading screen
-var EVERYTHING_LOADED = false;
+let EVERYTHING_LOADED = false;
 
-var guest = false;
+let guest = false;
 
-var stars = [];
-for (var i = 0; i < 30; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
+let stars = [];
+for (let i = 0; i < 30; i++) stars[i] = { x: Math.random() * w, y: Math.random() * h };
 
-var myId = undefined;
+let myId = undefined;
 
 
-var dots = [];
+let dots = [];
 dots[0] = {x:0,y:0,z:0};
-for (var i = 1; i < 1000; i++) {
-	var leaf = Math.floor(Math.random()*3);
-	var dist = ((Math.random()-.4)*(Math.random()-.6)+.3)*200;
-	var angleMiss = (Math.random()-.5)*dist*.02;
-	var a = leaf*Math.PI*2/3+angleMiss+dist/70;
-	var zz = square(dist)*(Math.random()-.5)*0.02;
-	var xx = dist*cosLow(a)*2;
-	var yy = dist*sinLow(a)*2;
+for (let i = 1; i < 1000; i++) {
+	let leaf = Math.floor(Math.random()*3);
+	let dist = ((Math.random()-.4)*(Math.random()-.6)+.3)*200;
+	let angleMiss = (Math.random()-.5)*dist*.02;
+	let a = leaf*Math.PI*2/3+angleMiss+dist/70;
+	let zz = square(dist)*(Math.random()-.5)*0.02;
+	let xx = dist*cosLow(a)*2;
+	let yy = dist*sinLow(a)*2;
 	dots[i] = { x: xx, y: yy, z: zz };
 }
 
-var quasar = [];
-/*for (var i = 0; i < 30; i++) {
-	var dist = Math.random()*.8;
-	var a = Math.random()*Math.PI*2;
-	var xx = dist*cosLow(a);
-	var yy = dist*sinLow(a);
+let quasar = [];
+/*for (let i = 0; i < 30; i++) {
+	let dist = Math.random()*.8;
+	let a = Math.random()*Math.PI*2;
+	let xx = dist*cosLow(a);
+	let yy = dist*sinLow(a);
 	quasar[i] = { x: xx, y: yy, z: Math.min(1/(dist-.4), 20)};
 }*/
 
-var killStreak = 0, killStreakTimer = -1;
-var badWeapon = 0;
-var mouseDown = false;
-var xxa = sx;
-var yya = sy;
+let killStreak = 0, killStreakTimer = -1;
+let badWeapon = 0;
+let mouseDown = false;
+let xxa = sx;
+let yya = sy;
 xxa *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
 yya *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-var planetTimerSec = 0;
-var flash = 0;
-var hyperdriveTimer = 0;
-var didW = false, didSteer = false, currTut = 0;
+let planetTimerSec = 0;
+let flash = 0;
+let hyperdriveTimer = 0;
+let didW = false, didSteer = false, currTut = 0;
 
-var sectorPoints = 0;
+let sectorPoints = 0;
 
-var wepns = jsn.weapons, ships = jsn.ships;
-for (var j = 0; j < wepns.length - 1; j++)//this nifty loop sorts weapons by ship
+let wepns = jsn.weapons, ships = jsn.ships;
+for (let j = 0; j < wepns.length - 1; j++)//this nifty loop sorts weapons by ship
 	if (wepns[weaponWithOrder(j)].type === wepns[weaponWithOrder(j + 1)].type && wepns[weaponWithOrder(j)].level > wepns[weaponWithOrder(j + 1)].level) {
-		var woj = weaponWithOrder(j), woj1 = weaponWithOrder(j + 1);
+		let woj = weaponWithOrder(j), woj1 = weaponWithOrder(j + 1);
 		wepns[woj].order = j + 1;
 		wepns[woj1].order = j;
 		j = 0;
@@ -218,12 +218,12 @@ for (var j = 0; j < wepns.length - 1; j++)//this nifty loop sorts weapons by shi
 wepns[-2] = { name: "" };
 wepns[-1] = { name: mEng[0] };
 
-var scroll = 0, weaponTimer = 0, charge = 0;
-var equipped = 0, ammos = {};
-var musicAudio = 0;
+let scroll = 0, weaponTimer = 0, charge = 0;
+let equipped = 0, ammos = {};
+let musicAudio = 0;
 
-var Aud = {};
-var Aud_prgs = [0, 0];
+let Aud = {};
+let Aud_prgs = [0, 0];
 
 global.send_api = async function(endpoint, data) {
 	return await fetch(API_URL + endpoint, {
@@ -263,7 +263,7 @@ function loadAllAudio() {
 	loadAudio("noammo", '/aud/noammo.wav');
 }
 
-var muted = false, musicMuted = false;
+let muted = false, musicMuted = false;
 
 // Passed to React Root
 function toggleAudio() {
@@ -283,9 +283,9 @@ function toggleMusic() {
 // Use this function to play any sound from the Aud object
 function playAudio(name, vol) {
 	if (muted || !soundAllowed) return;
-	var audio = Aud[name];
+	let audio = Aud[name];
 	if (!audio) { console.error("Unknown sound " + name); }
-	var id = audio.play();
+	let id = audio.play();
 
 	audio.volume(gVol * vol, id);
 
@@ -298,12 +298,12 @@ function playAudio(name, vol) {
 	}
 }
 
-var redShips = [];
-var blueShips = [];
-var greenShips = [];
-var planetImgs = [];
-var Img = {};
-var Img_prgs = [0 /* Count of loaded images */, 0 /* Count of all images */]
+let redShips = [];
+let blueShips = [];
+let greenShips = [];
+let planetImgs = [];
+let Img = {};
+let Img_prgs = [0 /* Count of loaded images */, 0 /* Count of all images */]
 loadAllImages();
 loadAllAudio();
 
@@ -425,126 +425,126 @@ function loadAllImages() {
 	loadImage("blackArrow", '/img/arrows/blackArrow.png');
 
 	//ships
-	for(var i = 0; i < 21; i++) loadShipImg("blue", i);
-	for(var i = 0; i < 21; i++) loadShipImg("red", i);
-	for(var i = 0; i < 21; i++) loadShipImg("green", i);
+	for(let i = 0; i < 21; i++) loadShipImg("blue", i);
+	for(let i = 0; i < 21; i++) loadShipImg("red", i);
+	for(let i = 0; i < 21; i++) loadShipImg("green", i);
 	loadImageEnd();
 			
-	for (var i = 1; i < 6; i++) {
+	for (let i = 1; i < 6; i++) {
 		planetImgs[i] = new Image();
 		planetImgs[i].src = '/img/space/planets/pt' + i + '.jpg';
 	}
 }
 
-var achs = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
-var bigNotes = [-1, -1, -1, -1];
+let achs = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+let bigNotes = [-1, -1, -1, -1];
 
 function roll(v) {
-	for (var i in dots) {
-		var dot = dots[i];
-		var dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
-		var ang = Math.atan2(dot.z, dot.y) + v / 28;
-		var cos = Math.cos(ang) * dist;
-		var sin = Math.sin(ang) * dist;
+	for (let i in dots) {
+		let dot = dots[i];
+		let dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
+		let ang = Math.atan2(dot.z, dot.y) + v / 28;
+		let cos = Math.cos(ang) * dist;
+		let sin = Math.sin(ang) * dist;
 		dot.y = cos;
 		dot.z = sin;
 	}
-	for (var i in quasar) {
-		var dot = quasar[i];
-		var dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
-		var ang = Math.atan2(dot.z, dot.y) + v / 28;
-		var cos = Math.cos(ang) * dist;
-		var sin = Math.sin(ang) * dist;
+	for (let i in quasar) {
+		let dot = quasar[i];
+		let dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
+		let ang = Math.atan2(dot.z, dot.y) + v / 28;
+		let cos = Math.cos(ang) * dist;
+		let sin = Math.sin(ang) * dist;
 		dot.y = cos;
 		dot.z = sin;
 	}
-	for (var i = 0; i < mapSz+1; i++) {
-		for (var j = 0; j < mapSz+1; j++) {
-			var dot = sectorPoints[i][j];
-			var dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
-			var ang = Math.atan2(dot.z, dot.y) + v / 28;
-			var cos = Math.cos(ang) * dist;
-			var sin = Math.sin(ang) * dist;
+	for (let i = 0; i < mapSz+1; i++) {
+		for (let j = 0; j < mapSz+1; j++) {
+			let dot = sectorPoints[i][j];
+			let dist = Math.sqrt(dot.y * dot.y + dot.z * dot.z);
+			let ang = Math.atan2(dot.z, dot.y) + v / 28;
+			let cos = Math.cos(ang) * dist;
+			let sin = Math.sin(ang) * dist;
 			dot.y = cos;
 			dot.z = sin;
 		}
 	}
 }
 function spin(v) {
-	for (var i in dots) {
-		var dot = dots[i];
-		var dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
-		var ang = Math.atan2(dot.z, dot.x) + v / 28;
-		var cos = Math.cos(ang) * dist;
-		var sin = Math.sin(ang) * dist;
+	for (let i in dots) {
+		let dot = dots[i];
+		let dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
+		let ang = Math.atan2(dot.z, dot.x) + v / 28;
+		let cos = Math.cos(ang) * dist;
+		let sin = Math.sin(ang) * dist;
 		dot.x = cos;
 		dot.z = sin;
 	}
-	for (var i in quasar) {
-		var dot = quasar[i];
-		var dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
-		var ang = Math.atan2(dot.z, dot.x) + v / 28;
-		var cos = Math.cos(ang) * dist;
-		var sin = Math.sin(ang) * dist;
+	for (let i in quasar) {
+		let dot = quasar[i];
+		let dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
+		let ang = Math.atan2(dot.z, dot.x) + v / 28;
+		let cos = Math.cos(ang) * dist;
+		let sin = Math.sin(ang) * dist;
 		dot.x = cos;
 		dot.z = sin;
 	}
-	for (var i = 0; i < mapSz+1; i++) {
-		for (var j = 0; j < mapSz+1; j++) {
-			var dot = sectorPoints[i][j];
-			var dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
-			var ang = Math.atan2(dot.z, dot.x) + v / 28;
-			var cos = Math.cos(ang) * dist;
-			var sin = Math.sin(ang) * dist;
+	for (let i = 0; i < mapSz+1; i++) {
+		for (let j = 0; j < mapSz+1; j++) {
+			let dot = sectorPoints[i][j];
+			let dist = Math.sqrt(dot.x * dot.x + dot.z * dot.z);
+			let ang = Math.atan2(dot.z, dot.x) + v / 28;
+			let cos = Math.cos(ang) * dist;
+			let sin = Math.sin(ang) * dist;
 			dot.x = cos;
 			dot.z = sin;
 		}
 	}
 }
 function rotate(v) {
-	for (var i in dots) {
-		var dot = dots[i];
-		var dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
-		var ang = Math.atan2(dot.y, dot.x) + v / 28;
-		var cos = Math.cos(ang) * dist;
-		var sin = Math.sin(ang) * dist;
+	for (let i in dots) {
+		let dot = dots[i];
+		let dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
+		let ang = Math.atan2(dot.y, dot.x) + v / 28;
+		let cos = Math.cos(ang) * dist;
+		let sin = Math.sin(ang) * dist;
 		dot.x = cos;
 		dot.y = sin;
 	}
-	for (var i in quasar) {
-		var dot = quasar[i];
-		var dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
-		var ang = Math.atan2(dot.y, dot.x) + v / 28;
-		var cos = Math.cos(ang) * dist;
-		var sin = Math.sin(ang) * dist;
+	for (let i in quasar) {
+		let dot = quasar[i];
+		let dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
+		let ang = Math.atan2(dot.y, dot.x) + v / 28;
+		let cos = Math.cos(ang) * dist;
+		let sin = Math.sin(ang) * dist;
 		dot.x = cos;
 		dot.y = sin;
 	}
-	for (var i = 0; i < mapSz+1; i++) {
-		for (var j = 0; j < mapSz+1; j++) {
-			var dot = sectorPoints[i][j];
-			var dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
-			var ang = Math.atan2(dot.y, dot.x) + v / 28;
-			var cos = Math.cos(ang) * dist;
-			var sin = Math.sin(ang) * dist;
+	for (let i = 0; i < mapSz+1; i++) {
+		for (let j = 0; j < mapSz+1; j++) {
+			let dot = sectorPoints[i][j];
+			let dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
+			let ang = Math.atan2(dot.y, dot.x) + v / 28;
+			let cos = Math.cos(ang) * dist;
+			let sin = Math.sin(ang) * dist;
 			dot.x = cos;
 			dot.y = sin;
 		}
 	}
 }
 function center3D(xxp,yyp,zzp) {
-	for (var i in dots) {
+	for (let i in dots) {
 		dots[i].x-=xxp;
 		dots[i].y-=yyp;
 		dots[i].z-=zzp;
 	}
-	for (var i in quasar) {
+	for (let i in quasar) {
 		quasar[i].x-=xxp;
 		quasar[i].y-=yyp;
 		quasar[i].z-=zzp;
 	}
-	for (var i = 0; i < mapSz+1; i++) {
-		for (var j = 0; j < mapSz+1; j++) {
+	for (let i = 0; i < mapSz+1; i++) {
+		for (let j = 0; j < mapSz+1; j++) {
 			sectorPoints[i][j].x-=xxp;
 			sectorPoints[i][j].y-=yyp;
 			sectorPoints[i][j].z-=zzp;
@@ -589,42 +589,42 @@ function render() {
 	}
 	frames++;
 	ops++;
-	var d = new Date();
-	var lagTimer = d.getTime();
+	let d = new Date();
+	let lagTimer = d.getTime();
 	ctx.font = '14px ShareTech';
 
-	var time0 = -performance.now();
+	let time0 = -performance.now();
 	canvas.width = canvas.width;
 	renderBG();//Fast, surprisingly.
-	var r = Math.floor(Math.random() * 25);
-	var undoing = false;
+	let r = Math.floor(Math.random() * 25);
+	let undoing = false;
 	if (dmgTimer > 0) {
 		rDmg(r);
 		undoing = true;
 	}
 	if ((iron + platinum + aluminium + silver) / (ships[ship].capacity * c2) > .995) currAlert = mEng[1];
 
-	var time1 = -performance.now();
+	let time1 = -performance.now();
 	time0 -= time1;
 	rStars(); // Laggy as shit. Everything up to this is fast.
 
-	var time2 = -performance.now();
+	let time2 = -performance.now();
 	time1 -= time2;
 	rPlanets();
 	rBases();
 
-	var time3 = -performance.now();
+	let time3 = -performance.now();
 	time2 -= time3;
 	rAsteroids();
 	rPacks();
 
-	var time4 = -performance.now();
+	let time4 = -performance.now();
 	time3 -= time4;
 	rTrails();//Gets to .2-.25 in heavy drifting
 	rPlayers();//fast
 	if (disguise > 0) rSelfCloaked();
 
-	var time5 = -performance.now();
+	let time5 = -performance.now();
 	time4 -= time5;
 	rBullets();//fast
 	rBeams();//Fast
@@ -635,7 +635,7 @@ function render() {
 	rVorts();//Fast
 	rBooms();//Fast
 
-	var time6 = -performance.now();
+	let time6 = -performance.now();
 	time5 -= time6;
 	rSectorEdge();
 	rEdgePointer();//Fast
@@ -647,20 +647,20 @@ function render() {
 	rWeapons();//fast
 	rEMP();
 
-	var time7 = -performance.now();
+	let time7 = -performance.now();
 	time6 -= time7;
 	pasteChat();//slow
 
-	var time8 = -performance.now();
+	let time8 = -performance.now();
 	time7 -= time8;
 	paste3DMap(8,8);//Performance unknown
 
-	var time9 = -performance.now();
+	let time9 = -performance.now();
 	time8 -= time9;
 	rRadar();//Tolerable lag
 	rCargo();
 
-	var timeA = -performance.now();
+	let timeA = -performance.now();
 	time9 -= timeA;
 	if (lb != 0) rLB();
 	rExpBar();//Maybe a little slow
@@ -676,10 +676,10 @@ function render() {
 	rBigNotes();
 
 	d = new Date();
-	var cTime = d.getTime();
+	let cTime = d.getTime();
 	clientLag = cTime - lagTimer;
 	timeA += performance.now();
-	var arr = [time0, time1, time2, time3, time4, time5, time6, time7, time8, time9, timeA];
+	let arr = [time0, time1, time2, time3, time4, time5, time6, time7, time8, time9, timeA];
 	lagMath(arr);
 	rTexts(clientLag);
 	ops--;
@@ -704,7 +704,7 @@ function rWeapons() {
 
 	write(mEng[152], w - 80, h - 432 + (-1 + 10) * 16);
 	write(mEng[151], w - 16, h - 432 + (-1 + 10) * 16);
-	for (var i = 0; i < 10; i++) {
+	for (let i = 0; i < 10; i++) {
 		ctx.fillStyle = scroll == i ? 'lime' : 'yellow';
 		if (i >= ships[ship].weapons) ctx.fillStyle = "orange";
 		if (ship < wepns[equipped[i]].Level) ctx.fillStyle = "red";
@@ -747,54 +747,54 @@ function r3DMap() {
 		spin(-(sx+5)*20);
 	}
 
-	var c3dx, c3dy, c3dz;
+	let c3dx, c3dy, c3dz;
 	
 	minictx.strokeStyle = 'gray';
 	minictx.lineWidth = 1;
 	minictx.textAlign = "center";
 
-	var avgX = 0;
-	var avgY = 0;
-	var avgZ = 0;
-	var avgi = 0;
+	let avgX = 0;
+	let avgY = 0;
+	let avgZ = 0;
+	let avgi = 0;
 
-	for (var i = 0; i < mapSz; i++) {
-		for (var j = 0; j < mapSz; j++) {
+	for (let i = 0; i < mapSz; i++) {
+		for (let j = 0; j < mapSz; j++) {
 
-			var dot1 = sectorPoints[i  ][j  ];
-			var dot2 = sectorPoints[i  ][j+1];
-			var dot3 = sectorPoints[i+1][j  ];
-			var dot4 = sectorPoints[i+1][j+1];
+			let dot1 = sectorPoints[i  ][j  ];
+			let dot2 = sectorPoints[i  ][j+1];
+			let dot3 = sectorPoints[i+1][j  ];
+			let dot4 = sectorPoints[i+1][j+1];
 			if (useOldMap) { // Override if the user is using the square map
-				var dot1 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
-				var dot2 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
-				var dot3 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
-				var dot4 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
+				let dot1 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
+				let dot2 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
+				let dot3 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
+				let dot4 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
 			}
 
-			var cz = (dot1.z+dot4.z)/2;
+			let cz = (dot1.z+dot4.z)/2;
 
-			var ga = .75;
+			let ga = .75;
 			if (!useOldMap) // Sectors dynamically transparent
 				ga = Math.min(1,48*square(square(square(-cz/400+.5))));
 			//if(ga<.1) continue; dunno why this doesnt work
 			minictx.globalAlpha=ga;
 
-			var appliedZoom = useOldMap?1:mapZoom;
+			let appliedZoom = useOldMap?1:mapZoom;
 
 			//render lines
-			var xx1 = dot1.x / appliedZoom;
-			var yy1 = dot1.y / appliedZoom;
-			var zz1 = dot1.z / appliedZoom;
-			var xx2 = dot2.x / appliedZoom;
-			var yy2 = dot2.y / appliedZoom;
-			var zz2 = dot2.z / appliedZoom;
-			var xx3 = dot3.x / appliedZoom;
-			var yy3 = dot3.y / appliedZoom;
-			var zz3 = dot3.z / appliedZoom;
-			var xx4 = dot4.x / appliedZoom;
-			var yy4 = dot4.y / appliedZoom;
-			var zz4 = dot4.z / appliedZoom;
+			let xx1 = dot1.x / appliedZoom;
+			let yy1 = dot1.y / appliedZoom;
+			let zz1 = dot1.z / appliedZoom;
+			let xx2 = dot2.x / appliedZoom;
+			let yy2 = dot2.y / appliedZoom;
+			let zz2 = dot2.z / appliedZoom;
+			let xx3 = dot3.x / appliedZoom;
+			let yy3 = dot3.y / appliedZoom;
+			let zz3 = dot3.z / appliedZoom;
+			let xx4 = dot4.x / appliedZoom;
+			let yy4 = dot4.y / appliedZoom;
+			let zz4 = dot4.z / appliedZoom;
 			minictx.beginPath();
 			minictx.moveTo(104+xx3, 104+yy3);
 			minictx.lineTo(104+xx1, 104+yy1);
@@ -804,15 +804,15 @@ function r3DMap() {
 			minictx.closePath();
 
 			//render sector labels
-			var fontsz = Math.hypot(xx3-xx2,yy3-yy2)/3;
+			let fontsz = Math.hypot(xx3-xx2,yy3-yy2)/3;
 			if(ga > .3 && fontsz > 5 && baseMap2D[i][j]===0 && !(useOldMap && i*j!=0)){
 				minictx.font = fontsz+"px ShareTech";
 				minictx.fillStyle = "white";
 				minictx.fillText(getSectorName(i,j), (xx2+xx3)/2+104, (yy2+yy3+fontsz*.65)/2+104);
 			}
 
-			var cx = (xx1+xx4)/2;
-			var cy = (yy1+yy4)/2;
+			let cx = (xx1+xx4)/2;
+			let cy = (yy1+yy4)/2;
 
 			avgX+=cx;
 			avgY+=cy;
@@ -845,17 +845,17 @@ function r3DMap() {
 			//else minictx.stroke(); <-- Renders borders around the sectors
 
 			if(baseMap2D[i][j]!==0){
-				var img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss);
+				let img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss);
 				minictx.drawImage(img, 104+cx-7, 104+cy-7, 15, 15);
 			}
 
 			if(planetMap2D[i][j]!==0){
-				var planX = planetMap2D[i][j].x/sectorWidth;
-				var planY = planetMap2D[i][j].y/sectorWidth;
-				var xxp1 = lerp(xx1,xx4,(planX+planY)/2)-cx;
-				var yyp1 = lerp(yy1,yy4,(planX+planY)/2)-cy;
-				var xxp2 = lerp(xx3,xx2,(-planX+1+planY)/2)-cx;
-				var yyp2 = lerp(yy3,yy2,(-planX+1+planY)/2)-cy;
+				let planX = planetMap2D[i][j].x/sectorWidth;
+				let planY = planetMap2D[i][j].y/sectorWidth;
+				let xxp1 = lerp(xx1,xx4,(planX+planY)/2)-cx;
+				let yyp1 = lerp(yy1,yy4,(planX+planY)/2)-cy;
+				let xxp2 = lerp(xx3,xx2,(-planX+1+planY)/2)-cx;
+				let yyp2 = lerp(yy3,yy2,(-planX+1+planY)/2)-cy;
 				minictx.fillStyle = 'white';
 				minictx.fillRect(104+cx+xxp1+xxp2-2,104+cy+yyp1+yyp2-2,4,4);
 			}
@@ -865,11 +865,11 @@ function r3DMap() {
 					minictx.strokeStyle = 'white';
 					minictx.fillStyle = 'black';
 					minictx.beginPath();
-					var bxin = bx*mapSz-Math.floor(bx*mapSz), byin = by*mapSz-Math.floor(by*mapSz);
-					var xxp1 = lerp(xx1,xx4,(bxin+byin)/2)-cx;
-					var yyp1 = lerp(yy1,yy4,(bxin+byin)/2)-cy;
-					var xxp2 = lerp(xx3,xx2,(-bxin+1+byin)/2)-cx;
-					var yyp2 = lerp(yy3,yy2,(-bxin+1+byin)/2)-cy;
+					let bxin = bx*mapSz-Math.floor(bx*mapSz), byin = by*mapSz-Math.floor(by*mapSz);
+					let xxp1 = lerp(xx1,xx4,(bxin+byin)/2)-cx;
+					let yyp1 = lerp(yy1,yy4,(bxin+byin)/2)-cy;
+					let xxp2 = lerp(xx3,xx2,(-bxin+1+byin)/2)-cx;
+					let yyp2 = lerp(yy3,yy2,(-bxin+1+byin)/2)-cy;
 					c3dx = cx+xxp1+xxp2;
 					c3dy = cy+yyp1+yyp2;
 					minictx.arc(104+c3dx, 104+c3dy, 4, 0, 2 * Math.PI, false);
@@ -880,11 +880,11 @@ function r3DMap() {
 				if(Math.floor(bxo*mapSz) == i && Math.floor(byo*mapSz) == j){ // render wormhole output
 					minictx.fillStyle = 'white';
 					minictx.beginPath();
-					var bxin = bxo*mapSz-Math.floor(bxo*mapSz), byin = byo*mapSz-Math.floor(byo*mapSz);
-					var xxp1 = lerp(xx1,xx4,(bxin+byin)/2)-cx;
-					var yyp1 = lerp(yy1,yy4,(bxin+byin)/2)-cy;
-					var xxp2 = lerp(xx3,xx2,(-bxin+1+byin)/2)-cx;
-					var yyp2 = lerp(yy3,yy2,(-bxin+1+byin)/2)-cy;
+					let bxin = bxo*mapSz-Math.floor(bxo*mapSz), byin = byo*mapSz-Math.floor(byo*mapSz);
+					let xxp1 = lerp(xx1,xx4,(bxin+byin)/2)-cx;
+					let yyp1 = lerp(yy1,yy4,(bxin+byin)/2)-cy;
+					let xxp2 = lerp(xx3,xx2,(-bxin+1+byin)/2)-cx;
+					let yyp2 = lerp(yy3,yy2,(-bxin+1+byin)/2)-cy;
 					c3dx = cx+xxp1+xxp2;
 					c3dy = cy+yyp1+yyp2;
 					minictx.arc(104+c3dx, 104+c3dy, 4, 0, 2 * Math.PI, false);
@@ -894,9 +894,9 @@ function r3DMap() {
 			}
 
 			//render heatmap
-			var eachmt = hmap[i][j];
+			let eachmt = hmap[i][j];
 			minictx.fillStyle = "rgb("+(Math.floor(eachmt>>16)%0x100)+", "+(Math.floor(eachmt>>8)%0x100)+", "+(eachmt%0x100)+")";
-			var alp = eachmt-Math.floor(eachmt);
+			let alp = eachmt-Math.floor(eachmt);
 			minictx.globalAlpha *= Math.sqrt(Math.min(1, alp))/2;
 			minictx.fill();
 			minictx.closePath();
@@ -909,11 +909,11 @@ function r3DMap() {
 
 	//render stars
 	if (!useOldMap) {
-		for (var i = 1; i < 1000; i++) {
-			var dot = dots[i];
-			var xx = 104 + dot.x / mapZoom;
-			var yy = 104 + dot.y / mapZoom;
-			var sz = i/500+.5
+		for (let i = 1; i < 1000; i++) {
+			let dot = dots[i];
+			let xx = 104 + dot.x / mapZoom;
+			let yy = 104 + dot.y / mapZoom;
+			let sz = i/500+.5
 			minictx.fillStyle = "#"+(((128 + Math.floor(Math.abs(CoherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(CoherentNoise(17*i+79)) * 128) << 8) + Math.floor(Math.abs(CoherentNoise(7*i+107)) * 128)).toString(16);
 			minictx.globalAlpha=Math.min(1,48*square(square(square(-dot.z/400+.5))));
 			minictx.fillRect(xx-sz/2, yy-sz/2, sz, sz);
@@ -933,19 +933,19 @@ function r3DMap() {
 function paste3DMap(xp,yp) {
 	if(sectorPoints == 0) return;
 	/*let d = new Date();
-	var t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
+	let t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
 	t/=1000;
 	ctx.globalAlpha=.8;
-	var bhx = dots[0].x, bhy = dots[0].y, bhz = dots[0].z;
+	let bhx = dots[0].x, bhy = dots[0].y, bhz = dots[0].z;
 	render quasar jet
-	for (var i in quasar) {
-		var dot = quasar[i];
-		var dt = t*Math.sqrt(square(dot.z-bhz)+square(dot.y-bhy)+square(dot.x-bhx))%100/10;
-		var x1 = xp+104 + ((dot.x-bhx)*dt+bhx) / mapZoom;
-		var y1 = yp+104 + ((dot.y-bhy)*dt+bhy) / mapZoom;
-		var x2 = xp+104 + ((dot.x-bhx)*dt*2+bhx) / mapZoom;
-		var y2 = yp+104 + ((dot.y-bhy)*dt*2+bhy) / mapZoom;
-		var sz = i/500+.5
+	for (let i in quasar) {
+		let dot = quasar[i];
+		let dt = t*Math.sqrt(square(dot.z-bhz)+square(dot.y-bhy)+square(dot.x-bhx))%100/10;
+		let x1 = xp+104 + ((dot.x-bhx)*dt+bhx) / mapZoom;
+		let y1 = yp+104 + ((dot.y-bhy)*dt+bhy) / mapZoom;
+		let x2 = xp+104 + ((dot.x-bhx)*dt*2+bhx) / mapZoom;
+		let y2 = yp+104 + ((dot.y-bhy)*dt*2+bhy) / mapZoom;
+		let sz = i/500+.5
 		ctx.strokeStyle = "#"+(((0 + Math.floor(Math.abs(CoherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(CoherentNoise(17*i+79)) * 128) << 8) + Math.floor(128+Math.abs(CoherentNoise(7*i+107)) * 128)).toString(16);
 		ctx.beginPath();
 		ctx.moveTo(x1,y1);
@@ -954,10 +954,10 @@ function paste3DMap(xp,yp) {
 		ctx.stroke();
 	}*/
 	ctx.drawImage(minimapcanvas,xp,yp);
-	var xxp1 = lerp(myxx1,myxx4,(px/sectorWidth+py/sectorWidth)/2)-pscx; // these are just clever ways of using linear interpolation in a skew vector space
-	var yyp1 = lerp(myyy1,myyy4,(px/sectorWidth+py/sectorWidth)/2)-pscy;
-	var xxp2 = lerp(myxx3,myxx2,(-px/sectorWidth+1+py/sectorWidth)/2)-pscx;
-	var yyp2 = lerp(myyy3,myyy2,(-px/sectorWidth+1+py/sectorWidth)/2)-pscy;
+	let xxp1 = lerp(myxx1,myxx4,(px/sectorWidth+py/sectorWidth)/2)-pscx; // these are just clever ways of using linear interpolation in a skew vector space
+	let yyp1 = lerp(myyy1,myyy4,(px/sectorWidth+py/sectorWidth)/2)-pscy;
+	let xxp2 = lerp(myxx3,myxx2,(-px/sectorWidth+1+py/sectorWidth)/2)-pscx;
+	let yyp2 = lerp(myyy3,myyy2,(-px/sectorWidth+1+py/sectorWidth)/2)-pscy;
 	ctx.fillStyle = brighten(pc);
 	ctx.globalAlpha = psga;
 	ctx.fillRect(xp+104+pscx+xxp1+xxp2-2, yp+104+pscy+yyp1+yyp2-2, 4, 4);
@@ -971,10 +971,10 @@ function rBuyShipWindow(){
 	roundRect(ctx, rx + 16, ry + 256 - 16, 256, 256, 8, false, true);
 
 	let d = new Date();
-	var t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
-	var rendX = rx + 128 + 16;
-	var rendY = ry + 128 * 3 - 16;
-	var img = colorSelect(pc,redShips,blueShips,greenShips)[shipView];
+	let t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
+	let rendX = rx + 128 + 16;
+	let rendY = ry + 128 * 3 - 16;
+	let img = colorSelect(pc,redShips,blueShips,greenShips)[shipView];
 	ctx.save();
 	ctx.translate(rendX, rendY);
 	ctx.rotate(-3 * t);
@@ -1014,9 +1014,9 @@ function rBuyShipWindow(){
 	}
 }
 function rOreShop(){
-	var info = {};
-	var mult1 = (myTrail % 16 == 2)?1.05:1;
-	var allIronPrice = iron * mult1, allSilverPrice = silver * mult1, allPlatinumPrice = platinum * mult1, allAluminiumPrice = aluminium * mult1;
+	let info = {};
+	let mult1 = (myTrail % 16 == 2)?1.05:1;
+	let allIronPrice = iron * mult1, allSilverPrice = silver * mult1, allPlatinumPrice = platinum * mult1, allAluminiumPrice = aluminium * mult1;
 	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + allIronPrice + " ($"+mult1+" " + mEng[155] + ")";
 	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + allSilverPrice + " ($"+mult1+" " + mEng[155] + ")";
 	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + allPlatinumPrice + " ($"+mult1+" " + mEng[155] + ")";
@@ -1027,7 +1027,7 @@ function rOreShop(){
 	ctx.font = '14px ShareTech';
 	ctx.textAlign = "left";
 
-	for (var i = 4; i < 8; i++) {
+	for (let i = 4; i < 8; i++) {
 		ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'yellow');
 		write(info[i], rx + 256 - 32, ry - 32 + i * 32);
 	}
@@ -1036,9 +1036,9 @@ function rOreShop(){
 	write(mEng[12] + " => $" + (allAluminiumPrice + allPlatinumPrice + allSilverPrice + allIronPrice), rx + 256 + 48, ry + 76); // Sell all
 
 	let d = new Date();
-	var stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
-	var spx = (stime % 8) * 128;
-	var Secret = Math.floor((stime / 8) % 4) * 128;
+	let stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
+	let spx = (stime % 8) * 128;
+	let Secret = Math.floor((stime / 8) % 4) * 128;
 	ctx.save();
 	ctx.translate(rx + 128 - 16, ry + (256 - 32 - 40) / 2 + 40);
 	ctx.drawImage(Img.silver, spx, Secret, 128, 128, -64, -64, 128, 128);
@@ -1063,11 +1063,11 @@ function rWeaponsInShop(){
 	ctx.fillStyle = seller == 601 ? "lime" : "yellow";
 	write(mEng[18], rx + 512 - 64, ry + 256 - 16);
 	ctx.fillStyle = 'yellow';
-	for (var i = 0; i < 10; i++) {
+	for (let i = 0; i < 10; i++) {
 		ctx.fillStyle = (seller - 10 == i) ? 'lime' : 'yellow';
 		if (ships[shipView].weapons <= i) ctx.fillStyle = "orange";
 		if (shipView < wepns[equipped[i]].level) ctx.fillStyle = "red";
-		var tag = '	      ';
+		let tag = '	      ';
 		if (equipped[i] == -1) tag = mEng[14] + (i != 9 ? '  ' : ' ');
 		else if (equipped[i] > -1) tag = mEng[19] + (i != 9 ? ' ' : '');
 		write(tag + (i + 1) + ": " + wepns[equipped[i]].name, rx + 256 + 32, ry + 256 + i * 16);
@@ -1097,14 +1097,14 @@ function rConfirm() {
 function rQuests() {
 	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
-	var mult = (myTrail % 16 == 2)?1.05:1;
+	let mult = (myTrail % 16 == 2)?1.05:1;
 	if (quest != 0) {
 		ctx.fillStyle = 'cyan';
 		ctx.textAlign = 'center';
 		ctx.font = '30px ShareTech';
 		write(mEng[36], rx + 128 * 3, ry + 128);
 		ctx.font = '14px ShareTech';
-		var desc = "";
+		let desc = "";
 		if (quest.type === 'Mining') desc = mEng[37] + quest.amt + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
 		if (quest.type === 'Base') desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
 		if (quest.type === 'Delivery') desc = mEng[42] + getSectorName(quest.sx, quest.sy) + mEng[43] + getSectorName(quest.dsx, quest.dsy) + mEng[40];
@@ -1114,10 +1114,10 @@ function rQuests() {
 		write(desc, rx + 128 * 3, ry + 192);
 		ctx.textAlign = 'left';
 	} else
-		for (var i in quests) {
-			var xv = i < 5 ? 0 : 128 * 3;
-			var questi = quests[i];
-			var desc = "";
+		for (let i in quests) {
+			let xv = i < 5 ? 0 : 128 * 3;
+			let questi = quests[i];
+			let desc = "";
 			ctx.fillStyle = i == seller - 300 ? 'lime' : 'yellow';
 			if (questi.type == 'Mining') desc = mEng[37] + questi.amt + mEng[38] + questi.metal + mEng[39] + getSectorName(questi.sx, questi.sy) + mEng[40];
 			if (questi.type == 'Base')
@@ -1151,30 +1151,30 @@ function rStats() {
 	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'left';
 	let d = new Date();
-	var t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
+	let t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
 
-	var ore = iron + silver + platinum + aluminium;
-	var upgradeCosts = 0;
+	let ore = iron + silver + platinum + aluminium;
+	let upgradeCosts = 0;
 	upgradeCosts += techEnergy(t2) + techEnergy(va2) + techEnergy(ag2) + techEnergy(c2) + techEnergy(mh2) + techEnergy(e2)*8;
-	var achievements = 0;
-	for (var i in achs) if (achs[i]) achievements++;
+	let achievements = 0;
+	for (let i in achs) if (achs[i]) achievements++;
 	ctx.fillStyle = "yellow";
 	write(mEng[161], rx + 16, ry + 512 - 16);
 	ctx.font = "32px ShareTech";
 	ctx.textAlign = "center";
 	write(myName, rx + 192, ry + 96);
 	ctx.font = "14px ShareTech";
-	var activeGens = 0;
+	let activeGens = 0;
 	if (ship >= wepns[20].level)
-		for (var i = 0; i < ships[ship].weapons; i++)
+		for (let i = 0; i < ships[ship].weapons; i++)
 			if (equipped[i] == 20) activeGens++;
-	var eMult = e2;
-	for (var i = 0; i < activeGens; i++) eMult *= 1.06;
+	let eMult = e2;
+	for (let i = 0; i < activeGens; i++) eMult *= 1.06;
 
 
-	var stats = [mEng[20] + Number((ships[ship].thrust * t2).toPrecision(3)), mEng[22] + Number((ships[ship].capacity * c2).toPrecision(3)), mEng[23] + Number((ships[ship].health * mh2).toPrecision(3)), mEng[164] + Number((eMult).toPrecision(3)), (kills - baseKills) + mEng[51], baseKills + mEng[52], mEng[55] + Number((worth + upgradeCosts).toPrecision(3)), mEng[56] + Number((money + ore + worth + upgradeCosts).toPrecision(3)), Math.round(experience) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
+	let stats = [mEng[20] + Number((ships[ship].thrust * t2).toPrecision(3)), mEng[22] + Number((ships[ship].capacity * c2).toPrecision(3)), mEng[23] + Number((ships[ship].health * mh2).toPrecision(3)), mEng[164] + Number((eMult).toPrecision(3)), (kills - baseKills) + mEng[51], baseKills + mEng[52], mEng[55] + Number((worth + upgradeCosts).toPrecision(3)), mEng[56] + Number((money + ore + worth + upgradeCosts).toPrecision(3)), Math.round(experience) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
 
-	for (var i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
+	for (let i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
 
 
 	ctx.fillStyle = seller == 700 ? "yellow" : "red";
@@ -1196,12 +1196,12 @@ function rStats() {
 		write(mEng[170], rx + 512 + 128, ry + 44 + 64 + 9 * 16);
 	}
 
-	var rendX = rx + 192;
-	var rendY = ry + 192;
+	let rendX = rx + 192;
+	let rendY = ry + 192;
 	ctx.save();
 	ctx.translate(rendX, rendY);
 	ctx.rotate(-3 * t);
-	var img = colorSelect(pc,redShips,blueShips,greenShips)[ship];
+	let img = colorSelect(pc,redShips,blueShips,greenShips)[ship];
 
 	ctx.drawImage(img, -img.width / 2, -img.height / 2);
 	ctx.restore();
@@ -1258,7 +1258,7 @@ function rStats() {
 	/*description for radar
 	ctx.textAlign = "left";
 	if (seller==201 || seller==207){
-		var txt = jsn.techs.radar[(va2-1)*8+(seller==201?1:-1)];
+		let txt = jsn.techs.radar[(va2-1)*8+(seller==201?1:-1)];
 		if(typeof txt !== "undefined")
 			write((seller==201?"Up":"Down")+"grade: " + txt, rx+512, ry+400);
 		txt = jsn.techs.radar[(va2-1)*8];
@@ -1271,7 +1271,7 @@ function rAchievements() {
 	ctx.fillStyle = "yellow";
 	ctx.font = "14px ShareTech";
 	ctx.textAlign = "center";
-	for (var i = 0; i < achs.length; i++) {
+	for (let i = 0; i < achs.length; i++) {
 		if (i < 13) ctx.fillStyle = achs[i] ? "red" : "pink";
 		else if (i < 25) ctx.fillStyle = achs[i] ? "gold" : "lime";
 		else if (i < 37) ctx.fillStyle = achs[i] ? "lightgray" : "white";
@@ -1288,15 +1288,15 @@ function rAchievements() {
 function rHelp() {
 	ctx.textAlign = "center";
 	ctx.font = "26px ShareTech";
-	var data = [mEng[62], mEng[63], mEng[64], mEng[65], mEng[66], mEng[67], mEng[68]];
-	for (var i = 0; i < 3; i++)
-		for (var j = 0; j < 2; j++) {
+	let data = [mEng[62], mEng[63], mEng[64], mEng[65], mEng[66], mEng[67], mEng[68]];
+	for (let i = 0; i < 3; i++)
+		for (let j = 0; j < 2; j++) {
 			ctx.fillStyle = (seller == 500 + i + j * 4) ? "lime" : "yellow";
-			var rendX = rx + 128 + i * 256, rendY = ry + 40 + j * (512 - 40) * 2 / 3 + (512 - 40) / 6;
+			let rendX = rx + 128 + i * 256, rendY = ry + 40 + j * (512 - 40) * 2 / 3 + (512 - 40) / 6;
 			write(data[i + j * 4], rendX, rendY);
 		}
 	ctx.fillStyle = (seller == 503) ? "lime" : "yellow";
-	var rendX = rx + 384, rendY = ry + 40 + (512 - 40) / 3 + (512 - 40) / 6;
+	let rendX = rx + 384, rendY = ry + 40 + (512 - 40) / 3 + (512 - 40) / 6;
 	write(data[3], rendX, rendY);
 	ctx.textAlign = "left";
 	ctx.font = "14px ShareTech";
@@ -1313,13 +1313,13 @@ function rWeaponStore() {
 	ctx.textAlign = "left";
 	ctx.font = '14px ShareTech';
 	//R to return to shop
-	for (var i = 0; i < wepns.length; i++) {
-		var wx = rx + 4 + 240 * Math.floor(wepns[i].order / Math.ceil(wepns.length / 3));
-		var wy = ry + 40 + 32 + (wepns[i].order % Math.ceil(wepns.length / 3) + 2) * 16;
-		var buyable = wepns[i].price > money ? "orange" : "yellow";
+	for (let i = 0; i < wepns.length; i++) {
+		let wx = rx + 4 + 240 * Math.floor(wepns[i].order / Math.ceil(wepns.length / 3));
+		let wy = ry + 40 + 32 + (wepns[i].order % Math.ceil(wepns.length / 3) + 2) * 16;
+		let buyable = wepns[i].price > money ? "orange" : "yellow";
 		if (ship < wepns[i].level) buyable = "red";
 
-		var starCol = "white";
+		let starCol = "white";
 		if (wepns[i].type === "Gun") starCol = "red";
 		if (wepns[i].type === "Missile") starCol = "orange";
 		if (wepns[i].type === "Orb") starCol = "tan";
@@ -1350,7 +1350,7 @@ function rWeaponStats(i) {
 
 	if (actuallyBuying) {
 		ctx.fillStyle = wepns[i].price > money ? "orange" : "limeq";
-		var buyText = wepns[i].price > money ? mEng[76] : mEng[77];
+		let buyText = wepns[i].price > money ? mEng[76] : mEng[77];
 		ctx.font = '24px ShareTech';
 		write(buyText, rx + 512 + 16, ry + 256 + 100 + 16 * 7);
 	}
@@ -1361,13 +1361,13 @@ function rBaseGui() {
 	ctx.lineWidth = 2;
 	ctx.textAlign = "right";
 	ctx.fillStyle = 'yellow';
-	var info = {};
+	let info = {};
 	rTexts(-1);
 
 	ctx.font = '14px ShareTech';
 	ctx.lineWidth = 2;
 
-	var tabs = {};
+	let tabs = {};
 	tabs[0] = mEng[142];
 	tabs[1] = mEng[143];
 	tabs[2] = mEng[144];
@@ -1377,10 +1377,10 @@ function rBaseGui() {
 	infoBox(rx, ry + 44, 768, 512 - 44, "black", "white");
 
 	ctx.textAlign = "center";
-	for (var i = 0; i < 5; i++) // Fill Tabs In
+	for (let i = 0; i < 5; i++) // Fill Tabs In
 		infoBox(rx + i * 768/5 + 8, ry + 4, 768/5-8, 32, (tab == i) ? 'darkgray' : 'black', "white");
 	ctx.fillStyle = 'white';
-	for (var i = 0; i < 5; i++) // Write tab names
+	for (let i = 0; i < 5; i++) // Write tab names
 		write(tabs[i], rx + (i * 768/5 + 768/10), ry + 23);
 
 	ctx.fillStyle = 'yellow';
@@ -1394,13 +1394,13 @@ function rBaseGui() {
 	rCargo();
 }
 function wrapText(text, x, y, maxWidth, lineHeight) {
-	var words = text.split(' ');
-	var line = '';
+	let words = text.split(' ');
+	let line = '';
 
-	for (var n = 0; n < words.length; n++) {
-		var testLine = line + words[n] + ' ';
-		var metrics = ctx.measureText(testLine);
-		var testWidth = metrics.width;
+	for (let n = 0; n < words.length; n++) {
+		let testLine = line + words[n] + ' ';
+		let metrics = ctx.measureText(testLine);
+		let testWidth = metrics.width;
 		if (testWidth > maxWidth && n > 0) {
 			write(line, x, y);
 			line = words[n] + ' ';
@@ -1471,41 +1471,41 @@ socket.on('update', function(data) {
 	isLocked = data.isLocked;
 	charge = data.charge;
 
-	var delta = data.state;
+	let delta = data.state;
 
-	for (var index = 0; index < delta.players.length; ++index) {
+	for (let index = 0; index < delta.players.length; ++index) {
 		player_update(delta.players[index]);
 	}
 
-	for (var index = 0; index < delta.vorts.length; ++index) {
+	for (let index = 0; index < delta.vorts.length; ++index) {
 		vort_update(delta.vorts[index]);
 	}
 
-	for (var index = 0; index < delta.mines.length; ++index) {
+	for (let index = 0; index < delta.mines.length; ++index) {
 		mine_update(delta.mines[index]);
 	}
 
-	for (var index = 0; index < delta.beams.length; ++index) {
+	for (let index = 0; index < delta.beams.length; ++index) {
 		beam_update(delta.beams[index]);
 	}
 
-	for (var index = 0; index < delta.blasts.length; ++index) {
+	for (let index = 0; index < delta.blasts.length; ++index) {
 		blast_update(delta.blasts[index]);
 	}
 
-	for (var index = 0; index < delta.asteroids.length; ++index) {
+	for (let index = 0; index < delta.asteroids.length; ++index) {
 		asteroid_update(delta.asteroids[index]);
 	}
 
-	for (var index = 0; index < delta.missiles.length; ++index) {
+	for (let index = 0; index < delta.missiles.length; ++index) {
 		missile_update(delta.missiles[index]);
 	}
 
-	for (var index = 0; index < delta.packs.length; ++index) {
+	for (let index = 0; index < delta.packs.length; ++index) {
 		pack_update(delta.packs[index]);
 	}
 
-	for (var index = 0; index < delta.orbs.length; ++index) {
+	for (let index = 0; index < delta.orbs.length; ++index) {
 		orb_update(delta.orbs[index]);
 	}
 
@@ -1529,12 +1529,12 @@ socket.on('player_create', function(data) {
 });
 
 function player_update(data) {
-	var id = data.id;
-	var delta = data.delta;
+	let id = data.id;
+	let delta = data.delta;
 	// We just changed sectors or are just loading in
 	if (playersInfo[id] === undefined) return;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		playersInfo[id][d] = delta[d];
 	}
 
@@ -1562,11 +1562,11 @@ socket.on('vort_create', function(data) {
 });
 
 function vort_update(data) {
-	var id = data.id;
+	let id = data.id;
 	if (vortsInfo[id] === undefined) return;
-	var delta = data.delta;
+	let delta = data.delta;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		vortsInfo[id][d] = delta[d];
 	}
 }
@@ -1580,12 +1580,12 @@ socket.on('mine_create', function (data) {
 });
 
 function mine_update(data) {
-	var id = data.id;
+	let id = data.id;
 	if (minesInfo[id] === undefined) return;
 
-	var delta = data.delta;
+	let delta = data.delta;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		minesInfo[id][d] = delta[d];
 	}
 }
@@ -1599,12 +1599,12 @@ socket.on('pack_create', function (data) {
 });
 
 function pack_update(data) {
-	var id = data.id;
+	let id = data.id;
 	if (packsInfo[id] === undefined) return;
 
-	var delta = data.delta;
+	let delta = data.delta;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		packsInfo[id][d] = delta[d];
 	}
 }
@@ -1618,12 +1618,12 @@ socket.on('beam_create', function (data) {
 });
 
 function beam_update(data) {
-	var id = data.id;
+	let id = data.id;
 	if (beamsInfo[id] === undefined) return;
 
-	var delta = data.delta;
+	let delta = data.delta;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		beamsInfo[id][d] = delta[d];
 	}
 }
@@ -1636,13 +1636,13 @@ socket.on('blast_create', function (data) {
 	blastsInfo[data.id] = data.pack;
 });
 
-function blast_update(delta) {
-	var id = delta.id;
+function blast_update(data) {
+	let id = data.id;
 	if (blastsInfo[id] === undefined) return;
 
-	var delta = data.delta;
+	let delta = data.delta;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		blastsInfo[id][d] = delta[d];
 	}
 }
@@ -1657,11 +1657,11 @@ socket.on('base_create', function (data) {
 
 function base_update(data) {
 	if (data === undefined || data.delta === undefined) return;
-	var delta = data.delta;
+	let delta = data.delta;
 
 	if (basesInfo === 0) return;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		basesInfo[d] = delta[d];
 	}
 }
@@ -1679,12 +1679,12 @@ socket.on('pong', (latency) => {
 });
 
 function asteroid_update (data) {
-	var id = data.id;
+	let id = data.id;
 
 	if (astsInfo[id] === undefined) return;
-	var delta = data.delta;
+	let delta = data.delta;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		astsInfo[id][d] = delta[d];
 	}
 }
@@ -1698,11 +1698,11 @@ socket.on('orb_create', function (data) {
 });
 
 function orb_update (data) {
-	var id = data.id;
+	let id = data.id;
 	if (orbsInfo[id] === undefined) return;
-	var delta = data.delta;
+	let delta = data.delta;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		orbsInfo[id][d] = delta[d];
 	}
 }
@@ -1716,12 +1716,12 @@ socket.on('missile_create', function (data) {
 });
 
 function missile_update (data) {
-	var id = data.id;
+	let id = data.id;
 	if (missilesInfo[id] === undefined) return;
 
-	var delta = data.delta;
+	let delta = data.delta;
 
-	for (var d in delta) {
+	for (let d in delta) {
 		missilesInfo[id][d] = delta[d];
 	}
 }
@@ -1782,15 +1782,15 @@ socket.on('chat', function (data) {
 		return;
 	}
 
-	var header = data.msg.split(":")[0];
-	var chatName = header.split("`")[2]; // normal chat
+	let header = data.msg.split(":")[0];
+	let chatName = header.split("`")[2]; // normal chat
 	if(header.includes("\[PM\] ")) chatName = header.split("\[PM\]")[1]; // pms
 	chatName = chatName.replace(/[^0-9a-zA-Z]/g, '');
 
 	if (chatName !== undefined) {
 		chatName = chatName.trim();
 		// If they're muted, don't chat!
-		for (var mut in clientmutes) {
+		for (let mut in clientmutes) {
 			if (mut.localeCompare(chatName, undefined, { sensitivity: 'accent'}) == 0) return;
 		}
 	}
@@ -1801,18 +1801,18 @@ socket.on('chat', function (data) {
 function _chat(data) {
 
 	if (data.msg.includes("`~")) {
-		var find1 = getPosition(data.msg, "`~", 1);
-		var find2 = getPosition(data.msg, "`~", 2);
+		let find1 = getPosition(data.msg, "`~", 1);
+		let find2 = getPosition(data.msg, "`~", 2);
 
 		if (find1 == -1 || find2 == -1) return;
 
-		var num = parseFloat(data.msg.substring(find1 + 2, find2));
+		let num = parseFloat(data.msg.substring(find1 + 2, find2));
 		data.msg = data.msg.replace("`~" + num + "`~", wepns[num].name);
 	}
 
-	for (var room = 0; room < 3; room++)
+	for (let room = 0; room < 3; room++)
 		if(room == data.gc || typeof data.gc === "undefined"){
-			for (var i = chatLength; i > 0; i--)
+			for (let i = chatLength; i > 0; i--)
 				messages[room][i] = messages[room][i - 1];
 			messages[room][0] = data.msg;
 		}
@@ -1853,7 +1853,7 @@ socket.on('badcookie', function (data) {
 });
 socket.on('loginSuccess', function (data) {
 	// Cleanup bullets from homepage
-	for (var i in bullets) delete bullets[i];
+	for (let i in bullets) delete bullets[i];
 	playAudio("music1", .5);
 	credentialState = 0;
 	ReactRoot.turnOffDisplay("LoginOverlay");
@@ -1874,7 +1874,7 @@ socket.on('registered', function (data) {
 });
 socket.on('lored', function (data) {
 	// Cleanup bullets from homepage
-	for (var i in bullets) delete bullets[i];
+	for (let i in bullets) delete bullets[i];
 	credentialState = 0;
 	pc = data.pc;
 	ReactRoot.turnOffDisplay("LoginOverlay");
@@ -1916,8 +1916,8 @@ socket.on('you', function (data) {
 		points = data.points;
 });
 socket.on('weapons', function (data) {
-	var diff = false;
-	for (var i in equipped)
+	let diff = false;
+	for (let i in equipped)
 		if (equipped[i] != data.weapons[i])
 			diff = true;
 	equipped = data.weapons;
@@ -1930,12 +1930,12 @@ socket.on('sound', function (data) {
 	if (data.file.includes("boom")) {
 		if (data.file === "bigboom") flash = 1;
 		booms[Math.random()] = { x: data.x, y: data.y, time: 0, shockwave: data.file === "bigboom" };
-		for (var i = 0; i < 5; i++) boomParticles[Math.random()] = { x: data.x, y: data.y, angle: Math.random() * 6.28, time: -1, dx: data.dx / 1.5, dy: data.dy / 1.5 };
+		for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: data.x, y: data.y, angle: Math.random() * 6.28, time: -1, dx: data.dx / 1.5, dy: data.dy / 1.5 };
 	}
-	var dx = (px - data.x) / 1000;
-	var dy = (py - data.y) / 1000;
-	var dist = Math.hypot(Math.abs(dx) + 10, Math.abs(dy) + 10);
-	var vol = .6 / dist;
+	let dx = (px - data.x) / 1000;
+	let dy = (py - data.y) / 1000;
+	let dist = Math.hypot(Math.abs(dx) + 10, Math.abs(dy) + 10);
+	let vol = .6 / dist;
 	if (data.file === "hyperspace") {
 		hyperdriveTimer = 200;
 		vol = 2;
@@ -1955,7 +1955,7 @@ socket.on('strong', function (data) {
 socket.on('spoils', function (data) {
 	data.amt = Math.round(data.amt);
 	if (data.amt == 0) return;
-	var msg = "", x = 0, y = 0;
+	let msg = "", x = 0, y = 0;
 	if (data.type === "experience") {
 		msg = mEng[175] + data.amt + mEng[176];
 		x = w / 2 + 256;//next to exp bar
@@ -2005,7 +2005,7 @@ socket.on('quest', function (data) {
 	qdsy = quest.dsy;
 });
 socket.on('achievementsKill', function (data) {
-	for (var a in data.achs){
+	for (let a in data.achs){
 		a = Number(a);
 		if (achs[a] != data.achs[a]){
 			achs[a] = data.achs[a];
@@ -2014,7 +2014,7 @@ socket.on('achievementsKill', function (data) {
 	}
 });
 socket.on('achievementsCash', function (data) {
-	for (var a in data.achs){
+	for (let a in data.achs){
 		a = Number(a);
 		if (achs[a + 13] != data.achs[a]){
 			achs[a + 13] = data.achs[a];
@@ -2023,7 +2023,7 @@ socket.on('achievementsCash', function (data) {
 	}
 });
 socket.on('achievementsDrift', function (data) {
-	for (var a in data.achs){
+	for (let a in data.achs){
 		a = Number(a);
 		if (achs[a + 25] != data.achs[a]){
 			achs[a + 25] = data.achs[a];
@@ -2032,7 +2032,7 @@ socket.on('achievementsDrift', function (data) {
 	}
 });
 socket.on('achievementsMisc', function (data) {
-	for (var a in data.achs){
+	for (let a in data.achs){
 		a = Number(a);
 		if (achs[a + 37] != data.achs[a]){
 			achs[a + 37] = data.achs[a];
@@ -2060,36 +2060,36 @@ socket.on('planetMap', function(data) {
 socket.on('baseMap', function(data) {
 	mapSz = data.mapSz;
 	console.log("Got basemap of size " + mapSz);
-	var baseMap = data.baseMap;
-	for(var i = 0; i < mapSz; i++){
+	let baseMap = data.baseMap;
+	for(let i = 0; i < mapSz; i++){
 		baseMap2D[i] = {};
-		for(var j = 0; j < mapSz; j++){
+		for(let j = 0; j < mapSz; j++){
 			baseMap2D[i][j] = 0;
 		}
 	}
-	for(var i = 0; i < mapSz; i++){
+	for(let i = 0; i < mapSz; i++){
 		planetMap2D[i] = {};
-		for(var j = 0; j < mapSz; j++){
+		for(let j = 0; j < mapSz; j++){
 			planetMap2D[i][j] = 0;
 		}
 	}
-	for (var teamColor in baseMap){
-		var thisMap = baseMap[teamColor];
-		for (var i = 0; i < thisMap.length; i += 2)
+	for (let teamColor in baseMap){
+		let thisMap = baseMap[teamColor];
+		for (let i = 0; i < thisMap.length; i += 2)
 			baseMap2D[thisMap[i]][thisMap[i+1]] = teamColor;
 	}
 
 	console.log("Loading minimap");
 	sectorPoints = {};
-	for (var i = 0; i < mapSz + 1; i++) {
+	for (let i = 0; i < mapSz + 1; i++) {
 		sectorPoints[i] = {};
-		for (var j = 0; j < mapSz + 1; j++) {
-			var theta = -2*Math.PI*i/mapSz;
-			var upwards = square((mapSz+7-j)/(mapSz+7));
-			var radius = cerp(0,1,upwards)*128;
-			var xx = Math.sin(theta) * radius;
-			var yy = Math.cos(theta) * radius;
-			var zz = upwards*256;
+		for (let j = 0; j < mapSz + 1; j++) {
+			let theta = -2*Math.PI*i/mapSz;
+			let upwards = square((mapSz+7-j)/(mapSz+7));
+			let radius = cerp(0,1,upwards)*128;
+			let xx = Math.sin(theta) * radius;
+			let yy = Math.cos(theta) * radius;
+			let zz = upwards*256;
 			sectorPoints[i][j] = { x: xx/2, y: yy/2, z: zz/2 };
 		}
 	}
@@ -2128,7 +2128,7 @@ setInterval(function () {
 	ups = uframes;
 	uframes = frames = 0;
 	let d = new Date();
-	var time = d.getTime();
+	let time = d.getTime();
 }, 1000);
 
 setInterval(function () {
@@ -2165,8 +2165,8 @@ function loop() {
 		ctx.fillRect(0, 0, w, h);
 
 		//desmos this stuff or you wont have a clue whats going on vvv
-		var softsign = Math.exp(homepageTimer/15);
-		var scale = 1.885*(softsign/(1+softsign)-.47);
+		let softsign = Math.exp(homepageTimer/15);
+		let scale = 1.885*(softsign/(1+softsign)-.47);
 		if(homepageTimer>100)scale = 1;
 
 		ctx.translate(w / 2, h / 2);
@@ -2174,8 +2174,8 @@ function loop() {
 		ctx.translate(-w / 2, -h / 2);
 
 		let d = new Date();
-		var t = d.getTime() / 6000;
-		var loreZoom = 100*(Math.hypot(loreTimer,256)-256);
+		let t = d.getTime() / 6000;
+		let loreZoom = 100*(Math.hypot(loreTimer,256)-256);
 		px = (32 + Math.sin(t * 4)) * 3200;
 		py = (32 + Math.cos(t * 5)) * 3200;
 
@@ -2186,24 +2186,24 @@ function loop() {
 		renderBG(true);
 
 		//Main hydra
-		var vx = 4000 * Math.sin(5 * t), vy = 3200 * Math.cos(4 * t);
-		var spd = Math.hypot(vx,vy) / 100.;
-		var rnd = Math.random();
-		var angleNow = -Math.atan2(5 * Math.sin(5 * t), 4 * Math.cos(4 * t));
+		let vx = 4000 * Math.sin(5 * t), vy = 3200 * Math.cos(4 * t);
+		let spd = Math.hypot(vx,vy) / 100.;
+		let rnd = Math.random();
+		let angleNow = -Math.atan2(5 * Math.sin(5 * t), 4 * Math.cos(4 * t));
 		if (rnd < .05) {
 			playAudio("minigun", .1);
 			bullets[rnd] = { x: px, y: py, vx: 12800 / 6000 * 20 * Math.cos(4 * t) + 40 * Math.cos(angleNow), vy: -16000 / 6000 * 20 * Math.sin(5 * t) + 40 * Math.sin(angleNow), id: rnd, angle: angleNow, wepnID: 0, color: 'red' };
 		}
 
-		var img = redShips[14];
-		var pw = ships[14].width;
-		var rendX = w / 2 + scrx;
-		var rendY = h / 2 + scry;
+		let img = redShips[14];
+		let pw = ships[14].width;
+		let rendX = w / 2 + scrx;
+		let rendY = h / 2 + scry;
 		ctx.save();
 		ctx.translate(rendX, rendY);
 		ctx.drawImage(Img.astUnderlayRed, -pw, -pw, pw * 2, pw * 2);
 		ctx.rotate(angleNow + Math.PI / 2);
-		var fireWidth = 32 * 1.2 * Math.sqrt(pw / 64), fireHeight = spd * 1.4 * pw / 64 + Math.random() * pw / 25;
+		let fireWidth = 32 * 1.2 * Math.sqrt(pw / 64), fireHeight = spd * 1.4 * pw / 64 + Math.random() * pw / 25;
 		if (spd > 0) ctx.drawImage(Img.fire, 0, Math.floor(Math.random() * 8) * 64, 64, 64, -fireWidth / 2, 0, fireWidth, fireHeight);
 		ctx.restore();
 		ctx.save();
@@ -2217,15 +2217,15 @@ function loop() {
 
 
 		//Extra ships
-		for (var j = 0; j < 4; j++) {
-			var pxn = (32 + Math.sin(t * 4 + .2)) * 3200 + CoherentNoise(t * 4 + j * 3 * Math.E) * 192;
-			var pyn = (32 + Math.cos(t * 5 + .2)) * 3200 + CoherentNoise(t * 4 + j * 3 * Math.E + 61.23) * 192;
-			for (var i in bullets) {
-				var b = bullets[i];
+		for (let j = 0; j < 4; j++) {
+			let pxn = (32 + Math.sin(t * 4 + .2)) * 3200 + CoherentNoise(t * 4 + j * 3 * Math.E) * 192;
+			let pyn = (32 + Math.cos(t * 5 + .2)) * 3200 + CoherentNoise(t * 4 + j * 3 * Math.E + 61.23) * 192;
+			for (let i in bullets) {
+				let b = bullets[i];
 				if (square(b.x - pxn) + square(b.y - pyn) < 64 * 32) {
 					delete bullets[i];
 					booms[Math.random()] = { x: b.x, y: b.y, time: 0, shockwave: false };
-					//for (var i = 0; i < 5; i++) boomParticles[Math.random()] = { x: b.x, y: b.y, angle: Math.random() * 6.28, time: -1, dx: b.vx / 1.5, dy: b.vy / 1.5 };
+					//for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: b.x, y: b.y, angle: Math.random() * 6.28, time: -1, dx: b.vx / 1.5, dy: b.vy / 1.5 };
 					playAudio("boom", .35);
 				}
 			}
@@ -2249,7 +2249,7 @@ function loop() {
 			ctx.drawImage(img, -pw / 2, -pw / 2);
 			ctx.restore();
 		}
-		for (var i in bullets) if (Math.random() < .01) delete bullets[i];
+		for (let i in bullets) if (Math.random() < .01) delete bullets[i];
 		rBullets();
 		rBooms();
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -2411,19 +2411,19 @@ document.onkeyup = function (event) {
 	}
 }
 document.addEventListener('mousemove', function (evt) {
-	var omx = mx;
-	var omy = my;
-	var mousePos = getMousePos(canvas, evt);
+	let omx = mx;
+	let omy = my;
+	let mousePos = getMousePos(canvas, evt);
 	mx = mousePos.x;
 	my = mousePos.y;
 	if (mb == 1 && mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
 	if (mx > w - 32 - 20 - 128 && my > h - 52) volTransparency = 1;
-	var preSeller = seller;
+	let preSeller = seller;
 	
 	//Map movement
 	if (mb == 1 && mx > 8 && mx < 216 && my < 216 && my > 8) {
-		var mxn = mx - omx;
-		var myn = my - omy;
+		let mxn = mx - omx;
+		let myn = my - omy;
 		roll(myn / 4);
 		spin(mxn / 4);
 		r3DMap();
@@ -2463,7 +2463,7 @@ document.addEventListener('mousemove', function (evt) {
 		seller = Math.floor((my - ry - 40 - 32) / 80) + 300;
 		if (mx > rx + 128 * 3) seller += 5;
 		if (preSeller != seller) {
-			var questi = quests[seller-300];
+			let questi = quests[seller-300];
 			qsx = questi.sx;
 			qsy = questi.sy;
 			qdsx = questi.dsx;
@@ -2507,8 +2507,8 @@ document.addEventListener('mousemove', function (evt) {
 
 	//More
 	else if (docked && tab == 4 && my > ry + 40 && my < ry + 512 && mx > rx && mx < rx + 768) {
-		var ticX = Math.floor((mx - rx) / 256);
-		var ticY = Math.floor((my - ry - 40) / ((512 - 40) / 3));
+		let ticX = Math.floor((mx - rx) / 256);
+		let ticY = Math.floor((my - ry - 40) / ((512 - 40) / 3));
 		if (ticY == 1) seller = 503;
 		else seller = 500 + ticX + ticY * 2;
 	}
@@ -2533,14 +2533,14 @@ document.addEventListener('mousedown', function (evt) {
 		return;
 	}
 	if (mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
-	var mousePos = getMousePos(canvas, evt);
+	let mousePos = getMousePos(canvas, evt);
 	mx = mousePos.x;
 	my = mousePos.y;
 	if (mx < 400 && mx > 9 && my > h - 32 && my < h - 8) {
 		typing = true;
 		ReactRoot.focusChat();
 	} else typing = false;
-	var i = seller;
+	let i = seller;
 	if (i == 0 && !mouseDown) {
 		mouseDown = true;
 		if ((mx < w - 32 - 20 - 128 - 16 || my < h - 92) && (mx > 512 + 32 || my < h - 216) && !(mx < 256 && my < 450)) {//not in vol section or chat section or map
@@ -2576,7 +2576,7 @@ document.addEventListener('mousedown', function (evt) {
 		rChat();
 	}
 	if (docked && mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
-		var item = '';
+		let item = '';
 		if (i == 5) item = 'iron';
 		else if (i == 6) item = 'silver';
 		else if (i == 7) item = 'platinum';
@@ -2607,7 +2607,7 @@ document.addEventListener('mouseup', function (evt) {
 	}
 }, false);
 document.addEventListener('mousewheel', function (evt) {
-	var d = Math.sign(evt.wheelDelta);
+	let d = Math.sign(evt.wheelDelta);
 	if (mx < 256 && my < 450) {
 		mapZoom*=d>0?.93:1.08;
 		mapZoom = Math.max(Math.min(mapZoom,1), .1);
@@ -2638,7 +2638,7 @@ function write(str, x, y) {
 }
 
 function getMousePos(canvas, evt) {
-	var rect = canvas.getBoundingClientRect();
+	let rect = canvas.getBoundingClientRect();
 	return {
 		x: evt.clientX - rect.left,
 		y: evt.clientY - rect.top
@@ -2650,7 +2650,7 @@ function cube(x) {
 function sinLow(x) {
 	x += Math.PI * 200;
 	x %= Math.PI * 2;
-	var modpi = x % Math.PI;
+	let modpi = x % Math.PI;
 	return (x > Math.PI ? -1 : 1) * sins[Math.floor(((modpi < Math.PI / 2) ? (modpi) : (Math.PI - modpi)) * 1000)];
 }
 function cosLow(x) {
@@ -2662,18 +2662,18 @@ function colorSelect(col, red, blue, green){
 	return green;
 }
 function pdist(x, sx, sy) {
-	var i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
-	var i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
+	let i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
+	let i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
 	return (Math.cbrt(Math.abs(Math.tan(x))) % i2) * 3500 * i2 + 800 * i1 + 600;
 }
 function maxPD(sx, sy) {
-	var i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
-	var i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
+	let i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
+	let i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
 	return i2 * 3500 * i2 + 800 * i1 + 600;
 }
 function minPD(sx, sy) {
-	var i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
-	var i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
+	let i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
+	let i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
 	return 800 * i1 + 600;
 }
 function square(x) {
@@ -2681,21 +2681,21 @@ function square(x) {
 }
 
 function r2x(x) {
-	var ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000];
+	let ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000];
 	return x < 0 ? 0 : ranks[x];
 }
 function CoherentNoise(x) {
-	var intX = Math.floor(x);
-	var w = x - intX;
-	var n0 = Math.sin(square(intX) * 1000);
-	var n1 = Math.sin(square(intX + 1) * 1000);
+	let intX = Math.floor(x);
+	let w = x - intX;
+	let n0 = Math.sin(square(intX) * 1000);
+	let n1 = Math.sin(square(intX + 1) * 1000);
 	return n0 + (n1 - n0) * (w * w / 2 - w * w * w / 3) * 6;
 }
 function lerp(a, b, w) {
 	return a * (1 - w) + b * w;
 }
 function cerp(a, b, w) {
-	var fancyweight = 3*w*w-2*w*w*w;
+	let fancyweight = 3*w*w-2*w*w*w;
 	return lerp(a,b,fancyweight);
 }
 function expToLife() {
@@ -2711,12 +2711,12 @@ function lagMath(arr) {
 		lagArr = arr;
 		return;
 	}
-	for (var i = 0; i < arr.length; i++)
+	for (let i = 0; i < arr.length; i++)
 		lagArr[i] = (lagArr[i] + arr[i] / 20) / 1.05;
 }
 function addBigNote(note) {
 	//set i to the least empty index of bigNotes
-	var i = 0;
+	let i = 0;
 	for (i; i<4; i++) if(bigNotes[i] == -1) break;
 
 	//and use that index for queue
@@ -2726,7 +2726,7 @@ function bgPos(x, px, scrx, i, tileSize) {
 	return ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
 }
 function weaponWithOrder(x) {
-	for (var i = 0; i < wepns.length; i++) if (wepns[i].order == x) return i;
+	for (let i = 0; i < wepns.length; i++) if (wepns[i].order == x) return i;
 }
 function getTimeAngle() {
 	return tick / 10;
@@ -2760,8 +2760,8 @@ function rLoadingBar() {
 }
 
 function updateNotes() {
-	for (var i in notes) {
-		var note = notes[i];
+	for (let i in notes) {
+		let note = notes[i];
 		if (note.time++ > 38)
 			delete notes[i];
 	}
@@ -2780,8 +2780,8 @@ function updateTrails() {
 		etc...
 	*/
 
-	for (var i in trails) {
-		var selfo = trails[i];
+	for (let i in trails) {
+		let selfo = trails[i];
 		if (selfo.time++ >= 5) {
 			delete trails[i];
 			continue;
@@ -2789,29 +2789,29 @@ function updateTrails() {
 		selfo.x += selfo.dx;
 		selfo.y += selfo.dy;
 	}
-	var d = new Date();
-	var t = d.getTime() / 100;
-	for (var i in playersInfo) {
-		var selfo = playersInfo[i];
+	let d = new Date();
+	let t = d.getTime() / 100;
+	for (let i in playersInfo) {
+		let selfo = playersInfo[i];
 
-		var trail = selfo.trail;
-		var mod = trail % 16;
+		let trail = selfo.trail;
+		let mod = trail % 16;
 		if (Math.abs(selfo.speed) > 1 && Math.abs(selfo.driftAngle - selfo.angle) > .05) {
-			var particleCount = square(ships[selfo.ship].width / 96) * .66;
+			let particleCount = square(ships[selfo.ship].width / 96) * .66;
 			particleCount *= Math.min(Math.abs(selfo.driftAngle - selfo.angle) * 8, 16)
 			if (trail > 15) particleCount /= 6;
 			else if (mod != 0) particleCount *= 2.5;
-			var cos = cosLow(selfo.angle);
-			var sin = sinLow(selfo.angle);
-			for (var j = 0; j < particleCount; j++) {
-				var rando = Math.random() * selfo.speed, rando2 = Math.random();
-				var col = (((96 + Math.floor(Math.random() * 64)) << 16) + ((96 + Math.floor(Math.random() * 128)) << 8) + 255 - Math.floor(Math.random() * 64)).toString(16);
+			let cos = cosLow(selfo.angle);
+			let sin = sinLow(selfo.angle);
+			for (let j = 0; j < particleCount; j++) {
+				let rando = Math.random() * selfo.speed, rando2 = Math.random();
+				let col = (((96 + Math.floor(Math.random() * 64)) << 16) + ((96 + Math.floor(Math.random() * 128)) << 8) + 255 - Math.floor(Math.random() * 64)).toString(16);
 				if (mod == 1) col = (((192 + Math.floor(Math.random() * 64)) << 16) + (Math.floor(Math.random() * 64) << 8) + Math.floor(Math.random() * 92)).toString(16);
 				else if (mod == 2) {
 					if (Math.random() < .5) col = (((255 - Math.floor(Math.random()) * 64) << 16) + ((183 + Math.floor(Math.random() * 64)) << 8)).toString(16);
 					else col = (((Math.floor(Math.random() * 64)) << 16) + ((192 + Math.floor(Math.random() * 64)) << 8) + Math.floor(Math.random() * 64)).toString(16);
 				} else if (mod == 3) {
-					var r = Math.random() < .5 ? 255 : 1;
+					let r = Math.random() < .5 ? 255 : 1;
 					col = ((r << 16) + (r << 8) + r).toString(16);
 				} else if (mod == 4) {
 					t = Math.random() * Math.PI * 60;
@@ -2824,21 +2824,21 @@ function updateTrails() {
 			}
 		}
 		if (selfo.health / selfo.maxHealth < .4)
-			for (var j = 0; j < 10; j++) {
-				var r = Math.random();
+			for (let j = 0; j < 10; j++) {
+				let r = Math.random();
 				trails[Math.random()] = { vip: false, dx: cos * selfo.speed / 2, dy: sin * selfo.speed / 2, x: selfo.x + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cos * r * selfo.speed, y: selfo.y + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sin * r * selfo.speed, time: -1, color: ((Math.round(112 + 32 * r) << 16) + (Math.round(112 + 32 * r) << 8) + Math.round(112 + 32 * r)).toString(16) };
 			}
 	}
 }
 function updateBooms() {
-	for (var i in booms) {
-		var b = booms[i];
+	for (let i in booms) {
+		let b = booms[i];
 		b.time += 14;
 		if (b.time > 400)
 			delete booms[i];
 	}
-	for (var i in boomParticles) {
-		var selfo = boomParticles[i];
+	for (let i in boomParticles) {
+		let selfo = boomParticles[i];
 		if (selfo.time++ >= 14) {
 			delete boomParticles[i];
 			continue;
@@ -2853,16 +2853,16 @@ function rLore() {
 	wrapText(jsn.lore[colorSelect(pc,0,1,2)], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
 	ctx.textAlign = 'center';
 	ctx.fillStyle = 'yellow';
-	var t = (new Date()).getTime() / 6000;
+	let t = (new Date()).getTime() / 6000;
 	ctx.font = ((32 + 6 * Math.sin(24 * t))*(loreTimer/(loreTimer+50))) + "px ShareTech";
 	ctx.fillText(mEng[80], w/2, h - 48);
 }
 function rEnergyBar() {
 	if (equipped === 0) return;
-	var Charge = wepns[equipped[scroll]].charge;
+	let Charge = wepns[equipped[scroll]].charge;
 	if (Charge < 12 && charge < 12) return;
 	if (Charge < 12 && charge >= 12) Charge = 150;
-	var div = charge/Charge;
+	let div = charge/Charge;
 	if(div>1) return;
 	ctx.fillStyle = 'lime';
 	ctx.globalAlpha = .5;
@@ -2916,7 +2916,7 @@ function rExpBar() {
 	ctx.strokeRect(w / 2 - 128, h - 28, 256, 16);
 
 	//foreground rectangle
-	var dec = 252 * (experience - r2x(rank - 1)) / (r2x(rank) - r2x(rank - 1));
+	let dec = 252 * (experience - r2x(rank - 1)) / (r2x(rank) - r2x(rank - 1));
 	if (dec < 0)
 		dec = 0;
 	ctx.fillStyle = "white";
@@ -2942,12 +2942,12 @@ function rExpBar() {
 function rNotes() {
 	ctx.textAlign = "center";
 	ctx.fillStyle = "pink";
-	for (var i in notes) {
-		var note = notes[i];
+	for (let i in notes) {
+		let note = notes[i];
 		ctx.font = (note.strong ? 40 : 20) + 'px ShareTech';
 		ctx.globalAlpha = (39 - note.time) / 39;
-		var x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + (note.local ? px : 0));
-		var y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + (note.local ? py : 0));
+		let x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + (note.local ? px : 0));
+		let y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + (note.local ? py : 0));
 		write(note.msg, x, y);
 	}
 	ctx.globalAlpha = 1;
@@ -2957,15 +2957,15 @@ function rNotes() {
 function rBooms() {
 	if (!login)
 		updateBooms();
-	for (var i in booms) {
-		var b = booms[i];
-		var pw = 128, ph = 128;
-		var rendX = b.x - px + w / 2 - pw / 2 + scrx, rendY = b.y - py + h / 2 - ph / 2 + scry;
+	for (let i in booms) {
+		let b = booms[i];
+		let pw = 128, ph = 128;
+		let rendX = b.x - px + w / 2 - pw / 2 + scrx, rendY = b.y - py + h / 2 - ph / 2 + scry;
 
 		if (b.time < 114) {
-			var img = Img.booms;
-			var sx = (b.time % 10) * 128;
-			var sy = Math.floor(b.time / 10) * 128;
+			let img = Img.booms;
+			let sx = (b.time % 10) * 128;
+			let sy = Math.floor(b.time / 10) * 128;
 
 			ctx.save();
 			ctx.drawImage(img, sx, sy, 128, 128, rendX, rendY, 128, 128);
@@ -2975,13 +2975,13 @@ function rBooms() {
 		if (!b.shockwave)
 			continue;
 		rendX = b.x - px + w / 2 + scrx, rendY = b.y - py + h / 2 + scry;
-		var ss = Math.sqrt(b.time) * 96;
+		let ss = Math.sqrt(b.time) * 96;
 		ctx.globalAlpha = .9 - b.time / 500.0;
 		ctx.drawImage(Img.shockwave, rendX - ss / 2, rendY - ss / 2, ss, ss);
 		ctx.globalAlpha = 1;
 	}
-	for (var i in boomParticles) {
-		var selfo = boomParticles[i];
+	for (let i in boomParticles) {
+		let selfo = boomParticles[i];
 		ctx.beginPath();
 		ctx.strokeStyle = "gray";
 		ctx.lineWidth = 6;
@@ -2997,8 +2997,8 @@ function rBooms() {
 	}
 }
 function rTrails() {
-	for (var i in trails) {
-		var selfo = trails[i];
+	for (let i in trails) {
+		let selfo = trails[i];
 		ctx.globalAlpha = (7 - selfo.time) / 7;
 		ctx.strokeStyle = ctx.fillStyle = "#" + selfo.color;
 		if (!selfo.vip) ctx.fillRect(selfo.x - 1 - px + w / 2 + scrx, selfo.y - 1 - py + scry + h / 2, 3, 3);
@@ -3008,10 +3008,10 @@ function rTrails() {
 }
 function drawStar(ox, oy, spikes, outerRadius, innerRadius) {
 	ctx.lineWidth = 1;
-	var rot = Math.PI / 2 * 3;
-	var x = ox;
-	var y = oy;
-	var step = Math.PI / spikes;
+	let rot = Math.PI / 2 * 3;
+	let x = ox;
+	let y = oy;
+	let step = Math.PI / spikes;
 	ctx.beginPath();
 	ctx.moveTo(ox, oy - outerRadius)
 	for (i = 0; i < spikes; i++) {
@@ -3029,13 +3029,13 @@ function drawStar(ox, oy, spikes, outerRadius, innerRadius) {
 	ctx.fill();
 }
 function rTexts(lag, arr) {
-	var ore = iron + silver + platinum + aluminium;
+	let ore = iron + silver + platinum + aluminium;
 	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'right';
 	ctx.fillStyle = 'yellow';
-	var lagNames = [mEng[182], mEng[183], mEng[184], mEng[185], mEng[186], mEng[187], mEng[188], mEng[189], mEng[190], mEng[191], mEng[192]];
-	var info = {};
-	var lbShift = guest ? 8:266;
+	let lagNames = [mEng[182], mEng[183], mEng[184], mEng[185], mEng[186], mEng[187], mEng[188], mEng[189], mEng[190], mEng[191], mEng[192]];
+	let info = {};
+	let lbShift = guest ? 8:266;
 	meanNLag *= nLagCt;
 	meanNLag += nLag;
 	nLagCt++;
@@ -3074,16 +3074,16 @@ function rTexts(lag, arr) {
 		}
 	}
 
-	var il = 13
+	let il = 13
 
-	for (var i = 0; i < ((dev && lag!=-1) ? il + lagArr.length : 8); i++)
+	for (let i = 0; i < ((dev && lag!=-1) ? il + lagArr.length : 8); i++)
 		write(i < il? info[i] : (lagNames[i - il] + mEng[195] + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
 	ctx.textAlign = 'left';
 }
 function rCurrQuest() {
 	ctx.fillStyle = 'cyan';
 	ctx.textAlign = 'center';
-	var desc = "";
+	let desc = "";
 	if (quest.type == 'Mining') desc = mEng[37] + quest.amt + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
 	if (quest.type == 'Base') desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
 	if (quest.type == 'Delivery') desc = mEng[42] + getSectorName(quest.sx, quest.sy) + mEng[43] + getSectorName(quest.dsx, quest.dsy) + mEng[40];
@@ -3109,25 +3109,25 @@ function rEMP() {
 	ctx.textAlign = 'left';
 }
 function rStars() {
-	var mirrors = 3;
-	var wm = w/mirrors;
-	var hm = h/mirrors;
-	for (var i in stars) {
-		var s = stars[i];
+	let mirrors = 3;
+	let wm = w/mirrors;
+	let hm = h/mirrors;
+	for (let i in stars) {
+		let s = stars[i];
 		ctx.strokeStyle = ctx.fillStyle = "rgb("+(128+32*(i%4))+","+(128+32*(i/4%4))+","+(128+32*(i/16%4))+")";
-		var parallax = (100 - i) / 100.0;
+		let parallax = (100 - i) / 100.0;
 		parallax = parallax * parallax;
 		parallax = parallax * parallax;
-		var starSz = 3-i/15; // distant stars are size 1, near stars are 3x3
+		let starSz = 3-i/15; // distant stars are size 1, near stars are 3x3
 		ctx.lineWidth = starSz;
-		var x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (parallax + .1) * .25) % wm;
-		var y = (500000 + s.y - (py - scry + sy * sectorWidth) * (parallax + .1) * .25) % hm;
-		for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++)
+		let x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (parallax + .1) * .25) % wm;
+		let y = (500000 + s.y - (py - scry + sy * sectorWidth) * (parallax + .1) * .25) % hm;
+		for(let j = 0; j < mirrors; j++) for(let k = 0; k < mirrors; k++)
 			ctx.fillRect(x+j*wm-2,y+k*hm-2,starSz,starSz);
 		
 		if(hyperdriveTimer>0){
 			ctx.beginPath();
-			for(var j = 0; j < mirrors; j++) for(var k = 0; k < mirrors; k++){
+			for(let j = 0; j < mirrors; j++) for(let k = 0; k < mirrors; k++){
 				ctx.moveTo(x+j*wm, y+k*hm);
 				ctx.lineTo(x+j*wm-starSz*pvx/10, y+k*hm-starSz*pvy/10);
 			}
@@ -3141,7 +3141,7 @@ function rSectorEdge() {
 	ctx.strokeStyle = ctx.fillStyle = 'yellow';
 	ctx.lineWidth = 2;
 	ctx.setLineDash([20, 15]);
-	for (var i = (w / 2 - px) % sectorWidth; i < w; i += sectorWidth) {
+	for (let i = (w / 2 - px) % sectorWidth; i < w; i += sectorWidth) {
 		ctx.beginPath();
 		ctx.moveTo(i + scrx, 0);
 		ctx.lineTo(i + scrx, h);
@@ -3152,7 +3152,7 @@ function rSectorEdge() {
 		ctx.fillText(mEng[103], 0, 0);
 		ctx.restore();
 	}
-	for (var i = (h / 2 - py) % sectorWidth; i < h; i += sectorWidth) {
+	for (let i = (h / 2 - py) % sectorWidth; i < h; i += sectorWidth) {
 		ctx.beginPath();
 		ctx.moveTo(0, i + scry);
 		ctx.lineTo(w, i + scry);
@@ -3164,17 +3164,17 @@ function rSectorEdge() {
 	ctx.setLineDash([]);
 }
 function preProcessChat() {
-	var chatList = messages[globalChat];
+	let chatList = messages[globalChat];
 	preChatArr = {};
 	chati = 0;
-	var regex = new RegExp(key + ".*?" + key, "g");
-	for (var m = chatLength - 1; m >= 0; m--) {
-		var line = '';
-		var words = chatList[m].split(' ');
-		for (var n = 0; n < words.length; n++) {
-			var testLine = line + words[n] + " ";
-			var metrics = ctx.measureText(testLine.replace(regex, ""));
-			var testWidth = metrics.width;
+	let regex = new RegExp(key + ".*?" + key, "g");
+	for (let m = chatLength - 1; m >= 0; m--) {
+		let line = '';
+		let words = chatList[m].split(' ');
+		for (let n = 0; n < words.length; n++) {
+			let testLine = line + words[n] + " ";
+			let metrics = ctx.measureText(testLine.replace(regex, ""));
+			let testWidth = metrics.width;
 			if (testWidth > 512 && n > 0) {
 				preChatArr[chati++] = line;
 				line = '                  ' + words[n] + ' ';
@@ -3188,8 +3188,8 @@ function preProcessChat() {
 	chati--;
 }
 function clearChat() {
-	for (var i = 0; i < 3; i++)
-		for (var j = 0; j < chatLength; j++)
+	for (let i = 0; i < 3; i++)
+		for (let j = 0; j < chatLength; j++)
 			messages[i][j] = "";
 }
 function rChat() {
@@ -3206,20 +3206,20 @@ function rChat() {
 	chatctx.globalAlpha = 1;
 	chatctx.textAlign = "left";
 
-	for (var i = 0; i < 3; i++) {
+	for (let i = 0; i < 3; i++) {
 		chatctx.fillStyle = ((seller != 800 + i) ? "violet" : "yellow");
 		chatctx.fillText((i==globalChat?">":" ")+chatRooms[i], 532, chatcanvas.height - 48+16*i);
 	}
 	chatctx.restore();
 
 	chatctx.save();
-	for (var ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
+	for (let ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
 		chatctx.fillStyle = "yellow";
-		var fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
+		let fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
 		chatctx.globalAlpha = square((fromTop + 20) / 20);
-		var curx = 0;
-		var splitStr = preChatArr[ri].split(key);
-		for (var j = 0; j < splitStr.length; j++) {
+		let curx = 0;
+		let splitStr = preChatArr[ri].split(key);
+		for (let j = 0; j < splitStr.length; j++) {
 			if (j % 2 == 0) {
 				chatctx.fillText(splitStr[j], 16 + curx, chatcanvas.height - 24 + 16 * fromTop);
 				curx += chatctx.measureText(splitStr[j]).width;
@@ -3237,13 +3237,13 @@ function renderBG(more) {
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, w, h);
 	ctx.font = '14px ShareTech';
-	var diagDist = ((sx + sy) * sectorWidth + px + py) / sectorWidth - (mapSz - 1);
-	var add = more?1:0;
-	var img = Img.spc;
-	for (var i = 0; i < ((hyperdriveTimer > 0) ? 3 : 1); i++) {
+	let diagDist = ((sx + sy) * sectorWidth + px + py) / sectorWidth - (mapSz - 1);
+	let add = more?1:0;
+	let img = Img.spc;
+	for (let i = 0; i < ((hyperdriveTimer > 0) ? 3 : 1); i++) {
 		ctx.globalAlpha = i == 0 ? .5 : ((10000 - square(100 - hyperdriveTimer)) / (i * 10000));
-		for (var x = -add; x < 2 + Math.floor(w / 2048)+add; x++)
-			for (var y = -add; y < 2 + Math.floor(h / 2048)+add; y++)
+		for (let x = -add; x < 2 + Math.floor(w / 2048)+add; x++)
+			for (let y = -add; y < 2 + Math.floor(h / 2048)+add; y++)
 				ctx.drawImage(img, bgPos(x, px, scrx, i, 2048), bgPos(y, py, scry, i, 2048));
 	}
 
@@ -3268,8 +3268,8 @@ function rLB() {
 	ctx.textAlign = "right";
 	write(mEng[107], w - 48 - 16, 48);
 	write(mEng[108], w - 16, 48);
-	for (var i = 0; i < lb.length; i++) {
-		var place = 1 + ((i != 16) ? i : parseInt(lb[i].id));
+	for (let i = 0; i < lb.length; i++) {
+		let place = 1 + ((i != 16) ? i : parseInt(lb[i].id));
 		ctx.textAlign = "left";
 		ctx.fillStyle = brighten(lb[i].color);
 		if(lb[i].name.includes(" ")){
@@ -3277,7 +3277,7 @@ function rLB() {
 			write(lb[i].name.charAt(1), w - 224, (i + 4) * 16);
 			ctx.font = "14px ShareTech";
 			let d = new Date();
-			var t = d.getTime() / (35 * 16);
+			let t = d.getTime() / (35 * 16);
 			if(lb[i].name.includes("V")||lb[i].name.includes("B"))
 				ctx.fillStyle = "rgba("+Math.floor(16*Math.sqrt(Math.sin(t)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*2/3)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*4/3)*128+128))+", 1)";
 			write(lb[i].name.substring(4), w - 216, (i + 4) * 16);
@@ -3294,7 +3294,7 @@ function rCargo() {
 
 	if (quest.type === 'Mining') {
 		ctx.fillStyle = "#d44";
-		var metalWeHave = iron;
+		let metalWeHave = iron;
 		     if(quest.metal === "aluminium") { ctx.fillStyle = "#999"; metalWeHave = aluminium; }
 		else if(quest.metal ===  "platinum") { ctx.fillStyle = "#90f"; metalWeHave = platinum; }
 		else if(quest.metal ===    "silver") { ctx.fillStyle = "#eef"; metalWeHave = silver; }
@@ -3311,15 +3311,15 @@ function rCargo() {
 	ctx.lineWidth = seller == 900?2:1;
 	ctx.strokeRect(224,8,16,208);
 
-	var myCapacity = ships[ship].capacity * c2;
+	let myCapacity = ships[ship].capacity * c2;
 	if(ship == 17) myCapacity = iron+platinum+silver+aluminium; // because it has infinite cargo
 
-	var ironBarHeight =      iron*208/myCapacity;
-	var silvBarHeight =    silver*208/myCapacity;
-	var alumBarHeight = aluminium*208/myCapacity;
-	var platBarHeight =  platinum*208/myCapacity;
+	let ironBarHeight =      iron*208/myCapacity;
+	let silvBarHeight =    silver*208/myCapacity;
+	let alumBarHeight = aluminium*208/myCapacity;
+	let platBarHeight =  platinum*208/myCapacity;
 
-	var runningY = 216-alumBarHeight;
+	let runningY = 216-alumBarHeight;
 	ctx.fillStyle = "#777";
 	ctx.fillRect(224,runningY,16,alumBarHeight);
 	
@@ -3342,10 +3342,10 @@ function rCargo() {
 }
 function rRadar() {
 	if (va2 < 1.12) return;
-	var radarZoom = 1;
+	let radarZoom = 1;
 	ctx.fillStyle = "white";
 	let d = new Date();
-	var stime = d.getTime() / (35 * 16);
+	let stime = d.getTime() / (35 * 16);
 
 	//darken circle and make outline
 	ctx.strokeStyle = "white";
@@ -3358,22 +3358,22 @@ function rRadar() {
 	ctx.fill();
 	ctx.stroke();
 	ctx.beginPath();
-	var lineAngle = stime % (2 * Math.PI);
+	let lineAngle = stime % (2 * Math.PI);
 	ctx.moveTo(112,342);
 	ctx.lineTo(112+Math.cos(lineAngle)*96,342+Math.sin(lineAngle)*96);
 	ctx.closePath();
 	ctx.stroke();
 
-	var r = va2*3840 - 1280;
-	var r2 = square(r);
-	var r2z2 = square(r*radarZoom);
-	var distFactor = 96/r/radarZoom;
+	let r = va2*3840 - 1280;
+	let r2 = square(r);
+	let r2z2 = square(r*radarZoom);
+	let distFactor = 96/r/radarZoom;
 	ctx.globalAlpha = ctx.lineWidth = .5;
 	if (px+r>sectorWidth){
-		var dx = sectorWidth - px;
-		var dy = 0;
-		var rx = dx * distFactor, ry = dy * distFactor;
-		var l = 96*Math.sqrt(1-square(rx/96))-2;
+		let dx = sectorWidth - px;
+		let dy = 0;
+		let rx = dx * distFactor, ry = dy * distFactor;
+		let l = 96*Math.sqrt(1-square(rx/96))-2;
 		ctx.beginPath();
 		ctx.moveTo(112+rx,ry-l + 342);
 		ctx.lineTo(112+rx,ry+l + 342);
@@ -3381,10 +3381,10 @@ function rRadar() {
 		ctx.stroke();
 	}
 	if (px-r<0){
-		var dx = 0 - px;
-		var dy = 0;
-		var rx = dx * distFactor, ry = dy * distFactor;
-		var l = 96*Math.sqrt(1-square(rx/96))-2;
+		let dx = 0 - px;
+		let dy = 0;
+		let rx = dx * distFactor, ry = dy * distFactor;
+		let l = 96*Math.sqrt(1-square(rx/96))-2;
 		ctx.beginPath();
 		ctx.moveTo(112+rx,ry-l + 342);
 		ctx.lineTo(112+rx,ry+l + 342);
@@ -3392,10 +3392,10 @@ function rRadar() {
 		ctx.stroke();
 	}
 	if (py+r>sectorWidth){
-		var dx = 0;
-		var dy = sectorWidth - py;
-		var rx = dx * distFactor, ry = dy * distFactor;
-		var l = 96*Math.sqrt(1-square(ry/96))-2;
+		let dx = 0;
+		let dy = sectorWidth - py;
+		let rx = dx * distFactor, ry = dy * distFactor;
+		let l = 96*Math.sqrt(1-square(ry/96))-2;
 		ctx.beginPath();
 		ctx.moveTo(112+rx-l,ry + 342);
 		ctx.lineTo(112+rx+l,ry + 342);
@@ -3403,10 +3403,10 @@ function rRadar() {
 		ctx.stroke();
 	}
 	if (py-r<0){
-		var dx = 0;
-		var dy = 0 - py;
-		var rx = dx * distFactor, ry = dy * distFactor;
-		var l = 96*Math.sqrt(1-square(ry/96))-2;
+		let dx = 0;
+		let dy = 0 - py;
+		let rx = dx * distFactor, ry = dy * distFactor;
+		let l = 96*Math.sqrt(1-square(ry/96))-2;
 		ctx.beginPath();
 		ctx.moveTo(112+rx-l,ry + 342);
 		ctx.lineTo(112+rx+l,ry + 342);
@@ -3415,11 +3415,11 @@ function rRadar() {
 	}
 	ctx.globalAlpha = ctx.lineWidth = 1;
 	if (basesInfo !== undefined) {
-		var dx = basesInfo.x - px;
-		var dy = basesInfo.y - py;
+		let dx = basesInfo.x - px;
+		let dy = basesInfo.y - py;
 		if (square(dx) + square(dy) < r2z2) {
-			var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-			var rx = dx * distFactor + 112, ry = dy * distFactor + 342;
+			let pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+			let rx = dx * distFactor + 112, ry = dy * distFactor + 342;
 			ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 			ctx.beginPath();
 			ctx.arc(rx, ry, (va2 > 1.24) ? 5 : 3, 0, 2 * Math.PI, false);
@@ -3429,14 +3429,14 @@ function rRadar() {
 			ctx.closePath();
 		}
 	}
-	var t = d.getTime() * 500;
-	for (var p_pack in playersInfo) {
-		var p = playersInfo[p_pack];
-		var dx = p.x - px;
-		var dy = p.y - py;
+	let t = d.getTime() * 500;
+	for (let p_pack in playersInfo) {
+		let p = playersInfo[p_pack];
+		let dx = p.x - px;
+		let dy = p.y - py;
 		if (square(dx) + square(dy) > r2z2) continue;
-		var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-		var rx = dx * distFactor + 112, ry = dy * distFactor + 342;
+		let pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+		let rx = dx * distFactor + 112, ry = dy * distFactor + 342;
 		ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 		ctx.beginPath();
 		ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
@@ -3446,13 +3446,13 @@ function rRadar() {
 	}
 	if (va2 > 2.2) {
 		ctx.fillStyle = "gold";
-		for (var p_pack in packsInfo) {
-			var p = packsInfo[p_pack];
-			var dx = p.x - px;
-			var dy = p.y - py;
+		for (let p_pack in packsInfo) {
+			let p = packsInfo[p_pack];
+			let dx = p.x - px;
+			let dy = p.y - py;
 			if (square(dx) + square(dy) > r2z2) continue;
-			var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-			var rx = dx * distFactor + 112, ry = dy * distFactor + 342;
+			let pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+			let rx = dx * distFactor + 112, ry = dy * distFactor + 342;
 			ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 			ctx.beginPath();
 			ctx.arc(rx, ry, 2, 0, 2 * Math.PI, false);
@@ -3461,14 +3461,14 @@ function rRadar() {
 		}
 	}
 	ctx.lineWidth = 2;
-	for (var a in astsInfo) {
+	for (let a in astsInfo) {
 		a = astsInfo[a];
 
-		var dx = a.x - px;
-		var dy = a.y - py;
+		let dx = a.x - px;
+		let dy = a.y - py;
 		if (square(dx) + square(dy) > r2z2) continue;
-		var pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-		var rx = dx * distFactor + 112, ry = dy * distFactor + 342;
+		let pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+		let rx = dx * distFactor + 112, ry = dy * distFactor + 342;
 		ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
 		ctx.beginPath();
 		ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
@@ -3484,7 +3484,7 @@ function rRadar() {
 		ctx.closePath();
 	}
 	ctx.globalAlpha = .5;
-	var radius = wepns[equipped[scroll]].range*960/r;
+	let radius = wepns[equipped[scroll]].range*960/r;
 	if (va2>1.8 && radius/radarZoom > 3 && radius/radarZoom<96) {
 		ctx.beginPath();
 		ctx.arc(112, 342, radius/radarZoom, 0, 2 * Math.PI, false);
@@ -3518,7 +3518,7 @@ function rCreds() {
 	ctx.fillStyle = 'pink';
 	ctx.textAlign = 'center';
 	ctx.font = '20px ShareTech';
-	var str = "";
+	let str = "";
 	if (credentialState == 1) str = mEng[112];
 	if (credentialState == 2) str = mEng[113];
 	if (credentialState == 3) str = mEng[114];
@@ -3539,9 +3539,9 @@ function rFlash() {
 	ctx.globalAlpha = 1;
 }
 function rTut() {
-	var ore = iron + silver + platinum + aluminium;
-	var text = "";
-	var line2 = "";
+	let ore = iron + silver + platinum + aluminium;
+	let text = "";
+	let line2 = "";
 	ctx.save();
 	ctx.textAlign = "center";
 	ctx.fillStyle = 'yellow';
@@ -3556,15 +3556,15 @@ function rTut() {
 		}
 		else if (ship == 0) { text = docked ? mEng[122] : mEng[121]; if(currTut < 4) { currTut = 4; addBigNote([256,text,"",""]); } }
 	}
-	var date = new Date();
-	var ms = date.getTime();
+	let date = new Date();
+	let ms = date.getTime();
 	ctx.font = (5 * sinLow(ms / 180) + 25) + "px ShareTech";
 	write(text, w / 2, 40);
 	write(line2, w / 2, 88);
 	ctx.restore();
 }
 function rDmg(r) {
-	var scale = dmgTimer / 16.;
+	let scale = dmgTimer / 16.;
 	ctx.fillStyle = 'red';
 	ctx.globalAlpha = scale * .75;
 	ctx.fillRect(0, 0, w, h);
@@ -3572,7 +3572,7 @@ function rDmg(r) {
 	ctx.translate(scale * (r % 5 - 2), scale * (r / 5 - 2));
 }
 function undoDmg(r) {
-	var scale = dmgTimer / 16.;
+	let scale = dmgTimer / 16.;
 	ctx.translate(-scale * (r % 5 - 2), -scale * (r / 5 - 2));
 	dmgTimer--;
 }
@@ -3609,8 +3609,8 @@ function roundRect(whatctx, x, y, width, height, radius, fill, stroke) {
 	if (typeof radius === 'undefined') radius = 0;
 	if (typeof radius === 'number') radius = { tl: radius, tr: radius, br: radius, bl: radius };
 	else {
-		var defaultRadius = { tl: 0, tr: 0, br: 0, bl: 0 };
-		for (var side in defaultRadius) radius[side] = radius[side] || defaultRadius[side];
+		let defaultRadius = { tl: 0, tr: 0, br: 0, bl: 0 };
+		for (let side in defaultRadius) radius[side] = radius[side] || defaultRadius[side];
 	}
 	whatctx.beginPath();
 	whatctx.moveTo(x + radius.tl, y);
@@ -3658,8 +3658,8 @@ function rRaid() {
 	ctx.save();
 	ctx.fillStyle = 'yellow';
 	ctx.textAlign = 'center';
-	var secs = raidTimer / 25;
-	var minutes = Math.floor(secs / 60), seconds = "" + (Math.floor(secs) % 60);
+	let secs = raidTimer / 25;
+	let minutes = Math.floor(secs / 60), seconds = "" + (Math.floor(secs) % 60);
 	if (seconds.length == 1) seconds = "0" + seconds;
 	ctx.font = "16px ShareTech";
 
@@ -3689,12 +3689,12 @@ function rBigNotes() {
 	if(bigNotes[0] === -1) return;
 	bigNotes[0][0] -= bigNotes[0][2] === "" ? 2 : 1.25;
 	if(bigNotes[0][0] < 0) {
-		for(var i = 0; i < 3; i++) bigNotes[i] = bigNotes[i+1]; // shift array down
+		for(let i = 0; i < 3; i++) bigNotes[i] = bigNotes[i+1]; // shift array down
 		bigNotes[3] = -1;
 		return;
 	}
 
-	var t = bigNotes[0][0];
+	let t = bigNotes[0][0];
 
 	//darken background
 	ctx.fillStyle = "black";
@@ -3704,7 +3704,7 @@ function rBigNotes() {
 	//text
 	ctx.textAlign = "center";
 	ctx.fillStyle = "cyan";
-	var x = w/2+(cube(t-128)+10*(t-128))/1500;
+	let x = w/2+(cube(t-128)+10*(t-128))/1500;
 
 	ctx.globalAlpha = .7;
 	ctx.font = "48px ShareTech";
@@ -3719,14 +3719,14 @@ function rBigNotes() {
 function rKillStreak() {
 	if (killStreakTimer < 0 || killStreak < 1) return;
 
-	var strTime = "" + Math.round(killStreakTimer / 25);
+	let strTime = "" + Math.round(killStreakTimer / 25);
 	while (strTime.length < 2) strTime = "0" + strTime;
 	strTime = "0:" + strTime;
-	var strMult = mEng[163] + killStreak;
+	let strMult = mEng[163] + killStreak;
 
 	ctx.save();
 	ctx.globalAlpha = Math.min(1, 1 - (killStreakTimer - 730.) / 15.);
-	var sizeMult = 1 + Math.max(0, Math.cbrt(killStreakTimer - 730.)) / 2.;
+	let sizeMult = 1 + Math.max(0, Math.cbrt(killStreakTimer - 730.)) / 2.;
 	ctx.textAlign = "center";
 
 	ctx.font = (sizeMult * 30.) + "px ShareTech";
@@ -3741,8 +3741,8 @@ function rKillStreak() {
 
 //object rendering
 function updateBullets() {
-	for (var i in bullets) {
-		var selfo = bullets[i];
+	for (let i in bullets) {
+		let selfo = bullets[i];
 		selfo.x += selfo.vx;
 		selfo.y += selfo.vy;
 		selfo.tick++;
@@ -3750,20 +3750,20 @@ function updateBullets() {
 }
 function rBullets() {
 	if (!login) updateBullets();
-	for (var i in bullets) {
-		var selfo = bullets[i];
-		var img = Img.redbullet;
-		var rendX = selfo.x - px + w / 2 + scrx;
-		var rendY = selfo.y - py + h / 2 + scry;
+	for (let i in bullets) {
+		let selfo = bullets[i];
+		let img = Img.redbullet;
+		let rendX = selfo.x - px + w / 2 + scrx;
+		let rendY = selfo.y - py + h / 2 + scry;
 		if (selfo.wepnID == 28) {
 			ctx.save();
 			ctx.globalAlpha = .1;
 			ctx.fillStyle = "white";
-			for (var c = 0; c < 10; c++) {
-				var angle = Math.random() * Math.PI * 2;
-				var uTick = Math.min(selfo.tick, 75);
-				var hypot = 4 + square(Math.random() * uTick / 10);
-				var hypotCenter = Math.random() * hypot;
+			for (let c = 0; c < 10; c++) {
+				let angle = Math.random() * Math.PI * 2;
+				let uTick = Math.min(selfo.tick, 75);
+				let hypot = 4 + square(Math.random() * uTick / 10);
+				let hypotCenter = Math.random() * hypot;
 				ctx.beginPath();
 				ctx.arc(rendX + Math.cos(angle) * hypotCenter, rendY + Math.sin(angle) * hypotCenter, hypot, 0, 2 * Math.PI, false);
 				ctx.closePath();
@@ -3776,8 +3776,8 @@ function rBullets() {
 		if (selfo.color == 'blue') img = Img.bluebullet;
 		if (selfo.color == 'green') img = Img.greenbullet;
 		if (selfo.wepnID == 1 || selfo.wepnID == 23) img = Img.bigBullet;
-		var pw = img.width;
-		var ph = img.height;
+		let pw = img.width;
+		let ph = img.height;
 		ctx.save();
 		ctx.translate(rendX, rendY);
 		ctx.rotate(selfo.angle + Math.PI / 2);
@@ -3786,16 +3786,16 @@ function rBullets() {
 	}
 }
 function rMissiles() {
-	for (var selfo in missilesInfo) {
+	for (let selfo in missilesInfo) {
 		selfo = missilesInfo[selfo];
-		var img = Img.missile;
+		let img = Img.missile;
 		if (selfo.wepnID == 11 || selfo.weaponID == 13) img = Img.heavyMissile;
 		if (selfo.wepnID == 12) img = Img.empMissile;
 		if (selfo.wepnID == 14) img = Img.torpedo;
-		var pw = img.width;
-		var ph = img.height;
-		var rendX = selfo.x - px + w / 2 + scrx;
-		var rendY = selfo.y - py + h / 2 + scry;
+		let pw = img.width;
+		let ph = img.height;
+		let rendX = selfo.x - px + w / 2 + scrx;
+		let rendY = selfo.y - py + h / 2 + scry;
 		ctx.save();
 		ctx.translate(rendX, rendY);
 		ctx.rotate(selfo.angle + Math.PI / 2);
@@ -3804,15 +3804,15 @@ function rMissiles() {
 	}
 }
 function rOrbs() {
-	for (var i in orbsInfo) {
-		var selfo = orbsInfo[i];
-		var img = Img.energyDisk;
+	for (let i in orbsInfo) {
+		let selfo = orbsInfo[i];
+		let img = Img.energyDisk;
 		if (selfo.wepnID == 42)
 			img = Img.photonOrb;
-		var pw = img.width;
-		var ph = img.height;
-		var rendX = selfo.x - px + w / 2 + scrx;
-		var rendY = selfo.y - py + h / 2 + scry;
+		let pw = img.width;
+		let ph = img.height;
+		let rendX = selfo.x - px + w / 2 + scrx;
+		let rendY = selfo.y - py + h / 2 + scry;
 		ctx.save();
 		ctx.translate(rendX, rendY);
 		ctx.rotate(getTimeAngle() + Math.PI / 2);
@@ -3821,13 +3821,13 @@ function rOrbs() {
 	}
 }
 function rMines() {
-	for (var selfo in minesInfo) {
+	for (let selfo in minesInfo) {
 		selfo = minesInfo[selfo];
-		var img = Img.mine;
-		var pw = img.width;
-		var ph = img.height;
-		var rendX = selfo.x - px + w / 2 + scrx;
-		var rendY = selfo.y - py + h / 2 + scry;
+		let img = Img.mine;
+		let pw = img.width;
+		let ph = img.height;
+		let rendX = selfo.x - px + w / 2 + scrx;
+		let rendY = selfo.y - py + h / 2 + scry;
 		if (selfo.wepnID == 16)
 			img = Img.laserMine;
 		else if (selfo.wepnID == 17)
@@ -3842,11 +3842,11 @@ function rMines() {
 			ctx.save();
 			ctx.globalAlpha = .1;
 			ctx.fillStyle = "white";
-			for (var c = 0; c < 10; c++) {
-				var angle = Math.random() * Math.PI * 2;
-				var uTick = 25;
-				var hypot = 4 + square(Math.random() * uTick / 10);
-				var hypotCenter = Math.random() * hypot;
+			for (let c = 0; c < 10; c++) {
+				let angle = Math.random() * Math.PI * 2;
+				let uTick = 25;
+				let hypot = 4 + square(Math.random() * uTick / 10);
+				let hypotCenter = Math.random() * hypot;
 				ctx.beginPath();
 				ctx.arc(rendX + Math.cos(angle) * hypotCenter, rendY + Math.sin(angle) * hypotCenter, hypot, 0, 2 * Math.PI, false);
 				ctx.fill();
@@ -3868,18 +3868,18 @@ function rMines() {
 }
 function rBeams() {
 	ctx.lineWidth = 6;
-	for (var i in beamsInfo) {
-		var selfo = beamsInfo[i];
+	for (let i in beamsInfo) {
+		let selfo = beamsInfo[i];
 		if (selfo.wepnID == 7) ctx.strokeStyle = 'mediumpurple';
 		else if (selfo.wepnID == 9) ctx.strokeStyle = 'lime';
 		else if (selfo.wepnID == 24) ctx.strokeStyle = 'yellow';
 		else if (selfo.wepnID == 45) ctx.strokeStyle = 'cyan';
 		else if (selfo.wepnID == 33 || selfo.wepnID == 26 || selfo.wepnID == 30) ctx.strokeStyle = '#d0c090';
 		else ctx.strokeStyle = 'red';
-		var bx = selfo.bx - px + w / 2 + scrx;
-		var by = selfo.by - py + h / 2 + scry;
-		var ex = selfo.ex - px + w / 2 + scrx;
-		var ey = selfo.ey - py + h / 2 + scry;
+		let bx = selfo.bx - px + w / 2 + scrx;
+		let by = selfo.by - py + h / 2 + scry;
+		let ex = selfo.ex - px + w / 2 + scrx;
+		let ey = selfo.ey - py + h / 2 + scry;
 		ctx.beginPath();
 		ctx.moveTo(bx, by);
 		ctx.lineTo(ex, ey);
@@ -3892,12 +3892,12 @@ function rBeams() {
 function rBlasts() {
 	ctx.lineWidth = 12;
 	ctx.strokeStyle = 'white';
-	for (var i in blastsInfo) {
-		var selfo = blastsInfo[i];
-		var bx = selfo.bx - px + w / 2 + scrx;
-		var by = selfo.by - py + h / 2 + scry;
-		var ex = selfo.bx + Math.cos(selfo.angle) * 10000 - px + w / 2 + scrx;
-		var ey = selfo.by + Math.sin(selfo.angle) * 10000 - py + h / 2 + scry;
+	for (let i in blastsInfo) {
+		let selfo = blastsInfo[i];
+		let bx = selfo.bx - px + w / 2 + scrx;
+		let by = selfo.by - py + h / 2 + scry;
+		let ex = selfo.bx + Math.cos(selfo.angle) * 10000 - px + w / 2 + scrx;
+		let ey = selfo.by + Math.sin(selfo.angle) * 10000 - py + h / 2 + scry;
 		ctx.beginPath();
 		ctx.moveTo(bx, by);
 		ctx.lineTo(ex, ey);
@@ -3908,18 +3908,18 @@ function rBlasts() {
 	ctx.globalAlpha = 1;
 }
 function rAsteroids() {
-	var nearA = 0;
-	for (var selfo in astsInfo) {
+	let nearA = 0;
+	for (let selfo in astsInfo) {
 		selfo = astsInfo[selfo];
 
-		var img = (selfo.metal == 0 ? Img.iron : (selfo.metal == 3 ? Img.platinum : (selfo.metal == 1 ? Img.silver : Img.aluminium)));
-		var rendX = selfo.x - px + w / 2 + scrx;
-		var rendY = selfo.y - py + h / 2 + scry;
+		let img = (selfo.metal == 0 ? Img.iron : (selfo.metal == 3 ? Img.platinum : (selfo.metal == 1 ? Img.silver : Img.aluminium)));
+		let rendX = selfo.x - px + w / 2 + scrx;
+		let rendY = selfo.y - py + h / 2 + scry;
 		let d = new Date();
-		var healthDec = (.5 + selfo.health / selfo.maxHealth) / 1.5;
-		var stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
-		var sx = (stime % 8) * 128;
-		var sy = Math.floor((stime / 8) % 4 + 4 * (Math.floor(selfo.metal) % 2)) * 128;
+		let healthDec = (.5 + selfo.health / selfo.maxHealth) / 1.5;
+		let stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
+		let sx = (stime % 8) * 128;
+		let sy = Math.floor((stime / 8) % 4 + 4 * (Math.floor(selfo.metal) % 2)) * 128;
 		ctx.save();
 		ctx.translate(rendX, rendY);
 		ctx.drawImage(Img.astUnderlayBlue, -128, -128);
@@ -3936,25 +3936,25 @@ function rAsteroids() {
 }
 function rPlanets() {
 	if (planets == 0) return;
-	var selfo = planets;
-	var rendX = (selfo.x - px + scrx)/4 + w/2;
-	var rendY = (selfo.y - py + scry)/4 + h/2;
+	let selfo = planets;
+	let rendX = (selfo.x - px + scrx)/4 + w/2;
+	let rendY = (selfo.y - py + scry)/4 + h/2;
 	if(rendX < -150 || rendX > w+150 || rendY < -150 || rendY > h+220) return;
 
 	let d = new Date();
-	var t = d.getTime() * 500;
-	var stime = d.getTime() / 150000;
+	let t = d.getTime() * 500;
+	let stime = d.getTime() / 150000;
 
-	var imgi = (sx + sy * mapSz) % 5 + 1;
-	var img = planetImgs[imgi];
+	let imgi = (sx + sy * mapSz) % 5 + 1;
+	let img = planetImgs[imgi];
 
 	if(typeof img === "undefined") return;
 
-	var ox = (sinLow(stime * 5) / 2 + .5) * (img.width - 256) + 128;//error on t05 width of undefined
-	var oy = (cosLow(stime * 4) / 2 + .5) * (img.height - 256) + 128;
+	let ox = (sinLow(stime * 5) / 2 + .5) * (img.width - 256) + 128;//error on t05 width of undefined
+	let oy = (cosLow(stime * 4) / 2 + .5) * (img.height - 256) + 128;
 	
 	ctx.save();
-	var pattern = ctx.createPattern(img, "no-repeat");
+	let pattern = ctx.createPattern(img, "no-repeat");
 	ctx.fillStyle = pattern;
 	ctx.translate(rendX, rendY);
 	ctx.drawImage(selfo.color==="yellow"?Img.planetU:colorSelect(selfo.color, Img.planetUR, Img.planetUB, Img.planetUG), -155, -155, 310, 310);
@@ -3974,13 +3974,13 @@ function rPlanets() {
 	ctx.font = "14px ShareTech";
 }
 function rPacks() {
-	for (var selfo in packsInfo) {
+	for (let selfo in packsInfo) {
 		selfo = packsInfo[selfo];
-		var img = selfo.type == 0 ? Img.pack : (selfo.type == 1 ? Img.bonus : (selfo.type == 2 ? Img.life : Img.ammo));
-		var rendX = selfo.x - px + w / 2 + scrx;
-		var rendY = selfo.y - py + h / 2 + scry;
+		let img = selfo.type == 0 ? Img.pack : (selfo.type == 1 ? Img.bonus : (selfo.type == 2 ? Img.life : Img.ammo));
+		let rendX = selfo.x - px + w / 2 + scrx;
+		let rendY = selfo.y - py + h / 2 + scry;
 		let d = new Date();
-		var stime = (d.getMilliseconds() / 1000 + d.getSeconds()) / 3;
+		let stime = (d.getMilliseconds() / 1000 + d.getSeconds()) / 3;
 		ctx.save();
 		ctx.translate(rendX, rendY);
 		ctx.scale(2,2);
@@ -3991,14 +3991,14 @@ function rPacks() {
 }
 function rVorts() {
 	let d = new Date();
-	var angleT = d.getTime() / 1000;
-	for (var selfo in vortsInfo) {
+	let angleT = d.getTime() / 1000;
+	for (let selfo in vortsInfo) {
 		ctx.save();
 		selfo = vortsInfo[selfo];
-		var img = selfo.isWorm ? Img.worm : Img.vort;
-		var size = 24 * selfo.size / 64;
-		var rendX = selfo.x - px + w / 2 + scrx;
-		var rendY = selfo.y - py + h / 2 + scry;
+		let img = selfo.isWorm ? Img.worm : Img.vort;
+		let size = 24 * selfo.size / 64;
+		let rendX = selfo.x - px + w / 2 + scrx;
+		let rendY = selfo.y - py + h / 2 + scry;
 		ctx.translate(rendX, rendY);
 		ctx.rotate(angleT % (Math.PI * 2));
 		ctx.drawImage(img, -size / 2, -size / 2, size, size);
@@ -4012,19 +4012,19 @@ function rVorts() {
 	}
 }
 function rPlayers() {
-	var pointers = [0,0,0];
-	for (var selfo in playersInfo) {
+	let pointers = [0,0,0];
+	for (let selfo in playersInfo) {
 		selfo = playersInfo[selfo];
 		if(selfo.disguise > 0) continue;
 
 		ctx.strokeStyle = "grey";
-		var img = colorSelect(selfo.color, redShips, blueShips, greenShips)[selfo.ship];
+		let img = colorSelect(selfo.color, redShips, blueShips, greenShips)[selfo.ship];
 
-		var pw = img.width;
-		var ph = img.height;
+		let pw = img.width;
+		let ph = img.height;
 		if (pw == 0 || ph == 0) return;
-		var rendX = selfo.x - px + w / 2 + scrx;
-		var rendY = selfo.y - py + h / 2 + scry;
+		let rendX = selfo.x - px + w / 2 + scrx;
+		let rendY = selfo.y - py + h / 2 + scry;
 
 		ctx.save();
 		ctx.translate(rendX, rendY);
@@ -4032,7 +4032,7 @@ function rPlayers() {
 		ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -pw, -ph, pw * 2, ph * 2);
 		ctx.globalAlpha = 1;
 		ctx.rotate(selfo.angle + Math.PI / 2);
-		var fireWidth = 32 * 1.2 * Math.sqrt(pw / 64), fireHeight = selfo.speed * 1.4 * pw / 64 + Math.random() * pw / 25;
+		let fireWidth = 32 * 1.2 * Math.sqrt(pw / 64), fireHeight = selfo.speed * 1.4 * pw / 64 + Math.random() * pw / 25;
 		if (selfo.speed > 0) ctx.drawImage(Img.fire, 0, tick % 8 * 64, 64, 64, -fireWidth / 2, 0, fireWidth, fireHeight);
 		ctx.restore();
 		ctx.save();
@@ -4048,7 +4048,7 @@ function rPlayers() {
 
 		if (selfo.name === myName){
 			if(selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];
-		} else for(var i = 0; i<3; i++){
+		} else for(let i = 0; i<3; i++){
 			if (selfo.color===teamColors[i]) {
 				if (pointers[i]===0) pointers[i] = selfo;
 				else if (square(selfo.x - px) + square(selfo.y - py) < square(pointers[i].x - px) + square(pointers[i].y - py)) pointers[i] = selfo;
@@ -4065,9 +4065,9 @@ function rPlayers() {
 		}
 		if (selfo.health / selfo.maxHealth >= 1) continue;
 		ctx.lineWidth = 4;
-		var r = Math.floor((1 - selfo.health / selfo.maxHealth) * 255);
-		var g = Math.floor(255 * selfo.health / selfo.maxHealth);
-		var b = Math.floor(64 * selfo.health / selfo.maxHealth);
+		let r = Math.floor((1 - selfo.health / selfo.maxHealth) * 255);
+		let g = Math.floor(255 * selfo.health / selfo.maxHealth);
+		let b = Math.floor(64 * selfo.health / selfo.maxHealth);
 		ctx.strokeStyle = "rgb(" + r + ", " + g + ", " + b + ")";
 		ctx.beginPath();
 		ctx.arc(rendX, rendY, pw / 1.5, (2.5 - selfo.health / selfo.maxHealth * .99) * Math.PI, (.501 + selfo.health / selfo.maxHealth) * Math.PI, false);
@@ -4077,12 +4077,12 @@ function rPlayers() {
 }
 function rSelfCloaked() {
 	ctx.strokeStyle = "grey";
-	var img = (pc==="red"?redShips:(pc==="blue"?blueShips:greenShips))[ship];
+	let img = (pc==="red"?redShips:(pc==="blue"?blueShips:greenShips))[ship];
 
-	var pw = img.width;
-	var ph = img.height;
-	var rendX = px - px + w / 2 + scrx;
-	var rendY = py - py + h / 2 + scry;
+	let pw = img.width;
+	let ph = img.height;
+	let rendX = px - px + w / 2 + scrx;
+	let rendY = py - py + h / 2 + scry;
 
 	ctx.save();
 	ctx.translate(rendX, rendY);
@@ -4097,16 +4097,16 @@ function rSelfCloaked() {
 		ctx.arc(rendX, rendY, pw / 1.5 - 8, 0, 2 * Math.PI, false);
 		ctx.stroke();
 	}
-	var pmaxHealth = ships[ship].health * mh2;
+	let pmaxHealth = ships[ship].health * mh2;
 	if (phealth < pmaxHealth * .3)
 		currAlert = mEng[150];
 
 	if (phealth / pmaxHealth >= 1)//draw hp bar
 		return;
 	ctx.lineWidth = 4;
-	var r = Math.floor((1 - phealth / pmaxHealth) * 255);
-	var g = Math.floor(255 * phealth / pmaxHealth);
-	var b = Math.floor(64 * phealth / pmaxHealth);
+	let r = Math.floor((1 - phealth / pmaxHealth) * 255);
+	let g = Math.floor(255 * phealth / pmaxHealth);
+	let b = Math.floor(64 * phealth / pmaxHealth);
 	ctx.strokeStyle = "rgb(" + r + ", " + g + ", " + b + ")";
 	ctx.beginPath();
 	ctx.arc(rendX, rendY, pw / 1.5, (2.5 - phealth / pmaxHealth * .99) * Math.PI, (.501 + phealth / pmaxHealth) * Math.PI, false);
@@ -4115,11 +4115,11 @@ function rSelfCloaked() {
 function rBases() {
 	if (basesInfo !== undefined) { // render bases
 
-		var image = colorSelect(basesInfo.color, Img.rss, Img.bss, Img.gss);
-		var pw = image.width;
-		var ph = image.height;
-		var rendX = basesInfo.x - px + w / 2 + scrx;
-		var rendY = basesInfo.y - py + h / 2 + scry;
+		let image = colorSelect(basesInfo.color, Img.rss, Img.bss, Img.gss);
+		let pw = image.width;
+		let ph = image.height;
+		let rendX = basesInfo.x - px + w / 2 + scrx;
+		let rendY = basesInfo.y - py + h / 2 + scry;
 		if (basesInfo.color !== pc) currAlert = mEng[131];
 
 		if (basesInfo.isBase) {
@@ -4145,7 +4145,7 @@ function rBases() {
 		}
 
 		if (basesInfo.turretLive) {
-			var timage = 0;
+			let timage = 0;
 			if(basesInfo.isMini) timage = colorSelect(basesInfo.color, Img.rsentry, Img.bsentry, Img.gsentry);
 			else timage = colorSelect(basesInfo.color, Img.rt, Img.bt, Img.gt);
 			pw = timage.width; // render turrets
@@ -4158,9 +4158,9 @@ function rBases() {
 
 			if (basesInfo.health / basesInfo.maxHealth < 1) {
 				ctx.lineWidth = 4;
-				var r = Math.floor((1 - basesInfo.health / basesInfo.maxHealth) * 255);
-				var g = Math.floor(255 * basesInfo.health / basesInfo.maxHealth);
-				var b = Math.floor(64 * basesInfo.health / basesInfo.maxHealth);
+				let r = Math.floor((1 - basesInfo.health / basesInfo.maxHealth) * 255);
+				let g = Math.floor(255 * basesInfo.health / basesInfo.maxHealth);
+				let b = Math.floor(64 * basesInfo.health / basesInfo.maxHealth);
 				ctx.strokeStyle = "rgb(" + r + ", " + g + ", " + b + ")";
 				ctx.beginPath();
 				ctx.arc(rendX, rendY, pw / 1.5, (2.5 - .99 * basesInfo.health / basesInfo.maxHealth) * Math.PI, (.501 + basesInfo.health / basesInfo.maxHealth) * Math.PI, false);
@@ -4172,9 +4172,9 @@ function rBases() {
 	}
 }
 function rBackPack(selfo) {
-	var img = Img.pack;
-	var rendX = selfo.x - px + w / 2 + scrx;
-	var rendY = selfo.y - py + h / 2 + scry;
+	let img = Img.pack;
+	let rendX = selfo.x - px + w / 2 + scrx;
+	let rendY = selfo.y - py + h / 2 + scry;
 	ctx.save();
 	ctx.translate(rendX, rendY);
 	ctx.drawImage(img, -16, -16, 32, 32);
@@ -4184,7 +4184,7 @@ function rBackPack(selfo) {
 
 //pointer rendering
 function rEdgePointer() {
-	var angle = 0;
+	let angle = 0;
 	if (px < py) {
 		if (sectorWidth - px > py) angle = 2;
 		else angle = 1;
@@ -4192,7 +4192,7 @@ function rEdgePointer() {
 		if (sectorWidth - px > py) angle = 3;
 		else angle = 0;
 	}
-	var text = '';
+	let text = '';
 	if (angle == 0) text = sectorWidth - px;
 	else if (angle == 3) text = py;
 	else if (angle == 2) text = px;
@@ -4200,28 +4200,28 @@ function rEdgePointer() {
 	rPointerArrow(Img.yellowArrow,angle*Math.PI/2,text,'yellow');
 }
 function rBasePointer(nearB) {
-	var text = Math.hypot(nearB.x - px, nearB.y - py);
-	var angle = Math.atan2(nearB.y - py, nearB.x - px);
+	let text = Math.hypot(nearB.x - px, nearB.y - py);
+	let angle = Math.atan2(nearB.y - py, nearB.x - px);
 	rPointerArrow(Img.whiteArrow,angle,text,'lightgray');
 }
 function rTeamPointers(pointers) {
-	for (var i = 0; i < 3; i++) {
+	for (let i = 0; i < 3; i++) {
 		if(pointers[i]===0)continue;
-		var text = Math.hypot(pointers[i].x - px, pointers[i].y - py);
-		var angle = Math.atan2(pointers[i].y - py, pointers[i].x - px);
+		let text = Math.hypot(pointers[i].x - px, pointers[i].y - py);
+		let angle = Math.atan2(pointers[i].y - py, pointers[i].x - px);
 		rPointerArrow(colorSelect(teamColors[i],Img.redArrow, Img.blueArrow,Img.greenArrow),angle,text,colorSelect(teamColors[i],"red","cyan","lime"));
 	}
 }
 function rAstPointer(nearE) {
-	var text = Math.hypot(nearE.x - px, nearE.y - py);
-	var angle = Math.atan2(nearE.y - py, nearE.x - px);
+	let text = Math.hypot(nearE.x - px, nearE.y - py);
+	let angle = Math.atan2(nearE.y - py, nearE.x - px);
 	rPointerArrow(Img.orangeArrow,angle,text,'orange');
 }
 function rBlackHoleWarning(x, y) {
-	var pw = ships[ship].width;
-	var dx = x - px;
-	var dy = y - py;
-	var angle = Math.atan2(dy, dx);
+	let pw = ships[ship].width;
+	let dx = x - px;
+	let dy = y - py;
+	let angle = Math.atan2(dy, dx);
 	rPointerArrow(Img.blackArrow,angle,Math.hypot(dx,dy),'white');
 }
 function rPointerArrow(img, angle, dist, textColor){
@@ -4229,12 +4229,12 @@ function rPointerArrow(img, angle, dist, textColor){
 		if (dist < 100 || dist > va2*3840 - 1280) return;
 	dist = Math.floor(dist / 10);
 	ctx.fillStyle = textColor;
-	var pw = ships[ship].width;
-	var rendX = w / 2 + pw * 1 * cosLow(angle) + scrx;
-	var rendY = h / 2 + pw * 1 * sinLow(angle) + scry;
-	var rendXt = w / 2 + pw * 1.3 * cosLow(angle) + scrx;
-	var rendYt = h / 2 + pw * 1.3 * sinLow(angle) + scry;
-	var hw = img.width / 2;
+	let pw = ships[ship].width;
+	let rendX = w / 2 + pw * 1 * cosLow(angle) + scrx;
+	let rendY = h / 2 + pw * 1 * sinLow(angle) + scry;
+	let rendXt = w / 2 + pw * 1.3 * cosLow(angle) + scrx;
+	let rendYt = h / 2 + pw * 1.3 * sinLow(angle) + scry;
+	let hw = img.width / 2;
 	ctx.save();
 	ctx.translate(rendX, rendY);
 	ctx.rotate(angle);

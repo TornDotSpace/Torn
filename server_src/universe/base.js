@@ -1,10 +1,10 @@
-var Bullet = require('../battle/bullet.js');
-var Missile = require('../battle/missile.js');
-var Blast = require('../battle/blast.js');
-var Orb = require('../battle/orb.js');
-var Beam = require('../battle/beam.js');
+let Bullet = require('../battle/bullet.js');
+let Missile = require('../battle/missile.js');
+let Blast = require('../battle/blast.js');
+let Orb = require('../battle/orb.js');
+let Beam = require('../battle/beam.js');
 
-var fs = require('fs');
+let fs = require('fs');
 
 module.exports = class Base {
 	constructor(i, b, sx, syy, col, x, y, m) {
@@ -35,8 +35,8 @@ module.exports = class Base {
 	tick() {
 		//spawn a bot if we need more bots
 		if(!this.isMini){
-			var botSpawn = Math.random();
-			var healthPercent = Math.max(this.health/this.maxHealth,.1);
+			let botSpawn = Math.random();
+			let healthPercent = Math.max(this.health/this.maxHealth,.1);
 			if (botSpawn*healthPercent < botFrequency)
 				spawnBot(this.sx, this.sy, this.color, healthPercent < .9);
 		}
@@ -53,8 +53,8 @@ module.exports = class Base {
 	}
 	tryGiveToOwner() { // if a base's owner stands over it, they get the stuff it's earned from killing people
 
-		var player = 0; // find owner
-		for (var i in players[this.sy][this.sx])
+		let player = 0; // find owner
+		for (let i in players[this.sy][this.sx])
 			if (players[this.sy][this.sx][i].name === this.owner) {
 				player = players[this.sy][this.sx][i];
 				break;
@@ -78,19 +78,19 @@ module.exports = class Base {
 		else this.fire();
 	}
 	fire() {
-		var c = 0; // nearest player
-		var cDist2 = 1000000000; // min dist to player
-		for (var i in players[this.sy][this.sx]) {
-			var player = players[this.sy][this.sx][i];
+		let c = 0; // nearest player
+		let cDist2 = 1000000000; // min dist to player
+		for (let i in players[this.sy][this.sx]) {
+			let player = players[this.sy][this.sx][i];
 			if (player.color == this.color || player.disguise > 0) continue; // don't shoot at friendlies
-			var dist2 = squaredDist(player, this);
+			let dist2 = squaredDist(player, this);
 			if (dist2 < cDist2) { c = player; cDist2 = dist2; } // update nearest player
 		}
 
 		if (c == 0) return;
 
-		var shouldMuon = this.reload < 0 && Math.random()<.015;
-		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, shouldMuon?10000:wepns[3].speed);
+		let shouldMuon = this.reload < 0 && Math.random()<.015;
+		let newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, shouldMuon?10000:wepns[3].speed);
 		this.angle = (this.angle+newAngle*2)/3;
 
 		if (this.reload < 0) {
@@ -102,18 +102,18 @@ module.exports = class Base {
 		}
 	}
 	fireMini() {
-		var c = 0; // nearest player
-		var cDist2 = 1000000000; // min dist to player
-		for (var i in players[this.sy][this.sx]) {
-			var player = players[this.sy][this.sx][i];
+		let c = 0; // nearest player
+		let cDist2 = 1000000000; // min dist to player
+		for (let i in players[this.sy][this.sx]) {
+			let player = players[this.sy][this.sx][i];
 			if (player.color == this.color || player.disguise > 0) continue; // don't shoot at friendlies
-			var dist2 = squaredDist(player, this);
+			let dist2 = squaredDist(player, this);
 			if (dist2 < cDist2) { c = player; cDist2 = dist2; } // update nearest player
 		}
 
 		if (c == 0) return;
 
-		var newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, wepns[5].speed);
+		let newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, wepns[5].speed);
 		this.angle = (this.angle+newAngle*2)/3;
 
 		if (this.reload < 0) {
@@ -122,55 +122,55 @@ module.exports = class Base {
 	}
 	shootOrb() {
 		this.reload = wepns[37].charge / 2;
-		var r = Math.random();
-		var orb = new Orb(this, r, 37);
+		let r = Math.random();
+		let orb = new Orb(this, r, 37);
 		orbs[this.sy][this.sx][r] = orb;
 		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	shootMuon() {
 		this.reload = wepns[34].charge / 2;
-		var r = Math.random();
-		var blast = new Blast(this, r, 34);
+		let r = Math.random();
+		let blast = new Blast(this, r, 34);
 		blasts[this.sy][this.sx][r] = blast;
 		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	shootRifle() {
 		this.reload = wepns[3].charge / 2;
-		var r = Math.random();
-		var bullet = new Bullet(this, r, 3, this.angle, 0);
+		let r = Math.random();
+		let bullet = new Bullet(this, r, 3, this.angle, 0);
 		bullets[this.sy][this.sx][r] = bullet;
 		sendAllSector('sound', { file: "shot", x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	shootMachineGun() {
 		this.reload = wepns[5].charge/2;
-		var r = Math.random();
-		var bullet = new Bullet(this, r, 5, this.angle, 0);
+		let r = Math.random();
+		let bullet = new Bullet(this, r, 5, this.angle, 0);
 		bullets[this.sy][this.sx][r] = bullet;
 		sendAllSector('sound', { file: "shot", x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	shootMissile() {//this is a torpedo
 		this.reload = wepns[14].charge/2;
-		var r = Math.random();
-		var bAngle = this.angle;
-		var missile = new Missile(this, r, 14, bAngle);
+		let r = Math.random();
+		let bAngle = this.angle;
+		let missile = new Missile(this, r, 14, bAngle);
 		missiles[this.sy][this.sx][r] = missile;
 		sendAllSector('sound', { file: "missile", x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	shootLaser () { // TODO merge this into Beam object, along with player.shootBeam()
-		var nearP = 0;
-		for (var i in players[this.sy][this.sx]) {
-			var p = players[this.sy][this.sx][i];
+		let nearP = 0;
+		for (let i in players[this.sy][this.sx]) {
+			let p = players[this.sy][this.sx][i];
 			if (p.color == this.color || p.sx != this.sx || p.sy != this.sy) continue;
 			if (nearP == 0) {
 				nearP = p;
 				continue;
 			}
-			var dx = p.x - this.x, dy = p.y - this.y;
+			let dx = p.x - this.x, dy = p.y - this.y;
 			if (dx * dx + dy * dy < squaredDist(nearP, this)) nearP = p;
 		}
 		if (nearP == 0) return;
-		var r = Math.random();
-		var beam = new Beam(this, r, 8, nearP, this);
+		let r = Math.random();
+		let beam = new Beam(this, r, 8, nearP, this);
 		beams[this.sy][this.sx][r] = beam;
 		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 		this.reload = wepns[8].charge / 2;
@@ -188,8 +188,8 @@ module.exports = class Base {
 			bases[this.sy][this.sx] = 0;
 			this.die = function() { };
 		} else {
-			var numBotsToSpawn = 2+4*Math.random()*Math.random();
-			for(var i = 0; i < numBotsToSpawn; i++) spawnBot(this.sx, this.sy, this.color, true);
+			let numBotsToSpawn = 2+4*Math.random()*Math.random();
+			for(let i = 0; i < numBotsToSpawn; i++) spawnBot(this.sx, this.sy, this.color, true);
 		}
 
 		//If I was killed by an asteroid...
@@ -202,15 +202,15 @@ module.exports = class Base {
 		if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
 			this.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
-			var multiplier = this.isMini?.4:this.sy;
-			var numInRange = 0;
-			for (var i in players[this.sy][this.sx]) { // Count all players in range
-				var p = players[this.sy][this.sx][i];
+			let multiplier = this.isMini?.4:this.sy;
+			let numInRange = 0;
+			for (let i in players[this.sy][this.sx]) { // Count all players in range
+				let p = players[this.sy][this.sx][i];
 				if (squaredDist(p, this) < square(baseClaimRange) && p.color === b.owner.color) numInRange++;
 			}
 			multiplier/=numInRange;
-			for (var i in players[this.sy][this.sx]) { // Reward appropriately
-				var p = players[this.sy][this.sx][i];
+			for (let i in players[this.sy][this.sx]) { // Reward appropriately
+				let p = players[this.sy][this.sx][i];
 				if (squaredDist(p, this) < square(baseClaimRange) && p.color === b.owner.color) {
 					p.spoils("experience", baseKillExp*multiplier); // reward them
 					p.spoils("money", baseKillMoney*multiplier);
@@ -220,8 +220,8 @@ module.exports = class Base {
 			if (raidTimer < 15000 && !this.isMini) { // during a raid
 				b.owner.points++; // give a point to the killer
 
-				for (var i in players[this.sy][this.sx]) { // as well as all other players in that sector
-					var p = players[this.sy][this.sx][i];
+				for (let i in players[this.sy][this.sx]) { // as well as all other players in that sector
+					let p = players[this.sy][this.sx][i];
 					if (p.color !== this.color) p.points+=2;
 				}
 			}
