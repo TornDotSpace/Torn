@@ -766,10 +766,10 @@ function r3DMap() {
 			let dot3 = sectorPoints[i+1][j  ];
 			let dot4 = sectorPoints[i+1][j+1];
 			if (useOldMap) { // Override if the user is using the square map
-				let dot1 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
-				let dot2 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
-				let dot3 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
-				let dot4 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
+				dot1 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
+				dot2 = {x:(i   - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
+				dot3 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j   - mapSz / 2) * 192 / mapSz, z:0};
+				dot4 = {x:(i+1 - mapSz / 2) * 192 / mapSz, y:(j+1 - mapSz / 2) * 192 / mapSz, z:0};
 			}
 
 			let cz = (dot1.z+dot4.z)/2;
