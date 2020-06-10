@@ -382,7 +382,7 @@ function init() { // start the server!
 	spawnBases();
 
 	//make asteroids. Make 10 times the number of sectors.
-	for (let i = 0; i < mapSz * mapSz; i++) createAsteroid(Math.floor(i/mapSz), i%mapSz);
+	for (let i = 0; i < mapSz * mapSz * 8; i++) createAsteroid(Math.floor(i/mapSz) % mapSz, i%mapSz);
 
 	//Make exactly one planet in each sector.
 	for (let s = 0; s < mapSz * mapSz; s++) {
