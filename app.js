@@ -509,7 +509,7 @@ function update() {
 
 	for(let i = 0; i < mapSz; i++)
 		for(let j = 0; j < mapSz; j++)
-			if (bases[i][j] == 0 && Math.random() < .000004) {
+			if (bases[i][j] == 0 && Math.random() < .000002) {
 				let r = Math.random();
 				let b = new Base(r, false, j, i, j<3?"red":(j<6?"blue":"green"), sectorWidth*Math.random(), sectorWidth*Math.random(), true);
 				bases[i][j] = b;

@@ -95,7 +95,7 @@ class Bot extends Player {
         }
     }
 
-    die = async function (b) {
+    async die (b) {
         delete players[this.sy][this.sx][this.id];
         if (b === undefined) {
             return;
