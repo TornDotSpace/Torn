@@ -467,6 +467,8 @@ module.exports = function initNetcode() {
             data.weapon = Math.floor(data.weapon);
             if (data.slot < 0 || data.slot > 9 || data.weapon < 0 || data.weapon >= wepns.length) return; // if they sent out of bound variables
 
+            if (typeof wepns[data.weapon] === "undefined") return;
+            
             // they cant buy when not docked. That slot must be unlocked. They need to have enough money. They need to have sufficiently high of a ship.
             if (!player.docked || player.weapons[data.slot] != -1 || player.money < wepns[data.weapon].price || wepns[data.weapon].level > player.ship) return;
 
