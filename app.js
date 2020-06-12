@@ -33,8 +33,14 @@ let fs = require('fs');
 buildFileSystem(); // create folders for players, neural nets, and turrets if they dont exist
 
 if (!Config.getValue("debug", "false")) {
-	let stdoutFileName = "logs/" + (new Date()) + ".log";
-	let stderrFilename = "error_logs/" + (new Date()) + ".log";
+	let d = new Date();
+	var start = new Date(d.getFullYear(), 0, 0);
+	var diff = d - start;
+	var oneDay = 1000 * 60 * 60 * 24;
+	var day = Math.floor(diff / oneDay);
+	day += 1000;
+	let stdoutFileName =       "logs/" + day + d + ".log";
+	let stderrFilename = "error_logs/" + day + d + ".log";
 	global.console = new console.Console(fs.createWriteStream(stdoutFileName), fs.createWriteStream(stderrFilename));
 }
 
@@ -142,8 +148,8 @@ global.baseMap=	{
 global.bulletWidth = 16; // collision radius
 let mineLifetime = 3; // mines despawn after this many minutes
 global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
-global.baseHealth = 4000; // max base health
-global.baseKillExp = 7500; // Exp reward for killing a base
+global.baseHealth = 4500; // max base health
+global.baseKillExp = 10000; // Exp reward for killing a base
 global.baseKillMoney = 250000; // ditto but money
 global.baseClaimRange = 1200; // How far you must be from a base (times ten) to get rewards
 global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
@@ -503,7 +509,7 @@ function update() {
 
 	for(let i = 0; i < mapSz; i++)
 		for(let j = 0; j < mapSz; j++)
-			if (bases[i][j] == 0 && Math.random() < .000002) {
+			if (bases[i][j] == 0 && Math.random() < .000005) {
 				let r = Math.random();
 				let b = new Base(r, false, j, i, j<3?"red":(j<6?"blue":"green"), sectorWidth*Math.random(), sectorWidth*Math.random(), true);
 				bases[i][j] = b;
