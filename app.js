@@ -33,14 +33,8 @@ let fs = require('fs');
 buildFileSystem(); // create folders for players, neural nets, and turrets if they dont exist
 
 if (!Config.getValue("debug", "false")) {
-	let d = new Date();
-	var start = new Date(d.getFullYear(), 0, 0);
-	var diff = now - start;
-	var oneDay = 1000 * 60 * 60 * 24;
-	var day = Math.floor(diff / oneDay);
-	day += 1000;
-	let stdoutFileName =       "logs/" + day + d + ".log";
-	let stderrFilename = "error_logs/" + day + d + ".log";
+	let stdoutFileName = "logs/" + (new Date()) + ".log";
+	let stderrFilename = "error_logs/" + (new Date()) + ".log";
 	global.console = new console.Console(fs.createWriteStream(stdoutFileName), fs.createWriteStream(stderrFilename));
 }
 
