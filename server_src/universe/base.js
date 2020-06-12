@@ -27,8 +27,8 @@ module.exports = class Base {
 		this.sy = syy,
 
 		this.reload = 0, // timer for shooting
-		this.health = (m?.3:1)*baseHealth,
-		this.maxHealth = (m?.3:1)*baseHealth,
+		this.health = (m?.2:1)*baseHealth,
+		this.maxHealth = (m?.2:1)*baseHealth,
 		this.empTimer = -1,
 		this.speed = 0; //vs unused but there for bullets,
 	}
@@ -48,7 +48,7 @@ module.exports = class Base {
 		this.empTimer--;
 		this.reload--;
 
-		if (this.health < this.maxHealth) this.health += 2;
+		if (this.health < this.maxHealth) this.health += 2.25;
 		if (tick % 50 == 0 && !this.isBase) this.tryGiveToOwner();
 	}
 	tryGiveToOwner() { // if a base's owner stands over it, they get the stuff it's earned from killing people
@@ -202,7 +202,7 @@ module.exports = class Base {
 		if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
 			this.sendDeathMsg(b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~");
 			b.owner.baseKilled();
-			let multiplier = this.isMini?.7:this.sy;
+			let multiplier = this.isMini?1:this.sy;
 			let numInRange = 0;
 			for (let i in players[this.sy][this.sx]) { // Count all players in range
 				let p = players[this.sy][this.sx][i];

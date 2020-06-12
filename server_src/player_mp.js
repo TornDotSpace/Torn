@@ -8,7 +8,6 @@ class PlayerMP extends Player {
         socket.player = this;
         this.socket = socket;
 
-        this.guild = "";
         this.ip = 0;
         this.chatTimer = 100;
         this.muteCap = 750;
