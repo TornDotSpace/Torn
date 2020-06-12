@@ -2358,6 +2358,7 @@ document.onkeydown = function (event) {
 		}
 		else if (event.keyCode === 88 || event.keyCode === 27) {//x
 			if (dead) return;
+			qsx = qsy = qdsx = qdsy = -1;
 			if (keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
 			keys[8] = true;
 			ReactRoot.turnOffRegister("");

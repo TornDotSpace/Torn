@@ -984,7 +984,7 @@ class Player {
 		sendAllSector('sound', { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
 	}
 	// Bot specific
-	die = async function (b) {
+	async die (b) {
 	}
 	dmg(d, origin) {
 

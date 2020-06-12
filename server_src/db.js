@@ -149,7 +149,8 @@ global.savePlayerData = function (player) {
         cornersTouched : player.cornersTouched,
         lastLogin : player.lastLogin,
         randmAchs : player.randmAchs,
-        lives : player.lives
+        lives : player.lives,
+        guild : player.guild
     };
     PLAYER_DATABASE.updateOne( { _id: player._id }, {$set : record}, { upsert: true });
 }

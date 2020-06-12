@@ -128,7 +128,7 @@ changePass(pass) { // /password
     this.emit("chat", { msg: "~`red~`Type \"/confirm your_new_password\" to complete the change." });
 }
 
-confirmPass = async function (pass) { // /confirm
+async confirmPass(pass) { // /confirm
     if (!this.docked) {
         this.emit("chat", { msg: "~`red~`This command is only available when docked at a base." });
         return;
@@ -162,7 +162,7 @@ testAfk() {
 emit(a, b) {
     this.socket.emit(a, b);
 }
-die = async function (b) { // b: bullet object or other object which killed us
+async die (b) { // b: bullet object or other object which killed us
     delete players[this.sy][this.sx][this.id];
 
     this.empTimer = -1;
@@ -185,8 +185,8 @@ die = async function (b) { // b: bullet object or other object which killed us
         else chatAll(this.nameWithColor() + " was destroyed by " + b.owner.nameWithColor() + "'s `~" + b.wepnID + "`~!");
 
         if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
-                b.owner.driftAchs[9] = true;
-                b.owner.sendAchievementsDrift(true);
+            b.owner.driftAchs[9] = true;
+            b.owner.sendAchievementsDrift(true);
         }
     }
     //send msg
@@ -206,7 +206,7 @@ die = async function (b) { // b: bullet object or other object which killed us
         //give the killer stuff
     if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
         b.owner.onKill(this);
-        b.owner.spoils("experience", !this.guest ? (10 + diff * (this.color === b.owner.color ? -1 : 1)) : 0);
+        b.owner.spoils("experience", !this.guest ? (10 + diff * (this.color === b.owner.color ? -5 : 1)) : 0);
         // Prevent farming and disincentivize targetting guests
         b.owner.spoils("money", b.owner.type === "Player" ? (this.guest ? 0 : b.owner.killStreak*playerKillMoney) : playerKillMoney);
 
