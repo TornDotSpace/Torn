@@ -954,6 +954,13 @@ function paste3DMap(xp,yp) {
 		ctx.stroke();
 	}*/
 	ctx.drawImage(minimapcanvas,xp,yp);
+	drawDotOn3DMap();
+	ctx.fillStyle = "yellow";
+	ctx.globalAlpha = 1;
+	ctx.font = "12px ShareTech";
+	write("Press M to use the "+(useOldMap?"3D":"flat")+" map", 8, 232);
+}
+function drawDotOn3DMap(){
 	let xxp1 = lerp(myxx1,myxx4,(px/sectorWidth+py/sectorWidth)/2)-pscx; // these are just clever ways of using linear interpolation in a skew vector space
 	let yyp1 = lerp(myyy1,myyy4,(px/sectorWidth+py/sectorWidth)/2)-pscy;
 	let xxp2 = lerp(myxx3,myxx2,(-px/sectorWidth+1+py/sectorWidth)/2)-pscx;
@@ -961,10 +968,6 @@ function paste3DMap(xp,yp) {
 	ctx.fillStyle = brighten(pc);
 	ctx.globalAlpha = psga;
 	ctx.fillRect(xp+104+pscx+xxp1+xxp2-2, yp+104+pscy+yyp1+yyp2-2, 4, 4);
-	ctx.fillStyle = "yellow";
-	ctx.globalAlpha = 1;
-	ctx.font = "12px ShareTech";
-	write("Press M to use the "+(useOldMap?"3D":"flat")+" map", 8, 232);
 }
 function rBuyShipWindow(){
 	ctx.fillStyle = 'white';
