@@ -166,7 +166,7 @@ async die (b) { // b: bullet object or other object which killed us
 
     this.empTimer = -1;
     this.killStreak = 0;
-    let diff = .02 * this.experience;
+    let diff = playerKillExpFraction * this.experience;
     this.leaveBaseShield = 25;
     this.refillAllAmmo();
 

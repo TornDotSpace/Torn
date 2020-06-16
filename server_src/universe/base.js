@@ -48,7 +48,7 @@ module.exports = class Base {
 		this.empTimer--;
 		this.reload--;
 
-		if (this.health < this.maxHealth) this.health += 2.25;
+		if (this.health < this.maxHealth) this.health += baseRegenSpeed;
 		if (tick % 50 == 0 && !this.isBase) this.tryGiveToOwner();
 	}
 	tryGiveToOwner() { // if a base's owner stands over it, they get the stuff it's earned from killing people
