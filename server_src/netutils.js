@@ -52,12 +52,12 @@ module.exports = function () {
 };
 
 
-global.playerChat = function (msg, gc, team, sx, sy, guild) { // chat in whatever chat room the player is in
+global.playerChat = function (msg, gc, team, guild) { // chat in whatever chat room the player is in
 	for (let i in sockets) {
 		let player = sockets[i].player;
 		if (typeof player === "undefined") continue;
 		if (gc == 1 && player.color != team) continue; // they arent on the same team
-		if (gc == 2 && (player.guild !== guild || guild.length*player.guild.length == 0)) continue; // they arent in the same guild
+		if (gc == 2 && guild != undefined && (player.guild !== guild)) continue; // they arent in the same guild
 		sockets[i].emit("chat", {msg:msg, gc:gc});
 	}
 }

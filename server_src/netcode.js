@@ -101,7 +101,7 @@ module.exports = function initNetcode() {
 
         let player = 0;
 
-        let socket_color = 0; // the color of this socket, only used for when spawning a guest for the first time.
+        let socket_color = "green"; // the color of this socket, only used for when spawning a guest for the first time.
 
         socket.io_on = socket.on;
 
@@ -419,7 +419,7 @@ module.exports = function initNetcode() {
 
                 // Send it to the client up to what chat room theyre in
                 if(player.globalChat == 2 && player.guild === '') socket.emit('chat', { msg: ("~`#ff0000~`You are not in a guild!") });
-                else playerChat(finalMsg, player.globalChat, player.color, player.sx, player.sy, player.guild);
+                else playerChat(finalMsg, player.globalChat, player.color, player.guild);
             }
         });
         socket.on('toggleGlobal', function (data) { // player wants to switch what chat room they're in
