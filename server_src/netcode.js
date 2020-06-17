@@ -101,7 +101,7 @@ module.exports = function initNetcode() {
 
         let player = 0;
 
-        let socket_color = 0; // the color of this socket, only used for when spawning a guest for the first time.
+        let socket_color = "green"; // the color of this socket, only used for when spawning a guest for the first time.
 
         socket.io_on = socket.on;
 
