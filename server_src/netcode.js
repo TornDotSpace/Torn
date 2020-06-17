@@ -263,7 +263,8 @@ module.exports = function initNetcode() {
                 let curr_socket = sockets[p];
                 if (curr_socket.player !== undefined && curr_socket.id != socket.id) {
                     if (curr_socket.player._id == player._id) {
-                        curr_socket.player.kick("A user has logged into this account from another location.");
+                        curr_socket.player.kickMsg = "A user has logged into this account from another location.";
+                        curr_socket.player.socket.disconnect();
                         wait_time = 6000;
                     }
                 }
