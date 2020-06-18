@@ -316,8 +316,7 @@ onMined(a) {
     else if (!this.moneyAchs[2] && 4000 <= this.iron + this.silver + this.aluminium + this.platinum) this.moneyAchs[2] = true;
     else if (!this.moneyAchs[3] && 15000 <= this.iron + this.silver + this.aluminium + this.platinum) this.moneyAchs[3] = true;
     else return;
-    this.s
-    endAchievementsCash(true);
+    this.sendAchievementsCash(true);
 }
 sendAchievementsKill(note) {
     this.emit("achievementsKill", { note: note, achs: this.killsAchs });
