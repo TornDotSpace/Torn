@@ -646,6 +646,17 @@ class Player {
 		}
 
 	}
+
+	updateRank() {
+		let prerank = this.rank;
+		this.rank = 0;
+		while (this.experience > ranks[this.rank]) this.rank++; //increment until we're in the right rank's range
+		
+		if (!this.isBot && this.rank > prerank && this.rank > 5){
+			this.emit('rank', {}); //congratulations!
+			chatAll(this.nameWithColor() + " just leveled up to rank " + this.rank + "!");
+		}
+	}
 	checkPlanetCollision() {
 
 		let p = planets[this.sy][this.sx];
@@ -706,166 +717,9 @@ class Player {
 		this.planetsClaimed = prevStr + "2" + postStr;
 
 	}
-	checkQuestStatus(touchingPlanet) {
 
-		if (this.quest == 0 || this.isBot) return;// no point if the person hasn't got a quest rn.
+	checkQuestStatus(touchingPlanet) {}
 
-		if (this.quest.type === 'Mining' && this.sx == this.quest.sx && this.sy == this.quest.sy) {
-
-			//check the player has sufficient metal according to quest
-			if (this.quest.metal == 'aluminium' && this.aluminium < this.quest.amt) return;
-			if (this.quest.metal == 'iron' && this.iron < this.quest.amt) return;
-			if (this.quest.metal == 'silver' && this.silver < this.quest.amt) return;
-			if (this.quest.metal == 'platinum' && this.platinum < this.quest.amt) return;
-
-			//take the amount from them
-			if (this.quest.metal == 'aluminium') this.aluminium -= this.quest.amt;
-			if (this.quest.metal == 'iron') this.iron -= this.quest.amt;
-			if (this.quest.metal == 'silver') this.silver -= this.quest.amt;
-			if (this.quest.metal == 'platinum') this.platinum -= this.quest.amt;
-
-			//reward them
-			this.spoils("money", this.quest.exp);
-			this.spoils("experience", Math.floor(this.quest.exp / 1500));
-
-			this.quest = 0;
-			this.emit('quest', { quest: this.quest, complete:true}); // tell client quest is over
-
-			if (!this.moneyAchs[9]) { // Questor
-				this.moneyAchs[9] = true;
-				this.sendAchievementsCash(true);
-			}
-
-			if ((this.questsDone & 1) == 0) this.questsDone += 1;
-
-		} else if (this.quest.type === 'Delivery' && touchingPlanet) {
-
-			//pickup
-			if (this.sx == this.quest.sx && this.sy == this.quest.sy && !this.hasPackage) {
-				this.hasPackage = true;
-				this.strongLocal("Package obtained!", this.x, this.y - 192);
-			}
-
-			//dropoff
-			if (this.hasPackage && this.sx == this.quest.dsx && this.sy == this.quest.dsy) {
-
-				this.spoils("money", this.quest.exp);//reward
-				this.spoils("experience", Math.floor(this.quest.exp / 1500));
-
-				this.hasPackage = false;
-				this.quest = 0;
-				this.emit('quest', { quest: this.quest, complete:true}); // tell client it's over
-				if ((this.questsDone & 2) == 0) this.questsDone += 2;
-
-				if (!this.moneyAchs[9]) { // Questor
-					this.moneyAchs[9] = true;
-					this.sendAchievementsCash(true);
-				}
-
-			}
-
-		}
-
-		if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
-			this.moneyAchs[10] = true;
-			this.sendAchievementsCash(true);
-		}
-
-	}
-	baseKilled() {
-
-		if (this.isBot) return;
-
-		this.baseKills++;
-
-		//achievementy stuff
-		this.killsAchs[7] = this.baseKills >= 1;
-		this.killsAchs[8] = this.baseKills >= 100;
-		this.sendAchievementsKill(true);
-
-		//base quest checking
-		if (this.quest != 0 && this.quest.type == 'Base') {
-			if (this.sx == this.quest.sx && this.sy == this.quest.sy) {
-
-				// reward player
-				this.spoils("money", this.quest.exp);
-				this.spoils("experience", Math.floor(this.quest.exp / 4000));
-
-				this.quest = 0; //tell client it's done
-				this.emit('quest', { quest: this.quest, complete: true});
-				if ((this.questsDone & 4) == 0) this.questsDone += 4;
-
-				if (!this.moneyAchs[9]) { // Questor
-					this.moneyAchs[9] = true;
-					this.sendAchievementsCash(true);
-				}
-
-			}
-		}
-
-		if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
-			this.moneyAchs[10] = true;
-			this.sendAchievementsCash(true);
-		}
-
-	}
-	updateRank() {
-		let prerank = this.rank;
-		this.rank = 0;
-		while (this.experience > ranks[this.rank]) this.rank++; //increment until we're in the right rank's range
-		if (!this.isBot && this.rank > prerank && this.rank > 5){
-			this.emit('rank', {}); //congratulations!
-			chatAll(this.nameWithColor() + " just leveled up to rank " + this.rank + "!");
-		}
-	}
-	sellOre(oretype){
-            //pay them appropriately
-              if (oretype == 'iron' || oretype == 'all') {
-                this.spoils("money", this.iron);
-                this.iron = 0;
-            } if (oretype == 'silver' || oretype == 'all') {
-                this.spoils("money", this.silver);
-                this.silver = 0;
-            } if (oretype == 'platinum' || oretype == 'all') {
-                this.spoils("money", this.platinum);
-                this.platinum = 0;
-            } if (oretype == 'aluminium' || oretype == 'all') {
-                this.spoils("money", this.aluminium);
-                this.aluminium = 0;
-            }
-            this.save();
-	}
-	dock() {
-
-		if (this.isBot) return; // can bots even get to this point in code?
-
-		if (this.docked) { // undock if already docked. This toggles the player's dock status
-			this.getAllPlanets(); // tell client what's out in the sector
-			this.docked = false;
-			players[this.sy][this.sx][this.id] = this;
-			delete dockers[this.id];
-			this.leaveBaseShield = 25;
-			this.health = this.maxHealth;
-			return;
-		}
-
-		this.checkTrailAchs();
-
-		let base = 0;
-		let b = bases[this.sy][this.sx];
-		if (b.isBase && b.color == this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
-		if (base == 0) return;
-
-		this.refillAllAmmo();
-		this.x = this.y = sectorWidth / 2;
-		this.save();
-		this.docked = true;
-
-		dockers[this.id] = this;
-		delete players[this.sy][this.sx][this.id];
-
-		this.sendStatus();
-	}
 	shootBullet(currWep) {
 		if (this.bulletQueue > 0) { // Submachinegun
 			if (this.ammos[this.equipped] <= 0) return;
@@ -1052,91 +906,17 @@ class Player {
 		else if (p.color === this.color) this.killsAchs[9] = true;
 		this.sendAchievementsKill(true);
 	}
-	onMined(a) {
-		if (this.isBot) return;
 
-		//bitmask of what types of ores this player has mined
-		if ((this.oresMined & (1 << a)) == 0) this.oresMined += 1 << a;
-
-		//achievementy stuff
-		if (this.oresMined == 15 && !this.moneyAchs[1]) this.moneyAchs[1] = true;
-		else if (!this.moneyAchs[0]) this.moneyAchs[0] = true;
-		else if (!this.moneyAchs[2] && 4000 <= this.iron + this.silver + this.aluminium + this.platinum) this.moneyAchs[2] = true;
-		else if (!this.moneyAchs[3] && 15000 <= this.iron + this.silver + this.aluminium + this.platinum) this.moneyAchs[3] = true;
-		else return;
-		this.sendAchievementsCash(true);
-	}
-	sendAchievementsKill(note) {
-		if (this.isBot) return;
-		this.emit("achievementsKill", { note: note, achs: this.killsAchs });
-	}
-	sendAchievementsCash(note) {
-		if (this.isBot) return;
-		this.emit("achievementsCash", { note: note, achs: this.moneyAchs });
-	}
-	sendAchievementsDrift(note) {
-		if (this.isBot) return;
-		this.emit("achievementsDrift", { note: note, achs: this.driftAchs });
-	}
-	sendAchievementsMisc(note) {
-		this.randmAchs[9] = !this.planetsClaimed.includes("0") && !this.planetsClaimed.includes("1"); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
-		if (this.isBot) return;
-		this.emit("achievementsMisc", { note: note, achs: this.randmAchs });
-	}
-	sendStatus() {
-		if (!this.isBot) this.emit("status", { docked: this.docked, state: this.dead, lives: this.lives });
-	}
-	checkMoneyAchievements() {
-		if (this.isBot) return;
-		if (this.money >= 10000 && !this.moneyAchs[4]) this.moneyAchs[4] = true;
-		else if (this.money >= 100000 && !this.moneyAchs[5]) this.moneyAchs[5] = true;
-		else if (this.money >= 1000000 && !this.moneyAchs[6]) this.moneyAchs[6] = true;
-		else if (this.money >= 10000000 && !this.moneyAchs[7]) this.moneyAchs[7] = true;
-		else return;
-		this.sendAchievementsCash(true);
-	}
-	checkDriftAchs() {
-		if (this.isBot) return;
-		if (this.driftTimer >= 25 && !this.driftAchs[0]) this.driftAchs[0] = true; // drift 1sex
-		else if (this.driftTimer >= 25 * 60 && !this.driftAchs[1]) this.driftAchs[1] = true; // 1min
-		else if (this.driftTimer >= 25 * 60 * 10 && !this.driftAchs[2]) this.driftAchs[2] = true; // 10mins
-		else if (this.driftTimer >= 25 * 60 * 60 && !this.driftAchs[3]) this.driftAchs[3] = true; // 1hr
-		else if (this.driftTimer >= 25 * 60 * 60 * 10 && !this.driftAchs[4]) this.driftAchs[4] = true; // 10hrs
-		else return;
-		this.sendAchievementsDrift(true);
-	}
-	checkTrailAchs() {
-
-		//Check if they have all achievements of a type. If so, give them the corresponding trail achievement of that type
-
-		let rAll = true;
-		for (let i = 0; i < 10; i++) if (!this.randmAchs[i]) rAll = false;
-		if (!this.randmAchs[10] && rAll) {
-			this.randmAchs[10] = true;
-			this.sendAchievementsMisc(false);
-		}
-
-		rAll = true;
-		for (let i = 0; i < 12; i++) if (!this.killsAchs[i]) rAll = false;
-		if (!this.killsAchs[12] && rAll) {
-			this.killsAchs[12] = true;
-			this.sendAchievementsKill(false);
-		}
-
-		rAll = true;
-		for (let i = 0; i < 11; i++) if (!this.driftAchs[i]) rAll = false;
-		if (!this.driftAchs[11] && rAll) {
-			this.driftAchs[11] = true;
-			this.sendAchievementsDrift(false);
-		}
-
-		rAll = true;
-		for (let i = 0; i < 11; i++) if (!this.moneyAchs[i]) rAll = false;
-		if (!this.moneyAchs[11] && rAll) {
-			this.moneyAchs[11] = true;
-			this.sendAchievementsCash(false);
-		}
-	}
+	// Player_MP stubs
+	onMined(a) {}
+	sendAchievementsKill(note) {}
+	sendAchievementsCash(note) {}
+	sendAchievementsDrift(note) {}
+	sendAchievementsMisc(note) {}
+	sendStatus() {}
+	checkMoneyAchievements() {}
+	checkDriftAchs() {}
+	checkTrailAchs() {}
 	
 	getAllPlanets() { // same, but with planets
 		if (this.isBot) return;
@@ -1167,15 +947,7 @@ class Player {
 		if (this.ship <= wepns[20].level) this.generators = 0; // gotta have sufficiently high ship
 	}
 	spoils(type, amt) { // gives you something. Called wenever you earn money / exp / w/e
-		if (typeof amt === "undefined") return;
-		if (type === "experience") {
-			this.experience += amt;
-			this.updateRank();
-		}
-		else if (type === "money") this.money += amt * ((amt > 0 && this.trail % 16 == 2) ? 1.05 : 1);
-		else if (type === "life" && this.lives < 20) this.lives += amt;
-		this.experience = Math.max(this.experience, 0);
-		this.emit("spoils", { type: type, amt: amt });
+		// STUBBED
 	}
 	nameWithoutTag(){
 		if(this.name.includes(" ")) return this.name.split(" ")[1];
@@ -1184,12 +956,8 @@ class Player {
 	nameWithColor(){ // returns something like "~`green~`[O] 2swap~`yellow~`"
 		return "~`"+this.color+"~`"+this.name+"~`yellow~`";
 	}
-	noteLocal(msg, x, y) {
-		this.emit('note', { msg: msg, x: x, y: y, local: true })
-	}
-	strongLocal(msg, x, y) {
-		this.emit('strong', { msg: msg, x: x, y: y, local: true });
-	}
+	noteLocal(msg, x, y) {}
+	strongLocal(msg, x, y) {}
 	
 	botPlay() {}
 	emit(a,b) {}
