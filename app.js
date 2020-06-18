@@ -96,7 +96,6 @@ global.readGuildList = function(){
 require('./server_src/math.js');
 
 let Base = require('./server_src/universe/base.js');
-let Asteroid = require("./server_src/universe/asteroid.js");
 let Planet = require("./server_src/universe/planet.js");
 let Vortex = require("./server_src/universe/vortex.js");
 let netcode = require('./server_src/netcode.js');
@@ -325,14 +324,13 @@ init();
 function sigHandle() {
 	console.log("[SERVER] Caught termination signal...");
 
-	sendAll("kick", { msg: "You have been logged out by an administrator working on the servers." });
-
 	for (let y in players) {
 		for (let x in players[y]) {
 			for (let id in players[y][x]) {
 				// Save & kick out
 				let player = players[y][x][id];
 				player.save();
+				player.kick("You have been logged out by an administrator working on the servers.");
 			}
 		}
 	}
@@ -344,8 +342,6 @@ function onCrash(err) {
 
 	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
 
-	sendAll("kick", {msg: "The server you are playing on has encountered a problem and needs to reset. You should be able to log back into the game and start exploring the universe almost immediately. :("});
-
 	let plyrs = '';
 
 	for (let y in players) {
@@ -355,6 +351,7 @@ function onCrash(err) {
 				let player = players[y][x][id];
 				if (player.isBot) continue;
 				player.save();
+				player.kick("The server you are playing on has encountered a problem and needs to reset. You should be able to log back into the game and start exploring the universe almost immediately. :(");
 				plyrs = plyrs + player.name + ', ';
 			}
 		}
@@ -989,26 +986,7 @@ function update() {
 				player.socket.emit('online', { lag: lag });
 				player.socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
 			}
-
-			//send(i, 'posUp', {cloaked: player.disguise > 0, isLocked: player.isLocked, health:player.health, shield:player.shield, planetTimer: player.planetTimer, energy:player.energy, sx: player.sx, sy: player.sy,charge:player.charge,x:player.x,y:player.y, angle:player.angle, speed: player.speed,packs:packPack[player.sy][player.sx],vorts:vortPack[player.sy][player.sx],mines:minePack[player.sy][player.sx],missiles:missilePack[player.sy][player.sx],orbs:orbPack[player.sy][player.sx],blasts:blastPack[player.sy][player.sx],beams:beamPack[player.sy][player.sx],planets:planetPack[player.sy][player.sx], asteroids:astPack[player.sy][player.sx],players:playerPack[player.sy][player.sx],bases:basePack[player.sy][player.sx]});
-			//send(i, 'partialposUp', {cloaked: player.distance > 0, isLocked: player.isLocked, health:player.health;
-			// trail
-			// shield
-			// empTimer
-			// hasPackage
-			// id: player.id
-			// ship: ship
-			// speed
-			// maxHealth
-			// color 
-			// x 
-			// y
-			// name
-			// health
-			// angle
-			// drift 
-
-			// missing: cloaked, isLocked,planetTimer, sx, sy, charge:player.charge
+			
 			player.socket.emit('update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: gameState });
 		}
 
