@@ -329,6 +329,7 @@ function sigHandle() {
 			for (let id in players[y][x]) {
 				// Save & kick out
 				let player = players[y][x][id];
+				if (player.isBot) continue;
 				player.save();
 				player.kick("You have been logged out by an administrator working on the servers.");
 			}
