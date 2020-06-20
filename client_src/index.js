@@ -29,6 +29,8 @@ function printStartup() {
 
 printStartup();
 
+global.loginInProgress = false;
+
 window.document.title = "torn.space";
 
 let isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);//broken
@@ -1417,6 +1419,7 @@ function clearBullets() {
 
 // socket error handling
 socket.on('connect_error', function (error) {
+	loginInProgress = false;
 	if (!login) {
 		alert("Failed to connect to the Torn servers. This probably either means they are down or your firewall is blocking the request. " + error);
 		socket.close();

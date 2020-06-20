@@ -6,43 +6,14 @@
  * 						ALL RIGHTS RESERVED
  */
 
-console.log("************************************************************************************************************************");
-console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
-console.log("▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
-console.log(" ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌     ▐░▌   ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌    ▐░▌   ▐░▌          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▌   ▐░▌   ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░█▄▄▄▄▄▄▄▄▄ ");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░▌   ▐░▌ ▐░▌    ▀▀▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀▀▀ ");
-console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌    ▐░▌▐░▌             ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌          ");
-console.log("     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░▌     ▐░▐░▌ ▄  ▄▄▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄ ");
-console.log("     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌      ▐░░▌▐░▌▐░░░░░░░░░░░▌▐░▌          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
-console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀        ▀▀  ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ ");
-console.log("                                                                                                                        ");
-console.log("************************************************************************************************************************");
-
-// Load config 
-let configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
-require('./server_src/config.js')(configEnvironment);
-// Hack for strict mode - we define IO later
-global.io = { }
-io.emit = function(a,b) { };
-
 let fs = require('fs');
 
 buildFileSystem(); // create folders for players, neural nets, and turrets if they dont exist
 
-if (!Config.getValue("debug", "false")) {
-	let d = new Date();
-	var start = new Date(d.getFullYear(), 0, 0);
-	var diff = d - start;
-	var oneDay = 1000 * 60 * 60 * 24;
-	var day = Math.floor(diff / oneDay);
-	day += 1000;
-	let stdoutFileName =       "logs/" + day + d + ".log";
-	let stderrFilename = "error_logs/" + day + d + ".log";
-	global.console = new console.Console(fs.createWriteStream(stdoutFileName), fs.createWriteStream(stderrFilename));
-}
+// Load config 
+let configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
+require('./server_src/config.js')(configEnvironment);
+global.serverInitialized = false;
 
 global.initReboot = function () {
 	console.log("\nInitializing server reboot...\n");
@@ -58,7 +29,6 @@ global.initReboot = function () {
 	setTimeout(function () { chatAll("~`#f00~`Server restarting in 1..."); }, 119 * 1000);
 	setTimeout(shutdown, 120 * 1000);
 }
-
 global.saveTurrets = function () {
 	//save em
 	let count = 0;
@@ -70,6 +40,38 @@ global.saveTurrets = function () {
 				count++;
 			}
 		}
+}
+
+require('./server_src/netcode.js')();
+
+
+
+console.log("************************************************************************************************************************");
+console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
+console.log("▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
+console.log(" ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌     ▐░▌   ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌    ▐░▌   ▐░▌          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▌   ▐░▌   ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░█▄▄▄▄▄▄▄▄▄ ");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░▌   ▐░▌ ▐░▌    ▀▀▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀▀▀ ");
+console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌    ▐░▌▐░▌             ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌          ");
+console.log("     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░▌     ▐░▐░▌ ▄  ▄▄▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄ ");
+console.log("     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌      ▐░░▌▐░▌▐░░░░░░░░░░░▌▐░▌          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
+console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀        ▀▀  ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ ");
+console.log("                                                                                                                        ");
+console.log("************************************************************************************************************************");
+
+
+if (!Config.getValue("debug", "false")) {
+	let d = new Date();
+	var start = new Date(d.getFullYear(), 0, 0);
+	var diff = d - start;
+	var oneDay = 1000 * 60 * 60 * 24;
+	var day = Math.floor(diff / oneDay);
+	day += 1000;
+	let stdoutFileName =       "logs/" + day + d + ".log";
+	let stderrFilename = "error_logs/" + day + d + ".log";
+	global.console = new console.Console(fs.createWriteStream(stdoutFileName), fs.createWriteStream(stderrFilename));
 }
 
 global.readMuteTable = function(){
@@ -98,7 +100,6 @@ require('./server_src/math.js');
 let Base = require('./server_src/universe/base.js');
 let Planet = require("./server_src/universe/planet.js");
 let Vortex = require("./server_src/universe/vortex.js");
-let netcode = require('./server_src/netcode.js');
 
 require('./server_src/db.js');
 connectToDB();
@@ -318,9 +319,6 @@ for(let i = 0; i < mapSz; i++){
 	}
 }
 
-
-init();
-
 function sigHandle() {
 	console.log("[SERVER] Caught termination signal...");
 
@@ -387,6 +385,11 @@ function init() { // start the server!
 
 	spawnBases();
 
+	//meta
+	setTimeout(initReboot, 86400 * 1000 - 6 * 60 * 1000);
+	setTimeout(idleSocketCheck, 1000 * 60 * 5);
+	saveTurrets();
+
 	//make asteroids. Make 10 times the number of sectors.
 	for (let i = 0; i < mapSz * mapSz * 8; i++) createAsteroid(Math.floor(i/mapSz) % mapSz, i%mapSz);
 
@@ -410,12 +413,10 @@ function init() { // start the server!
 		vorts[v.sy][v.sx][id] = v;
 	}
 
-	//start ticking
-	netcode();
-
 	setTimeout(update, tickRate);
 	broadcastInfo();
 
+	serverInitialized = true;
 	console.log("Server initialized successfully. Game log below.\n");
 }
 
@@ -1093,8 +1094,6 @@ function updateHeatmap() {
 	for (let i in lb) lb[i].socket.emit('heatmap', { hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen});
 }
 
-saveTurrets();
-
 function idleSocketCheck() {
 	let time = Date.now();
 	const timeout = 1000 * 60 * 5;
@@ -1110,9 +1109,6 @@ function idleSocketCheck() {
 
 	setTimeout(idleSocketCheck, timeout);
 }
-//meta
-setTimeout(initReboot, 86400 * 1000 - 6 * 60 * 1000);
-setTimeout(idleSocketCheck, 1000 * 60 * 5);
 
 function shutdown() {
 	process.exit();
@@ -1131,3 +1127,5 @@ function broadcastInfo(){
 	broadcastMsg++
 	setTimeout(broadcastInfo,20*60*1000);
 }
+
+init();

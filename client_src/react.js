@@ -242,6 +242,9 @@ class LoginOverlay extends Component {
 			</div>)
 	}
 	login = async () => {
+		if (loginInProgress) return;
+		loginInProgress = true;
+
 		let user = this.state.user;
 		let pass = this.state.pass;
 
@@ -254,11 +257,14 @@ class LoginOverlay extends Component {
 
 			if (playcookie.status == 403) {
 				credentialState = 1;
+				loginInProgress = false;
 				return;
 			} else if (playcookie.status != 200) {
 				alert("Failed to connect to Torn Account Services");
+				loginInProgress = false;
 				return;
 			}
+
 			playcookie = await playcookie.text();
 			connect();
 			console.log(":TornNetRepository: Got PLAYCOOKIE: " + playcookie);

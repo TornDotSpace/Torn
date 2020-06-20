@@ -85,12 +85,19 @@ module.exports = function initNetcode() {
     global.io = socketio(server, {
         serveClient: false,
         origins: "*:*",
-        wsEngine: Config.getValue("ws-engine", "ws"),
         timeout: 500,
         parser: msgpack
     });
 
     io.sockets.on('connection', function (socket) {
+
+        if (!serverInitialized)
+        {
+            socket.emit("kick", { msg: "Server is still starting up!"});
+            socket.disconnect();
+            return;
+        }
+
         socket.start = Date.now();
         let instance = false;
         sockets[socket.id] = socket;
