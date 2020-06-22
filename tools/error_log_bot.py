@@ -9,10 +9,12 @@ def send_webhook(msg):
     response = webhook.execute()
 
 def main():
+    data = ""
+
     for f in listdir(PATH):
         f = open(PATH + "/" + f, 'r')
         if isfile(f.name):
-            data = data + f.read()
+            data = f'{data} {f.read()}'
             remove(f.name)
         else:
             continue
@@ -21,10 +23,8 @@ def main():
         # We need to post to discord
         responses = 0
         for x in [data[i:i+1985] for i in range(0, len(data), 1985)]:
-            responses = responses + 1
             send_webhook(x)
-
-        if (responses == 0):
-            send_webhook("No errors encountered during last run.")
+    else:
+        send_webhook("No errors encountered during last run.")
 
 main()
