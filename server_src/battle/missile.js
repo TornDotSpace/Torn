@@ -19,14 +19,16 @@ module.exports = class Missile {
 		this.locked = 0, // player I'm locked onto
 		this.timer = 0, // since spawn
 		this.lockedTimer = 0, // since locking on to my current target (or is it since first locking onto anyone?)
+		this.distTravelled = 0, //distance I've travelled
 		this.wepnID = wepnID,
 		this.goalAngle = 0; // the angle I'm turning to match
 	}
 	tick() {
 
 		this.move();
-		if (this.timer++ > 10 * wepns[this.wepnID].range / wepns[this.wepnID].speed) this.die(); // out of range -> die
-		if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die();//out of sector
+		this.timer++; //time needs to flow. 
+		if (this.distTravelled >= 10 * wepns[this.wepnID].range) this.die(); // out of range -> die
+		if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); //out of sector
 
 		if (this.timer == 20 && this.wepnID == 13) { // missile swarm
 			for (let i = 0; i < 6; i++) { // spawn 6 missiles
@@ -78,7 +80,7 @@ module.exports = class Missile {
 	move() {
 
 		if (this.locked != 0)  {
-			if (this.lockedTimer++ > 7 * 25) this.die(); // if locked for >7s, die
+			if (this.lockedTimer++ > 10 * 25) this.die(); // if locked for >7s, die NOTE I just put it to 10 to see if time was the problem.
 
 			let target = players[this.sy][this.sx][this.locked]; // try 2 find the target object
 			if (typeof target === 'undefined' && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
@@ -109,10 +111,19 @@ module.exports = class Missile {
 		if (this.locked == 0) this.lockedTimer = 0;
 
 		let accelMult = 1 - 25 / (this.timer + 25); // pick up speed w/ time
-		this.x += this.vx * accelMult + this.emvx;
-		this.y += this.vy * accelMult + this.emvy; // move on tick
+		let velx = this.vx * accelMult;
+		let vely = this.vy * accelMult;
+
+		if(Math.sqrt(Math.pow(velx, 2)+Math.pow(vely, 2))+this.distTravelled>10*wepns[this.wepnID].range){ 
+				this.velx =  10 * Math.cos(this.angle) * (wepns[this.wepnID].range-this.distTravelled); //checking that we don't go too far.
+				this.vely =  10 * Math.sin(this.angle) * (wepns[this.wepnID].range-this.distTravelled);
+		}
+		this.distTravelled += wepns[this.wepnID].speed * accelMult; //This missile will try to get all the distance done.
+		this.x +=  velx + this.emvx;
+		this.y +=  vely + this.emvy; // move on tick
 		this.emvx *= .95;
-		this.emvy *= .95;
+
+		
 
 	}
 	die() {
