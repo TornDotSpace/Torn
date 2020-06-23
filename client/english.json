@@ -368,7 +368,7 @@
 		},
 		{
 			"name":"Missile Swarm",
-			"desc":"Fires a single, non-damaging missile which splits into a swarm of missiles which will attack the nearest target. Great tool to use against a large ambush.",
+			"desc":"Fires a single, non-damaging missile which splits into a swarm of missiles which will attack a horde of enemies. Great tool to use against a large ambush.",
 			"killmessages":[
 				"P1 swarmed P2 with missiles!",
 				"P1 missile-swarmed P2!",
