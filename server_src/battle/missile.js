@@ -31,7 +31,7 @@ module.exports = class Missile {
 		if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); //out of sector
 
 		if (this.timer == 20 && this.wepnID == 13) { // missile swarm
-			for (let i = 0; i < 6; i++) { // spawn 6 missiles
+			for (let i = 0; i < 2; i++) { // spawn 2 missiles that will track closest target
 				let r = Math.random();
 				let bAngle = this.angle + r * 2 - 1;
 				let missile = new Missile(this.owner, r, 10, bAngle);
@@ -40,6 +40,38 @@ module.exports = class Missile {
 				missile.sx = this.sx; // this is crucial, otherwise rings of fire happen
 				missile.sy = this.sy; // because owner is not necessarily in the same sector as parent missile
 				missiles[this.sy][this.sx][r] = missile;
+			}
+			for (let i in players[this.sy][this.sx]) {//spawn 4 missiles for each enemy ship in sector
+				let player = players[this.sy][this.sx][i];
+				let r = Math.random();
+				let bAngle = this.angle + r * 2 - 1;
+				let dist = squaredDist(player, this);
+				if ((player.color != this.color && player.disguise<=0) && (dist < square(wepns[this.wepnID].range * 10))){
+					for (let i = 0; i < 4; i++) { //Target the uncloaked enemy ship in range.
+						let r = Math.random();
+						let bAngle = this.angle + r * 2 - 1;
+						let missile = new Missile(this.owner, r, 10, bAngle);
+						missile.x = this.x;
+						missile.y = this.y;
+						missile.sx = this.sx; // this is crucial, otherwise rings of fire happen
+						missile.sy = this.sy; // because owner is not necessarily in the same sector as parent missile	
+						missile.locked = player.id; 
+						missiles[this.sy][this.sx][r] = missile;
+					}
+				}
+			}
+			if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
+				for (let i = 0; i < 4; i++) { // spawn 4 missiles towards the turret
+					let r = Math.random();
+					let bAngle = this.angle + r * 2 - 1;
+					let missile = new Missile(this.owner, r, 10, bAngle);
+					missile.x = this.x;
+					missile.y = this.y;
+					missile.sx = this.sx; // this is crucial, otherwise rings of fire happen
+					missile.sy = this.sy; // because owner is not necessarily in the same sector as parent missile
+					missile.locked = bases[this.sy][this.sx].id;
+					missiles[this.sy][this.sx][r] = missile;
+				}
 			}
 			this.die(); // and then die
 		}
@@ -115,8 +147,8 @@ module.exports = class Missile {
 		let vely = this.vy * accelMult;
 
 		if(Math.sqrt(Math.pow(velx, 2)+Math.pow(vely, 2))+this.distTravelled>10*wepns[this.wepnID].range){ 
-				this.velx =  10 * Math.cos(this.angle) * (wepns[this.wepnID].range-this.distTravelled); 
-				this.vely =  10 * Math.sin(this.angle) * (wepns[this.wepnID].range-this.distTravelled);//checking that we don't overstep range in our speed. This will fix problems with faster projectiles.
+				this.velx =  10 * Math.cos(this.angle) * (wepns[this.wepnID].range-this.distTravelled); //checking that we don't go too far.
+				this.vely =  10 * Math.sin(this.angle) * (wepns[this.wepnID].range-this.distTravelled);
 		}
 		this.distTravelled += wepns[this.wepnID].speed * accelMult; //This missile will try to get all the distance done.
 		this.x +=  velx + this.emvx;
