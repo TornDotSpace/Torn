@@ -115,8 +115,8 @@ module.exports = class Missile {
 		let vely = this.vy * accelMult;
 
 		if(Math.sqrt(Math.pow(velx, 2)+Math.pow(vely, 2))+this.distTravelled>10*wepns[this.wepnID].range){ 
-				this.velx =  10 * Math.cos(this.angle) * (wepns[this.wepnID].range-this.distTravelled); //checking that we don't go too far.
-				this.vely =  10 * Math.sin(this.angle) * (wepns[this.wepnID].range-this.distTravelled);
+				this.velx =  10 * Math.cos(this.angle) * (wepns[this.wepnID].range-this.distTravelled); 
+				this.vely =  10 * Math.sin(this.angle) * (wepns[this.wepnID].range-this.distTravelled);//checking that we don't overstep range in our speed. This will fix problems with faster projectiles.
 		}
 		this.distTravelled += wepns[this.wepnID].speed * accelMult; //This missile will try to get all the distance done.
 		this.x +=  velx + this.emvx;
