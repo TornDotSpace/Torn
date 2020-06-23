@@ -917,6 +917,7 @@ class Player {
 	checkMoneyAchievements() {}
 	checkDriftAchs() {}
 	checkTrailAchs() {}
+	baseKilled() {}
 	
 	getAllPlanets() { // same, but with planets
 		if (this.isBot) return;
