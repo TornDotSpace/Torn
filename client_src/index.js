@@ -999,12 +999,15 @@ function rBuyShipWindow(){
 	if (shipView != ship) write("$" + (ships[shipView].price - worth) + " " + mEng[14], rendX, rendY + 96);
 
 	ctx.textAlign = "left";
-	ctx.fillStyle = "yellow";
-	write(mEng[27] + (shipView > rank ? mEng[26] : ships[shipView].thrust), rx + 256 + 32, ry + 256 + 11 * 16);
-	write(mEng[28] + (shipView > rank ? mEng[26] : ships[shipView].agility), rx + 256 + 32, ry + 256 + 12 * 16);
-	write(mEng[29] + (shipView > rank ? mEng[26] : ships[shipView].health), rx + 256 + 32, ry + 256 + 13 * 16);
-	write(mEng[30] + (shipView > rank ? mEng[26] : ships[shipView].weapons), rx + 256 + 32, ry + 256 + 14 * 16);
-	write(mEng[31] + (shipView > rank ? mEng[26] : ships[shipView].capacity), rx + 256 + 32, ry + 256 + 15 * 16);
+	ctx.fillStyle = "white";//yellow
+	write(mEng[27] + (shipView > rank ? mEng[26] : ships[shipView].thrust), rx + 256 + 32, ry + 256 + 10 * 16 + 5);
+	write(mEng[28] + (shipView > rank ? mEng[26] : ships[shipView].agility), rx + 256 + 32, ry + 256 + 11 * 16 + 5);
+	write(mEng[29] + (shipView > rank ? mEng[26] : ships[shipView].health), rx + 256 + 32, ry + 256 + 12 * 16 + 5);
+	write(mEng[30] + (shipView > rank ? mEng[26] : ships[shipView].weapons), rx + 256 + 32, ry + 256 + 13 * 16 + 5);
+	write(mEng[31] + (shipView > rank ? mEng[26] : ships[shipView].capacity), rx + 256 + 32, ry + 256 + 14 * 16 + 5);
+
+	//ctx.fillStyle = "white";
+	wrapText(mEng[50] + (shipView > rank ? mEng[26] : ships[shipView].desc), rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
 
 	if (shipView < ships.length) ctx.drawImage(Img.arrow, rendX + 128 - 48, rendY - 16);
 	if (shipView > 0) {
@@ -1030,7 +1033,12 @@ function rOreShop(){
 	ctx.textAlign = "left";
 
 	for (let i = 4; i < 8; i++) {
-		ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'yellow');
+		switch(i){
+			case 4 :ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'brown'); break;
+			case 5 :ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'silver'); break;
+			case 6 :ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'purple'); break;
+			case 7 :ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'lightgrey'); break;
+		}
 		write(info[i], rx + 256 - 32, ry - 32 + i * 32);
 	}
 
@@ -1072,7 +1080,7 @@ function rWeaponsInShop(){
 		let tag = '	      ';
 		if (equipped[i] == -1) tag = mEng[14] + (i != 9 ? '  ' : ' ');
 		else if (equipped[i] > -1) tag = mEng[19] + (i != 9 ? ' ' : '');
-		write(tag + (i + 1) + ": " + wepns[equipped[i]].name, rx + 256 + 32, ry + 256 + i * 16);
+		write(tag + (" " + (i + 1)).slice(-2) + ": " + wepns[equipped[i]].name, rx + 256 + 32, ry + 256 + i * 16);
 	}
 }
 function rShop() {
