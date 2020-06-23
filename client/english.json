@@ -726,19 +726,19 @@
 			"nameA":"Scout",
 			"nameH":"Minnow",
 			"nameC":"Gnat",
-			"desc":"Your first ship. Check the Shop for new items."
+			"desc":"Your first ship. Don't forget to check the Shop for new items."
 		},
 		{
 			"nameA":"Private",
 			"nameH":"Piranha",
 			"nameC":"Flea",
-			"desc":"An enhanced version of its predecesor."
+			"desc":"An enhanced version of its predecesor, with more health and slots."
 		},
 		{
 			"nameA":"Mastodon",
 			"nameH":"Freighter",
 			"nameC":"Eristalis",
-			"desc":"A polivalent cargo ship."
+			"desc":"A polivalent cargo ship. Unlocking Turbo and Ore Cannon is a bonus."
 		},
 		{
 			"nameA":"Nymph",
@@ -786,19 +786,19 @@
 			"nameA":"Wasp",
 			"nameH":"Manta",
 			"nameC":"Hornet",
-			"desc":"A big enough cruiser to carry MD weapons."
+			"desc":"A big enough cruiser to carry Massive Destruction weapons."
 		},
 		{
 			"nameA":"Swift",
 			"nameH":"Sailfish",
 			"nameC":"Alcubierre",
-			"desc":"A light, fast cruiser."
+			"desc":"A light, fast cruiser. Even more so when using Supercharger."
 		},
 		{
 			"nameA":"Quarrier",
 			"nameH":"Beluga",
 			"nameC":"Honeypot",
-			"desc":"A heavy cargo ship, with extreme health."
+			"desc":"A heavy cargo ship, with extreme health. It's not exactly fast, though."
 		},
 		{
 			"nameA":"Destroyer",
@@ -810,7 +810,7 @@
 			"nameA":"Falcon",
 			"nameH":"Wyvern",
 			"nameC":"Defiant",
-			"desc":"The last non-elite heavy cruiser."
+			"desc":"The last non-elite heavy cruiser. It also unlocks all normal slots."
 		},
 		{
 			"nameA":"Interceptor",
@@ -822,32 +822,31 @@
 			"nameA":"Elite Swift",
 			"nameH":"Elite Sailfish",
 			"nameC":"Elite Alcubierre",
-			"desc":"C-Slot unlocked (simultaneous turbo)."
+			"desc":"The first Elite ship, with a passive enhanced drifting boost and C-Slot unlocked (simultaneous turbo with any other item)."
 		},
 		{
 			"nameA":"Elite Quarrier",
 			"nameH":"Elite Beluga",
 			"nameC":"Elite Honeypot",
-			"desc":"C-Ore launcher + mining web, careful of ore rays."
+			"desc":"It possess a C-Ore launcher plus a passive mining web effect on mining beams. Be careful of enemy ones, though."
 		},
 		{
 			"nameA":"Elite Destroyer",
 			"nameH":"Elite Taurus",
 			"nameC":"Elite Galley",
-			"desc":"A heavy cruiser with an unlimited C-Spreadhot."
+			"desc":"A refitted destroyer with an unlimited C-Spreadhot. Perfect for killing turrets in a team."
 		},
 		{
 			"nameA":"Elite Falcon",
 			"nameH":"Elite Wyvern",
 			"nameC":"Elite Defiant",
-			"desc":"C-HP Healing + passive EMP Blast on kill."
+			"desc":"A cruiser with C-HP Healing that works even when shields raised, and a passive EMP Blast on kill."
 		},
 		{
 			"nameA":"Elite Interceptor",
 			"nameH":"Elite Leviathan",
 			"nameC":"Elite Maser",
-			"desc":"A superheavy destroyer with C-Hypno Ray."
+			"desc":"Just a superheavy destroyer with C-Hypno Ray... or is there more to it?"
 		}
 	]
 }
-
