@@ -117,13 +117,13 @@
 		"Password must be 6-128 characters long!",
 		"Username taken!",
 		"Account already in use!",
-		"Press W to move!",
-		"Press A and D to steer!",
+		"Press W (or Up Arrow) to move forward!",
+		"Press A and D (or Left/Right Arrows) to steer!",
 		"Follow the orange arrow!",
 		"Shoot asteroids with spacebar!",
-		"Follow the white arrow and press X!",
-		"Sell your ore in the shop!",
-		"Go to the home tab and make an account!",
+		"Follow the white arrow and press X to Dock!",
+		"Sell your ore in the Base Shop!",
+		"Go to the Base and make an account!",
 		"Follow the white arrow or travel to a sector with a base!",
 		"Alert: ",
 		"Progress Saved!",
@@ -160,7 +160,7 @@
 		" for further instructions.",
 		"Eliminate all enemy players and turrets in ",
 		" and visit planet ",
-		"Deliver package to a permanent black hole.",
+		"Deliver package to a permanent black hole sector.",
 		"To change your password, visit torn.space/help",
 		"Active Generators: ",
 		"x",
@@ -209,59 +209,59 @@
 		"N/A"
 	],
 	"achNames":[
-		"First Blood:Kill 1 player",
-		"On a Roll:Kill 10 players",
-		"Bloodlust:Kill 100 players",
-		"General:Kill 1,000 players",
-		"Warlord:Kill 4,000 players",
-		"Reaper:Kill 10,000 players",
-		"Envy:Kill a custom trail",
-		"Invader:Destroy a turret",
-		"Conqueror:Destroy 100 turrets",
-		"Friendly Fire:Kill a teammate",
-		"Gone Postal:Kill a courier",
-		"Emo:Commit suicide",
-		"Blood Trail:1.05x Damage Resistance",
-		"Miner:Mine an asteroid",
-		"Collector:Mine one of each ore",
-		"Quarrier:Obtain 4,000 ore",
-		"Motherload:Obtain 15,000 ore",
-		"Rich Man:Get $10,000",
-		"Richer Man:Get $100,000",
-		"Millionaire:Get $1,000,000",
-		"Rolling In It:Get $10,000,000",
-		"Thief:Steal a package",
-		"Questor:Community service",
-		"Adventurer:Complete one of each quest",
-		"Money Trail:1.05x Money",
+		"First Blood:Kill 1 player.",
+		"On a Roll:Kill 10 players.",
+		"Bloodlust:Kill 100 players.",
+		"General:Kill 1,000 players.",
+		"Warlord:Kill 4,000 players.",
+		"Reaper:Kill 10,000 players.",
+		"Envy:Kill a custom trail.",
+		"Invader:Destroy a turret.",
+		"Conqueror:Destroy 100 turrets.",
+		"Friendly Fire:Kill a teammate.",
+		"Gone Postal:Kill a courier.",
+		"Emo:Commit suicide.",
+		"Blood Trail:1.05x Damage Resistance.",
+		"Miner:Mine an asteroid.",
+		"Collector:Mine one of each ore.",
+		"Quarrier:Obtain 4,000 ore.",
+		"Motherload:Obtain 15,000 ore.",
+		"Rich Man:Get $10,000.",
+		"Richer Man:Get $100,000.",
+		"Millionaire:Get $1,000,000.",
+		"Rolling In It:Get $10,000,000.",
+		"Thief:Steal a package.",
+		"Questor:Community service.",
+		"Adventurer:Complete one of each quest.",
+		"Money Trail:1.05x Money.",
 		"Shift to Drift:Drift!",
-		"Drifter:Drift for 1 minute total",
-		"Tramp:Drift 10 minutes total",
-		"Dizzy:Drift 1 hour total",
-		"Godpinkie:Drift 10 hours total",
-		"Takumi:Forced Induction",
-		"Bunta:Hyper-drift",
+		"Drifter:Drift for 1 minute total.",
+		"Tramp:Drift 10 minutes total.",
+		"Dizzy:Drift 1 hour total.",
+		"Godpinkie:Drift 10 hours total.",
+		"Takumi:Forced Induction.",
+		"Bunta:Hyper-drift.",
 		"Reverse:I can go backwards!?",
-		"Inertia Drift:Drift into a black hole",
-		"Dangerous:Kill while drifting",
-		"Stickshift:Reverse Turbo Drift",
-		"Panda Trail:1.05x Agility",
-		"Here to Stay:Make an account",
-		"Ouch:Die",
-		"Risky Business:Accept a quest in D4",
-		"Too Slow:Fall into a wormhole",
-		"Oops...:Fall into a black hole",
-		"Boing!:Touch the edge",
-		"Traveller:Visit every sector",
-		"Schizoid:Visit all 4 corners",
-		"Astronaut:Claim a planet",
-		"Imperialist:Claim each planet once",
+		"Inertia Drift:Drift into a black hole.",
+		"Dangerous:Kill while drifting.",
+		"Stickshift:Reverse Turbo Drift.",
+		"Panda Trail:1.05x Agility.",
+		"Here to Stay:Make an account.",
+		"Ouch:Die.",
+		"Risky Business:Accept a quest in a black hole sector.",
+		"Too Slow:Fall into a wormhole.",
+		"Oops...:Fall into a black hole.",
+		"Boing!:Touch the edge.",
+		"Traveller:Visit every sector.",
+		"Schizoid:Visit all 4 corners.",
+		"Astronaut:Claim a planet.",
+		"Imperialist:Claim each planet once.",
 		"Random Trail:Juke Further!"
 	],
 	"weapons":[
 		{
 			"name":"Stock Gun",
-			"desc":"A basic, medium range gun.",
+			"desc":"A basic, medium-range gun. At least you don't have to worry about ammo with this one.",
 			"killmessages":[
 				"P1 stock-gunned P2!",
 				"P1 capped P2!"
@@ -269,14 +269,14 @@
 		},
 		{
 			"name":"Plasma Gun",
-			"desc":"Short in range, slow to shoot and slow to recharge, but packs one hell of a punch.",
+			"desc":"Short in range compared with most guns, slow to shoot and slow to recharge, but packs one hell of a punch.",
 			"killmessages":[
 				"P1 vaporized P2 with a plasma gun!"
 			]
 		},
 		{
 			"name":"Reverse Gun",
-			"desc":"Get off my tail! Basic gun that shoots backwards.",
+			"desc":"Get off my tail! Basic, slightly more powerful Stock Gun that shoots backwards.",
 			"killmessages":[
 				"P1 got P2 from behind!"
 			]
@@ -301,7 +301,7 @@
 		},
 		{
 			"name":"Machine Gun",
-			"desc":"Rapid-fire! Ammunition is a bit weak, but that's no matter if you're shooting 13 rounds per second!",
+			"desc":"Rapid-fire! Ammunition is a bit weak, but that's no matter if you're shooting 5 rounds per second!",
 			"killmessages":[
 				"P1 unloaded on P2!",
 				"P1 machine-gunned P2!"
@@ -316,7 +316,7 @@
 		},
 		{
 			"name":"Plasma Beam",
-			"desc":"Automatically aims at the nearest enemy within a small range and fires a beam of plasma.",
+			"desc":"Automatically aims at the nearest enemy within a medium-large range and fires a beam of plasma.",
 			"killmessages":[
 				"P1 evaporated P2 with plasma!",
 				"P1 melted P2 with plasma!"
@@ -324,7 +324,7 @@
 		},
 		{
 			"name":"Laser Beam",
-			"desc":"Automatically aims at the nearest enemy within a medium range.",
+			"desc":"Automatically aims at the nearest enemy within a medium-short range.",
 			"killmessages":[
 				"P1 evaporated P2 with a laser!",
 				"P1 lasered a hole through P2!",
@@ -334,7 +334,7 @@
 		},
 		{
 			"name":"Hadron Beam",
-			"desc":"Short-range particle beam accelerator. Does a lot of damage, but takes a while to recharge. Can be used as a quick trump card for close calls.",
+			"desc":"Medium-range particle beam accelerator. Does a lot of damage, but takes a while to recharge. Can be used as a quick trump card for close calls.",
 			"killmessages":[
 				"P1 scattered P2's particles!",
 				"P1 disintegrated P2's nuclei!",
@@ -368,7 +368,7 @@
 		},
 		{
 			"name":"Missile Swarm",
-			"desc":"Fires a single missile which splits into a swarm of missiles which will attack a large horde of enemies. Great tool to use against a large ambush.",
+			"desc":"Fires a single, non-damaging missile which splits into a swarm of missiles which will attack a horde of enemies. Great tool to use against a large ambush.",
 			"killmessages":[
 				"P1 swarmed P2 with missiles!",
 				"P1 missile-swarmed P2!",
@@ -409,7 +409,7 @@
 		},
 		{
 			"name":"Hull Nanobots",
-			"desc":"Repairs you nice and quick on the go."
+			"desc":"Repairs 20% of your hull in a short time. Bulky ships with extreme amounts of health will love this."
 		},
 		{
 			"name":"Photon Cloak",
@@ -433,11 +433,11 @@
 		},
 		{
 			"name":"Electromagnet",
-			"desc":"Repels objects away from you. With practice, you can fling asteroids and mines at enemies, causing damage. Very effective against bases, but you do not recieve exp/bounty for killing a base with an asteroid."
+			"desc":"Repels objects away from you. With practice, you can fling asteroids and mines at enemies, causing damage. Very effective against turrets and sentries, but you do not recieve exp/bounty for killing them with an asteroid."
 		},
 		{
 			"name":"EMP Blast",
-			"desc":"Fires a beam which disables all ships it hits. Single-use."
+			"desc":"Fires a forward-aimed beam which disables all ships it hits."
 		},
 		{
 			"name":"Mining Laser",
@@ -474,7 +474,7 @@
 		},
 		{
 			"name":"Impulse Mine",
-			"desc":"Soon after deployed, this mine will explode and push every nearby player away without doing damage. Useful for moving quickly, just place one behind you and ride the shockwave."
+			"desc":"Soon after deployed, this mine will explode and push every nearby player away without doing damage. Useful for moving quickly in slow ships, just place one behind you and ride the shockwave."
 		},
 		{
 			"name":"Grenades",
@@ -486,7 +486,7 @@
 		},
 		{
 			"name":"Muon Ray",
-			"desc":"An extremely powerful beam weapon that must be aimed. Fires a high energy particle beam in the direction that your ship is facing which will do extremely heavy damage to anything it contacts. Can pass through multiple ships.",
+			"desc":"An extremely powerful forward-aimed beam weapon which can pass through multiple ships, dealing extremely heavy damage to any enemy it contacts.",
 			"killmessages":[
 				"P1 leptoned P2!",
 				"P1 muoned P2!"
@@ -510,7 +510,7 @@
 		},
 		{
 			"name":"Spreadshot",
-			"desc":"Three active barrels! The bullets come out at consistent angles, unlike shotgun."
+			"desc":"Three active barrels! The bullets come out at consistent angles, unlike shotgun, and with greater range."
 		},
 		{
 			"name":"Submachinegun",
@@ -542,7 +542,7 @@
 		},
 		{
 			"name":"Campfire",
-			"desc":"Quickly heals nearby players, as long as there are at least 2 of them."
+			"desc":"Quickly heals nearby friendly players, as long as there are at least 2 of them."
 		},
 		{
 			"name":"Healing Beam",
@@ -550,7 +550,7 @@
 		},
 		{
 			"name":"Sentry",
-			"desc":"A small turret which fires a machine gun."
+			"desc":"A small turret which fires a machine gun. As well as with normal turrets, there can only be 1 Sentry, or turret, at the time in the sector."
 		}
 	],
 	"splashes":[
@@ -726,127 +726,127 @@
 			"nameA":"Scout",
 			"nameH":"Minnow",
 			"nameC":"Gnat",
-			"desc":""
+			"desc":"Your first ship. Don't forget to check the Shop for new items."
 		},
 		{
 			"nameA":"Private",
 			"nameH":"Piranha",
 			"nameC":"Flea",
-			"desc":""
+			"desc":"An enhanced version of its predecesor, with more health and slots."
 		},
 		{
 			"nameA":"Mastodon",
 			"nameH":"Freighter",
 			"nameC":"Eristalis",
-			"desc":""
+			"desc":"A polivalent cargo ship. Unlocking Turbo and Ore Cannon is a bonus."
 		},
 		{
 			"nameA":"Nymph",
 			"nameH":"Strider",
 			"nameC":"Cloudhop",
-			"desc":""
+			"desc":"The fastest, but weakest, ship."
 		},
 		{
 			"nameA":"Bomber",
 			"nameH":"Lancer",
 			"nameC":"Scarab",
-			"desc":""
+			"desc":"A light escort, nice for patrolling."
 		},
 		{
 			"nameA":"Scythe",
 			"nameH":"Hammerhead",
 			"nameC":"Nephila",
-			"desc":""
+			"desc":"A heavy polivalent escort."
 		},
 		{
 			"nameA":"Dragonfly",
 			"nameH":"Swordfish",
 			"nameC":"Ladybug",
-			"desc":""
+			"desc":"One of the strongest explorers in the galaxy."
 		},
 		{
 			"nameA":"Sentry",
 			"nameH":"Battleship",
 			"nameC":"Metralla",
-			"desc":""
+			"desc":"The first cruiser of your faction."
 		},
 		{
 			"nameA":"Eagle",
 			"nameH":"Stingray",
 			"nameC":"Sceptre",
-			"desc":""
+			"desc":"A decent polivalent explorer vessel"
 		},
 		{
 			"nameA":"Phoenix",
 			"nameH":"Orca",
 			"nameC":"Centipede",
-			"desc":""
+			"desc":"A strong cruiser... for its size."
 		},
 		{
 			"nameA":"Wasp",
 			"nameH":"Manta",
 			"nameC":"Hornet",
-			"desc":""
+			"desc":"A big enough cruiser to carry Massive Destruction weapons."
 		},
 		{
 			"nameA":"Swift",
 			"nameH":"Sailfish",
 			"nameC":"Alcubierre",
-			"desc":""
+			"desc":"A light, fast cruiser. Even more so when using Supercharger."
 		},
 		{
 			"nameA":"Quarrier",
 			"nameH":"Beluga",
 			"nameC":"Honeypot",
-			"desc":""
+			"desc":"A heavy cargo ship, with extreme health. It's not exactly fast, though."
 		},
 		{
 			"nameA":"Destroyer",
 			"nameH":"Taurus",
 			"nameC":"Galley",
-			"desc":""
+			"desc":"The light destroyer of the fleet."
 		},
 		{
 			"nameA":"Falcon",
 			"nameH":"Wyvern",
 			"nameC":"Defiant",
-			"desc":""
+			"desc":"The last non-elite heavy cruiser. It also unlocks all normal slots."
 		},
 		{
 			"nameA":"Interceptor",
 			"nameH":"Leviathan",
 			"nameC":"Maser",
-			"desc":""
+			"desc":"A destroyer with all slots unlocked."
 		},
 		{
 			"nameA":"Elite Swift",
 			"nameH":"Elite Sailfish",
 			"nameC":"Elite Alcubierre",
-			"desc":""
+			"desc":"The first Elite ship, with a passive enhanced drifting boost and C-Slot unlocked (simultaneous turbo with any other item)."
 		},
 		{
 			"nameA":"Elite Quarrier",
 			"nameH":"Elite Beluga",
 			"nameC":"Elite Honeypot",
-			"desc":""
+			"desc":"It possess a C-Ore launcher plus a passive mining web effect on mining beams. Be careful of enemy ones, though."
 		},
 		{
 			"nameA":"Elite Destroyer",
 			"nameH":"Elite Taurus",
 			"nameC":"Elite Galley",
-			"desc":""
+			"desc":"A refitted destroyer with an unlimited C-Spreadhot. Perfect for killing turrets in a team."
 		},
 		{
 			"nameA":"Elite Falcon",
 			"nameH":"Elite Wyvern",
 			"nameC":"Elite Defiant",
-			"desc":""
+			"desc":"A cruiser with C-HP Healing that works even when shields raised, and a passive EMP Blast on kill."
 		},
 		{
 			"nameA":"Elite Interceptor",
 			"nameH":"Elite Leviathan",
 			"nameC":"Elite Maser",
-			"desc":""
+			"desc":"Just a superheavy destroyer with C-Hypno Ray... or is there more to it?"
 		}
 	]
 }
