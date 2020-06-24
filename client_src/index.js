@@ -1000,11 +1000,11 @@ function rBuyShipWindow(){
 
 	ctx.textAlign = "left";
 	ctx.fillStyle = "white";//yellow
-	write(mEng[27] + (shipView > rank ? mEng[26] : ships[shipView].thrust), rx + 256 + 32, ry + 256 + 10 * 16 + 5);
-	write(mEng[28] + (shipView > rank ? mEng[26] : ships[shipView].agility), rx + 256 + 32, ry + 256 + 11 * 16 + 5);
-	write(mEng[29] + (shipView > rank ? mEng[26] : ships[shipView].health), rx + 256 + 32, ry + 256 + 12 * 16 + 5);
-	write(mEng[30] + (shipView > rank ? mEng[26] : ships[shipView].weapons), rx + 256 + 32, ry + 256 + 13 * 16 + 5);
-	write(mEng[31] + (shipView > rank ? mEng[26] : ships[shipView].capacity), rx + 256 + 32, ry + 256 + 14 * 16 + 5);
+	write(mEng[27] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].thrust)), rx + 256 + 32, ry + 256 + 10 * 16 + 5);
+	write(mEng[28] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].agility)), rx + 256 + 32, ry + 256 + 11 * 16 + 5);
+	write(mEng[29] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].health)), rx + 256 + 32, ry + 256 + 12 * 16 + 5);
+	write(mEng[30] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].weapons)), rx + 256 + 32, ry + 256 + 13 * 16 + 5);
+	write(mEng[31] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].capacity)), rx + 256 + 32, ry + 256 + 14 * 16 + 5);
 
 	//ctx.fillStyle = "white";
 	wrapText(mEng[50] + (shipView > rank ? mEng[26] : ships[shipView].desc), rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
@@ -1022,10 +1022,10 @@ function rOreShop(){
 	let info = {};
 	let mult1 = (myTrail % 16 == 2)?1.05:1;
 	let allIronPrice = iron * mult1, allSilverPrice = silver * mult1, allPlatinumPrice = platinum * mult1, allAluminiumPrice = aluminium * mult1;
-	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + allIronPrice + " ($"+mult1+" " + mEng[155] + ")";
-	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + allSilverPrice + " ($"+mult1+" " + mEng[155] + ")";
-	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + allPlatinumPrice + " ($"+mult1+" " + mEng[155] + ")";
-	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + aluminium + " => $" + allAluminiumPrice + " ($"+mult1+" " + mEng[155] + ")";
+	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + numToLS(iron) + " => $" + numToLS(allIronPrice) + " ($"+mult1+" " + mEng[155] + ")";
+	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + numToLS(silver) + " => $" + numToLS(allSilverPrice) + " ($"+mult1+" " + mEng[155] + ")";
+	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + numToLS(platinum) + " => $" + numToLS(allPlatinumPrice) + " ($"+mult1+" " + mEng[155] + ")";
+	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + numToLS(aluminium) + " => $" + numToLS(allAluminiumPrice) + " ($"+mult1+" " + mEng[155] + ")";
 
 	ctx.strokeStyle = 'white';
 	ctx.lineWidth = 1;
@@ -1043,7 +1043,7 @@ function rOreShop(){
 	}
 
 	ctx.fillStyle = seller == 610 ? 'lime' : 'yellow';
-	write(mEng[12] + " => $" + (allAluminiumPrice + allPlatinumPrice + allSilverPrice + allIronPrice), rx + 256 + 48, ry + 76); // Sell all
+	write(mEng[12] + " => $" + numToLS(allAluminiumPrice + allPlatinumPrice + allSilverPrice + allIronPrice), rx + 256 + 48, ry + 76); // Sell all
 
 	let d = new Date();
 	let stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
@@ -1078,8 +1078,8 @@ function rWeaponsInShop(){
 		if (ships[shipView].weapons <= i) ctx.fillStyle = "orange";
 		if (shipView < wepns[equipped[i]].level) ctx.fillStyle = "red";
 		let tag = '	      ';
-		if (equipped[i] == -1) tag = mEng[14] + (i != 9 ? '  ' : ' ');
-		else if (equipped[i] > -1) tag = mEng[19] + (i != 9 ? ' ' : '');
+		if (equipped[i] == -1) tag = mEng[14] + '  ';
+		else if (equipped[i] > -1) tag = mEng[19] + ' ';
 		write(tag + (" " + (i + 1)).slice(-2) + ": " + wepns[equipped[i]].name, rx + 256 + 32, ry + 256 + i * 16);
 	}
 }
@@ -1115,7 +1115,7 @@ function rQuests() {
 		write(mEng[36], rx + 128 * 3, ry + 128);
 		ctx.font = '14px ShareTech';
 		let desc = "";
-		if (quest.type === 'Mining') desc = mEng[37] + quest.amt + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
+		if (quest.type === 'Mining') desc = mEng[37] + numToLS(quest.amt) + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
 		if (quest.type === 'Base') desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
 		if (quest.type === 'Delivery') desc = mEng[42] + getSectorName(quest.sx, quest.sy) + mEng[43] + getSectorName(quest.dsx, quest.dsy) + mEng[40];
 		if (quest.type === 'Secret') desc = mEng[156] + getSectorName(quest.sx, quest.sy) + mEng[157];//mEng[44];
@@ -1129,7 +1129,7 @@ function rQuests() {
 			let questi = quests[i];
 			let desc = "";
 			ctx.fillStyle = i == seller - 300 ? 'lime' : 'yellow';
-			if (questi.type == 'Mining') desc = mEng[37] + questi.amt + mEng[38] + questi.metal + mEng[39] + getSectorName(questi.sx, questi.sy) + mEng[40];
+			if (questi.type == 'Mining') desc = mEng[37] + numToLS(questi.amt) + mEng[38] + questi.metal + mEng[39] + getSectorName(questi.sx, questi.sy) + mEng[40];
 			if (questi.type == 'Base')
 				if (rank > 6) desc = mEng[41] + getSectorName(questi.sx, questi.sy) + mEng[40];
 				else desc = mEng[46];
@@ -1138,7 +1138,7 @@ function rQuests() {
 				else desc = mEng[46];
 			if (questi.type == 'Delivery') desc = mEng[42] + getSectorName(questi.sx, questi.sy) + mEng[43] + getSectorName(questi.dsx, questi.dsy) + mEng[40];
 			write(questi.type, xv + rx + 16, ry + 72 + i % 5 * 80);
-			write(mEng[47] + mult*questi.exp + mEng[48] + Math.floor(questi.exp / ((questi.type === 'Mining' || questi.type === 'Delivery') ? 1500 : 4000)) + mEng[49], xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
+			write(mEng[47] + numToLS(mult*questi.exp) + mEng[48] + numToLS(Math.floor(questi.exp / ((questi.type === 'Mining' || questi.type === 'Delivery') ? 1500 : 4000))) + mEng[49], xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
 			wrapText(mEng[50] + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
 		}
 }
@@ -1182,7 +1182,7 @@ function rStats() {
 	for (let i = 0; i < activeGens; i++) eMult *= 1.06;
 
 
-	let stats = [mEng[20] + Number((ships[ship].thrust * t2).toPrecision(3)), mEng[22] + Number((ships[ship].capacity * c2).toPrecision(3)), mEng[23] + Number((ships[ship].health * mh2).toPrecision(3)), mEng[164] + Number((eMult).toPrecision(3)), (kills - baseKills) + mEng[51], baseKills + mEng[52], mEng[55] + Number((worth + upgradeCosts).toPrecision(3)), mEng[56] + Number((money + ore + worth + upgradeCosts).toPrecision(3)), Math.round(experience) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
+	let stats = [mEng[20] + numToLS(Number((ships[ship].thrust * t2).toPrecision(3))), mEng[22] + numToLS(Number((ships[ship].capacity * c2).toPrecision(3))), mEng[23] + numToLS(Number((ships[ship].health * mh2).toPrecision(3))), mEng[164] + numToLS(Number((eMult).toPrecision(3))), numToLS((kills - baseKills)) + mEng[51], numToLS(baseKills) + mEng[52], mEng[55] + numToLS(Number((worth + upgradeCosts).toPrecision(3))), mEng[56] + numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3))), numToLS(Math.round(experience)) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
 
 	for (let i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
 
@@ -1239,31 +1239,31 @@ function rStats() {
 	
 	//upgrades
 	ctx.fillStyle = (seller == 200) ? "lime" : "white";
-	write("[+] $" + techPrice(t2), rx + 64 + 54, ry + 416 - 64 + 28);
+	write("[+] $" + numToLS(techPrice(t2)), rx + 64 + 54, ry + 416 - 64 + 28);
 	ctx.fillStyle = (seller == 201) ? "lime" : "white";
-	write("[+] $" + techPrice(va2), rx + 192 + 54, ry + 416 - 64 + 28);
+	write("[+] $" + numToLS(techPrice(va2)), rx + 192 + 54, ry + 416 - 64 + 28);
 	ctx.fillStyle = (seller == 202) ? "lime" : "white";
-	write("[+] $" + techPrice(c2), rx + 64 + 54, ry + 416 + 28);
+	write("[+] $" + numToLS(techPrice(c2)), rx + 64 + 54, ry + 416 + 28);
 	ctx.fillStyle = (seller == 203) ? "lime" : "white";
-	write("[+] $" + techPrice(mh2), rx + 192 + 54, ry + 416 + 28);
+	write("[+] $" + numToLS(techPrice(mh2)), rx + 192 + 54, ry + 416 + 28);
 	ctx.fillStyle = (seller == 204) ? "lime" : "white";
-	write("[+] $" + techPrice(e2)*8, rx + 320 + 54, ry + 416 - 64 + 28);
+	write("[+] $" + numToLS(techPrice(e2)*8), rx + 320 + 54, ry + 416 - 64 + 28);
 	ctx.fillStyle = (seller == 205) ? "lime" : "white";
-	write("[+] $" + techPrice(ag2), rx + 320 + 54, ry + 416 + 28);
+	write("[+] $" + numToLS(techPrice(ag2)), rx + 320 + 54, ry + 416 + 28);
 
 	//downgrades
 	ctx.fillStyle = (seller == 206) ? "lime" : "white";
-	if(t2 >1) write("[-] $" + -techPriceForDowngrade(t2), rx + 64 + 54, ry + 416 - 64 + 42);
+	if(t2 >1) write("[-] $" + numToLS(-techPriceForDowngrade(t2)), rx + 64 + 54, ry + 416 - 64 + 42);
 	ctx.fillStyle = (seller == 207) ? "lime" : "white";
-	if(va2>1) write("[-] $" + -techPriceForDowngrade(va2), rx + 192 + 54, ry + 416 - 64 + 42);
+	if(va2>1) write("[-] $" + numToLS(-techPriceForDowngrade(va2)), rx + 192 + 54, ry + 416 - 64 + 42);
 	ctx.fillStyle = (seller == 208) ? "lime" : "white";
-	if(c2 >1) write("[-] $" + -techPriceForDowngrade(c2), rx + 64 + 54, ry + 416 + 42);
+	if(c2 >1) write("[-] $" + numToLS(-techPriceForDowngrade(c2)), rx + 64 + 54, ry + 416 + 42);
 	ctx.fillStyle = (seller == 209) ? "lime" : "white";
-	if(mh2>1) write("[-] $" + -techPriceForDowngrade(mh2), rx + 192 + 54, ry + 416 + 42);
+	if(mh2>1) write("[-] $" + numToLS(-techPriceForDowngrade(mh2)), rx + 192 + 54, ry + 416 + 42);
 	ctx.fillStyle = (seller == 210) ? "lime" : "white";
-	if(e2 >1) write("[-] $" + -techPriceForDowngrade(e2)*8, rx + 320 + 54, ry + 416 - 64 + 42);
+	if(e2 >1) write("[-] $" + numToLS(-techPriceForDowngrade(e2)*8), rx + 320 + 54, ry + 416 - 64 + 42);
 	ctx.fillStyle = (seller == 211) ? "lime" : "white";
-	if(ag2>1) write("[-] $" + -techPriceForDowngrade(ag2), rx + 320 + 54, ry + 416 + 42);
+	if(ag2>1) write("[-] $" + numToLS(-techPriceForDowngrade(ag2)), rx + 320 + 54, ry + 416 + 42);
 
 	/*description for radar
 	ctx.textAlign = "left";
@@ -1316,7 +1316,7 @@ function rWeaponStore() {
 	ctx.textAlign = "right";
 	ctx.fillStyle = 'yellow';
 
-	write(mEng[5] + Math.floor(money), rx + 128 * 6 - 16, ry + 64);
+	write(mEng[5] + numToLS(Math.floor(money)), rx + 128 * 6 - 16, ry + 64);
 	ctx.textAlign = "center";
 	ctx.font = '24px ShareTech';
 	write(mEng[15], rx + 128 * 3, ry + 68);
@@ -3053,9 +3053,9 @@ function rTexts(lag, arr) {
 	nLagCt++;
 	meanNLag /= (nLagCt + 0.0);
 
-	info[0] = mEng[149] + Math.round(experience);
-	info[1] = mEng[5] + Math.floor(money);
-	info[2] = mEng[6] + kills;
+	info[0] = mEng[149] + numToLS(Math.round(experience));
+	info[1] = mEng[5] + numToLS(Math.floor(money));
+	info[2] = mEng[6] + numToLS(kills);
 	info[3] = mEng[148] + rank;
 	info[4] = mEng[3] + getSectorName(sx, sy);
 
@@ -3092,11 +3092,47 @@ function rTexts(lag, arr) {
 		write(i < il? info[i] : (lagNames[i - il] + mEng[195] + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
 	ctx.textAlign = 'left';
 }
+
+function numToLS(number){
+	//return number.toLocaleString();
+	/*For some reason the above doesn't work in all the texts.*/
+	let intnum = Math.floor(number);
+	let decimal = number - intnum;
+	let str = "";
+	if(decimal != 0) str = ".";
+	let count = 0;
+	while (decimal != 0){
+		let decint = Math.floor(decimal * 10);
+		let space = "";
+		switch(count){
+			case 0 : space = " ";count++; break;
+			case 1 : count++; break;
+			case 2 : space = ""; count=0; break;
+		}
+		str += space + decint;
+		decimal= decimal * 10 - decint;
+	}
+	count = 0;
+	do{
+		let space = "";
+		let next = Math.floor(intnum / 10); //Divides by 10
+		switch(count){
+			case 0 : space = "";count++; break;
+			case 1 : count++; break;
+			case 2 : if (next!=0){space = ",";} count=0; break;
+		}
+		str = space + (intnum%10) + str;
+		intnum = next;
+	}while (intnum != 0); //We wish to have "0" money, not "" money.
+
+	return str;	
+}
+
 function rCurrQuest() {
 	ctx.fillStyle = 'cyan';
 	ctx.textAlign = 'center';
 	let desc = "";
-	if (quest.type == 'Mining') desc = mEng[37] + quest.amt + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
+	if (quest.type == 'Mining') desc = mEng[37] + numToLS(quest.amt) + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
 	if (quest.type == 'Base') desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
 	if (quest.type == 'Delivery') desc = mEng[42] + getSectorName(quest.sx, quest.sy) + mEng[43] + getSectorName(quest.dsx, quest.dsy) + mEng[40];
 	if (quest.type == 'Secret') desc = mEng[156] + getSectorName(quest.sx, quest.sy) + mEng[157];
