@@ -2305,91 +2305,90 @@ document.onkeydown = function (event) {
 			ReactRoot.unfocusChat();
 			typing = false;
 		}
+		return;
 	}
-	else if (autopilot) return;
-	else {
-		if (event.keyCode == 13) {
-			ReactRoot.focusChat();
-			typing = true;
-		}
-		else if (event.keyCode == 78 && docked && tab == 8) { // n
-			confirmer = -1;
-			tab = 0;
-		}
-		else if (event.keyCode == 89 && docked && tab == 8) { // y
-			socket.emit('sellW', { slot: confirmer });
-			confirmer = -1;
-			tab = 0;
-		}
-		else if (event.keyCode == 66 && docked && tab == 7 && seller != 0 && actuallyBuying) { // b
-			socket.emit('buyW', { slot: scroll, weapon: seller - 20 });
-			tab = 0;
-		}
-		else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] != -2)
-			socket.emit('equip', { scroll: event.keyCode - 49 });
-		else if (event.keyCode == 48 && equipped[event.keyCode - 49] != -2)
-			socket.emit('equip', { scroll: 9 });
-		else if (event.keyCode === 83 || event.keyCode === 40) {//s
-			if (keys[1] != true) socket.emit('key', { inputId: 's', state: true });
-			keys[1] = true;
-		}
-		else if (event.keyCode === 192)//`
-			dev = !dev;
-		else if (event.keyCode === 77) {//m
-			useOldMap = !useOldMap;
-			r3DMap();
-		}
-		else if (event.keyCode === 69) {//e
-			if (keys[2] != true) socket.emit('key', { inputId: 'e', state: true });
-			keys[2] = true;
-		}
-		else if (event.keyCode === 87 || event.keyCode === 38) {//w
-			if (keys[3] != true) socket.emit('key', { inputId: 'w', state: true });
-			keys[3] = true;
-			didW = true;
-		}
-		else if (event.keyCode === 65 || event.keyCode === 37) {//a
-			if (keys[4] != true) socket.emit('key', { inputId: 'a', state: true });
-			keys[4] = true;
-			didSteer = true;
-		}
-		else if (event.keyCode === 68 || event.keyCode === 39) {//d
-			if (keys[5] != true) socket.emit('key', { inputId: 'd', state: true });
-			keys[5] = true;
-			didSteer = true;
-		}
-		else if (event.keyCode === 32) {//space
-			if (keys[6] != true) socket.emit('key', { inputId: ' ', state: true });
-			keys[6] = true;
-			if (equipped[scroll] < 0) badWeapon = 20;
-		}
-		else if (event.keyCode === 81) {//q
-			if (keys[7] != true) socket.emit('key', { inputId: 'q', state: true });
-			keys[7] = true;
-		}
-		else if (event.keyCode === 88 || event.keyCode === 27) {//x
-			if (dead) return;
-			qsx = qsy = qdsx = qdsy = -1;
-			if (keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
-			keys[8] = true;
-			ReactRoot.turnOffRegister("");
-			socket.emit('equip', { scroll: scroll });
-		}
-		else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
-			if (dead) return;
-			if (keys[9] != true) socket.emit('key', { inputId: 'c', state: true });
-			keys[9] = true;
-		}
-	}
-}
-document.onkeyup = function (event) {
 	if (login && !typing && event.keyCode === 80 && !docked) {
 		autopilot ^= true;
 		if(bigNotes[0] == -1)/*to prevent spam*/
 			addBigNote([256,"Autopilot "+(autopilot?"E":"Dise")+"ngaged!", "Press P to toggle.", ""]);
 		return;
-	} else if (autopilot)
+	}
+	if (autopilot)
 		return;
+	if (event.keyCode == 13) {
+		ReactRoot.focusChat();
+		typing = true;
+	}
+	else if (event.keyCode == 78 && docked && tab == 8) { // n
+		confirmer = -1;
+		tab = 0;
+	}
+	else if (event.keyCode == 89 && docked && tab == 8) { // y
+		socket.emit('sellW', { slot: confirmer });
+		confirmer = -1;
+		tab = 0;
+	}
+	else if (event.keyCode == 66 && docked && tab == 7 && seller != 0 && actuallyBuying) { // b
+		socket.emit('buyW', { slot: scroll, weapon: seller - 20 });
+		tab = 0;
+	}
+	else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] != -2)
+		socket.emit('equip', { scroll: event.keyCode - 49 });
+	else if (event.keyCode == 48 && equipped[event.keyCode - 49] != -2)
+		socket.emit('equip', { scroll: 9 });
+	else if (event.keyCode === 83 || event.keyCode === 40) {//s
+		if (keys[1] != true) socket.emit('key', { inputId: 's', state: true });
+		keys[1] = true;
+	}
+	else if (event.keyCode === 192)//`
+		dev = !dev;
+	else if (event.keyCode === 77) {//m
+		useOldMap = !useOldMap;
+		r3DMap();
+	}
+	else if (event.keyCode === 69) {//e
+		if (keys[2] != true) socket.emit('key', { inputId: 'e', state: true });
+		keys[2] = true;
+	}
+	else if (event.keyCode === 87 || event.keyCode === 38) {//w
+		if (keys[3] != true) socket.emit('key', { inputId: 'w', state: true });
+		keys[3] = true;
+		didW = true;
+	}
+	else if (event.keyCode === 65 || event.keyCode === 37) {//a
+		if (keys[4] != true) socket.emit('key', { inputId: 'a', state: true });
+		keys[4] = true;
+		didSteer = true;
+	}
+	else if (event.keyCode === 68 || event.keyCode === 39) {//d
+		if (keys[5] != true) socket.emit('key', { inputId: 'd', state: true });
+		keys[5] = true;
+		didSteer = true;
+	}
+	else if (event.keyCode === 32) {//space
+		if (keys[6] != true) socket.emit('key', { inputId: ' ', state: true });
+		keys[6] = true;
+		if (equipped[scroll] < 0) badWeapon = 20;
+	}
+	else if (event.keyCode === 81) {//q
+		if (keys[7] != true) socket.emit('key', { inputId: 'q', state: true });
+		keys[7] = true;
+	}
+	else if (event.keyCode === 88 || event.keyCode === 27) {//x
+		if (dead) return;
+		if(quest == 0) qsx = qsy = qdsx = qdsy = -1;
+		if (keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
+		keys[8] = true;
+		ReactRoot.turnOffRegister("");
+		socket.emit('equip', { scroll: scroll });
+	}
+	else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
+		if (dead) return;
+		if (keys[9] != true) socket.emit('key', { inputId: 'c', state: true });
+		keys[9] = true;
+	}
+}
+document.onkeyup = function (event) {
 	if (!login || tab == -1)
 		return;
 	if (event.keyCode === 83 || event.keyCode === 40) {//s
