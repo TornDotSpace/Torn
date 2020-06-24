@@ -20,6 +20,7 @@ class PlayerMP extends Player {
         this.permissionLevels = [-1];
         this.kickMsg = "";
         this.afkTimer = 10 * 60 * 30; // check for afk
+        this.guild = "";
     }
 
     kick(msg) {
