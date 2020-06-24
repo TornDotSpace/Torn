@@ -111,7 +111,7 @@ module.exports = class Missile {
 		this.emvx *= .95;
 	}
 	missileSwarmExplode(){
-		for (let i in players[this.sy][this.sx]) {//spawn 4 missiles for each enemy ship in sector
+		for (let i in players[this.sy][this.sx]) {//spawn 1 missile for each enemy ship in sector
 			let player = players[this.sy][this.sx][i];
 			let r = Math.random();
 			let bAngle = this.angle + r * 2 - 1;

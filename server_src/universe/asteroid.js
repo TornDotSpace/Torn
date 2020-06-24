@@ -69,29 +69,29 @@ class Asteroid {
 			switch (this.metal) {
 				case 0:
 					b.owner.iron += this.maxHealth;
-					if (b.owner.platinum + b.owner.iron + b.owner.aluminium + b.owner.silver > b.owner.capacity) { // TODO represent player.ores as an array to make this much less stupid
-						b.owner.iron = b.owner.capacity - (b.owner.platinum + b.owner.aluminium + b.owner.silver);
+					if (b.owner.platinum + b.owner.iron + b.owner.copper + b.owner.silver > b.owner.capacity) { // TODO represent player.ores as an array to make this much less stupid
+						b.owner.iron = b.owner.capacity - (b.owner.platinum + b.owner.copper + b.owner.silver);
 						if (b.owner.strongLocal !== undefined) b.owner.strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256);
 					}
 					break;
 				case 1:
 					b.owner.silver += this.maxHealth;
-					if (b.owner.platinum + b.owner.iron + b.owner.aluminium + b.owner.silver > b.owner.capacity) {
-						b.owner.silver = b.owner.capacity - (b.owner.platinum + b.owner.aluminium + b.owner.iron);
+					if (b.owner.platinum + b.owner.iron + b.owner.copper + b.owner.silver > b.owner.capacity) {
+						b.owner.silver = b.owner.capacity - (b.owner.platinum + b.owner.copper + b.owner.iron);
 						if (b.owner.strongLocal !== undefined) b.owner.strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256);
 					}
 					break;
 				case 2:
-					b.owner.aluminium += this.maxHealth;
-					if (b.owner.platinum + b.owner.iron + b.owner.aluminium + b.owner.silver > b.owner.capacity) {
-						b.owner.aluminium = b.owner.capacity - (b.owner.platinum + b.owner.iron + b.owner.silver);
+					b.owner.copper += this.maxHealth;
+					if (b.owner.platinum + b.owner.iron + b.owner.copper + b.owner.silver > b.owner.capacity) {
+						b.owner.copper = b.owner.capacity - (b.owner.platinum + b.owner.iron + b.owner.silver);
 						if (b.owner.strongLocal !== undefined) b.owner.strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256);
 					}
 					break;
 				default:
 					b.owner.platinum += this.maxHealth;
-					if (b.owner.platinum + b.owner.iron + b.owner.aluminium + b.owner.silver > b.owner.capacity) {
-						b.owner.platinum = b.owner.capacity - (b.owner.iron + b.owner.aluminium + b.owner.silver);
+					if (b.owner.platinum + b.owner.iron + b.owner.copper + b.owner.silver > b.owner.capacity) {
+						b.owner.platinum = b.owner.capacity - (b.owner.iron + b.owner.copper + b.owner.silver);
 						if (b.owner.strongLocal !== undefined) b.owner.strongLocal("Cargo Bay Full", b.owner.x, b.owner.y + 256);
 					}
 					break;
