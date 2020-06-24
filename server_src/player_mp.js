@@ -20,6 +20,7 @@ class PlayerMP extends Player {
         this.permissionLevels = [-1];
         this.kickMsg = "";
         this.afkTimer = 10 * 60 * 30; // check for afk
+        this.guild = "";
     }
 
     kick(msg) {
@@ -267,15 +268,20 @@ sellOre(oretype){
     } if (oretype == 'platinum' || oretype == 'all') {
         this.spoils("money", this.platinum);
         this.platinum = 0;
-    } if (oretype == 'aluminium' || oretype == 'all') {
-        this.spoils("money", this.aluminium);
-        this.aluminium = 0;
+    } if (oretype == 'copper' || oretype == 'all') {
+        this.spoils("money", this.copper);
+        this.copper = 0;
     }
     this.save();
 }
 
 dock() {
-    
+
+    if(typeof this.aluminium === "undefined") this.aluminium = 0;
+    if(typeof this.copper === "undefined") this.copper = 0;
+    this.copper += this.aluminium;
+    this.aluminium = 0;
+
     if (this.docked) { // undock if already docked. This toggles the player's dock status
         this.getAllPlanets(); // tell client what's out in the sector
         this.docked = false;
@@ -323,8 +329,8 @@ onMined(a) {
     //achievementy stuff
     if (this.oresMined == 15 && !this.moneyAchs[1]) this.moneyAchs[1] = true;
     else if (!this.moneyAchs[0]) this.moneyAchs[0] = true;
-    else if (!this.moneyAchs[2] && 4000 <= this.iron + this.silver + this.aluminium + this.platinum) this.moneyAchs[2] = true;
-    else if (!this.moneyAchs[3] && 15000 <= this.iron + this.silver + this.aluminium + this.platinum) this.moneyAchs[3] = true;
+    else if (!this.moneyAchs[2] && 4000 <= this.iron + this.silver + this.copper + this.platinum) this.moneyAchs[2] = true;
+    else if (!this.moneyAchs[3] && 15000 <= this.iron + this.silver + this.copper + this.platinum) this.moneyAchs[3] = true;
     else return;
     this.sendAchievementsCash(true);
 }
@@ -442,13 +448,13 @@ checkQuestStatus(touchingPlanet) {
     if (this.quest.type === 'Mining' && this.sx == this.quest.sx && this.sy == this.quest.sy) {
 
         //check the player has sufficient metal according to quest
-        if (this.quest.metal == 'aluminium' && this.aluminium < this.quest.amt) return;
+        if (this.quest.metal == 'copper' && this.copper < this.quest.amt) return;
         if (this.quest.metal == 'iron' && this.iron < this.quest.amt) return;
         if (this.quest.metal == 'silver' && this.silver < this.quest.amt) return;
         if (this.quest.metal == 'platinum' && this.platinum < this.quest.amt) return;
 
         //take the amount from them
-        if (this.quest.metal == 'aluminium') this.aluminium -= this.quest.amt;
+        if (this.quest.metal == 'copper') this.copper -= this.quest.amt;
         if (this.quest.metal == 'iron') this.iron -= this.quest.amt;
         if (this.quest.metal == 'silver') this.silver -= this.quest.amt;
         if (this.quest.metal == 'platinum') this.platinum -= this.quest.amt;

@@ -14,14 +14,13 @@ def main():
     for f in listdir(PATH):
         f = open(PATH + "/" + f, 'r')
         if isfile(f.name):
-            data = f'{data} {f.read()}'
+            data = f'{data}{f.read()}'
             remove(f.name)
         else:
             continue
 
     if len(data) != 0:
         # We need to post to discord
-        responses = 0
         for x in [data[i:i+1985] for i in range(0, len(data), 1985)]:
             send_webhook(x)
     else:

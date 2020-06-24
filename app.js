@@ -149,7 +149,7 @@ global.bulletWidth = 16; // collision radius
 let mineLifetime = 3; // mines despawn after this many minutes
 global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
 global.baseHealth = 5000; // max base health
-global.baseKillExp = 12000; // Exp reward for killing a base
+global.baseKillExp = 14000; // Exp reward for killing a base
 global.baseKillMoney = 250000; // ditto but money
 global.baseRegenSpeed = 2.5; // How many times faster bases regenerate health than players
 global.baseClaimRange = 1000; // How far you must be from a base (times ten) to get rewards
@@ -262,7 +262,7 @@ function updateQuests() {
 			let r = Math.random();
 			let r2 = Math.random();
 			let whatTeam = (Math.random()<.5)?colorSelect(teamColor,"blue","green","red"):colorSelect(teamColor,"green","red","blue");
-			let metals = ["aluminium", "silver", "platinum", "iron"];
+			let metals = ["copper", "silver", "platinum", "iron"];
 			let nm = 0;
 			if (i < 4) {
 				let dsxv = Math.floor(r2 * 100 % 1 * mapSz), dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
@@ -986,7 +986,7 @@ function update() {
 			if (player.isBot) continue;
 			if (tick % 12 == 0) { // LAG CONTROL
 				player.socket.emit('online', { lag: lag });
-				player.socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
+				player.socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper });
 			}
 			
 			player.socket.emit('update', {cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: gameState });
@@ -1002,7 +1002,7 @@ function update() {
 	for (let i in dockers) {
 		let player = dockers[i];
 		if (tick % 12 == 0) { // LAG CONTROL
-			player.socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, aluminium: player.aluminium });
+			player.socket.emit('you', { trail:player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper });
 			player.socket.emit('quests', { quests: teamQuests[player.color]});
 		}
 	}
