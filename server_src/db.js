@@ -130,6 +130,7 @@ global.savePlayerData = function (player) {
         iron : player.iron,
         silver : player.silver,
         platinum : player.platinum,
+        copper : player.copper,
         aluminium : player.aluminium,
         experience : player.experience,
         rank : player.rank,

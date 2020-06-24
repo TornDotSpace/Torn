@@ -112,7 +112,7 @@ let myxx1 = 0, myxx2 = 0, myxx3 = 0, myxx4 = 0;
 let myyy1 = 0, myyy2 = 0, myyy3 = 0, myyy4 = 0;
 let pscx = 0, pscy = 0, psga = 0;
 let bxo = 0, byo = 0, bx = 0, by = 0;
-let iron = 0, silver = 0, platinum = 0, aluminium = 0;
+let iron = 0, silver = 0, platinum = 0, copper = 0;
 let kills = 0, baseKills = 0, money = 0, experience = 0, rank = 0;
 let sx = 0, sy = 0;
 let docked = false, actuallyBuying = true;
@@ -369,7 +369,7 @@ function loadAllImages() {
 
 	// asteroids
 	loadImage("iron", '/img/space/iron.png');
-	loadImage("aluminium", '/img/space/aluminium.png');
+	loadImage("copper", '/img/space/copper.png');
 	loadImage("platinum", '/img/space/platinum.png');
 	loadImage("silver", '/img/space/silver.png');
 	loadImage("astUnderlayBlue", '/img/space/astUnderlayBlue.png');
@@ -604,7 +604,7 @@ function render() {
 		rDmg(r);
 		undoing = true;
 	}
-	if ((iron + platinum + aluminium + silver) / (ships[ship].capacity * c2) > .995) currAlert = mEng[1];
+	if ((iron + platinum + copper + silver) / (ships[ship].capacity * c2) > .995) currAlert = mEng[1];
 
 	let time1 = -performance.now();
 	time0 -= time1;
@@ -1019,31 +1019,26 @@ function rBuyShipWindow(){
 	}
 }
 function rOreShop(){
-	let info = {};
 	let mult1 = (myTrail % 16 == 2)?1.05:1;
-	let allIronPrice = iron * mult1, allSilverPrice = silver * mult1, allPlatinumPrice = platinum * mult1, allAluminiumPrice = aluminium * mult1;
-	info[4] = (iron > 0 ? mEng[133] : mEng[137]) + numToLS(iron) + " => $" + numToLS(allIronPrice) + " ($"+mult1+" " + mEng[155] + ")";
-	info[5] = (silver > 0 ? mEng[134] : mEng[138]) + numToLS(silver) + " => $" + numToLS(allSilverPrice) + " ($"+mult1+" " + mEng[155] + ")";
-	info[6] = (platinum > 0 ? mEng[135] : mEng[139]) + numToLS(platinum) + " => $" + numToLS(allPlatinumPrice) + " ($"+mult1+" " + mEng[155] + ")";
-	info[7] = (aluminium > 0 ? mEng[136] : mEng[140]) + numToLS(aluminium) + " => $" + numToLS(allAluminiumPrice) + " ($"+mult1+" " + mEng[155] + ")";
 
-	ctx.strokeStyle = 'white';
-	ctx.lineWidth = 1;
+	let allIronPrice = iron * mult1, allSilverPrice = silver * mult1, allPlatinumPrice = platinum * mult1, allCopperPrice = copper * mult1;
+
 	ctx.font = '14px ShareTech';
 	ctx.textAlign = "left";
 
-	for (let i = 4; i < 8; i++) {
-		switch(i){
-			case 4 :ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'brown'); break;
-			case 5 :ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'silver'); break;
-			case 6 :ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'purple'); break;
-			case 7 :ctx.fillStyle = ((i + 1 == seller) ? 'lime' : 'lightgrey'); break;
-		}
-		write(info[i], rx + 256 - 32, ry - 32 + i * 32);
-	}
+	ctx.fillStyle = (5 == seller) ? 'lime' : '#d44';
+	write((iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + numToLS(allIronPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 3 * 32);
+	ctx.fillStyle = (6 == seller) ? 'lime' : '#eef';
+	write((silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + numToLS(allSilverPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 4 * 32);
+	ctx.fillStyle = (7 == seller) ? 'lime' : '#90f';
+	write((platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + numToLS(allPlatinumPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 5 * 32);
+	ctx.fillStyle = (8 == seller) ? 'lime' : '#960';
+	write((copper > 0 ? mEng[136] : mEng[140]) + copper + " => $" + numToLS(allCopperPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 6 * 32);
 
 	ctx.fillStyle = seller == 610 ? 'lime' : 'yellow';
-	write(mEng[12] + " => $" + numToLS(allAluminiumPrice + allPlatinumPrice + allSilverPrice + allIronPrice), rx + 256 + 48, ry + 76); // Sell all
+
+	write(mEng[12] + " => $" + numToLS(allCopperPrice + allPlatinumPrice + allSilverPrice + allIronPrice), rx + 256 + 48, ry + 76); // Sell all
+
 
 	let d = new Date();
 	let stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
@@ -1163,7 +1158,7 @@ function rStats() {
 	let d = new Date();
 	let t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
 
-	let ore = iron + silver + platinum + aluminium;
+	let ore = iron + silver + platinum + copper;
 	let upgradeCosts = 0;
 	upgradeCosts += techEnergy(t2) + techEnergy(va2) + techEnergy(ag2) + techEnergy(c2) + techEnergy(mh2) + techEnergy(e2)*8;
 	let achievements = 0;
@@ -1910,7 +1905,7 @@ socket.on('you', function (data) {
 	kills = data.kills;
 	baseKills = data.baseKills;
 	iron = data.iron;
-	aluminium = data.aluminium;
+	copper = data.copper;
 	platinum = data.platinum;
 	silver = data.silver;
 	ship = data.ship;
@@ -2305,91 +2300,90 @@ document.onkeydown = function (event) {
 			ReactRoot.unfocusChat();
 			typing = false;
 		}
+		return;
 	}
-	else if (autopilot) return;
-	else {
-		if (event.keyCode == 13) {
-			ReactRoot.focusChat();
-			typing = true;
-		}
-		else if (event.keyCode == 78 && docked && tab == 8) { // n
-			confirmer = -1;
-			tab = 0;
-		}
-		else if (event.keyCode == 89 && docked && tab == 8) { // y
-			socket.emit('sellW', { slot: confirmer });
-			confirmer = -1;
-			tab = 0;
-		}
-		else if (event.keyCode == 66 && docked && tab == 7 && seller != 0 && actuallyBuying) { // b
-			socket.emit('buyW', { slot: scroll, weapon: seller - 20 });
-			tab = 0;
-		}
-		else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] != -2)
-			socket.emit('equip', { scroll: event.keyCode - 49 });
-		else if (event.keyCode == 48 && equipped[event.keyCode - 49] != -2)
-			socket.emit('equip', { scroll: 9 });
-		else if (event.keyCode === 83 || event.keyCode === 40) {//s
-			if (keys[1] != true) socket.emit('key', { inputId: 's', state: true });
-			keys[1] = true;
-		}
-		else if (event.keyCode === 192)//`
-			dev = !dev;
-		else if (event.keyCode === 77) {//m
-			useOldMap = !useOldMap;
-			r3DMap();
-		}
-		else if (event.keyCode === 69) {//e
-			if (keys[2] != true) socket.emit('key', { inputId: 'e', state: true });
-			keys[2] = true;
-		}
-		else if (event.keyCode === 87 || event.keyCode === 38) {//w
-			if (keys[3] != true) socket.emit('key', { inputId: 'w', state: true });
-			keys[3] = true;
-			didW = true;
-		}
-		else if (event.keyCode === 65 || event.keyCode === 37) {//a
-			if (keys[4] != true) socket.emit('key', { inputId: 'a', state: true });
-			keys[4] = true;
-			didSteer = true;
-		}
-		else if (event.keyCode === 68 || event.keyCode === 39) {//d
-			if (keys[5] != true) socket.emit('key', { inputId: 'd', state: true });
-			keys[5] = true;
-			didSteer = true;
-		}
-		else if (event.keyCode === 32) {//space
-			if (keys[6] != true) socket.emit('key', { inputId: ' ', state: true });
-			keys[6] = true;
-			if (equipped[scroll] < 0) badWeapon = 20;
-		}
-		else if (event.keyCode === 81) {//q
-			if (keys[7] != true) socket.emit('key', { inputId: 'q', state: true });
-			keys[7] = true;
-		}
-		else if (event.keyCode === 88 || event.keyCode === 27) {//x
-			if (dead) return;
-			qsx = qsy = qdsx = qdsy = -1;
-			if (keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
-			keys[8] = true;
-			ReactRoot.turnOffRegister("");
-			socket.emit('equip', { scroll: scroll });
-		}
-		else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
-			if (dead) return;
-			if (keys[9] != true) socket.emit('key', { inputId: 'c', state: true });
-			keys[9] = true;
-		}
-	}
-}
-document.onkeyup = function (event) {
 	if (login && !typing && event.keyCode === 80 && !docked) {
 		autopilot ^= true;
 		if(bigNotes[0] == -1)/*to prevent spam*/
 			addBigNote([256,"Autopilot "+(autopilot?"E":"Dise")+"ngaged!", "Press P to toggle.", ""]);
 		return;
-	} else if (autopilot)
+	}
+	if (autopilot)
 		return;
+	if (event.keyCode == 13) {
+		ReactRoot.focusChat();
+		typing = true;
+	}
+	else if (event.keyCode == 78 && docked && tab == 8) { // n
+		confirmer = -1;
+		tab = 0;
+	}
+	else if (event.keyCode == 89 && docked && tab == 8) { // y
+		socket.emit('sellW', { slot: confirmer });
+		confirmer = -1;
+		tab = 0;
+	}
+	else if (event.keyCode == 66 && docked && tab == 7 && seller != 0 && actuallyBuying) { // b
+		socket.emit('buyW', { slot: scroll, weapon: seller - 20 });
+		tab = 0;
+	}
+	else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] != -2)
+		socket.emit('equip', { scroll: event.keyCode - 49 });
+	else if (event.keyCode == 48 && equipped[event.keyCode - 49] != -2)
+		socket.emit('equip', { scroll: 9 });
+	else if (event.keyCode === 83 || event.keyCode === 40) {//s
+		if (keys[1] != true) socket.emit('key', { inputId: 's', state: true });
+		keys[1] = true;
+	}
+	else if (event.keyCode === 192)//`
+		dev = !dev;
+	else if (event.keyCode === 77) {//m
+		useOldMap = !useOldMap;
+		r3DMap();
+	}
+	else if (event.keyCode === 69) {//e
+		if (keys[2] != true) socket.emit('key', { inputId: 'e', state: true });
+		keys[2] = true;
+	}
+	else if (event.keyCode === 87 || event.keyCode === 38) {//w
+		if (keys[3] != true) socket.emit('key', { inputId: 'w', state: true });
+		keys[3] = true;
+		didW = true;
+	}
+	else if (event.keyCode === 65 || event.keyCode === 37) {//a
+		if (keys[4] != true) socket.emit('key', { inputId: 'a', state: true });
+		keys[4] = true;
+		didSteer = true;
+	}
+	else if (event.keyCode === 68 || event.keyCode === 39) {//d
+		if (keys[5] != true) socket.emit('key', { inputId: 'd', state: true });
+		keys[5] = true;
+		didSteer = true;
+	}
+	else if (event.keyCode === 32) {//space
+		if (keys[6] != true) socket.emit('key', { inputId: ' ', state: true });
+		keys[6] = true;
+		if (equipped[scroll] < 0) badWeapon = 20;
+	}
+	else if (event.keyCode === 81) {//q
+		if (keys[7] != true) socket.emit('key', { inputId: 'q', state: true });
+		keys[7] = true;
+	}
+	else if (event.keyCode === 88 || event.keyCode === 27) {//x
+		if (dead) return;
+		if(quest == 0) qsx = qsy = qdsx = qdsy = -1;
+		if (keys[8] != true) socket.emit('key', { inputId: 'x', state: true });
+		keys[8] = true;
+		ReactRoot.turnOffRegister("");
+		socket.emit('equip', { scroll: scroll });
+	}
+	else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {//c/v
+		if (dead) return;
+		if (keys[9] != true) socket.emit('key', { inputId: 'c', state: true });
+		keys[9] = true;
+	}
+}
+document.onkeyup = function (event) {
 	if (!login || tab == -1)
 		return;
 	if (event.keyCode === 83 || event.keyCode === 40) {//s
@@ -2592,7 +2586,7 @@ document.addEventListener('mousedown', function (evt) {
 		if (i == 5) item = 'iron';
 		else if (i == 6) item = 'silver';
 		else if (i == 7) item = 'platinum';
-		else if (i == 8) item = 'aluminium';
+		else if (i == 8) item = 'copper';
 		socket.emit('sell', { item: item });
 	} else if (docked && tab == 0 && my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) {
 		if (equipped[i - 10] == -1) {
@@ -3041,7 +3035,7 @@ function drawStar(ox, oy, spikes, outerRadius, innerRadius) {
 	ctx.fill();
 }
 function rTexts(lag, arr) {
-	let ore = iron + silver + platinum + aluminium;
+	let ore = iron + silver + platinum + copper;
 	ctx.font = '14px ShareTech';
 	ctx.textAlign = 'right';
 	ctx.fillStyle = 'yellow';
@@ -3343,7 +3337,7 @@ function rCargo() {
 	if (quest.type === 'Mining') {
 		ctx.fillStyle = "#d44";
 		let metalWeHave = iron;
-		     if(quest.metal === "aluminium") { ctx.fillStyle = "#999"; metalWeHave = aluminium; }
+		     if(quest.metal ===    "copper") { ctx.fillStyle = "#960"; metalWeHave = copper; }
 		else if(quest.metal ===  "platinum") { ctx.fillStyle = "#90f"; metalWeHave = platinum; }
 		else if(quest.metal ===    "silver") { ctx.fillStyle = "#eef"; metalWeHave = silver; }
 		write(metalWeHave + "/" + quest.amt + " " + quest.metal,248,16);
@@ -3360,15 +3354,15 @@ function rCargo() {
 	ctx.strokeRect(224,8,16,208);
 
 	let myCapacity = ships[ship].capacity * c2;
-	if(ship == 17) myCapacity = iron+platinum+silver+aluminium; // because it has infinite cargo
+	if(ship == 17) myCapacity = iron+platinum+silver+copper; // because it has infinite cargo
 
 	let ironBarHeight =      iron*208/myCapacity;
 	let silvBarHeight =    silver*208/myCapacity;
-	let alumBarHeight = aluminium*208/myCapacity;
+	let alumBarHeight =    copper*208/myCapacity;
 	let platBarHeight =  platinum*208/myCapacity;
 
 	let runningY = 216-alumBarHeight;
-	ctx.fillStyle = "#777";
+	ctx.fillStyle = "#960";
 	ctx.fillRect(224,runningY,16,alumBarHeight);
 	
 	runningY -= platBarHeight;
@@ -3524,7 +3518,7 @@ function rRadar() {
 		if (va2 > 1.74) {
 			if (a.metal == 0) ctx.strokeStyle = ctx.fillStyle = '#d44';
 			else if (a.metal == 1) ctx.strokeStyle = ctx.fillStyle = '#eef';
-			else if (a.metal == 2) ctx.strokeStyle = ctx.fillStyle = '#777';
+			else if (a.metal == 2) ctx.strokeStyle = ctx.fillStyle = '#960';
 			else if (a.metal == 3) ctx.strokeStyle = ctx.fillStyle = '#90f';
 		}
 		if (va2 > 1.62) ctx.stroke();
@@ -3587,7 +3581,7 @@ function rFlash() {
 	ctx.globalAlpha = 1;
 }
 function rTut() {
-	let ore = iron + silver + platinum + aluminium;
+	let ore = iron + silver + platinum + copper;
 	let text = "";
 	let line2 = "";
 	ctx.save();
@@ -3960,7 +3954,7 @@ function rAsteroids() {
 	for (let selfo in astsInfo) {
 		selfo = astsInfo[selfo];
 
-		let img = (selfo.metal == 0 ? Img.iron : (selfo.metal == 3 ? Img.platinum : (selfo.metal == 1 ? Img.silver : Img.aluminium)));
+		let img = (selfo.metal == 0 ? Img.iron : (selfo.metal == 3 ? Img.platinum : (selfo.metal == 1 ? Img.silver : Img.copper)));
 		let rendX = selfo.x - px + w / 2 + scrx;
 		let rendY = selfo.y - py + h / 2 + scry;
 		let d = new Date();
