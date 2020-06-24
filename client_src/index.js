@@ -3089,7 +3089,7 @@ function numToLS(number){
 	let intnum = Math.floor(number);
 	let decimal = number - intnum;
 	let str = "";
-	if(decimal != 0) str = ".decimal";
+	if(decimal != 0) str = ".";
 	let count = 0;
 	while (decimal != 0 && Math.abs(decimal) > 0.0000000001){ //Just to ensure that we don't go too far.
 		let decint = Math.floor(decimal * 10);
