@@ -56,7 +56,9 @@ class Bot extends Player {
 
         //at random, fill my ammo or die if there are no enemies to fight
         if (enemies == 0 && Math.random() < .001) this.refillAllAmmo();
-        if (enemies == 0 && Math.random() < botDespawnRate) this.die();
+        let myDespawnRate = botDespawnRate;
+        if (this.brainwashedBy !== 0) myDespawnRate/=2;
+        if (enemies == 0 && Math.random() < myDespawnRate) this.die();
 
         if (target == 0) target = anyFriend;
 
