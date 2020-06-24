@@ -3089,13 +3089,13 @@ function numToLS(number){
 	let intnum = Math.floor(number);
 	let decimal = number - intnum;
 	let str = "";
-	if(decimal != 0) str = ".";
+	if(decimal != 0) str = ".decimal";
 	let count = 0;
-	while (decimal != 0){
+	while (decimal != 0 && Math.abs(decimal) > 0.0000000001){ //Just to ensure that we don't go too far.
 		let decint = Math.floor(decimal * 10);
 		let space = "";
 		switch(count){
-			case 0 : space = " ";count++; break;
+			case 0 : space = " "; count++; break;
 			case 1 : count++; break;
 			case 2 : space = ""; count=0; break;
 		}
@@ -3107,7 +3107,7 @@ function numToLS(number){
 		let space = "";
 		let next = Math.floor(intnum / 10); //Divides by 10
 		switch(count){
-			case 0 : space = "";count++; break;
+			case 0 : space = ""; count++; break;
 			case 1 : count++; break;
 			case 2 : if (next!=0){space = ",";} count=0; break;
 		}
