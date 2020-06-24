@@ -2613,8 +2613,9 @@ document.addEventListener('mouseup', function (evt) {
 	}
 }, false);
 
-document.addEventListener('mousewheel', function (evt) {
-	let d = Math.sign(evt.wheelDelta);
+canvas.addEventListener('wheel', function(){
+	if (typeof event=="undefined") return;
+	let d = -Math.sign(event.deltaY);
 	if (mx < 256 && my < 450) {
 		mapZoom*=d>0?.93:1.08;
 		mapZoom = Math.max(Math.min(mapZoom,1), .1);
@@ -2628,38 +2629,7 @@ document.addEventListener('mousewheel', function (evt) {
 	}
 	if ((equipped[scroll] > 0 && (docked || scroll - d < 0 || scroll - d >= equipped.length || equipped[scroll - d] < -1)) || equipped[scroll - d] == -2)
 		return;
-	socket.emit('equip', { scroll: scroll - d });
-}, false);
-$(document).keydown(function (event) {
-	if (event.ctrlKey == true && (event.which == '61' || event.which == '107' || event.which == '173' || event.which == '109' || event.which == '187' || event.which == '189')) event.preventDefault();
-});
-$(window).bind('mousewheel DOMMouseScroll', function (event) {
-	if (event.ctrlKey == true) event.preventDefault();
-}, { passive: false });
-
-
-//canvas. This one is for Firefox. Tell me if it works in other browsers too
-canvas.addEventListener('wheel', function(){
-	if (typeof event=="undefined") return;
-	let d = Math.sign(event.deltaY);
-	//if (event.deltaY>0){
-		if (mx < 256 && my < 450) {
-			mapZoom*=d>0?.93:1.08;
-			mapZoom = Math.max(Math.min(mapZoom,1), .1);
-			r3DMap();
-			return;
-		}
-		if (mx < 512 + 32 && my > h - 216) {
-			chatScroll = Math.max(0, Math.min(chatLength - 10, chatScroll + d));
-			rChat();
-			return;
-		}
-		if ((equipped[scroll] > 0 && (docked || scroll - d < 0 || scroll - d >= equipped.length || equipped[scroll - d] < -1)) || equipped[scroll - d] == -2){
-			return;
-		}
-	//}
 	socket.emit('equip', { scroll: (scroll - d) });
-
 });
 
 
