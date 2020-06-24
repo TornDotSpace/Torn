@@ -68,7 +68,7 @@ class Player {
 		this.iron = 0,
 		this.silver = 0,
 		this.platinum = 0,
-		this.aluminium = 0,
+		this.copper = 0,
 
 		//bot stuff
 		this.net = 0, // where the neural network is stored
@@ -357,11 +357,11 @@ class Player {
 			this.speed *= mult;
 			this.vx *= mult;
 			this.vy *= mult;
-		} else if (this.ship == 17 && this.iron >= 250 && this.silver >= 250 && this.aluminium >= 250 && this.platinum >= 250) { // Quarrier
+		} else if (this.ship == 17 && this.iron >= 250 && this.silver >= 250 && this.copper >= 250 && this.platinum >= 250) { // Quarrier
 			if(this.disguise > 0 || this.shield) return;
 			this.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
 			this.silver -= 250;
-			this.aluminium -= 250;
+			this.copper -= 250;
 			this.platinum -= 250;
 			let r = Math.random();
 			let a = new Asteroid(r, 1000, this.sx, this.sy, Math.floor(Math.random() * 4));
@@ -411,7 +411,7 @@ class Player {
 		this.botPlay(); // simulates a player and presses keys.
 
 		let amDrifting = this.e || this.gyroTimer > 0;
-		let ore = this.iron + this.silver + this.platinum + this.aluminium;
+		let ore = this.iron + this.silver + this.platinum + this.copper;
 
 		//In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
 		let newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1);

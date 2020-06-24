@@ -38,7 +38,7 @@ module.exports = class Package {
 
 			let amt = Math.floor(Math.random() * 2000) + 2000; // how much ore we're gonna give
 			if (contents == 'ore') {
-				let left = p.capacity - p.iron - p.aluminium - p.silver - p.platinum; // how much more cargo space they have
+				let left = p.capacity - p.iron - p.copper - p.silver - p.platinum; // how much more cargo space they have
 				if (amt > left) { // if they don't have enough cargo space for the ore we're about to give
 					amt = left; // give them as much as they can take
 					p.strongLocal("Cargo Bay Full", p.x, p.y + 256); //tell them they have no room left
@@ -46,7 +46,7 @@ module.exports = class Package {
 				amt /= 4; // give them some of each
 				p.iron += amt
 				p.platinum += amt;
-				p.aluminium += amt;
+				p.copper += amt;
 				p.silver += amt;
 			}
 
