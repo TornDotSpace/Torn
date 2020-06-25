@@ -408,9 +408,9 @@
 			"range":1000000,
 			"damage":-1,
 			"speed":-1,
-			"charge":100,
+			"charge":50,
 			"price":4000,
-			"ammo":3,
+			"ammo":-1,
 			"level":6,
 			"order":24,
 			"type":"Beam",
@@ -457,7 +457,7 @@
 		},
 		{
 			"name":"Jammer",
-			"range":25,
+			"range":40,
 			"damage":0,
 			"speed":-1,
 			"charge":20,
@@ -609,6 +609,19 @@
 			"level":8,
 			"order":45,
 			"type":"Misc",
+			"bot":false
+		},
+		{
+			"name":"Lepton Pulse",
+			"range":10000,
+			"damage":10,
+			"speed":-1,
+			"charge":8,
+			"price":45000,
+			"ammo":300,
+			"level":12,
+			"order":47,
+			"type":"Blast",
 			"bot":false
 		}
 	],

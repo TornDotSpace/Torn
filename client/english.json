@@ -551,6 +551,10 @@
 		{
 			"name":"Sentry",
 			"desc":"A small turret which fires a machine gun. As well as with normal turrets, there can only be 1 Sentry, or turret, at the time in the sector."
+		},
+		{
+			"name":"Lepton Pulse",
+			"desc":"A small, repeated fire Muon Ray. Compared with its big counterpart, it deals far less damage, but shots far faster."
 		}
 	],
 	"splashes":[
