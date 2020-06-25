@@ -797,9 +797,11 @@ function r3DMap() {
 			let cz = (dot1.z+dot4.z)/2;
 
 			let ga = .75;
+
 			if (!useOldMap) // Sectors dynamically transparent
-				ga = Math.min(1,48*square(square(square(-cz/400+.5))));
+				ga = Math.max(0.3,Math.min(1,50*square(square(square(-cz/400+.5)))));
 			//if(ga<.1) continue; dunno why this doesnt work
+
 			minictx.globalAlpha=ga;
 
 			let appliedZoom = useOldMap?1:mapZoom;
@@ -827,7 +829,7 @@ function r3DMap() {
 
 			//render sector labels
 			let fontsz = Math.hypot(xx3-xx2,yy3-yy2)/3;
-			if(ga > .3 && fontsz > 5 && baseMap2D[i][j]===0 && !(useOldMap && i*j!=0)){
+			if(ga > .31 && fontsz > 5 && baseMap2D[i][j]===0 && !(useOldMap && i*j!=0)){
 				minictx.font = fontsz+"px ShareTech";
 				minictx.fillStyle = "white";
 				minictx.fillText(getSectorName(i,j), (xx2+xx3)/2+104, (yy2+yy3+fontsz*.65)/2+104);

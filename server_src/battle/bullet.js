@@ -61,7 +61,7 @@ module.exports = class Bullet {
 			for (let i in asts[this.sy][this.sx]) {
 				let a = asts[this.sy][this.sx][i];
 				if (squaredDist(a, this) < square(bulletWidth + 64)) { // if we collide
-					a.dmg(this.dmg * (this.wepnID == 0 ? 2 : 1), this); // hurt the asteroid. ternary: stock gun does double damage
+					a.dmg(this.dmg * (this.wepnID == 0 ? 2 : 1), this); // hurt the asteroid. ternary: Stock Gun does double damage.
 					a.vx += this.vx / 256; // push the asteroid
 					a.vy += this.vy / 256;
 					this.die(); // delete this bullet
