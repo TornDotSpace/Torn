@@ -3521,6 +3521,7 @@ function rRadar() {
 		}
 	}
 	let t = d.getTime() * 500;
+	ctx.fillStyle = "white";
 	for (let p_pack in playersInfo) {
 		let p = playersInfo[p_pack];
 		let dx = p.x - px;
