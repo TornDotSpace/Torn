@@ -151,7 +151,7 @@ global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies desp
 global.baseHealth = 5000; // max base health
 global.baseKillExp = 14000; // Exp reward for killing a base
 global.baseKillMoney = 250000; // ditto but money
-global.baseRegenSpeed = 2.5; // How many times faster bases regenerate health than players
+global.baseRegenSpeed = 2.6; // How many times faster bases regenerate health than players
 global.baseClaimRange = 1000; // How far you must be from a base (times ten) to get rewards
 global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
@@ -187,6 +187,7 @@ let broadcastMsg=0;
 
 
 //Object lists. All of them are in Y-MAJOR ORDER.
+global.guildPlayers = {};
 global.sockets = {}; // network
 global.players = new Array(mapSz); // in game
 global.dockers = {}; // at a base
@@ -507,6 +508,10 @@ function update() {
 	let d = new Date();
 	let lagTimer = d.getTime();
 	updateQuests();
+
+	guildPlayers = {};
+	for(let g in guildList)
+		guildPlayers[g] = {};
 
 	for(let i = 0; i < mapSz; i++)
 		for(let j = 0; j < mapSz; j++)
@@ -1091,7 +1096,10 @@ function updateHeatmap() {
 		hmap[i][j]=Math.floor(r*256)*0x10000+Math.floor(g*256)*0x100+Math.floor(b*256)+a;
 	}
 
-	for (let i in lb) lb[i].socket.emit('heatmap', { hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen});
+	for (let i in lb){
+		let myGuild = guildPlayers[lb[i].guild];
+		lb[i].socket.emit('heatmap', { myGuild: myGuild, hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen});
+	}
 }
 
 function idleSocketCheck() {
