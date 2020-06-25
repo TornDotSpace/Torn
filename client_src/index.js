@@ -3112,8 +3112,7 @@ function numToLS(x){
 	if(x == 0) return "0";
 	let intx = Math.floor(x);
 	let decimal = x-intx;
-	let str = parseFloat(decimal.toFixed(4));
-	if (str == 0) str = "";
+	let str = (""+parseFloat(decimal.toFixed(4))).substring(1);
 	x=intx;
 	while(x!=0){
 		let nextBit = ""+x%1000;
