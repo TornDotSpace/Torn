@@ -211,13 +211,21 @@ let didW = false, didSteer = false, currTut = 0;
 let sectorPoints = 0;
 
 let wepns = jsn.weapons, ships = jsn.ships;
-for (let j = 0; j < wepns.length - 1; j++)//this nifty loop sorts weapons by ship
-	if (wepns[weaponWithOrder(j)].type === wepns[weaponWithOrder(j + 1)].type && wepns[weaponWithOrder(j)].level > wepns[weaponWithOrder(j + 1)].level) {
-		let woj = weaponWithOrder(j), woj1 = weaponWithOrder(j + 1);
+
+let weaponTypeOrder = {"Gun":0, "Mine":1, "Missile":2, "Beam":3, "Orb":4, "Blast":5, "Misc":6}
+for (let j = 0; j < wepns.length; j++) {
+	wepns[j].order = j;
+}
+for (let j = 0; j < wepns.length - 1; j++) { //this nifty loop sorts weapons by ship
+	let woj = weaponWithOrder(j), woj1 = weaponWithOrder(j + 1);
+	let typeJ = weaponTypeOrder[wepns[woj].type], typeJ1 = weaponTypeOrder[wepns[woj1].type];
+	if (typeJ > typeJ1 || (wepns[woj].level > wepns[woj1].level && typeJ == typeJ1)) {
 		wepns[woj].order = j + 1;
 		wepns[woj1].order = j;
 		j = 0;
 	}
+}
+
 wepns[-2] = { name: "" };
 wepns[-1] = { name: mEng[0] };
 
@@ -789,9 +797,11 @@ function r3DMap() {
 			let cz = (dot1.z+dot4.z)/2;
 
 			let ga = .75;
+
 			if (!useOldMap) // Sectors dynamically transparent
-				ga = Math.min(1,48*square(square(square(-cz/400+.5))));
+				ga = Math.max(0.3,Math.min(1,50*square(square(square(-cz/400+.5)))));
 			//if(ga<.1) continue; dunno why this doesnt work
+
 			minictx.globalAlpha=ga;
 
 			let appliedZoom = useOldMap?1:mapZoom;
@@ -819,7 +829,7 @@ function r3DMap() {
 
 			//render sector labels
 			let fontsz = Math.hypot(xx3-xx2,yy3-yy2)/3;
-			if(ga > .3 && fontsz > 5 && baseMap2D[i][j]===0 && !(useOldMap && i*j!=0)){
+			if(ga > .31 && fontsz > 5 && baseMap2D[i][j]===0 && !(useOldMap && i*j!=0)){
 				minictx.font = fontsz+"px ShareTech";
 				minictx.fillStyle = "white";
 				minictx.fillText(getSectorName(i,j), (xx2+xx3)/2+104, (yy2+yy3+fontsz*.65)/2+104);
@@ -2726,7 +2736,7 @@ function cerp(a, b, w) {
 	return lerp(a,b,fancyweight);
 }
 function expToLife() {
-	return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-experience / 15000.)) + Math.atan(experience / 150000.) - .5)) + 500;
+	return Math.floor(guest ? 0 : 400000 * Math.atan(experience / 300000.)) + 500;
 }
 function abbrevInt(x) {
 	if (x < 10000) return "" + Math.round(x);
@@ -3511,6 +3521,7 @@ function rRadar() {
 		}
 	}
 	let t = d.getTime() * 500;
+	ctx.fillStyle = "white";
 	for (let p_pack in playersInfo) {
 		let p = playersInfo[p_pack];
 		let dx = p.x - px;

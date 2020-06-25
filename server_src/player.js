@@ -199,7 +199,7 @@ class Player {
 			// <= 17: Traditional Mines
 			else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades" || wep.name === "Pulse Mine" || wep.name === "Campfire") this.shootMine();
 			else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") this.shootOrb();
-			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray") this.shootBlast(wepId);
+			else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray" || wep.name === "Lepton Pulse") this.shootBlast(wepId);
 
 
 
@@ -886,7 +886,7 @@ class Player {
 		
 		if (this.ship == 19) for (let i in players[this.sy][this.sx]){
 			let p = players[this.sy][this.sx][i];
-			if(p.id !== this.id) p.EMP(15);
+			if(p.id !== this.id&& p.color == this.owner.color) p.EMP(15);
 		}
 		
 		this.kills++;

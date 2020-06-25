@@ -25,15 +25,16 @@ module.exports = class Blast {
 				let fy = player.y - Math.sin(this.angle) * pDist;
 				if (Math.hypot(fx - this.bx, fy - this.by) < ships[player.ship].width * 2 / 3) this.hit(player);
 			}
-
-			/*for(let i in asts[this.sy][this.sx]){
-				let ast = asts[this.sy][this.sx][i];
-				if((this.bx-ast.x) * Math.cos(this.angle) + (this.by-ast.y) * Math.sin(this.angle) > 0) continue;
-				let pDist = Math.hypot(ast.x - this.bx, ast.y - this.by);
-				let fx = ast.x - Math.cos(this.angle) * pDist;
-				let fy = ast.y - Math.sin(this.angle) * pDist;
-				if(Math.hypot(fx-this.bx,fy-this.by) < 64*2/3) this.hit(ast);
-			} // not using this atm */
+			if(this.wepnID != 25){
+				for(let i in asts[this.sy][this.sx]){
+					let ast = asts[this.sy][this.sx][i];
+					if((this.bx-ast.x) * Math.cos(this.angle) + (this.by-ast.y) * Math.sin(this.angle) > 0) continue;
+					let pDist = Math.hypot(ast.x - this.bx, ast.y - this.by);
+					let fx = ast.x - Math.cos(this.angle) * pDist;
+					let fy = ast.y - Math.sin(this.angle) * pDist;
+					if(Math.hypot(fx-this.bx,fy-this.by) < 64*2/3) ast.dmg(this.dmg, this); //hits the asteroid. Lepton will deal triple damage.
+				}
+			}
 
 			let base = bases[this.sy][this.sx];
 			if (base.color == this.owner.color || !base.turretLive) return;
@@ -46,7 +47,7 @@ module.exports = class Blast {
 	}
 	hit(b) {
 		if (this.wepnID == 25 && this.owner.color !== b.color) b.EMP(42); // emp blast
-		else if (this.wepnID == 34 && this.owner.color !== b.color) b.dmg(this.dmg, this); // muon
+		else if ((this.wepnID == 34 || this.wepnID == 47)&& this.owner.color !== b.color) b.dmg(this.dmg, this); // muon and lepton
 		else if (this.wepnID == 41) b.brainwashedBy = this.owner.id; // brainwashing laser
 	}
 };

@@ -24,7 +24,7 @@ constructor(socket) {
 }
 
 tick(){
-    if (this.guild !== "") guildPlayers[this.guild][this.id] = {sx:this.sx, sy:this.sy, x:this.x, y:this.y};
+    if (this.guild in guildPlayers) guildPlayers[this.guild][this.id] = {sx:this.sx, sy:this.sy, x:this.x, y:this.y};
     super.tick();
 }
 
