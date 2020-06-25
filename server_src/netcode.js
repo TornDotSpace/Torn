@@ -18,10 +18,6 @@ global.ipMuteTable = {};
 
 global.protocolVersion = undefined;
 
-function expToLife(exp, guest) { // how much a life costs, given your exp and whether you're logged in
-    return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-exp / 15000.)) + Math.atan(exp / 150000.) - .5)) + 500;
-}
-
 function runCommand(player, msg) { // player just sent msg in chat and msg starts with a /
     let toLower = msg.toLowerCase();
     let command = cmds[toLower.split(" ")[0]];

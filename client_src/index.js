@@ -2736,7 +2736,7 @@ function cerp(a, b, w) {
 	return lerp(a,b,fancyweight);
 }
 function expToLife() {
-	return Math.floor(guest ? 0 : 200000 * (1 / (1 + Math.exp(-experience / 15000.)) + Math.atan(experience / 150000.) - .5)) + 500;
+	return Math.floor(guest ? 0 : 400000 * Math.atan(experience / 300000.)) + 500;
 }
 function abbrevInt(x) {
 	if (x < 10000) return "" + Math.round(x);

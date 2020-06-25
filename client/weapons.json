@@ -570,10 +570,9 @@
 			"damage":10,
 			"speed":-1,
 			"charge":8,
-			"price":45000,
+			"price":25000,
 			"ammo":300,
-			"level":12,
-			"order":47,
+			"level":8,
 			"type":"Blast",
 			"bot":false
 		}
