@@ -2,35 +2,40 @@ let Player = require('./player.js');
 let Package = require("./universe/package.js");
 
 class PlayerMP extends Player {
-    constructor(socket) {
-        super(socket.id);
+constructor(socket) {
+    super(socket.id);
 
-        socket.player = this;
-        this.socket = socket;
+    socket.player = this;
+    this.socket = socket;
+    this.guild = "";
 
-        this.ip = 0;
-        this.chatTimer = 100;
-        this.muteCap = 750;
-        this.globalChat = 0;
-        this.lastmsg = "";
+    this.ip = 0;
+    this.chatTimer = 100;
+    this.muteCap = 750;
+    this.globalChat = 0;
+    this.lastmsg = "";
 
-        this.reply = "nobody"; // last person to pm / who pmed me
-        this.lastLogin = new Date();
+    this.reply = "nobody"; // last person to pm / who pmed me
+    this.lastLogin = new Date();
 
-        this.permissionLevels = [-1];
-        this.kickMsg = "";
-        this.afkTimer = 10 * 60 * 30; // check for afk
-        this.guild = "";
-    }
+    this.permissionLevels = [-1];
+    this.kickMsg = "";
+    this.afkTimer = 10 * 60 * 30; // check for afk
+}
 
-    kick(msg) {
-		this.kickMsg = msg;
-		this.emit("kick", { msg: msg });
-        this.socket.disconnect();
-        delete players[this.sy][this.sx][this.id];
-    }
+tick(){
+    if (this.guild !== "") guildPlayers[this.guild][this.id] = {sx:this.sx, sy:this.sy, x:this.x, y:this.y};
+    super.tick();
+}
+
+kick(msg) {
+	this.kickMsg = msg;
+	this.emit("kick", { msg: msg });
+    this.socket.disconnect();
+    delete players[this.sy][this.sx][this.id];
+}
     
-    swap(msg) { // msg looks like "/swap 2 5". Swaps two weapons.
+swap(msg) { // msg looks like "/swap 2 5". Swaps two weapons.
     if (!this.docked) {
         this.emit("chat", { msg: "You must be docked to use that command!" });
         return;

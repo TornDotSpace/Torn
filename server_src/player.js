@@ -129,7 +129,7 @@ class Player {
 	tick() {
 
 		//timer business
-		if (this.killStreakTimer-- < 0) this.killStreak = 0; // EDIT AT YOUR PERIL. Sensitive to off-by-ones.
+		if (this.killStreakTimer-- < 0) this.killStreak = 0; // Sensitive to off-by-ones.
 		if (this.borderJumpTimer > 0) this.borderJumpTimer--;
 		this.superchargerTimer--;
 		this.empTimer--;

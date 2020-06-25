@@ -124,6 +124,7 @@ let afk = false;
 
 let baseMap2D = {}
 let planetMap2D = {}
+let myGuild = {};
 let useOldMap = false;
 
 let chatLength = 40, chatScroll = 0, globalChat = 0, preChatArr = {}, chati = 0;
@@ -728,6 +729,17 @@ function ammoCodeToString(code) {
 	if (code == -2) return mEng[154];
 	else return "";
 }
+function constructMyGuild(data){
+	myGuild = {};
+	for(let i = 0; i < mapSz; i++) {
+		myGuild[i] = {};
+		for(let j = 0; j < mapSz; j++) myGuild[i][j] = {};
+	}
+	for(let m in data) {
+		let member = data[m];
+		myGuild[member.sy][member.sx][m] = {x:member.x, y:member.y};
+	}
+}
 function r3DMap() {
 	if(sectorPoints == 0) return;
 
@@ -862,6 +874,18 @@ function r3DMap() {
 				minictx.fillRect(104+cx+xxp1+xxp2-2,104+cy+yyp1+yyp2-2,4,4);
 			}
 
+			for(let m in myGuild[j][i]){
+				let member = myGuild[j][i][m];
+				let planX = member.x/sectorWidth;
+				let planY = member.y/sectorWidth;
+				let xxp1 = lerp(xx1,xx4,(planX+planY)/2)-cx;
+				let yyp1 = lerp(yy1,yy4,(planX+planY)/2)-cy;
+				let xxp2 = lerp(xx3,xx2,(-planX+1+planY)/2)-cx;
+				let yyp2 = lerp(yy3,yy2,(-planX+1+planY)/2)-cy;
+				minictx.fillStyle = brighten(pc);
+				minictx.fillRect(104+cx+xxp1+xxp2-2,104+cy+yyp1+yyp2-2,4,4);
+			}
+
 			if(va2 > 1.9){
 				if(Math.floor(bx*mapSz) == i && Math.floor(by*mapSz) == j){ // render wormhole
 					minictx.strokeStyle = 'white';
@@ -962,7 +986,7 @@ function paste3DMap(xp,yp) {
 	let yyp2 = lerp(myyy3,myyy2,(-px/sectorWidth+1+py/sectorWidth)/2)-pscy;
 	ctx.fillStyle = brighten(pc);
 	ctx.globalAlpha = psga;
-	ctx.fillRect(xp+104+pscx+xxp1+xxp2-2, yp+104+pscy+yyp1+yyp2-2, 4, 4);
+	ctx.fillRect(xp+104+pscx+xxp1+xxp2-3, yp+104+pscy+yyp1+yyp2-3, 6, 6);
 	ctx.fillStyle = "yellow";
 	ctx.globalAlpha = 1;
 	ctx.font = "12px ShareTech";
@@ -1027,13 +1051,13 @@ function rOreShop(){
 	ctx.textAlign = "left";
 
 	ctx.fillStyle = (5 == seller) ? 'lime' : '#d44';
-	write((iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + numToLS(allIronPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 3 * 32);
+	write((iron > 0 ? mEng[133] : mEng[137]) + "$" + numToLS(allIronPrice), rx + 256 - 32, ry + 3 * 32);
 	ctx.fillStyle = (6 == seller) ? 'lime' : '#eef';
-	write((silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + numToLS(allSilverPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 4 * 32);
+	write((silver > 0 ? mEng[134] : mEng[138]) + "$" + numToLS(allSilverPrice), rx + 256 - 32, ry + 4 * 32);
 	ctx.fillStyle = (7 == seller) ? 'lime' : '#90f';
-	write((platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + numToLS(allPlatinumPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 5 * 32);
+	write((platinum > 0 ? mEng[135] : mEng[139]) + "$" + numToLS(allPlatinumPrice), rx + 256 - 32, ry + 5 * 32);
 	ctx.fillStyle = (8 == seller) ? 'lime' : '#960';
-	write((copper > 0 ? mEng[136] : mEng[140]) + copper + " => $" + numToLS(allCopperPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 6 * 32);
+	write((copper > 0 ? mEng[136] : mEng[140]) + "$" + numToLS(allCopperPrice), rx + 256 - 32, ry + 6 * 32);
 
 	ctx.fillStyle = seller == 610 ? 'lime' : 'yellow';
 
@@ -2107,6 +2131,7 @@ socket.on('heatmap', function (data) {
 	raidBlue = data.raidBlue;
 	raidGreen = data.raidGreen;
 	youi = parseInt(data.youi);
+	constructMyGuild(data.myGuild);
 	if (data.youi > 15)
 		lb[16] = { id: data.youi, name: myName, exp: experience, color: pc, rank: rank };
 	r3DMap();
@@ -3083,7 +3108,26 @@ function rTexts(lag, arr) {
 	ctx.textAlign = 'left';
 }
 
-function numToLS(number){
+function numToLS(x){
+	if(x == 0) return "0";
+	let intx = Math.floor(x);
+	let decimal = x-intx;
+	let str = parseFloat(decimal.toFixed(4));
+	if (str == 0) str = "";
+	x=intx;
+	while(x!=0){
+		let nextBit = ""+x%1000;
+		if(x<1000) str = nextBit + str;
+		else{
+			while(nextBit.length < 3) nextBit = "0"+nextBit;
+			str = "," + nextBit + str;
+		}
+		x=Math.floor(x/1000);
+	}
+	return str;
+}
+
+function numToLS2(number){
 	//return number.toLocaleString();
 	/*For some reason the above doesn't work in all the texts.*/
 	let intnum = Math.floor(number);

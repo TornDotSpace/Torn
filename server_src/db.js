@@ -66,7 +66,9 @@ global.loadPlayerData = async function (playerName, socket) {
         player.sy = baseMap[player.color][1];
     }
 
-    player.lastLogin = new Date(player.lastLogin);
+    if(!(player.guild in guildPlayers)) player.guild = ""; // This accounts for players with old/undefined guilds 
+
+    player.lastLogin = new Date(player.lastLogin); // this also exists in the login call in netcode, should we toss either?
     
     player.permissionLevels = [0];
     if (player.name.includes("O")) player.permissionLevels.push(30); // they're capital, it's fine

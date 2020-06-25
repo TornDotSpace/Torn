@@ -39,7 +39,12 @@ cmds["/help"] = new Command("/help - Displays commands & usages", EVERYONE, func
 });
 
 cmds["/me"] = new Command("/me <msg>", EVERYONE, function (player, msg) {
-	playerChat("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4), player.globalChat, player.color, player.guild);
+    playerChat("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4), player.globalChat, player.color, player.guild);
+});
+
+cmds["/myguild"] = new Command("/myguild - Tells you what guild you're in", EVERYONE, function (player, msg) {
+    if(player.guild === "") player.socket.emit("chat", { msg: "~`orange~`You aren't in a guild!"});
+    else player.socket.emit("chat", { msg: "~`orange~`Your guild is: " + player.guild });
 });
 
 cmds["/playerstats"] = new Command("/playerstats - See how many players are online", EVERYONE, function (player, msg) {
