@@ -1027,13 +1027,13 @@ function rOreShop(){
 	ctx.textAlign = "left";
 
 	ctx.fillStyle = (5 == seller) ? 'lime' : '#d44';
-	write((iron > 0 ? mEng[133] : mEng[137]) + iron + " => $" + numToLS(allIronPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 3 * 32);
+	write((iron > 0 ? mEng[133] : mEng[137]) + "$" + numToLS(allIronPrice), rx + 256 - 32, ry + 3 * 32);
 	ctx.fillStyle = (6 == seller) ? 'lime' : '#eef';
-	write((silver > 0 ? mEng[134] : mEng[138]) + silver + " => $" + numToLS(allSilverPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 4 * 32);
+	write((silver > 0 ? mEng[134] : mEng[138]) + "$" + numToLS(allSilverPrice), rx + 256 - 32, ry + 4 * 32);
 	ctx.fillStyle = (7 == seller) ? 'lime' : '#90f';
-	write((platinum > 0 ? mEng[135] : mEng[139]) + platinum + " => $" + numToLS(allPlatinumPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 5 * 32);
+	write((platinum > 0 ? mEng[135] : mEng[139]) + "$" + numToLS(allPlatinumPrice), rx + 256 - 32, ry + 5 * 32);
 	ctx.fillStyle = (8 == seller) ? 'lime' : '#960';
-	write((copper > 0 ? mEng[136] : mEng[140]) + copper + " => $" + numToLS(allCopperPrice) + " ($"+mult1+" " + mEng[155] + ")", rx + 256 - 32, ry + 6 * 32);
+	write((copper > 0 ? mEng[136] : mEng[140]) + "$" + numToLS(allCopperPrice), rx + 256 - 32, ry + 6 * 32);
 
 	ctx.fillStyle = seller == 610 ? 'lime' : 'yellow';
 
