@@ -3083,7 +3083,26 @@ function rTexts(lag, arr) {
 	ctx.textAlign = 'left';
 }
 
-function numToLS(number){
+function numToLS(x){
+	if(x == 0) return "0";
+	let intx = Math.floor(x);
+	let decimal = x-intx;
+	let str = parseFloat(decimal.toFixed(4));
+	if (str == 0) str = "";
+	x=intx;
+	while(x!=0){
+		let nextBit = ""+x%1000;
+		if(x<1000) str = nextBit + str;
+		else{
+			while(nextBit.length < 3) nextBit = "0"+nextBit;
+			str = "," + nextBit + str;
+		}
+		x=Math.floor(x/1000);
+	}
+	return str;
+}
+
+function numToLS2(number){
 	//return number.toLocaleString();
 	/*For some reason the above doesn't work in all the texts.*/
 	let intnum = Math.floor(number);
