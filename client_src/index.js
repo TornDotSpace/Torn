@@ -211,13 +211,21 @@ let didW = false, didSteer = false, currTut = 0;
 let sectorPoints = 0;
 
 let wepns = jsn.weapons, ships = jsn.ships;
-for (let j = 0; j < wepns.length - 1; j++)//this nifty loop sorts weapons by ship
-	if (wepns[weaponWithOrder(j)].type === wepns[weaponWithOrder(j + 1)].type && wepns[weaponWithOrder(j)].level > wepns[weaponWithOrder(j + 1)].level) {
-		let woj = weaponWithOrder(j), woj1 = weaponWithOrder(j + 1);
+
+let weaponTypeOrder = {"Gun":0, "Mine":1, "Missile":2, "Beam":3, "Orb":4, "Blast":5, "Misc":6}
+for (let j = 0; j < wepns.length; j++) {
+	wepns[j].order = j;
+}
+for (let j = 0; j < wepns.length - 1; j++) { //this nifty loop sorts weapons by ship
+	let woj = weaponWithOrder(j), woj1 = weaponWithOrder(j + 1);
+	let typeJ = weaponTypeOrder[wepns[woj].type], typeJ1 = weaponTypeOrder[wepns[woj1].type];
+	if (typeJ > typeJ1 || (wepns[woj].level > wepns[woj1].level && typeJ == typeJ1)) {
 		wepns[woj].order = j + 1;
 		wepns[woj1].order = j;
 		j = 0;
 	}
+}
+
 wepns[-2] = { name: "" };
 wepns[-1] = { name: mEng[0] };
 
