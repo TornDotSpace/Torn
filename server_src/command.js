@@ -47,6 +47,11 @@ cmds["/myguild"] = new Command("/myguild - Tells you what guild you're in", EVER
     else player.socket.emit("chat", { msg: "~`orange~`Your guild is: " + player.guild });
 });
 
+cmds["/guildlist"] = new Command("/guildlist - Tells you a list of all guilds", EVERYONE, function (player, msg) {
+    for(let g in guildList)
+        player.socket.emit("chat", { msg: "~`orange~`" + g });
+});
+
 cmds["/playerstats"] = new Command("/playerstats - See how many players are online", EVERYONE, function (player, msg) {
     player.socket.emit("chat", { msg: "~`orange~`" + guestCount + " guests, " + playerCount + " players, " + botCount + " bots." });
 });
@@ -111,6 +116,11 @@ cmds["/joinguild"] = new Command("/joinguild <guildName>", REGISTERED, function 
     }
     player.guild = guildName;
     player.socket.emit("chat", { msg: "Joined guild " + guildName + "!" });
+});
+
+cmds["/leaveguild"] = new Command("/leaveguild - Leave your current guild", REGISTERED, function (player, msg) {
+    player.socket.emit("chat", { msg: "Left guild " + player.guild + "!" });
+    player.guild = "";
 });
 
 cmds["/pm"] = new Command("/pm <player> <msg>", REGISTERED, function (player, msg) {
