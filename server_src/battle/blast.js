@@ -32,7 +32,7 @@ module.exports = class Blast {
 					let pDist = Math.hypot(ast.x - this.bx, ast.y - this.by);
 					let fx = ast.x - Math.cos(this.angle) * pDist;
 					let fy = ast.y - Math.sin(this.angle) * pDist;
-					if(Math.hypot(fx-this.bx,fy-this.by) < 64*2/3) ast.dmg(this.dmg * (this.wepnID == 47 ? 3 : 2), this); //hits the asteroid. Lepton will deal triple damage.
+					if(Math.hypot(fx-this.bx,fy-this.by) < 64*2/3) ast.dmg(this.dmg, this); //hits the asteroid.
 				}
 			}
 
