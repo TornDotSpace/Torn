@@ -170,7 +170,7 @@
 		},
 		{
 			"name":"Torpedo",
-			"range":3000,
+			"range":2500,
 			"damage":15,
 			"speed":180,
 			"charge":30,
