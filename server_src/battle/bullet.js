@@ -31,7 +31,7 @@ module.exports = class Bullet {
 		this.dist += wepns[this.wepnID].speed / 10;
 		if (this.wepnID == 28 && this.time > 25 * 3) { // gravity bomb has 3 seconds to explode
 			let base = bases[this.sy][this.sx];
-			if (squaredDist(base, this) < square(3500)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 350 units away
+			if (squaredDist(base, this) < square(5000)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 500 units away
 			this.dieAndMakeVortex(); // collapse into black hole
 		}
 		else if (this.dist > wepns[this.wepnID].range) this.die(); // out of range

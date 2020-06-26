@@ -122,7 +122,7 @@
 		},
 		{
 			"name":"Missile",
-			"range":1000,
+			"range":750,
 			"damage":20,
 			"speed":100,
 			"charge":12,
@@ -134,7 +134,7 @@
 		},
 		{
 			"name":"Heavy Missile",
-			"range":600,
+			"range":450,
 			"damage":60,
 			"speed":50,
 			"charge":25,
@@ -146,7 +146,7 @@
 		},
 		{
 			"name":"EMP Missile",
-			"range":750,
+			"range":600,
 			"damage":25,
 			"speed":100,
 			"charge":100,
