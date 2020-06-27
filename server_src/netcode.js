@@ -115,18 +115,19 @@ module.exports = function initNetcode() {
                 } catch (err) {
 
                     // Log data to help us perform bug triage
-
-                    console.error("Exception caught in player event " + the_event);
-
-                    console.error("==== TORN.SPACE ERROR REPORT ====\n"); 
-                    console.error("Error Time: " + new Date() + "\n");
-                    console.error("Event: " + the_event + "\n");
-                    console.error("Exception information: " + err + "\n");
-                    console.error("Trace: " + err.stack + "\n");
-
-                    // Eject the player from the game: we don't know if they're in a valid state
-                    socket.emit("kick", { msg: "Internal server error." });
-                    socket.disconnect();
+                    let crashReport = `==== TORN.SPACE ERROR REPORT ====\nError Time: ${new Date()}\n\Event: ${the_event}\n\Stack Trace: ${err.stack}`
+                    if (Config.getValue("debug", true))
+                    {
+                        console.error(crashReport);
+                    } else
+                    {
+                        send_rpc("/crash/", crashReport).finally(function()
+                        {
+                            // Eject the player from the game: we don't know if they're in a valid state
+                            socket.emit("kick", { msg: "Internal server error." });
+                            socket.disconnect();
+                        });
+                    }
                 }
             });
         };

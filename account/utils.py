@@ -2,6 +2,7 @@ from secrets import token_urlsafe
 import bcrypt
 from datetime import datetime
 from numpy import int32
+from discord_webhook import DiscordWebhook
 
 class Hash:
     '''
@@ -56,3 +57,8 @@ class TimedCache:
         # Remove all keys which expired
         for key in list(filter(lambda x : self.entries[x].has_expired(), self.entries)):
             del self.entries[key]
+
+def send_webhook(data):
+    for x in [data[i:i+1985] for i in range(0, len(data), 1985)]:
+        webhook = DiscordWebhook(url='https://discordapp.com/api/webhooks/699745801924247582/BJKcA2Dpa5I_ghWJ979BQFqMkVRTFdzihcF_nkJv9UyEJb0TsBVMn4UiXD36UZK-Ch8U', content=f'```bash\n{x}```')
+        response = webhook.execute()
