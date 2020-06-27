@@ -2419,7 +2419,7 @@ document.onkeydown = function (event) {
 	}
 }
 document.onkeyup = function (event) {
-	if (!login || tab == -1)
+	if (!login || tab == -1 || autopilot)
 		return;
 	if (event.keyCode === 83 || event.keyCode === 40) {//s
 		keys[1] = false;

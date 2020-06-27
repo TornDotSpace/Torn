@@ -208,7 +208,6 @@ async die (b) { // b: bullet object or other object which killed us
 
         //give the killer stuff
     if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
-        b.owner.onKill(this);
 
         // Prevent farming and disincentivize targetting guests
         let other_ip = b.owner["ip"];
@@ -216,17 +215,17 @@ async die (b) { // b: bullet object or other object which killed us
         let award = !this.guest;
 
         if (award && other_ip !== undefined && other_ip == this.ip)
-        {
             award = false;
-        }
 
-        b.owner.spoils("experience", award ? (10 + diff * (this.color === b.owner.color ? -5 : 1)) : 0);
+        if (this.color === b.owner.color) b.owner.spoils("experience", award ? (10 + diff) : 0);
+        else b.owner.spoils("experience", -5 * Math.min(diff, self.experience*playerKillExpFraction));
         b.owner.spoils("money", b.owner.type === "Player" ? (award ? b.owner.killStreak*playerKillMoney : 0) : playerKillMoney);
 
         if (this.points > 0) { // raid points
             b.owner.points++;
             this.points--;
         }
+        b.owner.onKill(this);
     }
 
     this.hasPackage = false; // Maintained for onKill above
