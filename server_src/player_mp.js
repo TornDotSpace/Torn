@@ -510,7 +510,32 @@ checkQuestStatus(touchingPlanet) {
         this.moneyAchs[10] = true;
         this.sendAchievementsCash(true);
     }
+}
 
+getAllPlanets()
+{
+    let packHere = 0;
+    let planet = planets[this.sy][this.sx];
+    packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color };
+    this.emit('planets', { pack: packHere });
+
+}
+
+onKill(p) {
+    super.onKill(p);
+
+	//achievementy stuff
+	this.killsAchs[0] = this.kills >= 1;
+	this.killsAchs[1] = this.kills >= 10;
+	this.killsAchs[2] = this.kills >= 100;
+	this.killsAchs[3] = this.kills >= 1000;
+	this.killsAchs[4] = this.kills >= 4000;
+	this.killsAchs[5] = this.kills >= 10000;
+	if (p.trail != 0) this.killsAchs[6] = true;
+	if (p.hasPackage) this.killsAchs[10] = true;
+	if (p.name === this.name) this.killsAchs[11] = true;
+	else if (p.color === this.color) this.killsAchs[9] = true;
+	this.sendAchievementsKill(true);
 }
 
 };

@@ -872,8 +872,7 @@ class Player {
 		this.w = this.e = this.a = this.s = this.d = this.c = this.space = false;
 		if (!this.isBot) this.emit('emp', { t: t });
 	}
-	save() {
-	}
+	save() {}
 
 	onKill(p) {
 
@@ -890,21 +889,6 @@ class Player {
 		}
 		
 		this.kills++;
-
-		if (this.isBot) return;
-
-		//achievementy stuff
-		this.killsAchs[0] = this.kills >= 1;
-		this.killsAchs[1] = this.kills >= 10;
-		this.killsAchs[2] = this.kills >= 100;
-		this.killsAchs[3] = this.kills >= 1000;
-		this.killsAchs[4] = this.kills >= 4000;
-		this.killsAchs[5] = this.kills >= 10000;
-		if (p.trail != 0) this.killsAchs[6] = true;
-		if (p.hasPackage) this.killsAchs[10] = true;
-		if (p.name === this.name) this.killsAchs[11] = true;
-		else if (p.color === this.color) this.killsAchs[9] = true;
-		this.sendAchievementsKill(true);
 	}
 
 	// Player_MP stubs
@@ -918,14 +902,8 @@ class Player {
 	checkDriftAchs() {}
 	checkTrailAchs() {}
 	baseKilled() {}
-	
-	getAllPlanets() { // same, but with planets
-		if (this.isBot) return;
-		let packHere = 0;
-		let planet = planets[this.sy][this.sx];
-		packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color };
-		this.emit('planets', { pack: packHere });
-	}
+	getAllPlanets() {}
+
 	updatePolars() { // Convert my rectangular motion/position data to polar
 		this.driftAngle = Math.atan2(this.vy, this.vx);
 		this.speed = Math.sqrt(square(this.vy) + square(this.vx));
@@ -938,18 +916,14 @@ class Player {
 		sendWeapons(this);
 		this.strongLocal("Ammo Replenished!", this.x, this.y + 256);
 	}
-	testAfk() {
-		return false;
-	}
+	testAfk() {return false;}
 	calculateGenerators() { // count how many gens I have
 		this.generators = 0;
 		for (let slot = 0; slot < ships[this.ship].weapons; slot++)
 			if (this.weapons[slot] == 20) this.generators++;
 		if (this.ship <= wepns[20].level) this.generators = 0; // gotta have sufficiently high ship
 	}
-	spoils(type, amt) { // gives you something. Called wenever you earn money / exp / w/e
-		// STUBBED
-	}
+	spoils(type, amt) { /*gives you something. Called wenever you earn money / exp / w/e*/ }
 	nameWithoutTag(){
 		if(this.name.includes(" ")) return this.name.split(" ")[1];
 		return this.name;
