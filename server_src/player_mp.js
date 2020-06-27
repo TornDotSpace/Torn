@@ -535,7 +535,8 @@ onKill(p) {
 	if (p.hasPackage) this.killsAchs[10] = true;
 	if (p.name === this.name) this.killsAchs[11] = true;
 	else if (p.color === this.color) this.killsAchs[9] = true;
-	this.sendAchievementsKill(true);
+    this.sendAchievementsKill(true);
+    this.save();
 }
 
 };
