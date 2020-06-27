@@ -15,6 +15,17 @@ let configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
 require('./server_src/config.js')(configEnvironment);
 global.serverInitialized = false;
 
+global.saveTurrets = function () {
+	//save em
+	for (let i = 0; i < mapSz; i++)
+		for (let j = 0; j < mapSz; j++) {
+			let base = bases[i][j];
+			if (base != 0 && !base.isBase) {
+				base.save();
+			}
+		}
+}
+
 global.initReboot = function () {
 	console.log("\nInitializing server reboot...\n");
 	chatAll("~`#f00~`Server restarting in 120 seconds. Save your progress!");
@@ -28,18 +39,6 @@ global.initReboot = function () {
 	setTimeout(function () { chatAll("~`#f00~`Server restarting in 2..."); }, 118 * 1000);
 	setTimeout(function () { chatAll("~`#f00~`Server restarting in 1..."); }, 119 * 1000);
 	setTimeout(shutdown, 120 * 1000);
-}
-global.saveTurrets = function () {
-	//save em
-	let count = 0;
-	for (let i = 0; i < mapSz; i++)
-		for (let j = 0; j < mapSz; j++) {
-			let base = bases[i][j];
-			if (base != 0 && !base.isBase) {
-				base.save();
-				count++;
-			}
-		}
 }
 
 require('./server_src/netcode.js')();
@@ -334,7 +333,7 @@ function sigHandle() {
 			}
 		}
 	}
-	setTimeout(kill, 5000);
+	setTimeout(shutdown, 5000);
 }
 
 function onCrash(err) {
@@ -356,6 +355,8 @@ function onCrash(err) {
 			}
 		}
 	}
+
+	saveTurrets();
 
 	console.error("==== TORN.SPACE CRASH REPORT ====\n");
 	console.error("Crash Time: " + new Date() + "\n");
@@ -466,12 +467,6 @@ function spawnBases() {
 	}
 	console.log("\nBases Spawned!");
 }
-
-
-function kill() {
-	process.exit();
-}
-
 
 function createPlanet(name, sx, sy) {
 	let randA = Math.random();
@@ -1119,6 +1114,7 @@ function idleSocketCheck() {
 }
 
 function shutdown() {
+	saveTurrets();
 	process.exit();
 }
 

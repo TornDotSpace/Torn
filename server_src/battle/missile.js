@@ -131,7 +131,9 @@ module.exports = class Missile {
 		if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
 			let r = Math.random();
 			let bAngle = this.angle + r * 2 - 1;
-			let missile = new Missile(this.owner, r, 10, bAngle);
+			let wepid = 10; // Normal Missile
+			if(squaredDist(bases[this.sy][this.sx], this) < square(wepns[11].range * 10)) wepid = 11; // Heavy Missile
+			let missile = new Missile(this.owner, r, wepid, bAngle);
 			missile.x = this.x;
 			missile.y = this.y;
 			missile.sx = this.sx; // this is crucial, otherwise rings of fire happen
