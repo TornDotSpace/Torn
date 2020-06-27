@@ -8,6 +8,44 @@ class Bot extends Player {
         this.isBot = true;
         this.brainwashedBy = 0; // for enslaved bots
     }
+    flock(){
+        this.d = Math.random() < .1;
+        this.a = Math.random() < .1;
+        this.w = true;
+    }
+    goToOwner(){
+        let owner = 0;
+        for(let sy = 0; sy < mapSz; sy++)
+            for(let sx = 0; sx < mapSz; sx++)
+                if(this.brainwashedBy in players[sy][sx]){
+                    owner = players[sy][sx][this.brainwashedBy];
+                    break;
+                }
+        if (typeof owner === "undefined") return;
+        let myX = this.x + this.sx * sectorWidth;
+        let myY = this.y + this.sy * sectorWidth;
+        let theirX = owner.x + owner.sx * sectorWidth;
+        let theirY = owner.y + owner.sy * sectorWidth;
+        let turn = -(this.angle - Math.atan2(theirY - myY, theirX - myX) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+        this.d = turn > this.cva * this.cva * 10;
+        this.a = turn < -this.cva * this.cva * 10;
+        this.w = true;
+    }
+    flee(target){
+        let turn = -(this.angle - Math.atan2(target.y - this.y, target.x - this.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+        this.a = turn > this.cva * this.cva * 10;
+        this.d = turn < -this.cva * this.cva * 10;
+        this.w = this.s = true;
+    }
+    fight(target, close, range){
+        this.space = this.e = close < range * 1.2;
+        let isBase = target.type === "Base";
+        let turn = -(this.angle - calculateInterceptionAngle(target.x, target.y, isBase?0:target.vx, isBase?0:target.vy, this.x, this.y, wepns[this.equipped].speed) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+        this.d = turn > this.cva * this.cva * 10;
+        this.a = turn < -this.cva * this.cva * 10;
+        this.s = this.space && Math.abs(turn) > Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
+        this.w = Math.abs(turn) < Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
+    }
     botPlay() { // don't mess with this pls
         if (tick % 8 != Math.floor(this.id * 8)) return; // Lag prevention, also makes the bots a bit easier
         if (this.empTimer > 0) return;//cant move if i'm emp'd
@@ -29,29 +67,12 @@ class Bot extends Player {
             enemies++;
             let dist2 = hypot2(player.x, this.x, player.y, this.y);
             if (dist2 < close) {
-
-                // Nerf bots 
                 // Allow only low bots (0-3) to attack guests
                 // Bots will avoid attack players where the player is 7 or more levels lower than it
                 let nerfAmt = (player.guest) ? -4 : -7;
-
                 if (player.rank - this.rank <= nerfAmt) continue;
-
                 target = player; close = dist2;
-
             }
-
-        }
-
-        //Move towards the enemy
-        let movex = 0, movey = 0;
-        if (target != 0) { movex = target.x - this.x; movey = target.y - this.y; }
-
-        let base = bases[this.sy][this.sx];
-        if (base != 0 && base.color != this.color) {
-            let dist2 = hypot2(base.x, this.x, base.y, this.y);
-            if (friendlies > 0 && enemies == 0) target = base;
-            else if (dist2 < square(10 * sectorWidth / 2)) { movex = this.x - base.x; movey = this.y - base.y; }
         }
 
         //at random, fill my ammo or die if there are no enemies to fight
@@ -60,41 +81,13 @@ class Bot extends Player {
         if (this.brainwashedBy !== 0) myDespawnRate/=2;
         if (enemies == 0 && Math.random() < myDespawnRate) this.die();
 
-        if (target == 0) target = anyFriend;
+        let base = bases[this.sy][this.sx];
+        if (base != 0 && base.color != this.color) {target = base; enemies++;}
 
-        if (movex == 0 && movey == 0 && anyFriend == 0) {//flocking
-            this.d = Math.random() < .1;
-            this.a = Math.random() < .1;
-            this.w = true;
-            if (this.brainwashedBy != 0) {
-                let player = players[this.sy][this.sx][this.brainwashedBy];
-                if (typeof player === "undefined") return;
-                let myX = this.x + this.sx * sectorWidth;
-                let myY = this.y + this.sy * sectorWidth;
-                let theirX = player.x + player.sx * sectorWidth;
-                let theirY = player.y + player.sy * sectorWidth;
-                let turn = -(this.angle - Math.atan2(theirY - myY, theirX - myX) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
-                this.d = turn > this.cva * this.cva * 10;
-                this.a = turn < -this.cva * this.cva * 10;
-            }
-        } else if (target == 0) {//escaping base
-            let turn = -(this.angle - Math.atan2(base.y - this.y, base.x - this.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
-            this.a = turn > this.cva * this.cva * 10;
-            this.d = turn < -this.cva * this.cva * 10;
-            this.w = true;
-        } else if (anyFriend != 0 || (this.health < this.maxHealth / 3.5)) {//fleeing
-            let turn = -(this.angle - Math.atan2(target.y - this.y, target.x - this.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
-            this.a = turn > this.cva * this.cva * 10;
-            this.d = turn < -this.cva * this.cva * 10;
-            this.w = this.s = true;
-        } else {//fighting
-            this.space = this.e = close < range * 1.2;
-            let turn = -(this.angle - calculateInterceptionAngle(target.x, target.y, target.vx, target.vy, this.x, this.y, wepns[this.equipped].speed) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
-            this.d = turn > this.cva * this.cva * 10;
-            this.a = turn < -this.cva * this.cva * 10;
-            this.s = this.space && Math.abs(turn) > Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
-            this.w = Math.abs(turn) < Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
-        }
+        if (this.brainwashedBy !== 0 && (!(this.brainwashedBy in players[this.sy][this.sx]) || target == 0)) this.goToOwner();
+        else if (target == 0) this.flock();
+        else if ((this.health < this.maxHealth / 4 || enemies>friendlies*2+3) && this.brainwashedBy === 0) this.flee(target);
+        else this.fight(target, close, range);
     }
 
     async die (b) {
