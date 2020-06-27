@@ -422,7 +422,7 @@
 		},
 		{
 			"name":"Jammer",
-			"range":50,
+			"range":40,
 			"damage":0,
 			"speed":-1,
 			"charge":20,
