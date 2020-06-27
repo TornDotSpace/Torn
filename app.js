@@ -6,8 +6,42 @@
  * 						ALL RIGHTS RESERVED
  */
 
-let fs = require('fs');
+// Activate uncaught exception handler
+function onCrash(err) {
+	onCrash = function() { };
 
+	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
+
+	let plyrs = '';
+
+	for (let y in players) {
+		for (let x in players[y]) {
+			for (let id in players[y][x]) {
+				// Save & kick out
+				let player = players[y][x][id];
+				if (player.isBot) continue;
+				player.save();
+				player.kick("The server you are playing on has encountered a problem and needs to reset. You should be able to log back into the game and start exploring the universe almost immediately. :(");
+				plyrs = plyrs + player.name + ', ';
+			}
+		}
+	}
+
+	saveTurrets();
+
+	let crashReport = `==== TORN.SPACE CRASH REPORT ====\nCrash Time: ${new Date()}\nPlayers Online: ${plyrs}\nStack Trace: ${err.stack}`
+	if (Config.getValue("debug", true))
+	{
+		console.error(crashReport);
+	} else
+	{
+		send_rpc("/crash/", crashReport).finally(setTimeout(function() {process.exit(3); }, 4000));
+	}
+}
+
+process.on('uncaughtException', onCrash);
+
+let fs = require('fs');
 buildFileSystem(); // create folders for players, neural nets, and turrets if they dont exist
 
 // Load config 
@@ -41,8 +75,9 @@ global.initReboot = function () {
 	setTimeout(shutdown, 120 * 1000);
 }
 
-require('./server_src/netcode.js')();
 
+
+require('./server_src/netcode.js')();
 
 
 console.log("************************************************************************************************************************");
@@ -336,41 +371,7 @@ function sigHandle() {
 	setTimeout(shutdown, 5000);
 }
 
-function onCrash(err) {
-	onCrash = function() { };
-
-	console.log("[SERVER] Uncaught exception detected, kicking out players and terminating shard.");
-
-	let plyrs = '';
-
-	for (let y in players) {
-		for (let x in players[y]) {
-			for (let id in players[y][x]) {
-				// Save & kick out
-				let player = players[y][x][id];
-				if (player.isBot) continue;
-				player.save();
-				player.kick("The server you are playing on has encountered a problem and needs to reset. You should be able to log back into the game and start exploring the universe almost immediately. :(");
-				plyrs = plyrs + player.name + ', ';
-			}
-		}
-	}
-
-	saveTurrets();
-
-	console.error("==== TORN.SPACE CRASH REPORT ====\n");
-	console.error("Crash Time: " + new Date() + "\n");
-	console.error("Players online: " + plyrs + "\n");
-	console.error("Exception information: " + "\n");
-	console.error("Trace: " + err.stack + "\n");
-
-	// Exit with status code 3 to indicate uncaught exception
-	setTimeout(function() { process.exit(3); }, 4000);
-}
 function init() { // start the server!
-	// Activate uncaught exception handler
-	process.on('uncaughtException', onCrash);
-
 	// Add signal handlers
 	process.on('SIGINT', sigHandle);
 	process.on('SIGTERM', sigHandle);

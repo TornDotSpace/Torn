@@ -2,7 +2,7 @@ from aiohttp import web
 
 import asyncio
 import db
-from utils import Hash, TimedCacheEntry, generate_playcookie
+from utils import Hash, TimedCacheEntry, generate_playcookie, send_webhook
 from datetime import datetime, timedelta
 
 class PlayerCookie(TimedCacheEntry):
@@ -66,4 +66,8 @@ class TornRPCEndpoint:
         player_password = password_packet[split+1:]
 
         await db.change_password(player_username, player_password)
+        return web.Response()
+
+    async def handle_crash(self, request):
+        send_webhook(str(await request.content.read(), encoding='utf-8'))
         return web.Response()

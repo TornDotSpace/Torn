@@ -81,19 +81,6 @@ module.exports = class Vortex {
 			let a = angleBetween(p, this);
 			//then move them.
 			let guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
-/*
-			if (p.ship == 20 && !this.isWorm){ //Rank 20 approaching a black hole
-				if (dist < 60){
-					guestMult = -0.2; //Rank 20 will be pushed away from a black hole if too close.
-				}else{
-					if (dist > 70){
-						guestMult = 0.2; //Rank 20 will be weakly pulled to a black hole if too far. This is to allow the ship to escape the gravitational pull.
-					}else{
-						guestMult = 0; //Rank 20 won't be affected from a black hole at that distance.
-					}
-				}
-			}
-*/ 
 			p.x -= guestMult * .40 * this.size / dist * Math.cos(a);
 			p.y -= guestMult * .40 * this.size / dist * Math.sin(a);
 

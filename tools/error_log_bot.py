@@ -16,14 +16,7 @@ def main():
         if isfile(f.name):
             data = f'{data}{f.read()}'
             remove(f.name)
-        else:
-            continue
 
-    if len(data) != 0:
-        # We need to post to discord
-        for x in [data[i:i+1985] for i in range(0, len(data), 1985)]:
-            send_webhook(x)
-    else:
-        send_webhook("No errors encountered during last run.")
-
+    for x in [data[i:i+1985] for i in range(0, len(data), 1985)]:
+        send_webhook(x)
 main()

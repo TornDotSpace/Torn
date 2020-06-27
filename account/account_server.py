@@ -18,15 +18,16 @@ def __init__():
     cache = utils.TimedCache()
 
     print("*** Creating Internal RPC endpoint ***")
-    login_server = endpoint.TornRPCEndpoint(cache)
+    rpc_server = endpoint.TornRPCEndpoint(cache)
     print("*** Creating External API endpoint ***")
     api_endpoint = endpoint.TornLoginEndpoint(cache)
 
     app = web.Application()
     app.add_routes([web.post("/api/login/", api_endpoint.handle_recv),
-                    web.post("/rpc/login/", login_server.handle_login),
-                    web.post("/rpc/register/", login_server.handle_register),
-                    web.post("/rpc/reset/", login_server.handle_reset)
+                    web.post("/rpc/login/", rpc_server.handle_login),
+                    web.post("/rpc/register/", rpc_server.handle_register),
+                    web.post("/rpc/reset/", rpc_server.handle_reset),
+                    web.post("/rpc/crash/", rpc_server.handle_crash)
     ])
 
     # Configure default CORS settings.

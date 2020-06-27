@@ -797,11 +797,9 @@ function r3DMap() {
 			let cz = (dot1.z+dot4.z)/2;
 
 			let ga = .75;
-
 			if (!useOldMap) // Sectors dynamically transparent
-				ga = Math.max(0.3,Math.min(1,50*square(square(square(-cz/400+.5)))));
+				ga = Math.min(1,48*square(square(square(-cz/400+.5))));
 			//if(ga<.1) continue; dunno why this doesnt work
-
 			minictx.globalAlpha=ga;
 
 			let appliedZoom = useOldMap?1:mapZoom;
@@ -829,7 +827,7 @@ function r3DMap() {
 
 			//render sector labels
 			let fontsz = Math.hypot(xx3-xx2,yy3-yy2)/3;
-			if(ga > .31 && fontsz > 5 && baseMap2D[i][j]===0 && !(useOldMap && i*j!=0)){
+			if(ga > .3 && fontsz > 5 && baseMap2D[i][j]===0 && !(useOldMap && i*j!=0)){
 				minictx.font = fontsz+"px ShareTech";
 				minictx.fillStyle = "white";
 				minictx.fillText(getSectorName(i,j), (xx2+xx3)/2+104, (yy2+yy3+fontsz*.65)/2+104);
@@ -1210,11 +1208,9 @@ function rStats() {
 	let eMult = e2;
 	for (let i = 0; i < activeGens; i++) eMult *= 1.06;
 
-
 	let stats = [mEng[20] + numToLS(Number((ships[ship].thrust * t2).toPrecision(3))), mEng[22] + numToLS(Number((ships[ship].capacity * c2).toPrecision(3))), mEng[23] + numToLS(Number((ships[ship].health * mh2).toPrecision(3))), mEng[164] + numToLS(Number((eMult).toPrecision(3))), numToLS((kills - baseKills)) + mEng[51], numToLS(baseKills) + mEng[52], mEng[55] + numToLS(Number((worth + upgradeCosts).toPrecision(3))), mEng[56] + numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3))), numToLS(Math.round(experience)) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
 
 	for (let i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
-
 
 	ctx.fillStyle = seller == 700 ? "yellow" : "red";
 	write(mEng[165], rx + 512 + 128, ry + 44 + 64 - 1 * 16);
@@ -2419,7 +2415,7 @@ document.onkeydown = function (event) {
 	}
 }
 document.onkeyup = function (event) {
-	if (!login || tab == -1)
+	if (!login || tab == -1 || autopilot)
 		return;
 	if (event.keyCode === 83 || event.keyCode === 40) {//s
 		keys[1] = false;
@@ -3119,6 +3115,7 @@ function rTexts(lag, arr) {
 }
 
 function numToLS(x){
+	if(!Number.isFinite(x)) return "NaN";
 	if(x == 0) return "0";
 	let intx = Math.floor(x);
 	let decimal = x-intx;
@@ -3134,41 +3131,6 @@ function numToLS(x){
 		x=Math.floor(x/1000);
 	}
 	return str;
-}
-
-function numToLS2(number){
-	//return number.toLocaleString();
-	/*For some reason the above doesn't work in all the texts.*/
-	let intnum = Math.floor(number);
-	let decimal = number - intnum;
-	let str = "";
-	if(decimal != 0) str = ".";
-	let count = 0;
-	while (decimal != 0 && Math.abs(decimal) > 0.0000000001){ //Just to ensure that we don't go too far.
-		let decint = Math.floor(decimal * 10);
-		let space = "";
-		switch(count){
-			case 0 : space = " "; count++; break;
-			case 1 : count++; break;
-			case 2 : space = ""; count=0; break;
-		}
-		str += space + decint;
-		decimal= decimal * 10 - decint;
-	}
-	count = 0;
-	do{
-		let space = "";
-		let next = Math.floor(intnum / 10); //Divides by 10
-		switch(count){
-			case 0 : space = ""; count++; break;
-			case 1 : count++; break;
-			case 2 : if (next!=0){space = ",";} count=0; break;
-		}
-		str = space + (intnum%10) + str;
-		intnum = next;
-	}while (intnum != 0); //We wish to have "0" money, not "" money.
-
-	return str;	
 }
 
 function rCurrQuest() {
