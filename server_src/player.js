@@ -386,7 +386,7 @@ class Player {
 	}
 	reload(elite, wepId){
 		if(elite){
-			if(this.ship == 20) this.charge = -2000;
+			if(this.ship == 20) this.charge = -200;
 			if(this.ship == 18) this.charge = -wepns[39].charge;
 			if(this.ship == 19 && this.charge > -200) this.charge-=10;
 			if(this.ship == 17) this.charge = -150;
