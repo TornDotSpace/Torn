@@ -885,7 +885,7 @@ class Player {
 		
 		if (this.ship == 19) for (let i in players[this.sy][this.sx]){
 			let p = players[this.sy][this.sx][i];
-			if(p.id !== this.id&& p.color !== this.owner.color) p.EMP(15);
+			if(p.color !== this.color) p.EMP(15);
 		}
 		
 		this.kills++;
