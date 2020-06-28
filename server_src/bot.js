@@ -21,7 +21,10 @@ class Bot extends Player {
                     owner = players[sy][sx][this.brainwashedBy];
                     break;
                 }
-        if (typeof owner === "undefined") return;
+        if (typeof owner === "undefined" || owner === 0) {
+            this.isBrainwashedBy = 0;
+            return;
+        }
         let myX = this.x + this.sx * sectorWidth;
         let myY = this.y + this.sy * sectorWidth;
         let theirX = owner.x + owner.sx * sectorWidth;
