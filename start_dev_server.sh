@@ -1,5 +1,6 @@
 #!/bin/bash
 echo Starting mongod with journaling disabled on port 27017&
+mkdir db
 mongod --port 27017 --dbpath ./db --nojournal --bind_ip localhost&
 echo Building client
 npm install && npm run dev&
