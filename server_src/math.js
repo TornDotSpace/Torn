@@ -86,7 +86,7 @@ global.hypot2 = function (a, b, c, d) {
 	return square(a - b) + square(c - d);
 }
 global.expToLife = function(exp, guest) {
-	return Math.floor(guest ? 0 : 400000 * Math.atan(exp / 300000.)) + 500;
+	return Math.floor(guest ? 0 : 800000 * Math.atan(exp / 600000.)) + 500;
 }
 global.mod = function(n, m) { // used in findBisector
 	let remain = n % m;
