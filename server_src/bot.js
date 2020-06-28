@@ -38,8 +38,8 @@ class Bot extends Player {
         this.w = this.s = true;
     }
     fight(target, close, range){
-        this.space = this.e = close < range * 1.2;
         let isBase = target.type === "Base";
+        this.space = this.e = close < range * 1.2 || isBase;
         let turn = -(this.angle - calculateInterceptionAngle(target.x, target.y, isBase?0:target.vx, isBase?0:target.vy, this.x, this.y, wepns[this.equipped].speed) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
         this.d = turn > this.cva * this.cva * 10;
         this.a = turn < -this.cva * this.cva * 10;
