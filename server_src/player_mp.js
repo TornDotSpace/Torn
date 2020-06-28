@@ -170,7 +170,6 @@ async die (b) { // b: bullet object or other object which killed us
 
     this.empTimer = -1;
     this.killStreak = 0;
-    let diff = playerKillExpFraction * this.experience;
     this.leaveBaseShield = 25;
     this.refillAllAmmo();
 
@@ -208,24 +207,23 @@ async die (b) { // b: bullet object or other object which killed us
 
         //give the killer stuff
     if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
+        b.owner.onKill(this);
 
-        // Prevent farming and disincentivize targetting guests
+        // Award (or punish for teamkills)
+    	let diff = playerKillExpFraction * this.experience;
         let other_ip = b.owner["ip"];
+        if (!this.guest && !(other_ip !== undefined && other_ip == this.ip)){ // Only award them if their IP differs and they didn't kill a guest
+    	    if (this.color === b.owner.color) b.owner.spoils("experience", award ? (10 + diff) : 0);
+    	    else b.owner.spoils("experience", -5 * Math.min(diff, b.owner.experience*playerKillExpFraction)); // Punishment equals -5 times what the reward would have been, unless it's large in proportant to the punished person's exp
+        	b.owner.spoils("money", b.owner.type === "Player" ? b.owner.killStreak*playerKillMoney : playerKillMoney);
+    	}
 
-        let award = !this.guest;
-
-        if (award && other_ip !== undefined && other_ip == this.ip)
-            award = false;
-
-        if (this.color === b.owner.color) b.owner.spoils("experience", award ? (10 + diff) : 0);
-        else b.owner.spoils("experience", -5 * Math.min(diff, self.experience*playerKillExpFraction));
-        b.owner.spoils("money", b.owner.type === "Player" ? (award ? b.owner.killStreak*playerKillMoney : 0) : playerKillMoney);
-
+		if (this.color === b.owner.color && b.owner.type === "Player") b.owner.save(); // prevents people from logging out to get rid of their punishment
+        
         if (this.points > 0) { // raid points
             b.owner.points++;
             this.points--;
         }
-        b.owner.onKill(this);
     }
 
     this.hasPackage = false; // Maintained for onKill above
