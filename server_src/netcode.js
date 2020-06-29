@@ -81,7 +81,6 @@ module.exports = function initNetcode() {
     global.io = socketio(server, {
         serveClient: false,
         origins: "*:*",
-        timeout: 500,
         parser: msgpack
     });
 
