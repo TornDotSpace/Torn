@@ -2,26 +2,35 @@ function isOutOfBounds(obj) { // TODO this works but I'm not even using it anywh
 	return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 }
 
+let astCount = new Array(mapSz);
+
+for(let i = 0; i < mapSz; i++){
+	astCount[i] = new Array(mapSz);
+
+	for(let j = 0; j < mapSz; j++){
+		astCount[i][j] = 0;
+	}
+}
+
 class Asteroid {
-	constructor(i, h, sxx, syy, metal, natural) {
+	constructor(i, h, sx, sy, x, y, vx, vy, metal) {
 		this.type = "Asteroid",
 		this.id = i, // unique identifier
-		this.x = Math.floor(Math.random() * sectorWidth),
-		this.y = Math.floor(Math.random() * sectorWidth),
+		this.x = x,
+		this.y = y,
 		this.angle = 0,
 		this.health = h,
 		this.maxHealth = h,
-		this.sx = sxx,
-		this.sy = syy,
-		this.vx = 0,
-		this.vy = 0,
+		this.sx = sx,
+		this.sy = sy,
+		this.vx = vx,
+		this.vy = vy,
 		this.metal = metal,
 		this.va = (Math.random() - .5) / 10;
-		this.natural = natural;
 	}
-	
+
 	tick() {
-		let asteroidsHere = Object.keys(asts[this.sy][this.sx]).length;
+		let asteroidsHere = astCount[this.sy][this.sx];
 		this.health-=asteroidsHere/200; // decay asteroids so they don't get too bunched up in any one area
 		if(this.health < -50)this.die(0);
 		this.move();
@@ -63,10 +72,13 @@ class Asteroid {
 	die(b) {
 		// Bugfix for ion beam destroying multiple times
 		this.die = function () { };
-		if (this.natural)
+
+		// Prevent flooding of sectors with asteroids by only re-spawning if we've fallen below the sector min (8)
+		if (--astCount[this.sy][this.sx] < minSectorAsteroidCount)
 		{
 			createAsteroid(this.sx, this.sy);
 		}
+
 		delete asts[this.sy][this.sx][this.id];
 		if (b == 0) return;
 
@@ -123,12 +135,17 @@ class Asteroid {
 
 module.exports = Asteroid;
 
+global.spawnAsteroid = function (sx, sy, x, y, vx, vy, health, metal)
+{
+	let randId = Math.random();
+	let ast = new Asteroid(randId, health, sx, sy, x, y, vx, vy, metal);
+	asts[sy][sx][randId] = ast;
+	astCount[sy][sx]++;
+}
+
 global.createAsteroid = function (sx, sy) {
 	let vert = (sy + 1) / (mapSz + 1);
 	let hor = (sx + 1) / (mapSz + 1);
 	let metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
-	let randA = Math.random();
-	let h = Math.ceil(Math.random() * 1200 + 200);
-	let ast = new Asteroid(randA, h, sx, sy, metal, true);
-	asts[ast.sy][ast.sx][randA] = ast;
+	spawnAsteroid(sx, sy, Math.floor(Math.random() * sectorWidth), Math.floor(Math.random() * sectorWidth), 0, 0, Math.ceil(Math.random() * 1200 + 200), metal);
 }
