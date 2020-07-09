@@ -363,13 +363,7 @@ class Player {
 			this.silver -= 250;
 			this.copper -= 250;
 			this.platinum -= 250;
-			let r = Math.random();
-			let a = new Asteroid(r, 1000, this.sx, this.sy, Math.floor(Math.random() * 4));
-			a.x = this.x + Math.cos(this.angle) * 256;
-			a.y = this.y + Math.sin(this.angle) * 256;
-			a.vx = Math.cos(this.angle) * 15;
-			a.vy = Math.sin(this.angle) * 15;
-			asts[this.sy][this.sx][r] = a;
+			spawnAsteroid(this.sx, this.sy, this.x + Math.cos(this.angle) * 256, this.y + Math.sin(this.angle) * 256, Math.cos(this.angle) * 15, Math.sin(this.angle) * 15, Math.floor(Math.random() * 4));
 		} else if (this.ship == 18) {
 			if(this.disguise > 0 || this.shield) return;
 			this.shootBullet(39);
