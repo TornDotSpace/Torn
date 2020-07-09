@@ -67,7 +67,7 @@ module.exports = class Missile {
 	move() {
 
 		if (this.locked != 0)  {
-			if (this.lockedTimer++ > 10 * 25) this.die(); // if locked for >7s, die NOTE I just put it to 10 to see if time was the problem.
+			if (this.lockedTimer++ > missileLockTimeout) this.die();
 
 			let target = players[this.sy][this.sx][this.locked]; // try 2 find the target object
 			if (typeof target === 'undefined' && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
