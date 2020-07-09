@@ -4,10 +4,10 @@ require('../config.js')(configEnvironment);
 let fs = require('fs');
 
 global.serverInitialized = false;
-
+global.tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 //some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
-global.mineLifetime = 3; // mines despawn after this many minutes
+global.mineLifetime = 3 * tickRate * 60; // mines despawn after this many minutes (3)
 global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
 global.baseHealth = 4000; // max base health
 global.baseKillExp = 20000; // Exp reward for killing a base
@@ -21,6 +21,7 @@ global.playerLimit = 130; // A soft limit on the max number of players+bots+gues
 global.playerKillMoney = 2500;
 global.playerKillExpFraction = .04; // The amount of xp you steal from someone you kill
 global.minSectorAsteroidCount = 8;
+global.missileLockTimeout = 7 * tickRate; // if locked for >7s, die
 
 //Machine Learning
 global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
@@ -33,6 +34,7 @@ global.playerHeal = .2; // player healing speed
 global.baseHeal = 1; // base healing speed
 global.guestsCantChat = !Config.getValue("want_guest_chat", true);
 global.ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000]; // exp to rank conversion.
+global.afkTimerConst = 15 * tickRate * 60; // 15 minutes till we kick players for being afk
 
 global.tick = 0;
 global.playerCount = 0;

@@ -133,7 +133,6 @@ connectToDB();
 
 require('./server_src/bot.js');
 
-let tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 let broadcastMsg=0;
 let lag = 0, ops = 0; // ticks elapsed since boot, lag, count of number of instances of update() running at once
 let raidRed = 0, raidBlue = 0, raidGreen = 0; // Timer and points

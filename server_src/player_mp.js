@@ -20,7 +20,7 @@ constructor(socket) {
 
     this.permissionLevels = [-1];
     this.kickMsg = "";
-    this.afkTimer = 10 * 60 * 30; // check for afk
+    this.afkTimer = afkTimerConst; // used to check AFK status
 }
 
 tick(){

@@ -22,7 +22,7 @@ module.exports = class Mine {
 	tick() {
 		if (this.time == 0 && this.wepnID < 32) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
 		if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
-		if (this.time++ > 25 * 3 * 60) this.die(); // all mines die after 3 minutes
+		if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
 
 		this.move(); // not only grenade, anything EM'ed
 		if (this.wepnID == 43 && this.time % 8 == 0) this.doPulse(); // pulse
