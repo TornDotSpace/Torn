@@ -364,7 +364,7 @@ class Player {
 			this.copper -= 250;
 			this.platinum -= 250;
 			let r = Math.random();
-			let a = new Asteroid(r, 1000, this.sx, this.sy, Math.floor(Math.random() * 4), false);
+			let a = new Asteroid(r, 1000, this.sx, this.sy, Math.floor(Math.random() * 4));
 			a.x = this.x + Math.cos(this.angle) * 256;
 			a.y = this.y + Math.sin(this.angle) * 256;
 			a.vx = Math.cos(this.angle) * 15;
