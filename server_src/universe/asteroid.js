@@ -3,7 +3,7 @@ function isOutOfBounds(obj) { // TODO this works but I'm not even using it anywh
 }
 
 class Asteroid {
-	constructor(i, h, sxx, syy, metal) {
+	constructor(i, h, sxx, syy, metal, natural) {
 		this.type = "Asteroid",
 		this.id = i, // unique identifier
 		this.x = Math.floor(Math.random() * sectorWidth),
@@ -17,7 +17,9 @@ class Asteroid {
 		this.vy = 0,
 		this.metal = metal,
 		this.va = (Math.random() - .5) / 10;
+		this.natural = natural;
 	}
+	
 	tick() {
 		let asteroidsHere = Object.keys(asts[this.sy][this.sx]).length;
 		this.health-=asteroidsHere/200; // decay asteroids so they don't get too bunched up in any one area
@@ -61,7 +63,10 @@ class Asteroid {
 	die(b) {
 		// Bugfix for ion beam destroying multiple times
 		this.die = function () { };
-		createAsteroid(this.sx, this.sy);
+		if (this.natural)
+		{
+			createAsteroid(this.sx, this.sy);
+		}
 		delete asts[this.sy][this.sx][this.id];
 		if (b == 0) return;
 
@@ -124,6 +129,6 @@ global.createAsteroid = function (sx, sy) {
 	let metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
 	let randA = Math.random();
 	let h = Math.ceil(Math.random() * 1200 + 200);
-	let ast = new Asteroid(randA, h, sx, sy, metal);
+	let ast = new Asteroid(randA, h, sx, sy, metal, true);
 	asts[ast.sy][ast.sx][randA] = ast;
 }
