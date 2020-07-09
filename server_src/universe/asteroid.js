@@ -2,6 +2,16 @@ function isOutOfBounds(obj) { // TODO this works but I'm not even using it anywh
 	return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 }
 
+let astCount = new Array(mapSz);
+
+for(let i = 0; i < mapSz; i++){
+	astCount[i] = new Array(mapSz);
+
+	for(let j = 0; j < mapSz; j++){
+		astCount[i][j] = 0;
+	}
+}
+
 class Asteroid {
 	constructor(i, h, sx, sy, x, y, vx, vy, metal) {
 		this.type = "Asteroid",
@@ -131,4 +141,16 @@ global.createAsteroid = function (sx, sy) {
 	let hor = (sx + 1) / (mapSz + 1);
 	let metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
 	spawnAsteroid(sx, sy, Math.floor(Math.random() * sectorWidth), Math.floor(Math.random() * sectorWidth), 0, 0, Math.ceil(Math.random() * 1200 + 200), metal);
+	astCount[sx][sy]++;
+}
+
+global.printAstCount = function()
+{
+	for (var i = 0; i < mapSz; ++i)
+	{
+		for (var j = 0; j < mapSz; ++j)
+		{
+			console.log(astCount[i][j]);
+		}
+	}
 }
