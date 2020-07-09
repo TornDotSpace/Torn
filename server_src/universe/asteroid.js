@@ -30,7 +30,7 @@ class Asteroid {
 	}
 
 	tick() {
-		let asteroidsHere = Object.keys(asts[this.sy][this.sx]).length;
+		let asteroidsHere = astCount[this.sy][this.sx];
 		this.health-=asteroidsHere/200; // decay asteroids so they don't get too bunched up in any one area
 		if(this.health < -50)this.die(0);
 		this.move();
@@ -72,7 +72,13 @@ class Asteroid {
 	die(b) {
 		// Bugfix for ion beam destroying multiple times
 		this.die = function () { };
-		createAsteroid(this.sx, this.sy);
+
+		// Prevent flooding of sectors with asteroids by only re-spawning if we've fallen below the sector min (8)
+		if (--astCount[this.sy][this.sx] < minSectorAsteroidCount)
+		{
+			createAsteroid(this.sx, this.sy);
+		}
+
 		delete asts[this.sy][this.sx][this.id];
 		if (b == 0) return;
 
@@ -134,6 +140,7 @@ global.spawnAsteroid = function (sx, sy, x, y, vx, vy, health, metal)
 	let randId = Math.random();
 	let ast = new Asteroid(randId, health, sx, sy, x, y, vx, vy, metal);
 	asts[sy][sx][randId] = ast;
+	astCount[sy][sx]++;
 }
 
 global.createAsteroid = function (sx, sy) {
@@ -141,16 +148,4 @@ global.createAsteroid = function (sx, sy) {
 	let hor = (sx + 1) / (mapSz + 1);
 	let metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
 	spawnAsteroid(sx, sy, Math.floor(Math.random() * sectorWidth), Math.floor(Math.random() * sectorWidth), 0, 0, Math.ceil(Math.random() * 1200 + 200), metal);
-	astCount[sx][sy]++;
-}
-
-global.printAstCount = function()
-{
-	for (var i = 0; i < mapSz; ++i)
-	{
-		for (var j = 0; j < mapSz; ++j)
-		{
-			console.log(astCount[i][j]);
-		}
-	}
 }

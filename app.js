@@ -260,8 +260,7 @@ function init() { // start the server!
 	saveTurrets();
 
 	//make asteroids. Make 10 times the number of sectors.
-	for (let i = 0; i < mapSz * mapSz * 8; i++) createAsteroid(Math.floor(i/mapSz) % mapSz, i%mapSz);
-	printAstCount();
+	for (let i = 0; i < mapSz * mapSz * minSectorAsteroidCount; i++) createAsteroid(Math.floor(i/mapSz) % mapSz, i%mapSz);
 
 	//Make exactly one planet in each sector.
 	for (let s = 0; s < mapSz * mapSz; s++) {
