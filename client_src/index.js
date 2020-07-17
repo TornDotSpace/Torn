@@ -1058,27 +1058,31 @@ function rOreShop(){
 	ctx.font = '14px ShareTech';
 	ctx.textAlign = "left";
 
-	ctx.fillStyle = (5 == seller) ? 'lime' : '#d44';
+	ctx.fillStyle = (5 == seller && allIronPrice>0) ? 'lime' : '#d44';
 	write((iron > 0 ? mEng[133] : mEng[137]) + "$" + numToLS(allIronPrice), rx + 256 - 32, ry + 3 * 32);
-	ctx.fillStyle = (6 == seller) ? 'lime' : '#eef';
+	ctx.fillStyle = (6 == seller && allSilverPrice>0) ? 'lime' : '#eef';
 	write((silver > 0 ? mEng[134] : mEng[138]) + "$" + numToLS(allSilverPrice), rx + 256 - 32, ry + 4 * 32);
-	ctx.fillStyle = (7 == seller) ? 'lime' : '#90f';
+	ctx.fillStyle = (7 == seller && allPlatinumPrice>0) ? 'lime' : '#90f';
 	write((platinum > 0 ? mEng[135] : mEng[139]) + "$" + numToLS(allPlatinumPrice), rx + 256 - 32, ry + 5 * 32);
-	ctx.fillStyle = (8 == seller) ? 'lime' : '#960';
+	ctx.fillStyle = (8 == seller && allCopperPrice>0) ? 'lime' : '#960';
 	write((copper > 0 ? mEng[136] : mEng[140]) + "$" + numToLS(allCopperPrice), rx + 256 - 32, ry + 6 * 32);
 
 	ctx.fillStyle = seller == 610 ? 'lime' : 'yellow';
 
 	write(mEng[12] + " => $" + numToLS(allCopperPrice + allPlatinumPrice + allSilverPrice + allIronPrice), rx + 256 + 48, ry + 76); // Sell all
 
-
+	//Render asteroid animation
+	let astImg = Img.silver;
+	if (5 == seller && allIronPrice>0) astImg = Img.iron;
+	if (7 == seller && allPlatinumPrice>0) astImg = Img.platinum;
+	if (8 == seller && allCopperPrice>0) astImg = Img.copper;
 	let d = new Date();
 	let stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
 	let spx = (stime % 8) * 128;
 	let Secret = Math.floor((stime / 8) % 4) * 128;
 	ctx.save();
 	ctx.translate(rx + 128 - 16, ry + (256 - 32 - 40) / 2 + 40);
-	ctx.drawImage(Img.silver, spx, Secret, 128, 128, -64, -64, 128, 128);
+	ctx.drawImage(astImg, spx, Secret, 128, 128, -64, -64, 128, 128);
 	ctx.restore();
 }
 function rBuyLifeShop(){
