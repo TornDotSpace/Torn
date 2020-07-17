@@ -21,7 +21,7 @@
   "author": "The Torn.Space Team",
   "license": "All Rights Reserved",
   "devDependencies": {
-    "@babel/core": "^7.10.3",
+    "@babel/core": "^7.10.5",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-transform-runtime": "^7.10.5",
     "@babel/preset-env": "^7.10.4",
