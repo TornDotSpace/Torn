@@ -29,12 +29,13 @@ function load(lang) {
 
 global.loadLang = function (name) {
     let assigned = null;
+    /*
     if (location.href.includes("eng") || name == "eng") assigned = languagejson = eng;
     if (location.href.includes("frn") || name === "frn") assigned = languagejson = frn;
     if (location.href.includes("esp") || name === "esp") assigned = languagejson = esp;
     if (location.href.includes("pyc") || name === "pyc") assigned = languagejson = pyc;
     if (location.href.includes("deu") || name === "deu") assigned = languagejson = deu;
-
+    
     if (!assigned) {
         let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
@@ -57,7 +58,10 @@ global.loadLang = function (name) {
 
     if (languagejson == null) {
         languagejson = eng;
-    }
+    }*/
+
+    // Force English until other languages can be patched to work with client changes
+    assigned = languagejson = eng;
 
     languagejson = load(languagejson);
 
