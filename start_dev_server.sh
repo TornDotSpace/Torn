@@ -7,7 +7,6 @@ npm install && npm run dev&
 echo Starting Account Server
 ./account/account_server.py&
 npm install
-npm audit fix
 npm run dev
 echo
 echo
