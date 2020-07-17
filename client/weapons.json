@@ -851,7 +851,7 @@
 		},
 		{
 			"thrust":0.2,
-			"health":700,
+			"health":750,
 			"agility":0.25,
 			"width":192,
 			"price":10000000,
