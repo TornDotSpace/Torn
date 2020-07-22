@@ -850,7 +850,7 @@
 			"capacity":5000
 		},
 		{
-			"thrust":0.2,
+			"thrust":0.32,
 			"health":750,
 			"agility":0.25,
 			"width":192,
