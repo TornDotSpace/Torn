@@ -20,6 +20,7 @@ global.moneyPerRaidPoint = 300000;
 global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
 global.playerKillMoney = 2500;
 global.playerKillExpFraction = .04; // The amount of xp you steal from someone you kill
+global.playerKillMoneyFraction = .01; // The amount of money you steal from someone you kill
 global.minSectorAsteroidCount = 8;
 global.missileLockTimeout = 7 * tickRate; // if locked for >7s, die
 
@@ -33,7 +34,7 @@ global.botFrequency = trainingMode ? .0014 : .003;//higher: more bots spawn.
 global.playerHeal = .2; // player healing speed
 global.baseHeal = 1; // base healing speed
 global.guestsCantChat = !Config.getValue("want_guest_chat", true);
-global.ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000]; // exp to rank conversion.
+global.ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000, 200000000, 400000000, 1000000000]; // exp to rank conversion.
 global.afkTimerConst = 15 * tickRate * 60; // 15 minutes till we kick players for being afk
 
 global.tick = 0;
