@@ -2596,7 +2596,7 @@ document.addEventListener('mousedown', function (evt) {
 	if (i == 502) window.open('/leaderboard', '_blank');
 	if (i == 503) window.open('https://padlet.com/mchontz10/k2n7p1pnaxct', '_blank');
 	if (i == 504) window.open('https://www.youtube.com/channel/UCKsbC4GfoPOcyifiwW1GA4w', '_blank');
-	if (i == 505) window.open('https://discord.gg/wFsdUcY', '_blank');
+	if (i == 505) window.open('https://discord.gg/e9SYNg', '_blank');
 	if (i == 506) window.open('/credits', '_blank');
 	if (i == 601) {
 		tab = 7;
@@ -2718,7 +2718,7 @@ function square(x) {
 }
 
 function r2x(x) {
-	let ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000];
+	let ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000, 200000000, 400000000, 1000000000];
 	return x < 0 ? 0 : ranks[x];
 }
 function CoherentNoise(x) {
