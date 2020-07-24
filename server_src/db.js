@@ -47,7 +47,8 @@ global.handlePlayerDeath = async function (player) {
         player[key] = record[key];
     }
 
-    player.experience *= .98;
+    player.experience *= 1 - playerKillExpFraction;
+    player.money *= 1 - playerKillMoneyFraction;
     player.randmAchs[1] = true; // Death Achievement;
 }
 
@@ -153,7 +154,9 @@ global.savePlayerData = function (player) {
         lastLogin : player.lastLogin,
         randmAchs : player.randmAchs,
         lives : player.lives,
-        guild : player.guild
+        guild : player.guild,
+        sx : player.sx,
+        sy : player.sy
     };
     PLAYER_DATABASE.updateOne( { _id: player._id }, {$set : record}, { upsert: true });
 }
