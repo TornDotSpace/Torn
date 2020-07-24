@@ -17,8 +17,8 @@ echo
 echo
 echo Starting shard-1 on port 
 node --use_strict app.js 7300 dev&
-echo Starting web express on port 7301
-node web.js 7301&
+echo Starting web server on port 7301
+python3 -m http.server 7301 --directory client/& 
 echo Done. Browse to http://localhost:7301 to access the Torn dev server!
 echo Press any key to kill all instances
 read -n1 -r -p "Press any key to continue..." key
