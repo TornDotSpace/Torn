@@ -41,7 +41,7 @@
     "bad-words": "^3.0.3",
     "cors": "^2.8.5",
     "howler": "^2.2.0",
-    "mongodb": "^3.5.9",
+    "mongodb": "^3.6.0",
     "node-fetch": "^2.6.0",
     "socket.io": "^2.3.0",
     "socket.io-msgpack-parser": "^2.2.0"
