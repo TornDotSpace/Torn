@@ -270,7 +270,7 @@ module.exports = function initNetcode() {
                 }
             }
 
-            setTimeout(function() {               
+            setTimeout(async function() {               
                 await loadPlayerData(player);
                 player.ip = ip;
                 socket.emit("loginSuccess", {id: player.id});
