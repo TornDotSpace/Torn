@@ -291,7 +291,7 @@ module.exports = function initNetcode() {
     
                 player.getAllPlanets();
                 player.refillAllAmmo();
-                console.log(ip + " logged in as " + name + "! (last login: " + player.lastLogin + ")");
+                console.log(`${ip} logged in as ${name}! (last save: ${new Date(player.lastLogin)})`);
                 let text = player.nameWithColor() + ' logged in!';
                 chatAll(text);
 

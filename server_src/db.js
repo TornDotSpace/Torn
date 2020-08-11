@@ -67,8 +67,6 @@ global.loadPlayerData = async function (player) {
     }
 
     if(!(player.guild in guildPlayers)) player.guild = ""; // This accounts for players with old/undefined guilds 
-
-    player.lastLogin = new Date(player.lastLogin);
     
     player.permissionLevels = [0];
     if (player.name.includes("O")) player.permissionLevels.push(30); // they're capital, it's fine
