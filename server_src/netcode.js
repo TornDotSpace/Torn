@@ -248,7 +248,7 @@ module.exports = function initNetcode() {
                 }
             }
 
-            let response = await send_rpc("/login/", data.cookie);
+            const response = await send_rpc("/login/", data.cookie);
             
             if (!response.ok) {
                 socket.emit('badcookie');
@@ -256,25 +256,23 @@ module.exports = function initNetcode() {
                 return; 
             }
 
-            let name = await response.text();
-            player = await loadPlayerData(name, socket);
-            player.ip = ip;
+            const name = await response.text();
+            player = new PlayerMP(socket);
+            player._id = name;
 
             let wait_time = 0;
-            
             for (let p in sockets) {
                 let curr_socket = sockets[p];
-                if (curr_socket.player !== undefined && curr_socket.id != socket.id) {
-                    if (curr_socket.player._id == player._id) {
-                        curr_socket.player.kickMsg = "A user has logged into this account from another location.";
-                        curr_socket.player.socket.disconnect();
-                        wait_time = 6000;
-                    }
+                if (curr_socket.player !== undefined && curr_socket.player._id == name && curr_socket != socket) {
+                    curr_socket.player.kickMsg = "A user has logged into this account from another location.";
+                    curr_socket.player.socket.disconnect();
+                    wait_time = 6000;
                 }
             }
 
             setTimeout(function() {               
-
+                await loadPlayerData(player);
+                player.ip = ip;
                 socket.emit("loginSuccess", {id: player.id});
 
                 if (player.sx >= mapSz) player.sx--;

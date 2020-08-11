@@ -52,10 +52,9 @@ global.handlePlayerDeath = async function (player) {
     player.randmAchs[1] = true; // Death Achievement;
 }
 
-global.loadPlayerData = async function (playerName, socket) {
+global.loadPlayerData = async function (player) {
     
-    let record = await PLAYER_DATABASE.findOne({ _id: playerName });
-    let player = new PlayerMP(socket);
+    let record = await PLAYER_DATABASE.findOne({ _id: player._id });
 
     for (let key in record) {
         if (key === "password" || key === "email") continue; // don't load passwords into memory
@@ -69,7 +68,7 @@ global.loadPlayerData = async function (playerName, socket) {
 
     if(!(player.guild in guildPlayers)) player.guild = ""; // This accounts for players with old/undefined guilds 
 
-    player.lastLogin = new Date(player.lastLogin); // this also exists in the login call in netcode, should we toss either?
+    player.lastLogin = new Date(player.lastLogin);
     
     player.permissionLevels = [0];
     if (player.name.includes("O")) player.permissionLevels.push(30); // they're capital, it's fine
