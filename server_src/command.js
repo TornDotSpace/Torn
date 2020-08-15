@@ -69,7 +69,7 @@ cmds["/confirm"] = new Command("/confirm <newPassword>", REGISTERED, async funct
 
 cmds["/changeteam"] = new Command("/changeteam", REGISTERED, function (player, msg) {
     let split = msg.split(" ");
-    if (split.length > 2) {ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/changeteam'"});return;}
+    if (split.length > 2) {player.socket.emit("chat", { msg: "Bad syntax! The message should look like '/changeteam'"});return;}
     if (split.length == 1) {
         player.socket.emit("chat", { msg: "Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type \"/changeteam <color>\" to continue. Make sure you aren't near any players or bases on your current team." });
     }
