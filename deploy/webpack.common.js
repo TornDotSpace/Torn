@@ -1,45 +1,45 @@
-const path = require("path")
-const webpack = require("webpack")
+const path = require('path');
+const webpack = require('webpack');
 
 const git = require('git-revision-webpack-plugin');
-let gitRevisionPlugin = new git({
-	lightweightTags: true
-	});
+const gitRevisionPlugin = new git({
+  lightweightTags: true,
+});
 
 module.exports = {
-    entry: ["./client_src/index.js"],
-    output: {
-        path: path.resolve("./", "client"),
-        filename: "client.js"
-    },
-    module: {
-        rules: [{
-            test: /\.jsx?$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader',
+  entry: ['./client_src/index.js'],
+  output: {
+    path: path.resolve('./', 'client'),
+    filename: 'client.js',
+  },
+  module: {
+    rules: [{
+      test: /\.jsx?$/,
+      exclude: /node_modules/,
+      loader: 'babel-loader',
 	    query: {
-		presets: ['@babel/react', '@babel/preset-env'],
-		plugins: ['@babel/proposal-class-properties']
-	    }
-        }]
+        presets: ['@babel/react', '@babel/preset-env'],
+        plugins: ['@babel/proposal-class-properties'],
+	    },
+    }],
+  },
+  resolve: {
+    extensions: ['*', '.js', '.jsx'],
+  },
+  devServer: {
+    contentBase: './client',
+    hot: true,
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'initial',
     },
-    resolve: {
-        extensions: ['*', '.js', '.jsx']
-    },
-    devServer: {
-        contentBase: './client',
-        hot: true
-    },
-    optimization: {
-        splitChunks: {
-          chunks: "initial",
-        },
-    },
-    plugins: [
+  },
+  plugins: [
 	    new webpack.DefinePlugin({
       VERSION: JSON.stringify(gitRevisionPlugin.version()),
       COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
-      BRANCH: JSON.stringify(gitRevisionPlugin.branch())
-    })
-   ]
-}
+      BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+    }),
+  ],
+};
