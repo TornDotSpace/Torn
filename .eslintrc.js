@@ -20,5 +20,9 @@ module.exports = {
   ],
   'rules': {
     'max-len': [0],
+    'require-jsdoc': 0,
+    'camelcase': 0,
+    'valid-jsodc': 0,
+    'no-tabs': 0
   },
 };
