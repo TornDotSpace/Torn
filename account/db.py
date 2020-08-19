@@ -8,42 +8,48 @@ client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_CONNECTION_STR)
 db = client.torn
 players = db.players
 
+
 async def authenticate_player(username: str, password: str) -> bool:
     player = await players.find_one({"_id": username})
 
     # Player doesn't exist (or is dead)
-    if (player == None or player['lives'] <= 0):
+    if player == None or player["lives"] <= 0:
         return False
 
-    passwd = player['password']
+    passwd = player["password"]
 
-    if (isinstance(passwd, int)):
+    if isinstance(passwd, int):
         passwd = str(passwd)
-    
-    password = password.encode('utf-8')
-    passwd = passwd.encode('utf-8')
 
-    if (bcrypt.checkpw(password, passwd)):
+    password = password.encode("utf-8")
+    passwd = passwd.encode("utf-8")
+
+    if bcrypt.checkpw(password, passwd):
         return True
-    elif (bcrypt.checkpw(Hash.hontza_hash(password), passwd)):
+    elif bcrypt.checkpw(Hash.hontza_hash(password), passwd):
         # Legacy account - bcrypt the password
         hash = Hash.bcrypt_hash(password)
-        await players.update_one({"_id" : username}, { "$set": { "password" : hash}})
+        await players.update_one({"_id": username}, {"$set": {"password": hash}})
         return True
     else:
         return False
 
-async def change_password(username : str, new_password : str) -> bool:
-    new_password = new_password.encode('utf-8')
+
+async def change_password(username: str, new_password: str) -> bool:
+    new_password = new_password.encode("utf-8")
     hash = Hash.bcrypt_hash(new_password)
-    await players.update_one({"_id" : username}, { "$set": { "password" : hash}})
+    await players.update_one({"_id": username}, {"$set": {"password": hash}})
 
-async def user_exists(username : str) -> bool:
-    return await players.find_one({"_id":username}) != None
 
-async def create_account(username : str, password : str) -> bool:
-    password = password.encode('utf-8')
-    if (await user_exists(username)):
+async def user_exists(username: str) -> bool:
+    return await players.find_one({"_id": username}) != None
+
+
+async def create_account(username: str, password: str) -> bool:
+    password = password.encode("utf-8")
+    if await user_exists(username):
         return False
-    await players.insert_one({"_id" : username, "password": Hash.bcrypt_hash(password), "lives" : 20})
+    await players.insert_one(
+        {"_id": username, "password": Hash.bcrypt_hash(password), "lives": 20}
+    )
     return True

@@ -1,11 +1,11 @@
 class Event {
-    constructor(name, start, end) {
-        this.name = name;
-        this.startTime = start;
-        this.endTime = end;
-    }
+  constructor(name, start, end) {
+    this.name = name;
+    this.startTime = start;
+    this.endTime = end;
+  }
 
-    isActive() {
-        return false;
-    }
+  isActive() {
+    return false;
+  }
 };
