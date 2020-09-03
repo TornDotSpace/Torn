@@ -2604,7 +2604,7 @@ document.addEventListener('mousedown', function(evt) {
   if (i == 502) window.open('/leaderboard', '_blank');
   if (i == 503) window.open('https://padlet.com/mchontz10/k2n7p1pnaxct', '_blank');
   if (i == 504) window.open('https://www.youtube.com/channel/UCKsbC4GfoPOcyifiwW1GA4w', '_blank');
-  if (i == 505) window.open('https://discord.gg/DxU2bX', '_blank');
+  if (i == 505) window.open('https://discord.gg/tGrYXwP', '_blank');
   if (i == 506) window.open('/credits', '_blank');
   if (i == 601) {
     tab = 7;
