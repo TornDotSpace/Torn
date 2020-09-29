@@ -840,6 +840,7 @@ class Player {
     if (this.ship == 21){
       this.charge = -t; // Emp jams the rank 21 ship.
       t *= 0; // Emp jams the rank 21 ship, not fully disables.
+      if (this.health*1.05 < this.maxHealth) this.health*=1.05;// It will also heal the ship a very small bit.
 
     }
     this.empTimer = t;
