@@ -229,6 +229,19 @@ class Player {
         }
       } else if (wep.name === 'Electromagnet') { // identical structurally to pulse wave, see above for comments.
         if (global.tick % 2 == 0) {
+        for (const i in players[this.sy][this.sx]) {
+          const p = players[this.sy][this.sx][i];
+          if (p.color !== this.color) { // only enemies
+            const d2 = squaredDist(this, p); // distance squared between me and them
+            if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
+            const ang = angleBetween(this, p); // angle from the horizontal
+            const vel = 0; // this is just symbolic
+            p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but this jams Warp Drive
+            p.vy += Math.sin(ang) * vel;
+            p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
+            p.updatePolars(); // We changed their rectangular velocity.
+          }
+        }
           for (const i in asts[this.sy][this.sx]) {
             const a = asts[this.sy][this.sx][i];
             const d2 = squaredDist(this, a);
