@@ -92,11 +92,14 @@ cmds['/changeteam'] = new Command('/changeteam', REGISTERED, function(player, ms
       player.socket.emit('chat', {msg: 'That\'s your current team!'});
       return;
     }
-    player.sx = (player.sx + 3*(split[1]-player.color)) % mapSz;
+    teamDict={"red":0, "blue":1, "green":2};
+    old_sx=player.sx;
+    player.sx = (player.sx + 3*(teamDict[split[1]]-teamDict[player.color])) % mapSz;
     player.color = split[1];
     player.money *= .9;
     player.experience *= .9;
-    teamDict={"red":0, "blue":1, "green":2};
+    delete players[player.sy][old_sx][player.id];
+    players[player.sy][player.sx][player.id] = this;
     player.save();
   }
 });
