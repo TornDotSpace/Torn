@@ -184,7 +184,7 @@ for (let i = 1; i < 1000; i++) {
   const dist = ((Math.random()-.4)*(Math.random()-.6)+.3)*200;
   const angleMiss = (Math.random()-.5)*dist*.02;
   const a = leaf*Math.PI*2/3+angleMiss+dist/70;
-  const zz = square(dist)*(Math.random()-.5)*0.02;
+  const zz = square(dist)*(Math.random()-.5)*0.01;
   const xx = dist*cosLow(a)*2;
   const yy = dist*sinLow(a)*2;
   dots[i] = {x: xx, y: yy, z: zz};
@@ -1199,25 +1199,17 @@ function lastTechLevel(x) {
 }
 function rStats() {
 
-  console.log("DEBUG-A")
-
   ctx.font = '14px ShareTech';
   ctx.textAlign = 'left';
   const d = new Date();
   const t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
-
-  console.log("DEBUG-B")
 
   const ore = iron + silver + platinum + copper;
   let upgradeCosts = 0;
   upgradeCosts += techEnergy(t2) + techEnergy(va2) + techEnergy(ag2) + techEnergy(c2) + techEnergy(mh2) + techEnergy(e2)*8;
   let achievements = 0;
 
-  console.log("DEBUG-C")
-
   for (const i in achs) if (achs[i]) achievements++;
-
-  console.log("DEBUG-D")
 
   ctx.fillStyle = 'yellow';
   write(mEng[161], rx + 16, ry + 512 - 16);
@@ -1227,26 +1219,36 @@ function rStats() {
   ctx.font = '14px ShareTech';
   let activeGens = 0;
 
-  console.log("DEBUG-E")
-
   if (ship >= wepns[20].level) {
     for (let i = 0; i < ships[ship].weapons; i++) {
       if (equipped[i] == 20) activeGens++;
     }
   }
 
-  console.log("DEBUG-F")
-
   let eMult = e2;
   for (let i = 0; i < activeGens; i++) eMult *= 1.06;
 
   console.log("DEBUG-G")
 
-  const stats = [mEng[20] + numToLS(Number((ships[ship].thrust * t2).toPrecision(3))), mEng[22] + numToLS(Number((ships[ship].capacity * c2).toPrecision(3))), mEng[23] + numToLS(Number((ships[ship].health * mh2).toPrecision(3))), mEng[164] + numToLS(Number((eMult).toPrecision(3))), numToLS((kills - baseKills)) + mEng[51], numToLS(baseKills) + mEng[52], mEng[55] + numToLS(Number((worth + upgradeCosts).toPrecision(3))), mEng[56] + numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3))), numToLS(Math.round(experience)) + mEng[57], mEng[58] + rank, achievements + mEng[59]];
+  const stats = [
+  	mEng[20] + numToLS(Number((ships[ship].thrust * t2).toPrecision(3))),
+  	mEng[22] + numToLS(Number((ships[ship].capacity * c2).toPrecision(3))),
+  	mEng[23] + numToLS(Number((ships[ship].health * mh2).toPrecision(3))),
+  	mEng[164] + numToLS(Number((eMult).toPrecision(3))),
+  	numToLS((kills - baseKills)) + mEng[51],
+  	numToLS(baseKills) + mEng[52],
+  	mEng[55] + numToLS(Number((worth + upgradeCosts).toPrecision(3))),
+  	mEng[56] + numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3))),
+  	numToLS(Math.round(experience)) + mEng[57],
+  	mEng[58] + rank,
+  	achievements + mEng[59]
+  ];
+
+  console.log("DEBUG-H")
 
   for (let i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
 
-  console.log("DEBUG-H")
+  console.log("DEBUG-I")
 
   ctx.fillStyle = seller == 700 ? 'yellow' : 'red';
   write(mEng[165], rx + 512 + 128, ry + 44 + 64 - 1 * 16);
@@ -1267,8 +1269,6 @@ function rStats() {
     write(mEng[170], rx + 512 + 128, ry + 44 + 64 + 9 * 16);
   }
 
-  console.log("DEBUG-I")
-
   const rendX = rx + 192;
   const rendY = ry + 192;
   ctx.save();
@@ -1278,8 +1278,6 @@ function rStats() {
 
   ctx.drawImage(img, -img.width / 2, -img.height / 2);
   ctx.restore();
-
-  console.log("DEBUG-J")
 
   // techs
   ctx.fillStyle = 'yellow';
@@ -1302,8 +1300,6 @@ function rStats() {
   write('Energy lvl ' + ((e2-1)*8), rx + 320 + 54, ry + 416 - 64 + 14);
   write('Agility lvl ' + ((ag2-1)*8), rx + 320 + 54, ry + 416 + 14);
 
-  console.log("DEBUG-K")
-
   // upgrades
   ctx.fillStyle = (seller == 200) ? 'lime' : 'white';
   write('[+] $' + numToLS(techPrice(t2)), rx + 64 + 54, ry + 416 - 64 + 28);
@@ -1317,8 +1313,6 @@ function rStats() {
   write('[+] $' + numToLS(techPrice(e2)*8), rx + 320 + 54, ry + 416 - 64 + 28);
   ctx.fillStyle = (seller == 205) ? 'lime' : 'white';
   write('[+] $' + numToLS(techPrice(ag2)), rx + 320 + 54, ry + 416 + 28);
-
-  console.log("DEBUG-L")
 
   // downgrades
   ctx.fillStyle = (seller == 206) ? 'lime' : 'white';
@@ -1334,7 +1328,6 @@ function rStats() {
   ctx.fillStyle = (seller == 211) ? 'lime' : 'white';
   if (ag2>1) write('[-] $' + numToLS(-techPriceForDowngrade(ag2)), rx + 320 + 54, ry + 416 + 42);
 
-  console.log("DEBUG-M")
   /* description for radar
 	ctx.textAlign = "left";
 	if (seller==201 || seller==207){
