@@ -70,8 +70,7 @@ cmds['/confirm'] = new Command('/confirm <newPassword>', REGISTERED, async funct
 
 cmds['/changeteam'] = new Command('/changeteam', REGISTERED, function(player, msg) {
   if (!player.docked) {
-    this.emit('chat', {msg: '~`red~`This command is only available when docked at a base.'});
-    return;
+    player.socket.emit('chat', {msg: '~`red~`This command is only available when docked at a base.'}); return;
   }
   const split = msg.split(' ');
   if (split.length > 2) {
