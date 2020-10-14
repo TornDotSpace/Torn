@@ -99,7 +99,7 @@ cmds['/changeteam'] = new Command('/changeteam', REGISTERED, function(player, ms
     player.money *= .9;
     player.experience *= .9;
     delete players[player.sy][old_sx][player.id];
-    players[player.sy][player.sx][player.id] = this;
+    players[player.sy][player.sx][player.id] = player;
     player.save();
   }
 });
