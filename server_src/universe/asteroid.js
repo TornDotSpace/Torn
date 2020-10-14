@@ -123,7 +123,7 @@ class Asteroid {
   dmg(d, origin) {
     this.health -= d;
     if (this.health < 0) this.die(origin);
-    note('-' + d, this.x, this.y - 64, this.sx, this.sy);
+    note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy);
     return this.health < 0;
   }
   EMP(d) {
