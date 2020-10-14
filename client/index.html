@@ -34,7 +34,8 @@
 		<canvas id="ctx"></canvas>
 		
 		<div id="a"></div>
-		<script src="client.js?v=13"></script><!--Usually no port, with https-->
-		<script src="1.client.js?v=13"></script>
+		<script src="client.js?v=14"></script><!--Usually no port, with https-->
+		<script src="vendors~main.client.js?v=14"></script> <!--Development -- should 404 on test/prod-->
+		<script src="1.client.js?v=14"></script> <!--Live:should 200 on test/prod, 404 on dev-->
 	</body>
 </html>
