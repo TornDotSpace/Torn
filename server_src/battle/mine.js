@@ -108,7 +108,7 @@ module.exports = class Mine {
     {
       for (const i in players[this.sy][this.sx]) {
         const p = players[this.sy][this.sx][i];
-        if (squaredDist(p, this) < square(this.range * 40)) p.dmg(this.dmg, this); // if i'm in range of a player on explosion, damage them
+        if (!p.guest && squaredDist(p, this) < square(this.range * 40)) p.dmg(this.dmg, this); // if i'm in range of a player on explosion, damage them
       }
     }
     sendAllSector('sound', {file: 'boom', x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);

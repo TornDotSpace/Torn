@@ -69,6 +69,10 @@ cmds['/confirm'] = new Command('/confirm <newPassword>', REGISTERED, async funct
 }, false);
 
 cmds['/changeteam'] = new Command('/changeteam', REGISTERED, function(player, msg) {
+  if (!player.docked) {
+    this.emit('chat', {msg: '~`red~`This command is only available when docked at a base.'});
+    return;
+  }
   const split = msg.split(' ');
   if (split.length > 2) {
     player.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/changeteam\''}); return;
@@ -89,9 +93,11 @@ cmds['/changeteam'] = new Command('/changeteam', REGISTERED, function(player, ms
       player.socket.emit('chat', {msg: 'That\'s your current team!'});
       return;
     }
+    player.sx = (sx + 3*(split[1]-player.color)) % mapSz;
     player.color = split[1];
     player.money *= .9;
     player.experience *= .9;
+    teamDict={"red":0, "blue":1, "green":2};
     player.save();
   }
 });
