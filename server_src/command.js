@@ -92,7 +92,7 @@ cmds['/changeteam'] = new Command('/changeteam', REGISTERED, function(player, ms
       player.socket.emit('chat', {msg: 'That\'s your current team!'});
       return;
     }
-    player.sx = (sx + 3*(split[1]-player.color)) % mapSz;
+    player.sx = (player.sx + 3*(split[1]-player.color)) % mapSz;
     player.color = split[1];
     player.money *= .9;
     player.experience *= .9;
