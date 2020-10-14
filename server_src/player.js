@@ -229,6 +229,19 @@ class Player {
         }
       } else if (wep.name === 'Electromagnet') { // identical structurally to pulse wave, see above for comments.
         if (global.tick % 2 == 0) {
+        for (const i in players[this.sy][this.sx]) {
+          const p = players[this.sy][this.sx][i];
+          if (p.color !== this.color) { // only enemies
+            const d2 = squaredDist(this, p); // distance squared between me and them
+            if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
+            const ang = angleBetween(this, p); // angle from the horizontal
+            const vel = 0; // this is just symbolic
+            p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but this jams Warp Drive
+            p.vy += Math.sin(ang) * vel;
+            p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
+            p.updatePolars(); // We changed their rectangular velocity.
+          }
+        }
           for (const i in asts[this.sy][this.sx]) {
             const a = asts[this.sy][this.sx][i];
             const d2 = squaredDist(this, a);
@@ -836,7 +849,13 @@ class Player {
   }
   EMP(t) {
     if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
-    if (this.ship >= 16) t *= 1.5; // Emp works better on elites
+    if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
+    if (this.ship == 21){
+      this.charge = -t; // Emp jams the rank 21 ship.
+      t *= 0; // Emp jams the rank 21 ship, not fully disables.
+      if (this.health*1.05 < this.maxHealth) this.health*=1.05;// It will also heal the ship a very small bit.
+
+    }
     this.empTimer = t;
 
     // turn off all keys

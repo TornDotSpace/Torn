@@ -1024,6 +1024,7 @@ function broadcastInfo() {
     'If you find a bug, report it in the \'more\' menu!',
     'Type /changeteam to switch teams!',
     'Mute bothersome players with /mute username',
+    'Register your email with /email you@example.net',
   ];
   chatAll('~`#ff0000~`SERVER: '+randomMsgs[broadcastMsg%randomMsgs.length]);
   broadcastMsg++;

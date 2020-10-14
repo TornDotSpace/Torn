@@ -851,6 +851,12 @@
 			"nameH":"Elite Leviathan",
 			"nameC":"Elite Maser",
 			"desc":"Just a superheavy destroyer with C-Hypno Ray... or is there more to it?"
+		},
+		{
+			"nameA":"Anomalocaris",
+			"nameH":"Einstein",
+			"nameC":"Heisenberg",
+			"desc":"A heavy dreadnought with no C-Slot. This time, there's more to it, I swear!"
 		}
 	]
 }
