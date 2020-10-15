@@ -278,6 +278,7 @@ module.exports = function initNetcode() {
         player.calculateGenerators();
         socket.emit('raid', {raidTimer: raidTimer});
         player.checkTrailAchs();
+        player.randmAchs[2] = true;
         player.sendAchievementsKill(false);
         player.sendAchievementsCash(false);
         player.sendAchievementsDrift(false);
@@ -304,7 +305,7 @@ module.exports = function initNetcode() {
     socket.on('disconnect', function(data) { // Emitted by socket.IO when connection is terminated or ping timeout
       if (!player) return; // Don't allow unauthenticated clients to crash the server
 
-      setTimeout(function() {
+      //setTimeout(function() {
         // Cleanup
         // Kill socket
         socket.disconnect();
@@ -324,7 +325,7 @@ module.exports = function initNetcode() {
 
         console.log(text); // print in terminal
         chatAll(text); // send it to all the players
-      }, 6000);
+      //}, 6000);
     });
 
     socket.on('key', function(data) { // on client keypress or key release

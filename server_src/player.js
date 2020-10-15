@@ -120,7 +120,7 @@ class Player {
     this.cornersTouched = 0, // bitmask
     this.oresMined = 0, // bitmask
     this.questsDone = 0, // bitmask
-    this.planetsClaimed = '0000000000000000000000000000000000000000000000000',
+    this.planetsClaimed = '000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000',
     this.points = 0,
 
     this.equipped = 0;
@@ -843,7 +843,8 @@ class Player {
     if (this.health > this.maxHealth) this.health = this.maxHealth;
     if (this.health < 0) this.die(origin);
 
-    note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    if(d>0) note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    if(d<0) note('+' + Math.floor(abs(d)), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
     this.emit('dmg', {});
     return this.health < 0;
   }
