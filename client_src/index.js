@@ -1239,7 +1239,7 @@ function rStats() {
   console.log("DEBUG-G3")
   stats[3] += numToLS(Number((eMult).toPrecision(3)));
   console.log("DEBUG-G4")
-  stats[4] = numToLS((kills - baseKills)) + stats[4];
+  stats[4] = numToLS(kills) + stats[4];
   console.log("DEBUG-G5")
   stats[5] = numToLS(baseKills) + stats[5];
   console.log("DEBUG-G6")
