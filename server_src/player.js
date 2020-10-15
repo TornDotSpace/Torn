@@ -120,7 +120,7 @@ class Player {
     this.cornersTouched = 0, // bitmask
     this.oresMined = 0, // bitmask
     this.questsDone = 0, // bitmask
-    this.planetsClaimed = '0000000000000000000000000000000000000000000000000',
+    this.planetsClaimed = '000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000',
     this.points = 0,
 
     this.equipped = 0;
@@ -843,7 +843,8 @@ class Player {
     if (this.health > this.maxHealth) this.health = this.maxHealth;
     if (this.health < 0) this.die(origin);
 
-    note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    if(d>0) note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    if(d<0) note('+' + Math.floor(abs(d)), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
     this.emit('dmg', {});
     return this.health < 0;
   }
@@ -851,7 +852,7 @@ class Player {
     if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
     if (this.ship == 21){
-      this.charge = -t; // Emp jams the rank 21 ship.
+      this.charge += -4.5*t; // Emp jams the rank 21 ship.
       t *= 0; // Emp jams the rank 21 ship, not fully disables.
       if (this.health*1.05 < this.maxHealth) this.health*=1.05;// It will also heal the ship a very small bit.
 
@@ -876,6 +877,10 @@ class Player {
       for (const i in players[this.sy][this.sx]) {
         const p = players[this.sy][this.sx][i];
         if (p.color !== this.color) p.EMP(15);
+      }
+      if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive){
+        const b = bases[this.sy][this.sx];
+	b.EMP(150);
       }
     }
 
