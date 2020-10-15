@@ -851,7 +851,7 @@ class Player {
     if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
     if (this.ship == 21){
-      this.charge = -3*t; // Emp jams the rank 21 ship.
+      this.charge += -4.5*t; // Emp jams the rank 21 ship.
       t *= 0; // Emp jams the rank 21 ship, not fully disables.
       if (this.health*1.05 < this.maxHealth) this.health*=1.05;// It will also heal the ship a very small bit.
 
