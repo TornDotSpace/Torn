@@ -1228,27 +1228,31 @@ function rStats() {
   let eMult = e2;
   for (let i = 0; i < activeGens; i++) eMult *= 1.06;
 
-  console.log("DEBUG-G")
+  const stats = [mEng[20], mEng[22], mEng[23], mEng[164], mEng[51], mEng[52], mEng[55], mEng[56], mEng[57], mEng[58], mEng[59]];
 
-  const stats = [
-  	mEng[20] + numToLS(Number((ships[ship].thrust * t2).toPrecision(3))),
-  	mEng[22] + numToLS(Number((ships[ship].capacity * c2).toPrecision(3))),
-  	mEng[23] + numToLS(Number((ships[ship].health * mh2).toPrecision(3))),
-  	mEng[164] + numToLS(Number((eMult).toPrecision(3))),
-  	numToLS((kills - baseKills)) + mEng[51],
-  	numToLS(baseKills) + mEng[52],
-  	mEng[55] + numToLS(Number((worth + upgradeCosts).toPrecision(3))),
-  	mEng[56] + numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3))),
-  	numToLS(Math.round(experience)) + mEng[57],
-  	mEng[58] + rank,
-  	achievements + mEng[59]
-  ];
-
-  console.log("DEBUG-H")
+  console.log("DEBUG-G0")
+  stats[0] += numToLS(Number((ships[ship].thrust * t2).toPrecision(3)));
+  console.log("DEBUG-G1")
+  stats[1] += numToLS(Number((ships[ship].capacity * c2).toPrecision(3)));
+  console.log("DEBUG-G2")
+  stats[2] += numToLS(Number((ships[ship].health * mh2).toPrecision(3)));
+  console.log("DEBUG-G3")
+  stats[3] += numToLS(Number((eMult).toPrecision(3)));
+  console.log("DEBUG-G4")
+  stats[4] = numToLS((kills - baseKills)) + stats[4];
+  console.log("DEBUG-G5")
+  stats[5] = numToLS(baseKills) + stats[5];
+  console.log("DEBUG-G6")
+  stats[6] += numToLS(Number((worth + upgradeCosts).toPrecision(3)));
+  console.log("DEBUG-G7")
+  stats[7] += numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3)));
+  console.log("DEBUG-G8")
+  stats[8] = numToLS(Math.round(experience)) + stats[8];
+  console.log("DEBUG-G9")
+  stats[9] += rank;
+  stats[10] = achievements + stats[10];
 
   for (let i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
-
-  console.log("DEBUG-I")
 
   ctx.fillStyle = seller == 700 ? 'yellow' : 'red';
   write(mEng[165], rx + 512 + 128, ry + 44 + 64 - 1 * 16);
@@ -2172,8 +2176,8 @@ socket.on('baseMap', function(data) {
     sectorPoints[i] = {};
     for (let j = 0; j < mapSz + 1; j++) {
       const theta = -2*Math.PI*i/mapSz;
-      const upwards = square((mapSz+7-j)/(mapSz+7));
-      const radius = cerp(0, 1, upwards)*128;
+      const upwards = (j-mapSz/2+.5)*1.4/mapSz;
+      const radius = square(lerp(-1, 1, j/mapSz))*72+48;
       const xx = Math.sin(theta) * radius;
       const yy = Math.cos(theta) * radius;
       const zz = upwards*256;
