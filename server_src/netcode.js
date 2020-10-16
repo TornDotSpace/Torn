@@ -421,9 +421,9 @@ module.exports = function initNetcode() {
         else playerChat(finalMsg, player.globalChat, player.color, player.guild);
 
         if(Config.getValue('enable_discord_moderation',false)){
-          fewSpaces = ((data.msg.match(/ /g) || []).length)<Math.floor(data.msg.length/10)
-          frequentMsgs = player.chatTimer > 300;
-          allUpperCase = data.msg===data.msg.toUpperCase() && data.msg.length > 5;
+          fewSpaces = ((data.msg.match(/ /g) || []).length)<Math.floor(data.msg.length/15)
+          frequentMsgs = player.chatTimer > 400;
+          allUpperCase = data.msg===data.msg.toUpperCase() && data.msg.length > 6;
           if(frequentMsgs || fewSpaces || repeat || allUpperCase) detectSpam(player.name, data.msg);
         }
       }
