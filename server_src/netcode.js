@@ -405,8 +405,8 @@ module.exports = function initNetcode() {
       player.chatTimer += 150; // note this as potential spam
       if (repeat) player.chatTimer*=2.5;
       if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
-        socket.emit('chat', {msg: ('~`red~`You have been muted for ' + Math.floor(player.muteCap / 25) + ' seconds!')});
         muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
+        chatAll('~`violet~`' + player.name + '~`yellow~` has been muted for ' + Math.floor(player.muteCap / 25) + ' seconds!');
         player.muteCap *= repeat?4:2; // their next mute will be twice as long
         return;
       }
@@ -419,6 +419,13 @@ module.exports = function initNetcode() {
         // Send it to the client up to what chat room theyre in
         if (player.globalChat == 2 && player.guild === '') socket.emit('chat', {msg: ('~`#ff0000~`You are not in a guild!')});
         else playerChat(finalMsg, player.globalChat, player.color, player.guild);
+
+        if(Config.getValue('enable_discord_moderation',false)){
+          fewSpaces = ((data.msg.match(/ /g) || []).length)<Math.floor(data.msg.length/10)
+          frequentMsgs = player.chatTimer > 300;
+          allUpperCase = data.msg===data.msg.toUpperCase() && data.msg.length > 5;
+          if(frequentMsgs || fewSpaces || repeat || allUpperCase) detectSpam(player.name, data.msg);
+        }
       }
     });
     socket.on('toggleGlobal', function(data) { // player wants to switch what chat room they're in
