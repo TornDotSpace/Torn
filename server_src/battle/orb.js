@@ -83,7 +83,7 @@ module.exports = class Orb {
     this.x += this.vx;
     this.y += this.vy; // move
 
-    if (this.x > sectorWidth) {// check each edge of the 4 orbs could bounce on.
+    if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
       this.x = 1;
       this.sx = (this.sx+1+mapSz)%mapSz;
       this.locked == 0
