@@ -238,7 +238,7 @@
 			"ammo":2,
 			"level":4,
 			"type":"Misc",
-			"bot":false
+			"bot":true
 		},
 		{
 			"name":"Generator",

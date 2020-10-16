@@ -238,7 +238,7 @@ class Player {
             const d2 = squaredDist(this, p); // distance squared between me and them
             if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
             const ang = angleBetween(this, p); // angle from the horizontal
-            const vel = -0.0000001; // this is just symbolic
+            const vel = -0.0000001; // this is just symbolic, to jam warp drive
             p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but this jams Warp Drive
             p.vy += Math.sin(ang) * vel;
             p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
