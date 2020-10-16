@@ -1,5 +1,5 @@
 module.exports = class Orb {
-  constructor(ownr, i, wepnID) {// currently the only orb is energy disk
+  constructor(ownr, i, wepnID) {// currently the only orbs are energy disk and photon orb
     this.type = 'Orb',
     this.id = i, // unique identifier
     this.color = ownr.color, // owned by which team
@@ -82,8 +82,31 @@ module.exports = class Orb {
     if (this.locked == 0) this.lockedTimer = 0;
     this.x += this.vx;
     this.y += this.vy; // move
-    if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // if out of bounds
+
+    if (this.x > sectorWidth) {// check each edge of the 4 orbs could bounce on.
+      this.x = 1;
+      this.sx = (this.sx+1+mapSz)%mapSz;
+    } else if (this.y > sectorWidth) {
+      this.y = 1;
+      if (this.sy == mapSz-1) {
+        this.die();
+      } else {
+        this.sy++;
+      }
+    } else if (this.x < 0) {
+      this.x = (sectorWidth - 1);
+      this.sx = (this.sx-1+mapSz)%mapSz;
+    } else if (this.y < 0) {
+      this.y = (sectorWidth - 1);
+      if (this.sy == 0) {
+        this.die();
+      } else {
+        this.sy--;
+      }
+    }
+
   }
+
   die() {
     sendAllSector('sound', {file: 'boom', x: this.x, y: this.y, dx: this.vx, dy: this.vy}, this.sx, this.sy);
     delete orbs[this.sy][this.sx][this.id];

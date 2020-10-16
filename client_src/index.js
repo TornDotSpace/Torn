@@ -1230,25 +1230,15 @@ function rStats() {
 
   const stats = [mEng[20], mEng[22], mEng[23], mEng[164], mEng[51], mEng[52], mEng[55], mEng[56], mEng[57], mEng[58], mEng[59]];
 
-  console.log("DEBUG-G0")
   stats[0] += numToLS(Number((ships[ship].thrust * t2).toPrecision(3)));
-  console.log("DEBUG-G1")
   stats[1] += numToLS(Number((ships[ship].capacity * c2).toPrecision(3)));
-  console.log("DEBUG-G2")
   stats[2] += numToLS(Number((ships[ship].health * mh2).toPrecision(3)));
-  console.log("DEBUG-G3")
   stats[3] += numToLS(Number((eMult).toPrecision(3)));
-  console.log("DEBUG-G4")
   stats[4] = numToLS(kills) + stats[4];
-  console.log("DEBUG-G5")
   stats[5] = numToLS(baseKills) + stats[5];
-  console.log("DEBUG-G6")
   stats[6] += numToLS(Number((worth + upgradeCosts).toPrecision(3)));
-  console.log("DEBUG-G7")
   stats[7] += numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3)));
-  console.log("DEBUG-G8")
   stats[8] = numToLS(Math.round(experience)) + stats[8];
-  console.log("DEBUG-G9")
   stats[9] += rank;
   stats[10] = achievements + stats[10];
 
@@ -2176,7 +2166,7 @@ socket.on('baseMap', function(data) {
     sectorPoints[i] = {};
     for (let j = 0; j < mapSz + 1; j++) {
       const theta = -2*Math.PI*i/mapSz;
-      const upwards = (j-mapSz/2+.5)*1.4/mapSz;
+      const upwards = -(j-mapSz/2+.5)*1.4/mapSz;
       const radius = square(lerp(-1, 1, j/mapSz))*72+48;
       const xx = Math.sin(theta) * radius;
       const yy = Math.cos(theta) * radius;
@@ -2867,13 +2857,13 @@ function updateTrails() {
 
     const trail = selfo.trail;
     const mod = trail % 16;
+    const cos = cosLow(selfo.angle);
+    const sin = sinLow(selfo.angle);
     if (Math.abs(selfo.speed) > 1 && Math.abs(selfo.driftAngle - selfo.angle) > .05) {
       let particleCount = square(ships[selfo.ship].width / 96) * .66;
       particleCount *= Math.min(Math.abs(selfo.driftAngle - selfo.angle) * 8, 16);
       if (trail > 15) particleCount /= 6;
       else if (mod != 0) particleCount *= 2.5;
-      const cos = cosLow(selfo.angle);
-      const sin = sinLow(selfo.angle);
       for (let j = 0; j < particleCount; j++) {
         const rando = Math.random() * selfo.speed; const rando2 = Math.random();
         let col = (((96 + Math.floor(Math.random() * 64)) << 16) + ((96 + Math.floor(Math.random() * 128)) << 8) + 255 - Math.floor(Math.random() * 64)).toString(16);

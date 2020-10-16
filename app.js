@@ -144,6 +144,9 @@ global.readGuildList = function() {
 };
 
 require('./server_src/math.js');
+if (Config.getValue('enable_discord_moderation', false)) {
+  require('./server_src/discord.js');
+}
 
 const Base = require('./server_src/universe/base.js');
 const Planet = require('./server_src/universe/planet.js');

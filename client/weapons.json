@@ -238,7 +238,7 @@
 			"ammo":2,
 			"level":4,
 			"type":"Misc",
-			"bot":false
+			"bot":true
 		},
 		{
 			"name":"Generator",
@@ -352,7 +352,7 @@
 			"name":"Warp Drive",
 			"range":-1,
 			"damage":-1,
-			"speed":500,
+			"speed":1000,
 			"charge":80,
 			"price":150000,
 			"ammo":1,
