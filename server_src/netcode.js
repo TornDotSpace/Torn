@@ -305,12 +305,6 @@ module.exports = function initNetcode() {
     socket.on('disconnect', function(data) { // Emitted by socket.IO when connection is terminated or ping timeout
       if (!player) return; // Don't allow unauthenticated clients to crash the server
 
-
-      const text = player.nameWithColor() + ' left the game (reason: ' + reason + ')'; // write a message about the player leaving
-
-      console.log(text); // print in terminal
-      chatAll(text); // send it to all the players
-      
       setTimeout(function() {
         // Cleanup
         // Kill socket
@@ -326,6 +320,11 @@ module.exports = function initNetcode() {
         if (reason === undefined || !reason.localeCompare('')) {
           reason = data;
         }
+
+        const text = player.nameWithColor() + ' left the game (reason: ' + reason + ')'; // write a message about the player leaving
+
+        console.log(text); // print in terminal
+        chatAll(text); // send it to all the players
       }, 6000);
     });
 
