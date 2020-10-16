@@ -24,3 +24,6 @@ test-ssl/
 
 # db
 db/
+
+#Discord private token
+config/discordconfig.json
