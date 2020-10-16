@@ -206,7 +206,10 @@ class Player {
         if (wep.name === 'Supercharger') this.superchargerTimer = 1500;// 1 min
         else if (wep.name === 'Hull Nanobots') this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
         else if (wep.name === 'Photon Cloak') this.disguise = 200;// 6s
-        else if (wep.name === 'Warp Drive') this.speed = this.ship == 16 ? 1500 : 1000;
+        else if (wep.name === 'Warp Drive'){
+	   this.speed = this.ship == 16 ? 1500 : 1000; //R16 gets a 50% extra boost from it
+           this.speed+=100*(this.energy2-1); //the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it. 
+       }
       }
 
 
@@ -235,7 +238,7 @@ class Player {
             const d2 = squaredDist(this, p); // distance squared between me and them
             if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
             const ang = angleBetween(this, p); // angle from the horizontal
-            const vel = 0; // this is just symbolic
+            const vel = -0.0000001; // this is just symbolic
             p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but this jams Warp Drive
             p.vy += Math.sin(ang) * vel;
             p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
