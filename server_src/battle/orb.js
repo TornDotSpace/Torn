@@ -22,7 +22,6 @@ module.exports = class Orb {
     if (this.timer++ > 3 * wepns[this.wepnID].range / wepns[this.wepnID].speed) this.die();
     this.move();
 
-
     // Find next target
     let closest = -1;
     if (tick % 5 == 0 && this.locked == 0) {
@@ -55,6 +54,7 @@ module.exports = class Orb {
         }
       }
     }
+
   }
   move() {
     if (this.locked != 0) {
@@ -86,22 +86,26 @@ module.exports = class Orb {
     if (this.x > sectorWidth) {// check each edge of the 4 orbs could bounce on.
       this.x = 1;
       this.sx = (this.sx+1+mapSz)%mapSz;
+      this.locked == 0
     } else if (this.y > sectorWidth) {
       this.y = 1;
       if (this.sy == mapSz-1) {
         this.die();
       } else {
         this.sy++;
+        this.locked == 0
       }
     } else if (this.x < 0) {
       this.x = (sectorWidth - 1);
       this.sx = (this.sx-1+mapSz)%mapSz;
+      this.locked == 0
     } else if (this.y < 0) {
       this.y = (sectorWidth - 1);
       if (this.sy == 0) {
         this.die();
       } else {
         this.sy--;
+        this.locked == 0
       }
     }
 
