@@ -24,14 +24,25 @@ client.on("message", async message => {
   if(!message.member.roles.cache.some(r=>["Torn Moderator"].includes(r.name)))
     return message.reply("Sorry, you don't have permissions to use this!");
 
-  if(args[0] == "/modmute") {
+  if(args[0] === "/modmute") {
     returnmsg = modmute(message.content.trim());
     client.channels.cache.get('766664211581239326').send(returnmsg);
-  } else if(args[0] == "/ipmute") {
+  } else if(args[0] === "/ipmute") {
     returnmsg = ipmute(message.content.trim());
     client.channels.cache.get('766664211581239326').send(returnmsg);
-  } else if(args[0] == "/mute") {
+  } else if(args[0] === "/mute") {
     client.channels.cache.get('766664211581239326').send("You must either use /modmute or /ipmute!");
+  } else if(args[0] === "/broadcast") {
+    chatAll('~`#f66~`       BROADCAST: ~`lime~`' + msg.substring(11));
+    client.channels.cache.get('766664211581239326').send("Message broadcasted.");
+  } else if(args[0] === "/reboot") {
+  	if(!message.member.roles.cache.some(r=>["Developer"].includes(r.name)))
+      return message.reply("Sorry, you don't have permissions to use this!");
+    initReboot();
+  } else if(args[0] === "/help") {
+    client.channels.cache.get('766664211581239326').send("Command list: modmute, mute, ipmute, help, broadcast, reboot");
+  } else {
+    client.channels.cache.get('766664211581239326').send("Unknown command.");
   }
 });
 
