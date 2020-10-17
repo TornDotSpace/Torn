@@ -6,6 +6,44 @@ global.sendWeapons = function(player) { // tells a client what weapons that play
   player.emit('weapons', {weapons: player.weapons, worth: worth, ammos: player.ammos});
 };
 
+global.modmute = function(msg){
+  if (msg.split(' ').length != 3) {
+    return 'Bad syntax! The message should look like \'/modmute playernamewithouttag minutes\'';
+  } // split looks like {"/mute", "name", "minutesToMute"}
+  const name = msg.split(' ')[1];
+  const player = getPlayerFromName(name);
+  if (player == -1) {
+    return 'Player \''+name+'\' not found.';
+  }
+  const minutes = parseFloat(msg.split(' ')[2]);
+  if (typeof minutes !== 'number') return;
+
+  if (minutes < 0) return;
+
+  muteTable[player.name] = (Date.now() + (minutes * 60 * 1000));
+  chatAll('~`violet~`' + player.name + '~`yellow~` has been muted for '+minutes+' minutes!');
+  return player.name + 'has been muted for '+minutes+' minutes!';
+}
+
+global.ipmute = function(msg){
+  if (msg.split(' ').length != 3) {
+    return 'Bad syntax! The message should look like \'/ipmute playernamewithouttag minutes\'';
+  } // split looks like {"/mute", "name", "minutesToMute"}
+  const name = msg.split(' ')[1];
+  const player = getPlayerFromName(name);
+  if (player == -1) {
+    return 'Player \''+name+'\' not found.';
+  }
+  const minutes = parseFloat(msg.split(' ')[2]);
+  if (typeof minutes !== 'number') return;
+
+  if (minutes < 0) return;
+
+  ipMuteTable[player.ip] = (Date.now() + (minutes * 60 * 1000));
+  chatAll('~`violet~`' + player.name + '~`yellow~` has been IP-muted for '+minutes+' minutes!');
+  return player.name + 'has been IP-muted for '+minutes+' minutes!';
+}
+
 global.sendAllSector = function(out, data, sx, sy) {
   for (let p in players[sy][sx]) {
     p = players[sy][sx][p];

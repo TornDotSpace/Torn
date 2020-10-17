@@ -22,6 +22,37 @@ module.exports = class Orb {
     if (this.timer++ > 3 * wepns[this.wepnID].range / wepns[this.wepnID].speed) this.die();
     this.move();
 
+    // Crossing through sectors
+    const old_sx=this.sx;
+    const old_sy=this.sy;
+    if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
+      this.x = 1;
+      this.sx = (this.sx+1+mapSz)%mapSz;
+    } else if (this.y > sectorWidth) {
+      if (this.sy == mapSz-1) {
+        this.die();
+      } else {
+        this.y = 1;
+        this.sy++;
+      }
+    } else if (this.x < 0) {
+      this.x = (sectorWidth - 1);
+      this.sx = (this.sx-1+mapSz)%mapSz;
+    } else if (this.y < 0) {
+      if (this.sy == 0) {
+        this.die();
+      } else {
+        this.y = (sectorWidth - 1);
+        this.sy--;
+      }
+    }
+
+    if (old_sx !== this.sx || old_sy !== this.sy) {
+      this.locked = 0;
+      delete orbs[this.old_sy][this.old_sx][this.id];
+      orbs[this.sy][this.sx][this.id] = this;
+    }
+
     // Find next target
     let closest = -1;
     if (tick % 5 == 0 && this.locked == 0) {
@@ -54,7 +85,6 @@ module.exports = class Orb {
         }
       }
     }
-
   }
   move() {
     if (this.locked != 0) {
@@ -82,36 +112,7 @@ module.exports = class Orb {
     if (this.locked == 0) this.lockedTimer = 0;
     this.x += this.vx;
     this.y += this.vy; // move
-    if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // if out of bounds
-
-/*
-    if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
-      this.x = 1;
-      this.sx = (this.sx+1+mapSz)%mapSz;
-      this.locked == 0
-    } else if (this.y > sectorWidth) {
-      this.y = 1;
-      if (this.sy == mapSz-1) {
-        this.die();
-      } else {
-        this.sy++;
-        this.locked == 0
-      }
-    } else if (this.x < 0) {
-      this.x = (sectorWidth - 1);
-      this.sx = (this.sx-1+mapSz)%mapSz;
-      this.locked == 0
-    } else if (this.y < 0) {
-      this.y = (sectorWidth - 1);
-      if (this.sy == 0) {
-        this.die();
-      } else {
-        this.sy--;
-        this.locked == 0
-      }
-    }
-*/
-
+    //    if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // if out of bounds
   }
 
   die() {

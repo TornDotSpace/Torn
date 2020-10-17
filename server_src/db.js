@@ -1,4 +1,3 @@
-const PlayerMP = require('./player_mp.js');
 const MONGO_CONNECTION_STR = Config.getValue('mongo_connection_string', 'mongodb://localhost:27017/torn');
 let PLAYER_DATABASE = null;
 let TURRET_DATABASE = null;

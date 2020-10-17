@@ -805,8 +805,8 @@
 			"capacity":2000
 		},
 		{
-			"thrust":0.32,
-			"health":500,
+			"thrust":0.31,
+			"health":520,
 			"agility":0.3,
 			"width":192,
 			"price":1000000,
@@ -814,8 +814,8 @@
 			"capacity":20000
 		},
 		{
-			"thrust":0.5,
-			"health":250,
+			"thrust":0.48,
+			"health":260,
 			"agility":0.4,
 			"width":128,
 			"weapons":10,
@@ -823,8 +823,8 @@
 			"capacity":5000
 		},
 		{
-			"thrust":0.22,
-			"health":800,
+			"thrust":0.2,
+			"health":900,
 			"agility":0.3,
 			"width":192,
 			"price":2500000,
@@ -832,8 +832,8 @@
 			"capacity":999999
 		},
 		{
-			"thrust":0.35,
-			"health":500,
+			"thrust":0.32,
+			"health":550,
 			"agility":0.35,
 			"width":192,
 			"price":3000000,
@@ -841,8 +841,8 @@
 			"capacity":10000
 		},
 		{
-			"thrust":0.4,
-			"health":350,
+			"thrust":0.37,
+			"health":380,
 			"agility":0.5,
 			"width":128,
 			"price":5000000,
@@ -850,8 +850,8 @@
 			"capacity":5000
 		},
 		{
-			"thrust":0.32,
-			"health":750,
+			"thrust":0.3,
+			"health":800,
 			"agility":0.25,
 			"width":192,
 			"price":10000000,
@@ -859,8 +859,8 @@
 			"capacity":20000
 		},
 		{
-			"thrust":0.28,
-			"health":900,
+			"thrust":0.25,
+			"health":1000,
 			"agility":0.2,
 			"width":200,
 			"price":12000000,

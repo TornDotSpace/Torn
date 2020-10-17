@@ -365,7 +365,7 @@ module.exports = function initNetcode() {
     socket.on('chat', function(data) { // when someone sends a chat message
       if (typeof data === 'undefined' || typeof data.msg !== 'string' || data.msg.length > 128) return;
 
-      data.msg = data.msg.trim(); // "   hi   " => "hi"
+      data.msg = data.msg.trim(); // "   h i   " => "h i"
 
       if (player == 0 || data.msg.length == 0) return;
 
@@ -375,11 +375,11 @@ module.exports = function initNetcode() {
       }
 
       console.log('[CHAT] ' + player.name + ': ' + data.msg); // print their raw message
-      if (!player.name.includes('[')) data.msg = data.msg.replace(/`/ig, ''); // Normies can't triforce
+      if (!player.name.includes('[')) data.msg = data.msg.replace(/`/ig, ''); // Non-tags can't use colored text
 
       const time = Date.now();
 
-      if (data.msg.startsWith('/') && !data.msg.startsWith('/me') && !data.msg.startsWith('/r') && !data.msg.startsWith('/pm ')) {
+      if (data.msg.startsWith('/') && !data.msg.startsWith('/me ') && !data.msg.startsWith('/r ') && !data.msg.startsWith('/pm ')) {
         runCommand(player, data.msg); return;
       } // non spammable commands
 
@@ -397,34 +397,42 @@ module.exports = function initNetcode() {
       delete muteTable[player.name];
       delete ipMuteTable[player.ip];
 
-      data.msg = filter.clean(data.msg); // censor
+      newmsg = filter.clean(data.msg); // censor swear words
 
-      if (data.msg.startsWith('/')) runCommand(player, data.msg); // spammable commands
+      if (newmsg.startsWith('/')) runCommand(player, newmsg); // spammable commands
 
-      const repeat = data.msg === player.lastmsg;
+      const repeat = newmsg === player.lastmsg;
+      player.lastmsg = newmsg;
       player.chatTimer += 150; // note this as potential spam
-      if (repeat) player.chatTimer*=2.5;
+      if (repeat) player.chatTimer*=2;
       if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
         muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
         chatAll('~`violet~`' + player.name + '~`yellow~` has been muted for ' + Math.floor(player.muteCap / 25) + ' seconds!');
+        if (Config.getValue('enable_discord_moderation', false)) {
+          global.autoMuteNote(player.name + ' has been auto-muted for ' + Math.floor(player.muteCap / 25) + ' seconds!');
+        }
         player.muteCap *= repeat?4:2; // their next mute will be twice as long
         return;
       }
 
-      if (!data.msg.startsWith('/')) { // otherwise send the text
+      if (!newmsg.startsWith('/')) { // otherwise send the text
         let spaces = '';
         for (let i = player.name.length; i < 16; i++) spaces += ' '; // align the message
-        const finalMsg = spaces + player.nameWithColor() + ': ' + data.msg;
+        const finalMsg = spaces + player.nameWithColor() + ': ' + newmsg;
 
         // Send it to the client up to what chat room theyre in
         if (player.globalChat == 2 && player.guild === '') socket.emit('chat', {msg: ('~`#ff0000~`You are not in a guild!')});
         else playerChat(finalMsg, player.globalChat, player.color, player.guild);
 
-        if(Config.getValue('enable_discord_moderation',false)){
-          fewSpaces = ((data.msg.match(/ /g) || []).length)<Math.floor(data.msg.length/15)
+        if (Config.getValue('enable_discord_moderation', false)) {
+          fewSpaces = ((newmsg.match(/ /g) || []).length)<Math.floor(newmsg.length/15);
           frequentMsgs = player.chatTimer > 400;
-          allUpperCase = data.msg===data.msg.toUpperCase() && data.msg.length > 6;
-          if(frequentMsgs || fewSpaces || repeat || allUpperCase) detectSpam(player.name, data.msg);
+          allUpperCase = newmsg===newmsg.toUpperCase() && newmsg.length > 6;
+          isSweary = newmsg!==data.msg;
+          if (frequentMsgs || fewSpaces || isSweary || repeat || allUpperCase) {
+            detectSpam(player.name, newmsg);
+            player.chatTimer+=75;
+          }
         }
       }
     });

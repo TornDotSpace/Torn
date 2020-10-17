@@ -156,6 +156,7 @@ require('./server_src/db.js');
 connectToDB();
 
 require('./server_src/bot.js');
+require('./server_src/universe/asteroid.js');
 
 let broadcastMsg=0;
 let lag = 0; let ops = 0; // ticks elapsed since boot, lag, count of number of instances of update() running at once
@@ -419,15 +420,15 @@ function update() {
   for (let y = 0; y < mapSz; y++) {
     for (let x = 0; x < mapSz; x++) {
       const gameState = {
-        vorts: new Array(),
-        players: new Array(),
-        mines: new Array(),
-        packs: new Array(),
-        beams: new Array(),
-        blasts: new Array(),
-        asteroids: new Array(),
-        orbs: new Array(),
-        missiles: new Array(),
+        vorts: [],
+        players: [],
+        mines: [],
+        packs: [],
+        beams: [],
+        blasts: [],
+        asteroids: [],
+        orbs: [],
+        missiles: [],
         base: undefined,
       };
 
