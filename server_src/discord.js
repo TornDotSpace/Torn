@@ -3,7 +3,7 @@ const client = new Discord.Client();
 const config = require("../config/discordconfig.json");
 
 client.on("ready", () => {
-  console.log("Discord bot has started");
+  client.channels.cache.get('766664211581239326').send("Bot has started.");
   client.user.setActivity("torn.space");
 });
 
