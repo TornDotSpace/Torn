@@ -82,7 +82,9 @@ module.exports = class Orb {
     if (this.locked == 0) this.lockedTimer = 0;
     this.x += this.vx;
     this.y += this.vy; // move
+    if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // if out of bounds
 
+/*
     if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
       this.x = 1;
       this.sx = (this.sx+1+mapSz)%mapSz;
@@ -108,6 +110,7 @@ module.exports = class Orb {
         this.locked == 0
       }
     }
+*/
 
   }
 
