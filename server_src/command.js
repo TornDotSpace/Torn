@@ -199,41 +199,15 @@ cmds['/broadcast'] = new Command('/broadcast <msg> - Send a message to the whole
 });
 
 cmds['/modmute'] = new Command('/modmute <player> <minutesToMute> - Mutes the specified player server-wide.', MODPLUS, function(ply, msg) {
-  if (msg.split(' ').length != 3) {
-    ply.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/modmute playernamewithouttag minutes\''}); return;
-  } // split looks like {"/mute", "name", "minutesToMute"}
-  const name = msg.split(' ')[1];
-  const player = getPlayerFromName(name);
-  if (player == -1) {
-    ply.socket.emit('chat', {msg: 'Player \''+name+'\' not found.'});
-    return;
-  }
-  const minutes = parseFloat(msg.split(' ')[2]);
-  if (typeof minutes !== 'number') return;
-
-  if (minutes < 0) return;
-
-  muteTable[player.name] = (Date.now() + (minutes * 60 * 1000));
-  chatAll('~`violet~`' + player.name + '~`yellow~` has been muted for '+minutes+' minutes!');
+  //Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
+  const returnmsg = modmute(ply,msg);
+  ply.socket.emit('chat',{msg:returnmsg});
 });
 
 cmds['/ipmute'] = new Command('/ipmute <player> <minutesToMute> - Mutes the specified IP server-wide.', MODPLUS, function(ply, msg) {
-  if (msg.split(' ').length != 3) {
-    ply.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/ipmute playernamewithouttag minutes\''}); return;
-  } // split looks like {"/mute", "name", "minutesToMute"}
-  const name = msg.split(' ')[1];
-  const player = getPlayerFromName(name);
-  if (player == -1) {
-    ply.socket.emit('chat', {msg: 'Player \''+name+'\' not found.'});
-    return;
-  }
-  const minutes = parseFloat(msg.split(' ')[2]);
-  if (typeof minutes !== 'number') return;
-
-  if (minutes < 0) return;
-
-  ipMuteTable[player.ip] = (Date.now() + (minutes * 60 * 1000));
-  chatAll('~`violet~`' + player.name + '~`yellow~` has been muted for '+minutes+' minutes!');
+  //Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
+  const returnmsg = ipmute(ply,msg);
+  ply.socket.emit('chat',{msg:returnmsg});
 });
 
 

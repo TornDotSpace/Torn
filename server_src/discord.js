@@ -17,21 +17,21 @@ global.autoMuteNote = function(msg){
 
 client.on("message", async message => {
   if(message.author.bot) return;
-
+  if(!message.startsWith('/')) return;
   const args = message.content.trim().split(/ +/g);
-  
-  if(args.length != 3) return;
 
-  if(args[0] == "/mute") {
-    // Limited to mods and admins.
-    if(!message.member.roles.cache.some(r=>["Torn Moderator"].includes(r.name)))
-      return message.reply("Sorry, you don't have permissions to use this!");
-    
-    const minutes = Number(args[2]);
-    const name = args[1].toLowerCase();
-    muteTable[name] = (Date.now() + (minutes * 60 * 1000));
-    client.channels.cache.get('766664211581239326').send(name+" muted for "+minutes+" minutes");
-    chatAll('~`violet~`' + name + '~`yellow~` has been muted for ' + minutes + ' minutes!');
+  // Limited to mods and admins.
+  if(!message.member.roles.cache.some(r=>["Torn Moderator"].includes(r.name)))
+    return message.reply("Sorry, you don't have permissions to use this!");
+
+  if(args[0] == "/modmute") {
+    returnmsg = modmute(message.content.trim());
+    client.channels.cache.get('766664211581239326').send(returnmsg);
+  } else if(args[0] == "/ipmute") {
+    returnmsg = ipmute(message.content.trim());
+    client.channels.cache.get('766664211581239326').send(returnmsg);
+  } else if(args[0] == "/mute") {
+    client.channels.cache.get('766664211581239326').send("You must either use /modmute or /ipmute!");
   }
   
 });
