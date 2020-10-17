@@ -207,7 +207,7 @@ class Player {
         else if (wep.name === 'Hull Nanobots') this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
         else if (wep.name === 'Photon Cloak') this.disguise = 200;// 6s
         else if (wep.name === 'Warp Drive'){
-	   this.speed = weps[29].speed*(this.ship == 16 ? 1.5 : 1); //R16 gets a 50% extra boost from it
+	   this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); //R16 gets a 50% extra boost from it
            this.speed+=100*(this.energy2-1); //the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it. 
        }
       }
@@ -855,7 +855,7 @@ class Player {
     if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
     if (this.ship == 21){
-      this.charge += -4.5*t; // Emp jams the rank 21 ship.
+      this.charge += -3*t*this.energy2; // Emp jams the rank 21 ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
       t *= 0; // Emp jams the rank 21 ship, not fully disables.
       if (this.health*1.05 < this.maxHealth) this.health*=1.05;// It will also heal the ship a very small bit.
 
