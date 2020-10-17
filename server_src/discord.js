@@ -4,11 +4,15 @@ const config = require("../config/discordconfig.json");
 
 client.on("ready", () => {
   console.log("Discord bot has started");
-  client.user.setActivity("Playing torn.space");
+  client.user.setActivity("torn.space");
 });
 
 global.detectSpam = function(user, msg){
   client.channels.cache.get('766664211581239326').send(user + ': ' + msg);
+}
+
+global.autoMuteNote = function(msg){
+  client.channels.cache.get('766664211581239326').send(msg);
 }
 
 client.on("message", async message => {

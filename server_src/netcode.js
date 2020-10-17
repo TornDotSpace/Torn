@@ -407,6 +407,8 @@ module.exports = function initNetcode() {
       if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
         muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
         chatAll('~`violet~`' + player.name + '~`yellow~` has been muted for ' + Math.floor(player.muteCap / 25) + ' seconds!');
+        if(Config.getValue('enable_discord_moderation',false))
+          global.autoMuteNote(player.name + ' has been auto-muted for ' + Math.floor(player.muteCap / 25) + ' seconds!');
         player.muteCap *= repeat?4:2; // their next mute will be twice as long
         return;
       }
@@ -424,7 +426,10 @@ module.exports = function initNetcode() {
           fewSpaces = ((data.msg.match(/ /g) || []).length)<Math.floor(data.msg.length/15)
           frequentMsgs = player.chatTimer > 400;
           allUpperCase = data.msg===data.msg.toUpperCase() && data.msg.length > 6;
-          if(frequentMsgs || fewSpaces || repeat || allUpperCase) detectSpam(player.name, data.msg);
+          if(frequentMsgs || fewSpaces || repeat || allUpperCase) {
+            detectSpam(player.name, data.msg);
+            player.chatTimer+=75;
+          }
         }
       }
     });
