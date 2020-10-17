@@ -207,7 +207,7 @@ class Player {
         else if (wep.name === 'Hull Nanobots') this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
         else if (wep.name === 'Photon Cloak') this.disguise = 200;// 6s
         else if (wep.name === 'Warp Drive'){
-	   this.speed = weps[29].speed*(this.ship == 16 ? 1.5 : 1); //R16 gets a 50% extra boost from it
+	   this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); //R16 gets a 50% extra boost from it
            this.speed+=100*(this.energy2-1); //the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it. 
        }
       }
