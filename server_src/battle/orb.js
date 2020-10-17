@@ -49,7 +49,7 @@ module.exports = class Orb {
 
     if (old_sx !== this.sx || old_sy !== this.sy) {
       this.locked = 0;
-      delete orbs[this.old_sy][this.old_sx][this.id];
+      delete orbs[old_sy][old_sx][this.id];
       orbs[this.sy][this.sx][this.id] = this;
     }
 

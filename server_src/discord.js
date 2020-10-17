@@ -17,7 +17,7 @@ global.autoMuteNote = function(msg) {
 
 client.on("message", async message => {
   if(message.author.bot) return;
-  if(!message.startsWith('/')) return;
+  if(!message.content.startsWith('/')) return;
   const args = message.content.trim().split(/ +/g);
 
   // Limited to mods and admins.
