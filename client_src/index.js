@@ -517,6 +517,38 @@ function spin(v) {
   }
 }
 
+/*function rotate(v) {        Upcoming feature. DO NOT REMOVE!
+  for (const i in dots) {
+    const dot = dots[i];
+    const dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
+    const ang = Math.atan2(dot.y, dot.x) + v / 28;
+    const cos = Math.cos(ang) * dist;
+    const sin = Math.sin(ang) * dist;
+    dot.x = cos;
+    dot.y = sin;
+  }
+  for (const i in quasar) {
+    const dot = quasar[i];
+    const dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
+    const ang = Math.atan2(dot.y, dot.x) + v / 28;
+    const cos = Math.cos(ang) * dist;
+    const sin = Math.sin(ang) * dist;
+    dot.x = cos;
+    dot.y = sin;
+  }
+  for (let i = 0; i < mapSz+1; i++) {
+    for (let j = 0; j < mapSz+1; j++) {
+      const dot = sectorPoints[i][j];
+      const dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
+      const ang = Math.atan2(dot.y, dot.x) + v / 28;
+      const cos = Math.cos(ang) * dist;
+      const sin = Math.sin(ang) * dist;
+      dot.x = cos;
+      dot.y = sin;
+    }
+  }
+}*/
+
 function center3D(xxp, yyp, zzp) {
   for (const i in dots) {
     dots[i].x-=xxp;
