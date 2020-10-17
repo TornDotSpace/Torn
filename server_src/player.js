@@ -1,6 +1,5 @@
 const Blast = require('./battle/blast.js');
 const Bullet = require('./battle/bullet.js');
-const Asteroid = require('./universe/asteroid.js');
 const Missile = require('./battle/missile.js');
 const Base = require('./universe/base.js');
 const Orb = require('./battle/orb.js');
@@ -206,10 +205,10 @@ class Player {
         if (wep.name === 'Supercharger') this.superchargerTimer = 1500;// 1 min
         else if (wep.name === 'Hull Nanobots') this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
         else if (wep.name === 'Photon Cloak') this.disguise = 200;// 6s
-        else if (wep.name === 'Warp Drive'){
-	   this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); //R16 gets a 50% extra boost from it
-           this.speed+=100*(this.energy2-1); //the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it. 
-       }
+        else if (wep.name === 'Warp Drive') {
+	   this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
+          this.speed+=100*(this.energy2-1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it.
+        }
       }
 
 
@@ -232,19 +231,19 @@ class Player {
         }
       } else if (wep.name === 'Electromagnet') { // identical structurally to pulse wave, see above for comments.
         if (global.tick % 2 == 0) {
-        for (const i in players[this.sy][this.sx]) {
-          const p = players[this.sy][this.sx][i];
-          if (p.color !== this.color) { // only enemies
-            const d2 = squaredDist(this, p); // distance squared between me and them
-            if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
-            const ang = angleBetween(this, p); // angle from the horizontal
-            const vel = -0.0000001; // this is just symbolic, to jam warp drive
-            p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but this jams Warp Drive
-            p.vy += Math.sin(ang) * vel;
-            p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
-            p.updatePolars(); // We changed their rectangular velocity.
+          for (const i in players[this.sy][this.sx]) {
+            const p = players[this.sy][this.sx][i];
+            if (p.color !== this.color) { // only enemies
+              const d2 = squaredDist(this, p); // distance squared between me and them
+              if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
+              const ang = angleBetween(this, p); // angle from the horizontal
+              const vel = -0.0000001; // this is just symbolic, to jam warp drive
+              p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but this jams Warp Drive
+              p.vy += Math.sin(ang) * vel;
+              p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
+              p.updatePolars(); // We changed their rectangular velocity.
+            }
           }
-        }
           for (const i in asts[this.sy][this.sx]) {
             const a = asts[this.sy][this.sx][i];
             const d2 = squaredDist(this, a);
@@ -846,19 +845,18 @@ class Player {
     if (this.health > this.maxHealth) this.health = this.maxHealth;
     if (this.health < 0) this.die(origin);
 
-    if(d>0) note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-    if(d<0) note('+' + Math.floor(Math.abs(d)), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    if (d>0) note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    if (d<0) note('+' + Math.floor(Math.abs(d)), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
     this.emit('dmg', {});
     return this.health < 0;
   }
   EMP(t) {
     if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
-    if (this.ship == 21){
+    if (this.ship == 21) {
       this.charge += -3*t*this.energy2; // Emp jams the rank 21 ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
       t *= 0; // Emp jams the rank 21 ship, not fully disables.
       if (this.health*1.05 < this.maxHealth) this.health*=1.05;// It will also heal the ship a very small bit.
-
     }
     this.empTimer = t;
 
@@ -881,9 +879,9 @@ class Player {
         const p = players[this.sy][this.sx][i];
         if (p.color !== this.color) p.EMP(15);
       }
-      if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive){
+      if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive) {
         const b = bases[this.sy][this.sx];
-	b.EMP(150);
+        b.EMP(150);
       }
     }
 

@@ -63,7 +63,6 @@ class Bot extends Player {
 
     // Find closest enemy and any friendly in the sector
     let target = 0; let close = 100000000;
-    const anyFriend = 0;
     let friendlies = 0; let enemies = 0;// keep track of the player counts in the sector
     for (const p in players[this.sy][this.sx]) {
       const player = players[this.sy][this.sx][p];

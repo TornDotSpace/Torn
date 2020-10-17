@@ -23,6 +23,10 @@ module.exports = {
     'require-jsdoc': 0,
     'camelcase': 0,
     'valid-jsodc': 0,
-    'no-tabs': 0
+    'no-tabs': 0,
+    'guard-for-in': 0,
+    'no-mixed-spaces-and-tabs': 0,
+    'brace-style': 0,
+    'new-cap': 0,
   },
 };

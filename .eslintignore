@@ -1,2 +1,4 @@
 client/
 tools/
+client_src/react.js
+client_src/localizer.js
