@@ -213,7 +213,9 @@ cmds['/ipmute'] = new Command('/ipmute <player> <minutesToMute> - Mutes the spec
 
 // ADMINSTRATOR COMMANDS
 // These commands are accessible to adminstrators in the game
-cmds['/reboot'] = new Command('/reboot - Schedules a restart of the shard', ADMINPLUS, initReboot);
+cmds['/reboot'] = new Command('/reboot - Schedules a restart of the shard with 120 second countdown', ADMINPLUS, initReboot);
+
+cmds['/fastreboot'] = new Command('/fastreboot - Schedules a restart of the shard, with 10 second countdown instead of 120', ADMINPLUS, initFastReboot);
 
 cmds['/tp'] = new Command('/tp <player> - Teleport to the player.', ADMINPLUS, function(ply, msg) {
   if (msg.split(' ').length != 2) {

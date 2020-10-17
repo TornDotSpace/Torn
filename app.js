@@ -40,6 +40,27 @@ global.initReboot = function() {
   setTimeout(shutdown, 120 * 1000);
 };
 
+global.initFastReboot = function() {
+  console.log('\nInitializing fast server reboot...\n');
+  chatAll('~`#f00~`Server restarting in 10 seconds. Save your progress!');
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 5...');
+  }, 5 * 1000);
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 4...');
+  }, 6 * 1000);
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 3...');
+  }, 7 * 1000);
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 2...');
+  }, 8 * 1000);
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 1...');
+  }, 9 * 1000);
+  setTimeout(shutdown, 10 * 1000);
+};
+
 global.saveTurrets = function() {
   // save em
   for (let i = 0; i < mapSz; i++) {
