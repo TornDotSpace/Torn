@@ -131,7 +131,7 @@ let myGuild = {};
 let useOldMap = false;
 
 const chatLength = 40; let chatScroll = 0; let globalChat = 0; let preChatArr = {}; let chati = 0;
-const lorePage = 0; let homepageTimer = 0; let loreTimer = 0;
+let homepageTimer = 0; let loreTimer = 0;
 const chatRooms = [mEng[197], 'Team Chat', 'Guild Chat'];
 const messages = [{}, {}, {}];
 clearChat();
@@ -202,11 +202,6 @@ const quasar = [];
 let killStreak = 0; let killStreakTimer = -1;
 let badWeapon = 0;
 let mouseDown = false;
-let xxa = sx;
-let yya = sy;
-xxa *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-yya *= 256 / mapSz * (2 * mapSz - 1) / (2 * mapSz);
-let planetTimerSec = 0;
 let flash = 0;
 let hyperdriveTimer = 0;
 let didW = false; let didSteer = false; let currTut = 0;
@@ -521,37 +516,7 @@ function spin(v) {
     }
   }
 }
-function rotate(v) {
-  for (const i in dots) {
-    const dot = dots[i];
-    const dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
-    const ang = Math.atan2(dot.y, dot.x) + v / 28;
-    const cos = Math.cos(ang) * dist;
-    const sin = Math.sin(ang) * dist;
-    dot.x = cos;
-    dot.y = sin;
-  }
-  for (const i in quasar) {
-    const dot = quasar[i];
-    const dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
-    const ang = Math.atan2(dot.y, dot.x) + v / 28;
-    const cos = Math.cos(ang) * dist;
-    const sin = Math.sin(ang) * dist;
-    dot.x = cos;
-    dot.y = sin;
-  }
-  for (let i = 0; i < mapSz+1; i++) {
-    for (let j = 0; j < mapSz+1; j++) {
-      const dot = sectorPoints[i][j];
-      const dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
-      const ang = Math.atan2(dot.y, dot.x) + v / 28;
-      const cos = Math.cos(ang) * dist;
-      const sin = Math.sin(ang) * dist;
-      dot.x = cos;
-      dot.y = sin;
-    }
-  }
-}
+
 function center3D(xxp, yyp, zzp) {
   for (const i in dots) {
     dots[i].x-=xxp;
@@ -777,7 +742,7 @@ function r3DMap() {
     spin(-(sx+5)*20);
   }
 
-  let c3dx; let c3dy; let c3dz;
+  let c3dx; let c3dy;
 
   minictx.strokeStyle = 'gray';
   minictx.lineWidth = 1;
@@ -816,16 +781,12 @@ function r3DMap() {
       // render lines
       const xx1 = dot1.x / appliedZoom;
       const yy1 = dot1.y / appliedZoom;
-      const zz1 = dot1.z / appliedZoom;
       const xx2 = dot2.x / appliedZoom;
       const yy2 = dot2.y / appliedZoom;
-      const zz2 = dot2.z / appliedZoom;
       const xx3 = dot3.x / appliedZoom;
       const yy3 = dot3.y / appliedZoom;
-      const zz3 = dot3.z / appliedZoom;
       const xx4 = dot4.x / appliedZoom;
       const yy4 = dot4.y / appliedZoom;
-      const zz4 = dot4.z / appliedZoom;
       minictx.beginPath();
       minictx.moveTo(104+xx3, 104+yy3);
       minictx.lineTo(104+xx1, 104+yy1);
@@ -1198,7 +1159,6 @@ function lastTechLevel(x) {
   return Math.floor(x*8.-.001)/8.;
 }
 function rStats() {
-
   ctx.font = '14px ShareTech';
   ctx.textAlign = 'left';
   const d = new Date();
@@ -1428,7 +1388,6 @@ function rBaseGui() {
   ctx.lineWidth = 2;
   ctx.textAlign = 'right';
   ctx.fillStyle = 'yellow';
-  const info = {};
   rTexts(-1);
 
   ctx.font = '14px ShareTech';
@@ -1500,7 +1459,6 @@ socket.on('connect_error', function(error) {
 
 // packet handling
 socket.on('posUp', function(data) {
-  planetTimerSec = data.planetTimer / 25;
   px = data.x;
   py = data.y;
   phealth = data.health;
@@ -1583,8 +1541,6 @@ socket.on('update', function(data) {
   if (delta.base !== undefined) {
     base_update(delta.base);
   }
-
-  planetTimerSec = data.planetTimer / 25;
 
   updateBooms();
   updateNotes();
@@ -2210,8 +2166,6 @@ setInterval(function() {
   fps = frames;
   ups = uframes;
   uframes = frames = 0;
-  const d = new Date();
-  const time = d.getTime();
 }, 1000);
 
 setInterval(function() {
@@ -2722,21 +2676,7 @@ function colorSelect(col, red, blue, green) {
   if (col === 'blue') return blue;
   return green;
 }
-function pdist(x, sx, sy) {
-  const i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
-  const i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
-  return (Math.cbrt(Math.abs(Math.tan(x))) % i2) * 3500 * i2 + 800 * i1 + 600;
-}
-function maxPD(sx, sy) {
-  const i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
-  const i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
-  return i2 * 3500 * i2 + 800 * i1 + 600;
-}
-function minPD(sx, sy) {
-  const i1 = ((sx * sx * sx + sy * sy) % 5 + 1) / 2.23; // Geometric mean of 5 and 1
-  const i2 = ((sx * sx + sy) % 5 + 1) / 2.23;
-  return 800 * i1 + 600;
-}
+
 function square(x) {
   return x * x;
 }
@@ -2755,10 +2695,7 @@ function CoherentNoise(x) {
 function lerp(a, b, w) {
   return a * (1 - w) + b * w;
 }
-function cerp(a, b, w) {
-  const fancyweight = 3*w*w-2*w*w*w;
-  return lerp(a, b, fancyweight);
-}
+
 function expToLife() {
   return Math.floor(guest ? 0 : 800000 * Math.atan(experience / 600000.)) + 500;
 }
@@ -2865,7 +2802,7 @@ function updateTrails() {
       if (trail > 15) particleCount /= 6;
       else if (mod != 0) particleCount *= 2.5;
       for (let j = 0; j < particleCount; j++) {
-        const rando = Math.random() * selfo.speed; const rando2 = Math.random();
+        const rando = Math.random() * selfo.speed;
         let col = (((96 + Math.floor(Math.random() * 64)) << 16) + ((96 + Math.floor(Math.random() * 128)) << 8) + 255 - Math.floor(Math.random() * 64)).toString(16);
         if (mod == 1) col = (((192 + Math.floor(Math.random() * 64)) << 16) + (Math.floor(Math.random() * 64) << 8) + Math.floor(Math.random() * 92)).toString(16);
         else if (mod == 2) {
@@ -3095,7 +3032,6 @@ function drawStar(ox, oy, spikes, outerRadius, innerRadius) {
   ctx.fill();
 }
 function rTexts(lag, arr) {
-  const ore = iron + silver + platinum + copper;
   ctx.font = '14px ShareTech';
   ctx.textAlign = 'right';
   ctx.fillStyle = 'yellow';
@@ -3328,7 +3264,6 @@ function renderBG(more) {
   ctx.fillStyle = 'black';
   ctx.fillRect(0, 0, w, h);
   ctx.font = '14px ShareTech';
-  const diagDist = ((sx + sy) * sectorWidth + px + py) / sectorWidth - (mapSz - 1);
   const add = more?1:0;
   const img = Img.spc;
   for (let i = 0; i < ((hyperdriveTimer > 0) ? 3 : 1); i++) {
@@ -3461,7 +3396,6 @@ function rRadar() {
   ctx.stroke();
 
   const r = va2*3840 - 1280;
-  const r2 = square(r);
   const r2z2 = square(r*radarZoom);
   const distFactor = 96/r/radarZoom;
   ctx.globalAlpha = ctx.lineWidth = .5;
@@ -3525,7 +3459,6 @@ function rRadar() {
       ctx.closePath();
     }
   }
-  const t = d.getTime() * 500;
   ctx.fillStyle = 'white';
   for (const p_pack in playersInfo) {
     const p = playersInfo[p_pack];
@@ -4054,7 +3987,6 @@ function rPlanets() {
   if (rendX < -150 || rendX > w+150 || rendY < -150 || rendY > h+220) return;
 
   const d = new Date();
-  const t = d.getTime() * 500;
   const stime = d.getTime() / 150000;
 
   const imgi = (sx + sy * mapSz) % 5 + 1;
@@ -4334,7 +4266,6 @@ function rAstPointer(nearE) {
   rPointerArrow(Img.orangeArrow, angle, text, 'orange');
 }
 function rBlackHoleWarning(x, y) {
-  const pw = ships[ship].width;
   const dx = x - px;
   const dy = y - py;
   const angle = Math.atan2(dy, dx);

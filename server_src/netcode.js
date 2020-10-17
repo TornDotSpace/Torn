@@ -408,8 +408,9 @@ module.exports = function initNetcode() {
       if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
         muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
         chatAll('~`violet~`' + player.name + '~`yellow~` has been muted for ' + Math.floor(player.muteCap / 25) + ' seconds!');
-        if(Config.getValue('enable_discord_moderation',false))
+        if (Config.getValue('enable_discord_moderation', false)) {
           global.autoMuteNote(player.name + ' has been auto-muted for ' + Math.floor(player.muteCap / 25) + ' seconds!');
+        }
         player.muteCap *= repeat?4:2; // their next mute will be twice as long
         return;
       }
@@ -423,12 +424,12 @@ module.exports = function initNetcode() {
         if (player.globalChat == 2 && player.guild === '') socket.emit('chat', {msg: ('~`#ff0000~`You are not in a guild!')});
         else playerChat(finalMsg, player.globalChat, player.color, player.guild);
 
-        if(Config.getValue('enable_discord_moderation',false)){
-          fewSpaces = ((newmsg.match(/ /g) || []).length)<Math.floor(newmsg.length/15)
+        if (Config.getValue('enable_discord_moderation', false)) {
+          fewSpaces = ((newmsg.match(/ /g) || []).length)<Math.floor(newmsg.length/15);
           frequentMsgs = player.chatTimer > 400;
           allUpperCase = newmsg===newmsg.toUpperCase() && newmsg.length > 6;
           isSweary = newmsg!==data.msg;
-          if(frequentMsgs || fewSpaces || isSweary || repeat || allUpperCase) {
+          if (frequentMsgs || fewSpaces || isSweary || repeat || allUpperCase) {
             detectSpam(player.name, newmsg);
             player.chatTimer+=75;
           }
