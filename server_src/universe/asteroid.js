@@ -62,11 +62,55 @@ class Asteroid {
   move() {
     this.angle += this.va;
     if (Math.abs(this.vx) + Math.abs(this.vy) < .5) return;
-    this.vx *= .997;
+    this.vx *= .997; //Dust particle resistance
     this.vy *= .997;
-    this.x += this.vx;
-    this.y += this.vy;
-    if (isOutOfBounds(this)) this.die(0);
+    let gvx = 0;
+    let gvy = 0;
+      for (const i in asts[this.sy][this.sx]) {
+        const ast = asts[this.sy][this.sx][i];
+        if (ast.id !== this.id){ //Not going to count itself's gravity.
+          const dist = squaredDist(ast, this);
+          const ang = angleBetween(this, p); // angle from the horizontal
+//          const density = this.metal+1; // Density of the metal.
+          const vel =  (this.health) / (25* Math.log(dist)); // compute how fast to move by
+          gvx += Math.cos(ang) * vel; // actually accelerate them. Reason I'm not using vx is to allow electromag to have a lasting effect (otherwise they don't have electromagnet inertia)
+          gvy += Math.sin(ang) * vel;
+        }
+    }
+    this.x += this.vx + gvx;
+    this.y += this.vy + gvy;
+
+    const old_sx=this.sx;
+    const old_sy=this.sy;
+    if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
+      this.x = 1;
+      this.sx = (this.sx+1+mapSz)%mapSz;
+    } else if (this.y > sectorWidth) {
+      if (this.sy == mapSz-1) {
+        this.die(0);
+      } else {
+        this.y = 1;
+        this.sy++;
+      }
+    } else if (this.x < 0) {
+      this.x = (sectorWidth - 1);
+      this.sx = (this.sx-1+mapSz)%mapSz;
+    } else if (this.y < 0) {
+      if (this.sy == 0) {
+        this.die(0);
+      } else {
+        this.y = (sectorWidth - 1);
+        this.sy--;
+      }
+    }
+
+    if (old_sx !== this.sx || old_sy !== this.sy) {
+      this.vx *= .2; //Ensuring that people can't just throw asteroids at high speed through sectors
+      this.vy *= .2;
+      delete asts[old_sy][old_sx][this.id];
+      asts[this.sy][this.sx][this.id] = this;
+    }
+//    if (isOutOfBounds(this)) this.die(0);
   }
   die(b) {
     // Bugfix for ion beam destroying multiple times

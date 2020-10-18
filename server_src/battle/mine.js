@@ -11,7 +11,7 @@ module.exports = class Mine {
 
     this.x = ownr.x,
     this.y = ownr.y,
-    this.vx = Math.cos(ownr.angle)*wepns[weaponID].speed, // grenades are the only mines that move
+    this.vx = Math.cos(ownr.angle)*wepns[weaponID].speed, // grenades are the only mines that move on its own
     this.vy = Math.sin(ownr.angle)*wepns[weaponID].speed,
     this.sx = ownr.sx,
     this.sy = ownr.sy,
@@ -31,6 +31,38 @@ module.exports = class Mine {
   move() {
     this.x += this.vx;
     this.y += this.vy;
+
+    if (this.wepnID == 44){
+      const old_sx=this.sx;
+      const old_sy=this.sy;
+      if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
+        this.x = 1;
+        this.sx = (this.sx+1+mapSz)%mapSz;
+      } else if (this.y > sectorWidth) {
+        if (this.sy == mapSz-1) {
+          this.die();
+        } else {
+          this.y = 1;
+          this.sy++;
+        }
+      } else if (this.x < 0) {
+        this.x = (sectorWidth - 1);
+        this.sx = (this.sx-1+mapSz)%mapSz;
+      } else if (this.y < 0) {
+        if (this.sy == 0) {
+          this.die();
+        } else {
+          this.y = (sectorWidth - 1);
+          this.sy--;
+        }
+      }
+
+      if (old_sx !== this.sx || old_sy !== this.sy) {
+        delete mines[old_sy][old_sx][this.id];
+        mines[this.sy][this.sx][this.id] = this;
+      }
+    } //We could make mines die if out of bounds. Right now campfires are the only ones that cross borders.
+
   }
   doPulse() {
     if (this.time > 25 * 40) this.die(); // pulse has a shorter lifespan
