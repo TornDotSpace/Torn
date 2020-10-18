@@ -328,6 +328,13 @@ a:hover{
 	bottom: 40px;
 }
 
+/*
+$("input[type='text']").bind('focus', function() {
+   $(this).css('box-shadow', 'white');
+
+});
+*/
+
 input:-webkit-autofill { /* Get rid of Google's ugly autofill colors */
     -webkit-box-shadow: 0 0 0 30px white inset;
 }
