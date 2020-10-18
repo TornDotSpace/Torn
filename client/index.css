@@ -1,7 +1,7 @@
 @font-face {
 	font-family: 'ShareTech';
 	src: url('fonts/ShareTech.ttf');
-	font-stretch: 'condensed';
+	font-stretch: condensed;
 }
 
 body, #a {
@@ -47,7 +47,7 @@ body, #a {
 .container{
 	margin: 0 auto;
 	width:65%;
-	float:center;
+	float:none;
 }
 
 .guests, .login{
@@ -145,7 +145,7 @@ body, #a {
 	padding: 5px;
 	margin-top: 4px;
 	margin-bottom: 4px;
-	float: center;
+	float:none;
 }
 
 .register{
@@ -168,7 +168,7 @@ body, #a {
 	padding: 5px;
 	margin-top: 4px;
 	margin-bottom: 4px;
-	float: center;
+	float:none;
 	background-color: rgb(80, 80, 80);
 	color: white;
 	cursor: pointer;
@@ -250,7 +250,7 @@ a:hover{
 }
 
 .chat-input:focus {
-	border:8;
+	border:1px solid pink;
 	background-color: rgba(0, 0, 0, 255);
 }
 
