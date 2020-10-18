@@ -207,7 +207,7 @@ cmds['/email'] = new Command('/email <you@domain.tld> - Sets your email for pass
 cmds['/createguild'] = new Command('/createguild <guildname> - Creates a new guild', VIPPLUS, function(player, msg) {
   const split = msg.split(' ');
   if (split.length != 2) {
-    ply.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/createguild mynewguildname\''});
+    player.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/createguild mynewguildname\''});
     return;
   }
   const playersguild = findGuildFromOwner(player.name);
@@ -217,7 +217,7 @@ cmds['/createguild'] = new Command('/createguild <guildname> - Creates a new gui
   }
   const guildName = split[1];
   if (!guildName.match(/^[0-9a-z]+$/)){
-    ply.socket.emit('chat', {msg: 'Your guild name must only contain numbers and lowercase letters.'});
+    player.socket.emit('chat', {msg: 'Your guild name must only contain numbers and lowercase letters.'});
     return;
   }
   guildList[guildName] = {owner: player.name, team: true, public: false, rank: 40};
@@ -227,7 +227,7 @@ cmds['/createguild'] = new Command('/createguild <guildname> - Creates a new gui
 cmds['/guildprivacy'] = new Command('/guildprivacy - Toggle guild\'s privacy.', VIPPLUS, function(player, msg) {
   const split = msg.split(' ');
   if (split.length != 1) {
-    ply.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/guildprivacy\''});
+    player.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/guildprivacy\''});
     return;
   }
   const playersguild = findGuildFromOwner(player.name);
@@ -242,7 +242,7 @@ cmds['/guildprivacy'] = new Command('/guildprivacy - Toggle guild\'s privacy.', 
 cmds['/guildinvite'] = new Command('/guildinvite - Get guild invite code.', VIPPLUS, function(player, msg) {
   const split = msg.split(' ');
   if (split.length != 1) {
-    ply.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/guildinvite\''});
+    player.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/guildinvite\''});
     return;
   }
   const playersguild = findGuildFromOwner(player.name);
