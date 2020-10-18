@@ -238,7 +238,7 @@
 			"ammo":2,
 			"level":4,
 			"type":"Misc",
-			"bot":false
+			"bot":true
 		},
 		{
 			"name":"Generator",
@@ -286,7 +286,7 @@
 			"ammo":1,
 			"level":7,
 			"type":"Misc",
-			"bot":false
+			"bot":true
 		},
 		{
 			"name":"Electromagnet",
@@ -298,7 +298,7 @@
 			"ammo":-1,
 			"level":8,
 			"type":"Misc",
-			"bot":false
+			"bot":true
 		},
 		{
 			"name":"EMP Blast",
@@ -574,7 +574,7 @@
 			"ammo":-1,
 			"level":8,
 			"type":"Blast",
-			"bot":false
+			"bot":true
 		}
 	],
 	"planets":[
