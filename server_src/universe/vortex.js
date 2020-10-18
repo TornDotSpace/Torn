@@ -109,7 +109,7 @@ module.exports = class Vortex {
         const a = asts[this.sy][this.sx][i];
         const d2 = squaredDist(this, a);
         const ang = angleBetween(this, a);
-        const vel = .25 * this.size / Math.log(d2);    
+        const vel = .01 * this.size / Math.log(d2);    
         a.vx += Math.cos(ang) * vel;
         a.vy += Math.sin(ang) * vel;
 
