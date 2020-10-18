@@ -676,7 +676,7 @@
 			"width":64,
 			"price":7500,
 			"weapons":1,
-			"capacity":4000
+			"capacity":6000
 		},
 		{
 			"thrust":0.8,
@@ -685,7 +685,7 @@
 			"width":64,
 			"price":12500,
 			"weapons":2,
-			"capacity":4800
+			"capacity":8000
 		},
 		{
 			"thrust":0.7,
@@ -694,7 +694,7 @@
 			"width":64,
 			"price":20000,
 			"weapons":3,
-			"capacity":10000
+			"capacity":15000
 		},
 		{
 			"thrust":0.9,
@@ -703,7 +703,7 @@
 			"width":64,
 			"price":25000,
 			"weapons":3,
-			"capacity":2000
+			"capacity":3000
 		},
 		{
 			"thrust":0.7,
@@ -712,7 +712,7 @@
 			"width":64,
 			"price":40000,
 			"weapons":4,
-			"capacity":1800
+			"capacity":2500
 		},
 		{
 			"thrust":0.6,
@@ -721,7 +721,7 @@
 			"width":64,
 			"price":50000,
 			"weapons":5,
-			"capacity":4000
+			"capacity":5000
 		},
 		{
 			"thrust":0.65,
@@ -730,7 +730,7 @@
 			"width":64,
 			"price":75000,
 			"weapons":6,
-			"capacity":3000
+			"capacity":4000
 		},
 		{
 			"thrust":0.45,
@@ -739,7 +739,7 @@
 			"width":128,
 			"price":100000,
 			"weapons":6,
-			"capacity":3500
+			"capacity":4000
 		},
 		{
 			"thrust":0.55,
