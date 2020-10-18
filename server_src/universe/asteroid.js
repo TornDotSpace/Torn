@@ -71,7 +71,7 @@ class Asteroid {
         const ast = asts[this.sy][this.sx][i];
         if (ast.id !== this.id){ //Not going to count itself's gravity.
           const dist = squaredDist(ast, this);
-          const ang = angleBetween(this, p); // angle from the horizontal
+          const ang = angleBetween(this, ast); // angle from the horizontal
 //        const density = this.metal+1; // Density of the metal.
           const vel =  (this.health) / (100* Math.log(dist)); // compute how fast to move by
           gvx += Math.cos(ang) * vel; // actually accelerate them. Reason I'm not using vx is to allow electromag to have a lasting effect (otherwise they don't have electromagnet inertia)
