@@ -575,6 +575,18 @@
 			"level":8,
 			"type":"Blast",
 			"bot":true
+		},
+		{
+			"name":"Magnetic Mine",
+			"range":30,
+			"damage":90,
+			"speed":0,
+			"charge":45,
+			"price":10000,
+			"ammo":25,
+			"level":12,
+			"type":"Mine",
+			"bot":true
 		}
 	],
 	"planets":[

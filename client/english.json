@@ -555,6 +555,10 @@
 		{
 			"name":"Lepton Pulse",
 			"desc":"A small, repeated fire Muon Ray. Compared with its big counterpart, it deals far less damage, but shots far faster."
+		},
+		{
+			"name":"Magnetic Mine",
+			"desc":"Just a normal kind of mine... magnetically attracted to enemy ships if too close."
 		}
 	],
 	"splashes":[

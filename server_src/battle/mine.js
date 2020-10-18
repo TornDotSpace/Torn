@@ -29,8 +29,26 @@ module.exports = class Mine {
     if (this.wepnID == 44 && this.time % 25 == 0) this.doHeal(); // campfire
   }
   move() {
-    this.x += this.vx;
-    this.y += this.vy;
+    let magvx = 0;
+    let magvy = 0;
+    if (this.wepnID == 48){//Magnetic Mine
+      for (const i in players[this.sy][this.sx]) {
+        const p = players[this.sy][this.sx][i];
+        if (p.color !== this.color) { // only enemies
+          // compute distance and angle to players
+          const dist = Math.pow(squaredDist(this, p), 0.25);
+          if (dist > square(10 * wep.range)) continue; // if out of range, then don't bother.
+          const a = angleBetween(p, this);
+          const vel = 1000 / Math.log(dist);
+          magvx+=Math.cos(ang) * vel;
+          magvy+=Math.cos(sin) * vel;
+        }
+      }
+    }
+
+    this.x += this.vx + magvx;
+    this.y += this.vy + magvy;
+
 
     if (this.wepnID == 44){
       const old_sx=this.sx;
