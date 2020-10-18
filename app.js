@@ -40,6 +40,27 @@ global.initReboot = function() {
   setTimeout(shutdown, 120 * 1000);
 };
 
+global.initFastReboot = function() {
+  console.log('\nInitializing fast server reboot...\n');
+  chatAll('~`#f00~`Server restarting in 10 seconds. Save your progress!');
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 5...');
+  }, 5 * 1000);
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 4...');
+  }, 6 * 1000);
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 3...');
+  }, 7 * 1000);
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 2...');
+  }, 8 * 1000);
+  setTimeout(function() {
+    chatAll('~`#f00~`Server restarting in 1...');
+  }, 9 * 1000);
+  setTimeout(shutdown, 10 * 1000);
+};
+
 global.saveTurrets = function() {
   // save em
   for (let i = 0; i < mapSz; i++) {
@@ -135,12 +156,21 @@ global.guildList = {};
 global.readGuildList = function() {
   const source = 'server/guildnames';
   const data = fs.readFileSync(source, 'utf8');
-  const split = data.split(':');
-  console.log(split);
-  for (let i = 0; i+4 < split.length; i+=5) {
-    guildList[split[i]] = {owner: split[i+1], team: split[i+2], public: split[i+3], rank: split[i+4]};
+  const split = data.split('\n');
+  for (let i = 0; i < split.length-1; i++) { // minus 1 because an extra \n is at the end of the file.
+    const splitGuild = split[i].split(':');
+    guildList[splitGuild[0]] = {owner: splitGuild[1], public: splitGuild[2]};
   }
-  console.log(guildList);
+};
+
+global.writeGuildList = function() {
+  const source = 'server/guildnames';
+  writeStr="";
+  for (let i in guildList) {
+    const guildData = guildList[i];
+    writeStr += i + ":" + guildData.owner + ":" + guildData.team"\n";
+  }
+  fs.writeFileSync(source, writeStr);
 };
 
 require('./server_src/math.js');
@@ -1016,6 +1046,7 @@ function idleSocketCheck() {
 }
 
 function shutdown() {
+  writeGuildList();
   saveTurrets();
   process.exit();
 }
