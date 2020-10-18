@@ -398,9 +398,9 @@
 		},
 		{
 			"name":"Grenades",
-			"range":16,
-			"damage":80,
-			"speed":30,
+			"range":20,
+			"damage":100,
+			"speed":25,
 			"charge":25,
 			"price":8000,
 			"ammo":10,
@@ -458,12 +458,12 @@
 		},
 		{
 			"name":"Proximity Fuze",
-			"range":175,
-			"damage":40,
+			"range":200,
+			"damage":80,
 			"speed":75,
 			"charge":25,
 			"price":5000,
-			"ammo":15,
+			"ammo":20,
 			"level":5,
 			"type":"Missile",
 			"bot":true
@@ -535,7 +535,7 @@
 			"speed":0,
 			"charge":90,
 			"price":5000,
-			"ammo":3,
+			"ammo":2,
 			"level":5,
 			"type":"Mine",
 			"bot":false
