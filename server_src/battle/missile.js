@@ -27,7 +27,37 @@ module.exports = class Missile {
     this.move();
     this.timer++; // time needs to flow.
     if (this.distTravelled >= 10 * wepns[this.wepnID].range) this.die(); // out of range -> die
-    if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // out of sector
+    if(this.wepID==14){   //If torpedo... yeah we need a reason to make torpedo needed at such a high level with so little damage, ammo and recharge.
+      const old_sx=this.sx;
+      const old_sy=this.sy;
+      if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
+        this.x = 1;
+        this.sx = (this.sx+1+mapSz)%mapSz;
+      } else if (this.y > sectorWidth) {
+        if (this.sy == mapSz-1) {
+          this.die();
+        } else {
+          this.y = 1;
+          this.sy++;
+        }
+      } else if (this.x < 0) {
+        this.x = (sectorWidth - 1);
+        this.sx = (this.sx-1+mapSz)%mapSz;
+      } else if (this.y < 0) {
+        if (this.sy == 0) {
+          this.die();
+        } else {
+          this.y = (sectorWidth - 1);
+          this.sy--;
+        }
+      }
+
+      if (old_sx !== this.sx || old_sy !== this.sy) {
+        this.locked = 0;
+        delete missiles[old_sy][old_sx][this.id];
+        missiles[this.sy][this.sx][this.id] = this;
+      }
+    }else if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // out of sector
 
     if (this.timer == 20 && this.wepnID == 13) this.missileSwarmExplode();
 
