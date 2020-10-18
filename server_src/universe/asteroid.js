@@ -64,9 +64,9 @@ class Asteroid {
     if (Math.abs(this.vx) + Math.abs(this.vy) < .5) return;
     this.vx *= .997; //Dust particle resistance
     this.vy *= .997;
-    let gvx = 0;
-    let gvy = 0;
-    if(Math.random()<.2){
+    /*if(Math.random()<.2){
+      let gvx = 0;
+      let gvy = 0;
       for (const i in asts[this.sy][this.sx]) {
         const ast = asts[this.sy][this.sx][i];
         if (ast.id !== this.id){ //Not going to count itself's gravity.
@@ -78,9 +78,9 @@ class Asteroid {
           gvy += Math.sin(ang) * vel;
         }
       }
-    }
-    this.x += this.vx + gvx;
-    this.y += this.vy + gvy;
+      this.x += this.vx + gvx;
+      this.y += this.vy + gvy;
+    }*/
 
     const old_sx=this.sx;
     const old_sy=this.sy;

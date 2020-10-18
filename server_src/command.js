@@ -18,6 +18,8 @@ const ADMIN = 20;
 const OWNER = 30;
 const EVERYONE = [GUEST, PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
 const REGISTERED = [PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
+const VIPPLUS = [VIP, MVP, MODERATOR, ADMIN, OWNER];
+const MVPPLUS = [MVP, MODERATOR, ADMIN, OWNER];
 const MODPLUS = [MODERATOR, ADMIN, OWNER];
 const ADMINPLUS = [ADMIN, OWNER];
 
@@ -202,7 +204,7 @@ cmds['/email'] = new Command('/email <you@domain.tld> - Sets your email for pass
   player.socket.emit('chat', {msg: 'Registered Email Successfully!'});
 });
 
-cmds['/createguild'] = new Command('/createguild <guildname> - Creates a new guild', VIP, function(player, msg) {
+cmds['/createguild'] = new Command('/createguild <guildname> - Creates a new guild', VIPPLUS, function(player, msg) {
   const split = msg.split(' ');
   if (split.length != 2) {
     ply.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/createguild mynewguildname\''});
@@ -222,7 +224,7 @@ cmds['/createguild'] = new Command('/createguild <guildname> - Creates a new gui
   player.socket.emit('chat', {msg: 'Private guild '+guildName+' created! Use /guildprivacy to toggle its privacy.'});
 });
 
-cmds['/guildprivacy'] = new Command('/guildprivacy - Toggle guild\'s privacy.', VIP, function(player, msg) {
+cmds['/guildprivacy'] = new Command('/guildprivacy - Toggle guild\'s privacy.', VIPPLUS, function(player, msg) {
   const split = msg.split(' ');
   if (split.length != 1) {
     ply.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/guildprivacy\''});
@@ -237,7 +239,7 @@ cmds['/guildprivacy'] = new Command('/guildprivacy - Toggle guild\'s privacy.', 
   player.socket.emit('chat', {msg: 'Guild ' + playersguild + ' is now ' + guildList[playersguild].public + '. Run this command again to change back.'});
 });
 
-cmds['/guildinvite'] = new Command('/guildinvite - Get guild invite code.', VIP, function(player, msg) {
+cmds['/guildinvite'] = new Command('/guildinvite - Get guild invite code.', VIPPLUS, function(player, msg) {
   const split = msg.split(' ');
   if (split.length != 1) {
     ply.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/guildinvite\''});
