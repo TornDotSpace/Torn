@@ -138,6 +138,7 @@ cmds['/joinguild'] = new Command('/joinguild <guildName> <optionalinvite> - Join
       player.socket.emit('chat', {msg: 'That invite key is either incorrect, expired, or already used!'});
       return;
     }
+    delete guildList[guildName].invite;
   }
   player.guild = guildName;
   player.socket.emit('chat', {msg: 'Joined guild ' + guildName + '!'});

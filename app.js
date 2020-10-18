@@ -1046,6 +1046,7 @@ function idleSocketCheck() {
 }
 
 function shutdown() {
+  writeGuildList();
   saveTurrets();
   process.exit();
 }
