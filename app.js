@@ -159,7 +159,7 @@ global.readGuildList = function() {
   const split = data.split('\n');
   for (let i = 0; i < split.length-1; i++) { // minus 1 because an extra \n is at the end of the file.
     const splitGuild = split[i].split(':');
-    guildList[splitGuild[0]] = {owner: splitGuild[1], public: splitGuild[2]};
+    guildList[splitGuild[0]] = {owner: splitGuild[1], public: splitGuild[2], invite: "AdminInviteKey"};
   }
 };
 

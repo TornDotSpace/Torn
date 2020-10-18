@@ -136,17 +136,21 @@ cmds['/joinguild'] = new Command('/joinguild <guildName> <optionalinvite> - Join
       player.socket.emit('chat', {msg: 'That guild is private- you must be invited by its owner, '+guildObj.owner+'! Use /joinguild <guild> <invitenumber>!'});
       return;
     }
-    if (split[3] !== guildObj.invite){
+    if (split[2] !== guildObj.invite){
       player.socket.emit('chat', {msg: 'That invite key is either incorrect, expired, or already used!'});
       return;
     }
-    delete guildList[guildName].invite;
+    delete guildList.invite="AdminInviteKey";
   }
   player.guild = guildName;
   player.socket.emit('chat', {msg: 'Joined guild ' + guildName + '!'});
 });
 
 cmds['/leaveguild'] = new Command('/leaveguild - Leave your current guild', REGISTERED, function(player, msg) {
+  if(player.guild === '') {
+    player.socket.emit('chat', {msg: 'You are not in a guild!'});
+    return;
+  }
   player.socket.emit('chat', {msg: 'Left guild ' + player.guild + '!'});
   player.guild = '';
 });
@@ -220,7 +224,7 @@ cmds['/createguild'] = new Command('/createguild <guildname> - Creates a new gui
     player.socket.emit('chat', {msg: 'Your guild name must only contain numbers and lowercase letters.'});
     return;
   }
-  guildList[guildName] = {owner: player.name, team: true, public: false, rank: 40};
+  guildList[guildName] = {owner: player.name, public: "private", invite: "AdminInviteKey"};
   player.socket.emit('chat', {msg: 'Private guild '+guildName+' created! Use /guildprivacy to toggle its privacy.'});
 });
 

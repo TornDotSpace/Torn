@@ -27,6 +27,11 @@ class Asteroid {
     this.vy = vy,
     this.metal = metal,
     this.va = (Math.random() - .5) / 10;
+
+    if(this.vx==0 && this.vy==0){
+      this.vx=Math.random()-.5;
+      this.vy=Math.random()-.5;
+    }
   }
 
   tick() {
@@ -78,9 +83,12 @@ class Asteroid {
           gvy += Math.sin(ang) * vel;
         }
       }
-      this.x += this.vx + gvx;
-      this.y += this.vy + gvy;
+      this.vx += + gvx;
+      this.vy += + gvy;
     }*/
+
+    this.x+=this.vx;
+    this.y+=this.vy;
 
     const old_sx=this.sx;
     const old_sy=this.sy;
