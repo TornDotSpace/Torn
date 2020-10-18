@@ -106,6 +106,7 @@ module.exports = class Vortex {
 
     if(Math.random()<.2){
       for (const i in asts[this.sy][this.sx]) {
+        const dist = Math.pow(squaredDist(this, i), 0.25);
         const a = asts[this.sy][this.sx][i];
         const d2 = squaredDist(this, a);
         const ang = angleBetween(this, a);
