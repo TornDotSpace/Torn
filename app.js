@@ -166,9 +166,9 @@ global.readGuildList = function() {
 global.writeGuildList = function() {
   const source = 'server/guildnames';
   writeStr="";
-  for (let i in guildList) {
+  for (const i in guildList) {
     const guildData = guildList[i];
-    writeStr += i + ":" + guildData.owner + ":" + guildData.team"\n";
+    writeStr += (i + ":" + guildData.owner + ":" + guildData.team + "\n");
   }
   fs.writeFileSync(source, writeStr);
 };
