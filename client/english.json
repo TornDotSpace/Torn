@@ -850,13 +850,13 @@
 			"nameA":"Elite Interceptor",
 			"nameH":"Elite Leviathan",
 			"nameC":"Elite Maser",
-			"desc":"Just a superheavy destroyer with C-Hypno Ray... or is there more to it?"
+			"desc":"Just a superheavy destroyer with C-Hypno Ray... use it for amassing huge fleets or disabling bot's shielding."
 		},
 		{
 			"nameA":"Anomalocaris",
 			"nameH":"Einstein",
 			"nameC":"Heisenberg",
-			"desc":"A heavy dreadnought with no C-Slot. This time, there's more to it, I swear!"
+			"desc":"A heavy dreadnought with no C-Slot, but repelled to an extent from BH, and EMPs jam for a longer time instead."
 		}
 	]
 }
