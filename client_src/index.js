@@ -407,6 +407,7 @@ function loadAllImages() {
   loadImage('heavyMissile', '/img/weapons/heavyMissile.png');
   loadImage('empMissile', '/img/weapons/empMissile.png');
   loadImage('mine', '/img/weapons/mine.png');
+  loadImage('magneticMine', '/img/weapons/magneticMine.png');
   loadImage('grenade', '/img/weapons/grenade.png');
   loadImage('empMine', '/img/weapons/empMine.png');
   loadImage('laserMine', '/img/weapons/laserMine.png');
@@ -3915,6 +3916,8 @@ function rMines() {
       img = Img.pulseMine;
     } else if (selfo.wepnID == 44) {
       img = Img.campfire;
+    } else if (selfo.wepnID == 48) {
+      img = Img.magneticMine;
     } else if (selfo.wepnID == 32) {
       ctx.save();
       ctx.globalAlpha = .1;
