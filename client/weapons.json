@@ -583,7 +583,7 @@
 			"speed":0,
 			"charge":45,
 			"price":10000,
-			"ammo":25,
+			"ammo":-2,
 			"level":12,
 			"type":"Mine",
 			"bot":true
