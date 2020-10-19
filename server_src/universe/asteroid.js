@@ -83,8 +83,8 @@ class Asteroid {
           gvy += Math.sin(ang) * vel;
         }
       }
-      this.vx += + gvx;
-      this.vy += + gvy;
+      this.x += + gvx;
+      this.y += + gvy;
     }*/
 
     this.x+=this.vx;
