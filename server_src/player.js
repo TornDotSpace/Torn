@@ -746,7 +746,7 @@ class Player {
     sendAllSector('sound', {file: 'beam', x: this.x, y: this.y}, this.sx, this.sy);
   }
   shootMine() {
-    if (Object.keys(mines[this.sy][this.sx]).length >= 20 && this.weapons[this.equipped] < 30 || this.weapons[this.equipped] == 48) {
+    if (Object.keys(mines[this.sy][this.sx]).length >= 20 && (this.weapons[this.equipped] < 30 || this.weapons[this.equipped] == 48)) {
       this.ammos[this.equipped]++;
       this.emit('chat', {msg: 'This sector has reached its limit of 20 mines.'});
       return;
