@@ -37,7 +37,7 @@ module.exports = class Mine {
         if (p.color !== this.color) { // only enemies
           // compute distance and angle to players
           const dist = Math.pow(squaredDist(this, p), 0.25);
-          if (dist > square(10 * wep.range)) continue; // if out of range, then don't bother.
+          if (dist > square(10 * this.range)) continue; // if out of range, then don't bother.
           const a = angleBetween(p, this);
           const vel = 1000 / Math.log(dist);
           magvx+=Math.cos(ang) * vel;
