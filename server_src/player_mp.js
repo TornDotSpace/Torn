@@ -209,8 +209,9 @@ class PlayerMP extends Player {
       else if (Math.random() < .1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);// ammo
       else if (!this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 1);// coin
     }
-
-
+    
+    //const diff = 0.04 * this.experience;
+    //const moneyEarned = Math.max(0, 0.02*this.money);
     const diff = playerKillExpFraction * this.experience;
     const moneyEarned = Math.max(0, playerKillMoneyFraction*this.money);
     // give the killer stuff
@@ -218,14 +219,15 @@ class PlayerMP extends Player {
       b.owner.onKill(this);
 
       // Award (or punish for teamkills)
+      //const diff = playerKillExpFraction * this.experience;
       const other_ip = b.owner['ip'];
       if (!this.guest && !(other_ip !== undefined && other_ip == this.ip)) { // Only award them if their IP differs and they didn't kill a guest
-    	  if (this.color !== b.owner.color) b.owner.spoils('experience', 10 + Math.min(b.owner.experience*2,diff));
-    	  else b.owner.spoils('experience', -5 * Math.min(diff, b.owner.experience*playerKillExpFraction)); // Punishment equals -5 times what the reward would have been, unless it's large in proportant to the punished person's exp
-
-          b.owner.spoils('money', moneyEarned + (b.owner.type === 'Player' ? b.owner.killStreak*playerKillMoney : playerKillMoney));
-    	}
-
+    	if (this.color !== b.owner.color) b.owner.spoils('experience', 10 + Math.min(b.owner.experience*2,diff));
+    	else b.owner.spoils('experience', -5 * Math.min(diff, b.owner.experience*playerKillExpFraction)); // Punishment equals -5 times what the reward would have been, unless it's large in proportant to the punished person's exp
+        const moneyEarned = Math.max(0, playerKillMoneyFraction*this.money);
+        b.owner.spoils('money', moneyEarned + (b.owner.type === 'Player' ? b.owner.killStreak*playerKillMoney : playerKillMoney));
+          //this.owner.spoils('experience', -diff);
+      }
       if (this.color === b.owner.color && b.owner.type === 'Player') b.owner.save(); // prevents people from logging out to get rid of their punishment
 
       if (this.points > 0) { // raid points
@@ -233,9 +235,11 @@ class PlayerMP extends Player {
         this.points--;
       }
     }
-    this.owner.spoils('experience', -diff);
+    //this.owner.spoils('experience', -diff);
     this.money -= moneyEarned;
-
+    this.experience -= diff;
+    if (this.experience < 0) this.experience=0;
+    this.updateRank();
 
     this.hasPackage = false; // Maintained for onKill above
 
