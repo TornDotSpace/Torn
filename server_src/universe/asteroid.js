@@ -83,8 +83,8 @@ class Asteroid {
           gvy += Math.sin(ang) * vel;
         }
       }
-      this.vx += + gvx;
-      this.vy += + gvy;
+      this.x += + gvx;
+      this.y += + gvy;
     }*/
 
     this.x+=this.vx;
@@ -96,7 +96,7 @@ class Asteroid {
       this.x = 1;
       this.sx = (this.sx+1+mapSz)%mapSz;
     } else if (this.y > sectorWidth) {
-      if (this.sy == mapSz-1) {
+      if (this.sy >= mapSz-1) {
         this.die(0);
       } else {
         this.y = 1;
@@ -119,6 +119,8 @@ class Asteroid {
       this.vy *= .2;
       delete asts[old_sy][old_sx][this.id];
       asts[this.sy][this.sx][this.id] = this;
+      astCount[old_sy][old_sx]--; // We don't want the count getting negative and asteroids growing, don't we?
+      astCount[this.sy][this.sx]++;
     }
 //    if (isOutOfBounds(this)) this.die(0);
   }

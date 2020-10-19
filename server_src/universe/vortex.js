@@ -110,13 +110,13 @@ module.exports = class Vortex {
         const a = asts[this.sy][this.sx][i];
         const d2 = squaredDist(this, a);
         const ang = angleBetween(this, a);
-        const vel = .01 * this.size / Math.log(d2);    
+        const vel = .005 * this.size / Math.log(d2);    
         a.vx += Math.cos(ang) * vel;
         a.vy += Math.sin(ang) * vel;
 
-        if (dist < 15 && !this.isWorm) { // collision with black hole
+        if (d2 < 15 && !this.isWorm) { // collision with black hole
           a.die(0);
-        } else if (dist < 15 && this.isWorm) { // collision with wormhole
+        } else if (d2 < 15 && this.isWorm) { // collision with wormhole
           delete asts[a.sy][a.sx][a.id];
           a.vx *= 0.1; // Ensuring that people don't slingshot asteroids at high speed.
           a.vy *= 0.1;
