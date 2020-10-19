@@ -274,13 +274,13 @@ cmds['/broadcast'] = new Command('/broadcast <msg> - Send a message to the whole
 
 cmds['/modmute'] = new Command('/modmute <player> <minutesToMute> - Mutes the specified player server-wide.', MODPLUS, function(ply, msg) {
   //Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
-  const returnmsg = modmute(ply,msg);
+  const returnmsg = modmute(msg);
   ply.socket.emit('chat',{msg:returnmsg});
 });
 
 cmds['/ipmute'] = new Command('/ipmute <player> <minutesToMute> - Mutes the specified IP server-wide.', MODPLUS, function(ply, msg) {
   //Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
-  const returnmsg = ipmute(ply,msg);
+  const returnmsg = ipmute(msg);
   ply.socket.emit('chat',{msg:returnmsg});
 });
 
