@@ -104,27 +104,28 @@ module.exports = class Vortex {
       }
     }
 
-    for (const i in asts[this.sy][this.sx]) {
-      const a = asts[this.sy][this.sx][i];
-      const d2 = squaredDist(this, a);
-      const ang = angleBetween(this, a);
-      const vel = .25 * this.size / Math.log(d2);    
-      a.x += Math.cos(ang) * vel;
-      a.y += Math.sin(ang) * vel;
+    if(Math.random()<.2){
+      for (const i in asts[this.sy][this.sx]) {
+        const a = asts[this.sy][this.sx][i];
+        const d2 = squaredDist(this, a);
+        const ang = angleBetween(this, a);
+        const vel = .01 * this.size / Math.log(d2);    
+        a.vx += Math.cos(ang) * vel;
+        a.vy += Math.sin(ang) * vel;
 
-      if (dist < 15 && !this.isWorm) { // collision with black hole
-        a.die(0);
-      } else if (dist < 15 && this.isWorm) { // collision with wormhole
-        delete asts[a.sy][a.sx][a.id];
-        a.vx *=0.1; // Ensuring that people don't slingshot asteroids at high speed.
-        a.vy *=0.1;
-        a.sx = this.sxo;
-        a.sy = this.syo;
-        a.y = this.yo;
-        a.x = this.xo; // teleport them to the output node
-        asts[a.sy][a.sx][a.id] = a;
+        if (dist < 15 && !this.isWorm) { // collision with black hole
+          a.die(0);
+        } else if (dist < 15 && this.isWorm) { // collision with wormhole
+          delete asts[a.sy][a.sx][a.id];
+          a.vx *= 0.1; // Ensuring that people don't slingshot asteroids at high speed.
+          a.vy *= 0.1;
+          a.sx = this.sxo;
+          a.sy = this.syo;
+          a.y = this.yo;
+          a.x = this.xo; // teleport them to the output node
+          asts[a.sy][a.sx][a.id] = a;
+        }
       }
-
     }
   }
   die(b) {

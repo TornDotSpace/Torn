@@ -29,9 +29,9 @@ module.exports = class Mine {
     if (this.wepnID == 44 && this.time % 25 == 0) this.doHeal(); // campfire
   }
   move() {
-    let magvx = 0;
-    let magvy = 0;
     if (this.wepnID == 48){//Magnetic Mine
+      let magvx = 0;
+      let magvy = 0;
       for (const i in players[this.sy][this.sx]) {
         const p = players[this.sy][this.sx][i];
         if (p.color !== this.color) { // only enemies
@@ -44,11 +44,9 @@ module.exports = class Mine {
           magvy+=Math.cos(sin) * vel;
         }
       }
+      this.x += this.vx + magvx;
+      this.y += this.vy + magvy;
     }
-
-    this.x += this.vx + magvx;
-    this.y += this.vy + magvy;
-
 
     if (this.wepnID == 44){
       const old_sx=this.sx;

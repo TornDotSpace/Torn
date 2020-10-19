@@ -18,6 +18,8 @@ const ADMIN = 20;
 const OWNER = 30;
 const EVERYONE = [GUEST, PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
 const REGISTERED = [PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
+const VIPPLUS = [VIP, MVP, MODERATOR, ADMIN, OWNER];
+const MVPPLUS = [MVP, MODERATOR, ADMIN, OWNER];
 const MODPLUS = [MODERATOR, ADMIN, OWNER];
 const ADMINPLUS = [ADMIN, OWNER];
 
@@ -113,25 +115,42 @@ cmds['/nameturret'] = new Command('/nameturret <name>', REGISTERED, function(pla
   player.socket.emit('chat', {msg: num + ' turret(s) renamed.'});
 });
 
-cmds['/joinguild'] = new Command('/joinguild <guildName>', REGISTERED, function(player, msg) {
-  if (msg.length < 12) {
+cmds['/joinguild'] = new Command('/joinguild <guildName> <optionalinvite> - Join a guild', REGISTERED, function(player, msg) {
+  const split = msg.split(' ');
+  if(player.guild !== '') {
+    player.socket.emit('chat', {msg: 'You are already in '+player.guild+'! Use /leaveguild to leave it.'});
+    return;
+  }
+  if (split.length!=2 && split.length!=3) {
     player.socket.emit('chat', {msg: 'You must specify a guild name.'});
     return;
   }
-  const guildName = msg.substring(11);
-  if (typeof guildList[guildName] === 'undefined') {
+  const guildName = split[1];
+  const guildObj = guildList[guildName];
+  if (typeof guildObj === 'undefined') {
     player.socket.emit('chat', {msg: guildName + ' is not a real guild!'});
     return;
   }
-  if (guildList[guildName].public !== 'public') {
-    player.socket.emit('chat', {msg: 'That guild is private- you must be invited!'});
-    return;
+  if (guildObj.public !== 'public'){
+    if (split.length != 3) {
+      player.socket.emit('chat', {msg: 'That guild is private- you must be invited by its owner, '+guildObj.owner+'! Use /joinguild <guild> <invitenumber>!'});
+      return;
+    }
+    if (split[2] !== guildObj.invite){
+      player.socket.emit('chat', {msg: 'That invite key is either incorrect, expired, or already used!'});
+      return;
+    }
+    guildList.invite="AdminInviteKey";
   }
   player.guild = guildName;
   player.socket.emit('chat', {msg: 'Joined guild ' + guildName + '!'});
 });
 
 cmds['/leaveguild'] = new Command('/leaveguild - Leave your current guild', REGISTERED, function(player, msg) {
+  if(player.guild === '') {
+    player.socket.emit('chat', {msg: 'You are not in a guild!'});
+    return;
+  }
   player.socket.emit('chat', {msg: 'Left guild ' + player.guild + '!'});
   player.guild = '';
 });
@@ -149,10 +168,11 @@ cmds['/swap'] = new Command('/swap', REGISTERED, function(player, msg) {
 });
 
 cmds['/mute'] = new Command('/mute <player> - You will no longer hear the player\'s chat messages.', EVERYONE, function(ply, msg) {
-  if (msg.split(' ').length != 2) {
+  const split = msg.split(' ');
+  if (split.length != 2) {
     ply.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/mute playernamewithouttag\''}); return;
   } // split looks like {"/mute", "name"}
-  const name = msg.split(' ')[1];
+  const name = split[1];
   const player = getPlayerFromName(name);
   if (player == -1) {
 	    ply.socket.emit('chat', {msg: 'Player \''+name+'\' not found.'});
@@ -188,9 +208,63 @@ cmds['/email'] = new Command('/email <you@domain.tld> - Sets your email for pass
   player.socket.emit('chat', {msg: 'Registered Email Successfully!'});
 });
 
-cmds['/green'] = new Command('/green Join green team', ADMINPLUS, function(player, msg) {
-  player.color = 'green';
+cmds['/createguild'] = new Command('/createguild <guildname> - Creates a new guild', VIPPLUS, function(player, msg) {
+  const split = msg.split(' ');
+  if (split.length != 2) {
+    player.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/createguild mynewguildname\''});
+    return;
+  }
+  const playersguild = findGuildFromOwner(player.name);
+  if (playersguild!==-1){
+    player.socket.emit('chat', {msg: 'You already own guild +'+playersguild+'!'});
+    return;
+  }
+  const guildName = split[1];
+  if (!guildName.match(/^[0-9a-z]+$/)){
+    player.socket.emit('chat', {msg: 'Your guild name must only contain numbers and lowercase letters.'});
+    return;
+  }
+  guildList[guildName] = {owner: player.name, public: "private", invite: "AdminInviteKey"};
+  player.socket.emit('chat', {msg: 'Private guild '+guildName+' created! Use /guildprivacy to toggle its privacy.'});
 });
+
+cmds['/guildprivacy'] = new Command('/guildprivacy - Toggle guild\'s privacy.', VIPPLUS, function(player, msg) {
+  const split = msg.split(' ');
+  if (split.length != 1) {
+    player.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/guildprivacy\''});
+    return;
+  }
+  const playersguild = findGuildFromOwner(player.name);
+  if (playersguild===-1){
+    player.socket.emit('chat', {msg: 'You don\'t own a guild!'});
+    return;
+  }
+  guildList[playersguild].public = guildList[playersguild].public==='public'?'private':'public';
+  player.socket.emit('chat', {msg: 'Guild ' + playersguild + ' is now ' + guildList[playersguild].public + '. Run this command again to change back.'});
+});
+
+cmds['/guildinvite'] = new Command('/guildinvite - Get guild invite code.', VIPPLUS, function(player, msg) {
+  const split = msg.split(' ');
+  if (split.length != 1) {
+    player.socket.emit('chat', {msg: 'Bad syntax! The message should look like \'/guildinvite\''});
+    return;
+  }
+  const playersguild = findGuildFromOwner(player.name);
+  if (playersguild===-1){
+    player.socket.emit('chat', {msg: 'You don\'t own a guild!'});
+    return;
+  }
+  guildList[playersguild].invite = ""+Math.floor(Math.random()*100000);
+  player.socket.emit('chat', {msg: 'You can invite one user with invitation ' + guildList[playersguild].invite + '. Run this command again to invite another player.'});
+});
+
+findGuildFromOwner = function(owner){
+  for (let i in guildList) {
+    const guildData = guildList[i];
+    if(guildData.owner===owner) return i;
+  }
+  return -1;
+}
 
 // MODERATION COMMANDS
 // These commands are accessible to moderators in the game

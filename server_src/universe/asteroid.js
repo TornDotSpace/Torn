@@ -27,6 +27,11 @@ class Asteroid {
     this.vy = vy,
     this.metal = metal,
     this.va = (Math.random() - .5) / 10;
+
+    if(this.vx==0 && this.vy==0){
+      this.vx=Math.random()-.5;
+      this.vy=Math.random()-.5;
+    }
   }
 
   tick() {
@@ -64,21 +69,26 @@ class Asteroid {
     if (Math.abs(this.vx) + Math.abs(this.vy) < .5) return;
     this.vx *= .997; //Dust particle resistance
     this.vy *= .997;
-    let gvx = 0;
-    let gvy = 0;
+    /*if(Math.random()<.2){
+      let gvx = 0;
+      let gvy = 0;
       for (const i in asts[this.sy][this.sx]) {
         const ast = asts[this.sy][this.sx][i];
         if (ast.id !== this.id){ //Not going to count itself's gravity.
           const dist = squaredDist(ast, this);
-          const ang = angleBetween(this, p); // angle from the horizontal
-//          const density = this.metal+1; // Density of the metal.
+          const ang = angleBetween(this, ast); // angle from the horizontal
+//        const density = this.metal+1; // Density of the metal.
           const vel =  (this.health) / (100* Math.log(dist)); // compute how fast to move by
           gvx += Math.cos(ang) * vel; // actually accelerate them. Reason I'm not using vx is to allow electromag to have a lasting effect (otherwise they don't have electromagnet inertia)
           gvy += Math.sin(ang) * vel;
         }
-    }
-    this.x += this.vx + gvx;
-    this.y += this.vy + gvy;
+      }
+      this.vx += + gvx;
+      this.vy += + gvy;
+    }*/
+
+    this.x+=this.vx;
+    this.y+=this.vy;
 
     const old_sx=this.sx;
     const old_sy=this.sy;
