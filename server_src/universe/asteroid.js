@@ -2,7 +2,7 @@ function isOutOfBounds(obj) { // TODO this works but I'm not even using it anywh
   return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 }
 
-const astCount = new Array(mapSz);
+global.astCount = new Array(mapSz);
 
 for (let i = 0; i < mapSz; i++) {
   astCount[i] = new Array(mapSz);

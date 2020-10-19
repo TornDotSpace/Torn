@@ -20,7 +20,7 @@ module.exports = class Mine {
     this.wepnID = weaponID;
   }
   tick() {
-    if (this.time == 0 && this.wepnID < 32) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
+    if (this.time == 0 && this.wepnID < 32 ||this.wepnID > 47) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
     if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
     if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
 
@@ -36,10 +36,10 @@ module.exports = class Mine {
         const p = players[this.sy][this.sx][i];
         if (p.color !== this.color) { // only enemies
           // compute distance and angle to players
-          const dist = Math.pow(squaredDist(this, p), 0.25);
+          const dist = Math.pow(squaredDist(this, p), 2);
           if (dist < square(10 * this.range)){// if out of range, then don't bother.
             const a = angleBetween(p, this);
-            const vel = 1000 / Math.log(dist);
+            const vel = 500 / Math.log(dist);
             magvx+=Math.cos(a) * vel;
             magvy+=Math.sin(a) * vel;
           }

@@ -118,6 +118,7 @@ module.exports = class Vortex {
           a.die(0);
         } else if (d2 < 15 && this.isWorm) { // collision with wormhole
           delete asts[a.sy][a.sx][a.id];
+          astCount[a.sy][a.sx]--; // We don't want the count getting negative and asteroids growing, don't we?
           a.vx *= 0.1; // Ensuring that people don't slingshot asteroids at high speed.
           a.vy *= 0.1;
           a.sx = this.sxo;
@@ -125,6 +126,7 @@ module.exports = class Vortex {
           a.y = this.yo;
           a.x = this.xo; // teleport them to the output node
           asts[a.sy][a.sx][a.id] = a;
+          astCount[a.sy][a.sx]++;
         }
       }
     }
