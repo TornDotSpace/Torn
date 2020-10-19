@@ -3117,6 +3117,7 @@ function rTexts(lag, arr) {
 
 function numToLS(x) {
   if (!Number.isFinite(x)) return 'NaN';
+  if (x < 0)  return "-"+numToLS(-x);
   if (x == 0) return '0';
   const intx = Math.floor(x);
   const decimal = x-intx;
