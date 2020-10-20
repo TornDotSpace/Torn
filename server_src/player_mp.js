@@ -213,9 +213,9 @@ class PlayerMP extends Player {
     //const diff = 0.04 * this.experience;
     //const moneyEarned = Math.max(0, 0.02*this.money);
     const diff = playerKillExpFraction * this.experience;
-    const moneyEarned = Math.max(0, playerKillMoneyFraction*this.money);
+    var moneyEarned = Math.max(0, playerKillMoneyFraction*this.money);
     // give the killer stuff
-    if ((b.owner != 0) && (typeof b.owner !== 'undefined') && (b.owner.type === 'Player' || b.owner.type === 'Base')) {
+    if (b.owner != 0 && (typeof b.owner !== 'undefined') && (b.owner.type === 'Player' || b.owner.type === 'Base')) {
       b.owner.onKill(this);
 
       // Award (or punish for teamkills)
@@ -224,9 +224,8 @@ class PlayerMP extends Player {
       if (!this.guest && !(other_ip !== undefined && other_ip == this.ip)) { // Only award them if their IP differs and they didn't kill a guest
     	if (this.color !== b.owner.color) b.owner.spoils('experience', 10 + Math.min(b.owner.experience*2,diff));
     	else b.owner.spoils('experience', -5 * Math.min(diff, b.owner.experience*playerKillExpFraction)); // Punishment equals -5 times what the reward would have been, unless it's large in proportant to the punished person's exp
-        const moneyEarned = Math.max(0, playerKillMoneyFraction*this.money);
+        moneyEarned = Math.max(0, playerKillMoneyFraction*this.money);
         b.owner.spoils('money', moneyEarned + (b.owner.type === 'Player' ? b.owner.killStreak*playerKillMoney : playerKillMoney));
-          //this.owner.spoils('experience', -diff);
       }
       if (this.color === b.owner.color && b.owner.type === 'Player') b.owner.save(); // prevents people from logging out to get rid of their punishment
 
