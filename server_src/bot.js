@@ -229,14 +229,14 @@ global.spawnBot = function(sx, sy, col, force) {
   bot.angle = Math.random()*Math.PI*2;
   bot.sx = sx;
   bot.sy = sy;
-  const rand = 4.3 * Math.random();
+  const rand = 4.5 * Math.random();
   bot.experience = Math.sqrt(Math.pow(2, Math.pow(2, rand))-2)*sy*sy*sy + 3 * rand;
   bot.updateRank();
   bot.ship = bot.rank;
   bot.x = bot.y = sectorWidth / 2;
   bot.color = col;
   bot.name = Config.getValue('want_bot_names', false) ? 'BOT ' + botNames[Math.floor(Math.random() * (botNames.length))] : 'DRONE';
-  bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * .2) + .6);
+  bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * .25) + .7);
   bot.energy2 = Math.floor((bot.thrust2 - 1) * 5 / 2) / 5 + 1;
   bot.va = ships[bot.ship].agility * .08 * bot.agility2;
   bot.thrust = ships[bot.ship].thrust * bot.thrust2;
@@ -259,7 +259,7 @@ global.spawnNNBot = function(sx, sy, col) {
   const bot = new NeuralNetBot(id);
   bot.sx = sx;
   bot.sy = sy;
-  const rand = .33 + 3.67 * Math.random();
+  const rand = .33 + 3.85 * Math.random();
   bot.experience = trainingMode ? 150 : (Math.floor(Math.pow(2, Math.pow(2, rand))) / 8 + 3 * rand);// TODO change /8 to /4
   bot.updateRank();
   bot.ship = bot.rank;
@@ -269,7 +269,7 @@ global.spawnNNBot = function(sx, sy, col) {
   bot.net = 1;
   bot.name = 'BOT ' + botNames[Math.floor(Math.random() * (botNames.length))];
   bot.angle = Math.random() * Math.PI * 2;
-  bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * .2) + .6);
+  bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * .25) + .7);
   bot.energy2 = Math.floor((bot.thrust2 - 1) * 5 / 2) / 5 + 1;
   bot.va = ships[bot.ship].agility * .08 * bot.agility2;
   bot.thrust = ships[bot.ship].thrust * bot.thrust2;
