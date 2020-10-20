@@ -36,22 +36,22 @@ module.exports = class Mine {
         const p = players[this.sy][this.sx][i];
         if (p.color !== this.color) { // only enemies
           // compute distance and angle to players
-          const dist = Math.pow(squaredDist(this, p), 2);
-          if (dist < square(10 * this.range)){// if out of range, then don't bother.
-            const a = angleBetween(p, this);
-            const vel = 500 / Math.log(dist);
-            magvx+=Math.cos(a) * vel;
-            magvy+=Math.sin(a) * vel;
-          }
+          const distance = Math.pow(squaredDist(this, p), 0.25); // distance squared between me and them
+          if (distance > square(10 * this.range)) continue;// wepns[48].range
+          const a = angleBetween(p, this);
+          const vel = 3 / Math.log(distance);
+          magvx += Math.cos(a) * vel;
+          magvy += Math.sin(a) * vel;
+      
         }
       }
-      this.x += magvx;
-      this.y += magvy;
+      this.vx += magvx;
+      this.vy += magvy;
     }
     this.x += this.vx;
     this.y += this.vy;
 
-    if (this.wepnID == 44){
+    if (this.wepnID == 44){ //Campfire
       const old_sx=this.sx;
       const old_sy=this.sy;
       if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
@@ -80,7 +80,7 @@ module.exports = class Mine {
         delete mines[old_sy][old_sx][this.id];
         mines[this.sy][this.sx][this.id] = this;
       }
-    } //We could make mines die if out of bounds. Right now campfires are the only ones that cross borders.
+    } else if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // out of sector. Better make them die than store all mines outside the sector borders, unable to do anything
 
   }
   doPulse() {
