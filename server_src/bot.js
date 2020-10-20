@@ -232,7 +232,7 @@ global.spawnBot = function(sx, sy, col, force) {
   const rand = 4.5 * Math.random();
   bot.experience = Math.sqrt(Math.pow(2, Math.pow(2, rand))-2)*sy*sy*sy + 3 * rand;
   bot.updateRank();
-  bot.ship = bot.rank;
+  bot.ship = Math.min(bot.rank,21);
   bot.x = bot.y = sectorWidth / 2;
   bot.color = col;
   bot.name = Config.getValue('want_bot_names', false) ? 'BOT ' + botNames[Math.floor(Math.random() * (botNames.length))] : 'DRONE';
