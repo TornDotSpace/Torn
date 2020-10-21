@@ -382,14 +382,10 @@ module.exports = function initNetcode() {
         runCommand(player, data.msg); return;
       } // non spammable commands
 
-      // todo: combine these IFs (Has to support NaN mute durations)
-      if (muteTable[player.name] > time) {
-        const secondsLeft = Math.floor((muteTable[player.name]-time)/1000);
-        socket.emit('chat', {msg: ('~`#ff0000~`You are muted for ' + Math.floor(secondsLeft/60) + ' minutes and ' + secondsLeft%60 + ' seconds!')});
-        return;
-      }
-      if (ipMuteTable[player.ip] > time) {
-        const secondsLeft = Math.floor((ipMuteTable[player.ip]-time)/1000);
+      if (muteTable[player.name] > time || ipMuteTable[player.ip] > time) {
+        var secondsLeft = 0;
+        if(muteTable[player.name] > secondsLeft) secondsLeft = Math.floor((muteTable[player.name]-time)/1000); // We aren't using math.max here because it misbehaves with NaN arguments, which these dictionary accesses can be.
+        if(ipMuteTable[player.ip] > secondsLeft) secondsLeft = Math.floor((ipMuteTable[player.ip]-time)/1000);
         socket.emit('chat', {msg: ('~`#ff0000~`You are muted for ' + Math.floor(secondsLeft/60) + ' minutes and ' + secondsLeft%60 + ' seconds!')});
         return;
       }
@@ -402,7 +398,7 @@ module.exports = function initNetcode() {
 
       const repeat = newmsg === player.lastmsg;
       player.lastmsg = newmsg;
-      player.chatTimer += 150; // note this as potential spam
+      player.chatTimer += 140; // note this as potential spam
       if (repeat) player.chatTimer*=2;
       if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
         muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
