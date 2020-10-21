@@ -222,7 +222,7 @@ class Player {
             const d2 = squaredDist(this, p); // distance squared between me and them
             if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
             const ang = angleBetween(this, p); // angle from the horizontal
-            const vel = -10000 / Math.log(d2); // compute how fast to accelerate by
+            const vel = -5000 / Math.log(d2); // compute how fast to accelerate by
             p.vx += Math.cos(ang) * vel; // actually accelerate them
             p.vy += Math.sin(ang) * vel;
             p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
