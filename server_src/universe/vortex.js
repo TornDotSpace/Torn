@@ -103,7 +103,7 @@ module.exports = class Vortex {
         players[p.sy][p.sx][p.id] = p;
       }
     }
-
+    /*
     if(Math.random()<.2){
       for (const i in asts[this.sy][this.sx]) {
         const a = asts[this.sy][this.sx][i];
@@ -128,7 +128,8 @@ module.exports = class Vortex {
           astCount[a.sy][a.sx]++;
         }
       }
-    }
+    }*/
+
   }
   die(b) {
     sendAllSector('sound', {file: 'bigboom', x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
