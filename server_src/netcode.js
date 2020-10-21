@@ -574,7 +574,7 @@ module.exports = function initNetcode() {
       switch (item) {
         case 1: { // radar
                 	if (player.radar2 <= 1) break;
-            		const price = techPriceForDowngrade(player.radar2);
+            		const price = techPriceForDowngrade(player.radar2, player.name.startsWith("[V] "));
           if (player.money >= price) {
             player.money -= price;
             player.radar2 = lastTechLevel(player.radar2);
@@ -583,7 +583,7 @@ module.exports = function initNetcode() {
         }
         case 2: {// cargo
                 	if (player.capacity2 <= 1) break;
-            		const price = techPriceForDowngrade(player.capacity2);
+            		const price = techPriceForDowngrade(player.capacity2, player.name.startsWith("[V] "));
           if (player.money >= price) {
             player.money -= price;
             player.capacity2 = lastTechLevel(player.capacity2);
@@ -593,7 +593,7 @@ module.exports = function initNetcode() {
         }
         case 3: { // hull
                 	if (player.maxHealth2 <= 1) break;
-            		const price = techPriceForDowngrade(player.maxHealth2);
+            		const price = techPriceForDowngrade(player.maxHealth2, player.name.startsWith("[V] "));
           if (player.money >= price) {
             player.money -= price;
             player.maxHealth2 = lastTechLevel(player.maxHealth2);
@@ -603,7 +603,7 @@ module.exports = function initNetcode() {
         }
         case 4: { // energy
                 	if (player.energy2 <= 1) break;
-            		const price = techPriceForDowngrade(player.energy2)*8;
+            		const price = techPriceForDowngrade(player.energy2, player.name.startsWith("[V] "))*8;
           if (player.money >= price) {
             player.money -= price;
             player.energy2 = lastTechLevel(player.energy2);
@@ -612,7 +612,7 @@ module.exports = function initNetcode() {
         }
         case 5: { // agility
                 	if (player.agility2 <= 1) break;
-            		const price = techPriceForDowngrade(player.agility2);
+            		const price = techPriceForDowngrade(player.agility2, player.name.startsWith("[V] "));
           if (player.money >= price) {
             player.money -= price;
             player.agility2 = lastTechLevel(player.agility2);
@@ -622,7 +622,7 @@ module.exports = function initNetcode() {
         }
         default: { // 0: thrust
                 	if (player.thrust2 <= 1) break;
-            		const price = techPriceForDowngrade(player.thrust2);
+            		const price = techPriceForDowngrade(player.thrust2, player.name.startsWith("[V] "));
           if (player.money >= price) {
             player.money -= price;
             player.thrust2 = lastTechLevel(player.thrust2);

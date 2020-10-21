@@ -93,7 +93,8 @@ global.mod = function(n, m) { // used in findBisector
   return Math.floor(remain >= 0 ? remain : remain + m);
 };
 
-global.techPriceForDowngrade = function(x) { // money required to upgrade Tech
+global.techPriceForDowngrade = function(isVip) { // money required to upgrade Tech
+  if(isVip) return techEnergy(lastTechLevel(x))-techEnergy(x);
   return Math.max(techEnergy(lastTechLevel(x))-techEnergy(x), -300000000);
 };
 
