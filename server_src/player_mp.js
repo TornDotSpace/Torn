@@ -210,8 +210,6 @@ class PlayerMP extends Player {
       else if (!this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 1);// coin
     }
     
-    //const diff = 0.04 * this.experience;
-    //const moneyEarned = Math.max(0, 0.02*this.money);
     const diff = playerKillExpFraction * this.experience;
     var moneyEarned = Math.max(0, playerKillMoneyFraction*this.money);
     // give the killer stuff
@@ -224,7 +222,6 @@ class PlayerMP extends Player {
       if (!this.guest && !(other_ip !== undefined && other_ip == this.ip)) { // Only award them if their IP differs and they didn't kill a guest
     	if (this.color !== b.owner.color) b.owner.spoils('experience', 10 + Math.min(b.owner.experience*2,diff));
     	else b.owner.spoils('experience', -5 * Math.min(diff, b.owner.experience*playerKillExpFraction)); // Punishment equals -5 times what the reward would have been, unless it's large in proportant to the punished person's exp
-        moneyEarned = Math.max(0, playerKillMoneyFraction*this.money);
         b.owner.spoils('money', moneyEarned + (b.owner.type === 'Player' ? b.owner.killStreak*playerKillMoney : playerKillMoney));
       }
       if (this.color === b.owner.color && b.owner.type === 'Player') b.owner.save(); // prevents people from logging out to get rid of their punishment
@@ -234,11 +231,11 @@ class PlayerMP extends Player {
         this.points--;
       }
     }
-    //this.owner.spoils('experience', -diff);
+    //this.owner.spoils('experience', -diff); //For some reason it doen't work
     this.money -= moneyEarned;
     this.experience -= diff;
-    if (this.experience < 0) this.experience=0;
-    this.updateRank();
+    if (this.experience < 0) this.experience=0; //Ensuring we don't have negative xp people, as rare as that case may be
+    this.updateRank(); //Ensuring we don't have overleveled players that remain in the wrong level until they kill something.
 
     this.hasPackage = false; // Maintained for onKill above
 
