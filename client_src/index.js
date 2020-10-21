@@ -1179,7 +1179,8 @@ function rQuests() {
 function techPrice(x) { // money required to upgrade Tech
   return techEnergy(nextTechLevel(x))-techEnergy(x);
 }
-function techPriceForDowngrade(x) { // money required to upgrade Tech
+function techPriceForDowngrade(x) { // money required to upgrade Techglobal.techPriceForDowngrade = function(x,isVip) { // money required to upgrade Tech
+  if(myName.startsWith("[V] ")) return techEnergy(lastTechLevel(x))-techEnergy(x);
   return Math.max(techEnergy(lastTechLevel(x))-techEnergy(x), -300000000);
 }
 function techEnergy(x) { // Net price of some tech level
