@@ -2,7 +2,7 @@ function isOutOfBounds(obj) { // TODO this works but I'm not even using it anywh
   return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 }
 
-global.astCount = new Array(mapSz);
+const astCount = new Array(mapSz);
 
 for (let i = 0; i < mapSz; i++) {
   astCount[i] = new Array(mapSz);
@@ -27,11 +27,6 @@ class Asteroid {
     this.vy = vy,
     this.metal = metal,
     this.va = (Math.random() - .5) / 10;
-
-    if(this.vx==0 && this.vy==0){
-      this.vx=Math.random()-.5;
-      this.vy=Math.random()-.5;
-    }
   }
 
   tick() {
@@ -67,8 +62,9 @@ class Asteroid {
   move() {
     this.angle += this.va;
     if (Math.abs(this.vx) + Math.abs(this.vy) < .5) return;
-    this.vx *= .997; //Dust particle resistance
+    this.vx *= .997;
     this.vy *= .997;
+    //ASTEROID GRAVITY, ACTIVATE AT YOUR OWN LAGGY RISK
     /*if(Math.random()<.2){
       let gvx = 0;
       let gvy = 0;
@@ -77,7 +73,7 @@ class Asteroid {
         if (ast.id !== this.id){ //Not going to count itself's gravity.
           const dist = squaredDist(ast, this);
           const ang = angleBetween(this, ast); // angle from the horizontal
-//        const density = this.metal+1; // Density of the metal.
+          //const density = this.metal+1; // Density of the metal.
           const vel =  (this.health) / (100* Math.log(dist)); // compute how fast to move by
           gvx += Math.cos(ang) * vel; // actually accelerate them. Reason I'm not using vx is to allow electromag to have a lasting effect (otherwise they don't have electromagnet inertia)
           gvy += Math.sin(ang) * vel;
@@ -86,7 +82,7 @@ class Asteroid {
       this.x += + gvx;
       this.y += + gvy;
     }*/
-
+    //OUT OF BOUNDS BEHAVIOUR ¿DIE OR CROSS?
     this.x+=this.vx;
     this.y+=this.vy;
 
@@ -122,7 +118,11 @@ class Asteroid {
       //astCount[old_sy][old_sx]--; 
       astCount[this.sy][this.sx]++; // We don't want the count getting negative and asteroids growing, don't we?
     }
-//    if (isOutOfBounds(this)) this.die(0);
+/*
+    this.x += this.vx;
+    this.y += this.vy;
+    if (isOutOfBounds(this)) this.die(0);
+*/
   }
   die(b) {
     // Bugfix for ion beam destroying multiple times

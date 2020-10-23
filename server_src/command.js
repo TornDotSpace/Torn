@@ -41,6 +41,7 @@ cmds['/help'] = new Command('/help - Displays commands & usages', EVERYONE, func
 });
 
 cmds['/me'] = new Command('/me <msg>', EVERYONE, function(player, msg) {
+  if (msg.split(' ').length == 1) return;
   playerChat('~~`' + player.color + '~`' + player.name + '~`yellow~` ' + msg.substring(4), player.globalChat, player.color, player.guild);
 });
 
@@ -160,6 +161,7 @@ cmds['/pm'] = new Command('/pm <player> <msg>', REGISTERED, function(player, msg
 });
 
 cmds['/r'] = new Command('/r <msg>', REGISTERED, function(player, msg) {
+  if (msg.split(' ').length == 1) return;
   player.r(msg);
 });
 

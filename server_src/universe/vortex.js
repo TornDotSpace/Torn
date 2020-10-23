@@ -103,7 +103,7 @@ module.exports = class Vortex {
         players[p.sy][p.sx][p.id] = p;
       }
     }
-
+    /*WE WILL JUST MAKE THE ASTEROIDS DIE WHEN CROSSING A VORTEX - LESS BUGGY THIS WAY
     if(Math.random()<.2){
       for (const i in asts[this.sy][this.sx]) {
         const a = asts[this.sy][this.sx][i];
@@ -128,7 +128,8 @@ module.exports = class Vortex {
           astCount[a.sy][a.sx]++; // We don't want the count getting negative and asteroids growing, don't we?
         }
       }
-    }
+    }*/
+
   }
   die(b) {
     sendAllSector('sound', {file: 'bigboom', x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
