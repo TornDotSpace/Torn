@@ -119,8 +119,8 @@ class Asteroid {
       this.vy *= .2;
       delete asts[old_sy][old_sx][this.id];
       asts[this.sy][this.sx][this.id] = this;
-      astCount[old_sy][old_sx]--; // We don't want the count getting negative and asteroids growing, don't we?
-      astCount[this.sy][this.sx]++;
+      //astCount[old_sy][old_sx]--; 
+      astCount[this.sy][this.sx]++; // We don't want the count getting negative and asteroids growing, don't we?
     }
 //    if (isOutOfBounds(this)) this.die(0);
   }
