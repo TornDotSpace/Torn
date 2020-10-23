@@ -27,6 +27,10 @@ class Asteroid {
     this.vy = vy,
     this.metal = metal,
     this.va = (Math.random() - .5) / 10;
+    if(this.vx==0 && this.vy==0){
+      this.vx=Math.random()-.5;
+      this.vy=Math.random()-.5;
+    }
   }
 
   tick() {
@@ -62,7 +66,7 @@ class Asteroid {
   move() {
     this.angle += this.va;
     if (Math.abs(this.vx) + Math.abs(this.vy) < .5) return;
-    this.vx *= .997;
+    this.vx *= .997; //Dust particle resistance
     this.vy *= .997;
     //ASTEROID GRAVITY, ACTIVATE AT YOUR OWN LAGGY RISK
     /*if(Math.random()<.2){
