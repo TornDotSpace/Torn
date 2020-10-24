@@ -103,6 +103,7 @@ module.exports = class Vortex {
         players[p.sy][p.sx][p.id] = p;
       }
     }
+    /*
     if(Math.random()<.2){
       for (const i in asts[this.sy][this.sx]) {
         const dist = Math.pow(squaredDist(this, i), 0.25);
@@ -128,8 +129,7 @@ module.exports = class Vortex {
           asts[a.sy][a.sx][a.id] = a;
           astCount[a.sy][a.sx]++; // We don't want the count getting negative and asteroids growing, don't we?
         }
-        */
-      }
+      }*/ // Asteroid migration needs to be disabled as this can lead to issues with flooding sectors
     }
 
   }
