@@ -103,7 +103,6 @@ module.exports = class Vortex {
         players[p.sy][p.sx][p.id] = p;
       }
     }
-    /*
     if(Math.random()<.2){
       for (const i in asts[this.sy][this.sx]) {
         const dist = Math.pow(squaredDist(this, i), 0.25);
@@ -113,12 +112,13 @@ module.exports = class Vortex {
         const vel = .005 * this.size / Math.log(d2);    
         a.vx += Math.cos(ang) * vel;
         a.vy += Math.sin(ang) * vel;
-
+        if (d2 < 15) a.die(0); //WE WILL JUST MAKE THE ASTEROIDS DIE WHEN CROSSING A VORTEX - LESS BUGGY THIS WAY, THE DIE METHOD ALREADY DEALS WITH THE ASTEROID COUNT
+        /*
         if (d2 < 15 && !this.isWorm) { // collision with black hole
           a.die(0);
         } else if (d2 < 15 && this.isWorm) { // collision with wormhole
           delete asts[a.sy][a.sx][a.id];
-          astCount[a.sy][a.sx]--; // We don't want the count getting negative and asteroids growing, don't we?
+          //astCount[a.sy][a.sx]--; //The above already reduces the count... I suppose
           a.vx *= 0.1; // Ensuring that people don't slingshot asteroids at high speed.
           a.vy *= 0.1;
           a.sx = this.sxo;
@@ -126,10 +126,11 @@ module.exports = class Vortex {
           a.y = this.yo;
           a.x = this.xo; // teleport them to the output node
           asts[a.sy][a.sx][a.id] = a;
-          astCount[a.sy][a.sx]++;
+          astCount[a.sy][a.sx]++; // We don't want the count getting negative and asteroids growing, don't we?
         }
+        */
       }
-    }*/
+    }
 
   }
   die(b) {
