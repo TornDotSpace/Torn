@@ -126,10 +126,8 @@ module.exports = class Vortex {
           a.x = this.xo; // teleport them to the output node
           asts[a.sy][a.sx][a.id] = a;
           astCount[a.sy][a.sx]++; // We don't want the count getting negative and asteroids growing, don't we?
-        }*/Asteroid migration needs to be disabled as this can lead to issues with flooding sectors. 
-      }
+        }*/ //Asteroid migration needs to be disabled as this can lead to issues with flooding sectors. 
     }
-
   }
   die(b) {
     sendAllSector('sound', {file: 'bigboom', x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
