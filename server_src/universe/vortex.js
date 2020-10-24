@@ -102,7 +102,6 @@ module.exports = class Vortex {
 
         players[p.sy][p.sx][p.id] = p;
       }
-    } 
     if(Math.random()<.2){
       for (const i in asts[this.sy][this.sx]) {
         const a = asts[this.sy][this.sx][i];
@@ -128,8 +127,9 @@ module.exports = class Vortex {
           astCount[a.sy][a.sx]++; // We don't want the count getting negative and asteroids growing, don't we?
         }*/ //Asteroid migration needs to be disabled as this can lead to issues with flooding sectors. 
     }
+   }
   }
-  die(b) {
+  die() {
     sendAllSector('sound', {file: 'bigboom', x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
     delete vorts[this.sy][this.sx][this.id];
   }
