@@ -210,6 +210,19 @@ let sectorPoints = 0;
 
 const wepns = jsn.weapons; const ships = jsn.ships;
 
+//Used in the ship store to make the bar graphs
+var maxShipThrust=-1000;
+var maxShipHealth=-1000;
+var maxShipCapacity=-1000;
+var maxShipAgility=-1000;
+for(let i in ships){
+  const ship = ships[i];
+  if(ship.thrust>maxShipThrust) maxShipThrust=ship.thrust;
+  if(ship.capacity>maxShipCapacity) maxShipCapacity=ship.capacity;
+  if(ship.agility>maxShipAgility) maxShipAgility=ship.agility;
+  if(ship.health>maxShipHealth) maxShipHealth=ship.health;
+}
+
 const weaponTypeOrder = {'Gun': 0, 'Mine': 1, 'Missile': 2, 'Beam': 3, 'Orb': 4, 'Blast': 5, 'Misc': 6};
 for (let j = 0; j < wepns.length; j++) {
   wepns[j].order = j;
@@ -1035,12 +1048,16 @@ function rBuyShipWindow() {
   ctx.textAlign = 'left';
   ctx.fillStyle = 'white';
 
-  if(shipView > rank){
+  if(shipView <= rank){
     const shipStatsRx = rx+288, shipStatsRy = ry+421;
-    fillRect(shipStatsRx+40, shipStatsRy + 0 * 16, 80*ships[shipView].thrust  /maxShipThrust  , 12);
-    fillRect(shipStatsRx+40, shipStatsRy + 1 * 16, 80*ships[shipView].agility /maxShipAgility , 12);
-    fillRect(shipStatsRx+40, shipStatsRy + 2 * 16, 80*ships[shipView].health  /maxShipHealth  , 12);if(shipView!=17)
-   {fillRect(shipStatsRx+40, shipStatsRy + 3 * 16, 80*ships[shipView].capacity/maxShipCapacity, 12);} // 17 has infinite cargo
+    ctx.fillRect(shipStatsRx+40, shipStatsRy + 0 * 16, 80, 12);
+    ctx.fillRect(shipStatsRx+40, shipStatsRy + 1 * 16, 80, 12);
+    ctx.fillRect(shipStatsRx+40, shipStatsRy + 2 * 16, 80, 12);if(shipView!=17)
+   {ctx.fillRect(shipStatsRx+40, shipStatsRy + 3 * 16, 80, 12);} // 17 has infinite cargo
+    ctx.fillRect(shipStatsRx+40, shipStatsRy + 0 * 16, 80*ships[shipView].thrust  /maxShipThrust  , 12);
+    ctx.fillRect(shipStatsRx+40, shipStatsRy + 1 * 16, 80*ships[shipView].agility /maxShipAgility , 12);
+    ctx.fillRect(shipStatsRx+40, shipStatsRy + 2 * 16, 80*ships[shipView].health  /maxShipHealth  , 12);if(shipView!=17)
+   {ctx.fillRect(shipStatsRx+40, shipStatsRy + 3 * 16, 80*ships[shipView].capacity/maxShipCapacity, 12);} // 17 has infinite cargo
     write(mEng[27], shipStatsRx, shipStatsRy + 0 * 16);
     write(mEng[28], shipStatsRx, shipStatsRy + 1 * 16);
     write(mEng[29], shipStatsRx, shipStatsRy + 2 * 16);
