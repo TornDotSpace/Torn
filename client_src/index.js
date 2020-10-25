@@ -1046,26 +1046,28 @@ function rBuyShipWindow() {
   if (shipView != ship) write('$' + (ships[shipView].price - worth) + ' ' + mEng[14], rendX, rendY + 96);
 
   ctx.textAlign = 'left';
-  ctx.fillStyle = 'white';
 
   if(shipView <= rank){
-    const shipStatsRx = rx+288, shipStatsRy = ry+421;
-    ctx.fillRect(shipStatsRx+40, shipStatsRy + 0 * 16, 80, 12);
-    ctx.fillRect(shipStatsRx+40, shipStatsRy + 1 * 16, 80, 12);
-    ctx.fillRect(shipStatsRx+40, shipStatsRy + 2 * 16, 80, 12);if(shipView!=17)
-   {ctx.fillRect(shipStatsRx+40, shipStatsRy + 3 * 16, 80, 12);} // 17 has infinite cargo
-    ctx.fillRect(shipStatsRx+40, shipStatsRy + 0 * 16, 80*ships[shipView].thrust  /maxShipThrust  , 12);
-    ctx.fillRect(shipStatsRx+40, shipStatsRy + 1 * 16, 80*ships[shipView].agility /maxShipAgility , 12);
-    ctx.fillRect(shipStatsRx+40, shipStatsRy + 2 * 16, 80*ships[shipView].health  /maxShipHealth  , 12);if(shipView!=17)
-   {ctx.fillRect(shipStatsRx+40, shipStatsRy + 3 * 16, 80*ships[shipView].capacity/maxShipCapacity, 12);} // 17 has infinite cargo
+    ctx.fillStyle = 'white';
     write(mEng[27], shipStatsRx, shipStatsRy + 0 * 16);
     write(mEng[28], shipStatsRx, shipStatsRy + 1 * 16);
     write(mEng[29], shipStatsRx, shipStatsRy + 2 * 16);
     write(mEng[31] + (shipView==17?"Infinite":""), shipStatsRx, shipStatsRy + 3 * 16);
     write(mEng[30] + numToLS(ships[shipView].weapons), shipStatsRx, shipStatsRy + 4 * 16);
+    ctx.fillStyle = '#555';
+    const shipStatsRx = rx+288, shipStatsRy = ry+421;
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 0 * 16 - 10, 80, 12);
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 1 * 16 - 10, 80, 12);
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 2 * 16 - 10, 80, 12);if(shipView!=17)
+   {ctx.fillRect(shipStatsRx+60, shipStatsRy + 3 * 16 - 10, 80, 12);} // 17 has infinite cargo
+    ctx.fillStyle = 'white';
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 0 * 16 - 10, 80*ships[shipView].thrust  /maxShipThrust  , 12);
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 1 * 16 - 10, 80*ships[shipView].agility /maxShipAgility , 12);
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 2 * 16 - 10, 80*ships[shipView].health  /maxShipHealth  , 12);if(shipView!=17)
+   {ctx.fillRect(shipStatsRx+60, shipStatsRy + 3 * 16 - 10, 80*ships[shipView].capacity/maxShipCapacity, 12);} // 17 has infinite cargo
   }
 
-  // ctx.fillStyle = "white";
+  ctx.fillStyle = "white";
   wrapText(mEng[50] + (shipView > rank ? mEng[26] : ships[shipView].desc), rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
 
   if (shipView < ships.length) ctx.drawImage(Img.arrow, rendX + 128 - 48, rendY - 16);
