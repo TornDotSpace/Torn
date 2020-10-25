@@ -218,7 +218,7 @@ var maxShipAgility=-1000;
 for(let i in ships){
   const ship = ships[i];
   if(ship.thrust>maxShipThrust) maxShipThrust=ship.thrust;
-  if(ship.capacity>maxShipCapacity) maxShipCapacity=ship.capacity;
+  if(ship.capacity>maxShipCapacity && i != 17) maxShipCapacity=ship.capacity;
   if(ship.agility>maxShipAgility) maxShipAgility=ship.agility;
   if(ship.health>maxShipHealth) maxShipHealth=ship.health;
 }
