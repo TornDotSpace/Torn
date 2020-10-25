@@ -4,7 +4,7 @@ const config = require('../config/discordconfig.json');
 
 client.on("ready", () => {
   client.channels.cache.get('766664211581239326').send("Bot has started.");
-  setActivity();
+  setDiscordActivity();
 });
 
 myPlayerCount = 0; // cache the number to not excessively do discord calls
