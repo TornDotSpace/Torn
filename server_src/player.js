@@ -746,7 +746,7 @@ class Player {
     sendAllSector('sound', {file: 'beam', x: this.x, y: this.y}, this.sx, this.sy);
   }
   shootMine() {
-    if (Object.keys(mines[this.sy][this.sx]).length >= 20 && (this.weapons[this.equipped] < 30 || this.weapons[this.equipped] == 48)) {
+    if (Object.keys(mines[this.sy][this.sx]).length >= 20 && (this.weapons[this.equipped] < 30 || this.weapons[this.equipped] == 48 || this.weapons[this.equipped] == 43)) {
       this.ammos[this.equipped]++;
       this.emit('chat', {msg: 'This sector has reached its limit of 20 mines.'});
       return;
@@ -836,10 +836,9 @@ class Player {
       this.health -= 10000;
     }
 
-    // blood trail: less damage
-    if (this.trail % 16 == 1) d /= 1.05;
-
+    d /= (this.trail % 16 == 1 ? 1.05:1); // blood trail: less damage
     d *= (this.shield ? .25 : 1); // Shield- 1/4th damage
+    d *= (this.superchargerTimer>1 ? 2 : 1); // supercharger inflicts double damage
 
     this.health -= d;
     if (this.health > this.maxHealth) this.health = this.maxHealth;

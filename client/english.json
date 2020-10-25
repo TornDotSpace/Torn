@@ -264,7 +264,8 @@
 			"desc":"A basic, medium-range gun. At least you don't have to worry about ammo with this one.",
 			"killmessages":[
 				"P1 stock-gunned P2!",
-				"P1 capped P2!"
+				"P1 capped P2!",
+				"P1 filled P2 with lead!"
 			]
 		},
 		{
@@ -286,7 +287,8 @@
 			"desc":"Powerful, long-range, fast bullets. Does a lot of damage. Perfect for shooting at a large swarm of distant enemies.",
 			"killmessages":[
 				"P1 long-ranged P2!",
-				"P1 noscoped P2!"
+				"P1 noscoped P2!",
+				"P1 sniped P2!"
 			]
 		},
 		{

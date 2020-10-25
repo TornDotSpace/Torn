@@ -73,10 +73,7 @@ class Bot extends Player {
       enemies++;
       const dist2 = hypot2(player.x, this.x, player.y, this.y);
       if (dist2 < close) {
-        // Allow only low bots (0-3) to attack guests
-        // Bots will avoid attack players where the player is 7 or more levels lower than it
-        const nerfAmt = (player.guest) ? -4 : -7;
-        if (player.rank - this.rank <= nerfAmt) continue;
+        if (this.rank >= player.rank*1.5+4) continue; // Bots avoid players who are weak in comparison
         target = player; close = dist2;
       }
     }
