@@ -1206,7 +1206,6 @@ function rStats() {
   for (const i in achs) if (achs[i]) achievements++;
 
   ctx.fillStyle = 'yellow';
-  write(mEng[161], rx + 16, ry + 512 - 16);
   ctx.font = '32px ShareTech';
   ctx.textAlign = 'center';
   write(myName, rx + 192, ry + 96);
