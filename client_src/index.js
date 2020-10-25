@@ -86,7 +86,7 @@ const socket = io(GAMESERVER_URL,
     {
       autoConnect: false,
       parser: msgpack,
- 	});
+  });
 // Just to make socket accessible in react.js
 ReactRoot.socket = socket;
 
@@ -192,11 +192,11 @@ for (let i = 1; i < 1000; i++) {
 
 const quasar = [];
 /* for (let i = 0; i < 30; i++) {
-	let dist = Math.random()*.8;
-	let a = Math.random()*Math.PI*2;
-	let xx = dist*cosLow(a);
-	let yy = dist*sinLow(a);
-	quasar[i] = { x: xx, y: yy, z: Math.min(1/(dist-.4), 20)};
+  let dist = Math.random()*.8;
+  let a = Math.random()*Math.PI*2;
+  let xx = dist*cosLow(a);
+  let yy = dist*sinLow(a);
+  quasar[i] = { x: xx, y: yy, z: Math.min(1/(dist-.4), 20)};
 }*/
 
 let killStreak = 0; let killStreakTimer = -1;
@@ -969,26 +969,26 @@ function r3DMap() {
 function paste3DMap(xp, yp) {
   if (sectorPoints == 0) return;
   /* let d = new Date();
-	let t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
-	t/=1000;
-	ctx.globalAlpha=.8;
-	let bhx = dots[0].x, bhy = dots[0].y, bhz = dots[0].z;
-	render quasar jet
-	for (let i in quasar) {
-		let dot = quasar[i];
-		let dt = t*Math.sqrt(square(dot.z-bhz)+square(dot.y-bhy)+square(dot.x-bhx))%100/10;
-		let x1 = xp+104 + ((dot.x-bhx)*dt+bhx) / mapZoom;
-		let y1 = yp+104 + ((dot.y-bhy)*dt+bhy) / mapZoom;
-		let x2 = xp+104 + ((dot.x-bhx)*dt*2+bhx) / mapZoom;
-		let y2 = yp+104 + ((dot.y-bhy)*dt*2+bhy) / mapZoom;
-		let sz = i/500+.5
-		ctx.strokeStyle = "#"+(((0 + Math.floor(Math.abs(CoherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(CoherentNoise(17*i+79)) * 128) << 8) + Math.floor(128+Math.abs(CoherentNoise(7*i+107)) * 128)).toString(16);
-		ctx.beginPath();
-		ctx.moveTo(x1,y1);
-		ctx.lineTo(x2,y2);
-		ctx.closePath();
-		ctx.stroke();
-	}*/
+  let t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
+  t/=1000;
+  ctx.globalAlpha=.8;
+  let bhx = dots[0].x, bhy = dots[0].y, bhz = dots[0].z;
+  render quasar jet
+  for (let i in quasar) {
+    let dot = quasar[i];
+    let dt = t*Math.sqrt(square(dot.z-bhz)+square(dot.y-bhy)+square(dot.x-bhx))%100/10;
+    let x1 = xp+104 + ((dot.x-bhx)*dt+bhx) / mapZoom;
+    let y1 = yp+104 + ((dot.y-bhy)*dt+bhy) / mapZoom;
+    let x2 = xp+104 + ((dot.x-bhx)*dt*2+bhx) / mapZoom;
+    let y2 = yp+104 + ((dot.y-bhy)*dt*2+bhy) / mapZoom;
+    let sz = i/500+.5
+    ctx.strokeStyle = "#"+(((0 + Math.floor(Math.abs(CoherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(CoherentNoise(17*i+79)) * 128) << 8) + Math.floor(128+Math.abs(CoherentNoise(7*i+107)) * 128)).toString(16);
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.closePath();
+    ctx.stroke();
+  }*/
   ctx.drawImage(minimapcanvas, xp, yp);
   const xxp1 = lerp(myxx1, myxx4, (px/sectorWidth+py/sectorWidth)/2)-pscx; // these are just clever ways of using linear interpolation in a skew vector space
   const yyp1 = lerp(myyy1, myyy4, (px/sectorWidth+py/sectorWidth)/2)-pscy;
@@ -1033,12 +1033,20 @@ function rBuyShipWindow() {
   if (shipView != ship) write('$' + (ships[shipView].price - worth) + ' ' + mEng[14], rendX, rendY + 96);
 
   ctx.textAlign = 'left';
-  ctx.fillStyle = 'white';// yellow
-  write(mEng[27] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].thrust)), rx + 256 + 32, ry + 256 + 10 * 16 + 5);
-  write(mEng[28] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].agility)), rx + 256 + 32, ry + 256 + 11 * 16 + 5);
-  write(mEng[29] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].health)), rx + 256 + 32, ry + 256 + 12 * 16 + 5);
-  write(mEng[30] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].weapons)), rx + 256 + 32, ry + 256 + 13 * 16 + 5);
-  write(mEng[31] + (shipView > rank ? mEng[26] : numToLS(ships[shipView].capacity)), rx + 256 + 32, ry + 256 + 14 * 16 + 5);
+  ctx.fillStyle = 'white';
+
+  if(shipView > rank){
+    const shipStatsRx = rx+288, shipStatsRy = ry+421;
+    fillRect(shipStatsRx+40, shipStatsRy + 0 * 16, 80*ships[shipView].thrust  /maxShipThrust  , 12);
+    fillRect(shipStatsRx+40, shipStatsRy + 1 * 16, 80*ships[shipView].agility /maxShipAgility , 12);
+    fillRect(shipStatsRx+40, shipStatsRy + 2 * 16, 80*ships[shipView].health  /maxShipHealth  , 12);if(shipView!=17)
+   {fillRect(shipStatsRx+40, shipStatsRy + 3 * 16, 80*ships[shipView].capacity/maxShipCapacity, 12);} // 17 has infinite cargo
+    write(mEng[27], shipStatsRx, shipStatsRy + 0 * 16);
+    write(mEng[28], shipStatsRx, shipStatsRy + 1 * 16);
+    write(mEng[29], shipStatsRx, shipStatsRy + 2 * 16);
+    write(mEng[31] + (shipView==17?"Infinite":""), shipStatsRx, shipStatsRy + 3 * 16);
+    write(mEng[30] + numToLS(ships[shipView].weapons), shipStatsRx, shipStatsRy + 4 * 16);
+  }
 
   // ctx.fillStyle = "white";
   wrapText(mEng[50] + (shipView > rank ? mEng[26] : ships[shipView].desc), rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
@@ -1110,7 +1118,7 @@ function rWeaponsInShop() {
     ctx.fillStyle = (seller - 10 == i) ? 'lime' : 'yellow';
     if (ships[shipView].weapons <= i) ctx.fillStyle = 'orange';
     if (shipView < wepns[equipped[i]].level) ctx.fillStyle = 'red';
-    let tag = '	      ';
+    let tag = '       ';
     if (equipped[i] == -1) tag = mEng[14] + '  ';
     else if (equipped[i] > -1) tag = mEng[19] + ' ';
     write(tag + (' ' + (i + 1)).slice(-2) + ': ' + wepns[equipped[i]].name, rx + 256 + 32, ry + 256 + i * 16);
@@ -1206,7 +1214,6 @@ function rStats() {
   for (const i in achs) if (achs[i]) achievements++;
 
   ctx.fillStyle = 'yellow';
-  write(mEng[161], rx + 16, ry + 512 - 16);
   ctx.font = '32px ShareTech';
   ctx.textAlign = 'center';
   write(myName, rx + 192, ry + 96);
@@ -1317,15 +1324,15 @@ function rStats() {
   if (ag2>1) write('[-] $' + numToLS(-techPriceForDowngrade(ag2)), rx + 320 + 54, ry + 416 + 42);
 
   /* description for radar
-	ctx.textAlign = "left";
-	if (seller==201 || seller==207){
-		let txt = jsn.techs.radar[(va2-1)*8+(seller==201?1:-1)];
-		if(typeof txt !== "undefined")
-			write((seller==201?"Up":"Down")+"grade: " + txt, rx+512, ry+400);
-		txt = jsn.techs.radar[(va2-1)*8];
-		if(typeof txt !== "undefined")
-			write("Current: " + txt, rx+512, ry+384);
-	}*/
+  ctx.textAlign = "left";
+  if (seller==201 || seller==207){
+    let txt = jsn.techs.radar[(va2-1)*8+(seller==201?1:-1)];
+    if(typeof txt !== "undefined")
+      write((seller==201?"Up":"Down")+"grade: " + txt, rx+512, ry+400);
+    txt = jsn.techs.radar[(va2-1)*8];
+    if(typeof txt !== "undefined")
+      write("Current: " + txt, rx+512, ry+384);
+  }*/
 }
 function rAchievements() {
   ctx.save();
@@ -2503,7 +2510,7 @@ document.addEventListener('mousemove', function(evt) {
 
   // Shop
   else if (docked && tab == 0) {
-			 if (mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
+       if (mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
     else if (mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
       seller = 5 + Math.floor((my - 84 - ry) / 32);
       if (Math.floor((my - 84 - ry) / 16) % 2 == 1) seller = 0;
@@ -2532,7 +2539,7 @@ document.addEventListener('mousemove', function(evt) {
 
   // Stats
   else if (docked && tab == 2) {
-			 if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
+       if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
     else if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 201;
     else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 202;
     else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 203;
@@ -2554,7 +2561,7 @@ document.addEventListener('mousemove', function(evt) {
 
   // Buy weapon
   else if (docked && tab == 7) {
-			 if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16)) + 20;
+       if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16)) + 20;
     else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 && mx < rx + 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3))) + 20;
     else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3) * 2)) + 20;
 
@@ -2603,7 +2610,7 @@ document.addEventListener('mousedown', function(evt) {
     if (equipped[scroll] < 0) badWeapon = 20;
   }
   /* if(i == 350)
-		socket.emit('cancelquest', {});*/
+    socket.emit('cancelquest', {});*/
   if (i == 500) window.open('https://tornspace.wikia.com/wiki/Torn.space_Wiki', '_blank');
   if (i == 501) window.open('/store', '_blank');
   if (i == 502) window.open('/leaderboard', '_blank');
@@ -2801,16 +2808,16 @@ function updateNotes() {
 }
 function updateTrails() {
   /* trails:
-		0 -> default
-		1 -> blood
-		2 -> money
-		3 -> panda
-		4 -> random
-		5 -> rainbow
-		16+0 -> default star
-		16+1 -> blood star
-		etc...
-	*/
+    0 -> default
+    1 -> blood
+    2 -> money
+    3 -> panda
+    4 -> random
+    5 -> rainbow
+    16+0 -> default star
+    16+1 -> blood star
+    etc...
+  */
 
   for (const i in trails) {
     const selfo = trails[i];
@@ -3357,7 +3364,7 @@ function rCargo() {
   if (quest.type === 'Mining') {
     ctx.fillStyle = '#d44';
     let metalWeHave = iron;
-		     if (quest.metal === 'copper') {
+         if (quest.metal === 'copper') {
       ctx.fillStyle = '#960'; metalWeHave = copper;
     } else if (quest.metal === 'platinum') {
       ctx.fillStyle = '#90f'; metalWeHave = platinum;
