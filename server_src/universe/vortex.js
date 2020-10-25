@@ -103,7 +103,6 @@ module.exports = class Vortex {
         players[p.sy][p.sx][p.id] = p;
       }
     }
-    /*
     if(Math.random()<.2){
       for (const i in asts[this.sy][this.sx]) {
         const dist = Math.pow(squaredDist(this, i), 0.25);
@@ -115,7 +114,7 @@ module.exports = class Vortex {
         a.vy += Math.sin(ang) * vel;
 
         if (d2 < 15 && !this.isWorm) { // collision with black hole
-          a.die(0);
+          a.die(this);
         } else if (d2 < 15 && this.isWorm) { // collision with wormhole
           delete asts[a.sy][a.sx][a.id];
           astCount[a.sy][a.sx]--; // We don't want the count getting negative and asteroids growing, don't we?
@@ -129,7 +128,7 @@ module.exports = class Vortex {
           astCount[a.sy][a.sx]++;
         }
       }
-    }*/
+    }
 
   }
   die(b) {

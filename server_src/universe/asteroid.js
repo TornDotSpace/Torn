@@ -61,7 +61,7 @@ class Asteroid {
   }
   move() {
     this.angle += this.va;
-    if (Math.abs(this.vx) + Math.abs(this.vy) < .5) return;
+    if (Math.abs(this.vx) + Math.abs(this.vy) < .3) return;
     this.vx *= .997;
     this.vy *= .997;
     this.x += this.vx;
@@ -74,7 +74,7 @@ class Asteroid {
 
     // Prevent flooding of sectors with asteroids by only re-spawning if we've fallen below the sector min (8)
     if (--astCount[this.sy][this.sx] < minSectorAsteroidCount) {
-      createAsteroid(this.sx, this.sy);
+      createAsteroid(Math.floor(Math.random()*mapSz), Math.floor(Math.random()*mapSz));
     }
 
     delete asts[this.sy][this.sx][this.id];
