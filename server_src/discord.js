@@ -4,8 +4,16 @@ const config = require('../config/discordconfig.json');
 
 client.on("ready", () => {
   client.channels.cache.get('766664211581239326').send("Bot has started.");
-  client.user.setActivity("torn.space");
+  setActivity();
 });
+
+myPlayerCount = 0; // cache the number to not excessively do discord calls
+
+global.setDiscordActivity = function(){
+  if(myPlayerCount===playerCount) return;
+  client.user.setActivity("torn.space with " + playerCount + " players");
+  myPlayerCount=playerCount;
+}
 
 global.detectSpam = function(user, msg) {
   client.channels.cache.get('766664211581239326').send(user + ': ' + msg);
