@@ -44,12 +44,12 @@
   "dependencies": {
     "bad-words": "^3.0.3",
     "cors": "^2.8.5",
-    "discord.js": "^12.4.0",
+    "discord.js": "^12.4.1",
     "express": "^4.17.1",
     "howler": "^2.2.0",
     "mongodb": "^3.6.2",
     "node-fetch": "^2.6.1",
     "socket.io": "^2.3.0",
-    "socket.io-msgpack-parser": "^2.2.1"
+    "socket.io-msgpack-parser": "^3.0.0"
   }
 }

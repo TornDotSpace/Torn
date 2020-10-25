@@ -28,8 +28,8 @@ class Asteroid {
     this.metal = metal,
     this.va = (Math.random() - .5) / 10;
     if(this.vx==0 && this.vy==0){
-      this.vx=Math.random()-.5;
-      this.vy=Math.random()-.5;
+      this.vx=3*(Math.random()-.5);
+      this.vy=3*(Math.random()-.5);
     }
   }
 
@@ -115,18 +115,11 @@ class Asteroid {
     }
 
     if (old_sx !== this.sx || old_sy !== this.sy) {
-      this.vx *= .2; //Ensuring that people can't just throw asteroids at high speed through sectors
-      this.vy *= .2;
       delete asts[old_sy][old_sx][this.id];
       asts[this.sy][this.sx][this.id] = this;
-      //astCount[old_sy][old_sx]--; 
-      astCount[this.sy][this.sx]++; // We don't want the count getting negative and asteroids growing, don't we?
+      astCount[old_sy][old_sx]--; 
+      astCount[this.sy][this.sx]++; // Keep accurate count when asteroid changes sector
     }
-/*
-    this.x += this.vx;
-    this.y += this.vy;
-    if (isOutOfBounds(this)) this.die(0);
-*/
   }
   die(b) {
     // Bugfix for ion beam destroying multiple times
