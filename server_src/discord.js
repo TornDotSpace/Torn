@@ -41,7 +41,7 @@ client.on("message", async message => {
   } else if(args[0] === "/mute") {
     client.channels.cache.get('766664211581239326').send("You must either use /modmute or /ipmute!");
   } else if(args[0] === "/broadcast") {
-    chatAll("~`#f66~`       BROADCAST: ~`lime~`" + message.content.trim());
+    chatAll("~`#f66~`       BROADCAST: ~`lime~`" + message.content.trim());//	For some reason it it's trimmed to the thing below the server will crash
     //chatAll("~`#f66~`       BROADCAST: ~`lime~`" + message.content.trim().substring(11));
     client.channels.cache.get('766664211581239326').send("Message broadcasted.");
   } else if(args[0] === "/reboot") {
