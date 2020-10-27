@@ -75,19 +75,19 @@ class Player {
     this.isNNBot = false,
 
     /* please don't touch these
-		nearestEnemyDist = 0,//for nnBots
-		nearestFriendDist = 0,
-		nearestBulletDist = 0,
-		nearestEnemyAngle = 0,
-		nearestFriendAngle = 0,
-		nearestBulletAngle = 0,
-		nearestEnemyDistV = 0,//velocities
-		nearestFriendDistV = 0,
-		nearestBulletDistV = 0,
-		nearestEnemyAngleV = 0,
-		nearestFriendAngleV = 0,
-		nearestBulletAngleV = 0,
-		*/
+    nearestEnemyDist = 0,//for nnBots
+    nearestFriendDist = 0,
+    nearestBulletDist = 0,
+    nearestEnemyAngle = 0,
+    nearestFriendAngle = 0,
+    nearestBulletAngle = 0,
+    nearestEnemyDistV = 0,//velocities
+    nearestFriendDistV = 0,
+    nearestBulletDistV = 0,
+    nearestEnemyAngleV = 0,
+    nearestFriendAngleV = 0,
+    nearestBulletAngleV = 0,
+    */
 
     this.thrust = 1, // These are techs multiplied by ship stats, used for actual physics
     this.va = 1,
@@ -206,7 +206,7 @@ class Player {
         else if (wep.name === 'Hull Nanobots') this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
         else if (wep.name === 'Photon Cloak') this.disguise = 200;// 6s
         else if (wep.name === 'Warp Drive') {
-	   this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
+     this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
           this.speed+=100*(this.energy2-1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it.
         }
       }
@@ -746,7 +746,7 @@ class Player {
     sendAllSector('sound', {file: 'beam', x: this.x, y: this.y}, this.sx, this.sy);
   }
   shootMine() {
-    if (Object.keys(mines[this.sy][this.sx]).length >= 20 && (this.weapons[this.equipped] < 30 || this.weapons[this.equipped] == 48)) {
+    if (Object.keys(mines[this.sy][this.sx]).length >= 20 && (this.weapons[this.equipped] < 30 || this.weapons[this.equipped] == 48 || this.weapons[this.equipped] == 43)) {
       this.ammos[this.equipped]++;
       this.emit('chat', {msg: 'This sector has reached its limit of 20 mines.'});
       return;
@@ -836,10 +836,9 @@ class Player {
       this.health -= 10000;
     }
 
-    // blood trail: less damage
-    if (this.trail % 16 == 1) d /= 1.05;
-
+    d /= (this.trail % 16 == 1 ? 1.05:1); // blood trail: less damage
     d *= (this.shield ? .25 : 1); // Shield- 1/4th damage
+    d *= (this.superchargerTimer>1 ? 2 : 1); // supercharger inflicts double damage
 
     this.health -= d;
     if (this.health > this.maxHealth) this.health = this.maxHealth;
