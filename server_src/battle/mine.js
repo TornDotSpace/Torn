@@ -36,7 +36,7 @@ module.exports = class Mine {
         const p = players[this.sy][this.sx][i];
         if (p.color !== this.color) { // only enemies
           // compute distance and angle to players
-          const distance = Math.pow(squaredDist(this, p), 0.25); // distance squared between me and them
+          const distance = squaredDist(this, p); // distance squared between me and them
           if (distance > square(10 * this.range)) continue;// wepns[48].range
           const a = angleBetween(p, this);
           const vel = 3 / Math.log(distance);
