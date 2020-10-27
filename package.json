@@ -50,6 +50,6 @@
     "mongodb": "^3.6.2",
     "node-fetch": "^2.6.1",
     "socket.io": "^2.3.0",
-    "socket.io-msgpack-parser": "^3.0.0"
+    "socket.io-msgpack-parser": "^2.2.1"
   }
 }
