@@ -66,7 +66,7 @@ class Asteroid {
   move() {
     this.angle += this.va;
     if (Math.abs(this.vx) + Math.abs(this.vy) < .5) return;
-    this.vx *= .997; //Dust particle resistance
+    this.vx *= .997;
     this.vy *= .997;
     //ASTEROID GRAVITY, ACTIVATE AT YOUR OWN LAGGY RISK
     /*if(Math.random()<.2){
