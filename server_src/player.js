@@ -75,19 +75,19 @@ class Player {
     this.isNNBot = false,
 
     /* please don't touch these
-    nearestEnemyDist = 0,//for nnBots
-    nearestFriendDist = 0,
-    nearestBulletDist = 0,
-    nearestEnemyAngle = 0,
-    nearestFriendAngle = 0,
-    nearestBulletAngle = 0,
-    nearestEnemyDistV = 0,//velocities
-    nearestFriendDistV = 0,
-    nearestBulletDistV = 0,
-    nearestEnemyAngleV = 0,
-    nearestFriendAngleV = 0,
-    nearestBulletAngleV = 0,
-    */
+               nearestEnemyDist = 0,//for nnBots
+               nearestFriendDist = 0,
+               nearestBulletDist = 0,
+               nearestEnemyAngle = 0,
+               nearestFriendAngle = 0,
+               nearestBulletAngle = 0,
+               nearestEnemyDistV = 0,//velocities
+               nearestFriendDistV = 0,
+               nearestBulletDistV = 0,
+               nearestEnemyAngleV = 0,
+               nearestFriendAngleV = 0,
+               nearestBulletAngleV = 0,
+               */
 
     this.thrust = 1, // These are techs multiplied by ship stats, used for actual physics
     this.va = 1,

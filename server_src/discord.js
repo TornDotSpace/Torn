@@ -45,7 +45,7 @@ client.on("message", async message => {
     chatAll("~`#f66~`       BROADCAST: ~`lime~`" + message.content.trim().substring(11));
     client.channels.cache.get('766664211581239326').send("Message broadcasted.");
   } else if(args[0] === "/reboot") {
-    if(!message.member.roles.cache.some(r=>["Developer"].includes(r.name)))
+      if(!message.member.roles.cache.some(r=>["Developer"].includes(r.name)))
       return message.reply("Sorry, you don't have permissions to use this!");
     initReboot();
   } else if(args[0] === "/help") {
