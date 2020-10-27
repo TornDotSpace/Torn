@@ -102,7 +102,6 @@ module.exports = class Vortex {
         players[p.sy][p.sx][p.id] = p;
       }
     }
-
     if(Math.random()<.2){//limited for lag
       for (const i in asts[this.sy][this.sx]) {
         const dist = Math.pow(squaredDist(this, i), 0.25);
