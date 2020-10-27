@@ -102,7 +102,7 @@ module.exports = class Vortex {
         players[p.sy][p.sx][p.id] = p;
       }
     }
-    if(Math.random()<.2){
+    if(Math.random()<.2){//limited for lag
       for (const i in asts[this.sy][this.sx]) {
         const dist = Math.pow(squaredDist(this, i), 0.25);
         const a = asts[this.sy][this.sx][i];
@@ -111,47 +111,17 @@ module.exports = class Vortex {
         const vel = .005 * this.size / Math.log(d2);    
         a.vx += Math.cos(ang) * vel;
         a.vy += Math.sin(ang) * vel;
-
-        if (d2 < 15 && !this.isWorm) { // collision with black hole
-          a.die(this);
-        } else if (d2 < 15 && this.isWorm) { // collision with wormhole
-          delete asts[a.sy][a.sx][a.id];
-          astCount[a.sy][a.sx]--; // We don't want the count getting negative and asteroids growing, don't we?
-          a.vx *= 0.1; // Ensuring that people don't slingshot asteroids at high speed.
-          a.vy *= 0.1;
-          a.sx = this.sxo;
-          a.sy = this.syo;
-          a.y = this.yo;
-          a.x = this.xo; // teleport them to the output node
-          asts[a.sy][a.sx][a.id] = a;
-          astCount[a.sy][a.sx]++;
-        }
-      }
-    }
-
-  if(Math.random()<.2){//limited for lag
-    for (const i in asts[this.sy][this.sx]) {
-      const dist = Math.pow(squaredDist(this, i), 0.25);
-      const a = asts[this.sy][this.sx][i];
-      const d2 = squaredDist(this, a);
-      const ang = angleBetween(this, a);
-      const vel = .005 * this.size / Math.log(d2);    
-      a.vx += Math.cos(ang) * vel;
-      a.vy += Math.sin(ang) * vel;
-
-        if (d2 < 15 && !this.isWorm) { // collision with black hole
-          a.die(this);
-        } else if (d2 < 15 && this.isWorm) { // collision with wormhole
-          delete asts[a.sy][a.sx][a.id];
-          astCount[a.sy][a.sx]--; // We don't want the count getting negative and asteroids growing, don't we?
-          a.vx *= 0.1; // Ensuring that people don't slingshot asteroids at high speed.
-          a.vy *= 0.1;
-          a.sx = this.sxo;
-          a.sy = this.syo;
-          a.y = this.yo;
-          a.x = this.xo; // teleport them to the output node
-          asts[a.sy][a.sx][a.id] = a;
-          astCount[a.sy][a.sx]++;
+        if(d2<100){
+          if (!this.isWorm) { // collision with black hole
+            a.die(this);
+          } else { // collision with wormhole
+            delete asts[a.sy][a.sx][a.id];
+            a.sx = this.sxo;
+            a.sy = this.syo;
+            a.y = this.yo;
+            a.x = this.xo; // teleport them to the output node
+            asts[a.sy][a.sx][a.id] = a;
+          }
         }
       }
     }
