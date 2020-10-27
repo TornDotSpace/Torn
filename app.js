@@ -313,7 +313,7 @@ function init() { // start the server!
   saveTurrets();
 
   // make asteroids. Make 10 times the number of sectors.
-  for (let i = 0; i < mapSz * mapSz * minSectorAsteroidCount; i++) createAsteroid(Math.floor(i/mapSz) % mapSz, i%mapSz);
+  for (let i = 0; i < mapSz * mapSz * minSectorAsteroidCount; i++) spawnAsteroid();
 
   // Make exactly one planet in each sector.
   for (let s = 0; s < mapSz * mapSz; s++) {
@@ -728,9 +728,11 @@ function update() {
         }
       }
 
+      astCt=0;
       for (const i in asts[y][x]) {
         const ast = asts[y][x][i];
         let pack = astPack[y][x][i];
+        astCt++;
 
         ast.tick();
         // Check for creation
@@ -755,6 +757,7 @@ function update() {
 
         gameState.asteroids.push({delta: delta, id: i});
       }
+      astCount[y][x]=astCt;
 
       for (const j in orbs[y][x]) {
         const orb = orbs[y][x][j];

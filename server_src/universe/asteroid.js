@@ -35,7 +35,7 @@ class Asteroid {
 
   tick() {
     const asteroidsHere = astCount[this.sy][this.sx];
-    this.health-=asteroidsHere/200; // decay asteroids so they don't get too bunched up in any one area
+    this.health-=Math.max(asteroidsHere/200,0); // decay asteroids so they don't get too bunched up in any one area
     if (this.health < -50) this.die(0);
     this.move();
     if (Math.abs(this.vx) + Math.abs(this.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players.
@@ -117,8 +117,6 @@ class Asteroid {
     if (old_sx !== this.sx || old_sy !== this.sy) {
       delete asts[old_sy][old_sx][this.id];
       asts[this.sy][this.sx][this.id] = this;
-      astCount[old_sy][old_sx]--; 
-      astCount[this.sy][this.sx]++; // Keep accurate count when asteroid changes sector
     }
   }
   die(b) {
@@ -126,9 +124,7 @@ class Asteroid {
     this.die = function() { };
 
     // Prevent flooding of sectors with asteroids by only re-spawning if we've fallen below the sector min (8)
-    if (--astCount[this.sy][this.sx] < minSectorAsteroidCount) {
-      createAsteroid(Math.floor(Math.random()*mapSz), Math.floor(Math.random()*mapSz));
-    }
+    spawnAsteroid();
 
     delete asts[this.sy][this.sx][this.id];
     if (b == 0) return;
@@ -186,16 +182,16 @@ class Asteroid {
 
 module.exports = Asteroid;
 
-global.spawnAsteroid = function(sx, sy, x, y, vx, vy, health, metal) {
-  const randId = Math.random();
-  const ast = new Asteroid(randId, health, sx, sy, x, y, vx, vy, metal);
-  asts[sy][sx][randId] = ast;
-  astCount[sy][sx]++;
-};
-
-global.createAsteroid = function(sx, sy) {
+global.spawnAsteroid = function() {
+  sx = Math.floor(Math.random()*mapSz);
+  sy = Math.floor(Math.random()*mapSz);
   const vert = (sy + 1) / (mapSz + 1);
   const hor = (sx + 1) / (mapSz + 1);
   const metal = (Math.random() < hor ? 1 : 0) + (Math.random() < vert ? 2 : 0);
-  spawnAsteroid(sx, sy, Math.floor(Math.random() * sectorWidth), Math.floor(Math.random() * sectorWidth), 0, 0, Math.ceil(Math.random() * 1200 + 200), metal);
+  x = Math.floor(Math.random() * sectorWidth);
+  y = Math.floor(Math.random() * sectorWidth);
+  health = Math.ceil(Math.random() * 1200 + 200);
+  const randId = Math.random();
+  const ast = new Asteroid(randId, health, sx, sy, x, y, 0, 0, metal);
+  asts[sy][sx][randId] = ast;
 };
