@@ -772,7 +772,7 @@
 			"capacity":8000
 		},
 		{
-			"thrust":0.44,
+			"thrust":0.43,
 			"health":250,
 			"agility":0.7,
 			"width":128,
@@ -781,7 +781,7 @@
 			"capacity":5000
 		},
 		{
-			"thrust":0.48,
+			"thrust":0.47,
 			"health":220,
 			"agility":0.6,
 			"width":128,
@@ -790,7 +790,7 @@
 			"capacity":2000
 		},
 		{
-			"thrust":0.29,
+			"thrust":0.28,
 			"health":600,
 			"agility":0.25,
 			"width":192,
@@ -799,81 +799,81 @@
 			"capacity":50000
 		},
 		{
-			"thrust":0.33,
+			"thrust":0.31,
 			"health":400,
-			"agility":0.35,
+			"agility":0.2,
 			"width":192,
 			"price":500000,
 			"weapons":9,
 			"capacity":10000
 		},
 		{
-			"thrust":0.37,
+			"thrust":0.35,
 			"health":300,
-			"agility":0.5,
+			"agility":0.42,
 			"width":128,
 			"price":1000000,
 			"weapons":10,
 			"capacity":2000
 		},
 		{
-			"thrust":0.3,
+			"thrust":0.28,
 			"health":520,
-			"agility":0.3,
+			"agility":0.25,
 			"width":192,
 			"price":1000000,
 			"weapons":10,
 			"capacity":20000
 		},
 		{
-			"thrust":0.44,
+			"thrust":0.41,
 			"health":260,
-			"agility":0.4,
+			"agility":0.32,
 			"width":128,
 			"weapons":10,
 			"price":2000000,
 			"capacity":5000
 		},
 		{
-			"thrust":0.2,
+			"thrust":0.18,
 			"health":900,
-			"agility":0.3,
+			"agility":0.25,
 			"width":192,
 			"price":2500000,
 			"weapons":10,
 			"capacity":999999
 		},
 		{
-			"thrust":0.3,
+			"thrust":0.28,
 			"health":550,
-			"agility":0.35,
+			"agility":0.3,
 			"width":192,
 			"price":3000000,
 			"weapons":10,
 			"capacity":10000
 		},
 		{
-			"thrust":0.34,
+			"thrust":0.32,
 			"health":380,
-			"agility":0.5,
+			"agility":0.42,
 			"width":128,
 			"price":5000000,
 			"weapons":10,
 			"capacity":5000
 		},
 		{
-			"thrust":0.28,
+			"thrust":0.25,
 			"health":800,
-			"agility":0.25,
+			"agility":0.2,
 			"width":192,
 			"price":10000000,
 			"weapons":10,
 			"capacity":20000
 		},
 		{
-			"thrust":0.23,
+			"thrust":0.2,
 			"health":1000,
-			"agility":0.2,
+			"agility":0.17,
 			"width":200,
 			"price":12000000,
 			"weapons":10,
