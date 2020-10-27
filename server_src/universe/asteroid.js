@@ -97,7 +97,7 @@ class Asteroid {
       this.sx = (this.sx+1+mapSz)%mapSz;
     } else if (this.y > sectorWidth) {
       if (this.sy >= mapSz-1) {
-        this.die(0);
+      	delete asts[old_sy][old_sx][this.id];
       } else {
         this.y = 1;
         this.sy++;
@@ -107,7 +107,7 @@ class Asteroid {
       this.sx = (this.sx-1+mapSz)%mapSz;
     } else if (this.y < 0) {
       if (this.sy == 0) {
-        this.die(0);
+      	delete asts[old_sy][old_sx][this.id];
       } else {
         this.y = (sectorWidth - 1);
         this.sy--;
@@ -124,7 +124,9 @@ class Asteroid {
     this.die = function() { };
 
     // Prevent flooding of sectors with asteroids by only re-spawning if we've fallen below the sector min (8)
-    spawnAsteroid();
+    var sumAsts = 0;
+    for(let i in astCount)for(let j in astCount[i])sumAsts+=astCount[i][j];
+    if(sumAsts<8*mapSz*mapSz)spawnAsteroid();
 
     delete asts[this.sy][this.sx][this.id];
     if (b == 0) return;

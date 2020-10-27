@@ -422,11 +422,11 @@
 		},
 		{
 			"name":"Jammer",
-			"range":50,
+			"range":70,
 			"damage":0,
 			"speed":-1,
 			"charge":20,
-			"price":40000,
+			"price":10000,
 			"ammo":-1,
 			"level":10,
 			"type":"Beam",
