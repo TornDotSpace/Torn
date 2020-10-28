@@ -5,6 +5,7 @@ const Base = require('./universe/base.js');
 const Orb = require('./battle/orb.js');
 const Mine = require('./battle/mine.js');
 const Beam = require('./battle/beam.js');
+const Asteroid = require('./universe/asteroid.js');
 
 class Player {
   constructor(id) {
