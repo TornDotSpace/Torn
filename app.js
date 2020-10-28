@@ -329,9 +329,9 @@ function init() { // start the server!
 
   // 3 Black Holes
   for (let vortno = 0; vortno < 9; vortno++) {
-    if (vortno % 3 != 1) continue;
+    if (vortno % 3 != 2) continue;
     id = Math.random();
-    v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, vortno, 8, .15, 0, false);
+    v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, vortno, 4, .15, 0, false);
     vorts[v.sy][v.sx][id] = v;
   }
 
@@ -945,7 +945,7 @@ function update() {
 
 if (Config.getValue('enable_discord_moderation', false)) setInterval(setDiscordActivity, 60000);
 
-setInterval(updateHeatmap, 700);
+setInterval(updateHeatmap, 500);
 function updateHeatmap() {
   const hmap = [];
   const lb = [];

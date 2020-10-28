@@ -178,13 +178,14 @@ let myId = undefined;
 
 
 const dots = [];
+const armCount = 5;
 dots[0] = {x: 0, y: 0, z: 0};
-for (let i = 1; i < 1000; i++) {
-  const leaf = Math.floor(Math.random()*3);
+for (let i = 1; i < 800; i++) {
+  const leaf = Math.floor(Math.random()*armCount);
   const dist = ((Math.random()-.4)*(Math.random()-.6)+.3)*200;
-  const angleMiss = (Math.random()-.5)*dist*.02;
-  const a = leaf*Math.PI*2/3+angleMiss+dist/70;
-  const zz = square(dist)*(Math.random()-.5)*0.01;
+  const angleMiss = (Math.random()-.5)*dist*.06/armCount;
+  const a = leaf*Math.PI*2/armCount+angleMiss+dist/70;
+  const zz = square(dist)*(Math.random()-.5)*0.008;
   const xx = dist*cosLow(a)*2;
   const yy = dist*sinLow(a)*2;
   dots[i] = {x: xx, y: yy, z: zz};
