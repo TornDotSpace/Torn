@@ -959,7 +959,7 @@ function r3DMap() {
 
   // render stars
   if (!useOldMap) {
-    for (let i = 1; i < 1000; i++) {
+    for (let i in dots) {
       const dot = dots[i];
       const xx = 104 + dot.x / mapZoom;
       const yy = 104 + dot.y / mapZoom;
