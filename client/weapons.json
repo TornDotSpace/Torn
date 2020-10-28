@@ -352,7 +352,7 @@
 			"name":"Warp Drive",
 			"range":-1,
 			"damage":-1,
-			"speed":600,
+			"speed":715,
 			"charge":80,
 			"price":150000,
 			"ammo":1,
