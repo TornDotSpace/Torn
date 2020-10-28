@@ -853,7 +853,7 @@ class Player {
     return this.health < 0;
   }
   EMP(t) {
-    /* if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship*/ 
+    /* if (this.empTimer > 0) return;  */  // emps don't stack. can't emp an already emp's ship
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
     /* if (this.ship == 21) { */
     this.charge += -t*this.energy2; // Emp jams the rank 21 ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
@@ -865,7 +865,9 @@ class Player {
     this.empTimer = t;
 
     // turn off all keys
-    /*this.w = this.e = this.a = this.s = this.d = this.c = this.space = false;*/
+    /*
+    this.w = this.e = this.a = this.s = this.d = this.c = this.space = false; 
+    */
     if (!this.isBot) this.emit('emp', {t: t});
   }
   save() {}
