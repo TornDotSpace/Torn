@@ -578,7 +578,7 @@
 		},
 		{
 			"name":"Magnetic Mine",
-			"range":30,
+			"range":50,
 			"damage":90,
 			"speed":0,
 			"charge":45,

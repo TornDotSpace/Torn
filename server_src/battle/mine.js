@@ -39,7 +39,7 @@ module.exports = class Mine {
           const distance = squaredDist(this, p); // distance squared between me and them
           if (distance > square(10 * this.range)) continue;// wepns[48].range
           const a = angleBetween(p, this);
-          const vel = 3 / Math.log(distance);
+          const vel = 4.5 / Math.log(distance);
           magvx += Math.cos(a) * vel;
           magvy += Math.sin(a) * vel;
         }
