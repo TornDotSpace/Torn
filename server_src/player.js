@@ -855,7 +855,7 @@ class Player {
   EMP(t) {
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
     this.charge += -t*this.energy2; // Emp jams the rank 21 ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
-    this.empTimer = t; 
+    this.empTimer = t;
     if (!this.isBot) this.emit('emp', {t: t});
   }
   save() {}
