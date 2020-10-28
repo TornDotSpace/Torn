@@ -24,9 +24,7 @@ jobs:
         npm run dev --if-present
         npm run test-build --if-present
         npm run build --if-present
+	eslint .
       env:
         CI: true
-    - name: lint (via eslint)
-      run: |
-	eslint .
 
