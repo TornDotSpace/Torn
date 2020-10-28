@@ -207,7 +207,7 @@ class Player {
         else if (wep.name === 'Hull Nanobots') this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
         else if (wep.name === 'Photon Cloak') this.disguise = 200;// 6s
         else if (wep.name === 'Warp Drive') {
-     this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
+          this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
           this.speed+=100*(this.energy2-1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it.
         }
       }
@@ -366,7 +366,7 @@ class Player {
       this.copper -= 250;
       this.platinum -= 250;
       const randId = Math.random();
-      var ast = new Asteroid(randId, health, this.sx, this.sy, this.x + Math.cos(this.angle) * 256, this.y + Math.sin(this.angle) * 256, Math.cos(this.angle) * 15, Math.sin(this.angle) * 15, Math.floor(Math.random() * 4));
+      const ast = new Asteroid(randId, health, this.sx, this.sy, this.x + Math.cos(this.angle) * 256, this.y + Math.sin(this.angle) * 256, Math.cos(this.angle) * 15, Math.sin(this.angle) * 15, Math.floor(Math.random() * 4));
       asts[this.sy][this.sx][randId] = ast;
     } else if (this.ship == 18) {
       if (this.disguise > 0 || this.shield) return;

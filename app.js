@@ -159,16 +159,16 @@ global.readGuildList = function() {
   const split = data.split('\n');
   for (let i = 0; i < split.length-1; i++) { // minus 1 because an extra \n is at the end of the file.
     const splitGuild = split[i].split(':');
-    guildList[splitGuild[0]] = {owner: splitGuild[1], public: splitGuild[2], invite: "AdminInviteKey"};
+    guildList[splitGuild[0]] = {owner: splitGuild[1], public: splitGuild[2], invite: 'AdminInviteKey'};
   }
 };
 
 global.writeGuildList = function() {
   const source = 'server/guildnames';
-  writeStr="";
+  writeStr='';
   for (const i in guildList) {
     const guildData = guildList[i];
-    writeStr += i + ":" + guildData.owner + ":" + guildData.public+"\n";
+    writeStr += i + ':' + guildData.owner + ':' + guildData.public+'\n';
   }
   fs.writeFileSync(source, writeStr);
 };

@@ -86,7 +86,7 @@ const socket = io(GAMESERVER_URL,
     {
       autoConnect: false,
       parser: msgpack,
-  });
+    });
 // Just to make socket accessible in react.js
 ReactRoot.socket = socket;
 
@@ -211,17 +211,17 @@ let sectorPoints = 0;
 
 const wepns = jsn.weapons; const ships = jsn.ships;
 
-//Used in the ship store to make the bar graphs
-var maxShipThrust=-1000;
-var maxShipHealth=-1000;
-var maxShipCapacity=-1000;
-var maxShipAgility=-1000;
-for(let i in ships){
+// Used in the ship store to make the bar graphs
+let maxShipThrust=-1000;
+let maxShipHealth=-1000;
+let maxShipCapacity=-1000;
+let maxShipAgility=-1000;
+for (const i in ships) {
   const ship = ships[i];
-  if(ship.thrust>maxShipThrust) maxShipThrust=ship.thrust;
-  if(ship.capacity>maxShipCapacity && i != 17) maxShipCapacity=ship.capacity;
-  if(ship.agility>maxShipAgility) maxShipAgility=ship.agility;
-  if(ship.health>maxShipHealth) maxShipHealth=ship.health;
+  if (ship.thrust>maxShipThrust) maxShipThrust=ship.thrust;
+  if (ship.capacity>maxShipCapacity && i != 17) maxShipCapacity=ship.capacity;
+  if (ship.agility>maxShipAgility) maxShipAgility=ship.agility;
+  if (ship.health>maxShipHealth) maxShipHealth=ship.health;
 }
 
 const weaponTypeOrder = {'Gun': 0, 'Mine': 1, 'Missile': 2, 'Beam': 3, 'Orb': 4, 'Blast': 5, 'Misc': 6};
@@ -532,7 +532,7 @@ function spin(v) {
   }
 }
 
-/*function rotate(v) {        Upcoming feature. DO NOT REMOVE!
+/* function rotate(v) {        Upcoming feature. DO NOT REMOVE!
   for (const i in dots) {
     const dot = dots[i];
     const dist = Math.sqrt(dot.x * dot.x + dot.y * dot.y);
@@ -959,7 +959,7 @@ function r3DMap() {
 
   // render stars
   if (!useOldMap) {
-    for (let i in dots) {
+    for (const i in dots) {
       const dot = dots[i];
       const xx = 104 + dot.x / mapZoom;
       const yy = 104 + dot.y / mapZoom;
@@ -1048,27 +1048,27 @@ function rBuyShipWindow() {
 
   ctx.textAlign = 'left';
 
-  if(shipView <= rank){
-    const shipStatsRx = rx+288, shipStatsRy = ry+421;
+  if (shipView <= rank) {
+    const shipStatsRx = rx+288; const shipStatsRy = ry+421;
     ctx.fillStyle = 'white';
     write(mEng[27], shipStatsRx, shipStatsRy + 0 * 16);
     write(mEng[28], shipStatsRx, shipStatsRy + 1 * 16);
     write(mEng[29], shipStatsRx, shipStatsRy + 2 * 16);
-    write(mEng[31] + (shipView==17?"Infinite":""), shipStatsRx, shipStatsRy + 3 * 16);
+    write(mEng[31] + (shipView==17?'Infinite':''), shipStatsRx, shipStatsRy + 3 * 16);
     write(mEng[30] + numToLS(ships[shipView].weapons), shipStatsRx, shipStatsRy + 4 * 16);
     ctx.fillStyle = '#555';
     ctx.fillRect(shipStatsRx+60, shipStatsRy + 0 * 16 - 10, 80, 12);
     ctx.fillRect(shipStatsRx+60, shipStatsRy + 1 * 16 - 10, 80, 12);
-    ctx.fillRect(shipStatsRx+60, shipStatsRy + 2 * 16 - 10, 80, 12);if(shipView!=17)
-   {ctx.fillRect(shipStatsRx+60, shipStatsRy + 3 * 16 - 10, 80, 12);} // 17 has infinite cargo
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 2 * 16 - 10, 80, 12); if (shipView!=17)
+    {ctx.fillRect(shipStatsRx+60, shipStatsRy + 3 * 16 - 10, 80, 12);} // 17 has infinite cargo
     ctx.fillStyle = 'white';
-    ctx.fillRect(shipStatsRx+60, shipStatsRy + 0 * 16 - 10, 80*ships[shipView].thrust  /maxShipThrust  , 12);
-    ctx.fillRect(shipStatsRx+60, shipStatsRy + 1 * 16 - 10, 80*ships[shipView].agility /maxShipAgility , 12);
-    ctx.fillRect(shipStatsRx+60, shipStatsRy + 2 * 16 - 10, 80*ships[shipView].health  /maxShipHealth  , 12);if(shipView!=17)
-   {ctx.fillRect(shipStatsRx+60, shipStatsRy + 3 * 16 - 10, 80*ships[shipView].capacity/maxShipCapacity, 12);} // 17 has infinite cargo
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 0 * 16 - 10, 80*ships[shipView].thrust /maxShipThrust, 12);
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 1 * 16 - 10, 80*ships[shipView].agility /maxShipAgility, 12);
+    ctx.fillRect(shipStatsRx+60, shipStatsRy + 2 * 16 - 10, 80*ships[shipView].health /maxShipHealth, 12); if (shipView!=17)
+    {ctx.fillRect(shipStatsRx+60, shipStatsRy + 3 * 16 - 10, 80*ships[shipView].capacity/maxShipCapacity, 12);} // 17 has infinite cargo
   }
 
-  ctx.fillStyle = "white";
+  ctx.fillStyle = 'white';
   wrapText(mEng[50] + (shipView > rank ? mEng[26] : ships[shipView].desc), rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
 
   if (shipView < ships.length) ctx.drawImage(Img.arrow, rendX + 128 - 48, rendY - 16);
@@ -1208,7 +1208,7 @@ function techPrice(x) { // money required to upgrade Tech
   return techEnergy(nextTechLevel(x))-techEnergy(x);
 }
 function techPriceForDowngrade(x) { // money required to upgrade Tech
-  if(myName.startsWith("[V] ")) return techEnergy(lastTechLevel(x))-techEnergy(x);
+  if (myName.startsWith('[V] ')) return techEnergy(lastTechLevel(x))-techEnergy(x);
   return Math.max(techEnergy(lastTechLevel(x))-techEnergy(x), -300000000);
 }
 function techEnergy(x) { // Net price of some tech level
@@ -2530,7 +2530,7 @@ document.addEventListener('mousemove', function(evt) {
 
   // Shop
   else if (docked && tab == 0) {
-       if (mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
+    if (mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
     else if (mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
       seller = 5 + Math.floor((my - 84 - ry) / 32);
       if (Math.floor((my - 84 - ry) / 16) % 2 == 1) seller = 0;
@@ -2559,7 +2559,7 @@ document.addEventListener('mousemove', function(evt) {
 
   // Stats
   else if (docked && tab == 2) {
-       if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
+    if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
     else if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 201;
     else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 202;
     else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 203;
@@ -2581,7 +2581,7 @@ document.addEventListener('mousemove', function(evt) {
 
   // Buy weapon
   else if (docked && tab == 7) {
-       if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16)) + 20;
+    if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16)) + 20;
     else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 && mx < rx + 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3))) + 20;
     else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3) * 2)) + 20;
 
@@ -3145,7 +3145,7 @@ function rTexts(lag, arr) {
 
 function numToLS(x) {
   if (!Number.isFinite(x)) return 'NaN';
-  if (x < 0)  return "-"+numToLS(-x);
+  if (x < 0) return '-'+numToLS(-x);
   if (x == 0) return '0';
   const intx = Math.floor(x);
   const decimal = x-intx;
@@ -3384,7 +3384,7 @@ function rCargo() {
   if (quest.type === 'Mining') {
     ctx.fillStyle = '#d44';
     let metalWeHave = iron;
-         if (quest.metal === 'copper') {
+    if (quest.metal === 'copper') {
       ctx.fillStyle = '#960'; metalWeHave = copper;
     } else if (quest.metal === 'platinum') {
       ctx.fillStyle = '#90f'; metalWeHave = platinum;

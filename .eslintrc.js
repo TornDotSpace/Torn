@@ -28,5 +28,6 @@ module.exports = {
     'no-mixed-spaces-and-tabs': 0,
     'brace-style': 0,
     'new-cap': 0,
+    'no-unused-vars': 0,
   },
 };
