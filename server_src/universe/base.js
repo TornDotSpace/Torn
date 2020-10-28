@@ -209,7 +209,7 @@ module.exports = class Base {
     if (typeof b.owner !== 'undefined' && b.owner.type === 'Player') {
       this.sendDeathMsg(b.owner.nameWithColor() + '\'s `~' + b.wepnID + '`~');
       b.owner.baseKilled();
-      let multiplier = this.isMini?1:this.sy;
+      let multiplier = this.isMini?1:2*Math.abs(this.sy-mapSz/2-.5);
       let numInRange = 0;
       for (const i in players[this.sy][this.sx]) { // Count all players in range
         const p = players[this.sy][this.sx][i];
