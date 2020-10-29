@@ -103,7 +103,7 @@ module.exports = class Base {
       if (cDist2 < square(wepns[8].range * 10)) this.shootLaser();// range:60
       else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb();// range:125
       else if (cDist2 < square(175 * 10)) this.shootMissile();// range:175
-      else if (cDist2 < square(wepns[3].range * 10)) this.shootRifle();// range:750
+      else if (cDist2 < 10+square(wepns[3].range * 10)) this.shootRifle();// range:750 plus some extra distance rifle can travel. Basically this makes the turret slightly smarter.
     }
   }
   fireMini() {
@@ -124,7 +124,7 @@ module.exports = class Base {
     this.angle = (this.angle+newAngle*2)/3;
 
     if (this.reload < 0) {
-      if (cDist2 < square(wepns[5].range * 10)) this.shootMachineGun();// range:???
+      if (cDist2 < 5 + square(wepns[5].range * 10)) this.shootMachineGun();// range:??? + the small extra range machine gun bullets are still capable of hitting a target. Basically this allows the turret not to be attacked with the same weapon by players without the turret reacting.
     }
   }
   shootOrb() {
