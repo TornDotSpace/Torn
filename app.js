@@ -1010,7 +1010,7 @@ function updateHeatmap() {
   }
 
   const lbSend = [];
-  for (let i = 0; i < Math.min(16, j); i++) lbSend[i] = {name: lb[i].name, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank};
+  for (let i = 0; i < Math.min(20, j); i++) lbSend[i] = {name: lb[i].name, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank};
 
   // Normalize colors as though they are vectors to length 255
   for (let i = 0; i < mapSz; i++) {
