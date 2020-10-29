@@ -27,7 +27,7 @@ module.exports = class Missile {
     this.move();
     this.timer++; // time needs to flow.
     if (this.distTravelled >= 10 * wepns[this.wepnID].range) this.die(); // out of range -> die
-    if(this.wepnID == 14){   //If torpedo... yeah we need a reason to make torpedo needed at such a high level with so little damage, ammo and recharge.
+    if (this.wepnID == 14) { // If torpedo... yeah we need a reason to make torpedo needed at such a high level with so little damage, ammo and recharge.
       const old_sx=this.sx;
       const old_sy=this.sy;
       if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
@@ -57,7 +57,7 @@ module.exports = class Missile {
         delete missiles[old_sy][old_sx][this.id];
         missiles[this.sy][this.sx][this.id] = this;
       }
-    }else if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // out of sector
+    } else if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // out of sector
 
     if (this.timer == 20 && this.wepnID == 13) this.missileSwarmExplode();
 
@@ -109,7 +109,7 @@ module.exports = class Missile {
         if (target.sx == this.sx && target.sy == this.sy && squaredDist(target, this) < 10000 * (this.wepnID == 38 ? 5 : 1) && target.turretLive != false /* we don't know it's a base. can't just say ==true.*/) {
           target.dmg(this.dmg, this);
           this.die();
-          if (this.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(18); // emp missile
+          if (this.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(54); // emp missile
           return;
         }
 

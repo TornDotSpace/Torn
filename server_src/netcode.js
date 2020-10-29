@@ -383,9 +383,9 @@ module.exports = function initNetcode() {
       } // non spammable commands
 
       if (muteTable[player.name] > time || ipMuteTable[player.ip] > time) {
-        var secondsLeft = 0;
-        if(muteTable[player.name] > secondsLeft) secondsLeft = Math.floor((muteTable[player.name]-time)/1000); // We aren't using math.max here because it misbehaves with NaN arguments, which these dictionary accesses can be.
-        if(ipMuteTable[player.ip] > secondsLeft) secondsLeft = Math.floor((ipMuteTable[player.ip]-time)/1000);
+        let secondsLeft = 0;
+        if (muteTable[player.name] > secondsLeft) secondsLeft = Math.floor((muteTable[player.name]-time)/1000); // We aren't using math.max here because it misbehaves with NaN arguments, which these dictionary accesses can be.
+        if (ipMuteTable[player.ip] > secondsLeft) secondsLeft = Math.floor((ipMuteTable[player.ip]-time)/1000);
         socket.emit('chat', {msg: ('~`#ff0000~`You are muted for ' + Math.floor(secondsLeft/60) + ' minutes and ' + secondsLeft%60 + ' seconds!')});
         return;
       }
@@ -570,7 +570,7 @@ module.exports = function initNetcode() {
       switch (item) {
         case 1: { // radar
                 	if (player.radar2 <= 1) break;
-            		const price = techPriceForDowngrade(player.radar2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.radar2, player.name.startsWith('[V] '));
           if (player.money >= price) {
             player.money -= price;
             player.radar2 = lastTechLevel(player.radar2);
@@ -579,7 +579,7 @@ module.exports = function initNetcode() {
         }
         case 2: {// cargo
                 	if (player.capacity2 <= 1) break;
-            		const price = techPriceForDowngrade(player.capacity2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.capacity2, player.name.startsWith('[V] '));
           if (player.money >= price) {
             player.money -= price;
             player.capacity2 = lastTechLevel(player.capacity2);
@@ -589,7 +589,7 @@ module.exports = function initNetcode() {
         }
         case 3: { // hull
                 	if (player.maxHealth2 <= 1) break;
-            		const price = techPriceForDowngrade(player.maxHealth2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.maxHealth2, player.name.startsWith('[V] '));
           if (player.money >= price) {
             player.money -= price;
             player.maxHealth2 = lastTechLevel(player.maxHealth2);
@@ -599,7 +599,7 @@ module.exports = function initNetcode() {
         }
         case 4: { // energy
                 	if (player.energy2 <= 1) break;
-            		const price = techPriceForDowngrade(player.energy2, player.name.startsWith("[V] "))*8;
+            		const price = techPriceForDowngrade(player.energy2, player.name.startsWith('[V] '))*8;
           if (player.money >= price) {
             player.money -= price;
             player.energy2 = lastTechLevel(player.energy2);
@@ -608,7 +608,7 @@ module.exports = function initNetcode() {
         }
         case 5: { // agility
                 	if (player.agility2 <= 1) break;
-            		const price = techPriceForDowngrade(player.agility2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.agility2, player.name.startsWith('[V] '));
           if (player.money >= price) {
             player.money -= price;
             player.agility2 = lastTechLevel(player.agility2);
@@ -618,7 +618,7 @@ module.exports = function initNetcode() {
         }
         default: { // 0: thrust
                 	if (player.thrust2 <= 1) break;
-            		const price = techPriceForDowngrade(player.thrust2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.thrust2, player.name.startsWith('[V] '));
           if (player.money >= price) {
             player.money -= price;
             player.thrust2 = lastTechLevel(player.thrust2);

@@ -45,7 +45,7 @@ module.exports = class Blast {
     }
   }
   hit(b) {
-    if (this.wepnID == 25 && this.owner.color !== b.color) b.EMP(42); // emp blast
+    if (this.wepnID == 25 && this.owner.color !== b.color) b.EMP(126); // emp blast
     else if ((this.wepnID == 34 || this.wepnID == 47)&& this.owner.color !== b.color) b.dmg(this.dmg, this); // muon and lepton
     else if (this.wepnID == 41) b.brainwashedBy = this.owner.id; // brainwashing laser
   }
