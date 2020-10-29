@@ -102,16 +102,16 @@ module.exports = class Vortex {
         players[p.sy][p.sx][p.id] = p;
       }
     }
-    if(Math.random()<.2){//limited for lag
+    if (Math.random()<.2) {// limited for lag
       for (const i in asts[this.sy][this.sx]) {
         const dist = Math.pow(squaredDist(this, i), 0.25);
         const a = asts[this.sy][this.sx][i];
         const d2 = squaredDist(this, a);
         const ang = angleBetween(this, a);
-        const vel = .005 * this.size / Math.log(d2);    
+        const vel = .005 * this.size / Math.log(d2);
         a.vx += Math.cos(ang) * vel;
         a.vy += Math.sin(ang) * vel;
-        if(d2<100){
+        if (d2<100) {
           if (!this.isWorm) { // collision with black hole
             a.die(this);
           } else { // collision with wormhole

@@ -207,7 +207,7 @@ class Player {
         else if (wep.name === 'Hull Nanobots') this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
         else if (wep.name === 'Photon Cloak') this.disguise = 200;// 6s
         else if (wep.name === 'Warp Drive') {
-     this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
+          this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
           this.speed+=100*(this.energy2-1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it.
         }
       }
@@ -366,7 +366,7 @@ class Player {
       this.copper -= 250;
       this.platinum -= 250;
       const randId = Math.random();
-      var ast = new Asteroid(randId, health, this.sx, this.sy, this.x + Math.cos(this.angle) * 256, this.y + Math.sin(this.angle) * 256, Math.cos(this.angle) * 15, Math.sin(this.angle) * 15, Math.floor(Math.random() * 4));
+      const ast = new Asteroid(randId, health, this.sx, this.sy, this.x + Math.cos(this.angle) * 256, this.y + Math.sin(this.angle) * 256, Math.cos(this.angle) * 15, Math.sin(this.angle) * 15, Math.floor(Math.random() * 4));
       asts[this.sy][this.sx][randId] = ast;
     } else if (this.ship == 18) {
       if (this.disguise > 0 || this.shield) return;
@@ -489,7 +489,7 @@ class Player {
       if (m.color != this.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
         if (m.wepnID != 16 && squaredDist(m, this) < square(16 + ships[this.ship].width)) {
           this.dmg(m.dmg, m); // damage me
-          if (m.wepnID == 17) this.EMP(50); // emp mine
+          if (m.wepnID == 17) this.EMP(160); // emp mine
           m.die();
           break;
         } else if (m.wepnID == 16 && squaredDist(m, this) < square(wepns[m.wepnID].range + ships[this.ship].width)) { // TODO range * 10?
@@ -853,17 +853,9 @@ class Player {
     return this.health < 0;
   }
   EMP(t) {
-    if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
-    if (this.ship == 21) {
-      this.charge += -3*t*this.energy2; // Emp jams the rank 21 ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
-      t *= 0; // Emp jams the rank 21 ship, not fully disables.
-      if (this.health*1.05 < this.maxHealth) this.health*=1.05;// It will also heal the ship a very small bit.
-    }
+    this.charge += -t*this.energy2; // Emp jams the rank 21 ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
     this.empTimer = t;
-
-    // turn off all keys
-    this.w = this.e = this.a = this.s = this.d = this.c = this.space = false;
     if (!this.isBot) this.emit('emp', {t: t});
   }
   save() {}
@@ -879,7 +871,7 @@ class Player {
     if (this.ship == 19) {
       for (const i in players[this.sy][this.sx]) {
         const p = players[this.sy][this.sx][i];
-        if (p.color !== this.color) p.EMP(15);
+        if (p.color !== this.color) p.EMP(70);
       }
       if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive) {
         const b = bases[this.sy][this.sx];

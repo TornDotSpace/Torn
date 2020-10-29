@@ -118,7 +118,7 @@ cmds['/nameturret'] = new Command('/nameturret <name>', REGISTERED, function(pla
 
 cmds['/joinguild'] = new Command('/joinguild <guildName> <optionalinvite> - Join a guild', REGISTERED, function(player, msg) {
   const split = msg.split(' ');
-  if(player.guild !== '') {
+  if (player.guild !== '') {
     player.socket.emit('chat', {msg: 'You are already in '+player.guild+'! Use /leaveguild to leave it.'});
     return;
   }
@@ -132,23 +132,23 @@ cmds['/joinguild'] = new Command('/joinguild <guildName> <optionalinvite> - Join
     player.socket.emit('chat', {msg: guildName + ' is not a real guild!'});
     return;
   }
-  if (guildObj.public !== 'public'){
+  if (guildObj.public !== 'public') {
     if (split.length != 3) {
       player.socket.emit('chat', {msg: 'That guild is private- you must be invited by its owner, '+guildObj.owner+'! Use /joinguild <guild> <invitenumber>!'});
       return;
     }
-    if (split[2] !== guildObj.invite){
+    if (split[2] !== guildObj.invite) {
       player.socket.emit('chat', {msg: 'That invite key is either incorrect, expired, or already used!'});
       return;
     }
-    guildList.invite="AdminInviteKey";
+    guildList.invite='AdminInviteKey';
   }
   player.guild = guildName;
   player.socket.emit('chat', {msg: 'Joined guild ' + guildName + '!'});
 });
 
 cmds['/leaveguild'] = new Command('/leaveguild - Leave your current guild', REGISTERED, function(player, msg) {
-  if(player.guild === '') {
+  if (player.guild === '') {
     player.socket.emit('chat', {msg: 'You are not in a guild!'});
     return;
   }
@@ -217,16 +217,16 @@ cmds['/createguild'] = new Command('/createguild <guildname> - Creates a new gui
     return;
   }
   const playersguild = findGuildFromOwner(player.name);
-  if (playersguild!==-1){
+  if (playersguild!==-1) {
     player.socket.emit('chat', {msg: 'You already own guild +'+playersguild+'!'});
     return;
   }
   const guildName = split[1];
-  if (!guildName.match(/^[0-9a-z]+$/)){
+  if (!guildName.match(/^[0-9a-z]+$/)) {
     player.socket.emit('chat', {msg: 'Your guild name must only contain numbers and lowercase letters.'});
     return;
   }
-  guildList[guildName] = {owner: player.name, public: "private", invite: "AdminInviteKey"};
+  guildList[guildName] = {owner: player.name, public: 'private', invite: 'AdminInviteKey'};
   player.socket.emit('chat', {msg: 'Private guild '+guildName+' created! Use /guildprivacy to toggle its privacy.'});
 });
 
@@ -237,7 +237,7 @@ cmds['/guildprivacy'] = new Command('/guildprivacy - Toggle guild\'s privacy.', 
     return;
   }
   const playersguild = findGuildFromOwner(player.name);
-  if (playersguild===-1){
+  if (playersguild===-1) {
     player.socket.emit('chat', {msg: 'You don\'t own a guild!'});
     return;
   }
@@ -252,21 +252,21 @@ cmds['/guildinvite'] = new Command('/guildinvite - Get guild invite code.', VIPP
     return;
   }
   const playersguild = findGuildFromOwner(player.name);
-  if (playersguild===-1){
+  if (playersguild===-1) {
     player.socket.emit('chat', {msg: 'You don\'t own a guild!'});
     return;
   }
-  guildList[playersguild].invite = ""+Math.floor(Math.random()*100000);
+  guildList[playersguild].invite = ''+Math.floor(Math.random()*100000);
   player.socket.emit('chat', {msg: 'You can invite one user with invitation ' + guildList[playersguild].invite + '. Run this command again to invite another player.'});
 });
 
-findGuildFromOwner = function(owner){
-  for (let i in guildList) {
+findGuildFromOwner = function(owner) {
+  for (const i in guildList) {
     const guildData = guildList[i];
-    if(guildData.owner===owner) return i;
+    if (guildData.owner===owner) return i;
   }
   return -1;
-}
+};
 
 // MODERATION COMMANDS
 // These commands are accessible to moderators in the game
@@ -275,15 +275,15 @@ cmds['/broadcast'] = new Command('/broadcast <msg> - Send a message to the whole
 });
 
 cmds['/modmute'] = new Command('/modmute <player> <minutesToMute> - Mutes the specified player server-wide.', MODPLUS, function(ply, msg) {
-  //Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
+  // Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
   const returnmsg = modmute(msg);
-  ply.socket.emit('chat',{msg:returnmsg});
+  ply.socket.emit('chat', {msg: returnmsg});
 });
 
 cmds['/ipmute'] = new Command('/ipmute <player> <minutesToMute> - Mutes the specified IP server-wide.', MODPLUS, function(ply, msg) {
-  //Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
+  // Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
   const returnmsg = ipmute(msg);
-  ply.socket.emit('chat',{msg:returnmsg});
+  ply.socket.emit('chat', {msg: returnmsg});
 });
 
 

@@ -29,7 +29,7 @@ module.exports = class Mine {
     if (this.wepnID == 44 && this.time % 25 == 0) this.doHeal(); // campfire
   }
   move() {
-    if (this.wepnID == 48){ //Magnetic Mine
+    if (this.wepnID == 48) { // Magnetic Mine
       let magvx = 0;
       let magvy = 0;
       for (const i in players[this.sy][this.sx]) {
@@ -39,10 +39,9 @@ module.exports = class Mine {
           const distance = squaredDist(this, p); // distance squared between me and them
           if (distance > square(10 * this.range)) continue;// wepns[48].range
           const a = angleBetween(p, this);
-          const vel = 3 / Math.log(distance);
+          const vel = 4.5 / Math.log(distance);
           magvx += Math.cos(a) * vel;
           magvy += Math.sin(a) * vel;
-      
         }
       }
       this.vx += magvx;
@@ -51,7 +50,7 @@ module.exports = class Mine {
     this.x += this.vx;
     this.y += this.vy;
 
-    if (this.wepnID == 44){ //Campfire
+    if (this.wepnID == 44) { // Campfire
       const old_sx=this.sx;
       const old_sy=this.sy;
       if (this.x > sectorWidth) {// check each edge of the 4 they could cross.
@@ -81,7 +80,6 @@ module.exports = class Mine {
         mines[this.sy][this.sx][this.id] = this;
       }
     } else if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // out of sector. Better make them die than store all mines outside the sector borders, unable to do anything
-
   }
   doPulse() {
     if (this.time > 25 * 40) this.die(); // pulse has a shorter lifespan

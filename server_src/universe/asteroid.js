@@ -27,7 +27,7 @@ class Asteroid {
     this.vy = vy,
     this.metal = metal,
     this.va = (Math.random() - .5) / 10;
-    if(this.vx==0 && this.vy==0){
+    if (this.vx==0 && this.vy==0) {
       this.vx=3*(Math.random()-.5);
       this.vy=3*(Math.random()-.5);
     }
@@ -35,7 +35,7 @@ class Asteroid {
 
   tick() {
     const asteroidsHere = astCount[this.sy][this.sx];
-    this.health-=Math.max(asteroidsHere/200,0); // decay asteroids so they don't get too bunched up in any one area
+    this.health-=Math.max(asteroidsHere/200, 0); // decay asteroids so they don't get too bunched up in any one area
     if (this.health < -50) this.die(0);
     this.move();
     if (Math.abs(this.vx) + Math.abs(this.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players.
@@ -68,8 +68,8 @@ class Asteroid {
     if (Math.abs(this.vx) + Math.abs(this.vy) < .5) return;
     this.vx *= .997;
     this.vy *= .997;
-    //ASTEROID GRAVITY, ACTIVATE AT YOUR OWN LAGGY RISK
-    /*if(Math.random()<.2){
+    // ASTEROID GRAVITY, ACTIVATE AT YOUR OWN LAGGY RISK
+    /* if(Math.random()<.2){
       let gvx = 0;
       let gvy = 0;
       for (const i in asts[this.sy][this.sx]) {
@@ -86,7 +86,7 @@ class Asteroid {
       this.x += + gvx;
       this.y += + gvy;
     }*/
-    //OUT OF BOUNDS BEHAVIOUR ¿DIE OR CROSS?
+    // OUT OF BOUNDS BEHAVIOUR ¿DIE OR CROSS?
     this.x+=this.vx;
     this.y+=this.vy;
 
@@ -124,9 +124,9 @@ class Asteroid {
     this.die = function() { };
 
     // Prevent flooding of sectors with asteroids by only re-spawning if we've fallen below the sector min (8)
-    var sumAsts = 0;
-    for(let i in astCount)for(let j in astCount[i])sumAsts+=astCount[i][j];
-    if(sumAsts<8*mapSz*mapSz)spawnAsteroid();
+    let sumAsts = 0;
+    for (const i in astCount) for (const j in astCount[i])sumAsts+=astCount[i][j];
+    if (sumAsts<8*mapSz*mapSz)spawnAsteroid();
 
     delete asts[this.sy][this.sx][this.id];
     if (b == 0) return;
