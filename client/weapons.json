@@ -238,7 +238,7 @@
 			"ammo":3,
 			"level":4,
 			"type":"Misc",
-			"bot":false
+			"bot":true
 		},
 		{
 			"name":"Generator",
@@ -355,7 +355,7 @@
 			"speed":715,
 			"charge":80,
 			"price":150000,
-			"ammo":1,
+			"ammo":2,
 			"level":7,
 			"type":"Misc",
 			"bot":false
@@ -442,7 +442,7 @@
 			"ammo":-2,
 			"level":11,
 			"type":"Misc",
-			"bot":false
+			"bot":true
 		},
 		{
 			"name":"Energy Disk",
