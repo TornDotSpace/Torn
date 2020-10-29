@@ -221,9 +221,9 @@
 			"range":-1,
 			"damage":-150,
 			"speed":-1,
-			"charge":175,
+			"charge":150,
 			"price":50000,
-			"ammo":3,
+			"ammo":4,
 			"level":8,
 			"type":"Misc",
 			"bot":false
@@ -233,9 +233,9 @@
 			"range":-1,
 			"damage":-1,
 			"speed":-1,
-			"charge":130,
+			"charge":100,
 			"price":30000,
-			"ammo":2,
+			"ammo":3,
 			"level":4,
 			"type":"Misc",
 			"bot":false
@@ -286,7 +286,7 @@
 			"ammo":1,
 			"level":7,
 			"type":"Misc",
-			"bot":false
+			"bot":true
 		},
 		{
 			"name":"Electromagnet",
@@ -458,7 +458,7 @@
 		},
 		{
 			"name":"Proximity Fuze",
-			"range":200,
+			"range":210,
 			"damage":80,
 			"speed":75,
 			"charge":25,
@@ -482,9 +482,9 @@
 		},
 		{
 			"name":"Submachinegun",
-			"range":250,
+			"range":300,
 			"damage":12,
-			"speed":60,
+			"speed":70,
 			"charge":10,
 			"price":30000,
 			"ammo":1000,
@@ -506,7 +506,7 @@
 		},
 		{
 			"name":"Photon Orb",
-			"range":130,
+			"range":135,
 			"damage":18,
 			"speed":8,
 			"charge":12,
@@ -542,7 +542,7 @@
 		},
 		{
 			"name":"Healing Beam",
-			"range":30,
+			"range":35,
 			"damage":-10,
 			"speed":0,
 			"charge":50,
@@ -554,7 +554,7 @@
 		},
 		{
 			"name":"Sentry",
-			"range":300,
+			"range":305,
 			"damage":15,
 			"speed":80,
 			"charge":5,
@@ -583,7 +583,7 @@
 			"speed":0,
 			"charge":45,
 			"price":10000,
-			"ammo":5,
+			"ammo":10,
 			"level":12,
 			"type":"Mine",
 			"bot":true
