@@ -482,9 +482,9 @@
 		},
 		{
 			"name":"Submachinegun",
-			"range":250,
+			"range":300,
 			"damage":12,
-			"speed":60,
+			"speed":70,
 			"charge":10,
 			"price":30000,
 			"ammo":1000,

@@ -729,6 +729,7 @@ class Player {
       if (currWep == 2) bAngle -= 3.1415; // reverse gun
       if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
       if (currWep == 4) bAngle += Math.random() - .5; // shotgun
+      if (currWep == 40) bAngle += Math.random() - .15; // smg
 
       const bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
       bullets[this.sy][this.sx][r] = bullet;

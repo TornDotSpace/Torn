@@ -42,10 +42,12 @@ class Bot extends Player {
     this.d = turn < -this.cva * this.cva * 10;
     this.w = this.s = true;
   }
-  fight(target, close, range) {
+  fight(target, close) {
     const isBase = target.type === 'Base';
+    const range = square(wepns[this.equipped].range * 10);
     this.space = this.e = close < range * 1.2 || isBase;
-    const turn = -(this.angle - calculateInterceptionAngle(target.x, target.y, isBase?0:target.vx, isBase?0:target.vy, this.x, this.y, wepns[this.equipped].speed) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+    var intercept = calculateInterceptionAngle(target.x, target.y, isBase?0:target.vx, isBase?0:target.vy, this.x, this.y, wepns[this.equipped].speed);
+    const turn = -(this.angle - intercept + Math.PI * 21) % (2 * Math.PI) + Math.PI;
     this.d = turn > this.cva * this.cva * 10;
     this.a = turn < -this.cva * this.cva * 10;
     this.s = this.space && Math.abs(turn) > Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
@@ -57,7 +59,6 @@ class Bot extends Player {
 
     this.equipped = 0;
     while (this.ammos[this.equipped] == 0) this.equipped++; // select the first available weapon with ammo
-    const range = square(wepns[this.equipped].range * 10);
 
     this.w = this.e = this.s = this.c = this.space = false; // release all keys
 
@@ -73,7 +74,6 @@ class Bot extends Player {
       enemies++;
       const dist2 = hypot2(player.x, this.x, player.y, this.y);
       if (dist2 < close) {
-        if (this.rank >= player.rank*1.5+4) continue; // Bots avoid players who are weak in comparison
         target = player; close = dist2;
       }
     }
@@ -85,14 +85,14 @@ class Bot extends Player {
     if (enemies == 0 && Math.random() < myDespawnRate) this.die();
 
     const base = bases[this.sy][this.sx];
-    if (base != 0 && base.color != this.color) {
+    if (base != 0 && hypot2(base.x, this.x, base.y, this.y)<close*3+square(150) && base.color != this.color) {
       target = base; enemies++;
     }
 
     if (this.brainwashedBy !== 0 && (!(this.brainwashedBy in players[this.sy][this.sx]) || target == 0)) this.goToOwner();
     else if (target == 0) this.flock();
-    else if ((this.health < this.maxHealth / 4 || enemies>friendlies*2+3) && this.brainwashedBy === 0) this.flee(target);
-    else this.fight(target, close, range);
+    else if (this.health < this.maxHealth / 5.5 && this.brainwashedBy === 0) this.flee(target);
+    else this.fight(target, close);
   }
 
   async die(b) {
