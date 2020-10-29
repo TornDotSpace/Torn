@@ -46,7 +46,7 @@ class Bot extends Player {
     const isBase = target.type === 'Base';
     const range = square(wepns[this.equipped].range * 10);
     this.space = this.e = close < range * 1.2 || isBase;
-    var intercept = calculateInterceptionAngle(target.x, target.y, isBase?0:target.vx, isBase?0:target.vy, this.x, this.y, wepns[this.equipped].speed);
+    const intercept = calculateInterceptionAngle(target.x, target.y, isBase?0:target.vx, isBase?0:target.vy, this.x, this.y, wepns[this.equipped].speed);
     const turn = -(this.angle - intercept + Math.PI * 21) % (2 * Math.PI) + Math.PI;
     this.d = turn > this.cva * this.cva * 10;
     this.a = turn < -this.cva * this.cva * 10;
