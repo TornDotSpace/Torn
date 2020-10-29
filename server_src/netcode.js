@@ -278,7 +278,7 @@ module.exports = function initNetcode() {
         player.calculateGenerators();
         socket.emit('raid', {raidTimer: raidTimer});
         player.checkTrailAchs();
-        player.randmAchs[1] = true;
+        player.randmAchs[0] = true;
         player.sendAchievementsKill(false);
         player.sendAchievementsCash(false);
         player.sendAchievementsDrift(false);
