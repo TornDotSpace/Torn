@@ -655,6 +655,7 @@ class Player {
     const cool = p.cooldown;
     if (cool < 0) {
       this.refillAllAmmo(); p.cooldown = 50;
+      if (this.health < this.maxHealth) this.health++;
     }
 
     this.checkQuestStatus(true); // lots of quests are planet based
@@ -684,10 +685,13 @@ class Player {
     }
 
     if (p.color === this.color || cool > 0) return;
-
+    if (p.color === 'yellow')
+      chatAll('Planet ' + p.name + ' colonized by ' + this.nameWithColor() + "!"); // Colonizing planets. Since this will happen once per planet it will not be spammy
+    // else
+    //   chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy
     p.color = this.color; // claim
     p.owner = this.name;
-    // chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy
+
 
     for (const i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();// send them new planet data
 
