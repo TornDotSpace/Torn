@@ -123,11 +123,6 @@ class Asteroid {
     // Bugfix for ion beam destroying multiple times
     this.die = function() { };
 
-    // Prevent flooding of sectors with asteroids by only re-spawning if we've fallen below the sector min (8)
-    let sumAsts = 0;
-    for (const i in astCount) for (const j in astCount[i])sumAsts+=astCount[i][j];
-    if (sumAsts<8*mapSz*mapSz)spawnAsteroid();
-
     delete asts[this.sy][this.sx][this.id];
     if (b == 0) return;
 

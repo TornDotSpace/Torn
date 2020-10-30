@@ -57,7 +57,9 @@ cmds['/guildlist'] = new Command('/guildlist - Tells you a list of all guilds', 
 });
 
 cmds['/playerstats'] = new Command('/playerstats - See how many players are online', EVERYONE, function(player, msg) {
-  player.socket.emit('chat', {msg: '~`orange~`' + guestCount + ' guests, ' + playerCount + ' players, ' + botCount + ' bots.'});
+  let sumAsts = 0;
+  for (const i in astCount) for (const j in astCount[i])sumAsts+=astCount[i][j];
+  player.socket.emit('chat', {msg: '~`orange~`' + guestCount + ' guests, ' + playerCount + ' players, ' + botCount + ' bots, and ' + sumAsts + ' asteroids.'});
 });
 
 // PLAYER COMMANDS
