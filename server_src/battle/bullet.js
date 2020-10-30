@@ -1,8 +1,8 @@
-const Vortex = require('../universe/vortex.js');
+const Vortex = require("../universe/vortex.js");
 
 module.exports = class Bullet {
   constructor(ownr, i, wepnID, angl, info) {
-    this.type = 'Bullet',
+    this.type = "Bullet",
     this.id = i, // unique identifier
     this.time = 0, // time since spawn
     this.color = ownr.color, // whose team
@@ -23,7 +23,7 @@ module.exports = class Bullet {
   }
   tick() {
     if (this.time++ == 0) { // if this was just spawned
-      sendAllSector('newBullet', {x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color}, this.sx, this.sy);
+      sendAllSector("newBullet", {x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color}, this.sx, this.sy);
       // this.x -= this.vx; //These were here before Alex's refactor. Not sure if they should exist.
       // this.y -= this.vy;
     }
@@ -72,9 +72,9 @@ module.exports = class Bullet {
     }
   }
   die() {
-    sendAllSector('delBullet', {id: this.id}, this.sx, this.sy);
+    sendAllSector("delBullet", {id: this.id}, this.sx, this.sy);
     const reverse = this.wepnID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
-    sendAllSector('sound', {file: 'boom', x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy}, this.sx, this.sy);
+    sendAllSector("sound", {file: "boom", x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy}, this.sx, this.sy);
     delete bullets[this.sy][this.sx][this.id];
   }
   dieAndMakeVortex() {

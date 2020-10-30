@@ -59,11 +59,11 @@ module.exports = class NeuralNet {
     return out;
   };
   save(k) {
-    const source = 'server/neuralnets/' + k + '.bot';
+    const source = "server/neuralnets/" + k + ".bot";
     if (fs.existsSync(source)) fs.unlinkSync(source);
-    let str = '';
-    for (let i = 0; i < 300; i++) str += this.genes[i] + '\n';
-    fs.writeFileSync(source, str, {'encoding': 'utf8'});
+    let str = "";
+    for (let i = 0; i < 300; i++) str += this.genes[i] + "\n";
+    fs.writeFileSync(source, str, {"encoding": "utf8"});
   };
   load() {
     this.id = Math.floor(Math.random() * neuralFiles);
@@ -71,9 +71,9 @@ module.exports = class NeuralNet {
 
     const parentCount = Math.floor(Math.random() * 3 + 1);
     for (let p = 0; p < parentCount; p++) {
-      const source = 'server/neuralnets/' + Math.floor(Math.random() * neuralFiles) + '.bot';
+      const source = "server/neuralnets/" + Math.floor(Math.random() * neuralFiles) + ".bot";
       if (fs.existsSync(source)) {
-        const fileData = fs.readFileSync(source, 'utf8').split('\n');
+        const fileData = fs.readFileSync(source, "utf8").split("\n");
         for (let i = 0; i < 300; i++) this.genes[i] += parseFloat(fileData[i]) / parentCount;
       }
     }

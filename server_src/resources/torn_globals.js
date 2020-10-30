@@ -1,10 +1,10 @@
 // Load config
-const configEnvironment = (process.argv.length <= 3) ? 'dev' : process.argv[3];
-require('../config.js')(configEnvironment);
-const fs = require('fs');
+const configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
+require("../config.js")(configEnvironment);
+const fs = require("fs");
 
 global.serverInitialized = false;
-global.tickRate = 1000 / Config.getValue('server_tick_rate', 60);
+global.tickRate = 1000 / Config.getValue("server_tick_rate", 60);
 // some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
 global.mineLifetime = 3 * tickRate * 60; // mines despawn after this many minutes (3)
@@ -33,7 +33,7 @@ global.neuralFiles = 1500; // how many files should be in competition
 global.botFrequency = trainingMode ? .0014 : .003;// higher: more bots spawn.
 global.playerHeal = .2; // player healing speed
 global.baseHeal = 1; // base healing speed
-global.guestsCantChat = !Config.getValue('want_guest_chat', true);
+global.guestsCantChat = !Config.getValue("want_guest_chat", true);
 global.ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000, 200000000, 400000000, 1000000000]; // exp to rank conversion.
 global.afkTimerConst = 15 * tickRate * 60; // 15 minutes till we kick players for being afk
 
@@ -42,7 +42,7 @@ global.playerCount = 0;
 global.botCount = 0;
 global.guestCount = 0; // blue/red players/guests/bots
 global.raidTimer = 50000;
-global.teamQuests = {'blue': [], 'red': [], 'green': []};// A list of the 10 available quests for humans and aliens
+global.teamQuests = {"blue": [], "red": [], "green": []};// A list of the 10 available quests for humans and aliens
 
 // Object lists. All of them are in Y-MAJOR ORDER.
 global.guildPlayers = {};
@@ -64,8 +64,8 @@ global.vorts = new Array(mapSz); // Worm/black holes
 global.asts = new Array(mapSz); // Asteroids
 global.planets = new Array(mapSz);
 
-const jsn = JSON.parse(fs.readFileSync('client/weapons.json', 'utf8'));
-global.eng = JSON.parse(fs.readFileSync('client/english.json', 'utf8'));
+const jsn = JSON.parse(fs.readFileSync("client/weapons.json", "utf8"));
+global.eng = JSON.parse(fs.readFileSync("client/english.json", "utf8"));
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 global.planetNames = jsn.planets;
@@ -74,7 +74,7 @@ global.planetNames = jsn.planets;
 // bases
 global.basesPerTeam = 6;
 global.baseMap=	{
-  'red': [	// x, y
+  "red": [	// x, y
     1, 0,
     2, 7,
     2, 2,
@@ -82,7 +82,7 @@ global.baseMap=	{
     1, 5,
     0, 8,
   ],
-  'blue': [
+  "blue": [
     4, 0,
     5, 7,
     5, 2,
@@ -90,7 +90,7 @@ global.baseMap=	{
     4, 5,
     3, 8,
   ],
-  'green': [
+  "green": [
     7, 0,
     8, 7,
     8, 2,

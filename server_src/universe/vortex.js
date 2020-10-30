@@ -6,7 +6,7 @@ module.exports = class Vortex {
     this.xo = Math.random() * sectorWidth,
     this.yo = Math.random() * sectorWidth,
 
-    this.type = 'Vortex',
+    this.type = "Vortex",
     this.wepnID = 28,
     this.owner = ownr,
     this.id = i, // unique identifier
@@ -62,7 +62,7 @@ module.exports = class Vortex {
       this.yo = ((byo * mapSz) % 1) * sectorWidth;
 
       // every 2 seconds, tell the players where I am (for radar only, I think)
-      if (tick % 50 == 0) sendAll('worm', {bx: bx, by: by, bxo: bxo, byo: byo});
+      if (tick % 50 == 0) sendAll("worm", {bx: bx, by: by, bxo: bxo, byo: byo});
     }
 
     for (const i in players[this.sy][this.sx]) {
@@ -127,7 +127,7 @@ module.exports = class Vortex {
     }
   }
   die() {
-    sendAllSector('sound', {file: 'bigboom', x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
+    sendAllSector("sound", {file: "bigboom", x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
     delete vorts[this.sy][this.sx][this.id];
   }
   onKill() {
