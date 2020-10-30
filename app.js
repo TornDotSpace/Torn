@@ -921,6 +921,12 @@ function update() {
     // Clear
     }
   }
+
+  // re-spawn asteroids if we've fallen below the sector avg (8)
+  let sumAsts = 0;
+  for (const i in astCount) for (const j in astCount[i])sumAsts+=astCount[i][j];
+  if (sumAsts<8*mapSz*mapSz)spawnAsteroid();
+
   for (const i in deads) {
     const player = deads[i];
     if (tick % 12 == 0) // LAG CONTROL
