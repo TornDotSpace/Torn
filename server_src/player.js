@@ -688,7 +688,7 @@ class Player {
     if (p.color === 'yellow') {
       chatAll('Planet ' + p.name + ' colonized by ' + this.nameWithColor() + "!"); // Colonizing planets. Since this will happen once per planet it will not be spammy
     }
-    // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy
+    // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy when people fight over a planet
     p.color = this.color; // claim
     p.owner = this.name;
 
