@@ -1,6 +1,6 @@
 module.exports = class Blast {
   constructor(ownr, i, weaponID) {
-    this.type = 'Blast',
+    this.type = "Blast",
     this.id = i, // unique identifier
     this.dmg = wepns[weaponID].damage,
     this.sx = ownr.sx,
