@@ -205,7 +205,7 @@ class Player {
       else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
         if (wep.name === "Supercharger") this.superchargerTimer = 1500*(this.ship==21 ? 1.5 : 1);// 1 min, more if rank 21
         else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
-        else if (wep.name === "Photon Cloak") this.disguise = (300+100*(this.energy2-1)+5*(this.ship-wepns[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 9s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
+        else if (wep.name === "Photon Cloak") this.disguise = (300+100*(this.energy2-1)+5*(this.ship-weps[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 9s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
         else if (wep.name === "Warp Drive") {
           this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
           this.speed+=100*(this.energy2-1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it.
@@ -864,6 +864,7 @@ class Player {
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
     this.charge += -t*this.energy2; // Emp jams the ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
     this.empTimer += t;
+    if (this.ship == 21 && this.health*1.05 < this.maxHealth) this.health*=1.05;// It will also heal the ship a very small bit.
     if (!this.isBot) this.emit("emp", {t: t});
   }
   save() {}
