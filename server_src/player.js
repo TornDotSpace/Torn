@@ -864,7 +864,7 @@ class Player {
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
     this.charge += -t*this.energy2; // Emp jams the ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
     this.empTimer += t;
-    if (this.ship == 21 && this.health*1.05 < this.maxHealth) this.health*=1.05;// It will also heal the ship a very small bit.
+    if (this.ship == 21 && this.health*1.05 < this.maxHealth) this.health*=1.05; // It will also heal the ship a very small bit.
     if (!this.isBot) this.emit("emp", {t: t});
   }
   save() {}
@@ -886,6 +886,7 @@ class Player {
         const b = bases[this.sy][this.sx];
         b.EMP(150);
       }
+      this.health += Math.min(Math.max(5, this.maxHealth*.03), this.maxHealth - this.health);
     }
 
     this.kills++;
