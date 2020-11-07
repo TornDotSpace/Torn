@@ -17,8 +17,8 @@ global.secs = function(x) {
 };
 
 global.colorSelect = function(col, red, blue, green) {
-  if (col === 'red') return red;
-  if (col === 'blue') return blue;
+  if (col === "red") return red;
+  if (col === "blue") return blue;
   return green;
 };
 

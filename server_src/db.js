@@ -1,32 +1,32 @@
-const MONGO_CONNECTION_STR = Config.getValue('mongo_connection_string', 'mongodb://localhost:27017/torn');
+const MONGO_CONNECTION_STR = Config.getValue("mongo_connection_string", "mongodb://localhost:27017/torn");
 let PLAYER_DATABASE = null;
 let TURRET_DATABASE = null;
-const Mongo = require('mongodb').MongoClient(MONGO_CONNECTION_STR, {useUnifiedTopology: true});
-const Base = require('./universe/base.js');
+const Mongo = require("mongodb").MongoClient(MONGO_CONNECTION_STR, {useUnifiedTopology: true});
+const Base = require("./universe/base.js");
 
 // TODO: Implement failover in the event we lose connection
 // to MongoDB
 global.connectToDB = function() {
   if (PLAYER_DATABASE != null) {
-    console.log('[DB] Already connected to MongoDB database...');
+    console.log("[DB] Already connected to MongoDB database...");
     return;
   }
 
-  console.log('[DB] Connecting to MongoDB instance @ ' + MONGO_CONNECTION_STR);
+  console.log("[DB] Connecting to MongoDB instance @ " + MONGO_CONNECTION_STR);
 
   Mongo.connect(function(err, client) {
     if (err) {
-      console.log('[DB] Connection failed! (ERROR: ' + err + ')');
+      console.log("[DB] Connection failed! (ERROR: " + err + ")");
       return;
     }
 
-    const db = client.db('torn');
-    PLAYER_DATABASE = db.collection('players');
-    TURRET_DATABASE = db.collection('turrets');
+    const db = client.db("torn");
+    PLAYER_DATABASE = db.collection("players");
+    TURRET_DATABASE = db.collection("turrets");
 
     loadTurretData();
     setTimeout(saveTurrets, 1000);
-    console.log('[DB] Connection successful!');
+    console.log("[DB] Connection successful!");
   });
 };
 
@@ -38,7 +38,7 @@ global.handlePlayerDeath = async function(player) {
   if (record == null) return;
 
   // Certain variables should NOT be reverted
-  const persist = ['lastLogin', 'randAchs', 'killAchs', 'moneyAchs', 'driftAchs', 'planetsClaimed', 'lives', 'experience', 'rank'];
+  const persist = ["lastLogin", "randAchs", "killAchs", "moneyAchs", "driftAchs", "planetsClaimed", "lives", "experience", "rank"];
   for (const key in record) {
     if (key in persist) continue;
 
@@ -54,7 +54,7 @@ global.loadPlayerData = async function(player) {
   const record = await PLAYER_DATABASE.findOne({_id: player._id});
 
   for (const key in record) {
-    if (key === 'password' || key === 'email') continue; // don't load passwords into memory
+    if (key === "password" || key === "email") continue; // don't load passwords into memory
     player[key] = record[key];
   }
 
@@ -63,15 +63,15 @@ global.loadPlayerData = async function(player) {
     player.sy = baseMap[player.color][1];
   }
 
-  if (!(player.guild in guildPlayers)) player.guild = ''; // This accounts for players with old/undefined guilds
+  if (!(player.guild in guildPlayers)) player.guild = ""; // This accounts for players with old/undefined guilds
 
   player.permissionLevels = [0];
-  if (player.name.includes('O')) player.permissionLevels.push(30); // they're capital, it's fine
-  if (player.name.includes('A')) player.permissionLevels.push(20);
-  if (player.name.includes('M')) player.permissionLevels.push(10);
-  if (player.name.includes('B')) player.permissionLevels.push(7);
-  if (player.name.includes('V')) player.permissionLevels.push(5);
-  if (player.name.includes('Y')) player.permissionLevels.push(3);
+  if (player.name.includes("O")) player.permissionLevels.push(30); // they're capital, it's fine
+  if (player.name.includes("A")) player.permissionLevels.push(20);
+  if (player.name.includes("M")) player.permissionLevels.push(10);
+  if (player.name.includes("B")) player.permissionLevels.push(7);
+  if (player.name.includes("V")) player.permissionLevels.push(5);
+  if (player.name.includes("Y")) player.permissionLevels.push(3);
 
   return player;
 };
@@ -98,7 +98,7 @@ global.deleteTurret = function(turret) {
 };
 
 global.loadTurretData = async function() {
-  console.log('\nLoading Turrets...');
+  console.log("\nLoading Turrets...");
   const items = await TURRET_DATABASE.find();
 
   items.forEach((i) => {
@@ -107,12 +107,12 @@ global.loadTurretData = async function() {
       b[x] = i[x];
     }
     bases[b.sy][b.sx] = b;
-    console.log('Turret (' + b.sy + ',' + b.sx + ') loaded!');
+    console.log("Turret (" + b.sy + "," + b.sx + ") loaded!");
   });
 };
 
 global.savePlayerEmail = function(player, email) {
-  PLAYER_DATABASE.updateOne( {_id: player._id}, {$set: {'email': email}}, {upsert: true});
+  PLAYER_DATABASE.updateOne( {_id: player._id}, {$set: {"email": email}}, {upsert: true});
 };
 global.savePlayerData = function(player) {
   const record = {
