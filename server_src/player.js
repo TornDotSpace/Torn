@@ -203,9 +203,9 @@ class Player {
       // Timery Weapons
 
       else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-        if (wep.name === "Supercharger") this.superchargerTimer = 1500;// 1 min
-        else if (wep.name === "Hull Nanobots") this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
-        else if (wep.name === "Photon Cloak") this.disguise = 200;// 6s
+        if (wep.name === "Supercharger") this.superchargerTimer = 1500*(this.ship==21 ? 1.5 : 1);// 1 min, more if rank 21
+        else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
+        else if (wep.name === "Photon Cloak") this.disguise = (300+100*(this.energy2-1)+5*(this.ship-weps[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 9s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
         else if (wep.name === "Warp Drive") {
           this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
           this.speed+=100*(this.energy2-1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it.
@@ -386,7 +386,7 @@ class Player {
     if (elite) {
       if (this.ship == 20) this.charge = -wepns[41].charge;
       if (this.ship == 18) this.charge = -wepns[39].charge;
-      if (this.ship == 19 && this.charge > -200) this.charge-=10;
+      if (this.ship == 19 && this.charge > -200) this.charge-=10/this.energy2;
       if (this.ship == 17) this.charge = -150;
       return;
     }
@@ -846,20 +846,23 @@ class Player {
 
     d /= (this.trail % 16 == 1 ? 1.05:1); // blood trail: less damage
     d *= (this.shield ? .25 : 1); // Shield- 1/4th damage
+    d *= ((this.shield && this.ship == 19) ? .5 : 1); // Rank 19 suffers less damage when shielded.
     d *= (this.superchargerTimer>1 ? 2 : 1); // supercharger inflicts double damage
+    if ((this.ship>=19)&&d<=1&&d>0) d=0; // Too weak attacks won't strain the hull of the ship.
 
     this.health -= d;
     if (this.health > this.maxHealth) this.health = this.maxHealth;
     if (this.health < 0) this.die(origin);
 
     if (d>0) note("-" + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    if (d==0) note("No dmg", this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
     if (d<0) note("+" + Math.floor(Math.abs(d)), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
     this.emit("dmg", {});
     return this.health < 0;
   }
   EMP(t) {
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
-    this.charge += -t*this.energy2; // Emp jams the rank 21 ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
+    this.charge += -t*this.energy2; // Emp jams the ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
     this.empTimer += t;
     if (!this.isBot) this.emit("emp", {t: t});
   }
