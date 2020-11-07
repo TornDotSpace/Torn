@@ -846,9 +846,9 @@ class Player {
 
     d /= (this.trail % 16 == 1 ? 1.05:1); // blood trail: less damage
     d *= (this.shield ? .25 : 1); // Shield- 1/4th damage
-    d *= ((this.shield && this.ship == 19) ? .5 : 1); //Rank 19 suffers less damage when shielded.
+    d *= ((this.shield && this.ship == 19) ? .5 : 1); // Rank 19 suffers less damage when shielded.
     d *= (this.superchargerTimer>1 ? 2 : 1); // supercharger inflicts double damage
-    if((this.ship>=19)&&d<=1&&d>0) d=0; //Too weak attacks won't strain the hull of the ship.
+    if ((this.ship>=19)&&d<=1&&d>0) d=0; // Too weak attacks won't strain the hull of the ship.
 
     this.health -= d;
     if (this.health > this.maxHealth) this.health = this.maxHealth;
