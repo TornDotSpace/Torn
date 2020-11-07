@@ -204,7 +204,7 @@ class Player {
 
       else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
         if (wep.name === "Supercharger") this.superchargerTimer = 1500*(this.ship==21 ? 1.5 : 1);// 1 min, more if rank 21
-        else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage,this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
+        else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
         else if (wep.name === "Photon Cloak") this.disguise = (300+100*(this.energy2-1)+5*(this.ship-weps[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 9s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
         else if (wep.name === "Warp Drive") {
           this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
@@ -846,7 +846,7 @@ class Player {
 
     d /= (this.trail % 16 == 1 ? 1.05:1); // blood trail: less damage
     d *= (this.shield ? .25 : 1); // Shield- 1/4th damage
-    d *= ((this.shield && this.ship == 19) ? .5 : 1) //Rank 19 suffers less damage when shielded.
+    d *= ((this.shield && this.ship == 19) ? .5 : 1); //Rank 19 suffers less damage when shielded.
     d *= (this.superchargerTimer>1 ? 2 : 1); // supercharger inflicts double damage
     if((this.ship>=19)&&d<=1&&d>0) d=0; //Too weak attacks won't strain the hull of the ship.
 
