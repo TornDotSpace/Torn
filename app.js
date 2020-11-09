@@ -949,7 +949,7 @@ function update() {
   ops--;
 }
 
-if (Config.getValue("enable_discord_moderation", false)) setInterval(setDiscordActivity, 60000);
+// if (Config.getValue("enable_discord_moderation", false)) setInterval(setDiscordActivity, 60000);
 
 setInterval(updateHeatmap, 500);
 function updateHeatmap() {
