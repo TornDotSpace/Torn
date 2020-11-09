@@ -57,7 +57,13 @@ client.on("message", async (message) => {
 
 client.on("error", function(error)
 {
-  console.log(error);
+  console.err(error);
 });
 
-client.login(config.token);
+try
+{
+  client.login(config.token);
+} catch (err)
+{
+  console.error(err);
+}
