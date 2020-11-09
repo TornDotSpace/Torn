@@ -205,7 +205,7 @@ class Player {
       else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
         if (wep.name === "Supercharger") this.superchargerTimer = 1500*(this.ship==21 ? 2 : 1);// 1 min, more if rank 21
         else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
-        else if (wep.name === "Photon Cloak") this.disguise = (300+100*(this.energy2-1)+5*(this.ship-weps[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 9s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
+        else if (wep.name === "Photon Cloak") this.disguise = (300+100*(this.energy2-1)+5*(this.ship-wepns[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 9s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
         else if (wep.name === "Warp Drive") {
           this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
           this.speed+=100*(this.energy2-1)*(this.superchargerTimer>0 ? 2 : 1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.

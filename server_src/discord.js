@@ -55,4 +55,15 @@ client.on("message", async (message) => {
   }
 });
 
-client.login(config.token);
+client.on("error", function(error)
+{
+  console.err(error);
+});
+
+try
+{
+  // client.login(config.token);
+} catch (err)
+{
+  console.error(err);
+}
