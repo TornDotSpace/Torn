@@ -425,7 +425,7 @@ module.exports = function initNetcode() {
           allUpperCase = newmsg===newmsg.toUpperCase() && newmsg.length > 6;
           isSweary = newmsg!==data.msg;
           if (frequentMsgs || fewSpaces || isSweary || repeat || allUpperCase) {
-            detectSpam(player.name, newmsg);
+            // detectSpam(player.name, newmsg);
             player.chatTimer+=75;
           }
         }
