@@ -543,9 +543,9 @@
 		{
 			"name":"Healing Beam",
 			"range":35,
-			"damage":-10,
+			"damage":-20,
 			"speed":0,
-			"charge":50,
+			"charge":40,
 			"price":5000,
 			"ammo":-1,
 			"level":8,
