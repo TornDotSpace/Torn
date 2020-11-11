@@ -150,7 +150,7 @@ class Player {
     this.fire();
 
     let chargeVal = (this.energy2 + 1)/1.8; // charge speed scales with energy tech
-    for (let i = 0; i < this.generators; i++) chargeVal *= 1.035;
+    for (let i = 0; i < this.generators; i++) chargeVal *= 1.05;
     if (this.charge < 0 || this.space || this.c) this.charge+=chargeVal;
     else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
   }
@@ -203,12 +203,12 @@ class Player {
       // Timery Weapons
 
       else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-        if (wep.name === "Supercharger") this.superchargerTimer = 1500*(this.ship==21 ? 1.5 : 1);// 1 min, more if rank 21
+        if (wep.name === "Supercharger") this.superchargerTimer = 1500*(this.ship==21 ? 2 : 1);// 1 min, more if rank 21
         else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
         else if (wep.name === "Photon Cloak") this.disguise = (300+100*(this.energy2-1)+5*(this.ship-wepns[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 9s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
         else if (wep.name === "Warp Drive") {
           this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
-          this.speed+=100*(this.energy2-1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it.
+          this.speed+=100*(this.energy2-1)*(this.superchargerTimer>0 ? 2 : 1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
         }
       }
 
@@ -223,7 +223,7 @@ class Player {
             const d2 = squaredDist(this, p); // distance squared between me and them
             if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
             const ang = angleBetween(this, p); // angle from the horizontal
-            const vel = -5000 / Math.log(d2); // compute how fast to accelerate by
+            const vel = -6000 / Math.log(d2); // compute how fast to accelerate by
             p.vx += Math.cos(ang) * vel; // actually accelerate them
             p.vy += Math.sin(ang) * vel;
             p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
@@ -733,7 +733,7 @@ class Player {
       if (currWep == 2) bAngle -= 3.1415; // reverse gun
       if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
       if (currWep == 4) bAngle += Math.random() - .5; // shotgun
-      if (currWep == 40) bAngle += Math.random() - .15; // smg
+      if (currWep == 40) bAngle += (Math.random() - .5)*0.15; // smg
 
       const bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
       bullets[this.sy][this.sx][r] = bullet;

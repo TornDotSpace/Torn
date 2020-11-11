@@ -27,7 +27,7 @@
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "^7.12.5",
     "@babel/runtime": "^7.12.5",
-    "babel-loader": "^8.1.0",
+    "babel-loader": "^8.2.1",
     "eslint": "^7.13.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-react": "^7.21.5",
@@ -49,8 +49,8 @@
     "howler": "^2.2.1",
     "mongodb": "^3.6.3",
     "node-fetch": "^2.6.1",
-    "socket.io": "^3.0.0",
-    "socket.io-client": "^3.0.0",
+    "socket.io": "^3.0.1",
+    "socket.io-client": "^3.0.1",
     "socket.io-msgpack-parser": "^3.0.1"
   }
 }
