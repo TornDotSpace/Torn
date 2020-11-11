@@ -62,7 +62,7 @@ client.on("error", function(error)
 
 try
 {
-  // client.login(config.token);
+  client.login(config.token);
 } catch (err)
 {
   console.error(err);
