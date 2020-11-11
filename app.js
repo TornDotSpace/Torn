@@ -78,6 +78,18 @@ const fs = require("fs");
 // Activate uncaught exception handler
 process.on("uncaughtException", onCrash);
 
+// Activate unhandledRejection handler
+process.on("unhandledRejection", function(err) {
+  console.log("[SERVER] Unhandled promise rejection - this is a bug!");
+
+  const crashReport = `==== TORN.SPACE ERROR REPORT ====\nUnhandled promise rejection\n\nTime: ${new Date()}\nStack Trace: ${err.stack}`;
+  if (Config.getValue("debug", true)) {
+    console.error(crashReport);
+  } else {
+    send_rpc("/crash/", crashReport);
+  }
+});
+
 buildFileSystem(); // create folders for players, neural nets, and turrets if they dont exist
 
 function onCrash(err) {
