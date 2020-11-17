@@ -37,7 +37,7 @@ client.on("message", async (message) => {
     client.channels.cache.get("766664211581239326").send(returnmsg + " Please say your reason for muting in chat now.");
   } else if (args[0] === "/ipmute") {
     returnmsg = ipmute(message.content.trim());
-    client.channels.cache.get("766664211581239326").send(returnmsg + " Please say your reason for muting in chat now.");
+    client.channels.cache.get("766664211581239326").send(returnmsg + " Please say your reason for muting in chat now. REMINDER: ONLY USE IP-MUTE WHEN SOMEONE EVADES NORMAL MUTE. IP MUTE SHOULD NOT BE YOUR FIRST RESPONSE.");
   } else if (args[0] === "/mute") {
     client.channels.cache.get("766664211581239326").send("You must either use /modmute or /ipmute!");
   } else if (args[0] === "/broadcast") {
