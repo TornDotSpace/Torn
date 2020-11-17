@@ -594,7 +594,7 @@ class Player {
       this.sendAchievementsMisc(true);
     }
 
-    if ((this.sx % 3 != 0 && this.sy == 8) && this.quest.type === "Secret3") {
+    if ((this.sx % 3 == 2 && this.sy == 4) && this.quest.type === "Secret3") {
       this.spoils("money", this.quest.exp); // reward the player
       this.spoils("experience", Math.floor(this.quest.exp / 4000));
 

@@ -3359,7 +3359,7 @@ function rLB() {
   write(mEng[107], w - 48 - 16, 48);
   write(mEng[108], w - 16, 48);
   for (let i = 0; i < lb.length; i++) {
-    const place = 1 + ((i != 16) ? i : parseInt(lb[i].id));
+    const place = 1 + ((i != 20) ? i : parseInt(lb[i].id));
     ctx.textAlign = "left";
     ctx.fillStyle = brighten(lb[i].color);
     if (lb[i].name.includes(" ")) {
