@@ -6,7 +6,7 @@ module.exports = class Vortex {
     this.xo = Math.random() * sectorWidth,
     this.yo = Math.random() * sectorWidth,
 
-    this.type = 'Vortex',
+    this.type = "Vortex",
     this.wepnID = 28,
     this.owner = ownr,
     this.id = i, // unique identifier
@@ -62,7 +62,7 @@ module.exports = class Vortex {
       this.yo = ((byo * mapSz) % 1) * sectorWidth;
 
       // every 2 seconds, tell the players where I am (for radar only, I think)
-      if (tick % 50 == 0) sendAll('worm', {bx: bx, by: by, bxo: bxo, byo: byo});
+      if (tick % 50 == 0) sendAll("worm", {bx: bx, by: by, bxo: bxo, byo: byo});
     }
 
     for (const i in players[this.sy][this.sx]) {
@@ -79,7 +79,9 @@ module.exports = class Vortex {
 
       if (dist < 15 && !this.isWorm) { // collision with black hole
         p.die(this); // i think it's important that this happens before we give them the achievements
-
+        if (this.owner != 0) { // if I'm a gravity bomb
+	  this.size += p.ship; // Eating the ship will make the gravity bomb BH grow. The bigger the ship, the more it will grow.
+        }
         if (p.e) {
           p.driftAchs[8] = true; // drift into a black hole
           p.sendAchievementsDrift(true);
@@ -114,6 +116,9 @@ module.exports = class Vortex {
         if (d2<100) {
           if (!this.isWorm) { // collision with black hole
             a.die(this);
+            if (this.owner != 0) { // if I'm a gravity bomb
+	      this.size += 10; // Eating asteroids will make the gravity bomb BH grow.
+            }
           } else { // collision with wormhole
             delete asts[a.sy][a.sx][a.id];
             a.sx = this.sxo;
@@ -127,7 +132,7 @@ module.exports = class Vortex {
     }
   }
   die() {
-    sendAllSector('sound', {file: 'bigboom', x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
+    sendAllSector("sound", {file: "bigboom", x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
     delete vorts[this.sy][this.sx][this.id];
   }
   onKill() {

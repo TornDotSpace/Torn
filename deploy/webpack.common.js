@@ -1,38 +1,38 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require("path");
+const webpack = require("webpack");
 
-const git = require('git-revision-webpack-plugin');
+const git = require("git-revision-webpack-plugin");
 const gitRevisionPlugin = new git({
   lightweightTags: true,
 });
 
 module.exports = {
-  entry: ['./client_src/index.js'],
+  entry: ["./client_src/index.js"],
   output: {
-    path: path.resolve('./', 'client'),
-    filename: 'client.js',
+    path: path.resolve("./", "client"),
+    filename: "client.js",
   },
   module: {
     rules: [{
       test: /\.jsx?$/,
       exclude: /node_modules/,
-      loader: 'babel-loader',
+      loader: "babel-loader",
 	    query: {
-        presets: ['@babel/react', '@babel/preset-env'],
-        plugins: ['@babel/proposal-class-properties'],
+        presets: ["@babel/react", "@babel/preset-env"],
+        plugins: ["@babel/proposal-class-properties"],
 	    },
     }],
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ["*", ".js", ".jsx"],
   },
   devServer: {
-    contentBase: './client',
+    contentBase: "./client",
     hot: true,
   },
   optimization: {
     splitChunks: {
-      chunks: 'initial',
+      chunks: "initial",
     },
   },
   plugins: [

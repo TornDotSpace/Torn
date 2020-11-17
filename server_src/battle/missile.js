@@ -1,6 +1,6 @@
 module.exports = class Missile {
   constructor(ownr, i, wepnID, angl) {
-    this.type = 'Missile',
+    this.type = "Missile",
     this.id = i, // unique identifier
     this.color = ownr.color, // whose side i'm on
     this.dmg = wepns[wepnID].damage,
@@ -98,18 +98,18 @@ module.exports = class Missile {
       if (this.lockedTimer++ > missileLockTimeout) this.die();
 
       let target = players[this.sy][this.sx][this.locked]; // try 2 find the target object
-      if (typeof target === 'undefined' && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
+      if (typeof target === "undefined" && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
       if (target == 0) target = asts[this.sy][this.sx][this.locked];
-      if (typeof target === 'undefined') this.locked = 0;
+      if (typeof target === "undefined") this.locked = 0;
 
       else { // if we found it, then...
-        if (target.type === 'Player') target.isLocked = true;
+        if (target.type === "Player") target.isLocked = true;
 
         // on impact
         if (target.sx == this.sx && target.sy == this.sy && squaredDist(target, this) < 10000 * (this.wepnID == 38 ? 5 : 1) && target.turretLive != false /* we don't know it's a base. can't just say ==true.*/) {
           target.dmg(this.dmg, this);
           this.die();
-          if (this.wepnID == 12 && (target.type === 'Player' || target.type === 'Base')) target.EMP(54); // emp missile
+          if (this.wepnID == 12 && (target.type === "Player" || target.type === "Base")) target.EMP(54); // emp missile
           return;
         }
 
@@ -171,7 +171,7 @@ module.exports = class Missile {
     this.die(); // and then die
   }
   die() {
-    sendAllSector('sound', {file: 'boom', x: this.x, y: this.y, dx: this.vx, dy: this.vy}, this.sx, this.sy);
+    sendAllSector("sound", {file: "boom", x: this.x, y: this.y, dx: this.vx, dy: this.vy}, this.sx, this.sy);
     delete missiles[this.sy][this.sx][this.id];
   }
 };

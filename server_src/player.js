@@ -1,21 +1,21 @@
-const Blast = require('./battle/blast.js');
-const Bullet = require('./battle/bullet.js');
-const Missile = require('./battle/missile.js');
-const Base = require('./universe/base.js');
-const Orb = require('./battle/orb.js');
-const Mine = require('./battle/mine.js');
-const Beam = require('./battle/beam.js');
-const Asteroid = require('./universe/asteroid.js');
+const Blast = require("./battle/blast.js");
+const Bullet = require("./battle/bullet.js");
+const Missile = require("./battle/missile.js");
+const Base = require("./universe/base.js");
+const Orb = require("./battle/orb.js");
+const Mine = require("./battle/mine.js");
+const Beam = require("./battle/beam.js");
+const Asteroid = require("./universe/asteroid.js");
 
 class Player {
   constructor(id) {
-    this._id = '',
-    this.type = 'Player',
+    this._id = "",
+    this.type = "Player",
 
-    this.name = 'ERR0',
+    this.name = "ERR0",
     this.id = id, // unique identifier
     this.trail = 0,
-    this.color = id > .5 ? 'red' : 'blue',
+    this.color = id > .5 ? "red" : "blue",
     this.ship = 0,
     this.experience = 0,
     this.rank = 0,
@@ -120,7 +120,7 @@ class Player {
     this.cornersTouched = 0, // bitmask
     this.oresMined = 0, // bitmask
     this.questsDone = 0, // bitmask
-    this.planetsClaimed = '000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000'+'000000000',
+    this.planetsClaimed = "000000000"+"000000000"+"000000000"+"000000000"+"000000000"+"000000000"+"000000000"+"000000000"+"000000000",
     this.points = 0,
 
     this.equipped = 0;
@@ -136,7 +136,7 @@ class Player {
 
     const amDrifting = this.e || this.gyroTimer > 0;
     this.shield = (this.s && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
-    if (this.disguise>0 || (this.shield && this.weapons[this.equipped]>0 && wepns[this.weapons[this.equipped]].type !== 'Misc' && wepns[this.weapons[this.equipped]].type !== 'Mine' && this.space)) this.charge=Math.min(this.charge, 0);
+    if (this.disguise>0 || (this.shield && this.weapons[this.equipped]>0 && wepns[this.weapons[this.equipped]].type !== "Misc" && wepns[this.weapons[this.equipped]].type !== "Mine" && this.space)) this.charge=Math.min(this.charge, 0);
     this.leaveBaseShield--;
 
     if (!this.isBot) {
@@ -150,7 +150,7 @@ class Player {
     this.fire();
 
     let chargeVal = (this.energy2 + 1)/1.8; // charge speed scales with energy tech
-    for (let i = 0; i < this.generators; i++) chargeVal *= 1.035;
+    for (let i = 0; i < this.generators; i++) chargeVal *= 1.05;
     if (this.charge < 0 || this.space || this.c) this.charge+=chargeVal;
     else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
   }
@@ -163,7 +163,7 @@ class Player {
     // In case of insufficient ammo
     if (this.ammos[this.equipped] == 0 && this.charge > 10) {
       this.charge = 0;
-      this.emit('sound', {file: 'noammo', x: this.x, y: this.y});
+      this.emit("sound", {file: "noammo", x: this.x, y: this.y});
       return;
     }
 
@@ -171,11 +171,11 @@ class Player {
       if (this.ammos[this.equipped] == 0) return;
 
       if (wep.level > this.ship) {
-        this.emit('chat', {msg: 'This weapon is incompatible with your current ship!', color: 'yellow'});
+        this.emit("chat", {msg: "This weapon is incompatible with your current ship!", color: "yellow"});
         return;
       }
 
-      if (wep.name === 'Submachinegun') { // Submachinegun physics
+      if (wep.name === "Submachinegun") { // Submachinegun physics
         if (this.bulletQueue == 0) {
           this.bulletQueue += 5;
           this.ammos[this.equipped] -= 5;
@@ -189,48 +189,48 @@ class Player {
 
       // Traditional Weapons
       // <= 6 are traditional guns.
-      if (wepId <= 6 || wep.name === 'Gravity Bomb' || wep.name === 'Spreadshot') this.shootBullet(wepId);
+      if (wepId <= 6 || wep.name === "Gravity Bomb" || wep.name === "Spreadshot") this.shootBullet(wepId);
       // <= 9 are plasma, laser, hadron beams.
-      else if (wepId <= 9 || wep.name === 'Jammer' || wep.name === 'Mining Laser' || wep.name === 'Ore Cannon' || wep.name === 'Destabilizer' || wep.name === 'Healing Beam') this.shootBeam(this, false);
+      else if (wepId <= 9 || wep.name === "Jammer" || wep.name === "Mining Laser" || wep.name === "Ore Cannon" || wep.name === "Destabilizer" || wep.name === "Healing Beam") this.shootBeam(this, false);
       // Traditional missiles
-      else if (wepId <= 14 || wep.name === 'Proximity Fuze') this.shootMissile();
+      else if (wepId <= 14 || wep.name === "Proximity Fuze") this.shootMissile();
       // <= 17: Traditional Mines
-      else if (wepId <= 17 || wep.name === 'Impulse Mine' || wep.name === 'Grenades' || wep.name === 'Pulse Mine' || wep.name === 'Campfire'|| wep.name === 'Magnetic Mine') this.shootMine();
-      else if (wep.name === 'Energy Disk' || wep.name === 'Photon Orb') this.shootOrb();
-      else if (wep.name === 'Muon Ray' || wep.name === 'EMP Blast' || wep.name === 'Hypno Ray' || wep.name === 'Lepton Pulse') this.shootBlast(wepId);
+      else if (wepId <= 17 || wep.name === "Impulse Mine" || wep.name === "Grenades" || wep.name === "Pulse Mine" || wep.name === "Campfire"|| wep.name === "Magnetic Mine") this.shootMine();
+      else if (wep.name === "Energy Disk" || wep.name === "Photon Orb") this.shootOrb();
+      else if (wep.name === "Muon Ray" || wep.name === "EMP Blast" || wep.name === "Hypno Ray" || wep.name === "Lepton Pulse") this.shootBlast(wepId);
 
 
       // Timery Weapons
 
       else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-        if (wep.name === 'Supercharger') this.superchargerTimer = 1500;// 1 min
-        else if (wep.name === 'Hull Nanobots') this.health += Math.min(this.maxHealth*.2, this.maxHealth - this.health); // min prevents overflow
-        else if (wep.name === 'Photon Cloak') this.disguise = 200;// 6s
-        else if (wep.name === 'Warp Drive') {
+        if (wep.name === "Supercharger") this.superchargerTimer = 1500*(this.ship==21 ? 2 : 1);// 1 min, more if rank 21
+        else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
+        else if (wep.name === "Photon Cloak") this.disguise = (300+100*(this.energy2-1)+5*(this.ship-wepns[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 9s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
+        else if (wep.name === "Warp Drive") {
           this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
-          this.speed+=100*(this.energy2-1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it.
+          this.speed+=100*(this.energy2-1)*(this.superchargerTimer>0 ? 2 : 1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
         }
       }
 
 
       // Movey Weapons
 
-      else if (wep.name === 'Pulse Wave') {
-        sendAllSector('sound', {file: 'bigboom', x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed}, this.sx, this.sy);
+      else if (wep.name === "Pulse Wave") {
+        sendAllSector("sound", {file: "bigboom", x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed}, this.sx, this.sy);
         for (const i in players[this.sy][this.sx]) {
           const p = players[this.sy][this.sx][i];
           if (p.color !== this.color) { // only enemies
             const d2 = squaredDist(this, p); // distance squared between me and them
             if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
             const ang = angleBetween(this, p); // angle from the horizontal
-            const vel = -5000 / Math.log(d2); // compute how fast to accelerate by
+            const vel = -6000 / Math.log(d2); // compute how fast to accelerate by
             p.vx += Math.cos(ang) * vel; // actually accelerate them
             p.vy += Math.sin(ang) * vel;
             p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
             p.updatePolars(); // We changed their rectangular velocity.
           }
         }
-      } else if (wep.name === 'Electromagnet') { // identical structurally to pulse wave, see above for comments.
+      } else if (wep.name === "Electromagnet") { // identical structurally to pulse wave, see above for comments.
         if (global.tick % 2 == 0) {
           for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
@@ -287,14 +287,14 @@ class Player {
 
       // Misc
 
-      else if (wep.name === 'Turret') {
+      else if (wep.name === "Turret") {
         if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
-          this.emit('chat', {msg: 'Your turret must be closer to the center of the sector!', color: 'yellow'});
+          this.emit("chat", {msg: "Your turret must be closer to the center of the sector!", color: "yellow"});
           this.space = false;
           return;
         }
         if (bases[this.sy][this.sx] != 0) {
-          this.emit('chat', {msg: 'There can only be one turret in any sector!', color: 'yellow'});
+          this.emit("chat", {msg: "There can only be one turret in any sector!", color: "yellow"});
           this.space = false;
           return;
         }
@@ -302,10 +302,10 @@ class Player {
         const b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, false);
         b.owner = this.name;
         bases[this.sy][this.sx] = b;
-        this.emit('chat', {msg: 'You placed a turret! Name it with "/nameturret <name>".', color: 'yellow'});
-      } else if (wep.name === 'Sentry') {
+        this.emit("chat", {msg: "You placed a turret! Name it with \"/nameturret <name>\".", color: "yellow"});
+      } else if (wep.name === "Sentry") {
         if (bases[this.sy][this.sx] != 0) {
-          this.emit('chat', {msg: 'There can only be one turret in any sector!', color: 'yellow'});
+          this.emit("chat", {msg: "There can only be one turret in any sector!", color: "yellow"});
           this.space = false;
           return;
         }
@@ -313,8 +313,8 @@ class Player {
         const b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, true);
         b.owner = this.name;
         bases[this.sy][this.sx] = b;
-        this.emit('chat', {msg: 'You placed a sentry! Name it with "/nameturret <name>".', color: 'yellow'});
-      } else if (wep.name === 'Turbo') {
+        this.emit("chat", {msg: "You placed a sentry! Name it with \"/nameturret <name>\".", color: "yellow"});
+      } else if (wep.name === "Turbo") {
         const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
         const mult = isDrifting ? 1.025 : 1.017; // Faster when drifting.
 
@@ -330,9 +330,9 @@ class Player {
           this.driftAchs[10] = true;
           this.sendAchievementsDrift(true);
         }
-      } else if (wep.name === 'Hyperdrive') {
+      } else if (wep.name === "Hyperdrive") {
         const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
-        this.emit('sound', {file: 'hyperspace', x: this.x, y: this.y});
+        this.emit("sound", {file: "hyperspace", x: this.x, y: this.y});
         this.hyperdriveTimer = 200;
         if (isDrifting && this.w && !this.driftAchs[6]) { // Hyper-drift
           this.driftAchs[6] = true;
@@ -386,7 +386,7 @@ class Player {
     if (elite) {
       if (this.ship == 20) this.charge = -wepns[41].charge;
       if (this.ship == 18) this.charge = -wepns[39].charge;
-      if (this.ship == 19 && this.charge > -200) this.charge-=10;
+      if (this.ship == 19 && this.charge > -200) this.charge-=10/this.energy2;
       if (this.ship == 17) this.charge = -150;
       return;
     }
@@ -394,8 +394,8 @@ class Player {
     else this.charge = -wepns[wepId].charge;
   }
   canShoot(wepId) {
-    if (typeof wepns[wepId] === 'undefined') return false;
-    if (this.disguise > 0 || (this.shield && wepns[wepId].type !== 'Misc')) return false;
+    if (typeof wepns[wepId] === "undefined") return false;
+    if (this.disguise > 0 || (this.shield && wepns[wepId].type !== "Misc")) return false;
     const sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
     return this.space && sufficientCharge;
   }
@@ -496,7 +496,7 @@ class Player {
           const r = Math.random(); // Laser Mine
           const beam = new Beam(m.owner, r, m.wepnID, this, m); // m.owner is the owner, m is the origin location
           beams[this.sy][this.sx][r] = beam;
-          sendAllSector('sound', {file: 'beam', x: m.x, y: m.y}, m.sx, m.sy);
+          sendAllSector("sound", {file: "beam", x: m.x, y: m.y}, m.sx, m.sy);
           m.die();
         }
       }
@@ -553,7 +553,7 @@ class Player {
       }
     }
     if (giveBounce && !this.randmAchs[5]) {
-      if (this.guest) this.emit('chat', {msg: '~`orange~`You must create an account to explore the universe!'});
+      if (this.guest) this.emit("chat", {msg: "~`orange~`You must create an account to explore the universe!"});
       else {
         this.randmAchs[5] = true;
         this.sendAchievementsMisc(true);
@@ -578,7 +578,7 @@ class Player {
     this.jukeTimer = (this.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
   }
   mute(minutes) {
-    chatAll(this.nameWithColor() + ' has been ' + (minutes > 0 ? 'muted for ' + minutes + ' minutes!' : 'unmuted!'));
+    chatAll(this.nameWithColor() + " has been " + (minutes > 0 ? "muted for " + minutes + " minutes!" : "unmuted!"));
   }
   onChangeSectors() {
     // track my touched corners
@@ -594,15 +594,15 @@ class Player {
       this.sendAchievementsMisc(true);
     }
 
-    if ((this.sx % 3 != 0 && this.sy == 8) && this.quest.type === 'Secret3') {
-      this.spoils('money', this.quest.exp); // reward the player
-      this.spoils('experience', Math.floor(this.quest.exp / 4000));
+    if ((this.sx % 3 != 0 && this.sy == 8) && this.quest.type === "Secret3") {
+      this.spoils("money", this.quest.exp); // reward the player
+      this.spoils("experience", Math.floor(this.quest.exp / 4000));
 
       this.hasPackage = false;
       if ((this.questsDone & 8) == 0) this.questsDone += 8;
 
       this.quest = 0; // reset quest and tell the client
-      this.emit('quest', {quest: this.quest, complete: true});
+      this.emit("quest", {quest: this.quest, complete: true});
 
       if (!this.moneyAchs[9]) { // Questor
         this.moneyAchs[9] = true;
@@ -614,9 +614,9 @@ class Player {
       }
     }
 
-    if (this.quest != 0 && this.quest.type === 'Secret' && this.sx == this.quest.sx && this.sy == this.quest.sy) { // advance in secret quest to phase 2
-      this.quest = {type: 'Secret2', exp: this.quest.exp, sx: this.quest.sx, sy: this.quest.sy};
-      this.emit('quest', {quest: this.quest, complete: false});
+    if (this.quest != 0 && this.quest.type === "Secret" && this.sx == this.quest.sx && this.sy == this.quest.sy) { // advance in secret quest to phase 2
+      this.quest = {type: "Secret2", exp: this.quest.exp, sx: this.quest.sx, sy: this.quest.sy};
+      this.emit("quest", {quest: this.quest, complete: false});
     }
 
     // tell client what's in this sector
@@ -627,9 +627,9 @@ class Player {
     const prevStr = this.planetsClaimed.substring(0, index);
     const checkStr = this.planetsClaimed.substring(index, index + 1);
     const postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
-    if (checkStr !== '2') this.planetsClaimed = prevStr + '1' + postStr;
+    if (checkStr !== "2") this.planetsClaimed = prevStr + "1" + postStr;
 
-    if (!this.planetsClaimed.includes('0') && !this.randmAchs[6]) {
+    if (!this.planetsClaimed.includes("0") && !this.randmAchs[6]) {
       this.randmAchs[6] = true;
       this.sendAchievementsMisc(true);
     }
@@ -641,8 +641,8 @@ class Player {
     while (this.experience > ranks[this.rank]) this.rank++; // increment until we're in the right rank's range
 
     if (!this.isBot && this.rank > prerank && this.rank > 5) {
-      this.emit('rank', {}); // congratulations!
-      chatAll(this.nameWithColor() + ' just leveled up to rank ' + this.rank + '!');
+      this.emit("rank", {}); // congratulations!
+      chatAll(this.nameWithColor() + " just leveled up to rank " + this.rank + "!");
     }
   }
   checkPlanetCollision() {
@@ -655,16 +655,17 @@ class Player {
     const cool = p.cooldown;
     if (cool < 0) {
       this.refillAllAmmo(); p.cooldown = 50;
+      if (this.health < this.maxHealth) this.health++;
     }
 
     this.checkQuestStatus(true); // lots of quests are planet based
 
     if (this.guest) {
-      this.emit('chat', {msg: 'You must create an account in the base before you can claim planets!', color: 'yellow'});
+      this.emit("chat", {msg: "You must create an account in the base before you can claim planets!", color: "yellow"});
       return;
     }
 
-    if (typeof this.quest !== 'undefined' && this.quest != 0 && this.quest.type === 'Secret2' && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
+    if (typeof this.quest !== "undefined" && this.quest != 0 && this.quest.type === "Secret2" && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
       // compute whether there are any unkilled enemies in this sector
       let cleared = true;
       for (const i in players[this.sy][this.sx]) {
@@ -678,16 +679,19 @@ class Player {
 
       if (cleared) { // 2 ifs needed, don't merge this one with the last one
         this.hasPackage = true;
-        this.quest = {type: 'Secret3', exp: this.quest.exp};
-        this.emit('quest', {quest: this.quest, complete: false}); // notify client
+        this.quest = {type: "Secret3", exp: this.quest.exp};
+        this.emit("quest", {quest: this.quest, complete: false}); // notify client
       }
     }
 
     if (p.color === this.color || cool > 0) return;
-
+    if (p.color === "yellow") {
+      chatAll("Planet " + p.name + " colonized by " + this.nameWithColor() + "!"); // Colonizing planets. Since this will happen once per planet it will not be spammy
+    }
+    // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy when people fight over a planet
     p.color = this.color; // claim
     p.owner = this.name;
-    // chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy
+
 
     for (const i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();// send them new planet data
 
@@ -696,13 +700,13 @@ class Player {
       this.sendAchievementsMisc(true);
     }
 
-    this.emit('planetMap', {x: p.x, y: p.y, sx: p.sx, sy: p.sy});
+    this.emit("planetMap", {x: p.x, y: p.y, sx: p.sx, sy: p.sy});
 
     // Update list of claimed planets.
     const index = this.sx + this.sy * mapSz;
     const prevStr = this.planetsClaimed.substring(0, index);
     const postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
-    this.planetsClaimed = prevStr + '2' + postStr;
+    this.planetsClaimed = prevStr + "2" + postStr;
   }
 
   checkQuestStatus(touchingPlanet) {}
@@ -729,11 +733,11 @@ class Player {
       if (currWep == 2) bAngle -= 3.1415; // reverse gun
       if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
       if (currWep == 4) bAngle += Math.random() - .5; // shotgun
-      if (currWep == 40) bAngle += Math.random() - .15; // smg
+      if (currWep == 40) bAngle += (Math.random() - .5)*0.15; // smg
 
       const bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
       bullets[this.sy][this.sx][r] = bullet;
-      sendAllSector('sound', {file: (currWep == 5 || currWep == 6 || currWep == 39) ? 'minigun' : 'shot', x: this.x, y: this.y}, this.sx, this.sy);
+      sendAllSector("sound", {file: (currWep == 5 || currWep == 6 || currWep == 39) ? "minigun" : "shot", x: this.x, y: this.y}, this.sx, this.sy);
     }
   }
   shootMissile() {
@@ -741,29 +745,29 @@ class Player {
     const bAngle = this.angle;
     const missile = new Missile(this, r, this.weapons[this.equipped], bAngle);
     missiles[this.sy][this.sx][r] = missile;
-    sendAllSector('sound', {file: 'missile', x: this.x, y: this.y}, this.sx, this.sy);
+    sendAllSector("sound", {file: "missile", x: this.x, y: this.y}, this.sx, this.sy);
   }
   shootOrb() {
     const r = Math.random();
     const orb = new Orb(this, r, this.weapons[this.equipped]);
     orbs[this.sy][this.sx][r] = orb;
-    sendAllSector('sound', {file: 'beam', x: this.x, y: this.y}, this.sx, this.sy);
+    sendAllSector("sound", {file: "beam", x: this.x, y: this.y}, this.sx, this.sy);
   }
   shootMine() {
     if (Object.keys(mines[this.sy][this.sx]).length >= 20 && (this.weapons[this.equipped] < 30 || this.weapons[this.equipped] == 48 || this.weapons[this.equipped] == 43)) {
       this.ammos[this.equipped]++;
-      this.emit('chat', {msg: 'This sector has reached its limit of 20 mines.'});
+      this.emit("chat", {msg: "This sector has reached its limit of 20 mines."});
       return;
     }
     if (square(this.sx - sectorWidth / 2) + square(this.sy - sectorWidth / 2) < square(600 * 10)) {
       this.ammos[this.equipped]++;
-      this.emit('chat', {msg: 'You may not place a mine here.'});
+      this.emit("chat", {msg: "You may not place a mine here."});
       return;
     }
     const r = Math.random();
     const mine = new Mine(this, r, this.weapons[this.equipped]);
     mines[this.sy][this.sx][r] = mine;
-    sendAllSector('mine', {x: this.x, y: this.y}, this.sx, this.sy);
+    sendAllSector("mine", {x: this.x, y: this.y}, this.sx, this.sy);
   }
   shootBeam(origin, restricted) {// restricted is for recursive calls from quarriers
     const ox = origin.x; const oy = origin.y;
@@ -808,11 +812,11 @@ class Player {
     // gyrodynamite
     if (this.weapons[this.equipped] == 31 && nearP.sx == this.sx && nearP.sy == this.sy && nearP.color != this.color) {
       nearP.gyroTimer = 250;
-      nearP.emit('gyro', {t: 250});
+      nearP.emit("gyro", {t: 250});
     }
 
     // elite quarrier
-    if (this.ship == 17 && nearP != 0 && nearP.type === 'Asteroid') {
+    if (this.ship == 17 && nearP != 0 && nearP.type === "Asteroid") {
       nearP.hit = true;
       for (let i = 0; i < 3; i++) this.shootBeam(nearP, true);
     }
@@ -820,13 +824,13 @@ class Player {
     const r = Math.random();
     const beam = new Beam(this, r, this.weapons[this.equipped], nearP, origin);
     beams[this.sy][this.sx][r] = beam;
-    sendAllSector('sound', {file: 'beam', x: ox, y: oy}, this.sx, this.sy);
+    sendAllSector("sound", {file: "beam", x: ox, y: oy}, this.sx, this.sy);
   }
   shootBlast(currWep) {
     const r = Math.random();
     const blast = new Blast(this, r, currWep);
     blasts[this.sy][this.sx][r] = blast;
-    sendAllSector('sound', {file: 'beam', x: this.x, y: this.y}, this.sx, this.sy);
+    sendAllSector("sound", {file: "beam", x: this.x, y: this.y}, this.sx, this.sy);
   }
   // Bot specific
   async die(b) {
@@ -835,29 +839,33 @@ class Player {
     if (!players[this.sy][this.sx][this.id]) return; // multi-kill bug
 
     // reward nn bots for hurting other players
-    if (this.isNNBot && origin.type === 'Bullet' && origin.owner.type === 'Player' && origin.owner.net != 0) {
+    if (this.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net != 0) {
       origin.owner.net.save(this.isNNBot ? this.net.id : Math.floor(Math.random()));
       this.health -= 10000;
     }
 
     d /= (this.trail % 16 == 1 ? 1.05:1); // blood trail: less damage
     d *= (this.shield ? .25 : 1); // Shield- 1/4th damage
+    d *= ((this.shield && this.ship == 19) ? .5 : 1); // Rank 19 suffers less damage when shielded.
     d *= (this.superchargerTimer>1 ? 2 : 1); // supercharger inflicts double damage
+    if ((this.ship>=19)&&d<1.5&&d>0) d=0; // Too weak attacks won't strain the hull of the ship.
 
     this.health -= d;
     if (this.health > this.maxHealth) this.health = this.maxHealth;
     if (this.health < 0) this.die(origin);
 
-    if (d>0) note('-' + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-    if (d<0) note('+' + Math.floor(Math.abs(d)), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-    this.emit('dmg', {});
+    if (d>0) note("-" + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    if (d==0) note("No dmg", this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
+    if (d<0) note("+" + Math.floor(Math.abs(d)), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    this.emit("dmg", {});
     return this.health < 0;
   }
   EMP(t) {
     if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
-    this.charge += -t*this.energy2; // Emp jams the rank 21 ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
+    this.charge += -t*this.energy2; // Emp jams the ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
     this.empTimer += t;
-    if (!this.isBot) this.emit('emp', {t: t});
+    if (this.ship == 21 && this.health*1.05 < this.maxHealth) this.health*=1.05; // It will also heal the ship a very small bit.
+    if (!this.isBot) this.emit("emp", {t: t});
   }
   save() {}
 
@@ -878,6 +886,7 @@ class Player {
         const b = bases[this.sy][this.sx];
         b.EMP(150);
       }
+      this.health += Math.min(Math.max(5, this.maxHealth*.03), this.maxHealth - this.health);
     }
 
     this.kills++;
@@ -901,12 +910,12 @@ class Player {
     this.speed = Math.sqrt(square(this.vy) + square(this.vx));
   }
   refillAmmo(i) {
-    if (typeof wepns[this.weapons[i]] !== 'undefined') this.ammos[i] = wepns[this.weapons[i]].ammo;
+    if (typeof wepns[this.weapons[i]] !== "undefined") this.ammos[i] = wepns[this.weapons[i]].ammo;
   }
   refillAllAmmo() {
     for (let i = 0; i < 10; i++) this.refillAmmo(i);
     sendWeapons(this);
-    this.strongLocal('Ammo Replenished!', this.x, this.y + 256);
+    this.strongLocal("Ammo Replenished!", this.x, this.y + 256);
   }
   testAfk() {
     return false;
@@ -920,11 +929,11 @@ class Player {
   }
   spoils(type, amt) {/* gives you something. Called wenever you earn money / exp / w/e*/}
   nameWithoutTag() {
-    if (this.name.includes(' ')) return this.name.split(' ')[1];
+    if (this.name.includes(" ")) return this.name.split(" ")[1];
     return this.name;
   }
   nameWithColor() { // returns something like "~`green~`[O] 2swap~`yellow~`"
-    return '~`'+this.color+'~`'+this.name+'~`yellow~`';
+    return "~`"+this.color+"~`"+this.name+"~`yellow~`";
   }
   noteLocal(msg, x, y) {}
   strongLocal(msg, x, y) {}

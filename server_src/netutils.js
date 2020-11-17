@@ -1,47 +1,47 @@
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 // Miscellaneous Networking
 global.sendWeapons = function(player) { // tells a client what weapons that player has;
   if (player == 0) return;
   const worth = ships[player.ship].price * .75;
-  player.emit('weapons', {weapons: player.weapons, worth: worth, ammos: player.ammos});
+  player.emit("weapons", {weapons: player.weapons, worth: worth, ammos: player.ammos});
 };
 
 global.modmute = function(msg) {
-  if (msg.split(' ').length != 3) {
-    return 'Bad syntax! The message should look like \'/modmute playernamewithouttag minutes\'';
+  if (msg.split(" ").length != 3) {
+    return "Bad syntax! The message should look like '/modmute playernamewithouttag minutes'";
   } // split looks like {"/mute", "name", "minutesToMute"}
-  const name = msg.split(' ')[1];
+  const name = msg.split(" ")[1];
   const player = getPlayerFromName(name);
   if (player == -1) {
-    return 'Player \''+name+'\' not found.';
+    return "Player '"+name+"' not found.";
   }
-  const minutes = parseFloat(msg.split(' ')[2]);
-  if (typeof minutes !== 'number') return;
+  const minutes = parseFloat(msg.split(" ")[2]);
+  if (typeof minutes !== "number") return;
 
   if (minutes < 0) return;
 
   muteTable[player.name] = (Date.now() + (minutes * 60 * 1000));
-  chatAll('~`violet~`' + player.name + '~`yellow~` has been muted for '+minutes+' minutes!');
-  return player.name + 'has been muted for '+minutes+' minutes!';
+  chatAll("~`violet~`" + player.name + "~`yellow~` has been muted for "+minutes+" minutes!");
+  return player.name + "has been muted for "+minutes+" minutes!";
 };
 
 global.ipmute = function(msg) {
-  if (msg.split(' ').length != 3) {
-    return 'Bad syntax! The message should look like \'/ipmute playernamewithouttag minutes\'';
+  if (msg.split(" ").length != 3) {
+    return "Bad syntax! The message should look like '/ipmute playernamewithouttag minutes'";
   } // split looks like {"/mute", "name", "minutesToMute"}
-  const name = msg.split(' ')[1];
+  const name = msg.split(" ")[1];
   const player = getPlayerFromName(name);
   if (player == -1) {
-    return 'Player \''+name+'\' not found.';
+    return "Player '"+name+"' not found.";
   }
-  const minutes = parseFloat(msg.split(' ')[2]);
-  if (typeof minutes !== 'number') return;
+  const minutes = parseFloat(msg.split(" ")[2]);
+  if (typeof minutes !== "number") return;
 
   if (minutes < 0) return;
 
   ipMuteTable[player.ip] = (Date.now() + (minutes * 60 * 1000));
-  chatAll('~`violet~`' + player.name + '~`yellow~` has been IP-muted for '+minutes+' minutes!');
-  return player.name + 'has been IP-muted for '+minutes+' minutes!';
+  chatAll("~`violet~`" + player.name + "~`yellow~` has been IP-muted for "+minutes+" minutes!");
+  return player.name + "has been IP-muted for "+minutes+" minutes!";
 };
 
 global.sendAllSector = function(out, data, sx, sy) {
@@ -63,26 +63,26 @@ global.sendAll = function(out, data) {
 };
 
 global.chatAll = function(msg) { // sends msg in the chat
-  sendAll('chat', {msg: msg});
+  sendAll("chat", {msg: msg});
 };
 
 global.sendTeam = function(color, out, data) { // send a socket.io message to all the members of some team
   for (const i in sockets) {
     const player = sockets[i].player;
-    if (typeof player !== 'undefined' && player.color === color) sockets[i].emit(out, data);
+    if (typeof player !== "undefined" && player.color === color) sockets[i].emit(out, data);
   }
 };
 
 global.note = function(msg, x, y, sx, sy) { // a popup note in game that everone in the sector can see.
-  sendAllSector('note', {msg: msg, x: x, y: y, local: false}, sx, sy);
+  sendAllSector("note", {msg: msg, x: x, y: y, local: false}, sx, sy);
 };
 
 global.strong = function(msg, x, y, sx, sy) { // a bigger note
-  sendAllSector('strong', {msg: msg, x: x, y: y, local: false}, sx, sy);
+  sendAllSector("strong", {msg: msg, x: x, y: y, local: false}, sx, sy);
 };
 
 global.parseBoolean = function(s) {
-  return (s === 'true');
+  return (s === "true");
 };
 
 module.exports = function() {
@@ -93,17 +93,17 @@ module.exports = function() {
 global.playerChat = function(msg, gc, team, guild) { // chat in whatever chat room the player is in
   for (const i in sockets) {
     const player = sockets[i].player;
-    if (typeof player === 'undefined') continue;
+    if (typeof player === "undefined") continue;
     if (gc == 1 && player.color != team) continue; // they arent on the same team
     if (gc == 2 && guild != undefined && (player.guild !== guild)) continue; // they arent in the same guild
-    sockets[i].emit('chat', {msg: msg, gc: gc});
+    sockets[i].emit("chat", {msg: msg, gc: gc});
   }
 };
 
 global.send_rpc = async function(endpoint, data) {
-  return await fetch(Config.getValue('rpc_server', undefined) + '/rpc' + endpoint, {
-    method: 'post',
+  return await fetch(Config.getValue("rpc_server", undefined) + "/rpc" + endpoint, {
+    method: "post",
     body: data,
-    headers: {'Content-Type': 'x-www-form-urlencoded'},
+    headers: {"Content-Type": "x-www-form-urlencoded"},
   });
 };

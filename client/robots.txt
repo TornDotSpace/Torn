@@ -1,6 +1,5 @@
 User-agent: * 
-Disallow: 
-/changelog/
-/fun/
+Disallow:
+/socket.io/
 
 Crawl-delay: 300
