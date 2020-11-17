@@ -365,9 +365,9 @@ module.exports = function initNetcode() {
       if (typeof data === "undefined" || typeof data.msg !== "string" || data.msg.length > 128) return;
 
       data.msg = data.msg.trim(); // "   h i   " => "h i"
-      const re = /%CC%/g
-      const hasZalgo = re.test(encodeURIComponent(data.msg)); 
-      data.msg = data.msg.replace(/%CC(%[A-Z0-9]{2})+%20/g," ").replace(/%CC(%[A-Z0-9]{2})+(\w)/g,"$2") // replace anything else
+      const re = /%CC%/g;
+      const hasZalgo = re.test(encodeURIComponent(data.msg));
+      data.msg = data.msg.replace(/%CC(%[A-Z0-9]{2})+%20/g, " ").replace(/%CC(%[A-Z0-9]{2})+(\w)/g, "$2"); // replace anything else
 
       if (player == 0 || data.msg.length == 0) return;
 
