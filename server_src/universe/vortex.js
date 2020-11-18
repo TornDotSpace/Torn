@@ -73,7 +73,7 @@ module.exports = class Vortex {
       const a = angleBetween(p, this);
       // then move them.
       let guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
-      if (p.ship == 21 && !this.isWorm) guestMult=0.5*(-1+(50/dist)); // R21 ship gets pushed from a BH if too far, BUT IT'S STILL PULLED WITH FORCE IF TOO CLOSE. Reason this isn't an increment is because someone could get a GUEST at level 21, buy the ship, and then the old *=0.5 would actually be more OP than the old code.
+      if (p.ship == 21 && !this.isWorm) guestMult=0.45*(-1+(35/dist)); // R21 ship gets pushed from a BH if too far, BUT IT'S STILL PULLED WITH FORCE IF TOO CLOSE. Reason this isn't an increment is because someone could get a GUEST at level 21, buy the ship, and then the old *=0.5 would actually be more OP than the old code.
       p.x -= guestMult * .40 * this.size / dist * Math.cos(a);
       p.y -= guestMult * .40 * this.size / dist * Math.sin(a);
 

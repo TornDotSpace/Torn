@@ -233,7 +233,7 @@
 			"range":-1,
 			"damage":-1,
 			"speed":-1,
-			"charge":50,
+			"charge":25,
 			"price":30000,
 			"ammo":3,
 			"level":4,
@@ -256,7 +256,7 @@
 			"name":"Turbo",
 			"range":-1,
 			"damage":-1,
-			"speed":1.44,
+			"speed":1.48,
 			"charge":0,
 			"price":15000,
 			"ammo":-1,
@@ -268,7 +268,7 @@
 			"name":"Hyperdrive",
 			"range":-1,
 			"damage":-1,
-			"speed":10000,
+			"speed":11111,
 			"charge":150,
 			"price":6000,
 			"ammo":-2,
@@ -338,7 +338,7 @@
 		},
 		{
 			"name":"Gravity Bomb",
-			"range":2500,
+			"range":3000,
 			"damage":300,
 			"speed":10,
 			"charge":0,
@@ -352,7 +352,7 @@
 			"name":"Warp Drive",
 			"range":-1,
 			"damage":-1,
-			"speed":715,
+			"speed":716,
 			"charge":80,
 			"price":150000,
 			"ammo":2,
@@ -386,9 +386,9 @@
 		},
 		{
 			"name":"Impulse Mine",
-			"range":18,
+			"range":20,
 			"damage":0,
-			"speed":0,
+			"speed":-1,
 			"charge":25,
 			"price":6000,
 			"ammo":10,
@@ -398,7 +398,7 @@
 		},
 		{
 			"name":"Grenades",
-			"range":20,
+			"range":22,
 			"damage":100,
 			"speed":25,
 			"charge":25,
@@ -458,7 +458,7 @@
 		},
 		{
 			"name":"Proximity Fuze",
-			"range":270,
+			"range":300,
 			"damage":80,
 			"speed":75,
 			"charge":25,
@@ -483,9 +483,9 @@
 		{
 			"name":"Submachinegun",
 			"range":300,
-			"damage":12,
+			"damage":13,
 			"speed":70,
-			"charge":10,
+			"charge":9,
 			"price":30000,
 			"ammo":1000,
 			"level":6,
@@ -543,7 +543,7 @@
 		{
 			"name":"Healing Beam",
 			"range":35,
-			"damage":-22,
+			"damage":-25,
 			"speed":0,
 			"charge":20,
 			"price":5000,
@@ -579,7 +579,7 @@
 		{
 			"name":"Magnetic Mine",
 			"range":50,
-			"damage":90,
+			"damage":100,
 			"speed":0,
 			"charge":45,
 			"price":10000,
@@ -817,7 +817,7 @@
 			"capacity":2000
 		},
 		{
-			"thrust":0.25,
+			"thrust":0.26,
 			"health":500,
 			"agility":0.25,
 			"width":190,
@@ -835,8 +835,8 @@
 			"capacity":5000
 		},
 		{
-			"thrust":0.16,
-			"health":840,
+			"thrust":0.17,
+			"health":842,
 			"agility":0.25,
 			"width":192,
 			"price":2500000,
@@ -845,7 +845,7 @@
 		},
 		{
 			"thrust":0.25,
-			"health":520,
+			"health":525,
 			"agility":0.3,
 			"width":185,
 			"price":3000000,
@@ -853,8 +853,8 @@
 			"capacity":10000
 		},
 		{
-			"thrust":0.30,
-			"health":380,
+			"thrust":0.31,
+			"health":385,
 			"agility":0.42,
 			"width":128,
 			"price":5000000,
@@ -863,7 +863,7 @@
 		},
 		{
 			"thrust":0.22,
-			"health":760,
+			"health":777,
 			"agility":0.2,
 			"width":190,
 			"price":10000000,
@@ -871,8 +871,8 @@
 			"capacity":20000
 		},
 		{
-			"thrust":0.18,
-			"health":920,
+			"thrust":0.19,
+			"health":921,
 			"agility":0.17,
 			"width":200,
 			"price":12000000,
