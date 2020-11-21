@@ -648,14 +648,14 @@ class Player {
   checkPlanetCollision() {
     const p = planets[this.sy][this.sx];
 
-    // if out of range, return. Only try this once a second.
-    if (tick % 10 != 0 || squaredDist(p, this) > square(512)) return;
+    // if out of range, return. Only try this once every fifth of second.
+    if (tick % 2 != 0 || squaredDist(p, this) > square(512)) return;
 
     // cooldown to prevent chat spam when 2 people are on the planet
     const cool = p.cooldown;
     if (cool < 0) {
-      this.refillAllAmmo(); p.cooldown = 50;
-      if (this.health < this.maxHealth) this.health++;
+      this.refillAllAmmo(); p.cooldown = 20;
+      this.health += Math.min(Math.max(1, this.health*.01), this.maxHealth - this.health);
     }
 
     this.checkQuestStatus(true); // lots of quests are planet based
@@ -733,7 +733,7 @@ class Player {
       if (currWep == 2) bAngle -= 3.1415; // reverse gun
       if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
       if (currWep == 4) bAngle += Math.random() - .5; // shotgun
-      if (currWep == 40) bAngle += (Math.random() - .5)*0.15; // smg
+      if (currWep == 40) bAngle += (Math.random() - .5)*0.08; // smg
 
       const bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
       bullets[this.sy][this.sx][r] = bullet;
@@ -845,8 +845,9 @@ class Player {
     }
 
     d /= (this.trail % 16 == 1 ? 1.05:1); // blood trail: less damage
-    d *= (this.shield ? .25 : 1); // Shield- 1/4th damage
+    d *= ((this.shield && d > 0) ? .25 : 1); // Shield- 1/4th damage. Won't block healing items
     d *= ((this.shield && this.ship == 19) ? .5 : 1); // Rank 19 suffers less damage when shielded.
+    d *= ((this.shield && this.ship > 19) ? .75 : 1); // Ranks above 19 suffer slightly less damage when shielded.
     d *= (this.superchargerTimer>1 ? 2 : 1); // supercharger inflicts double damage
     if ((this.ship>=19)&&d<1.5&&d>0) d=0; // Too weak attacks won't strain the hull of the ship.
 
