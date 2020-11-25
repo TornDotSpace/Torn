@@ -365,6 +365,9 @@ module.exports = function initNetcode() {
       if (typeof data === "undefined" || typeof data.msg !== "string" || data.msg.length > 128) return;
 
       data.msg = data.msg.trim(); // "   h i   " => "h i"
+      const re = /%CC%/g;
+      const hasZalgo = re.test(encodeURIComponent(data.msg));
+      data.msg = data.msg.replace(/%CC(%[A-Z0-9]{2})+%20/g, " ").replace(/%CC(%[A-Z0-9]{2})+(\w)/g, "$2"); // replace anything else
 
       if (player == 0 || data.msg.length == 0) return;
 
@@ -400,6 +403,7 @@ module.exports = function initNetcode() {
       player.lastmsg = newmsg;
       player.chatTimer += 140; // note this as potential spam
       if (repeat) player.chatTimer*=2;
+      if (hasZalgo) player.chatTimer*=3;
       if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
         muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
         chatAll("~`violet~`" + player.name + "~`yellow~` has been muted for " + Math.floor(player.muteCap / 25) + " seconds!");

@@ -130,9 +130,9 @@ class Player {
     // timer business
     if (this.killStreakTimer-- < 0) this.killStreak = 0; // Sensitive to off-by-ones.
     if (this.borderJumpTimer > 0) this.borderJumpTimer--;
-    this.superchargerTimer--;
-    this.empTimer--;
-    this.disguise--;
+    if (this.superchargerTimer > 0) this.superchargerTimer--;
+    if (this.empTimer > 0) this.empTimer--;
+    if (this.disguise > 0) this.disguise--;
 
     const amDrifting = this.e || this.gyroTimer > 0;
     this.shield = (this.s && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
@@ -203,12 +203,11 @@ class Player {
       // Timery Weapons
 
       else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-        if (wep.name === "Supercharger") this.superchargerTimer = 1500*(this.ship==21 ? 2 : 1);// 1 min, more if rank 21
+        if (wep.name === "Supercharger") this.superchargerTimer += 1500*(this.ship==21 ? 2 : 1); // 1 min, more if rank 21
         else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
-        else if (wep.name === "Photon Cloak") this.disguise = (300+100*(this.energy2-1)+5*(this.ship-wepns[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 9s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
+        else if (wep.name === "Photon Cloak") this.disguise += (333+110*(this.energy2-1)+10*(this.ship-wepns[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
         else if (wep.name === "Warp Drive") {
-          this.speed = wepns[29].speed*(this.ship == 16 ? 1.5 : 1); // R16 gets a 50% extra boost from it
-          this.speed+=100*(this.energy2-1)*(this.superchargerTimer>0 ? 2 : 1); // the more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
+          this.speed = (wepns[29].speed*(this.ship == 16 ? 1.5 : 1)*(this.superchargerTimer>0 ? 2 : 1)+150*(this.energy2-1)*(this.superchargerTimer>0 ? 2 : 1))*(isDrifting ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
         }
       }
 
@@ -228,6 +227,34 @@ class Player {
             p.vy += Math.sin(ang) * vel;
             p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
             p.updatePolars(); // We changed their rectangular velocity.
+          }
+          for (const i in asts[this.sy][this.sx]) {
+            const a = asts[this.sy][this.sx][i];
+            const d2 = squaredDist(this, a);
+            if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
+            const ang = angleBetween(this, a);
+            const vel = -100000 / Math.max(d2, 200000);
+            a.vx += Math.cos(ang) * vel;
+            a.vy += Math.sin(ang) * vel;
+          }
+          for (const i in missiles[this.sy][this.sx]) {
+            const m = missiles[this.sy][this.sx][i];
+            const d2 = squaredDist(this, m);
+            if (d2 > square(10 * wep.range)) continue;
+            const ang = angleBetween(this, m);
+            const vel = -10000000 / Math.max(d2, 2000000);
+            m.emvx += Math.cos(ang) * vel;
+            m.emvy += Math.sin(ang) * vel;
+          }
+          for (const i in mines[this.sy][this.sx]) {
+            const m = mines[this.sy][this.sx][i];
+            const d2 = squaredDist(this, m);
+            if (d2 > square(10 * wep.range)) continue;
+            const ang = angleBetween(this, m);
+            const vel = -5000 / Math.max(d2, 2000000);
+            m.vx += Math.cos(ang) * vel;
+            m.vy += Math.sin(ang) * vel;
+            if (d2 < 15) m.die();
           }
         }
       } else if (wep.name === "Electromagnet") { // identical structurally to pulse wave, see above for comments.
@@ -305,7 +332,7 @@ class Player {
         this.emit("chat", {msg: "You placed a turret! Name it with \"/nameturret <name>\".", color: "yellow"});
       } else if (wep.name === "Sentry") {
         if (bases[this.sy][this.sx] != 0) {
-          this.emit("chat", {msg: "There can only be one turret in any sector!", color: "yellow"});
+          this.emit("chat", {msg: "There can only be one turret or sentry in any sector!", color: "yellow"});
           this.space = false;
           return;
         }
@@ -316,7 +343,7 @@ class Player {
         this.emit("chat", {msg: "You placed a sentry! Name it with \"/nameturret <name>\".", color: "yellow"});
       } else if (wep.name === "Turbo") {
         const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
-        const mult = isDrifting ? 1.025 : 1.017; // Faster when drifting.
+        const mult = wepns[21].speed * isDrifting ? 1.025 : 1; // Faster when drifting.
 
         this.speed *= mult;
         this.vx *= mult;
@@ -353,9 +380,9 @@ class Player {
   shootEliteWeapon() {
     if (this.rank < this.ship) return;
     if (this.ship == 16) { // Elite Raider
-      if (this.disguise > 0) return;
+      // if (this.disguise > 0) return;
       // This effectively just shoots turbo.
-      const mult = ((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.025 : 1.017;
+      const mult = wepns[21].speed * ((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.03 : 1.017;
       this.speed *= mult;
       this.vx *= mult;
       this.vy *= mult;
@@ -373,7 +400,7 @@ class Player {
       this.shootBullet(39);
     } // Built in spreadshot
     else if (this.ship == 19) {
-      if (this.disguise > 0) return;
+      // if (this.disguise > 0) return;
       if (this.health < this.maxHealth) this.health++;
     } // Heals you
     else if (this.ship == 20) {
@@ -384,10 +411,10 @@ class Player {
   }
   reload(elite, wepId) {
     if (elite) {
-      if (this.ship == 20) this.charge = -wepns[41].charge;
-      if (this.ship == 18) this.charge = -wepns[39].charge;
+      if (this.ship == 20) this.charge = -wepns[41].charge*0.95;
+      if (this.ship == 18) this.charge = -wepns[39].charge*0.95;
       if (this.ship == 19 && this.charge > -200) this.charge-=10/this.energy2;
-      if (this.ship == 17) this.charge = -150;
+      if (this.ship == 17) this.charge = -140;
       return;
     }
     if (wepns[wepId].charge > 12) this.charge = 0;
@@ -395,7 +422,7 @@ class Player {
   }
   canShoot(wepId) {
     if (typeof wepns[wepId] === "undefined") return false;
-    if (this.disguise > 0 || (this.shield && wepns[wepId].type !== "Misc")) return false;
+    if ((this.disguise > 0 && !(wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29 || wep.name === "Hyperdrive" || wep.name === "Turbo")) || (this.shield && wepns[wepId].type !== "Misc")) return false;
     const sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
     return this.space && sufficientCharge;
   }
@@ -594,7 +621,7 @@ class Player {
       this.sendAchievementsMisc(true);
     }
 
-    if ((this.sx % 3 != 0 && this.sy == 8) && this.quest.type === "Secret3") {
+    if ((this.sx % 3 == 2 && this.sy == 4) && this.quest.type === "Secret3") {
       this.spoils("money", this.quest.exp); // reward the player
       this.spoils("experience", Math.floor(this.quest.exp / 4000));
 
@@ -648,14 +675,14 @@ class Player {
   checkPlanetCollision() {
     const p = planets[this.sy][this.sx];
 
-    // if out of range, return. Only try this once a second.
-    if (tick % 10 != 0 || squaredDist(p, this) > square(512)) return;
+    // if out of range, return. Only try this once every fifth of second.
+    if (tick % 2 != 0 || squaredDist(p, this) > square(512)) return;
 
     // cooldown to prevent chat spam when 2 people are on the planet
     const cool = p.cooldown;
     if (cool < 0) {
-      this.refillAllAmmo(); p.cooldown = 50;
-      if (this.health < this.maxHealth) this.health++;
+      this.refillAllAmmo(); p.cooldown = 20;
+      this.health += Math.min(Math.max(1, this.health*.01), this.maxHealth - this.health);
     }
 
     this.checkQuestStatus(true); // lots of quests are planet based
@@ -733,7 +760,7 @@ class Player {
       if (currWep == 2) bAngle -= 3.1415; // reverse gun
       if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
       if (currWep == 4) bAngle += Math.random() - .5; // shotgun
-      if (currWep == 40) bAngle += (Math.random() - .5)*0.15; // smg
+      if (currWep == 40) bAngle += (Math.random() - .5)*0.08; // smg
 
       const bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
       bullets[this.sy][this.sx][r] = bullet;
@@ -845,8 +872,9 @@ class Player {
     }
 
     d /= (this.trail % 16 == 1 ? 1.05:1); // blood trail: less damage
-    d *= (this.shield ? .25 : 1); // Shield- 1/4th damage
+    d *= ((this.shield && d > 0) ? .25 : 1); // Shield- 1/4th damage. Won't block healing items
     d *= ((this.shield && this.ship == 19) ? .5 : 1); // Rank 19 suffers less damage when shielded.
+    d *= ((this.shield && this.ship > 19) ? .75 : 1); // Ranks above 19 suffer slightly less damage when shielded.
     d *= (this.superchargerTimer>1 ? 2 : 1); // supercharger inflicts double damage
     if ((this.ship>=19)&&d<1.5&&d>0) d=0; // Too weak attacks won't strain the hull of the ship.
 
