@@ -3,7 +3,7 @@ const fs = require("fs");
 const Filter = require("bad-words"); // bad-words node package
 const filter = new Filter();
 
-filter.removeWords("god", "hell", "crap", "flipping the bird", "Lipshitz", "Lipshits", "polack", "screwing", "slut", "sluts", "hui", "poop", "screw");
+filter.removeWords("god", "hell", "crap", "flipping the bird", "Lipshitz", "Lipshits", "polack", "screwing", "slut", "sluts", "hui", "poop", "screw", "coño", "puta", "hijoputa", "cabrón", "cabron", "mierda");
 const PlayerMP = require("./player_mp.js");
 require("./netutils.js");
 require("./command.js");
@@ -394,8 +394,7 @@ module.exports = function initNetcode() {
       }
       delete muteTable[player.name];
       delete ipMuteTable[player.ip];
-
-      newmsg = filter.clean(data.msg); // censor swear words
+      if (data.msg != null) newmsg = filter.clean(data.msg); // censor swear words. Added the not null as a temporary patch
 
       if (newmsg.startsWith("/")) runCommand(player, newmsg); // spammable commands
 
