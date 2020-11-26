@@ -131,13 +131,13 @@ class Player {
     // timer business
     if (this.killStreakTimer-- < 0) this.killStreak = 0; // Sensitive to off-by-ones.
     if (this.borderJumpTimer > 0) this.borderJumpTimer--;
-    this.superchargerTimer--;
+    if (this.superchargerTimer >= 0) this.superchargerTimer--;
     if (this.empTimer > 0) this.empTimer--;
     if (this.disguise > 0) this.disguise--;
 
     const amDrifting = this.e || this.gyroTimer > 0;
     this.shield = (this.s && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
-    if (this.disguise>0 || (this.shield && this.weapons[this.equipped]>0 && wepns[this.weapons[this.equipped]].type !== "Misc" && wepns[this.weapons[this.equipped]].type !== "Mine" && this.space)) this.charge=Math.min(this.charge, 0);
+    if ((this.disguise>0 && this.weapons[this.equipped] != 18 && this.weapons[this.equipped] != 19 && this.weapons[this.equipped] != 21 && this.weapons[this.equipped] != 22 && this.weapons[this.equipped] != 29 && this.weapons[this.equipped] != 36) || (this.shield && this.weapons[this.equipped]>0 && wepns[this.weapons[this.equipped]].type !== "Misc" && wepns[this.weapons[this.equipped]].type !== "Mine" && this.space)) this.charge=Math.min(this.charge, 0);
     this.leaveBaseShield--;
 
     if (!this.isBot) {
@@ -204,10 +204,10 @@ class Player {
       // Timery Weapons
 
       else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-        if (wep.name === "Supercharger"){
-          if(this.superchargerTimer <= 0) this.superchargerTimer = 1500*(this.ship==21 ? 2 : 1); // 1 min, more if rank 21
+        if (wep.name === "Supercharger") {
+          if (this.superchargerTimer <= 0) this.superchargerTimer = 1500*(this.ship==21 ? 2 : 1); // 1 min, more if rank 21
           else this.superchargerTimer += 1500*(this.ship==21 ? 2 : 1); // Stackable
-        }else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
+        } else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
         else if (wep.name === "Photon Cloak") this.disguise += (333+110*(this.energy2-1)+10*(this.ship-wepns[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
         else if (wep.name === "Warp Drive") {
           this.speed = (wepns[29].speed*(this.ship == 16 ? 1.5 : 1)*(this.superchargerTimer>0 ? 2 : 1)+150*(this.energy2-1)*(this.superchargerTimer>0 ? 2 : 1))*(((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
@@ -424,7 +424,7 @@ class Player {
   }
   canShoot(wepId) {
     if (typeof wepns[wepId] === "undefined") return false;
-    if ((this.disguise > 0 && wepId != 18 && wepId != 19 && wepId != 21 && wepId != 22 && wepId != 29 && wepId != 36)) || (this.shield && wepns[wepId].type !== "Misc")) return false;
+    if ((this.disguise > 0 && wepId != 18 && wepId != 19 && wepId != 21 && wepId != 22 && wepId != 29 && wepId != 36) || (this.shield && wepns[wepId].type !== "Misc")) return false;
     const sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
     return this.space && sufficientCharge;
   }
