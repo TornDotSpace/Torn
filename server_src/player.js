@@ -235,7 +235,7 @@ class Player {
             const d2 = squaredDist(this, a);
             if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
             const ang = angleBetween(this, a);
-            const vel = -100000 / Math.max(d2, 200000);
+            const vel = -200000 / Math.max(d2, 200000);
             a.vx += Math.cos(ang) * vel;
             a.vy += Math.sin(ang) * vel;
           }
@@ -244,7 +244,7 @@ class Player {
             const d2 = squaredDist(this, m);
             if (d2 > square(10 * wep.range)) continue;
             const ang = angleBetween(this, m);
-            const vel = -10000000 / Math.max(d2, 2000000);
+            const vel = -100000000 / Math.max(d2, 2000000);
             m.emvx += Math.cos(ang) * vel;
             m.emvy += Math.sin(ang) * vel;
             if (d2 < 5) m.die();
@@ -254,7 +254,7 @@ class Player {
             const d2 = squaredDist(this, m);
             if (d2 > square(10 * wep.range)) continue;
             const ang = angleBetween(this, m);
-            const vel = -5000 / Math.max(d2, 2000000);
+            const vel = -10000 / Math.max(d2, 2000000);
             m.vx += Math.cos(ang) * vel;
             m.vy += Math.sin(ang) * vel;
             if (d2 < 200) m.die();
