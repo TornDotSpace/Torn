@@ -31,6 +31,7 @@ class Player {
     this.borderJumpTimer = 0, // for deciding whether to hurt the player
     this.planetTimer = 0,
     this.leaveBaseShield = 0,
+    this.superchargerTimer= -1;
     this.empTimer = -1,
     this.disguise = -1,
     this.timer = 0,
@@ -130,7 +131,7 @@ class Player {
     // timer business
     if (this.killStreakTimer-- < 0) this.killStreak = 0; // Sensitive to off-by-ones.
     if (this.borderJumpTimer > 0) this.borderJumpTimer--;
-    if (this.superchargerTimer > 0) this.superchargerTimer--;
+    this.superchargerTimer--;
     if (this.empTimer > 0) this.empTimer--;
     if (this.disguise > 0) this.disguise--;
 
@@ -203,8 +204,10 @@ class Player {
       // Timery Weapons
 
       else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
-        if (wep.name === "Supercharger") this.superchargerTimer += 1500*(this.ship==21 ? 2 : 1); // 1 min, more if rank 21
-        else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
+        if (wep.name === "Supercharger"){
+          if(this.superchargerTimer <= 0) this.superchargerTimer = 1500*(this.ship==21 ? 2 : 1); // 1 min, more if rank 21
+          else this.superchargerTimer += 1500*(this.ship==21 ? 2 : 1); // Stackable
+        }else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth*.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
         else if (wep.name === "Photon Cloak") this.disguise += (333+110*(this.energy2-1)+10*(this.ship-wepns[19].level))*(this.superchargerTimer>0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
         else if (wep.name === "Warp Drive") {
           this.speed = (wepns[29].speed*(this.ship == 16 ? 1.5 : 1)*(this.superchargerTimer>0 ? 2 : 1)+150*(this.energy2-1)*(this.superchargerTimer>0 ? 2 : 1))*(((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
@@ -342,7 +345,7 @@ class Player {
         this.emit("chat", {msg: "You placed a sentry! Name it with \"/nameturret <name>\".", color: "yellow"});
       } else if (wep.name === "Turbo") {
         const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
-        const mult = wepns[21].speed * isDrifting ? 1.025 : 1; // Faster when drifting.
+        const mult = wepns[21].speed * (isDrifting ? 1.025 : 1); // Faster when drifting.
 
         this.speed *= mult;
         this.vx *= mult;
@@ -381,7 +384,7 @@ class Player {
     if (this.ship == 16) { // Elite Raider
       // if (this.disguise > 0) return;
       // This effectively just shoots turbo.
-      const mult = wepns[21].speed * ((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.03 : 1.017;
+      const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.03 : 1.017);
       this.speed *= mult;
       this.vx *= mult;
       this.vy *= mult;
@@ -421,7 +424,7 @@ class Player {
   }
   canShoot(wepId) {
     if (typeof wepns[wepId] === "undefined") return false;
-    if ((this.disguise > 0 && !(wepId == 18 || wepId == 19 || wepId == 21 || wepId == 22 || wepId == 29 || wepId == 36)) || (this.shield && wepns[wepId].type !== "Misc")) return false;
+    if ((this.disguise > 0 && wepId != 18 && wepId != 19 && wepId != 21 && wepId != 22 && wepId != 29 && wepId != 36)) || (this.shield && wepns[wepId].type !== "Misc")) return false;
     const sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
     return this.space && sufficientCharge;
   }
