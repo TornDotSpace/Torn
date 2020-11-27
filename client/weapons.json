@@ -256,7 +256,7 @@
 			"name":"Turbo",
 			"range":-1,
 			"damage":-1,
-			"speed":1.045,
+			"speed":1.04,
 			"charge":0,
 			"price":15000,
 			"ammo":-1,
@@ -430,7 +430,7 @@
 			"ammo":-1,
 			"level":10,
 			"type":"Beam",
-			"bot":true
+			"bot":false
 		},
 		{
 			"name":"Supercharger",
