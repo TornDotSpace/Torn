@@ -590,7 +590,7 @@ class Player {
       }
     }
 
-    if (this.borderJumpTimer > 100) { // damage for running away from fights
+    if (this.hyperdriveTimer <= 0 && this.borderJumpTimer > 100) { // damage for running away from fights, hyperdrive won't automatically trigger it
       this.health = (this.health - 1) * .9 + 1;
       this.borderJumpTimer = 50;
     }
