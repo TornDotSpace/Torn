@@ -256,7 +256,7 @@
 			"name":"Turbo",
 			"range":-1,
 			"damage":-1,
-			"speed":1.05,
+			"speed":1.045,
 			"charge":0,
 			"price":15000,
 			"ammo":-1,
