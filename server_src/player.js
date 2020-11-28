@@ -247,7 +247,7 @@ class Player {
             const vel = -100000000 / Math.max(d2, 2000000);
             m.emvx += Math.cos(ang) * vel;
             m.emvy += Math.sin(ang) * vel;
-            if (d2 < 5) m.die();
+            if (squaredDist(m, this) < square(20 + ships[this.ship].width)) m.die();
           }
           for (const i in mines[this.sy][this.sx]) {
             const m = mines[this.sy][this.sx][i];
@@ -257,7 +257,7 @@ class Player {
             const vel = -10000 / Math.max(d2, 2000000);
             m.vx += Math.cos(ang) * vel;
             m.vy += Math.sin(ang) * vel;
-            if (d2 < 200) m.die();
+            if (squaredDist(m, this) < square(200 + ships[this.ship].width)) m.die();
           }
         }
       } else if (wep.name === "Electromagnet") { // identical structurally to pulse wave, see above for comments.
