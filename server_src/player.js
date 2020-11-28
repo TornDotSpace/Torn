@@ -247,7 +247,7 @@ class Player {
             const vel = -100000000 / Math.max(d2, 2000000);
             m.emvx += Math.cos(ang) * vel;
             m.emvy += Math.sin(ang) * vel;
-            if (d2 < 5) m.die();
+            if (squaredDist(m, this) < square(20 + ships[this.ship].width)) m.die();
           }
           for (const i in mines[this.sy][this.sx]) {
             const m = mines[this.sy][this.sx][i];
@@ -257,7 +257,7 @@ class Player {
             const vel = -10000 / Math.max(d2, 2000000);
             m.vx += Math.cos(ang) * vel;
             m.vy += Math.sin(ang) * vel;
-            if (d2 < 200) m.die();
+            if (squaredDist(m, this) < square(200 + ships[this.ship].width)) m.die();
           }
         }
       } else if (wep.name === "Electromagnet") { // identical structurally to pulse wave, see above for comments.
@@ -347,7 +347,6 @@ class Player {
       } else if (wep.name === "Turbo") {
         const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
         const mult = wepns[21].speed * (isDrifting ? 1.014 : 1); // Faster when drifting.
-
         this.speed *= mult;
         this.vx *= mult;
         this.vy *= mult;
@@ -385,7 +384,7 @@ class Player {
     if (this.ship == 16) { // Elite Raider
       // if (this.disguise > 0) return;
       // This effectively just shoots turbo.
-      const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.017 : 1.01);
+      const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.016 : 1.01);
       this.speed *= mult;
       this.vx *= mult;
       this.vy *= mult;
