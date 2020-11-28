@@ -346,7 +346,7 @@ class Player {
         this.emit("chat", {msg: "You placed a sentry! Name it with \"/nameturret <name>\".", color: "yellow"});
       } else if (wep.name === "Turbo") {
         const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
-        const mult = wepns[21].speed * (isDrifting ? 1.025 : 1); // Faster when drifting.
+        const mult = wepns[21].speed * (isDrifting ? 1.014 : 1); // Faster when drifting.
 
         this.speed *= mult;
         this.vx *= mult;
@@ -385,7 +385,7 @@ class Player {
     if (this.ship == 16) { // Elite Raider
       // if (this.disguise > 0) return;
       // This effectively just shoots turbo.
-      const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.03 : 1.017);
+      const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.017 : 1.01);
       this.speed *= mult;
       this.vx *= mult;
       this.vy *= mult;
