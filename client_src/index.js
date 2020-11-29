@@ -417,8 +417,10 @@ function loadAllImages() {
   loadImage("energyDisk", "/img/weapons/energyDisk.png");
   loadImage("photonOrb", "/img/weapons/photonOrb.png");
   loadImage("missile", "/img/weapons/missile.png");
+  loadImage("missile", "/img/weapons/alienMissile.png");
   loadImage("torpedo", "/img/weapons/torpedo.png");
   loadImage("heavyMissile", "/img/weapons/heavyMissile.png");
+  loadImage("heavyMissile", "/img/weapons/alienMissileSwarm.png");
   loadImage("empMissile", "/img/weapons/empMissile.png");
   loadImage("mine", "/img/weapons/mine.png");
   loadImage("magneticMine", "/img/weapons/magneticMine.png");
@@ -3894,7 +3896,9 @@ function rMissiles() {
   for (let selfo in missilesInfo) {
     selfo = missilesInfo[selfo];
     let img = Img.missile;
-    if (selfo.wepnID == 11 || selfo.weaponID == 13) img = Img.heavyMissile;
+    if (selfo.wepnID == 10 && (selfo.color == "red" || selfo.color == "green")) img = Img.alienMissile;
+    if (selfo.wepnID == 11 || (selfo.weaponID == 13 && selfo.color == "blue")) img = Img.heavyMissile;
+    if (selfo.weaponID == 13 && (selfo.color == "red" || selfo.color == "green")) img = Img.alienMissileSwarm;
     if (selfo.wepnID == 12) img = Img.empMissile;
     if (selfo.wepnID == 14) img = Img.torpedo;
     const pw = img.width;
