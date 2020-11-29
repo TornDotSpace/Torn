@@ -639,7 +639,7 @@ function render() {
 
   let time1 = -performance.now();
   time0 -= time1;
-  rStars(); // Laggy as shit. Everything up to this is fast.
+  if (fps > 26 && clientLag < 28) rStars(); // Laggy as shit. Everything up to this is fast.
 
   let time2 = -performance.now();
   time1 -= time2;
