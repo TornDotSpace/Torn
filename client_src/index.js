@@ -417,10 +417,10 @@ function loadAllImages() {
   loadImage("energyDisk", "/img/weapons/energyDisk.png");
   loadImage("photonOrb", "/img/weapons/photonOrb.png");
   loadImage("missile", "/img/weapons/missile.png");
-  loadImage("missile", "/img/weapons/alienMissile.png");
+  loadImage("alienMissile", "/img/weapons/alienMissile.png");
   loadImage("torpedo", "/img/weapons/torpedo.png");
   loadImage("heavyMissile", "/img/weapons/heavyMissile.png");
-  loadImage("heavyMissile", "/img/weapons/alienMissileSwarm.png");
+  loadImage("alienMissileSwarm", "/img/weapons/alienMissileSwarm.png");
   loadImage("empMissile", "/img/weapons/empMissile.png");
   loadImage("mine", "/img/weapons/mine.png");
   loadImage("magneticMine", "/img/weapons/magneticMine.png");
