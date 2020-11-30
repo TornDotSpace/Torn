@@ -639,7 +639,7 @@ function render() {
 
   let time1 = -performance.now();
   time0 -= time1;
-  if (fps > 26 && clientLag < 28) rStars(); // Laggy as shit. Everything up to this is fast.
+  if (fps >= 30 && clientLag <= 25) rStars(); // Laggy as shit. Everything up to this is fast.
 
   let time2 = -performance.now();
   time1 -= time2;
@@ -3894,7 +3894,7 @@ function rBullets() {
 }
 function rMissiles() {
   for (let selfo in missilesInfo) {
-    selfo = missilesInfo[selfo];
+  //  selfo = missilesInfo[selfo];
     let img = Img.missile;
     if (selfo.wepnID == 10 && (selfo.color == "red" || selfo.color == "green")) img = Img.alienMissile;
     if (selfo.wepnID == 11 || (selfo.weaponID == 13 && selfo.color == "blue")) img = Img.heavyMissile;
