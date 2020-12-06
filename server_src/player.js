@@ -132,8 +132,8 @@ class Player {
     if (this.killStreakTimer-- < 0) this.killStreak = 0; // Sensitive to off-by-ones.
     if (this.borderJumpTimer > 0) this.borderJumpTimer--;
     if (this.superchargerTimer >= 0) this.superchargerTimer--;
-    if (this.empTimer > 0) this.empTimer--;
-    if (this.disguise > 0) this.disguise--;
+    if (this.empTimer >= 0) this.empTimer--;
+    if (this.disguise >= 0) this.disguise--;
 
     const amDrifting = this.e || this.gyroTimer > 0;
     this.shield = (this.s && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
