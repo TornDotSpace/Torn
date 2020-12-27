@@ -17,7 +17,7 @@ module.exports = {
       test: /\.jsx?$/,
       exclude: /node_modules/,
       loader: "babel-loader",
-	    query: {
+	    options: {
         presets: ["@babel/react", "@babel/preset-env"],
         plugins: ["@babel/proposal-class-properties"],
 	    },
@@ -32,7 +32,7 @@ module.exports = {
   },
   optimization: {
     splitChunks: {
-      chunks: "initial",
+      //chunks: "initial",
     },
   },
   plugins: [
