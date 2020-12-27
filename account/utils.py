@@ -8,12 +8,16 @@ from discord_webhook import DiscordWebhook
 class int32(c_int32):
     def __add__(self, other):
         return int32(self.value + other.value)
+
     def __sub__(self, other):
         return int32(self.value - other.value)
-    def __lshift__(self,other):
+
+    def __lshift__(self, other):
         return int32(self.value << other.value)
+
     def __str__(self):
         return str(self.value)
+
 
 class Hash:
     """
