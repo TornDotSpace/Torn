@@ -32,7 +32,7 @@ module.exports = {
   },
   optimization: {
     splitChunks: {
-      //chunks: "initial",
+      // chunks: "initial",
     },
   },
   plugins: [
