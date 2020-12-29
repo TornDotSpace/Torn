@@ -116,12 +116,12 @@ module.exports = function initNetcode() {
           if (Config.getValue("debug", true)) {
             console.error(crashReport);
           } else {
-            send_rpc("/crash/", crashReport).finally(function() {
-              // Eject the player from the game: we don't know if they're in a valid state
-              socket.emit("kick", {msg: "Internal server error."});
-              socket.disconnect();
-            });
+            send_rpc("/crash/", crashReport);
           }
+
+          // Eject the player from the game: we don't know if they're in a valid state
+          socket.emit("kick", {msg: "Internal server error."});
+          socket.disconnect();
         }
       });
     };
@@ -395,7 +395,15 @@ module.exports = function initNetcode() {
       }
       delete muteTable[player.name];
       delete ipMuteTable[player.ip];
-      if (data.msg != null) newmsg = filter.clean(data.msg); // censor swear words. Added the not null as a temporary patch
+
+      // TODO: FIXME: https://github.com/web-mech/badwords/issues/93
+      try
+      {
+        newmsg = filter.clean(data.msg); // censor swear words.
+      } catch (e)
+      {
+        newmsg = data.msg;
+      }
 
       if (newmsg.startsWith("/")) runCommand(player, newmsg); // spammable commands
 
