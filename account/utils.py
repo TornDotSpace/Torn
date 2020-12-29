@@ -1,4 +1,4 @@
-from secrets import token_urlsafe
+from secrets import token_hex
 import bcrypt
 from datetime import datetime
 from ctypes import c_int32
@@ -46,7 +46,7 @@ class Hash:
 
 def generate_playcookie() -> str:
     # Playcookies are 32-byte strings
-    return token_urlsafe(32)
+    return token_hex(32)
 
 
 class TimedCacheEntry:
