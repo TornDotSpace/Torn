@@ -10,6 +10,7 @@ WiredTiger
 client/leaderboard/
 client/accountusage/data.json
 client/*.js
+client/*.LICENSE.txt
 
 # Python
 */__pycache__/
