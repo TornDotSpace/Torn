@@ -29,6 +29,11 @@ class TornLoginEndpoint:
 
         # Generate playcookie + store it
         cookie = generate_playcookie()
+
+        while self.cache.get(cookie) != None:
+            await asyncio.sleep(1)
+            cookie = generate_playcookie()
+
         expire = datetime.now() + timedelta(minutes=5)
         self.cache.add(cookie, PlayerCookie(expire, username))
 

@@ -1,8 +1,22 @@
-from secrets import token_urlsafe
+from secrets import token_hex
 import bcrypt
 from datetime import datetime
-from numpy import int32
+from ctypes import c_int32
 from discord_webhook import DiscordWebhook
+
+
+class int32(c_int32):
+    def __add__(self, other):
+        return int32(self.value + other.value)
+
+    def __sub__(self, other):
+        return int32(self.value - other.value)
+
+    def __lshift__(self, other):
+        return int32(self.value << other.value)
+
+    def __str__(self):
+        return str(self.value)
 
 
 class Hash:
@@ -32,7 +46,7 @@ class Hash:
 
 def generate_playcookie() -> str:
     # Playcookies are 32-byte strings
-    return token_urlsafe(32)
+    return token_hex(32)
 
 
 class TimedCacheEntry:

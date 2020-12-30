@@ -435,7 +435,7 @@
 		},
 		{
 			"name":"Electromagnet",
-			"desc":"Repels asteroids away from you, and can tamper with, even jam, opponent's Warp Drives. With practice, you can fling asteroids and mines at enemies, causing damage (or aiding groups of allies from afar if campfire). Very effective against turrets and sentries, but you do not recieve exp/bounty for killing them with an asteroid, unless you unloaded those asteroids from your cargo, that is..."
+			"desc":"Repels asteroids away from you, tampers with/jams enemy Warp Drives. With practice, you can fling asteroids and mines at enemies, causing damage. Effective against turrets and sentries, but you do not recieve exp/bounty for killing them with a natural asteroid."
 		},
 		{
 			"name":"EMP Blast",
@@ -454,7 +454,7 @@
 		},
 		{
 			"name":"Gravity Bomb",
-			"desc":"Creates a small temporary black hole upon explosion. Be cautious with this weapon- you need to get far enough away before it implodes. The vortex will wait until it is at least 500 units from a base before deploying. Single-use.",
+			"desc":"Creates a small temporary black hole upon explosion, that grows when consuming matter. Be cautious with this weapon- you need to get far enough away before it implodes. The vortex will wait until it is at least 500 units from a base before deploying. Single-use.",
 			"killmessages":[
 				"P1 spaghettified P2!"
 			]
