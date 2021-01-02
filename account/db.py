@@ -35,6 +35,10 @@ async def authenticate_player(username: str, password: str) -> bool:
         return False
 
 
+async def check_email_match(username: str, email: str) -> bool:
+    return await players.find_one({"_id": username, "email": email}) != None
+
+
 async def change_password(username: str, new_password: str) -> bool:
     new_password = new_password.encode("utf-8")
     hash = Hash.bcrypt_hash(new_password)
