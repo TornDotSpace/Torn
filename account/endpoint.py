@@ -66,7 +66,7 @@ class TornLoginEndpoint:
         message["From"] = "torndotspace@gmail.com"
         message["To"] = email
         message["Subject"] = "[torn.space] Password reset request"
-        message.set_content(f"Go to https://torn.space/reset&cookie={token}")
+        message.set_content(f"Go to https://torn.space/reset.html&cookie={token}")
 
         aiosmtplib.send()
 
