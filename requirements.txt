@@ -1,7 +1,8 @@
 aiohttp
+aiosmtplib
+aiohttp_cors
 asyncio
 discord_webhook
-aiohttp_cors
 motor
 pymongo
 

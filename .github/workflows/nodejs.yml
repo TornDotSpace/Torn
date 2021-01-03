@@ -21,7 +21,11 @@ jobs:
       run: |
         npm install
         npm ci
-        npm run dev --if-present && npm run test-build --if-present && npm run build --if-present && ./node_modules/.bin/eslint .
+        npm run dev --if-present && npm run test-build --if-present && npm run build --if-present
+      env:
+        CI: true
+    - name: Lint
+      run: ./node_modules/.bin/eslint .
       env:
         CI: true
 

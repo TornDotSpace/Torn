@@ -38,7 +38,7 @@ global.handlePlayerDeath = async function(player) {
   if (record == null) return;
 
   // Certain variables should NOT be reverted
-  const persist = ["lastLogin", "randAchs", "killAchs", "moneyAchs", "driftAchs", "planetsClaimed", "lives", "experience", "rank"];
+  const persist = ["lastLogin", "randmAchs", "killAchs", "moneyAchs", "driftAchs", "planetsClaimed", "lives", "experience", "rank"];
   for (const key in record) {
     if (key in persist) continue;
 

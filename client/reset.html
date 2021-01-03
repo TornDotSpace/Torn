@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <script>
+        function resetPass()
+        {
+            const password1 = document.getElementById("newpass").value;
+            const password2 = document.getElementById("confirm").value;
+
+            if (password1 !== password2)
+            {
+                alert("Error: Passwords do not match");
+                return false;
+            }
+
+            if (password1.length < 6 || password2.length > 128)
+            {
+                alert("Error: Invalid password length.");
+                return false;
+            }
+
+            const cookie = window.location.href.split("?")[1].split("=")[1];
+            const request = new XMLHttpRequest();
+
+            request.open("POST", "/api/reset/", true);
+            request.onreadystatechange = function () {
+                if (this.readyState == 4)
+                {
+                    if (this.status == 200)
+                    {
+                        alert("Password reset successfully!");
+                        window.location.replace("https://torn.space");
+                        return false;
+                    }
+                    else
+                    {
+                        alert(`Failed to reset password. HTTP ${this.status}`)
+                        return false;
+                    }
+                }
+            }
+            request.send(`${cookie}${password1}`);
+            return false;
+        }
+    </script>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Torn - Account Password Resets</title>
+		<link rel="stylesheet" href="page.css" />
+    </head>
+	<body>
+        <div align="center">
+        <text style="font-size:4vw">Welcome to the torn.space account password reset system!</text>
+        <br>
+        <text style="font-size:2vw">In the following fields, enter your new password. The only requirement we impose is that it must be between 6 and 128 characters.</text>
+        <form onsubmit="return resetPass()">
+            <label style="font-size:2vw" for="newpass">New Password:</label><br>
+            <input type="password" id="newpass" name="newpass" value=""><br>
+            <label style="font-size:2vw" for="confirm">Confirm New Password:</label><br>
+            <input type="password" id="confirm" name="confirm" value=""><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+	</body>
+</html>

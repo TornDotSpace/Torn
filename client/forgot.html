@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <script>
+        function resetPass()
+        {
+            const username = document.getElementById("newpass").value;
+            const password = document.getElementById("confirm").value;
+            const request = new XMLHttpRequest();
+
+            request.open("POST", "/api/forgot/", true);
+            request.onreadystatechange = function () {
+                if (this.readyState == 4)
+                {
+                    if (this.status == 200)
+                    {
+                        alert("Password reset initiated. Please check your email for futher instructions");
+                        window.location.replace("https://torn.space");
+                        return false;
+                    }
+                    else
+                    {
+                        alert(`Failed to initiate a password reset. HTTP ${this.status}`)
+                        return false;
+                    }
+                }
+            }
+            request.send(`${username}%${password}`);
+            return false;
+        }
+    </script>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Torn - Forgot Password</title>
+		<link rel="stylesheet" href="page.css" />
+    </head>
+	<body>
+        <div align="center">
+        <text style="font-size:4vw">Welcome to the torn.space account password reset system!</text>
+        <br>
+        <text style="font-size:2vw">In the following fields, enter the username and email of the account you'd like to change passwords on.</text>
+        <form onsubmit="return resetPass()">
+            <label style="font-size:2vw" for="newpass">Username:</label><br>
+            <input type="test" id="newpass" name="newpass" value=""><br>
+            <label style="font-size:2vw" for="confirm">Email:</label><br>
+            <input type="text" id="confirm" name="confirm" value=""><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+	</body>
+</html>

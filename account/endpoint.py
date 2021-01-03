@@ -2,8 +2,17 @@ from aiohttp import web
 
 import asyncio
 import db
-from utils import Hash, TimedCacheEntry, generate_playcookie, send_webhook
+from utils import (
+    Hash,
+    TimedCacheEntry,
+    generate_playcookie,
+    send_webhook,
+    COOKIE_BYTE_SIZE,
+)
 from datetime import datetime, timedelta
+import aiosmtplib
+from email.message import EmailMessage
+import os
 
 
 class PlayerCookie(TimedCacheEntry):
@@ -16,28 +25,82 @@ class PlayerCookie(TimedCacheEntry):
 
 
 class TornLoginEndpoint:
-    async def handle_recv(self, request):
-        user_data = str(await request.content.read(), encoding="utf-8")
-
-        username = user_data[: user_data.find("%")].lower()
-        password = user_data[user_data.find("%") + 1 :]
-
-        valid_auth = await db.authenticate_player(username, password)
-
-        if not valid_auth:
-            return web.Response(status=403)
-
-        # Generate playcookie + store it
+    async def generate_safe_cookie(self, username, ttl=5):
         cookie = generate_playcookie()
 
         while self.cache.get(cookie) != None:
             await asyncio.sleep(1)
             cookie = generate_playcookie()
 
-        expire = datetime.now() + timedelta(minutes=5)
+        expire = datetime.now() + timedelta(minutes=ttl)
         self.cache.add(cookie, PlayerCookie(expire, username))
 
-        return web.Response(text=cookie)
+        return cookie
+
+    async def handle_login(self, request):
+        user_data = str(await request.content.read(), encoding="utf-8")
+
+        username = user_data[: user_data.find("%")].lower()
+        password = user_data[user_data.find("%") + 1 :]
+
+        return (
+            web.Response(text=await self.generate_safe_cookie(username))
+            if await db.authenticate_player(username, password)
+            else web.Response(status=403)
+        )
+
+    async def handle_forgot(self, request):
+        user_data = str(await request.content.read(), encoding="utf-8")
+        username = user_data[: user_data.find("%")].lower()
+        email = user_data[user_data.find("%") + 1 :]
+
+        if not await db.check_email_match(username, email):
+            return web.Response(status=403)
+
+        print("Sending forgot response...")
+        # Generate a 60 minute token for password resets
+        token = await self.generate_safe_cookie(username, ttl=60)
+
+        message = EmailMessage()
+        message["From"] = "torndotspace@gmail.com"
+        message["To"] = email
+        message["Subject"] = "[torn.space] Password reset request"
+        message.set_content(
+            f"Hello {username}!\n We have received a request to reset your account's password. Go to https://torn.space/reset.html&cookie={token} to reset your password. Note: This link will only be available for one hour.\nThank you for using the Torn.Space Account Recovery System"
+        )
+
+        asyncio.create_task(
+            aiosmtplib.send(
+                message,
+                hostname="smtp.gmail.com",
+                port=465,
+                username="torndotspace",
+                password=os.environ["TORN_EMAIL_PASSWORD"],
+                use_tls=True,
+            )
+        )
+        return web.Response(status=200)
+
+    async def handle_reset(self, request):
+        user_data = str(await request.content.read(), encoding="utf-8")
+        cookie = user_data[:COOKIE_BYTE_SIZE]
+
+        # see if cookie is valid
+        username = self.cache.get(cookie)
+
+        if username == None:
+            return web.Response(status=403)
+
+        new_password = user_data[COOKIE_BYTE_SIZE:]
+
+        # Send back HTTP 400: Bad request if password is invalid
+        if len(new_password) < 6 or len(new_password) > 128:
+            return web.Response(status=400)
+
+        # consume cookie
+        self.cache.remove(cookie)
+        await db.change_password(username, new_password)
+        return web.Response()
 
     def __init__(self, cache):
         self.cache = cache

@@ -27,7 +27,9 @@ def __init__():
     app = web.Application()
     app.add_routes(
         [
-            web.post("/api/login/", api_endpoint.handle_recv),
+            web.post("/api/login/", api_endpoint.handle_login),
+            web.post("/api/forgot/", api_endpoint.handle_forgot),
+            web.post("/api/reset/", api_endpoint.handle_reset),
             web.post("/rpc/login/", rpc_server.handle_login),
             web.post("/rpc/register/", rpc_server.handle_register),
             web.post("/rpc/reset/", rpc_server.handle_reset),

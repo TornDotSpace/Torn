@@ -4,6 +4,8 @@ from datetime import datetime
 from ctypes import c_int32
 from discord_webhook import DiscordWebhook
 
+COOKIE_BYTE_SIZE = 32
+
 
 class int32(c_int32):
     def __add__(self, other):
@@ -46,7 +48,7 @@ class Hash:
 
 def generate_playcookie() -> str:
     # Playcookies are 32-byte strings
-    return token_hex(32)
+    return token_hex(COOKIE_BYTE_SIZE)
 
 
 class TimedCacheEntry:

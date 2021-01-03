@@ -81,8 +81,10 @@ module.exports = function initNetcode() {
   // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js
   global.io = socketio(server, {
     serveClient: false,
-    origins: "*:*",
     parser: msgpack,
+    cors: {
+      origin: "*",
+    },
   });
 
   io.sockets.on("connection", function(socket) {
