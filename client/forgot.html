@@ -3,11 +3,9 @@
     <script>
         function resetPass()
         {
-            let username = document.getElementById("newpass").value;
-            let password = document.getElementById("confirm").value;
-
-
-            let request = new XMLHttpRequest();
+            const username = document.getElementById("newpass").value;
+            const password = document.getElementById("confirm").value;
+            const request = new XMLHttpRequest();
 
             request.open("POST", "http://localhost:8080/api/forgot/", true);
             request.onreadystatechange = function () {

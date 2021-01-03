@@ -3,8 +3,8 @@
     <script>
         function resetPass()
         {
-            let password1 = document.getElementById("newpass").value;
-            let password2 = document.getElementById("confirm").value;
+            const password1 = document.getElementById("newpass").value;
+            const password2 = document.getElementById("confirm").value;
 
             if (password1 !== password2)
             {
@@ -18,8 +18,8 @@
                 return false;
             }
 
-            let cookie = window.location.href.split("?")[1].split("=")[1];
-            let request = new XMLHttpRequest();
+            const cookie = window.location.href.split("?")[1].split("=")[1];
+            const request = new XMLHttpRequest();
 
             request.open("POST", "http://localhost:8080/api/reset/", true);
             request.onreadystatechange = function () {
