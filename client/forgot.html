@@ -7,7 +7,7 @@
             const password = document.getElementById("confirm").value;
             const request = new XMLHttpRequest();
 
-            request.open("POST", "http://localhost:8080/api/forgot/", true);
+            request.open("POST", "/api/forgot/", true);
             request.onreadystatechange = function () {
                 if (this.readyState == 4)
                 {

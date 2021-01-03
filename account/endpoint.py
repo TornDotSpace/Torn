@@ -12,6 +12,7 @@ from utils import (
 from datetime import datetime, timedelta
 import aiosmtplib
 from email.message import EmailMessage
+import os
 
 
 class PlayerCookie(TimedCacheEntry):
@@ -59,16 +60,26 @@ class TornLoginEndpoint:
         print("Sending forgot response...")
         # Generate a 60 minute token for password resets
         token = await self.generate_safe_cookie(username, ttl=60)
-        # FIXME: implement email sending
-        return web.Response()
 
         message = EmailMessage()
         message["From"] = "torndotspace@gmail.com"
         message["To"] = email
         message["Subject"] = "[torn.space] Password reset request"
-        message.set_content(f"Go to https://torn.space/reset.html&cookie={token}")
+        message.set_content(
+            f"Hello {username}!\n We have received a request to reset your account's password. Go to https://torn.space/reset.html&cookie={token} to reset your password. Note: This link will only be available for one hour.\nThank you for using the Torn.Space Account Recovery System"
+        )
 
-        aiosmtplib.send()
+        asyncio.create_task(
+            aiosmtplib.send(
+                message,
+                hostname="smtp.gmail.com",
+                port=465,
+                username="torndotspace",
+                password=os.environ["TORN_EMAIL_PASSWORD"],
+                use_tls=True,
+            )
+        )
+        return web.Response(status=200)
 
     async def handle_reset(self, request):
         user_data = str(await request.content.read(), encoding="utf-8")

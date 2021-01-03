@@ -21,7 +21,7 @@
             const cookie = window.location.href.split("?")[1].split("=")[1];
             const request = new XMLHttpRequest();
 
-            request.open("POST", "http://localhost:8080/api/reset/", true);
+            request.open("POST", "/api/reset/", true);
             request.onreadystatechange = function () {
                 if (this.readyState == 4)
                 {
