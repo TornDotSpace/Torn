@@ -87,6 +87,7 @@ class TornLoginEndpoint:
 
         # see if cookie is valid
         username = self.cache.get(cookie)
+        print(f"Cookie: {cookie}, username: {username}")
 
         if username == None:
             return web.Response(status=403)
