@@ -66,7 +66,7 @@ class TornLoginEndpoint:
         message["To"] = email
         message["Subject"] = "[torn.space] Password reset request"
         message.set_content(
-            f"Hello {username}!\n We have received a request to reset your account's password. Go to https://torn.space/reset.html&cookie={token} to reset your password. Note: This link will only be available for one hour.\nThank you for using the Torn.Space Account Recovery System"
+            f"Hello {username}!\nWe have received a request to reset your account's password. Go to https://torn.space/reset.html?cookie={token} to reset your password. Note: This link will only be available for one hour.\nThank you for using the Torn.Space Account Recovery System"
         )
 
         asyncio.create_task(
