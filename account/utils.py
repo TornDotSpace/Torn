@@ -5,6 +5,7 @@ from ctypes import c_int32
 from discord_webhook import DiscordWebhook
 
 COOKIE_BYTE_SIZE = 32
+REAL_COOKIE_SIZE = COOKIE_BYTE_SIZE // 2
 
 
 class int32(c_int32):
@@ -48,7 +49,7 @@ class Hash:
 
 def generate_playcookie() -> str:
     # Playcookies are 32-byte strings
-    return token_hex(COOKIE_BYTE_SIZE)
+    return token_hex(REAL_COOKIE_SIZE)
 
 
 class TimedCacheEntry:
