@@ -99,7 +99,7 @@ class TornLoginEndpoint:
 
         # consume cookie
         self.cache.remove(cookie)
-        await db.change_password(username, new_password)
+        await db.change_password(username.get_username(), new_password)
         return web.Response()
 
     def __init__(self, cache):
