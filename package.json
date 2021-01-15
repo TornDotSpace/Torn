@@ -49,7 +49,7 @@
     "howler": "^2.2.1",
     "mongodb": "^3.6.3",
     "node-fetch": "^2.6.1",
-    "socket.io": "^3.0.5",
+    "socket.io": "^3.1.0",
     "socket.io-client": "^3.0.5",
     "socket.io-msgpack-parser": "^3.0.1"
   }
