@@ -3894,7 +3894,7 @@ function rBullets() {
 }
 function rMissiles() {
   for (const i in missilesInfo) {
-   // for (let selfo in missilesInfo) {
+  // for (let selfo in missilesInfo) {
     selfo = missilesInfo[i];
     let img = Img.missile;
     if (selfo.wepnID == 10 && (selfo.color == "red" || selfo.color == "green")) {
@@ -4010,9 +4010,12 @@ function rBeams() {
 }
 function rBlasts() {
   ctx.lineWidth = 12;
-  ctx.strokeStyle = "white";
+  ctx.strokeStyle = "gold";
   for (const i in blastsInfo) {
     const selfo = blastsInfo[i];
+    if (selfo.wepnID == 25) {
+      ctx.strokeStyle = "white";
+    }
     const bx = selfo.bx - px + w / 2 + scrx;
     const by = selfo.by - py + h / 2 + scry;
     const ex = selfo.bx + Math.cos(selfo.angle) * 10000 - px + w / 2 + scrx;
