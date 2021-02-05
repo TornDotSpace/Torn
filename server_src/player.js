@@ -891,7 +891,8 @@ class Player {
     return this.health < 0;
   }
   EMP(t) {
-    if (this.ship >= 16&&this.ship<=20) t *= 1.5; // Emp works better on elites
+    if (!this.isBot && this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship. THIS IS A TEMPORARY MEASURE UNTIL THE EMP NONSENSE GETS FIXED
+    if (this.ship >= 16 && this.ship<=20) t *= 1.5; // Emp works better on elites
     this.charge += -t*this.energy2; // Emp jams the ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
     this.empTimer += t;
     if (this.ship == 21 && this.health*1.05 < this.maxHealth) this.health*=1.05; // It will also heal the ship a very small bit.
