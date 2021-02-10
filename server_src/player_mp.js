@@ -130,6 +130,13 @@ class PlayerMP extends Player {
       this.emit("chat", {msg: "~`red~`Password must be 6-128 characters."});
       return;
     }
+
+    if (pass == self.name)
+    {
+      this.emit("chat", {msg: "~`red~`Password cannot be the same as your username!"});
+      return;
+    }
+
     this.tentativePassword = pass;
     this.emit("chat", {msg: "~`red~`Type \"/confirm your_new_password\" to complete the change."});
   }

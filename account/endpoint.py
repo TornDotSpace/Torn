@@ -126,6 +126,7 @@ class TornRPCEndpoint:
         register_username = register_packet[0:split]
         register_password = register_packet[split + 1 :]
 
+
         if not (await db.create_account(register_username, register_password)):
             return web.Response(status=403)
         return web.Response()
