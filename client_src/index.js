@@ -3895,7 +3895,7 @@ function rBullets() {
 function rMissiles() {
   for (const i in missilesInfo) {
   // for (let selfo in missilesInfo) {
-    selfo = missilesInfo[i];
+    const selfo = missilesInfo[i];
     let img = Img.missile;
     if (selfo.wepnID == 10 && (selfo.color == "red" || selfo.color == "green")) {
       img = Img.alienMissile;
