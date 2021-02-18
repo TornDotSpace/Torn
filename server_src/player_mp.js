@@ -131,7 +131,7 @@ class PlayerMP extends Player {
       return;
     }
 
-    if (pass == self.name)
+    if (pass == this.name)
     {
       this.emit("chat", {msg: "~`red~`Password cannot be the same as your username!"});
       return;
