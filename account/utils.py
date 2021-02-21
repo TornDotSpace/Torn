@@ -88,7 +88,7 @@ class TimedCache:
 
 def send_webhook(data):
     if len(argv) <= 1:
-        return # no webhook supplied
+        return  # no webhook supplied
     for x in [data[i : i + 1985] for i in range(0, len(data), 1985)]:
         webhook = DiscordWebhook(
             url=argv[1],
