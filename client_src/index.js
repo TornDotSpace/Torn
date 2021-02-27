@@ -1342,17 +1342,17 @@ function rStats() {
   write("[+] $" + numToLS(techPrice(ag2)), rx + 320 + 54, ry + 416 + 28);
 
   // downgrades
-  ctx.fillStyle = (seller == 206) ? "lime" : "white";
+  ctx.fillStyle = (seller == 206) ? "red" : "white";
   if (t2 >1) write("[-] $" + numToLS(-techPriceForDowngrade(t2)), rx + 64 + 54, ry + 416 - 64 + 42);
-  ctx.fillStyle = (seller == 207) ? "lime" : "white";
+  ctx.fillStyle = (seller == 207) ? "red" : "white";
   if (va2>1) write("[-] $" + numToLS(-techPriceForDowngrade(va2)), rx + 192 + 54, ry + 416 - 64 + 42);
-  ctx.fillStyle = (seller == 208) ? "lime" : "white";
+  ctx.fillStyle = (seller == 208) ? "red" : "white";
   if (c2 >1) write("[-] $" + numToLS(-techPriceForDowngrade(c2)), rx + 64 + 54, ry + 416 + 42);
-  ctx.fillStyle = (seller == 209) ? "lime" : "white";
+  ctx.fillStyle = (seller == 209) ? "red" : "white";
   if (mh2>1) write("[-] $" + numToLS(-techPriceForDowngrade(mh2)), rx + 192 + 54, ry + 416 + 42);
-  ctx.fillStyle = (seller == 210) ? "lime" : "white";
+  ctx.fillStyle = (seller == 210) ? "red" : "white";
   if (e2 >1) write("[-] $" + numToLS(-techPriceForDowngrade(e2)*8), rx + 320 + 54, ry + 416 - 64 + 42);
-  ctx.fillStyle = (seller == 211) ? "lime" : "white";
+  ctx.fillStyle = (seller == 211) ? "red" : "white";
   if (ag2>1) write("[-] $" + numToLS(-techPriceForDowngrade(ag2)), rx + 320 + 54, ry + 416 + 42);
 
   /* description for radar
@@ -3910,15 +3910,21 @@ function rBullets() {
   }
 }
 function rMissiles() {
-  for (const selfo in missilesInfo) {
+  for (const i in missilesInfo) {
   // for (let selfo in missilesInfo) {
-  //  selfo = missilesInfo[selfo];
+    const selfo = missilesInfo[i];
     let img = Img.missile;
-    if (selfo.wepnID == 10 && (selfo.color == "red" || selfo.color == "green")) img = Img.alienMissile;
-    if (selfo.wepnID == 11 || (selfo.weaponID == 13 && selfo.color == "blue")) img = Img.heavyMissile;
-    if (selfo.weaponID == 13 && (selfo.color == "red" || selfo.color == "green")) img = Img.alienMissileSwarm;
-    if (selfo.wepnID == 12) img = Img.empMissile;
-    if (selfo.wepnID == 14) img = Img.torpedo;
+    if (selfo.wepnID == 10 && (selfo.color == "red" || selfo.color == "green")) {
+      img = Img.alienMissile;
+    } else if (selfo.wepnID == 11 || (selfo.weaponID == 13 && selfo.color == "blue")) {
+      img = Img.heavyMissile;
+    } else if (selfo.weaponID == 13 && (selfo.color == "red" || selfo.color == "green")) {
+      img = Img.alienMissileSwarm;
+    } else if (selfo.wepnID == 12) {
+      img = Img.empMissile;
+    } else if (selfo.wepnID == 14) {
+      img = Img.torpedo;
+    }
     const pw = img.width;
     const ph = img.height;
     const rendX = selfo.x - px + w / 2 + scrx;
@@ -4021,9 +4027,12 @@ function rBeams() {
 }
 function rBlasts() {
   ctx.lineWidth = 12;
-  ctx.strokeStyle = "white";
+  ctx.strokeStyle = "gold";
   for (const i in blastsInfo) {
     const selfo = blastsInfo[i];
+    if (selfo.wepnID == 25) {
+      ctx.strokeStyle = "white";
+    }
     const bx = selfo.bx - px + w / 2 + scrx;
     const by = selfo.by - py + h / 2 + scry;
     const ex = selfo.bx + Math.cos(selfo.angle) * 10000 - px + w / 2 + scrx;

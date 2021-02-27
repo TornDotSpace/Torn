@@ -199,7 +199,7 @@ module.exports = function initNetcode() {
         return;
       }
       user = user.toLowerCase();
-      if (typeof pass !== "string" || pass.length > 128 || pass.length < 6) {
+      if (typeof pass !== "string" || pass.length > 128 || pass.length < 6 || pass == user) {
         socket.emit("invalidReg", {reason: 3});
         return;
       }

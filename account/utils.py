@@ -4,7 +4,10 @@ from datetime import datetime
 from ctypes import c_int32
 from discord_webhook import DiscordWebhook
 
+from sys import argv
+
 COOKIE_BYTE_SIZE = 32
+REAL_COOKIE_SIZE = COOKIE_BYTE_SIZE // 2
 
 
 class int32(c_int32):
@@ -48,7 +51,7 @@ class Hash:
 
 def generate_playcookie() -> str:
     # Playcookies are 32-byte strings
-    return token_hex(COOKIE_BYTE_SIZE)
+    return token_hex(REAL_COOKIE_SIZE)
 
 
 class TimedCacheEntry:
@@ -84,9 +87,11 @@ class TimedCache:
 
 
 def send_webhook(data):
+    if len(argv) <= 1:
+        return  # no webhook supplied
     for x in [data[i : i + 1985] for i in range(0, len(data), 1985)]:
         webhook = DiscordWebhook(
-            url="https://discordapp.com/api/webhooks/699745801924247582/BJKcA2Dpa5I_ghWJ979BQFqMkVRTFdzihcF_nkJv9UyEJb0TsBVMn4UiXD36UZK-Ch8U",
+            url=argv[1],
             content=f"```bash\n{x}```",
         )
-        response = webhook.execute()
+        webhook.execute()
