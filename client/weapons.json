@@ -10,7 +10,8 @@
 			"ammo":-1,
 			"level":0,
 			"type":"Gun",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"1":{
 			"name":"Plasma Gun",
@@ -22,7 +23,8 @@
 			"ammo":175,
 			"level":2,
 			"type":"Gun",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"2":{
 			"name":"Reverse Gun",
@@ -34,7 +36,8 @@
 			"ammo":-1,
 			"level":1,
 			"type":"Gun",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"3":{
 			"name":"Rifle",
@@ -46,7 +49,8 @@
 			"ammo":50,
 			"level":5,
 			"type":"Gun",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"4":{
 			"name":"Shotgun",
@@ -58,7 +62,8 @@
 			"ammo":40,
 			"level":3,
 			"type":"Gun",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"5":{
 			"name":"Machine Gun",
@@ -70,7 +75,8 @@
 			"ammo":500,
 			"level":4,
 			"type":"Gun",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"6":{
 			"name":"Minigun",
@@ -82,7 +88,8 @@
 			"ammo":500,
 			"level":6,
 			"type":"Gun",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"7":{
 			"name":"Plasma Beam",
@@ -94,7 +101,8 @@
 			"ammo":-1,
 			"level":1,
 			"type":"Beam",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"8":{
 			"name":"Laser Beam",
@@ -106,7 +114,8 @@
 			"ammo":-1,
 			"level":4,
 			"type":"Beam",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"9":{
 			"name":"Hadron Beam",
@@ -118,7 +127,8 @@
 			"ammo":-1,
 			"level":8,
 			"type":"Beam",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"10":{
 			"name":"Missile",
@@ -130,7 +140,8 @@
 			"ammo":20,
 			"level":0,
 			"type":"Missile",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"11":{
 			"name":"Heavy Missile",
@@ -142,7 +153,8 @@
 			"ammo":20,
 			"level":3,
 			"type":"Missile",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"12":{
 			"name":"EMP Missile",
@@ -154,7 +166,8 @@
 			"ammo":8,
 			"level":7,
 			"type":"Missile",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"13":{
 			"name":"Missile Swarm",
@@ -166,7 +179,8 @@
 			"ammo":20,
 			"level":9,
 			"type":"Missile",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"14":{
 			"name":"Torpedo",
@@ -178,7 +192,8 @@
 			"ammo":15,
 			"level":5,
 			"type":"Missile",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"15":{
 			"name":"Mine",
@@ -190,7 +205,8 @@
 			"ammo":20,
 			"level":0,
 			"type":"Mine",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"16":{
 			"name":"Laser Mine",
@@ -202,7 +218,8 @@
 			"ammo":10,
 			"level":3,
 			"type":"Mine",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"17":{
 			"name":"EMP Mine",
@@ -214,7 +231,8 @@
 			"ammo":5,
 			"level":6,
 			"type":"Mine",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"18":{
 			"name":"Hull Nanobots",
@@ -226,7 +244,8 @@
 			"ammo":4,
 			"level":8,
 			"type":"Misc",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"19":{
 			"name":"Photon Cloak",
@@ -238,7 +257,8 @@
 			"ammo":3,
 			"level":4,
 			"type":"Misc",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"20":{
 			"name":"Generator",
@@ -250,7 +270,8 @@
 			"ammo":-1,
 			"level":9,
 			"type":"Misc",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"21":{
 			"name":"Turbo",
@@ -262,7 +283,8 @@
 			"ammo":-1,
 			"level":2,
 			"type":"Misc",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"22":{
 			"name":"Hyperdrive",
@@ -274,7 +296,8 @@
 			"ammo":-2,
 			"level":5,
 			"type":"Misc",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"23":{
 			"name":"Pulse Wave",
@@ -286,7 +309,8 @@
 			"ammo":1,
 			"level":7,
 			"type":"Misc",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"24":{
 			"name":"Electromagnet",
@@ -298,7 +322,8 @@
 			"ammo":-1,
 			"level":8,
 			"type":"Misc",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"25":{
 			"name":"EMP Blast",
@@ -310,7 +335,8 @@
 			"ammo":2,
 			"level":9,
 			"type":"Blast",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"26":{
 			"name":"Mining Laser",
@@ -322,7 +348,8 @@
 			"ammo":-1,
 			"level":1,
 			"type":"Beam",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"27":{
 			"name":"Turret",
@@ -334,7 +361,8 @@
 			"ammo":-2,
 			"level":10,
 			"type":"Misc",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"28":{
 			"name":"Gravity Bomb",
@@ -346,7 +374,8 @@
 			"ammo":-2,
 			"level":10,
 			"type":"Misc",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"29":{
 			"name":"Warp Drive",
@@ -358,7 +387,8 @@
 			"ammo":2,
 			"level":7,
 			"type":"Misc",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"30":{
 			"name":"Ore Cannon",
@@ -370,7 +400,8 @@
 			"ammo":-1,
 			"level":2,
 			"type":"Beam",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"31":{
 			"name":"Destabilizer",
@@ -382,7 +413,8 @@
 			"ammo":-1,
 			"level":6,
 			"type":"Beam",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"32":{
 			"name":"Impulse Mine",
@@ -394,7 +426,8 @@
 			"ammo":10,
 			"level":4,
 			"type":"Mine",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"33":{
 			"name":"Grenades",
@@ -406,7 +439,8 @@
 			"ammo":10,
 			"level":3,
 			"type":"Mine",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"34":{
 			"name":"Muon Ray",
@@ -418,7 +452,8 @@
 			"ammo":1,
 			"level":10,
 			"type":"Blast",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"35":{
 			"name":"Jammer",
@@ -430,7 +465,8 @@
 			"ammo":-1,
 			"level":10,
 			"type":"Beam",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"36":{
 			"name":"Supercharger",
@@ -442,7 +478,8 @@
 			"ammo":-2,
 			"level":11,
 			"type":"Misc",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"37":{
 			"name":"Energy Disk",
@@ -454,7 +491,8 @@
 			"ammo":15,
 			"level":0,
 			"type":"Orb",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"38":{
 			"name":"Proximity Fuze",
@@ -466,7 +504,8 @@
 			"ammo":20,
 			"level":5,
 			"type":"Missile",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"39":{
 			"name":"Spreadshot",
@@ -478,7 +517,8 @@
 			"ammo":200,
 			"level":6,
 			"type":"Gun",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"40":{
 			"name":"Submachinegun",
@@ -490,7 +530,8 @@
 			"ammo":1000,
 			"level":6,
 			"type":"Gun",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"41":{
 			"name":"Hypno Ray",
@@ -502,7 +543,8 @@
 			"ammo":-2,
 			"level":5,
 			"type":"Blast",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"42":{
 			"name":"Photon Orb",
@@ -514,7 +556,8 @@
 			"ammo":-1,
 			"level":6,
 			"type":"Orb",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"43":{
 			"name":"Pulse Mine",
@@ -526,7 +569,8 @@
 			"ammo":3,
 			"level":4,
 			"type":"Mine",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"44":{
 			"name":"Campfire",
@@ -538,7 +582,8 @@
 			"ammo":2,
 			"level":5,
 			"type":"Mine",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"45":{
 			"name":"Healing Beam",
@@ -550,7 +595,8 @@
 			"ammo":-1,
 			"level":8,
 			"type":"Beam",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"46":{
 			"name":"Sentry",
@@ -562,7 +608,8 @@
 			"ammo":-2,
 			"level":8,
 			"type":"Misc",
-			"bot":false
+			"bot":false,
+			"enabled":true
 		},
 		"47":{
 			"name":"Lepton Pulse",
@@ -574,7 +621,8 @@
 			"ammo":-1,
 			"level":8,
 			"type":"Blast",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		},
 		"48":{
 			"name":"Magnetic Mine",
@@ -586,7 +634,8 @@
 			"ammo":10,
 			"level":12,
 			"type":"Mine",
-			"bot":true
+			"bot":true,
+			"enabled":true
 		}
 	},
 	"planets":[

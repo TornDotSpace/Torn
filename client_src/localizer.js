@@ -71,11 +71,11 @@ global.loadLang = function(name) {
   jsn.splashes = languagejson.splashes;
 
   jsn.lore = languagejson.lore;
-  for (let i = 0; i < jsn.weapons.length; i++) {
+  for (let i = 0; i < Object.keys(jsn.weapons).length; i++) {
     jsn.weapons[i].name = languagejson.weapons[i].name;
     jsn.weapons[i].desc = languagejson.weapons[i].desc;
   }
-  for (let i = 0; i < jsn.ships.length; i++) {
+  for (let i = 0; i < Object.keys(jsn.ships).length; i++) {
     jsn.ships[i].nameA = languagejson.ships[i].nameA;
     jsn.ships[i].nameH = languagejson.ships[i].nameH;
     jsn.ships[i].nameC = languagejson.ships[i].nameC;

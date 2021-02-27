@@ -1,20 +1,20 @@
 "use strict";
 
 function printStartup() {
-  console.log("************************************************************************************************************************");
-  console.log(" ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄     ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ ");
-  console.log("▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
-  console.log(" ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░▌░▌     ▐░▌   ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ");
-  console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌▐░▌    ▐░▌   ▐░▌          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ");
-  console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌ ▐░▌   ▐░▌   ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░█▄▄▄▄▄▄▄▄▄ ");
-  console.log("     ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌  ▐░▌   ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌");
-  console.log("     ▐░▌     ▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░▌   ▐░▌ ▐░▌    ▀▀▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀▀▀ ");
-  console.log("     ▐░▌     ▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌    ▐░▌▐░▌             ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌          ");
-  console.log("     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░▌     ▐░▐░▌ ▄  ▄▄▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄ ");
-  console.log("     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌      ▐░░▌▐░▌▐░░░░░░░░░░░▌▐░▌          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌");
-  console.log("      ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀        ▀▀  ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ ");
-  console.log("                                                                                                                        ");
-  console.log("************************************************************************************************************************");
+  console.log("******************************************************************************************************");
+  console.log(" ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄      ▄     ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄ ");
+  console.log("▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░▌    ▐░▌   ▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌");
+  console.log(" ▀▀▀█░█▀▀▀ ▐░█▀▀▀▀▀█░▌▐░█▀▀▀▀▀█░▌▐░▌░▌   ▐░▌   ▐░█▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀█░▌▐░█▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀ ");
+  console.log("    ▐░▌    ▐░▌     ▐░▌▐░▌     ▐░▌▐░▌▐░▌  ▐░▌   ▐░▌        ▐░▌     ▐░▌▐░▌     ▐░▌▐░▌        ▐░▌        ");
+  console.log("    ▐░▌    ▐░▌     ▐░▌▐░█▄▄▄▄▄█░▌▐░▌ ▐░▌ ▐░▌   ▐░█▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄█░▌▐░█▄▄▄▄▄█░▌▐░▌        ▐░█▄▄▄▄▄▄▄ ");
+  console.log("    ▐░▌    ▐░▌     ▐░▌▐░░░░░░░░░▌▐░▌  ▐░▌▐░▌   ▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░▌        ▐░░░░░░░░░▌");
+  console.log("    ▐░▌    ▐░▌     ▐░▌▐░█▀▀█░█▀▀ ▐░▌   ▐░▐░▌    ▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀█░▌▐░▌        ▐░█▀▀▀▀▀▀▀ ");
+  console.log("    ▐░▌    ▐░▌     ▐░▌▐░▌   ▐░▌  ▐░▌    ▐░░▌           ▐░▌▐░▌        ▐░▌     ▐░▌▐░▌        ▐░▌        ");
+  console.log("    ▐░▌    ▐░█▄▄▄▄▄█░▌▐░▌    ▐░▌ ▐░▌     ▐░▌ ▄  ▄▄▄▄▄▄▄█░▌▐░▌        ▐░▌     ▐░▌▐░█▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄ ");
+  console.log("    ▐░▌    ▐░░░░░░░░░▌▐░▌     ▐░▌▐░▌     ▐░▌▐░▌▐░░░░░░░░░▌▐░▌        ▐░▌     ▐░▌▐░░░░░░░░░▌▐░░░░░░░░░▌");
+  console.log("     ▀      ▀▀▀▀▀▀▀▀▀  ▀       ▀  ▀       ▀  ▀  ▀▀▀▀▀▀▀▀▀  ▀          ▀       ▀  ▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀ ");
+  console.log("                                                                                                      ");
+  console.log("******************************************************************************************************");
 
   console.log("torn-client-git-" + BRANCH + "-" + COMMITHASH);
   console.log("Implementing protocol version " + VERSION);
@@ -224,13 +224,22 @@ for (const i in ships) {
   if (ship.health>maxShipHealth) maxShipHealth=ship.health;
 }
 
-const weaponTypeOrder = {"Gun": 0, "Mine": 1, "Missile": 2, "Beam": 3, "Orb": 4, "Blast": 5, "Misc": 6};
-for (let j = 0; j < wepns.length; j++) {
-  wepns[j].order = j;
+for (let j in wepns) {
+  if(!wepns[j].enabled)
+  	delete wepns[j];
 }
-for (let j = 0; j < wepns.length - 1; j++) { // this nifty loop sorts weapons by ship
-  const woj = weaponWithOrder(j); const woj1 = weaponWithOrder(j + 1);
-  const typeJ = weaponTypeOrder[wepns[woj].type]; const typeJ1 = weaponTypeOrder[wepns[woj1].type];
+const weaponTypeOrder = {"Gun": 0, "Mine": 1, "Missile": 2, "Beam": 3, "Orb": 4, "Blast": 5, "Misc": 6};
+let o = 0;
+for (let j in wepns) {
+  wepns[j].order = o;
+  o++;
+}
+let wepnCount = Object.keys(wepns).length;
+for (let j = 0; j < wepnCount - 1; j++) { // this nifty loop sorts weapons by ship
+  const woj = weaponWithOrder(j);
+  const woj1 = weaponWithOrder(j + 1);
+  const typeJ = weaponTypeOrder[wepns[woj].type];
+  const typeJ1 = weaponTypeOrder[wepns[woj1].type];
   if (typeJ > typeJ1 || (wepns[woj].level > wepns[woj1].level && typeJ == typeJ1)) {
     wepns[woj].order = j + 1;
     wepns[woj1].order = j;
@@ -240,6 +249,7 @@ for (let j = 0; j < wepns.length - 1; j++) { // this nifty loop sorts weapons by
 
 wepns[-2] = {name: ""};
 wepns[-1] = {name: mEng[0]};
+wepnCount += 2;
 
 let scroll = 0; let weaponTimer = 0; let charge = 0;
 let equipped = 0; let ammos = {};
@@ -1404,26 +1414,29 @@ function rWeaponStore() {
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
   // R to return to shop
-  for (let i = 0; i < wepns.length; i++) {
-    const wx = rx + 4 + 240 * Math.floor(wepns[i].order / Math.ceil(wepns.length / 3));
-    const wy = ry + 40 + 32 + (wepns[i].order % Math.ceil(wepns.length / 3) + 2) * 16;
-    let buyable = wepns[i].price > money ? "orange" : "yellow";
-    if (ship < wepns[i].level) buyable = "red";
+  for (let i in wepns) {
+  	const weapon = wepns[i];
+    const wx = rx + 4 + 240 * Math.floor(weapon.order / Math.ceil(wepnCount / 3));
+    const wy = ry + 40 + 32 + (weapon.order % Math.ceil(wepnCount / 3) + 2) * 16;
+    let buyable = weapon.price > money ? "orange" : "yellow";
+    if (ship < weapon.level) buyable = "red";
 
     let starCol = "white";
-    if (wepns[i].type === "Gun") starCol = "red";
-    if (wepns[i].type === "Missile") starCol = "orange";
-    if (wepns[i].type === "Orb") starCol = "tan";
-    if (wepns[i].type === "Beam") starCol = "lime";
-    if (wepns[i].type === "Blast") starCol = "green";
-    if (wepns[i].type === "Mine") starCol = "blue";
-    if (wepns[i].type === "Misc") starCol = "purple";
+    let type = weapon.type;
+    if (type === "Gun") 	starCol = "red";
+    if (type === "Missile")	starCol = "orange";
+    if (type === "Orb") 	starCol = "tan";
+    if (type === "Beam") 	starCol = "lime";
+    if (type === "Blast") 	starCol = "green";
+    if (type === "Mine") 	starCol = "blue";
+    if (type === "Misc") 	starCol = "purple";
     ctx.fillStyle = starCol;
 
     write("*", wx, wy);
     ctx.fillStyle = seller - 20 == i ? "lime" : buyable;
-    write(mEng[69] + ("$" + wepns[i].price + "         ").substring(0, 9) + wepns[i].name, wx + 11, wy);
-    if (seller - 20 == i) rWeaponStats(i);
+    write(mEng[69] + ("$" + weapon.price + "         ").substring(0, 9) + weapon.name, wx + 11, wy);
+    if (seller - 20 == i)
+      rWeaponStats(i);
   }
 }
 function rWeaponStats(i) {
@@ -1440,7 +1453,7 @@ function rWeaponStats(i) {
   write(mEng[174] + wepns[i].level, rx + 256 + 32, ry + 364 + 16 * 8);
 
   if (actuallyBuying) {
-    ctx.fillStyle = wepns[i].price > money ? "orange" : "limeq";
+    ctx.fillStyle = wepns[i].price > money ? "orange" : "lime";
     const buyText = wepns[i].price > money ? mEng[76] : mEng[77];
     ctx.font = "24px ShareTech";
     write(buyText, rx + 512 + 16, ry + 256 + 100 + 16 * 7);
@@ -1487,6 +1500,10 @@ function rBaseGui() {
   rCargo();
 }
 function wrapText(text, x, y, maxWidth, lineHeight) {
+  if(typeof text === "undefined"){
+    console.log("Undefined text");
+    return;
+  }
   const words = text.split(" ");
   let line = "";
 
@@ -2583,9 +2600,9 @@ document.addEventListener("mousemove", function(evt) {
 
   // Buy weapon
   else if (docked && tab == 7) {
-    if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16)) + 20;
-    else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 && mx < rx + 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3))) + 20;
-    else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepns.length / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepns.length / 3) * 2)) + 20;
+    if      (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16           && mx < rx + 16 +           8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16                               )) + 20;
+    else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16 + 240     && mx < rx + 16 + 240 +     8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepnCount / 3)    )) + 20;
+    else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepnCount / 3) * 2)) + 20;
 
     else seller = 0;
   }
@@ -2788,7 +2805,7 @@ function bgPos(x, px, scrx, i, tileSize) {
   return ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
 }
 function weaponWithOrder(x) {
-  for (let i = 0; i < wepns.length; i++) if (wepns[i].order == x) return i;
+  for (let i in wepns) if (wepns[i].order == x) return parseInt(i);
 }
 function getTimeAngle() {
   return tick / 10;
