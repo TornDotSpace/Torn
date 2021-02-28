@@ -224,13 +224,13 @@ for (const i in ships) {
   if (ship.health>maxShipHealth) maxShipHealth=ship.health;
 }
 
-for (let j in wepns) {
-  if(!wepns[j].enabled)
-  	delete wepns[j];
+for (const j in wepns) {
+  if (!wepns[j].enabled)
+  	{delete wepns[j];}
 }
 const weaponTypeOrder = {"Gun": 0, "Mine": 1, "Missile": 2, "Beam": 3, "Orb": 4, "Blast": 5, "Misc": 6};
 let o = 0;
-for (let j in wepns) {
+for (const j in wepns) {
   wepns[j].order = o;
   o++;
 }
@@ -1414,7 +1414,7 @@ function rWeaponStore() {
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
   // R to return to shop
-  for (let i in wepns) {
+  for (const i in wepns) {
   	const weapon = wepns[i];
     const wx = rx + 4 + 240 * Math.floor(weapon.order / Math.ceil(wepnCount / 3));
     const wy = ry + 40 + 32 + (weapon.order % Math.ceil(wepnCount / 3) + 2) * 16;
@@ -1422,7 +1422,7 @@ function rWeaponStore() {
     if (ship < weapon.level) buyable = "red";
 
     let starCol = "white";
-    let type = weapon.type;
+    const type = weapon.type;
     if (type === "Gun") 	starCol = "red";
     if (type === "Missile")	starCol = "orange";
     if (type === "Orb") 	starCol = "tan";
@@ -1436,7 +1436,7 @@ function rWeaponStore() {
     ctx.fillStyle = seller - 20 == i ? "lime" : buyable;
     write(mEng[69] + ("$" + weapon.price + "         ").substring(0, 9) + weapon.name, wx + 11, wy);
     if (seller - 20 == i)
-      rWeaponStats(i);
+    {rWeaponStats(i);}
   }
 }
 function rWeaponStats(i) {
@@ -1500,7 +1500,7 @@ function rBaseGui() {
   rCargo();
 }
 function wrapText(text, x, y, maxWidth, lineHeight) {
-  if(typeof text === "undefined"){
+  if (typeof text === "undefined") {
     console.log("Undefined text");
     return;
   }
@@ -2600,8 +2600,8 @@ document.addEventListener("mousemove", function(evt) {
 
   // Buy weapon
   else if (docked && tab == 7) {
-    if      (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16           && mx < rx + 16 +           8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16                               )) + 20;
-    else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16 + 240     && mx < rx + 16 + 240 +     8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepnCount / 3)    )) + 20;
+    if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 )) + 20;
+    else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16 + 240 && mx < rx + 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepnCount / 3) )) + 20;
     else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepnCount / 3) * 2)) + 20;
 
     else seller = 0;
@@ -2805,7 +2805,7 @@ function bgPos(x, px, scrx, i, tileSize) {
   return ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
 }
 function weaponWithOrder(x) {
-  for (let i in wepns) if (wepns[i].order == x) return parseInt(i);
+  for (const i in wepns) if (wepns[i].order == x) return parseInt(i);
 }
 function getTimeAngle() {
   return tick / 10;

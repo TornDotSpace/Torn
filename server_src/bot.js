@@ -239,7 +239,7 @@ global.spawnBot = function(sx, sy, col, force) {
   bot.thrust = ships[bot.ship].thrust * bot.thrust2;
   bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
   bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
-  var keys = Object.keys(wepns);
+  const keys = Object.keys(wepns);
   for (let i = 0; i < 10; i++) {
     do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
     while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot);
