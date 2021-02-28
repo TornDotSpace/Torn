@@ -96,7 +96,7 @@ module.exports = class Mine {
         playerFound = true;
       }
     }
-/*
+    /*
     for (const i in missiles[this.sy][this.sx]) {
       const m = missiles[this.sy][this.sx][i];
       const d2 = squaredDist(this, m);
@@ -106,7 +106,7 @@ module.exports = class Mine {
       m.emvx += Math.cos(ang) * vel;
       m.emvy += Math.sin(ang) * vel;
     }
-*/
+    */
     if (playerFound) {
       sendAllSector("sound", {file: "bigboom", x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
       this.time += 25*3;
