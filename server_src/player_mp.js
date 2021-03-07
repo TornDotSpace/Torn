@@ -99,7 +99,7 @@ class PlayerMP extends Player {
       }
 
       if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-        console.log("[PM] " + this.name + "-> ", player.name, ": " + raw);
+        console.log("[PM] " + this.name + "->", player.name, ": " + raw);
         player.emit("chat", {msg: "~`orange~`[PM] [" + this.name + "]: " + raw});
         this.emit("chat", {msg: "~`lime~`Message sent!"});
         this.reply = player.name;

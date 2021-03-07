@@ -42,6 +42,7 @@ cmds["/help"] = new Command("/help - Displays commands & usages", EVERYONE, func
 
 cmds["/me"] = new Command("/me <msg>", EVERYONE, function(player, msg) {
   if (msg.split(" ").length == 1) return;
+  console.log("[ME]: " + msg);
   playerChat("~~`" + player.color + "~`" + player.name + "~`yellow~` " + msg.substring(4), player.globalChat, player.color, player.guild);
 });
 

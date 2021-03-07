@@ -407,8 +407,7 @@ module.exports = function initNetcode() {
       }
 
       if (newmsg.startsWith("/")) runCommand(player, newmsg); // spammable commands
-
-      console.log("[CHAT] " + player.name + ": " + data.msg); // print their (cleaned) message
+      else console.log("[CHAT] " + player.name + ": " + data.msg); // print their (cleaned) message
 
       const repeat = newmsg === player.lastmsg;
       player.lastmsg = newmsg;
