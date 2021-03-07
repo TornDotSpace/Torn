@@ -83,41 +83,31 @@ class PlayerMP extends Player {
       this.emit("chat", {msg: "Invalid Syntax!"});
       return;
     }
+
     const name = msg.split(" ")[1];
     const raw = msg.substring(name.length + 5);
+
     this.emit("chat", {msg: "~`cyan~`Sending private message to " + name + "..."});
-    for (let i = 0; i < mapSz; i++) {
-      for (let j = 0; j < mapSz; j++) {
-        for (const p in players[j][i]) {
-          const player = players[j][i][p];
-          if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-            player.emit("chat", {msg: "~`orange~`[PM] [" + this.name + "]: " + raw});
-            this.emit("chat", {msg: "~`lime~`Message sent!"});
-            this.reply = player.name;
-            player.reply = this.name;
-            return;
-          }
-        }
+
+    for (const sock in sockets)
+    {
+      const player = sockets[sock].player;
+
+      if (player == undefined)
+      {
+        continue;
       }
-    } for (const p in dockers) {
-      const player = dockers[p];
+
       if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
+        console.log("[PM] " + this.name + "-> ", player.name, ": " + raw);
         player.emit("chat", {msg: "~`orange~`[PM] [" + this.name + "]: " + raw});
-        this.emit("chat", {msg: "~`white~`Message sent!"});
-        this.reply = player.name;
-        player.reply = this.name;
-        return;
-      }
-    } for (const p in deads) {
-      const player = deads[p];
-      if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
-        player.emit("chat", {msg: "~`orange~`[PM] [" + this.name + "]: " + raw});
-        this.emit("chat", {msg: "~`lightgray~`Message sent!"});
+        this.emit("chat", {msg: "~`lime~`Message sent!"});
         this.reply = player.name;
         player.reply = this.name;
         return;
       }
     }
+
     this.emit("chat", {msg: "~`red~`Player not found!"});
   }
 

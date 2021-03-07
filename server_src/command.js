@@ -273,6 +273,7 @@ findGuildFromOwner = function(owner) {
 // MODERATION COMMANDS
 // These commands are accessible to moderators in the game
 cmds["/broadcast"] = new Command("/broadcast <msg> - Send a message to the whole server", MODPLUS, function(player, msg) {
+  console.log("ADMIN: BROADCAST INITIATED BY " + player + ": " + msg);
   chatAll("~`#f66~`       BROADCAST: ~`lime~`" + msg.substring(11));
 });
 

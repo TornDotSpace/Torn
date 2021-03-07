@@ -379,7 +379,6 @@ module.exports = function initNetcode() {
         return;
       }
 
-      console.log("[CHAT] " + player.name + ": " + data.msg); // print their raw message
       if (!player.name.includes("[")) data.msg = data.msg.replace(/`/ig, ""); // Non-tags can't use colored text
 
       const time = Date.now();
@@ -408,6 +407,8 @@ module.exports = function initNetcode() {
       }
 
       if (newmsg.startsWith("/")) runCommand(player, newmsg); // spammable commands
+
+      console.log("[CHAT] " + player.name + ": " + data.msg); // print their (cleaned) message
 
       const repeat = newmsg === player.lastmsg;
       player.lastmsg = newmsg;
