@@ -939,16 +939,16 @@ function update() {
   for (const i in astCount) for (const j in astCount[i])sumAsts+=astCount[i][j];
   if (sumAsts<8*mapSz*mapSz)spawnAsteroid();
 
-  for (const i in deads) {
-    const player = deads[i];
-    if (tick % 12 == 0) // LAG CONTROL
-    {
+  if (tick % 12 == 0) // LAG CONTROL
+  {
+    for (const i in deads) {
+      const player = deads[i];
       player.socket.emit("online", {lag: lag});
     }
   }
-  for (const i in dockers) {
-    const player = dockers[i];
-    if (tick % 12 == 0) { // LAG CONTROL
+  if (tick % 12 == 0) { // LAG CONTROL
+    for (const i in dockers) {
+      const player = dockers[i];
       player.socket.emit("you", {trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper});
       player.socket.emit("quests", {quests: teamQuests[player.color]});
     }
