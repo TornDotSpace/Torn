@@ -397,7 +397,7 @@ class Player {
     }
   }
   shootEliteWeapon() {
-    if (this.rank < this.ship)) return;
+    if (this.rank < this.ship) return;
     if (this.ship == 16) { // Elite Raider
       // if (this.disguise > 0) return;
       // This effectively just shoots turbo.
