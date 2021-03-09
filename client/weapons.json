@@ -184,7 +184,7 @@
 		},
 		"14":{
 			"name":"Torpedo",
-			"range":3500,
+			"range":5000,
 			"damage":16,
 			"speed":180,
 			"charge":30,
@@ -496,7 +496,7 @@
 		},
 		"38":{
 			"name":"Proximity Fuze",
-			"range":300,
+			"range":600,
 			"damage":80,
 			"speed":75,
 			"charge":25,

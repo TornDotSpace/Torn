@@ -3937,7 +3937,7 @@ function rMissiles() {
       img = Img.alienMissile;
     } else if (selfo.wepnID == 11 || (selfo.weaponID == 13 && selfo.color == "blue")) {
       img = Img.heavyMissile;
-    } else if (selfo.weaponID == 13 && (selfo.color == "red" || selfo.color == "green")) {
+    } else if (selfo.weaponID == 13) { // && (selfo.color == "red" || selfo.color == "green") FOR SOME REASON THE TEAM THINGY NEVER WORKS
       img = Img.alienMissileSwarm;
     } else if (selfo.wepnID == 12) {
       img = Img.empMissile;
