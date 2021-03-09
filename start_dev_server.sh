@@ -5,7 +5,8 @@ mongod --port 27017 --dbpath ./db --nojournal --bind_ip localhost&
 echo Building client
 npm install && npm run dev&
 echo Starting Account Server
-./account/account_server.py&
+# For Windows, add python3 before the ./account/account/account_server.py . For Linux, remove it.
+python3 ./account/account_server.py&
 npm install
 npm run dev
 echo
