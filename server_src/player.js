@@ -189,7 +189,7 @@ class Player {
       if (this.ammos[this.equipped] == 0) return;
 
       if (wep.level > this.ship) {
-        this.emit("chat", {msg: "This weapon is incompatible with your current ship!", color: "yellow"});
+        this.emit("chat", {msg: "This weapon is incompatible with your current ship!", color: "red"});
         return;
       }
 
@@ -336,7 +336,7 @@ class Player {
 
       else if (wep.name === "Turret") {
         if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
-          this.emit("chat", {msg: "Your turret must be closer to the center of the sector!", color: "yellow"});
+          this.emit("chat", {msg: "Your turret must be closer to the center of the sector!", color: "cyan"});
           this.space = false;
           return;
         }
@@ -349,10 +349,10 @@ class Player {
         const b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, false);
         b.owner = this.name;
         bases[this.sy][this.sx] = b;
-        this.emit("chat", {msg: "You placed a turret! Name it with \"/nameturret <name>\".", color: "yellow"});
+        this.emit("chat", {msg: "You placed a turret! Name it with \"/nameturret <name>\".", color: "lime"});
       } else if (wep.name === "Sentry") {
         if (bases[this.sy][this.sx] != 0) {
-          this.emit("chat", {msg: "There can only be one turret or sentry in any sector!", color: "yellow"});
+          this.emit("chat", {msg: "There can only be one turret or sentry in any sector!", color: "orange"});
           this.space = false;
           return;
         }
@@ -360,7 +360,7 @@ class Player {
         const b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, true);
         b.owner = this.name;
         bases[this.sy][this.sx] = b;
-        this.emit("chat", {msg: "You placed a sentry! Name it with \"/nameturret <name>\".", color: "yellow"});
+        this.emit("chat", {msg: "You placed a sentry! Name it with \"/nameturret <name>\".", color: "lime"});
       } else if (wep.name === "Turbo") {
         const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
         const mult = wepns[21].speed * (isDrifting ? 1.014 : 1); // Faster when drifting.
@@ -397,7 +397,7 @@ class Player {
     }
   }
   shootEliteWeapon() {
-    if (this.rank < this.ship) return;
+    if (this.rank < this.ship)) return;
     if (this.ship == 16) { // Elite Raider
       // if (this.disguise > 0) return;
       // This effectively just shoots turbo.
@@ -620,7 +620,7 @@ class Player {
   }
   juke(left) {
     if (this.charge < 0) return;
-    this.charge = -20;
+    this.charge = -10;
     this.jukeTimer = (this.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
   }
   mute(minutes) {
@@ -707,7 +707,7 @@ class Player {
     this.checkQuestStatus(true); // lots of quests are planet based
 
     if (this.guest) {
-      this.emit("chat", {msg: "You must create an account in the base before you can claim planets!", color: "yellow"});
+      this.emit("chat", {msg: "You must create an account in the base before you can claim planets!", color: "cyan"});
       return;
     }
 
@@ -928,7 +928,10 @@ class Player {
     if (this.ship == 19) {
       for (const i in players[this.sy][this.sx]) {
         const p = players[this.sy][this.sx][i];
-        if (p.color !== this.color) p.EMP(70);
+        if (p.color !== this.color) {
+           if (p.isBot) p.EMP(100); // Original 70
+           else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
+        } 
       }
       if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive) {
         const b = bases[this.sy][this.sx];

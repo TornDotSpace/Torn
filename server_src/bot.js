@@ -72,7 +72,7 @@ class Bot extends Player {
   }
   botPlay() { // don't mess with this pls
     if (tick % 8 != Math.floor(this.id * 8)) return; // Lag prevention, also makes the bots a bit easier
-    if (this.empTimer > 0) return;// cant move if i'm emp'd
+    // if (this.empTimer > 0) return; cant move if i'm emp'd THIS SEEMS TO BE CAUSING THE EMP LOCK SOMEHOW
 
     this.equipped = 0;
     while (this.ammos[this.equipped] == 0) this.equipped++; // select the first available weapon with ammo
@@ -81,7 +81,7 @@ class Bot extends Player {
 
     // Find closest enemy and any friendly in the sector
     let target = 0; let close = 100000000;
-    let friendlies = 0; let enemies = 0;// keep track of the player counts in the sector
+    let friendlies = 0; let enemies = 0; // keep track of the player counts in the sector
     for (const p in players[this.sy][this.sx]) {
       const player = players[this.sy][this.sx][p];
       if (this.id == player.id || player.disguise > 0) continue;
@@ -98,7 +98,7 @@ class Bot extends Player {
     // at random, fill my ammo or die if there are no enemies to fight
     if (enemies == 0 && Math.random() < .001) this.refillAllAmmo();
     let myDespawnRate = botDespawnRate;
-    if (this.brainwashedBy !== 0) myDespawnRate/=2;
+    if (this.brainwashedBy !== 0) myDespawnRate/=4;
     if (enemies == 0 && Math.random() < myDespawnRate) this.die();
 
     const base = bases[this.sy][this.sx];
@@ -121,7 +121,7 @@ class Bot extends Player {
     if (b.type !== "Vortex") {
       // drop a package
       const r = Math.random();
-      if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier)
+      if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier), only makes sense if this is not a bot
       else if (Math.random() < .012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);// life
       else if (Math.random() < .1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);// ammo
       else packs[this.sy][this.sx][r] = new Package(this, r, 1);// coin
