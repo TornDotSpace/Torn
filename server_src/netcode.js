@@ -60,7 +60,6 @@ function runCommand(player, msg) { // player just sent msg in chat and msg start
 module.exports = function initNetcode() {
   const port = process.argv[2];
   console.log("");
-  for (let i = 0; i < 5; i++) console.log("=== STARTING SERVER ON PORT " + port + " ===");
 
   const http = require("http");
   const https = require("https");
@@ -78,7 +77,16 @@ module.exports = function initNetcode() {
         protocol.createServer(options) :
         protocol.createServer();
 
-  server.listen(parseInt(port));
+  if (Config.getValue("want-unix-sockets", false))
+  {
+    // Open a unix socket on current dir
+    server.listen("torn.socket");
+  }
+  else
+  {
+    console.log("=== STARTING SERVER ON PORT " + port + " ===");
+    server.listen(parseInt(port));
+  }
 
 
   // Try to grab the protocol version from the current git tag
