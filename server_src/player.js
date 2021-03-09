@@ -929,9 +929,9 @@ class Player {
       for (const i in players[this.sy][this.sx]) {
         const p = players[this.sy][this.sx][i];
         if (p.color !== this.color) {
-           if (p.isBot) p.EMP(100); // Original 70
-           else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
-        } 
+          if (p.isBot) p.EMP(100); // Original 70
+          else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
+        }
       }
       if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive) {
         const b = bases[this.sy][this.sx];
