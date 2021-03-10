@@ -72,7 +72,7 @@ class Bot extends Player {
   }
   botPlay() { // don't mess with this pls
     if (tick % 8 != Math.floor(this.id * 8)) return; // Lag prevention, also makes the bots a bit easier
-    if (this.empTimer > 0) return; // cant move if i'm emp'd THIS SEEMS TO BE CAUSING THE EMP LOCK SOMEHOW
+    if (this.empTimer > 0) return; // cant move if i'm emp'd
 
     this.equipped = 0;
     while (this.ammos[this.equipped] == 0) this.equipped++; // select the first available weapon with ammo

@@ -451,7 +451,7 @@ class Player {
       this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
     }
 
-    this.botPlay(); // simulates a player and presses keys.
+    if (this.isBot) this.botPlay(); // simulates a player and presses keys.
 
     const amDrifting = this.e || this.gyroTimer > 0;
     const ore = this.iron + this.silver + this.platinum + this.copper;
