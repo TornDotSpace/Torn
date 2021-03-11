@@ -927,7 +927,7 @@
 			"price":12000000,
 			"weapons":10,
 			"capacity":18000
-		}
+		},
 		{
 			"thrust":1.15,
 			"health":222,
