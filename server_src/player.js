@@ -426,7 +426,7 @@ class Player {
       this.shootBlast(41);
       this.save();
     } // Built in Hypno
-    else if (this.ship == 22 && tick % 50 == 0) {
+    else if (this.ship == 21 && tick % 50 == 0) {
       const ox = origin.x; const oy = origin.y;
       let nearBEnemy = 0; // enemy turret target, which we will compute
       let nearPFriendly = 0; // friendly ship target, which we will compute
