@@ -863,6 +863,12 @@
 			"nameH":"Einstein",
 			"nameC":"Heisenberg",
 			"desc":"A massive, heavy dreadnought with no C-Slot, but repelled to an extent from BH."
+		},
+		{
+			"nameA":"Olympic",
+			"nameH":"Necromancer",
+			"nameC":"Lamprey",
+			"desc":"A medical, fast response ship."
 		}
 	]
 }

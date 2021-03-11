@@ -426,7 +426,7 @@ class Player {
       this.shootBlast(41);
       this.save();
     } // Built in Hypno
-    else if (this.ship == 21 && tick % 50 == 0) {
+    else if (this.ship == 22 && tick % 50 == 0) {
       const ox = origin.x; const oy = origin.y;
       let nearBEnemy = 0; // enemy turret target, which we will compute
       let nearPFriendly = 0; // friendly ship target, which we will compute
@@ -470,25 +470,27 @@ class Player {
 
       if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
 
-      const reB = Math.random();
+
       const rfP = Math.random();
-      const reP = Math.random();
-      const rA = Math.random();
+
       if (nearPEnemy != 0) {
-        const beamfP = new Beam(this, reP, 45, nearPFriendly, origin); // Healing beam
+        const reP = Math.random();
+        if ( nearPFriendly.maxHealth >= nearPFriendly.health - wepns[45].damage ) const beamfP = new Beam(this, rfP, 45, nearPFriendly, origin); // Healing beam
         const beameP = new Beam(this, reP, 8, nearPEnemy, origin); // Laser beam
         beams[this.sy][this.sx][rfP] = beamfP;
         beams[this.sy][this.sx][reP] = beameP;
       }
       if (nearBEnemy != 0) {
-        const beamfP = new Beam(this, reP, 45, nearPFriendly, origin); // Healing beam
-        const beameB = new Beam(this, reP, 8, nearPEnemy, origin); // Laser beam
+        const reB = Math.random();
+        if ( nearPFriendly.maxHealth >= nearPFriendly.health - wepns[45].damage )const beamfP = new Beam(this, rfP, 45, nearPFriendly, origin); // Healing beam
+        const beameB = new Beam(this, reB, 8, nearPEnemy, origin); // Laser beam
         beams[this.sy][this.sx][rfP] = beamfP;
         beams[this.sy][this.sx][reB] = beameB;
       }
       if (nearA != 0) {
-        const beamfP = new Beam(this, reP, 45, nearPFriendly, origin); // Healing beam
-        const beamA = new Beam(this, reP, 8, nearPEnemy, origin); // Laser beam
+        const rA = Math.random();
+        if ( nearPFriendly.maxHealth >= nearPFriendly.health - wepns[45].damage ) const beamfP = new Beam(this, rfP, 45, nearPFriendly, origin); // Healing beam
+        const beamA = new Beam(this, rA, 8, nearPEnemy, origin); // Laser beam
         beams[this.sy][this.sx][rfP] = beamfP;
         beams[this.sy][this.sx][rA] = beamA;
       }
@@ -1046,8 +1048,14 @@ class Player {
   }
   calculateGenerators() { // count how many gens I have
     this.generators = 0;
-    for (let slot = 0; slot < ships[this.ship].weapons; slot++) {
-      if (this.weapons[slot] == 20) this.generators++;
+    if (this.ship == 22) {
+      for (let slot = 0; slot < 10; slot++) {
+        if (this.weapons[slot] == 20) this.generators++;
+      }   
+    } else {
+      for (let slot = 0; slot < ships[this.ship].weapons; slot++) {
+        if (this.weapons[slot] == 20) this.generators++;
+      }
     }
     if (this.ship <= wepns[20].level) this.generators = 0; // gotta have sufficiently high ship
   }
