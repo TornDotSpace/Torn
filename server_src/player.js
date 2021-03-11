@@ -1057,7 +1057,7 @@ class Player {
     if (this.ship == 22) {
       for (let slot = 0; slot < 10; slot++) {
         if (this.weapons[slot] == 20) this.generators++;
-      }   
+      }
     } else {
       for (let slot = 0; slot < ships[this.ship].weapons; slot++) {
         if (this.weapons[slot] == 20) this.generators++;
