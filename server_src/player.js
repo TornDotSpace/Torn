@@ -426,6 +426,76 @@ class Player {
       this.shootBlast(41);
       this.save();
     } // Built in Hypno
+    else if (this.ship == 22 && tick % 50 == 0) {
+      const ox = origin.x; const oy = origin.y;
+      let nearBEnemy = 0; // enemy turret target, which we will compute
+      let nearPFriendly = 0; // friendly ship target, which we will compute
+      let nearPEnemy = 0; // enemy ship target, which we will compute
+      let nearA = 0; // asteroid target, which we will compute
+      const range2 = square(50 * 10); // Range 50
+
+      // base
+      const b = bases[this.sy][this.sx];
+      if ((b != 0) && (b.health > baseHealth*.9995) && b.turretLive && (hypot2(b.x, ox, b.y, oy) < range2)) {
+        if (b.color !== this.color) nearBEnemy = b;
+      }
+
+      // search players
+      for (const i in players[this.sy][this.sx]) {
+        const p = players[this.sy][this.sx][i];
+        if ( !(p.disguise > 0 || this.id == p.id) ) { // only count visible ships, and not you
+          const dx = p.x - ox; const dy = p.y - oy;
+          const dist2 = dx * dx + dy * dy;
+
+          if (dist2 < range2) {
+            if ( p.color == this.color ) {
+              if (nearPFriendly == 0 || dist2 < square(nearPFriendly.x - ox) + square(nearPFriendly.y - oy)) nearPFriendly = p;
+            } else {
+              if (nearPEnemy == 0 || dist2 < square(nearPEnemy.x - ox) + square(nearPEnemy.y - oy)) nearPEnemy = p;
+            }
+          }
+        }
+      }
+
+      // search asteroids
+      if (nearA == 0) {
+        for (const i in asts[this.sy][this.sx]) {
+          const a = asts[this.sy][this.sx][i];
+          if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
+          const dx = a.x - ox; const dy = a.y - oy;
+          const dist2 = dx * dx + dy * dy;
+          if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
+        }
+      }
+
+      if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
+
+      const reB = Math.random();
+      const rfP = Math.random();
+      const reP = Math.random();
+      const rA = Math.random();
+      if (nearPEnemy != 0) {
+        const beamfP = new Beam(this, reP, 45, nearPFriendly, origin); // Healing beam
+        const beameP = new Beam(this, reP, 8, nearPEnemy, origin); // Laser beam
+        beams[this.sy][this.sx][rfP] = beamfP;
+        beams[this.sy][this.sx][reP] = beameP;
+      }
+      if (nearBEnemy != 0) {
+        const beamfP = new Beam(this, reP, 45, nearPFriendly, origin); // Healing beam
+        const beameB = new Beam(this, reP, 8, nearPEnemy, origin); // Laser beam
+        beams[this.sy][this.sx][rfP] = beamfP;
+        beams[this.sy][this.sx][reB] = beameB;
+      }
+      if (nearA != 0) {
+        const beamfP = new Beam(this, reP, 45, nearPFriendly, origin); // Healing beam
+        const beamA = new Beam(this, reP, 8, nearPEnemy, origin); // Laser beam
+        beams[this.sy][this.sx][rfP] = beamfP;
+        beams[this.sy][this.sx][rA] = beamA;
+      }
+
+      sendAllSector("sound", {file: "beam", x: ox, y: oy}, this.sx, this.sy);
+    } // A healing leech beam, only for helping teammates
+
     this.reload(true, 0);
   }
   reload(elite, wepId) {
