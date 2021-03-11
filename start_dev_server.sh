@@ -6,7 +6,7 @@ echo Building client
 npm install && npm run dev&
 echo Starting Account Server
 # For Windows, add python3 before the ./account/account/account_server.py . For Linux, remove it.
-./account/account_server.py&
+python3 ./account/account_server.py&
 npm install
 npm run dev
 echo

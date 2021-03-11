@@ -486,9 +486,9 @@ function loadAllImages() {
   loadImage("blackArrow", "/img/arrows/blackArrow.png");
 
   // ships
-  for (let i = 0; i < 22; i++) loadShipImg("blue", i);
-  for (let i = 0; i < 22; i++) loadShipImg("red", i);
-  for (let i = 0; i < 22; i++) loadShipImg("green", i);
+  for (let i = 0; i < 23; i++) loadShipImg("blue", i);
+  for (let i = 0; i < 23; i++) loadShipImg("red", i);
+  for (let i = 0; i < 23; i++) loadShipImg("green", i);
   loadImageEnd();
 
   for (let i = 1; i < 6; i++) {
