@@ -426,13 +426,13 @@ class Player {
       this.shootBlast(41);
       this.save();
     } // Built in Hypno
-    else if (this.ship == 22 && tick % 50 == 0) {
+    else if (this.ship == 22 && tick % 20 == 0) {
       const ox = this.x; const oy = this.y; // Current emitter coordinates
       let nearBEnemy = 0; // enemy turret target, which we will compute
       let nearPFriendly = 0; // friendly ship target, which we will compute
       let nearPEnemy = 0; // enemy ship target, which we will compute
       let nearA = 0; // asteroid target, which we will compute
-      const range2 = square(70 * 10); // Range 70
+      const range2 = square(90 * 10); // Range 70
 
       // base
       const b = bases[this.sy][this.sx];
@@ -474,28 +474,28 @@ class Player {
 
       if (nearPEnemy != 0) {
         const reP = Math.random();
-        if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-          const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-          beams[this.sy][this.sx][rfP] = beamfP;
-        }
+        // if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
+        const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+        beams[this.sy][this.sx][rfP] = beamfP;
+        // }
         const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
         beams[this.sy][this.sx][reP] = beameP;
       }
       if (nearBEnemy != 0) {
         const reB = Math.random();
-        if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-          const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-          beams[this.sy][this.sx][rfP] = beamfP;
-        }
+        // if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
+        const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+        beams[this.sy][this.sx][rfP] = beamfP;
+        // }
         const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
         beams[this.sy][this.sx][reB] = beameB;
       }
       if (nearA != 0) {
         const rA = Math.random();
-        if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-          const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-          beams[this.sy][this.sx][rfP] = beamfP;
-        }
+        // if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
+        const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+        beams[this.sy][this.sx][rfP] = beamfP;
+        // }
         const beamA = new Beam(this, rA, 8, nearA, this); // Laser beam
         beams[this.sy][this.sx][rA] = beamA;
       }
