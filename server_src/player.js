@@ -427,23 +427,24 @@ class Player {
       this.save();
     } // Built in Hypno
     else if (this.ship == 22 && tick % 50 == 0) {
-      const ox = origin.x; const oy = origin.y;
+      const ox = origin.x; const oy = origin.y; // Current emitter coordinates
       let nearBEnemy = 0; // enemy turret target, which we will compute
       let nearPFriendly = 0; // friendly ship target, which we will compute
       let nearPEnemy = 0; // enemy ship target, which we will compute
       let nearA = 0; // asteroid target, which we will compute
-      const range2 = square(50 * 10); // Range 50
+      const range2 = square(70 * 10); // Range 70
 
       // base
       const b = bases[this.sy][this.sx];
-      if ((b != 0) && (b.health > baseHealth*.9995) && b.turretLive && (hypot2(b.x, ox, b.y, oy) < range2)) {
-        if (b.color !== this.color) nearBEnemy = b;
+      if ((b != 0) && b.turretLive && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2)  && (b.health > baseHealth*.9995) ) {
+        nearBEnemy = b;
       }
+
 
       // search players
       for (const i in players[this.sy][this.sx]) {
         const p = players[this.sy][this.sx][i];
-        if ( !(p.disguise > 0 || this.id == p.id) ) { // only count visible ships, and not you
+        if (p.disguise > 0 && this.id != p.id) { // only count visible ships, and not you
           const dx = p.x - ox; const dy = p.y - oy;
           const dist2 = dx * dx + dy * dy;
 
@@ -458,14 +459,12 @@ class Player {
       }
 
       // search asteroids
-      if (nearA == 0) {
-        for (const i in asts[this.sy][this.sx]) {
-          const a = asts[this.sy][this.sx][i];
-          if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
-          const dx = a.x - ox; const dy = a.y - oy;
-          const dist2 = dx * dx + dy * dy;
-          if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
-        }
+      for (const i in asts[this.sy][this.sx]) {
+        const a = asts[this.sy][this.sx][i];
+        if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
+        const dx = a.x - ox; const dy = a.y - oy;
+        const dist2 = dx * dx + dy * dy;
+        if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
       }
 
       if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
@@ -477,27 +476,27 @@ class Player {
         const reP = Math.random();
         if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
           const beamfP = new Beam(this, rfP, 45, nearPFriendly, origin); // Healing beam
+          beams[this.sy][this.sx][rfP] = beamfP;
         }
         const beameP = new Beam(this, reP, 8, nearPEnemy, origin); // Laser beam
-        beams[this.sy][this.sx][rfP] = beamfP;
         beams[this.sy][this.sx][reP] = beameP;
       }
       if (nearBEnemy != 0) {
         const reB = Math.random();
         if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
           const beamfP = new Beam(this, rfP, 45, nearPFriendly, origin); // Healing beam
+          beams[this.sy][this.sx][rfP] = beamfP;
         }
         const beameB = new Beam(this, reB, 8, nearPEnemy, origin); // Laser beam
-        beams[this.sy][this.sx][rfP] = beamfP;
         beams[this.sy][this.sx][reB] = beameB;
       }
       if (nearA != 0) {
         const rA = Math.random();
         if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
           const beamfP = new Beam(this, rfP, 45, nearPFriendly, origin); // Healing beam
+          beams[this.sy][this.sx][rfP] = beamfP;
         }
         const beamA = new Beam(this, rA, 8, nearPEnemy, origin); // Laser beam
-        beams[this.sy][this.sx][rfP] = beamfP;
         beams[this.sy][this.sx][rA] = beamA;
       }
 
