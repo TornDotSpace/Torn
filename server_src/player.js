@@ -436,7 +436,7 @@ class Player {
 
       // base
       const b = bases[this.sy][this.sx];
-      if ((b != 0) && b.turretLive && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2)  && (b.health > baseHealth*.9995) ) {
+      if ((b != 0) && b.turretLive && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2) && (b.health > baseHealth*.9995) ) {
         nearBEnemy = b;
       }
 
@@ -444,7 +444,7 @@ class Player {
       // search players
       for (const i in players[this.sy][this.sx]) {
         const p = players[this.sy][this.sx][i];
-        if (p.disguise > 0 && this.id != p.id) { // only count visible ships, and not you
+        if (!(p.disguise > 0 && this.id == p.id)) { // only count visible ships, and not you
           const dx = p.x - ox; const dy = p.y - oy;
           const dist2 = dx * dx + dy * dy;
 
