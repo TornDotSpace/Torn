@@ -931,11 +931,11 @@
 		{
 			"thrust":1.15,
 			"health":222,
-			"agility":0.5,
+			"agility":0.55,
 			"width":100,
 			"price":12000000,
 			"weapons":3,
-			"capacity":16000
+			"capacity":16500
 		}
 	],
 	"techs":{
