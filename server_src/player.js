@@ -427,7 +427,7 @@ class Player {
       this.save();
     } // Built in Hypno
     else if (this.ship == 22 && tick % 50 == 0) {
-      const ox = origin.x; const oy = origin.y; // Current emitter coordinates
+      const ox = this.x; const oy = this.y; // Current emitter coordinates
       let nearBEnemy = 0; // enemy turret target, which we will compute
       let nearPFriendly = 0; // friendly ship target, which we will compute
       let nearPEnemy = 0; // enemy ship target, which we will compute
