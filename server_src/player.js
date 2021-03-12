@@ -487,7 +487,7 @@ class Player {
           const beamfP = new Beam(this, rfP, 45, nearPFriendly, origin); // Healing beam
           beams[this.sy][this.sx][rfP] = beamfP;
         }
-        const beameB = new Beam(this, reB, 8, nearPEnemy, origin); // Laser beam
+        const beameB = new Beam(this, reB, 8, nearBEnemy, origin); // Laser beam
         beams[this.sy][this.sx][reB] = beameB;
       }
       if (nearA != 0) {
@@ -496,7 +496,7 @@ class Player {
           const beamfP = new Beam(this, rfP, 45, nearPFriendly, origin); // Healing beam
           beams[this.sy][this.sx][rfP] = beamfP;
         }
-        const beamA = new Beam(this, rA, 8, nearPEnemy, origin); // Laser beam
+        const beamA = new Beam(this, rA, 8, nearA, origin); // Laser beam
         beams[this.sy][this.sx][rA] = beamA;
       }
 
