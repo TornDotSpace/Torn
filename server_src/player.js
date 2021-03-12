@@ -426,13 +426,13 @@ class Player {
       this.shootBlast(41);
       this.save();
     } // Built in Hypno
-    else if (this.ship == 22 && tick % 20 == 0) {
+    else if (this.ship == 22 && tick % 10 == 0) {
       const ox = this.x; const oy = this.y; // Current emitter coordinates
       let nearBEnemy = 0; // enemy turret target, which we will compute
       let nearPFriendly = 0; // friendly ship target, which we will compute
       let nearPEnemy = 0; // enemy ship target, which we will compute
       let nearA = 0; // asteroid target, which we will compute
-      const range2 = square(90 * 10); // Range 70
+      const range2 = square(100 * 10); // Range 100
 
       // base
       const b = bases[this.sy][this.sx];
