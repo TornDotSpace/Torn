@@ -436,7 +436,7 @@ class Player {
 
       // base
       const b = bases[this.sy][this.sx];
-      if ((b != 0) && b.turretLive && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2) && (b.health > baseHealth*.9995) ) {
+      if ((b != 0) && b.turretLive && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2) ) {
         nearBEnemy = b;
       }
 
