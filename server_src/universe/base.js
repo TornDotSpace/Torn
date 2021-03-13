@@ -254,7 +254,12 @@ module.exports = class Base {
   dmg(d, origin) {
     this.health -= d;
     if (this.health < 0) this.die(origin);
-    note("-" + d, this.x, this.y - 64, this.sx, this.sy);
+
+    if (d>0) note("-" + Math.floor(d), this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+    if (d==0) note("No dmg", this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
+    if (d<0) note("+" + Math.floor(Math.abs(d)), this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
+
+    // note("-" + d, this.x, this.y - 64, this.sx, this.sy);
     return this.health < 0;
   }
   spoils(type, amt) {
