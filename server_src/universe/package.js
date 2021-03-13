@@ -52,7 +52,9 @@ module.exports = class Package {
       if (contents == "money") title += "20000 money!";
       p.strongLocal(title, p.x, p.y - 192); // send it
     } else if (this.type == 1) p.spoils("money", 5000); // coin
-    else if (this.type == 2) p.spoils("life", 1); // floating life
-    else if (this.type == 3) p.refillAllAmmo(); // ammo package
+    else if (this.type == 2) {
+      if (p.lives < 20) p.spoils("life", 1); // floating life
+      else p.spoils("money", Math.floor(800000 * 2 * Math.atan(p.experience / 600000.)) + 500); // reward the player the price of two lifes
+    } else if (this.type == 3) p.refillAllAmmo(); // ammo package
   }
 };
