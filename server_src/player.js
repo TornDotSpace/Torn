@@ -444,7 +444,7 @@ class Player {
       // search players
       for (const i in players[this.sy][this.sx]) {
         const p = players[this.sy][this.sx][i];
-        if (!(p.disguise > 0 && this.id == p.id)) { // only count visible ships, and not you
+        if ( !(p.disguise > 0 || this.id == p.id) ) { // You can only heal decloaked teammates.
           const dx = p.x - ox; const dy = p.y - oy;
           const dist2 = dx * dx + dy * dy;
 
@@ -467,41 +467,46 @@ class Player {
         if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
       }
 
-      if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
+      if (nearA != 0) {
+        const rM = Math.random();
+        const beamMe = new Beam(this, rM, 45, this, this); // Healing beam for myself when mining asteroids
+        beams[this.sy][this.sx][rM] = beamMe;
+        const rA = Math.random();
+        const beamA = new Beam(this, rA, 30, nearA, this); // Ore Cannon
+        beams[this.sy][this.sx][rA] = beamA;
+      }
 
+      if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
 
       const rfP = Math.random();
 
-      if (nearPEnemy != 0) {
-        const reP = Math.random();
-        // if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
+      if (nearA != 0) {
+        if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
         const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
         beams[this.sy][this.sx][rfP] = beamfP;
-        // }
+        }
+      }
+      if (nearPEnemy != 0) {
+        const reP = Math.random();
+        if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
+        const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+        beams[this.sy][this.sx][rfP] = beamfP;
+        }
         const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
         beams[this.sy][this.sx][reP] = beameP;
       }
       if (nearBEnemy != 0) {
         const reB = Math.random();
-        // if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
+        if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
         const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
         beams[this.sy][this.sx][rfP] = beamfP;
-        // }
+        }
         const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
         beams[this.sy][this.sx][reB] = beameB;
       }
-      if (nearA != 0) {
-        const rA = Math.random();
-        // if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-        const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-        beams[this.sy][this.sx][rfP] = beamfP;
-        // }
-        const beamA = new Beam(this, rA, 8, nearA, this); // Laser beam
-        beams[this.sy][this.sx][rA] = beamA;
-      }
 
       sendAllSector("sound", {file: "beam", x: ox, y: oy}, this.sx, this.sy);
-    } // A healing leech beam, only for helping teammates
+    } // A healing leech beam, only for helping teammates, or when near an asteroid.
 
     this.reload(true, 0);
   }

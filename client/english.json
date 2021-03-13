@@ -868,7 +868,7 @@
 			"nameA":"Olympic",
 			"nameH":"Necromancer",
 			"nameC":"Lamprey",
-			"desc":"A medical, fast response ship."
+			"desc":"A medical, fast response ship. Always needs a partner to use the leech heal, except from asteroids."
 		}
 	]
 }
