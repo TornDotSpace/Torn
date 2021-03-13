@@ -477,20 +477,21 @@ class Player {
       }
 
       if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
-
+      this.spoils("money", 250); // reward the player for healing a teammate
+      this.spoils("experience", 10); // The medic gets more experience from healing
       const rfP = Math.random();
 
       if (nearA != 0) {
         if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-        const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-        beams[this.sy][this.sx][rfP] = beamfP;
+          const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+          beams[this.sy][this.sx][rfP] = beamfP;
         }
       }
       if (nearPEnemy != 0) {
         const reP = Math.random();
         if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-        const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-        beams[this.sy][this.sx][rfP] = beamfP;
+          const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+          beams[this.sy][this.sx][rfP] = beamfP;
         }
         const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
         beams[this.sy][this.sx][reP] = beameP;
@@ -498,8 +499,8 @@ class Player {
       if (nearBEnemy != 0) {
         const reB = Math.random();
         if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-        const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-        beams[this.sy][this.sx][rfP] = beamfP;
+          const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+          beams[this.sy][this.sx][rfP] = beamfP;
         }
         const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
         beams[this.sy][this.sx][reB] = beameB;
