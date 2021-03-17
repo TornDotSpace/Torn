@@ -47,7 +47,7 @@
     "discord.js": "^12.5.1",
     "express": "^4.17.1",
     "howler": "^2.2.1",
-    "mongodb": "^3.6.4",
+    "mongodb": "^3.6.5",
     "node-fetch": "^2.6.1",
     "socket.io": "^4.0.0",
     "socket.io-client": "^4.0.0",
