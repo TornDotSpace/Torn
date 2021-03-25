@@ -789,10 +789,7 @@ class Player {
 
     this.checkQuestStatus(true); // lots of quests are planet based
 
-    if (this.guest) {
-      this.emit("chat", {msg: "You must create an account in the base before you can claim planets!", color: "cyan"});
-      return;
-    }
+    if (this.guest) return; //You must create an account in the base before you can claim planets!
 
     if (typeof this.quest !== "undefined" && this.quest != 0 && this.quest.type === "Secret2" && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
       // compute whether there are any unkilled enemies in this sector
