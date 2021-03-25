@@ -1404,20 +1404,18 @@ function rAchievements() {
   }
   ctx.restore();
 }
-function rHelp() {
+function rMore() {
   ctx.textAlign = "center";
   ctx.font = "26px ShareTech";
-  const data = [mEng[62], mEng[63], mEng[64], mEng[65], mEng[66], mEng[67], mEng[68]];
+  const data = [mEng[62], mEng[63], mEng[64], mEng[66], mEng[67], mEng[68]];
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 2; j++) {
-      ctx.fillStyle = (seller == 500 + i + j * 4) ? "lime" : "yellow";
-      const rendX = rx + 128 + i * 256; const rendY = ry + 40 + j * (512 - 40) * 2 / 3 + (512 - 40) / 6;
-      write(data[i + j * 4], rendX, rendY);
+      ctx.fillStyle = (seller == 500 + i+j*3) ? "lime" : "yellow";
+      const rendX = rx + 128 + i * 256;
+      const rendY = ry + 40 + j * (512 - 40) * 2 / 3 + (512 - 40) / 6;
+      write(data[i + j * 3], rendX, rendY);
     }
   }
-  ctx.fillStyle = (seller == 503) ? "lime" : "yellow";
-  const rendX = rx + 384; const rendY = ry + 40 + (512 - 40) / 3 + (512 - 40) / 6;
-  write(data[3], rendX, rendY);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
 }
@@ -1878,7 +1876,7 @@ function rInBase() {
       rAchievements();
       break;
     case 4:
-      rHelp();
+      rMore();
       break;
     case 7:
       rWeaponStore();
@@ -2629,9 +2627,8 @@ document.addEventListener("mousemove", function(evt) {
   // More
   else if (docked && tab == 4 && my > ry + 40 && my < ry + 512 && mx > rx && mx < rx + 768) {
     const ticX = Math.floor((mx - rx) / 256);
-    const ticY = Math.floor((my - ry - 40) / ((512 - 40) / 3));
-    if (ticY == 1) seller = 503;
-    else seller = 500 + ticX + ticY * 2;
+    const ticY = Math.floor((my - ry - 40) / ((512 - 40) / 2));
+    seller = 500 + ticX + ticY * 3;
   } else seller = 0;
   if (seller != 0 && seller != preSeller) playAudio("button2", .2);
   if (preSeller!=seller && (Math.abs(preSeller-801)<=1 || Math.abs(seller-801)<=1)) rChat();
@@ -2669,13 +2666,16 @@ document.addEventListener("mousedown", function(evt) {
   }
   /* if(i == 350)
     socket.emit('cancelquest', {});*/
+
+  //more page
   if (i == 500) window.open("https://tornspace.wikia.com/wiki/Torn.space_Wiki", "_blank");
   if (i == 501) window.open("/store", "_blank");
   if (i == 502) window.open("/leaderboard", "_blank");
-  if (i == 503) window.open("https://padlet.com/mchontz10/k2n7p1pnaxct", "_blank");
-  if (i == 504) window.open("https://www.youtube.com/channel/UCKsbC4GfoPOcyifiwW1GA4w", "_blank");
-  if (i == 505) window.open("https://discord.gg/tGrYXwP", "_blank");
-  if (i == 506) window.open("/credits", "_blank");
+  //row 2
+  if (i == 503) window.open("https://github.com/TornDotSpace/Torn", "_blank");
+  if (i == 504) window.open("https://discord.gg/tGrYXwP", "_blank");
+  if (i == 505) window.open("/credits", "_blank");
+
   if (i == 601) {
     tab = 7;
     actuallyBuying = false;
