@@ -1047,7 +1047,13 @@ class Player {
     if (typeof wepns[this.weapons[i]] !== "undefined") this.ammos[i] = wepns[this.weapons[i]].ammo;
   }
   refillAllAmmo() {
-    for (let i = 0; i < 10; i++) this.refillAmmo(i);
+    var ammoHasChanged = false;
+    for (let i = 0; i < 10; i++) {
+    	var beforeAmmo = this.ammos[i]
+        this.refillAmmo(i);
+        if (beforeAmmo != this.ammos[i]) ammoHasChanged = true;
+    }
+    if(!ammoHasChanged) return;
     sendWeapons(this);
     this.strongLocal("Ammo Replenished!", this.x, this.y + 256);
   }
