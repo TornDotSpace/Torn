@@ -789,7 +789,7 @@ class Player {
 
     this.checkQuestStatus(true); // lots of quests are planet based
 
-    if (this.guest) return; //You must create an account in the base before you can claim planets!
+    if (this.guest) return; // You must create an account in the base before you can claim planets!
 
     if (typeof this.quest !== "undefined" && this.quest != 0 && this.quest.type === "Secret2" && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
       // compute whether there are any unkilled enemies in this sector
@@ -1047,13 +1047,13 @@ class Player {
     if (typeof wepns[this.weapons[i]] !== "undefined") this.ammos[i] = wepns[this.weapons[i]].ammo;
   }
   refillAllAmmo() {
-    var ammoHasChanged = false;
+    let ammoHasChanged = false;
     for (let i = 0; i < 10; i++) {
-    	var beforeAmmo = this.ammos[i]
-        this.refillAmmo(i);
-        if (beforeAmmo != this.ammos[i]) ammoHasChanged = true;
+    	const beforeAmmo = this.ammos[i];
+      this.refillAmmo(i);
+      if (beforeAmmo != this.ammos[i]) ammoHasChanged = true;
     }
-    if(!ammoHasChanged) return;
+    if (!ammoHasChanged) return;
     sendWeapons(this);
     this.strongLocal("Ammo Replenished!", this.x, this.y + 256);
   }
