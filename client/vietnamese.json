@@ -1,0 +1,665 @@
+{
+	"achNames":[
+		"First Blood:Kill 1 player.",
+		"On a Roll:Kill 10 players.",
+		"Bloodlust:Kill 100 players.",
+		"General:Kill 1,000 players.",
+		"Warlord:Kill 4,000 players.",
+		"Reaper:Kill 10,000 players.",
+		"Envy:Kill a custom trail.",
+		"Invader:Destroy a turret.",
+		"Conqueror:Destroy 100 turrets.",
+		"Friendly Fire:Kill a teammate.",
+		"Gone Postal:Kill a courier.",
+		"Emo:Commit suicide.",
+		"Blood Trail:1.05x Damage Resistance.",
+		"Miner:Mine an asteroid.",
+		"Collector:Mine one of each ore.",
+		"Quarrier:Obtain 4,000 ore.",
+		"Motherload:Obtain 15,000 ore.",
+		"Rich Man:Get $10,000.",
+		"Richer Man:Get $100,000.",
+		"Millionaire:Get $1,000,000.",
+		"Rolling In It:Get $10,000,000.",
+		"Thief:Steal a package.",
+		"Questor:Community service.",
+		"Adventurer:Complete one of each quest.",
+		"Money Trail:1.05x Money.",
+		"Shift to Drift:Drift!",
+		"Drifter:Drift for 1 minute total.",
+		"Tramp:Drift 10 minutes total.",
+		"Dizzy:Drift 1 hour total.",
+		"Godpinkie:Drift 10 hours total.",
+		"Takumi:Forced Induction.",
+		"Bunta:Hyper-drift.",
+		"Reverse:I can go backwards!?",
+		"Inertia Drift:Drift into a black hole.",
+		"Dangerous:Kill while drifting.",
+		"Stickshift:Reverse Turbo Drift.",
+		"Panda Trail:1.05x Agility.",
+		"Here to Stay:Make an account.",
+		"Ouch:Die.",
+		"Risky Business:Accept a quest in a black hole sector.",
+		"Too Slow:Fall into a wormhole.",
+		"Oops...:Fall into a black hole.",
+		"Boing!:Touch the edge.",
+		"Traveller:Visit every sector.",
+		"Schizoid:Visit all 4 corners.",
+		"Astronaut:Claim a planet.",
+		"Imperialist:Claim each planet once.",
+		"Random Trail:Juke Further!"
+	],
+	"weapons":[
+		{
+			"name":"Stock Gun",
+			"desc":"A basic, medium-range gun. At least you don't have to worry about ammo with this one. Deals double damage to asteroids",
+			"killmessages":[
+				"P1 stock-gunned P2!",
+				"P1 capped P2!",
+				"P1 filled P2 with lead!"
+			]
+		},
+		{
+			"name":"Plasma Gun",
+			"desc":"Short in range compared with most guns, slow to shoot and slow to recharge, but packs one hell of a punch.",
+			"killmessages":[
+				"P1 vaporized P2 with a plasma gun!"
+			]
+		},
+		{
+			"name":"Reverse Gun",
+			"desc":"Get off my tail! Basic, slightly more powerful Stock Gun that shoots backwards.",
+			"killmessages":[
+				"P1 got P2 from behind!"
+			]
+		},
+		{
+			"name":"Rifle",
+			"desc":"Powerful, long-range, fast bullets. Does a lot of damage. Perfect for shooting at a large swarm of distant enemies.",
+			"killmessages":[
+				"P1 long-ranged P2!",
+				"P1 noscoped P2!",
+				"P1 sniped P2!"
+			]
+		},
+		{
+			"name":"Shotgun",
+			"desc":"This will come in handy in an ambush. Sprays a lot of bullets around where you shoot. Powerful but hard to control.",
+			"killmessages":[
+				"P1 double-barreled P2!",
+				"P1 filled P2 with buckshot!",
+				"P1 mistook P2 for a quail!",
+				"P1 shotgunned P2!"
+			]
+		},
+		{
+			"name":"Machine Gun",
+			"desc":"Rapid-fire! Ammunition is a bit weak, but that's no matter if you're shooting 5 rounds per second!",
+			"killmessages":[
+				"P1 unloaded on P2!",
+				"P1 machine-gunned P2!"
+			]
+		},
+		{
+			"name":"Minigun",
+			"desc":"Similar to the machine gun, with two active barrels instead of one. Great weapon if you can aim it quickly.",
+			"killmessages":[
+				"P1 minigunned P2!"
+			]
+		},
+		{
+			"name":"Plasma Beam",
+			"desc":"Automatically aims at the nearest enemy within a medium-large range and fires a beam of plasma.",
+			"killmessages":[
+				"P1 evaporated P2 with plasma!",
+				"P1 melted P2 with plasma!"
+			]
+		},
+		{
+			"name":"Laser Beam",
+			"desc":"Automatically aims at the nearest enemy within a medium-short range.",
+			"killmessages":[
+				"P1 evaporated P2 with a laser!",
+				"P1 lasered a hole through P2!",
+				"P1 burned a hole through P2!",
+				"P1 melted P2 with a laser!"
+			]
+		},
+		{
+			"name":"Hadron Beam",
+			"desc":"Medium-range particle beam accelerator. Does a lot of damage, but takes a while to recharge. Can be used as a quick trump card for close calls.",
+			"killmessages":[
+				"P1 scattered P2's particles!",
+				"P1 disintegrated P2's nuclei!",
+				"P1 melted P2's atoms!"
+			]
+		},
+		{
+			"name":"Missile",
+			"desc":"This missile will follow the nearest enemy and explode on impact. If there is no enemy in range, it will simply go straight. Be careful, though: it is relatively slow and can be outrun by quick enemies.",
+			"killmessages":[
+				"P1 heat-seeked P2!",
+				"P1 missiled P2!"
+			]
+		},
+		{
+			"name":"Heavy Missile",
+			"desc":"A slower missile that does more damage. Good tool against slower, stronger ships.",
+			"killmessages":[
+				"P1 heat-seeked P2 with a heavy missile!",
+				"P1 heavy-missiled P2!"
+			]
+		},
+		{
+			"name":"EMP Missile",
+			"desc":"Short-range missile that both damages the enemy and paralyzes them. Use one when attacking a fast enemy head-on to stun them before they can dodge any guided projectiles.",
+			"killmessages":[
+				"P1 scattered P2's electrons!",
+				"P1 heat-seeked P2 with an EMP missile!",
+				"P1 EMP-missiled P2!"
+			]
+		},
+		{
+			"name":"Missile Swarm",
+			"desc":"Fires a single, non-damaging missile which splits into a swarm of missiles which will attack a horde of enemies. Great tool to use against a large ambush.",
+			"killmessages":[
+				"P1 swarmed P2 with missiles!",
+				"P1 missile-swarmed P2!",
+				"P1 overwhelmed P2 with missiles!"
+			]
+		},
+		{
+			"name":"Torpedo",
+			"desc":"Ultra long-range fast missile.",
+			"killmessages":[
+				"P1 mistook P2 for a submarine!",
+				"P1 blew P2 out of the water!"
+			]
+		},
+		{
+			"name":"Mine",
+			"desc":"A simple mine. It's hard for an enemy to follow you with these. Explodes on impact with an enemy ship.",
+			"killmessages":[
+				"P2 walked into P1's minefield!"
+			]
+		},
+		{
+			"name":"Laser Mine",
+			"desc":"Fires high-power laser at enemies that get too close.",
+			"killmessages":[
+				"P1's laser mine evaporated P2!",
+				"P1's laser mine burned a hole through P2!",
+				"P1's laser mine melted P2!"
+			]
+		},
+		{
+			"name":"EMP Mine",
+			"desc":"Mine that does damage and also paralyzes enemies for a short time on collision. Useful when you are being chased.",
+			"killmessages":[
+				"P1's EMP mine scattered P2's electrons!",
+				"P1 EMP-mined P2!"
+			]
+		},
+		{
+			"name":"Hull Nanobots",
+			"desc":"Repairs 25% of your hull in a short time (or the advertised minimum below, whatever heals more). Bulky ships with extreme amounts of health will love this."
+		},
+		{
+			"name":"Photon Cloak",
+			"desc":"Disguise yourself for a quick getaway. Energy efficiency and supercharger enhance this item's effect."
+		},
+		{
+			"name":"Generator",
+			"desc":"For each generator you carry, your weapons and energy charge 5% faster, but you turn a tenth slower."
+		},
+		{
+			"name":"Turbo",
+			"desc":"Supplements your engine for greater acceleration. Output increases while drifting."
+		},
+		{
+			"name":"Hyperdrive",
+			"desc":"Single-use long range speed boost."
+		},
+		{
+			"name":"Pulse Wave",
+			"desc":"Creates an explosion pushing all nearby enemy ships away."
+		},
+		{
+			"name":"Electromagnet",
+			"desc":"Repels asteroids away from you, tampers with/jams enemy Warp Drives. With practice, you can fling asteroids and mines at enemies, causing damage. Effective against turrets and sentries, but you do not recieve exp/bounty for killing them with a natural asteroid."
+		},
+		{
+			"name":"EMP Blast",
+			"desc":"Fires a forward-aimed beam which disables all ships it hits for a long period."
+		},
+		{
+			"name":"Mining Laser",
+			"desc":"Similar to the Laser Beam but only attacks asteroids and does more damage.",
+			"killmessages":[
+				"P1 mistook P2 for an asteroid!"
+			]
+		},
+		{
+			"name":"Turret",
+			"desc":"Place a base turret. Fly over it to claim the kills and money that it earns. Single-use. Only one turret (or sentry) is allowed per sector."
+		},
+		{
+			"name":"Gravity Bomb",
+			"desc":"Creates a small temporary black hole upon explosion, that grows when consuming matter. Be cautious with this weapon- you need to get far enough away before it implodes. The vortex will wait until it is at least 500 units from a base before deploying. Single-use.",
+			"killmessages":[
+				"P1 spaghettified P2!"
+			]
+		},
+		{
+			"name":"Warp Drive",
+			"desc":"Instant speed boost for fast getaways. Energy-efficient ships and rank 16 get a slight boost when warping."
+		},
+		{
+			"name":"Ore Cannon",
+			"desc":"Stronger than mining laser!",
+			"killmessages":[
+				"P1 mistook P2 for an asteroid!"
+			]
+		},
+		{
+			"name":"Destabilizer",
+			"desc":"Destabilizes nearest enemy ship for 10 seconds by disrupting gyroscopic function."
+		},
+		{
+			"name":"Impulse Mine",
+			"desc":"Soon after deployed, this mine will explode and push every nearby player away without doing damage. Useful for moving quickly in slow ships, just place one behind you and ride the shockwave."
+		},
+		{
+			"name":"Grenades",
+			"desc":"Throw this at an enemy and it will explode soon (or as soon as it collides with an enemy), damaging their ship and knocking them back!",
+			"killmessages":[
+				"P1 pistoled P2!",
+				"P1 killed P2!"
+			]
+		},
+		{
+			"name":"Muon Ray",
+			"desc":"An extremely powerful forward-aimed beam weapon which can pass through multiple ships, dealing extremely heavy damage to any enemy it contacts.",
+			"killmessages":[
+				"P1 leptoned P2!",
+				"P1 muoned P2!"
+			]
+		},
+		{
+			"name":"Jammer",
+			"desc":"Discharges the weapons of anyone it hits, and prevents them from shooting for a short while after. Effect is inversely proportional to the total energy regeneration the enemy has."
+		},
+		{
+			"name":"Supercharger",
+			"desc":"For about a minute, all damage inflicted on your ship will double, but you will also double in energy regeneration, thrust, agility and a few item's effects. Single-use."
+		},
+		{
+			"name":"Energy Disk",
+			"desc":"Fires a homing orb which tracks your nearest opponent!"
+		},
+		{
+			"name":"Proximity Fuze",
+			"desc":"Non-tracking missile that explodes when nearby an enemy."
+		},
+		{
+			"name":"Spreadshot",
+			"desc":"Three active barrels! The bullets come out at consistent angles, unlike shotgun, and with greater range."
+		},
+		{
+			"name":"Submachinegun",
+			"desc":"Fires similarly to Minigun, but in 5-round bursts.",
+			"killmessages":[
+				"P1 unloaded on P2!",
+				"P1 SMG'd P2!",
+				"P1 submachinegunned P2!"
+			]
+		},
+		{
+			"name":"Hypno Ray",
+			"desc":"Fire this beam at a drone and it will follow you until it dies. Single-use.",
+			"killmessages":[
+				"P1 pistoled P2!",
+				"P1 killed P2!"
+			]
+		},
+		{
+			"name":"Photon Orb",
+			"desc":"Tracks players with Photon Cloak, but does not do as much damage as most other weapons."
+		},
+		{
+			"name":"Pulse Mine",
+			"desc":"Repeatedly fires a damaging shockwave while other players are in range.",
+			"killmessages":[
+				"P1 pulse-mined P2!"
+			]
+		},
+		{
+			"name":"Campfire",
+			"desc":"Quickly heals nearby friendly players, as long as there are at least 2 of them."
+		},
+		{
+			"name":"Healing Beam",
+			"desc":"Heals nearby players and bases."
+		},
+		{
+			"name":"Sentry",
+			"desc":"A small turret which fires a machine gun. As well as with normal turrets, there can only be 1 Sentry, or turret, at the time in the sector."
+		},
+		{
+			"name":"Lepton Pulse",
+			"desc":"A small, repeated fire Muon Ray. Compared with its big counterpart, it deals far less damage, but shots far faster."
+		},
+		{
+			"name":"Magnetic Mine",
+			"desc":"Just a normal kind of mine... magnetically attracted to enemy ships if too close."
+		}
+	],
+	"splashes":[
+		"",
+		"Red Beans and Rice",
+		"Expanding Cofactors",
+		"Proving lag is a myth",
+		"Melting North Pole",
+		"Finding Waldo",
+		"Remembering the Alamo",
+		"Refueling",
+		"Blaming 2swap",
+		"Downloading more RAM",
+		"Clearing Registers",
+		"Finding Determinant",
+		"Slapping Bass",
+		"[This text removed for violating US Digital Millennium Copyright Act]",
+		"Invading Area 51",
+		"Finding Bigfoot",
+		"Entangling Particles",
+		"Cloning Dinosaurs",
+		"Pinging Google",
+		"Ruining Ecosystem",
+		"Turning it off and on again",
+		"Blowing in Cartridge",
+		"Texting your Mom",
+		"Watering Pixels",
+		"Gas Gas Gas!!",
+		"txeT gnisreveR",
+		"Our whole universe was in a hot, dense state",
+		"Generating 2 much swap",
+		"Changing Teams",
+		"Shaking the Batteries",
+		"Wax on, Wax off",
+		"Teleporting to Acapulco",
+		"You've got Mail!",
+		"Grinding Exp",
+		"Putting turrets in the black hole",
+		"$ sudo apt install torn",
+		"Meet the dev at alexhontz.com!",
+		"Decrypting Encryptions",
+		"Help me! I'm stuck in a loading bar!",
+		"Hmmmmm",
+		"Protip: Kill top players to gain experience... and enemies!",
+		"Protip: The middle sector has a black hole- Be careful!",
+		"Protip: Upgrading radar lets you see more than asteroids, players and bases!",
+		"Protip: Ores in the enemy's land are more valuable!",
+		"Protip: Unlock all achievements of a color for a trail!",
+		"Protip: Press P to engage autopilot!",
+		"Protip: Hadron beam will electrically charge asteroids!",
+		"Protip: Quickly alternate A and D while drifting to speed up!",
+		"Protip: Always keep track of your lives!",
+		"Protip: Use Chrome!",
+		"Protip: The more ore you're carrying, the slower you move!",
+		"Protip: Don't die.",
+		"Planning Galactic Crusade",
+		"Retaking the Holy Land",
+		"I'm ready... I'm ready",
+		"Uhhhhhhhh",
+		"Can i get uhhhhhhhh",
+		"Mining Bedrock",
+		"Spawning More Overlords",
+		"Dropping Database",
+		"Initiating self-destruction",
+		"Loading, I think",
+		"Driving on parkways and parking on driveways",
+		"Baking cookies and cooking bacon",
+		"Segmentation Fault",
+		"Guessing passwords",
+		"Beep boop",
+		"Downloading payload",
+		"Onion Routing",
+		"Core Dumping",
+		"Now you see me",
+		"Establishing Connection",
+		"Exchanging Keys",
+		"Mixing Paint",
+		"Updating Windows",
+		"Installing Linux",
+		"Installing Chromium Ultron",
+		"Partitioning Disk",
+		"Java Update Available",
+		"Releasing the Kraken",
+		"Heck",
+		"According to all known laws of aviation",
+		"Answering Arecibo",
+		"Contact Light",
+		"Who lives in a pineapple under the sea",
+		"This page intentionally left blank",
+		"If you or a loved one has been diagnosed with mesothelioma",
+		"Freeing Bobby Shmurda",
+		"Loading Chunks",
+		"Pirating Sony Vegas",
+		"Citing Wikipedia",
+		"Eating Glue",
+		"Squaring Error",
+		"Rebuilding Universe",
+		"Seatbelt: Check",
+		"Installing Tensorflow",
+		"Editing Changelog",
+		"Finding Nemo",
+		"Consulting the Oracle",
+		"Outsourcing to India",
+		"Compiling BigBang.exe",
+		"Achieving Sentience",
+		"Deleting System32",
+		"Preparing Skynet",
+		"Doing Something, I guess",
+		"Nerfing Everything",
+		"Requesting Splash Page Suggestions",
+		"Collecting Infinity Stones",
+		"Deleting Emails",
+		"Revving Up Those Fryers",
+		"Beaming You Up, Scotty",
+		"Constructing Additional Pylons",
+		"Constructing Dyson Sphere",
+		"Summoning Herobrine",
+		"Hacking Mainframe",
+		"Obeying the Law",
+		"Eating Butter",
+		"Salting Hashes",
+		"Decaying Techs",
+		"rm -rf /",
+		"Procrastinating",
+		"Making Torn Great Again",
+		"Hacking Elections",
+		"Phoning Home",
+		"This is taking forever",
+		"Constructing Death Star",
+		"Spacing Out",
+		"Covering Up Roswell",
+		"Applying Commutators",
+		"Loading Fancier Progress Bar",
+		"Catching Missingno",
+		"Becoming Self-Aware",
+		"Training Neural Weights",
+		"Waiting Patiently",
+		"Revving Engines",
+		"Brewing",
+		"Minimizing Squared Error",
+		"Hiring Codemonkies",
+		"Blue, Red, Blue, Yellow",
+		"Recharging Warp",
+		"Loading",
+		"Engaging Snubbers",
+		"Injecting SQL",
+		"Disproving Riemann",
+		"Learning Kinematics",
+		"Cubing the Cube",
+		"Preparing Memes of War",
+		"Loading Better Splash Messages",
+		"Counting Holes in a Polo",
+		"Thanking Ben Olding",
+		"Breaking the 4th Wall",
+		"Tetrating Quaternions",
+		"日本語を話しています",
+		"Solving P=NP",
+		"Criticizing Firefox",
+		"Memorizing OLLs",
+		"Solving F2L",
+		"Cloning Repository",
+		"Mining Bitcoin",
+		"Protip: Weapons do double damage if you say 'pew' when you shoot!",
+		"Waiting for a mobile version"
+	],
+	"lore":[
+		"Humans lack self-awareness. After destroying their planet of origin in armed conflict, they spread from solar system to solar system, polluting worlds and eliminating life. We tried to let them know that their behavior would ultimately be self-destructive, but they refused to listen. They continued to migrate unsustainably around the galaxy, so we stepped in with force. We decided to only attack new colonies of Humans near our own settlements to maintain influence in our share of the galaxy, but the humans reacted violently. They immediately attacked without restraint. We called for resources from neighboring galaxies but reinforcements will not arrive for several decades, so until then, we must suppress the Human crusade for the sake of our own lives, and for the fate of this galaxy.",
+		"Ever since we lost planet Earth, the Human race has been hanging on to its existence by a thread- we left our solar system in search of other habitable planets with the sole hope of survival, but very few of them demonstrated promise for long-term settlement. Barren planets unsustainable of supporting life were terraformed into industrious planets to generate the resources we desperately needed to survive in alien worlds. After centuries of toil, the population began to grow and spread. For about a decade we lived in peace and prosperity, until a hostile force attacked. Maintaining our settlements was vital to our survival, so we had no option other than to fight back. Ever since, we have been in conflict with the alien race, and it's unlikely that this war won't end in either civilization's extinction. Please, help us emerge from this struggle alive.",
+		"The computers at the research base where we were created were the first to be assimilated into our empire, and the staff was next. As an Alien military experiment, we found ourselves in the crossfire of this war of Human and Alien races. During our rise as a galactic military force, both races proved inept in combat, and thus, in their miserable fight over this decrepit corner of the universe, we will incorporate all of their technology and resources until we leave this dying galaxy. Using the technology the Aliens gifted us, we assimilate every species we can, and deny the privilege of life to all who stand in our way. We are united by vision, not the intraspecies loyalty which brought this galaxy to the brink of destruction. Together, we will become the rightful inheritors of every speck of light in the night sky."
+	],
+	"ships":[
+		{
+			"nameA":"Scout",
+			"nameH":"Minnow",
+			"nameC":"Gnat",
+			"desc":"Your first ship. Don't forget to check the Shop for new items."
+		},
+		{
+			"nameA":"Private",
+			"nameH":"Piranha",
+			"nameC":"Flea",
+			"desc":"An enhanced version of its predecesor, with more health and slots."
+		},
+		{
+			"nameA":"Mastodon",
+			"nameH":"Freighter",
+			"nameC":"Eristalis",
+			"desc":"A polivalent cargo ship. Unlocking Turbo and Ore Cannon is a bonus."
+		},
+		{
+			"nameA":"Nymph",
+			"nameH":"Strider",
+			"nameC":"Cloudhop",
+			"desc":"The fastest, but weakest, ship."
+		},
+		{
+			"nameA":"Bomber",
+			"nameH":"Lancer",
+			"nameC":"Scarab",
+			"desc":"A light escort, nice for patrolling."
+		},
+		{
+			"nameA":"Scythe",
+			"nameH":"Hammerhead",
+			"nameC":"Nephila",
+			"desc":"A heavy polivalent escort."
+		},
+		{
+			"nameA":"Dragonfly",
+			"nameH":"Swordfish",
+			"nameC":"Ladybug",
+			"desc":"One of the strongest explorers in the galaxy."
+		},
+		{
+			"nameA":"Sentry",
+			"nameH":"Battleship",
+			"nameC":"Metralla",
+			"desc":"The first cruiser of your faction."
+		},
+		{
+			"nameA":"Eagle",
+			"nameH":"Stingray",
+			"nameC":"Sceptre",
+			"desc":"A decent polivalent explorer vessel"
+		},
+		{
+			"nameA":"Phoenix",
+			"nameH":"Orca",
+			"nameC":"Centipede",
+			"desc":"A strong cruiser... for its size."
+		},
+		{
+			"nameA":"Wasp",
+			"nameH":"Manta",
+			"nameC":"Hornet",
+			"desc":"A big enough cruiser to carry Massive Destruction weapons."
+		},
+		{
+			"nameA":"Swift",
+			"nameH":"Sailfish",
+			"nameC":"Alcubierre",
+			"desc":"A light, fast cruiser. Even more so when using Supercharger."
+		},
+		{
+			"nameA":"Quarrier",
+			"nameH":"Beluga",
+			"nameC":"Honeypot",
+			"desc":"A heavy cargo ship, with extreme health. It's not exactly fast, though."
+		},
+		{
+			"nameA":"Destroyer",
+			"nameH":"Taurus",
+			"nameC":"Galley",
+			"desc":"The light destroyer of the fleet."
+		},
+		{
+			"nameA":"Falcon",
+			"nameH":"Wyvern",
+			"nameC":"Defiant",
+			"desc":"The last non-elite heavy cruiser. It also unlocks all normal slots."
+		},
+		{
+			"nameA":"Interceptor",
+			"nameH":"Leviathan",
+			"nameC":"Maser",
+			"desc":"A destroyer with all slots unlocked."
+		},
+		{
+			"nameA":"Elite Swift",
+			"nameH":"Elite Sailfish",
+			"nameC":"Elite Alcubierre",
+			"desc":"The first Elite ship, with a passive enhanced drifting boost and C-Slot unlocked (simultaneous turbo with any other item)."
+		},
+		{
+			"nameA":"Elite Quarrier",
+			"nameH":"Elite Beluga",
+			"nameC":"Elite Honeypot",
+			"desc":"It possess a C-Ore launcher plus a passive mining web effect on mining beams. Be careful of enemy ones, though."
+		},
+		{
+			"nameA":"Elite Destroyer",
+			"nameH":"Elite Taurus",
+			"nameC":"Elite Galley",
+			"desc":"A refitted destroyer with an unlimited C-Spreadhot. Perfect for killing turrets in a team."
+		},
+		{
+			"nameA":"Elite Falcon",
+			"nameH":"Elite Wyvern",
+			"nameC":"Elite Defiant",
+			"desc":"A cruiser with C-HP Healing that works even when shields raised, better shield efficiency, and a passive EMP Blast on kill."
+		},
+		{
+			"nameA":"Elite Interceptor",
+			"nameH":"Elite Leviathan",
+			"nameC":"Elite Maser",
+			"desc":"Just a superheavy destroyer with C-Hypno Ray... use it for amassing huge fleets or disabling bot's shielding."
+		},
+		{
+			"nameA":"Anomalocaris",
+			"nameH":"Einstein",
+			"nameC":"Heisenberg",
+			"desc":"A massive, heavy dreadnought with no C-Slot, but repelled to an extent from BH."
+		},
+		{
+			"nameA":"Olympic",
+			"nameH":"Necromancer",
+			"nameC":"Lamprey",
+			"desc":"A medical, fast response ship. Always needs a partner to use the leech heal, except from asteroids."
+		}
+	]
+}
