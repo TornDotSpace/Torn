@@ -19,6 +19,7 @@ const esp = 'spanish.json';
 const pyc = 'russian.json';
 const deu = 'german.json';
 const frn = 'french.json';
+const tki = 'tokipona.json';
 
 global.languagejson = null;
 
@@ -44,44 +45,41 @@ function load(lang) {
 }
 
 global.loadLang = function(name) {
+  global.languageNumber = 0;
   let assigned = null;
-  /*
-    if (location.href.includes("eng") || name == "eng") assigned = languagejson = eng;
-    if (location.href.includes("frn") || name === "frn") assigned = languagejson = frn;
-    if (location.href.includes("esp") || name === "esp") assigned = languagejson = esp;
-    if (location.href.includes("pyc") || name === "pyc") assigned = languagejson = pyc;
-    if (location.href.includes("deu") || name === "deu") assigned = languagejson = deu;
+  
+  if (location.href.includes("eng") || name === "eng") {assigned = languagejson = eng; languageNumber = 0;}
+  //if (location.href.includes("frn") || name === "frn") {assigned = languagejson = frn; languageNumber = 0;}
+  if (location.href.includes("esp") || name === "esp") {assigned = languagejson = esp; languageNumber = 1;}
+  //if (location.href.includes("pyc") || name === "pyc") {assigned = languagejson = pyc; languageNumber = 0;}
+  //if (location.href.includes("deu") || name === "deu") {assigned = languagejson = deu; languageNumber = 0;}
+  if (location.href.includes("tki") || name === "tki") {assigned = languagejson = tki; languageNumber = 2;}
 
-    if (!assigned) {
-        let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  if (!assigned) {
+      let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-        //console.log(lang);
-        if (lang == null) {
-            languagejson = eng;
-        }
-        if (lang === "frn") {
-            languagejson = frn;
-        } else if (lang === "esp") {
-            languagejson = esp;
-        } else if (lang === "pyc") {
-            languagejson = pyc;
-        } else if (lang === "eng") {
-            languagejson = eng;
-        } else if (lang == "deu") {
-            languagejson = deu;
-        }
-    }
+      if (lang === "frn") {
+//          languagejson = frn;
+      } else if (lang === "esp") {
+          languagejson = esp;
+          languageNumber = 1;
+      } else if (lang === "pyc") {
+//          languagejson = pyc;
+      } else if (lang === "eng") {
+//          languagejson = eng;
+      } else if (lang == "deu") {
+//          languagejson = deu;
+      } else if (lang == "tki") {
+          languagejson = tki;
+          languageNumber = 2;
+      }
+  }
 
-    if (languagejson == null) {
-        languagejson = eng;
-    }*/
-
-  // Force English until other languages can be patched to work with client changes
-  assigned = languagejson = eng;
+  if (languagejson == null) {
+      languagejson = eng;
+  }
 
   languagejson = load(languagejson);
-
-  jsn.messages = languagejson.messages;
 
   jsn.achNames = languagejson.achNames;
   jsn.splashes = languagejson.splashes;
@@ -97,7 +95,7 @@ global.loadLang = function(name) {
     jsn.ships[i].nameC = languagejson.ships[i].nameC;
     jsn.ships[i].desc = languagejson.ships[i].desc;
   }
-  global.mEng = jsn.messages;
+  global.mEng = load("translate.json");
   global.splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
   if (!splash.endsWith('!') && !splash.endsWith('?')) splash += '...';
 };

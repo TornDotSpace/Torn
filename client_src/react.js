@@ -253,7 +253,8 @@ class LoginOverlay extends Component {
 					<a onClick={this.langEsp} >Esp|</a>
 					<a onClick={this.langFrn} >Frn|</a>
 					<a onClick={this.langDeu} >Deu|</a>
-					<a onClick={this.langPyc} >Pyc</a>
+					<a onClick={this.langPyc} >Pyc|</a>
+					<a onClick={this.langTki} >Tki</a>
 				</div>
 			</div>)
 	}
@@ -321,6 +322,10 @@ class LoginOverlay extends Component {
 
 	langDeu = () => {
 		setLang("deu");
+	}
+
+	langTki = () => {
+		setLang("tki");
 	}
 }
 

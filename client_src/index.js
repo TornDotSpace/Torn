@@ -151,7 +151,7 @@ let useOldMap = false;
 
 const chatLength = 40; let chatScroll = 0; let globalChat = 0; let preChatArr = {}; let chati = 0;
 let homepageTimer = 0; let loreTimer = 0;
-const chatRooms = [mEng[197], "Team Chat", "Guild Chat"];
+const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
 const messages = [{}, {}, {}];
 clearChat();
 preProcessChat();
@@ -230,6 +230,16 @@ let sectorPoints = 0;
 
 const wepns = jsn.weapons; const ships = jsn.ships;
 
+function translate(english, arr){
+  if(typeof mEng[english] === "undefined")
+    return "TRANSLATION ERROR";
+  var translated = (languageNumber == 0)? english : mEng[english][languageNumber-1];
+  if(arr !== undefined)
+    while(arr.length > 0)
+      translated = translated.replace('#', arr.shift());
+  return translated;
+}
+
 // Used in the ship store to make the bar graphs
 let maxShipThrust=-1000;
 let maxShipHealth=-1000;
@@ -267,7 +277,7 @@ for (let j = 0; j < wepnCount - 1; j++) { // this nifty loop sorts weapons by sh
 }
 
 wepns[-2] = {name: ""};
-wepns[-1] = {name: mEng[0]};
+wepns[-1] = {name: translate("Empty")};
 wepnCount += 2;
 
 let scroll = 0; let weaponTimer = 0; let charge = 0;
@@ -664,7 +674,7 @@ function render() {
     rDmg(r);
     undoing = true;
   }
-  if ((iron + platinum + copper + silver) / (ships[ship].capacity * c2) > .995) currAlert = mEng[1];
+  if ((iron + platinum + copper + silver) / (ships[ship].capacity * c2) > .995) currAlert = translate("Cargo Bay Full!");
 
   let time1 = -performance.now();
   time0 -= time1;
@@ -732,7 +742,7 @@ function render() {
   if (flash > 0) rFlash();
   rTut();
   if (undoing && hyperdriveTimer <= 0) undoDmg(r);
-  if (isLocked) currAlert = mEng[132];
+  if (isLocked) currAlert = translate("Locked on by missile!");
   rAlert();
   currAlert = bigAlert = "";
   rBigNotes();
@@ -749,7 +759,7 @@ function render() {
 
 
 // shop rendering
-function rWeapons() {
+function rWeapons() { // Weapon selector on right side of game
   if (equipped === 0) return;
   if (equipped[1] == -2) return;
   ctx.save();
@@ -764,8 +774,8 @@ function rWeapons() {
   ctx.textAlign = "right";
   ctx.globalAlpha = Math.max(weaponTimer--, 0) / 100 * .7 + .3;
 
-  write(mEng[152], w - 80, h - 432 + (-1 + 10) * 16);
-  write(mEng[151], w - 16, h - 432 + (-1 + 10) * 16);
+  write(translate("Weapon"), w - 80, h - 432 + (-1 + 10) * 16);
+  write(translate("Ammo"), w - 16, h - 432 + (-1 + 10) * 16);
   for (let i = 0; i < 10; i++) {
     ctx.fillStyle = scroll == i ? "lime" : "yellow";
     if (i >= ships[ship].weapons) ctx.fillStyle = "orange";
@@ -778,14 +788,14 @@ function rWeapons() {
   ctx.fillStyle = "yellow";
   badWeapon = (badWeapon < 1) ? 0 : (badWeapon - 1);
   ctx.font = (16 + badWeapon) + "px ShareTech";
-  write(mEng[2], w - 16, h - 96);
+  write(translate("Scroll to Change Weapons"), w - 16, h - 96);
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
 }
 function ammoCodeToString(code) {
   if (code >= 0) return code + "";
-  if (code == -1) return mEng[153];
-  if (code == -2) return mEng[154];
+  if (code == -1) return translate("Inf.");
+  if (code == -2) return translate("Only One");
   else return "";
 }
 function constructMyGuild(data) {
@@ -813,7 +823,7 @@ function r3DMap() {
 
   if (hmap == 0 || typeof hmap[sx] === "undefined") return;
 
-  // if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = mEng[104]; // GREENTODO enemy swarm
+  // if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = translate("Enemy Swarm In Sector"); // GREENTODO enemy swarm
 
   if (pscx == 0) {
     roll(40);
@@ -1067,26 +1077,26 @@ function rBuyShipWindow() {
   ctx.textAlign = "center";
   ctx.fillStyle = "yellow";
   ctx.font = "20px ShareTech";
-  write(mEng[24], rx + 128 + 16, ry + 256 + 16);
+  write(translate("Upgrade Ship"), rx + 128 + 16, ry + 256 + 16);
   ctx.font = "14px ShareTech";
-  write(mEng[25] + " " + shipView, rx + 128 + 16, ry + 256 + 56);
+  write(translate("Rank") + " " + shipView, rx + 128 + 16, ry + 256 + 56);
   write(colorSelect(pc, ships[shipView].nameA, ships[shipView].nameH, ships[shipView].nameC), rx + 128 + 16, ry + 256 + 40);
   if (shipView > rank) ctx.fillStyle = "red";
   ctx.fillStyle = "yellow";
   if (ships[shipView].price > money + worth || shipView > rank) ctx.fillStyle = "red";
   else if (seller == 100) ctx.fillStyle = "lime";
-  if (shipView != ship) write("$" + (ships[shipView].price - worth) + " " + mEng[14], rendX, rendY + 96);
+  if (shipView != ship) write("$" + (ships[shipView].price - worth) + " " + translate("[BUY]"), rendX, rendY + 96);
 
   ctx.textAlign = "left";
 
   if (shipView <= rank) {
     const shipStatsRx = rx+288; const shipStatsRy = ry+421;
     ctx.fillStyle = "white";
-    write(mEng[27], shipStatsRx, shipStatsRy + 0 * 16);
-    write(mEng[28], shipStatsRx, shipStatsRy + 1 * 16);
-    write(mEng[29], shipStatsRx, shipStatsRy + 2 * 16);
-    write(mEng[31] + (shipView==17?"Infinite":""), shipStatsRx, shipStatsRy + 3 * 16);
-    write(mEng[30] + numToLS(ships[shipView].weapons), shipStatsRx, shipStatsRy + 4 * 16);
+    write(translate("Thrust  : "), shipStatsRx, shipStatsRy + 0 * 16);
+    write(translate("Agility : "), shipStatsRx, shipStatsRy + 1 * 16);
+    write(translate("Health  : "), shipStatsRx, shipStatsRy + 2 * 16);
+    write(translate("Cargo   : ") + (shipView==17?"Infinite":""), shipStatsRx, shipStatsRy + 3 * 16);
+    write(translate("Weapons : ") + numToLS(ships[shipView].weapons), shipStatsRx, shipStatsRy + 4 * 16);
     ctx.fillStyle = "#555";
     ctx.fillRect(shipStatsRx+60, shipStatsRy + 0 * 16 - 10, 80, 12);
     ctx.fillRect(shipStatsRx+60, shipStatsRy + 1 * 16 - 10, 80, 12);
@@ -1100,7 +1110,7 @@ function rBuyShipWindow() {
   }
 
   ctx.fillStyle = "white";
-  wrapText(mEng[50] + (shipView > rank ? mEng[26] : ships[shipView].desc), rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
+  wrapText(translate("Description: ") + (shipView > rank ? translate("???") : ships[shipView].desc), rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
 
   if (shipView < ships.length) ctx.drawImage(Img.arrow, rendX + 128 - 48, rendY - 16);
   if (shipView > 0) {
@@ -1120,17 +1130,17 @@ function rOreShop() {
   ctx.textAlign = "left";
 
   ctx.fillStyle = (5 == seller && allIronPrice>0) ? "lime" : "#d44";
-  write((iron > 0 ? mEng[133] : mEng[137]) + "$" + numToLS(allIronPrice), rx + 256 - 32, ry + 3 * 32);
+  write((iron > 0 ? translate("[SELL] Iron:     ") : translate("       Iron:     ")) + "$" + numToLS(allIronPrice), rx + 256 - 32, ry + 3 * 32);
   ctx.fillStyle = (6 == seller && allSilverPrice>0) ? "lime" : "#eef";
-  write((silver > 0 ? mEng[134] : mEng[138]) + "$" + numToLS(allSilverPrice), rx + 256 - 32, ry + 4 * 32);
+  write((silver > 0 ? translate("[SELL] Silver:   ") : translate("       Silver:   ")) + "$" + numToLS(allSilverPrice), rx + 256 - 32, ry + 4 * 32);
   ctx.fillStyle = (7 == seller && allPlatinumPrice>0) ? "lime" : "#90f";
-  write((platinum > 0 ? mEng[135] : mEng[139]) + "$" + numToLS(allPlatinumPrice), rx + 256 - 32, ry + 5 * 32);
+  write((platinum > 0 ? translate("[SELL] Platinum: ") : translate("       Platinum: ")) + "$" + numToLS(allPlatinumPrice), rx + 256 - 32, ry + 5 * 32);
   ctx.fillStyle = (8 == seller && allCopperPrice>0) ? "lime" : "#960";
-  write((copper > 0 ? mEng[136] : mEng[140]) + "$" + numToLS(allCopperPrice), rx + 256 - 32, ry + 6 * 32);
+  write((copper > 0 ? translate("[SELL] Copper:   ") : translate("       Copper:   ")) + "$" + numToLS(allCopperPrice), rx + 256 - 32, ry + 6 * 32);
 
   ctx.fillStyle = seller == 610 ? "lime" : "yellow";
 
-  write(mEng[12] + " => $" + numToLS(allCopperPrice + allPlatinumPrice + allSilverPrice + allIronPrice), rx + 256 + 48, ry + 76); // Sell all
+  write(translate("[Sell All]") + " => $" + numToLS(allCopperPrice + allPlatinumPrice + allSilverPrice + allIronPrice), rx + 256 + 48, ry + 76); // Sell all
 
   // Render asteroid animation
   let astImg = Img.silver;
@@ -1149,29 +1159,29 @@ function rOreShop() {
 function rBuyLifeShop() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "right";
-  write(mEng[13] + lives + " ($" + expToLife() + ") ", rx + 768 - 16 - ctx.measureText(mEng[14]).width, ry + 512 - 16);
+  write(translate("Lives Remaining: ") + lives + " ($" + expToLife() + ") ", rx + 768 - 16 - ctx.measureText(translate("[BUY]")).width, ry + 512 - 16);
   ctx.fillStyle = (lives >= 20 || money < expToLife()) ? "red" : ((seller == 611) ? "lime" : "yellow");
-  write(mEng[14], rx + 768 - 16, ry + 512 - 16);
+  write(translate("[BUY]"), rx + 768 - 16, ry + 512 - 16);
   ctx.textAlign = "left";
 }
 function rWeaponsInShop() {
   ctx.fillStyle = "yellow";
   ctx.font = "24px ShareTech";
-  write(mEng[15], rx + 256 + 32, ry + 256 - 16);
+  write(translate("Weapons"), rx + 256 + 32, ry + 256 - 16);
   ctx.textAlign = "center";
-  write(mEng[16], rx + 256, ry + 64 + 8);
+  write(translate("Ores"), rx + 256, ry + 64 + 8);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
   ctx.fillStyle = seller == 601 ? "lime" : "yellow";
-  write(mEng[18], rx + 512 - 64, ry + 256 - 16);
+  write(translate("[View All]"), rx + 512 - 64, ry + 256 - 16);
   ctx.fillStyle = "yellow";
   for (let i = 0; i < 10; i++) {
     ctx.fillStyle = (seller - 10 == i) ? "lime" : "yellow";
     if (ships[shipView].weapons <= i) ctx.fillStyle = "orange";
     if (shipView < wepns[equipped[i]].level) ctx.fillStyle = "red";
     let tag = "       ";
-    if (equipped[i] == -1) tag = mEng[14] + "  ";
-    else if (equipped[i] > -1) tag = mEng[19] + " ";
+    if (equipped[i] == -1) tag = translate("[BUY]") + "  ";
+    else if (equipped[i] > -1) tag = translate("[SELL]") + " ";
     write(tag + (" " + (i + 1)).slice(-2) + ": " + wepns[equipped[i]].name, rx + 256 + 32, ry + 256 + i * 16);
   }
 }
@@ -1188,9 +1198,9 @@ function rConfirm() {
   ctx.fillStyle = "cyan";
   ctx.textAlign = "center";
   ctx.font = "16px ShareTech";
-  write(mEng[32] + wepns[equipped[confirmer]].name + mEng[33] + (wepns[equipped[confirmer]].price * .75) + mEng[34], rx + 128 * 3, ry + 128);
+  write(translate("Are you sure you would like to sell your # for $#?", [wepns[equipped[confirmer]].name, wepns[equipped[confirmer]].price * .75]), rx + 128 * 3, ry + 128);
   ctx.font = "15px ShareTech";
-  write(mEng[35], rx + 128 * 3, ry + 192);
+  write(translate("Press Y to confirm or N to return."), rx + 128 * 3, ry + 192);
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
 }
@@ -1202,15 +1212,15 @@ function rQuests() {
     ctx.fillStyle = "cyan";
     ctx.textAlign = "center";
     ctx.font = "30px ShareTech";
-    write(mEng[36], rx + 128 * 3, ry + 128);
+    write(translate("Quest Accepted!"), rx + 128 * 3, ry + 128);
     ctx.font = "14px ShareTech";
     let desc = "";
-    if (quest.type === "Mining") desc = mEng[37] + numToLS(quest.amt) + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
-    if (quest.type === "Base") desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
-    if (quest.type === "Delivery") desc = mEng[42] + getSectorName(quest.sx, quest.sy) + mEng[43] + getSectorName(quest.dsx, quest.dsy) + mEng[40];
-    if (quest.type === "Secret") desc = mEng[156] + getSectorName(quest.sx, quest.sy) + mEng[157];// mEng[44];
-    if (quest.type === "Secret2") desc = mEng[158] + getSectorName(quest.sx, quest.sy) + mEng[159] + secret2PlanetName + mEng[40];
-    if (quest.type === "Secret3") desc = mEng[160];
+    if (quest.type === "Mining") desc = translate("Bring # units of # to sector #.", [numToLS(quest.amt), quest.metal, getSectorName(quest.sx, quest.sy)]);
+    if (quest.type === "Base") desc = translate("Eliminate enemy base in sector #.", [getSectorName(quest.sx, quest.sy)]);
+    if (quest.type === "Delivery") desc = translate("Obtain package from planet # and deliver it to planet #.", [getSectorName(quest.sx, quest.sy), getSectorName(quest.dsx, quest.dsy)]);
+    if (quest.type === "Secret") desc = translate("Proceed to sector # for further instructions.", [getSectorName(quest.sx, quest.sy)]);// translate("Secret Mission.");
+    if (quest.type === "Secret2") desc = translate("Eliminate all enemy players and turrets in # and visit planet #.", [getSectorName(quest.sx, quest.sy), secret2PlanetName]);
+    if (quest.type === "Secret3") desc = translate("Deliver package to a permanent black hole sector.");
     write(desc, rx + 128 * 3, ry + 192);
     ctx.textAlign = "left";
   } else {
@@ -1219,19 +1229,19 @@ function rQuests() {
       const questi = quests[i];
       let desc = "";
       ctx.fillStyle = i == seller - 300 ? "lime" : "yellow";
-      if (questi.type == "Mining") desc = mEng[37] + numToLS(questi.amt) + mEng[38] + questi.metal + mEng[39] + getSectorName(questi.sx, questi.sy) + mEng[40];
+      if (questi.type == "Mining") desc = translate("Bring # units of # to sector #.", [numToLS(questi.amt), questi.metal, getSectorName(questi.sx, questi.sy)]);
       if (questi.type == "Base") {
-        if (rank > 6) desc = mEng[41] + getSectorName(questi.sx, questi.sy) + mEng[40];
-        else desc = mEng[46];
+        if (rank > 6) desc = translate("Eliminate enemy base in sector #.", [getSectorName(questi.sx, questi.sy)]);
+        else desc = translate("Quest Locked!");
       }
       if (questi.type == "Secret") {
-        if (rank > 14) desc = mEng[156] + getSectorName(questi.sx, questi.sy) + mEng[157];// mEng[44];
-        else desc = mEng[46];
+        if (rank > 14) desc = translate("Proceed to sector # for further instructions.", [getSectorName(questi.sx, questi.sy)]);// translate("Secret Mission.");
+        else desc = translate("Quest Locked!");
       }
-      if (questi.type == "Delivery") desc = mEng[42] + getSectorName(questi.sx, questi.sy) + mEng[43] + getSectorName(questi.dsx, questi.dsy) + mEng[40];
+      if (questi.type == "Delivery") desc = translate("Obtain package from planet # and deliver it to planet #.", [getSectorName(questi.sx, questi.sy), getSectorName(questi.dsx, questi.dsy)]);
       write(questi.type, xv + rx + 16, ry + 72 + i % 5 * 80);
-      write(mEng[47] + numToLS(mult*questi.exp) + mEng[48] + numToLS(Math.floor(questi.exp / ((questi.type === "Mining" || questi.type === "Delivery") ? 1500 : 4000))) + mEng[49], xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
-      wrapText(mEng[50] + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
+      write(translate("Reward: $# and # exp.", [numToLS(mult*questi.exp), numToLS(Math.floor(questi.exp / ((questi.type === "Mining" || questi.type === "Delivery") ? 1500 : 4000)))]), xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
+      wrapText(translate("Description: ") + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
     }
   }
 }
@@ -1280,13 +1290,13 @@ function rStats() {
   let eMult = e2;
   for (let i = 0; i < activeGens; i++) eMult *= 1.06;
 
-  const stats = [mEng[20], mEng[22], mEng[23], mEng[164], mEng[51], mEng[52], mEng[55], mEng[56], mEng[57], mEng[58], mEng[59]];
+  const stats = [translate("Thrust  : "), translate("Cargo   : "), translate("Health  : "), translate("Energy  : "), translate("Kills: "), translate(" Bases Destroyed"), translate("Ship Value: $"), translate("Net Worth: $"), translate(" Experience"), translate("Rank: "), translate(" Achievements")];
 
   stats[0] += numToLS(Number((ships[ship].thrust * t2).toPrecision(3)));
   stats[1] += numToLS(Number((ships[ship].capacity * c2).toPrecision(3)));
   stats[2] += numToLS(Number((ships[ship].health * mh2).toPrecision(3)));
   stats[3] += numToLS(Number((eMult).toPrecision(3)));
-  stats[4] = numToLS(kills) + stats[4];
+  stats[4] += numToLS(kills);
   stats[5] = numToLS(baseKills) + stats[5];
   stats[6] += numToLS(Number((worth + upgradeCosts).toPrecision(3)));
   stats[7] += numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3)));
@@ -1297,22 +1307,22 @@ function rStats() {
   for (let i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
 
   ctx.fillStyle = seller == 700 ? "yellow" : "red";
-  write(mEng[165], rx + 512 + 128, ry + 44 + 64 - 1 * 16);
+  write(translate("[Default Trail]"), rx + 512 + 128, ry + 44 + 64 - 1 * 16);
   if (achs[12]) {
     ctx.fillStyle = seller == 701 ? "yellow" : "red";
-    write(mEng[166], rx + 512 + 128, ry + 44 + 64 + 1 * 16);
+    write(translate("[Blood Trail]"), rx + 512 + 128, ry + 44 + 64 + 1 * 16);
   } if (achs[24]) {
     ctx.fillStyle = seller == 702 ? "yellow" : "gold";
-    write(mEng[167], rx + 512 + 128, ry + 44 + 64 + 3 * 16);
+    write(translate("[Money Trail]"), rx + 512 + 128, ry + 44 + 64 + 3 * 16);
   } if (achs[36]) {
     ctx.fillStyle = seller == 703 ? "yellow" : "lightgray";
-    write(mEng[168], rx + 512 + 128, ry + 44 + 64 + 5 * 16);
+    write(translate("[Panda Trail]"), rx + 512 + 128, ry + 44 + 64 + 5 * 16);
   } if (achs[47]) {
     ctx.fillStyle = seller == 704 ? "yellow" : "cyan";
-    write(mEng[169], rx + 512 + 128, ry + 44 + 64 + 7 * 16);
+    write(translate("[Random Trail]"), rx + 512 + 128, ry + 44 + 64 + 7 * 16);
   } if (false) {
     ctx.fillStyle = seller == 705 ? "yellow" : "cyan";
-    write(mEng[170], rx + 512 + 128, ry + 44 + 64 + 9 * 16);
+    write(translate("[Rainbow Trail]"), rx + 512 + 128, ry + 44 + 64 + 9 * 16);
   }
 
   const rendX = rx + 192;
@@ -1329,7 +1339,7 @@ function rStats() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "left";
   ctx.font = "24px ShareTech";
-  write(mEng[17], rx + 64, ry + 256 + 64 + 16);
+  write(translate("Upgrades"), rx + 64, ry + 256 + 64 + 16);
   ctx.fillStyle = "white";
   ctx.font = "12px ShareTech";
   ctx.drawImage(Img.button, rx + 64, ry + 416 - 64);
@@ -1339,12 +1349,12 @@ function rStats() {
   ctx.drawImage(Img.button, rx + 320, ry + 416 - 64);
   ctx.drawImage(Img.button, rx + 320, ry + 416);
   ctx.textAlign = "center";
-  write("Thrust lvl " + ((t2-1)*8), rx + 64 + 54, ry + 416 - 64 + 14);
-  write("Radar lvl " + ((va2-1)*8), rx + 192 + 54, ry + 416 - 64 + 14);
-  write("Cargo lvl " + ((c2-1)*8), rx + 64 + 54, ry + 416 + 14);
-  write("Hull lvl " + ((mh2-1)*8), rx + 192 + 54, ry + 416 + 14);
-  write("Energy lvl " + ((e2-1)*8), rx + 320 + 54, ry + 416 - 64 + 14);
-  write("Agility lvl " + ((ag2-1)*8), rx + 320 + 54, ry + 416 + 14);
+  write(translate("Thrust lvl ") + ((t2-1)*8), rx + 64 + 54, ry + 416 - 64 + 14);
+  write(translate("Radar lvl ") + ((va2-1)*8), rx + 192 + 54, ry + 416 - 64 + 14);
+  write(translate("Cargo lvl ") + ((c2-1)*8), rx + 64 + 54, ry + 416 + 14);
+  write(translate("Hull lvl ") + ((mh2-1)*8), rx + 192 + 54, ry + 416 + 14);
+  write(translate("Energy lvl ") + ((e2-1)*8), rx + 320 + 54, ry + 416 - 64 + 14);
+  write(translate("Agility lvl ") + ((ag2-1)*8), rx + 320 + 54, ry + 416 + 14);
 
   // upgrades
   ctx.fillStyle = (seller == 200) ? "lime" : "white";
@@ -1400,14 +1410,14 @@ function rAchievements() {
       write(jsn.achNames[i].split(":")[1], rx + 768 * (1 + (i % 5) * 2) / 10, ry + 20 + 40 * Math.floor(i / 5) + 60);
     }
     ctx.font = "15px ShareTech";
-    write(achs[i] ? jsn.achNames[i].split(":")[0] : mEng[172], rx + 768 * (1 + (i % 5) * 2) / 10, ry + 8 + 40 * Math.floor(i / 5) + 60);
+    write(achs[i] ? jsn.achNames[i].split(":")[0] : translate("???"), rx + 768 * (1 + (i % 5) * 2) / 10, ry + 8 + 40 * Math.floor(i / 5) + 60);
   }
   ctx.restore();
 }
 function rMore() {
   ctx.textAlign = "center";
   ctx.font = "26px ShareTech";
-  const data = [mEng[62], mEng[63], mEng[64], mEng[66], mEng[67], mEng[68]];
+  const data = [translate("Wiki"), translate("Store"), translate("Leaderboard"), translate("Github"), translate("Discord"), translate("Credits")];
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 2; j++) {
       ctx.fillStyle = (seller == 500 + i+j*3) ? "lime" : "yellow";
@@ -1424,10 +1434,10 @@ function rWeaponStore() {
   ctx.textAlign = "right";
   ctx.fillStyle = "yellow";
 
-  write(mEng[5] + numToLS(Math.floor(money)), rx + 128 * 6 - 16, ry + 64);
+  write(translate("Money: ") + numToLS(Math.floor(money)), rx + 128 * 6 - 16, ry + 64);
   ctx.textAlign = "center";
   ctx.font = "24px ShareTech";
-  write(mEng[15], rx + 128 * 3, ry + 68);
+  write(translate("Weapons"), rx + 128 * 3, ry + 68);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
   // R to return to shop
@@ -1451,7 +1461,7 @@ function rWeaponStore() {
 
     write("*", wx, wy);
     ctx.fillStyle = seller - 20 == i ? "lime" : buyable;
-    write(mEng[69] + ("$" + weapon.price + "         ").substring(0, 9) + weapon.name, wx + 11, wy);
+    write(translate("[INFO] ") + ("$" + weapon.price + "         ").substring(0, 9) + weapon.name, wx + 11, wy);
     if (seller - 20 == i)
     {rWeaponStats(i);}
   }
@@ -1462,16 +1472,16 @@ function rWeaponStats(i) {
   wrapText(wepns[i].desc, rx + 32, ry + 364 + 16 * 2, 128 * 6 - 64, 16);
 
   write("Type   : " + wepns[i].type, rx + 32, ry + 364 + 16 * 5);
-  write(mEng[71] + (wepns[i].range == -1 ? mEng[206] : (wepns[i].range + " Meters")), rx + 32, ry + 364 + 16 * 6);
-  write(mEng[72] + (wepns[i].damage == -1 ? mEng[206] : wepns[i].damage), rx + 32, ry + 364 + 16 * 7);
-  write(mEng[73] + (wepns[i].speed == -1 ? mEng[206] : wepns[i].speed), rx + 32, ry + 364 + 16 * 8);
-  write(mEng[74] + (wepns[i].charge == -1 ? mEng[206] : ((wepns[i].charge / 25) + mEng[75])), rx + 256 + 32, ry + 364 + 16 * 6);
-  write(mEng[173] + ammoCodeToString(wepns[i].ammo), rx + 256 + 32, ry + 364 + 16 * 7);
-  write(mEng[174] + wepns[i].level, rx + 256 + 32, ry + 364 + 16 * 8);
+  write(translate("Range  : ") + (wepns[i].range == -1 ? translate("N/A") : (wepns[i].range + " Meters")), rx + 32, ry + 364 + 16 * 6);
+  write(translate("Damage : ") + (wepns[i].damage == -1 ? translate("N/A") : wepns[i].damage), rx + 32, ry + 364 + 16 * 7);
+  write(translate("Speed  : ") + (wepns[i].speed == -1 ? translate("N/A") : wepns[i].speed), rx + 32, ry + 364 + 16 * 8);
+  write(translate("Charge : ") + (wepns[i].charge == -1 ? translate("N/A") : (wepns[i].charge / 25) + translate(" Seconds")), rx + 256 + 32, ry + 364 + 16 * 6);
+  write(translate("Ammo   : ") + ammoCodeToString(wepns[i].ammo), rx + 256 + 32, ry + 364 + 16 * 7);
+  write(translate("Ship   : ") + wepns[i].level, rx + 256 + 32, ry + 364 + 16 * 8);
 
   if (actuallyBuying) {
     ctx.fillStyle = wepns[i].price > money ? "orange" : "lime";
-    const buyText = wepns[i].price > money ? mEng[76] : mEng[77];
+    const buyText = wepns[i].price > money ? translate("Not Enough Money") : translate("Press B to Buy");
     ctx.font = "24px ShareTech";
     write(buyText, rx + 512 + 16, ry + 256 + 100 + 16 * 7);
   }
@@ -1487,11 +1497,11 @@ function rBaseGui() {
   ctx.lineWidth = 2;
 
   const tabs = {};
-  tabs[0] = mEng[142];
-  tabs[1] = mEng[143];
-  tabs[2] = mEng[144];
-  tabs[3] = mEng[145];
-  tabs[4] = mEng[146];
+  tabs[0] = translate("Shop");
+  tabs[1] = translate("Quests");
+  tabs[2] = translate("Stats");
+  tabs[3] = translate("Achievements");
+  tabs[4] = translate("More");
 
   infoBox(rx, ry + 44, 768, 512 - 44, "black", "white");
 
@@ -1509,7 +1519,7 @@ function rBaseGui() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "right";
   ctx.font = "18px ShareTech";
-  write(mEng[78], rx + 768 - 16, ry + 512 + 24);
+  write(translate("PRESS X TO EXIT SPACE STATION"), rx + 768 - 16, ry + 512 + 24);
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
   // ctx.drawImage(Img.baseOutline, rx - 4, ry - 4);
@@ -2087,7 +2097,7 @@ socket.on("spoils", function(data) {
   if (data.amt == 0) return;
   let msg = ""; let x = 0; let y = 0;
   if (data.type === "experience") {
-    msg = mEng[175] + data.amt + mEng[176];
+    msg = translate("+") + data.amt + translate(" EXP!");
     x = w / 2 + 256;// next to exp bar
     y = h - 32;
   } else if (data.type === "money") {
@@ -2095,11 +2105,11 @@ socket.on("spoils", function(data) {
     x = w - 512;
     y = 64;
   } else if (data.type === "ore") {
-    msg = mEng[175] + data.amt + mEng[177];
+    msg = translate("+") + data.amt + translate(" Ore!");
     x = w - 512;
     y = 96;
   } else if (data.type === "life") {
-    msg = mEng[175] + data.amt + (data.amt > 1 ? mEng[178] : mEng[179]);
+    msg = translate("+") + data.amt + (data.amt > 1 ? translate(" lives!") : translate(" life!"));
     x = w - 512;
     y = 128;
   }
@@ -2566,13 +2576,13 @@ document.addEventListener("mousemove", function(evt) {
 
   // Shop
   else if (docked && tab == 0) {
-    if (mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(mEng[12]).width && my > ry + 64 && my < ry + 80) seller = 610;
+    if (mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(translate("[Sell All]")).width && my > ry + 64 && my < ry + 80) seller = 610;
     else if (mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
       seller = 5 + Math.floor((my - 84 - ry) / 32);
       if (Math.floor((my - 84 - ry) / 16) % 2 == 1) seller = 0;
     } else if (my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) seller = Math.floor((my - ry - 246) / 16 + 10);
-    else if (my > ry + 256 - 30 && my < ry + 256 - 16 && mx > rx + 512 - 64 && mx < rx + 512 - 64 + ctx.measureText(mEng[18]).width) seller = 601;
-    else if (mx > rx + 768 - 16 - ctx.measureText(mEng[14]).width && mx < rx + 768 - 16 && my > ry + 512 - 32 && my < ry + 512 - 16) seller = 611;
+    else if (my > ry + 256 - 30 && my < ry + 256 - 16 && mx > rx + 512 - 64 && mx < rx + 512 - 64 + ctx.measureText(translate("[View All]")).width) seller = 601;
+    else if (mx > rx + 768 - 16 - ctx.measureText(translate("[BUY]")).width && mx < rx + 768 - 16 && my > ry + 512 - 32 && my < ry + 512 - 16) seller = 611;
     else if (my > ry + 256 - 16 && my < ry + 512 - 16 && mx > rx + 16 && mx < rx + 256 + 16) {
       if (my > ry + 256 + 128 + 32) seller = 100;
       else seller = 0;
@@ -2800,8 +2810,8 @@ function expToLife() {
 }
 function abbrevInt(x) {
   if (x < 10000) return "" + Math.round(x);
-  if (x < 10000000) return Math.round(x / 1000) + mEng[180];
-  if (x < 10000000000) return Math.round(x / 1000000) + mEng[181];
+  if (x < 10000000) return Math.round(x / 1000) + translate("K");
+  if (x < 10000000000) return Math.round(x / 1000000) + translate("M");
 }
 function lagMath(arr) {
   if (lagArr == 0) {
@@ -2954,7 +2964,7 @@ function rLore() {
   ctx.fillStyle = "yellow";
   const t = (new Date()).getTime() / 6000;
   ctx.font = ((32 + 6 * Math.sin(24 * t))*(loreTimer/(loreTimer+50))) + "px ShareTech";
-  ctx.fillText(mEng[80], w/2, h - 48);
+  ctx.fillText(translate("Click to play!"), w/2, h - 48);
 }
 function rEnergyBar() {
   if (equipped === 0) return;
@@ -3134,7 +3144,7 @@ function rTexts(lag, arr) {
   ctx.font = "14px ShareTech";
   ctx.textAlign = "right";
   ctx.fillStyle = "yellow";
-  const lagNames = [mEng[182], mEng[183], mEng[184], mEng[185], mEng[186], mEng[187], mEng[188], mEng[189], mEng[190], mEng[191], mEng[192]];
+  const lagNames = ["Background", "Stars", "Planets/Bases", "Asteroids/packages", "Players/trails", "Weapons", "Gui", "Chat", "Map", "Radar", "Gui2"];
   const info = {};
   const lbShift = guest ? 8:266;
   meanNLag *= nLagCt;
@@ -3142,33 +3152,34 @@ function rTexts(lag, arr) {
   nLagCt++;
   meanNLag /= (nLagCt + 0.0);
 
-  info[0] = mEng[149] + numToLS(Math.round(experience));
-  info[1] = mEng[5] + numToLS(Math.floor(money));
-  info[2] = mEng[6] + numToLS(kills);
-  info[3] = mEng[148] + rank;
-  info[4] = mEng[3] + getSectorName(sx, sy);
+  info[0] = translate("Experience: ") + numToLS(Math.round(experience));
+  info[1] = translate("Money: ") + numToLS(Math.floor(money));
+  info[2] = translate("Kills: ") + numToLS(kills);
+  info[3] = translate("Rank: ") + rank;
+  info[4] = translate("Sector: ") + getSectorName(sx, sy);
 
   info[5] = "";
-  info[6] = isChrome?"":mEng[81];
-  info[7] = isChrome?"":mEng[82];
+  info[6] = "";
+  info[7] = "";
 
   if (dev) {
-    info[8] = mEng[83] + Number((lag / 40.).toPrecision(3)) + mEng[193];
-    info[9] = mEng[84] + Number((sLag / 40.).toPrecision(3)) + mEng[193];
-    info[10] = mEng[85] + nLag + " ms " + mEng[194] + Number(meanNLag).toPrecision(3) + " ms" + ")";
-    info[11] = mEng[86] + fps;
-    info[12] = mEng[87] + ups;
+    //We won't translate these things, really no point.
+    info[8] = "Client Lag: " + Number((lag / 40.).toPrecision(3)) + " ticks";
+    info[9] = "Server Lag: " + Number((sLag / 40.).toPrecision(3)) + " ticks";
+    info[10] = "2-Way Latency: " + nLag + " ms " + "(Mean: " + Number(meanNLag).toPrecision(3) + " ms" + ")";
+    info[11] = "FPS: " + fps;
+    info[12] = "UPS: " + ups;
     if (lag > 50) {
-      info[5] = mEng[88];
-      info[6] = mEng[89];
+      info[5] = translate("You appear to be lagging due to an old system or browser.");
+      info[6] = translate("We recommend playing on a newer system if available.");
       info[7] = "";
     } else if (nLag > 100) {
-      info[5] = mEng[90];
-      info[6] = mEng[91];
-      info[7] = mEng[92];
+      info[5] = translate("You appear to be lagging due to a slow connection.");
+      info[6] = "";
+      info[7] = "";
     } else if (sLag > 50) {
-      info[5] = mEng[95];
-      info[6] = mEng[92];
+      info[5] = translate("Our servers are lagging due to heavy traffic at the moment.");
+      info[6] = translate("We apologize for the inconvenience.");
       info[7] = "";
     }
   }
@@ -3176,7 +3187,7 @@ function rTexts(lag, arr) {
   const il = 13;
 
   for (let i = 0; i < ((dev && lag!=-1) ? il + lagArr.length : 8); i++) {
-    write(i < il? info[i] : (lagNames[i - il] + mEng[195] + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
+    write(i < il? info[i] : (lagNames[i - il] + translate("Gui2") + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
   }
   ctx.textAlign = "left";
 }
@@ -3205,12 +3216,12 @@ function rCurrQuest() {
   ctx.fillStyle = "cyan";
   ctx.textAlign = "center";
   let desc = "";
-  if (quest.type == "Mining") desc = mEng[37] + numToLS(quest.amt) + mEng[38] + quest.metal + mEng[39] + getSectorName(quest.sx, quest.sy) + mEng[40];
-  if (quest.type == "Base") desc = mEng[41] + getSectorName(quest.sx, quest.sy) + mEng[40];
-  if (quest.type == "Delivery") desc = mEng[42] + getSectorName(quest.sx, quest.sy) + mEng[43] + getSectorName(quest.dsx, quest.dsy) + mEng[40];
-  if (quest.type == "Secret") desc = mEng[156] + getSectorName(quest.sx, quest.sy) + mEng[157];
-  if (quest.type == "Secret2") desc = mEng[158] + getSectorName(quest.sx, quest.sy) + mEng[159] + secret2PlanetName + mEng[40];
-  if (quest.type == "Secret3") desc = mEng[160];
+  if (quest.type == "Mining") desc = translate("Bring ") + numToLS(quest.amt) + translate(" units of ") + quest.metal + translate(" to sector ") + getSectorName(quest.sx, quest.sy) + translate(".");
+  if (quest.type == "Base") desc = translate("Eliminate enemy base in sector ") + getSectorName(quest.sx, quest.sy) + translate(".");
+  if (quest.type == "Delivery") desc = translate("Obtain package from planet ") + getSectorName(quest.sx, quest.sy) + translate(" and deliver it to planet ") + getSectorName(quest.dsx, quest.dsy) + translate(".");
+  if (quest.type == "Secret") desc = translate("Proceed to sector ") + getSectorName(quest.sx, quest.sy) + translate(" for further instructions.");
+  if (quest.type == "Secret2") desc = translate("Eliminate all enemy players and turrets in ") + getSectorName(quest.sx, quest.sy) + translate(" and visit planet ") + secret2PlanetName + translate(".");
+  if (quest.type == "Secret3") desc = translate("Deliver package to a permanent black hole sector.");
   write(desc, w / 2, h - 56);
   ctx.textAlign = "left";
 }
@@ -3219,12 +3230,12 @@ function rEMP() {
   ctx.textAlign = "center";
   ctx.fillStyle = "orange";
   if (empTimer > 0) {
-    write(mEng[96] + Math.round(empTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-    currAlert = mEng[98];
+    write(translate("EMP in Effect for ") + Math.round(empTimer / 25) + translate(" Seconds") + translate("!"), w / 2, 256);
+    currAlert = translate("Power Lost due to EMP!");
   }
   if (gyroTimer > 0) {
-    write(mEng[99] + Math.round(gyroTimer / 25) + mEng[75] + mEng[97], w / 2, 256);
-    currAlert = mEng[100];
+    write(translate("Gyrodynamite in Effect for ") + Math.round(gyroTimer / 25) + translate(" Seconds") + translate("!"), w / 2, 256);
+    currAlert = translate("Stabilization Lost due to Gyrodynamite!");
   }
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
@@ -3275,7 +3286,7 @@ function rSectorEdge() {
     ctx.save();
     ctx.translate(i, h / 2);
     ctx.rotate(Math.PI / 2);
-    ctx.fillText(mEng[103], 0, 0);
+    ctx.fillText(translate("Edge of Sector"), 0, 0);
     ctx.restore();
   }
   for (let i = (h / 2 - py) % sectorWidth; i < h; i += sectorWidth) {
@@ -3283,7 +3294,7 @@ function rSectorEdge() {
     ctx.moveTo(0, i + scry);
     ctx.lineTo(w, i + scry);
     ctx.stroke();
-    write(mEng[103], w / 2, i);
+    write(translate("Edge of Sector"), w / 2, i);
   }
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
@@ -3389,13 +3400,13 @@ function rLB() {
   ctx.fillStyle = "yellow";
   ctx.font = "24px ShareTech";
   ctx.textAlign = "center";
-  write(mEng[105], w - 128, 28);
+  write(translate("Leaderboard"), w - 128, 28);
   ctx.font = "14px ShareTech";
   ctx.fillStyle = "yellow";
-  write(mEng[106], w - 208, 48);
+  write(translate("Name"), w - 208, 48);
   ctx.textAlign = "right";
-  write(mEng[107], w - 48 - 16, 48);
-  write(mEng[108], w - 16, 48);
+  write(translate("Exp"), w - 48 - 16, 48);
+  write(translate("Rank"), w - 16, 48);
   for (let i = 0; i < lb.length; i++) {
     const place = 1 + ((i != 20) ? i : parseInt(lb[i].id));
     ctx.textAlign = "left";
@@ -3412,7 +3423,7 @@ function rLB() {
       write(lb[i].name.substring(4), w - 216, (i + 4) * 16);
     } else write(lb[i].name, w - 216, (i + 4) * 16);
     ctx.fillStyle = "yellow";
-    write(place + mEng[40], w - 248, (i + 4) * 16);
+    write(place + translate("."), w - 248, (i + 4) * 16);
     ctx.textAlign = "right";
     write(abbrevInt(lb[i].exp), w - 48 - 16, (i + 4) * 16);
     write(lb[i].rank, w - 16, (i + 4) * 16);
@@ -3629,7 +3640,7 @@ function rAfk() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "center";
   ctx.font = "40px ShareTech";
-  write(mEng[109], rx + 128 * 3, ry + 512);
+  write(translate("Disconnected: AFK!"), rx + 128 * 3, ry + 512);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
 }
@@ -3637,10 +3648,10 @@ function rDead() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "center";
   ctx.font = "50px ShareTech";
-  write(mEng[110], rx + 128 * 3, ry + 128);
+  write(translate("You Died!"), rx + 128 * 3, ry + 128);
   ctx.font = "34px ShareTech";
-  write(mEng[13] + lives, rx + 128 * 3, ry + 384);
-  if (lives > 0) write(mEng[111], rx + 128 * 3, ry + 512);
+  write(translate("Lives Remaining: ") + lives, rx + 128 * 3, ry + 384);
+  if (lives > 0) write(translate("Press E to respawn."), rx + 128 * 3, ry + 512);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
 }
@@ -3649,10 +3660,10 @@ function rCreds() {
   ctx.textAlign = "center";
   ctx.font = "20px ShareTech";
   let str = "";
-  if (credentialState == 1) str = mEng[112];
-  if (credentialState == 2) str = mEng[113];
-  if (credentialState == 3) str = mEng[114];
-  if (credentialState == 4) str = mEng[115];
+  if (credentialState == 1) str = translate("Invalid user/pass combo!");
+  if (credentialState == 2) str = translate("Username must be alphanumeric, with 4-16 characters!");
+  if (credentialState == 3) str = translate("Password must be 6-128 characters long and not the same as your username!");
+  if (credentialState == 4) str = translate("Username taken!");
   if (credentialState == 5) str = "Username is profane!";
   if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
   if (credentialState == 8) str = "You must be rank 1 to create an account!";
@@ -3677,25 +3688,25 @@ function rTut() {
   ctx.fillStyle = "yellow";
   if (guest) {
     if (money != 8000 && currTut > 3) {
-      text = mEng[123]; if (currTut < 5) {
+      text = translate("Go to the Base and make an account!"); if (currTut < 5) {
         currTut = 5; addBigNote([256, text, "", ""]);
       }
     } else if (!didW) {
-      text = mEng[117]; if (currTut < 1) {
+      text = translate("Press W (or Up Arrow) to move forward!"); if (currTut < 1) {
         currTut = 1; addBigNote([256, text, "", ""]);
       }
     } else if (!didSteer) {
-      text = mEng[118]; if (currTut < 2) {
+      text = translate("Press A and D (or Left/Right Arrows) to steer!"); if (currTut < 2) {
         currTut = 2; addBigNote([256, text, "", ""]);
       }
     } else if (ship == 0 && ore == 0) {
-      text = mEng[119];
-      line2 = mEng[120];
+      text = translate("Follow the orange arrow!");
+      line2 = translate("Shoot asteroids with spacebar!");
       if (currTut < 3) {
         currTut = 3; addBigNote([256, text, line2, ""]);
       }
     } else if (ship == 0) {
-      text = docked ? mEng[122] : mEng[121]; if (currTut < 4) {
+      text = docked ? translate("Sell your ore in the Base Shop!") : translate("Follow the white arrow and press X to Dock!"); if (currTut < 4) {
         currTut = 4; addBigNote([256, text, "", ""]);
       }
     }
@@ -3722,18 +3733,18 @@ function undoDmg(r) {
 }
 function rAlert() {
   ctx.fillStyle = tick % 6 < 3 ? "orange" : "yellow";
-  if (lives < 5) currAlert = "Low Lives";
-  if (lives == 2) bigAlert = "TWO LIVES LEFT";
-  if (lives == 1) bigAlert = "ONE LIFE LEFT";
+  if (lives < 5) currAlert = translate("Low Lives");
+  if (lives == 2) bigAlert = translate("TWO LIVES LEFT");
+  if (lives == 1) bigAlert = translate("ONE LIFE LEFT");
   if (currAlert !== "") {
     ctx.font = "20px ShareTech";
     ctx.textAlign = "right";
-    write(mEng[125] + currAlert, w - 16, h - 320);
+    write(translate("Alert: ") + currAlert, w - 16, h - 320);
   }
   if (bigAlert !== "") {
     ctx.font = "30px ShareTech";
     ctx.textAlign = "center";
-    write(mEng[125] + bigAlert, w/2, h/4);
+    write(translate("Alert: ") + bigAlert, w/2, h/4);
   }
 }
 function rSavedNote() {
@@ -3743,8 +3754,8 @@ function rSavedNote() {
   ctx.strokeStyle = "black";
   ctx.font = "64px ShareTech";
   ctx.globalAlpha = Math.sqrt(savedNote / 41);
-  ctx.fillText(mEng[126], w / 2, h / 2);
-  ctx.strokeText(mEng[126], w / 2, h / 2);
+  ctx.fillText(translate("Progress Saved!"), w / 2, h / 2);
+  ctx.strokeText(translate("Progress Saved!"), w / 2, h / 2);
   ctx.restore();
 }
 function roundRect(whatctx, x, y, width, height, radius, fill, stroke) {
@@ -3808,8 +3819,8 @@ function rRaid() {
   ctx.font = "16px ShareTech";
 
   if (raidTimer >= 0 && raidTimer < 15000) {
-    write(mEng[200] + minutes + ":" + seconds, w / 2, h - 120);
-    write(mEng[201] + points, w / 2, h - 80);
+    write(translate("Raid In Progress: ") + minutes + ":" + seconds, w / 2, h - 120);
+    write(translate("Points: ") + points, w / 2, h - 80);
 
     ctx.font = "14px ShareTech";
     write("/   /", w / 2, h - 100);
@@ -3825,7 +3836,7 @@ function rRaid() {
     ctx.fillStyle = "cyan";
     ctx.textAlign = "left";
     write(raidBlue, w / 2 + 24, h - 100);
-  } else if (docked && minutes > 5) write(mEng[202] + (minutes - 10) + ":" + seconds, w / 2, h - 120);
+  } else if (docked && minutes > 5) write(translate("Next raid in: ") + (minutes - 10) + ":" + seconds, w / 2, h - 120);
   ctx.restore();
 }
 function rBigNotes() {
@@ -3865,7 +3876,7 @@ function rKillStreak() {
   let strTime = "" + Math.round(killStreakTimer / 25);
   while (strTime.length < 2) strTime = "0" + strTime;
   strTime = "0:" + strTime;
-  const strMult = mEng[163] + killStreak;
+  const strMult = translate("x") + killStreak;
 
   ctx.save();
   ctx.globalAlpha = Math.min(1, 1 - (killStreakTimer - 730.) / 15.);
@@ -4127,7 +4138,7 @@ function rPlanets() {
   ctx.textAlign = "center";
   ctx.fillStyle = brighten(selfo.color);
   ctx.font = "30px ShareTech";
-  write(mEng[127] + selfo.name, rendX, rendY - 196);
+  write(translate("Planet ") + selfo.name, rendX, rendY - 196);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
 }
@@ -4164,8 +4175,8 @@ function rVorts() {
     ctx.rotate(-.5 * angleT % (Math.PI * 2));
     ctx.drawImage(img, -size * 3 / 4, -size * 3 / 4, 1.5 * size, 1.5 * size);
     ctx.restore();
-    if (selfo.isWorm) currAlert = mEng[128];
-    else bigAlert = mEng[129];
+    if (selfo.isWorm) currAlert = translate("Wormhole Nearby!");
+    else bigAlert = translate("Black Hole Nearby!");
     rBlackHoleWarning(selfo.x, selfo.y);
   }
 }
@@ -4205,7 +4216,7 @@ function rPlayers() {
     ctx.textAlign = "left";
 
     if (selfo.name === myName) {
-      if (selfo.health < selfo.maxHealth * .3) currAlert = mEng[150];
+      if (selfo.health < selfo.maxHealth * .3) currAlert = translate("Low Health!");
     } else {
       for (let i = 0; i<3; i++) {
         if (selfo.color===teamColors[i]) {
@@ -4259,7 +4270,7 @@ function rSelfCloaked() {
   }
   const pmaxHealth = ships[ship].health * mh2;
   if (phealth < pmaxHealth * .3) {
-    currAlert = mEng[150];
+    currAlert = translate("Low Health!");
   }
 
   if (phealth / pmaxHealth >= 1)// draw hp bar
@@ -4282,7 +4293,7 @@ function rBases() {
     let ph = image.height;
     const rendX = basesInfo.x - px + w / 2 + scrx;
     const rendY = basesInfo.y - py + h / 2 + scry;
-    if (basesInfo.color !== pc) currAlert = mEng[131];
+    if (basesInfo.color !== pc) currAlert = translate("Enemy Base Nearby!");
 
     if (basesInfo.isBase) {
       ctx.save();
@@ -4295,7 +4306,7 @@ function rBases() {
       ctx.fillStyle = "lime";
       if (experience < 64 && basesInfo.color == pc && square(px - basesInfo.x) + square(py - basesInfo.y) < square(512)) {
         ctx.font = "" + (2.5 * sinLow(tick / 8) + 15) + "px ShareTech";
-        write(mEng[130], rendX, rendY - 96);
+        write(translate("X TO DOCK WITH BASE"), rendX, rendY - 96);
         ctx.font = "14px ShareTech";
       }
       ctx.textAlign = "left";
