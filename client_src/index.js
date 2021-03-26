@@ -230,13 +230,13 @@ let sectorPoints = 0;
 
 const wepns = jsn.weapons; const ships = jsn.ships;
 
-function translate(english, arr){
-  if(typeof mEng[english] === "undefined")
-    return "TRANSLATION ERROR";
-  var translated = (languageNumber == 0)? english : mEng[english][languageNumber-1];
-  if(arr !== undefined)
-    while(arr.length > 0)
-      translated = translated.replace('#', arr.shift());
+function translate(english, arr) {
+  if (typeof mEng[english] === "undefined")
+  {return "TRANSLATION ERROR";}
+  let translated = (languageNumber == 0)? english : mEng[english][languageNumber-1];
+  if (arr !== undefined)
+  {while (arr.length > 0)
+  {translated = translated.replace("#", arr.shift());}}
   return translated;
 }
 
@@ -3163,7 +3163,7 @@ function rTexts(lag, arr) {
   info[7] = "";
 
   if (dev) {
-    //We won't translate these things, really no point.
+    // We won't translate these things, really no point.
     info[8] = "Client Lag: " + Number((lag / 40.).toPrecision(3)) + " ticks";
     info[9] = "Server Lag: " + Number((sLag / 40.).toPrecision(3)) + " ticks";
     info[10] = "2-Way Latency: " + nLag + " ms " + "(Mean: " + Number(meanNLag).toPrecision(3) + " ms" + ")";
