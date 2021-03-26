@@ -2677,11 +2677,11 @@ document.addEventListener("mousedown", function(evt) {
   /* if(i == 350)
     socket.emit('cancelquest', {});*/
 
-  //more page
+  // more page
   if (i == 500) window.open("https://tornspace.wikia.com/wiki/Torn.space_Wiki", "_blank");
   if (i == 501) window.open("/store", "_blank");
   if (i == 502) window.open("/leaderboard", "_blank");
-  //row 2
+  // row 2
   if (i == 503) window.open("https://github.com/TornDotSpace/Torn", "_blank");
   if (i == 504) window.open("https://discord.gg/tGrYXwP", "_blank");
   if (i == 505) window.open("/credits", "_blank");
