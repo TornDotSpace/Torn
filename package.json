@@ -28,7 +28,7 @@
     "@babel/preset-react": "^7.12.13",
     "@babel/runtime": "^7.13.10",
     "babel-loader": "^8.2.2",
-    "eslint": "^7.22.0",
+    "eslint": "^7.23.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-react": "^7.23.1",
     "git-revision-webpack-plugin": "^3.0.6",
