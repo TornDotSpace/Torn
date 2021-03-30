@@ -306,7 +306,6 @@ function loadAudio(name, _src) {
     preload: true,
     onload: function() {
       currLoading = "Loaded audio "+name;
-      console.log(currLoading);
       ++Aud_prgs[0];
     },
     pool: 15,
@@ -1110,7 +1109,8 @@ function rBuyShipWindow() {
   }
 
   ctx.fillStyle = "white";
-  wrapText(translate("Description: ") + (shipView > rank ? translate("???") : ships[shipView].desc), rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
+  if(shipView<=rank)
+    wrapText(translate("Description: ") + ships[shipView].desc, rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
 
   if (shipView < ships.length) ctx.drawImage(Img.arrow, rendX + 128 - 48, rendY - 16);
   if (shipView > 0) {

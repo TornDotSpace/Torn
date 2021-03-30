@@ -1088,6 +1088,7 @@ function shutdown() {
 
 function broadcastInfo() {
   const randomMsgs = [
+    "Contact us if you want to translate Torn into your language!",
     "Never give anyone your password, for any reason!",
     "Support the game by buying a VIP pass in the store!",
     "Join the torn.space discord in the 'more' tab!",
@@ -1096,7 +1097,7 @@ function broadcastInfo() {
     "Mute bothersome players with /mute username",
     "Register your email with /email you@example.net",
   ];
-  chatAll("~`#ff0000~`SERVER: "+randomMsgs[broadcastMsg%randomMsgs.length]);
+  chatAll("~`#ff0000~`"+randomMsgs[broadcastMsg%randomMsgs.length]);
   broadcastMsg++;
   setTimeout(broadcastInfo, 20*60*1000);
 }
