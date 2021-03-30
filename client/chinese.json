@@ -2,7 +2,7 @@
     "achNames":[
         "First Blood:打败一辆飞船。",
         "On a Roll:打败十辆飞船。",
-        "Bloodlust:打败一辆飞船。",
+        "Bloodlust:打败一白辆飞船。",
         "General:Kill:打败一千辆飞船。",
         "Warlord:Kill:打败四千辆飞船。",
         "Reaper:打败一万辆飞船。",
@@ -13,82 +13,82 @@
         "Gone Postal:杀死一个信使。",
         "Emo:自杀。",
         "Blood Trail:飞船损害反抗+5%。",
-        "Miner:矿一个小行星。",
-        "Collector:矿每一种小行星最少一次。",
+        "Miner:挖一个小行星。",
+        "Collector:挖每一种小行星。",
         "Quarrier:获得四千矿石。",
         "Motherload:获得一万五千矿石",
-        "Rich Man:获得一万美元。",
-        "Richer Man:获得十万美元。",
-        "Millionaire:获得一百万美元。",
-        "Rolling In It:获得一千万美元。",
-        "Thief:Steal a package.",
-        "Questor:Community service.",
-        "Adventurer:Complete one of each quest.",
-        "Money Trail:1.05x Money.",
-        "Shift to Drift:Drift!",
-        "Drifter:Drift for 1 minute total.",
-        "Tramp:Drift 10 minutes total.",
-        "Dizzy:Drift 1 hour total.",
-        "Godpinkie:Drift 10 hours total.",
-        "Takumi:Forced Induction.",
-        "Bunta:Hyper-drift.",
-        "Reverse:I can go backwards!?",
-        "Inertia Drift:Drift into a black hole.",
-        "Dangerous:Kill while drifting.",
-        "Stickshift:Reverse Turbo Drift.",
-        "Panda Trail:1.05x Agility.",
-        "Here to Stay:Make an account.",
-        "Ouch:Die.",
-        "Risky Business:Accept a quest in a black hole sector.",
-        "Too Slow:Fall into a wormhole.",
-        "Oops...:Fall into a black hole.",
-        "Boing!:Touch the edge.",
-        "Traveller:Visit every sector.",
-        "Schizoid:Visit all 4 corners.",
-        "Astronaut:Claim a planet.",
-        "Imperialist:Claim each planet once.",
-        "Random Trail:Juke Further!"
+        "Rich Man:获得一万元。",
+        "Richer Man:获得十万元。",
+        "Millionaire:获得一百万元。",
+        "Rolling In It:获得一千万元。",
+        "Thief:偷一个包裹。",
+        "Questor:社区服务。",
+        "Adventurer:每一个任务最少完成一次。",
+        "Money Trail:完成任务的奖励+5%。",
+        "Shift to Drift:漂移！",
+        "Drifter:一共漂移一分钟。",
+        "Tramp:一共漂移十分钟。",
+        "Dizzy:一共漂移一个小时。",
+        "Godpinkie:一共漂移十个小时。",
+        "Takumi:被迫感应。",
+        "Bunta:超级-漂移。",
+        "Reverse:我可以倒退？",
+        "Inertia Drift:漂移进一个黑洞。",
+        "Dangerous:漂移中打败一辆飞船。",
+        "Stickshift:逆转-涡轮-漂移。",
+        "Panda Trail:灵活性+5%。",
+        "Here to Stay:登记一个帐户。",
+        "Ouch:死一次。",
+        "Risky Business:接受一个在黑洞象限里的任务。",
+        "Too Slow:掉进一个虫洞。",
+        "Oops...:掉进一个黑洞。",
+        "Boing!:碰到边界。",
+        "Traveller:去每一个象限。",
+        "Schizoid:去每一个角落。",
+        "Astronaut:宣称一个行星。",
+        "Imperialist:宣称每一个行星最少一次。",
+        "Random Trail:横向运动+5m。"
     ],
     "weapons":[
         {
-            "name":"Stock Gun",
-            "desc":"A basic, medium-range gun. At least you don't have to worry about ammo with this one. Deals double damage to asteroids"
+            "name":"库存枪",
+            "desc":"一个基本的，中等范围的枪。这种有无限的弹药。一个基本的，中等范围的枪。这种枪有无限的弹药。对小行星有两倍的损害。"
         },
         {
-            "name":"Plasma Gun",
-            "desc":"Short in range compared with most guns, slow to shoot and slow to recharge, but packs one hell of a punch."
+            "name":"等离子枪",
+            "desc":"范围小，子弹也慢，但是每一个子弹很强。"
         },
         {
-            "name":"Reverse Gun",
-            "desc":"Get off my tail! Basic, slightly more powerful Stock Gun that shoots backwards."
+            "name":"反向枪",
+            "desc":"跟库存枪一样，但是更强一点。这把枪是向后射击的。"
         },
         {
-            "name":"Rifle",
-            "desc":"Powerful, long-range, fast bullets. Does a lot of damage. Perfect for shooting at a large swarm of distant enemies."
+            "name":"步枪",
+            "desc":"这些子弹又有力，又很快。它的范围也很大。"
         },
         {
-            "name":"Shotgun",
-            "desc":"This will come in handy in an ambush. Sprays a lot of bullets around where you shoot. Powerful but hard to control."
+            "name":"弹枪",
+            "desc":"这把枪发射很多子弹，但是很难瞄准。当敌舰很多时，这把枪很有用。"
         },
         {
-            "name":"Machine Gun",
-            "desc":"Rapid-fire! Ammunition is a bit weak, but that's no matter if you're shooting 5 rounds per second!"
+            "name":"机枪",
+            "desc":"这把枪射击得很快。这把枪的子弹不是很强，但是一秒钟可以射出五个子弹。"
         },
         {
-            "name":"Minigun",
-            "desc":"Similar to the machine gun, with two active barrels instead of one. Great weapon if you can aim it quickly."
+            "name":"加特林机枪",
+            "desc":"跟机枪差不多，但是会一次射出两个子弹。"
         },
         {
-            "name":"Plasma Beam",
-            "desc":"Automatically aims at the nearest enemy within a medium-large range and fires a beam of plasma."
+            "name":"等离子束",
+            "desc":"自动瞄准中等范围内最近的敌人并发射一个等离子束。"
         },
         {
-            "name":"Laser Beam",
-            "desc":"Automatically aims at the nearest enemy within a medium-short range."
+            "name":"激光束",
+            "desc":"自动瞄准中-短范围内的最近敌方飞船。"
         },
         {
-            "name":"Hadron Beam",
-            "desc":"Medium-range particle beam accelerator. Does a lot of damage, but takes a while to recharge. Can be used as a quick trump card for close calls."
+            "name":"强子束",
+            "desc":"中等范围粒子束加速器。会造成很大的损害，但是需要一段时间才能在射。"
         },
         {
             "name":"Missile",
