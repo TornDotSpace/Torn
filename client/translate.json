@@ -80,11 +80,11 @@
 	"K":	["K",	"000",		"千"],
 	"M":	["M",	"000000",	"百万"],
 
-	"Experience: ":	["Experiencia: ",	"sona: ",		"经验: "],
-	"Money: ":		["Dinero: ",		"mani: ",		"余额: "],
-	"Kills: ":		["Asesinatos: ",	"jan moli: ",	"攻击数: "],
-	"Rank: ":		["Rango: ",			"nanpa: ",		"排名: "],
-	"Sector: ":		["Sector: ",		"ma: ",			"区域: "],
+	"Experience: #":	["Experiencia: #",	"sona: #",		"经验: #"],
+	"Money: #":			["Dinero: #",		"mani: #",		"余额: #"],
+	"Kills: #":			["Asesinatos: #",	"jan moli: #",	"攻击数: #"],
+	"Rank: #":			["Rango: #",		"nanpa: #",		"排名: #"],
+	"Sector: #":		["Sector: #",		"ma: #",		"区域: #"],
 
 	"Are you sure you would like to sell your # for $#?":	["¿Está seguro de que quiere vender su # por $#?",	"sina kin wile pana e #, kama jo e $#?",				"确认出售你的 #: #?"],
 	"Press Y to confirm or N to return.":					["Presione Y para confirmar o N para regresar.",	"wile la, o kepeken e Y. wile ala la, o kepeken e N.",	"点击 Y 确认, 或点击 N 取消."],

@@ -1290,19 +1290,15 @@ function rStats() {
   let eMult = e2;
   for (let i = 0; i < activeGens; i++) eMult *= 1.06;
 
-  const stats = [translate("Thrust  : "), translate("Cargo   : "), translate("Health  : "), translate("Energy  : "), translate("Kills: "), translate(" Bases Destroyed"), translate("Ship Value: $"), translate("Net Worth: $"), translate(" Experience"), translate("Rank: "), translate(" Achievements")];
+  const stats = [translate("Thrust  : "), translate("Cargo   : "), translate("Health  : "), translate("Energy  : "),
+                 translate("Players Killed: #", [numToLS(kills)]), translate("Bases Destroyed: #", [numToLS(baseKills)]),
+                 translate("Ship Value: $#", [numToLS(Number((worth + upgradeCosts).toPrecision(3)))]), translate("Net Worth: $#", [numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3)))]),
+                 translate("Experience: #", [numToLS(Math.round(experience))]), translate("Rank: #", [rank]), translate("Achievements: #", [achievements])];
 
   stats[0] += numToLS(Number((ships[ship].thrust * t2).toPrecision(3)));
   stats[1] += numToLS(Number((ships[ship].capacity * c2).toPrecision(3)));
   stats[2] += numToLS(Number((ships[ship].health * mh2).toPrecision(3)));
   stats[3] += numToLS(Number((eMult).toPrecision(3)));
-  stats[4] += numToLS(kills);
-  stats[5] = numToLS(baseKills) + stats[5];
-  stats[6] += numToLS(Number((worth + upgradeCosts).toPrecision(3)));
-  stats[7] += numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3)));
-  stats[8] = numToLS(Math.round(experience)) + stats[8];
-  stats[9] += rank;
-  stats[10] = achievements + stats[10];
 
   for (let i = 0; i < stats.length; i++) write(stats[i], rx + 512 - 64, ry + 44 + 32 + i * 16);
 
@@ -3152,11 +3148,11 @@ function rTexts(lag, arr) {
   nLagCt++;
   meanNLag /= (nLagCt + 0.0);
 
-  info[0] = translate("Experience: ") + numToLS(Math.round(experience));
-  info[1] = translate("Money: ") + numToLS(Math.floor(money));
-  info[2] = translate("Kills: ") + numToLS(kills);
-  info[3] = translate("Rank: ") + rank;
-  info[4] = translate("Sector: ") + getSectorName(sx, sy);
+  info[0] = translate("Experience: #", [numToLS(Math.round(experience))]);
+  info[1] = translate("Money: #", [numToLS(Math.floor(money))]);
+  info[2] = translate("Kills: #", [numToLS(kills)]);
+  info[3] = translate("Rank: #", [rank]);
+  info[4] = translate("Sector: #", [getSectorName(sx, sy)]);
 
   info[5] = "";
   info[6] = "";
@@ -3692,11 +3688,11 @@ function rTut() {
         currTut = 5; addBigNote([256, text, "", ""]);
       }
     } else if (!didW) {
-      text = translate("Press W (or Up Arrow) to move forward!"); if (currTut < 1) {
+      text = translate("Press W to move forward!"); if (currTut < 1) {
         currTut = 1; addBigNote([256, text, "", ""]);
       }
     } else if (!didSteer) {
-      text = translate("Press A and D (or Left/Right Arrows) to steer!"); if (currTut < 2) {
+      text = translate("Press A and D to steer!"); if (currTut < 2) {
         currTut = 2; addBigNote([256, text, "", ""]);
       }
     } else if (ship == 0 && ore == 0) {
