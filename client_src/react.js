@@ -251,9 +251,6 @@ class LoginOverlay extends Component {
 					<a href="legal/tos.pdf" > Terms of Service </a><br/>
 					<a onClick={this.langEng} >Eng|</a>
 					<a onClick={this.langEsp} >Esp|</a>
-					<a onClick={this.langFrn} >Frn|</a>
-					<a onClick={this.langDeu} >Deu|</a>
-					<a onClick={this.langPyc} >Pyc|</a>
 					<a onClick={this.langTki} >Tki|</a>
 					<a onClick={this.langChn} >Chn</a>
 				</div>
@@ -311,18 +308,6 @@ class LoginOverlay extends Component {
 
 	langEsp = () => {
 		setLang("esp");
-	}
-
-	langFrn = () => {
-		setLang("frn");
-	}
-
-	langPyc = () => {
-		setLang("pyc");
-	}
-
-	langDeu = () => {
-		setLang("deu");
 	}
 
 	langTki = () => {

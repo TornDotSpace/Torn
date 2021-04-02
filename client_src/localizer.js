@@ -14,13 +14,13 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-const eng = 'english.json';
-const esp = 'spanish.json';
-const pyc = 'russian.json';
-const deu = 'german.json';
-const frn = 'french.json';
-const tki = 'tokipona.json';
-const chn = 'chinese.json';
+const eng = 'translations/english.json';
+const esp = 'translations/spanish.json';
+const pyc = 'translations/russian.json';
+const deu = 'translations/german.json';
+const frn = 'translations/french.json';
+const tki = 'translations/tokipona.json';
+const chn = 'translations/chinese.json';
 
 global.languagejson = null;
 
@@ -50,33 +50,24 @@ global.loadLang = function(name) {
   let assigned = null;
   
   if (location.href.includes("eng") || name === "eng") {assigned = languagejson = eng; languageNumber = 0;}
-  //if (location.href.includes("frn") || name === "frn") {assigned = languagejson = frn; languageNumber = 0;}
   if (location.href.includes("esp") || name === "esp") {assigned = languagejson = esp; languageNumber = 1;}
-  //if (location.href.includes("pyc") || name === "pyc") {assigned = languagejson = pyc; languageNumber = 0;}
-  //if (location.href.includes("deu") || name === "deu") {assigned = languagejson = deu; languageNumber = 0;}
   if (location.href.includes("tki") || name === "tki") {assigned = languagejson = tki; languageNumber = 2;}
   if (location.href.includes("chn") || name === "chn") {assigned = languagejson = chn; languageNumber = 3;}
 
   if (!assigned) {
       let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-      if (lang === "frn") {
-//          languagejson = frn;
-      } else if (lang === "esp") {
-          languagejson = esp;
-          languageNumber = 1;
-      } else if (lang === "pyc") {
-//          languagejson = pyc;
+      if (lang === "esp") {
+        languagejson = esp;
+        languageNumber = 1;
       } else if (lang === "eng") {
-//          languagejson = eng;
-      } else if (lang == "deu") {
-//          languagejson = deu;
-      } else if (lang == "tki") {
-          languagejson = tki;
-          languageNumber = 2;
-      } else if (lang == "chn") {
-          languagejson = chn;
-          languageNumber = 3;
+        languagejson = eng;
+      } else if (lang === "tki") {
+        languagejson = tki;
+        languageNumber = 2;
+      } else if (lang === "chn") {
+        languagejson = chn;
+        languageNumber = 3;
       }
   }
 
