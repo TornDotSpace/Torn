@@ -14,11 +14,8 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-const eng = 'translations/english.json';
+const eng = 'english.json';
 const esp = 'translations/spanish.json';
-const pyc = 'translations/russian.json';
-const deu = 'translations/german.json';
-const frn = 'translations/french.json';
 const tki = 'translations/tokipona.json';
 const chn = 'translations/chinese.json';
 
