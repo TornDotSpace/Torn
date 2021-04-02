@@ -195,14 +195,13 @@
 	"Agility lvl ":	["Agility lvl ",	"nanpa pi tawa monsi",	"灵活等级 "],
 	"MAX":			["MAX",				"ale",					"满级"],
 
-	"Press M to use the flat map":			["Presiona M para mirar la mapa plana!",	"o kepeken M tawa lukin e lipu ma ",	"点击 M 使用平面地图"],
-	"Press M to use the 3D map":			["Presiona M para mirar la mapa 3D!",		"o kepeken M tawa lukin e lipu ma ",	"点击 M 使用3D地图"],
+	"Press M to use the flat map":	["Presiona M para mirar la mapa plana!",	"o kepeken M tawa lukin e lipu ma nanpa tu!",	"点击 M 使用平面地图"],
+	"Press M to use the 3D map":	["Presiona M para mirar la mapa 3D!",		"o kepeken M tawa lukin e lipu ma nanpa wan!",	"点击 M 使用3D地图"],
 
-	"Press enter to chat!":			["Presiona entra para hablar!",	"ale",	"点击回车键进入聊天"],
+	"Press enter to chat!":	["Presiona entra para hablar!",	"o kepeken K tawa toki",	"点击回车键进入聊天"],
 
-	"Delivery":	["",	"",	"运输"],
-	"Mining":	["",	"",	"挖矿"],
-	"Base":		["",	"",	"基地"],
-	"Secret":	["",	"",	"秘密"],
-
+	"Delivery":	["Enviaje",	"tawa e ijo",		"运输"],
+	"Mining":	["minería",	"pakala e kiwen",	"挖矿"],
+	"Base":		["Base",	"moli e tomo",		"基地"],
+	"Secret":	["Secreto",	"sona ala",			"秘密"]
 }

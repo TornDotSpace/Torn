@@ -1054,7 +1054,7 @@ function paste3DMap(xp, yp) {
   ctx.fillStyle = "yellow";
   ctx.globalAlpha = 1;
   ctx.font = "12px ShareTech";
-  write("Press M to use the "+(useOldMap?"3D":"flat")+" map", 8, 232);
+  write(translate("Press M to use the "+(useOldMap?"3D":"flat")+" map"), 8, 232);
 }
 function rBuyShipWindow() {
   ctx.fillStyle = "white";
@@ -1239,7 +1239,7 @@ function rQuests() {
         else desc = translate("Quest Locked!");
       }
       if (questi.type == "Delivery") desc = translate("Obtain package from planet # and deliver it to planet #.", [getSectorName(questi.sx, questi.sy), getSectorName(questi.dsx, questi.dsy)]);
-      write(questi.type, xv + rx + 16, ry + 72 + i % 5 * 80);
+      write(translate(questi.type), xv + rx + 16, ry + 72 + i % 5 * 80);
       write(translate("Reward: $# and # exp.", [numToLS(mult*questi.exp), numToLS(Math.floor(questi.exp / ((questi.type === "Mining" || questi.type === "Delivery") ? 1500 : 4000)))]), xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 16);
       wrapText(translate("Description: ") + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
     }
