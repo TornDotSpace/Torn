@@ -1109,8 +1109,8 @@ function rBuyShipWindow() {
   }
 
   ctx.fillStyle = "white";
-  if(shipView<=rank)
-    wrapText(translate("Description: ") + ships[shipView].desc, rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);
+  if (shipView<=rank)
+  {wrapText(translate("Description: ") + ships[shipView].desc, rx + 512 - 64, ry + 256 + 10 * 16 + 5, 64 * 6 - 64, 16);}
 
   if (shipView < ships.length) ctx.drawImage(Img.arrow, rendX + 128 - 48, rendY - 16);
   if (shipView > 0) {
@@ -1291,9 +1291,9 @@ function rStats() {
   for (let i = 0; i < activeGens; i++) eMult *= 1.06;
 
   const stats = [translate("Thrust  : "), translate("Cargo   : "), translate("Health  : "), translate("Energy  : "),
-                 translate("Players Killed: #", [numToLS(kills)]), translate("Bases Destroyed: #", [numToLS(baseKills)]),
-                 translate("Ship Value: $#", [numToLS(Number((worth + upgradeCosts).toPrecision(3)))]), translate("Net Worth: $#", [numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3)))]),
-                 translate("Experience: #", [numToLS(Math.round(experience))]), translate("Rank: #", [rank]), translate("Achievements: #", [achievements])];
+    translate("Players Killed: #", [numToLS(kills)]), translate("Bases Destroyed: #", [numToLS(baseKills)]),
+    translate("Ship Value: $#", [numToLS(Number((worth + upgradeCosts).toPrecision(3)))]), translate("Net Worth: $#", [numToLS(Number((money + ore + worth + upgradeCosts).toPrecision(3)))]),
+    translate("Experience: #", [numToLS(Math.round(experience))]), translate("Rank: #", [rank]), translate("Achievements: #", [achievements])];
 
   stats[0] += numToLS(Number((ships[ship].thrust * t2).toPrecision(3)));
   stats[1] += numToLS(Number((ships[ship].capacity * c2).toPrecision(3)));
