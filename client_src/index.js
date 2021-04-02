@@ -1515,7 +1515,7 @@ function rBaseGui() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "right";
   ctx.font = "18px ShareTech";
-  write(translate("PRESS X TO EXIT SPACE STATION"), rx + 768 - 16, ry + 512 + 24);
+  write(translate("PRESS X TO EXIT BASE"), rx + 768 - 16, ry + 512 + 24);
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
   // ctx.drawImage(Img.baseOutline, rx - 4, ry - 4);

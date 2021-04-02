@@ -20,6 +20,7 @@ const pyc = 'russian.json';
 const deu = 'german.json';
 const frn = 'french.json';
 const tki = 'tokipona.json';
+const chn = 'chinese.json';
 
 global.languagejson = null;
 
@@ -54,6 +55,7 @@ global.loadLang = function(name) {
   //if (location.href.includes("pyc") || name === "pyc") {assigned = languagejson = pyc; languageNumber = 0;}
   //if (location.href.includes("deu") || name === "deu") {assigned = languagejson = deu; languageNumber = 0;}
   if (location.href.includes("tki") || name === "tki") {assigned = languagejson = tki; languageNumber = 2;}
+  if (location.href.includes("chn") || name === "chn") {assigned = languagejson = chn; languageNumber = 3;}
 
   if (!assigned) {
       let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
@@ -72,6 +74,9 @@ global.loadLang = function(name) {
       } else if (lang == "tki") {
           languagejson = tki;
           languageNumber = 2;
+      } else if (lang == "chn") {
+          languagejson = chn;
+          languageNumber = 3;
       }
   }
 
