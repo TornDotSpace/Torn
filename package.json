@@ -44,7 +44,7 @@
   "dependencies": {
     "bad-words": "^3.0.4",
     "cors": "^2.8.5",
-    "discord.js": "^12.5.2",
+    "discord.js": "^12.5.3",
     "express": "^4.17.1",
     "howler": "^2.2.1",
     "mongodb": "^3.6.5",
