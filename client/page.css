@@ -23,12 +23,13 @@ html {
 }
 
 body {
+	background-color: black;
 	font-size: 14px;
 	line-height: 1.375;
 	background-attachment: fixed;
 	color: #7f7;
 	font-family: 'ShareTech';
-	background-image: url('/img/space/NewBackgroundWithBlack.png');
+	background-image: url('/img/space/Background.png');
 }
 
 a{

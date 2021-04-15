@@ -63,11 +63,6 @@ global.minimapcanvas = document.createElement("canvas");
 minimapcanvas.width = minimapcanvas.height = 208;
 global.minictx = minimapcanvas.getContext("2d", {alpha: true});
 
-global.chatcanvas = document.createElement("canvas");
-chatcanvas.width = 650;
-chatcanvas.height = 200;
-global.chatctx = chatcanvas.getContext("2d", {alpha: true});
-
 import React from "react";
 import ReactDOM from "react-dom";
 import ReactRootJS from "./react.js";
@@ -110,7 +105,6 @@ global.planetMap2D = {};
 global.myGuild = {};
 global.useOldMap = false;
 
-global.chatLength = 40; global.chatScroll = 0; global.globalChat = 0; global.preChatArr = {}; global.chati = 0;
 global.homepageTimer = 0; global.loreTimer = 0;
 global.raidTimer = -1; global.raidRed = 0; global.raidBlue = 0; global.raidGreen = 0; global.points = 0;
 global.shield = false; global.autopilot = false;

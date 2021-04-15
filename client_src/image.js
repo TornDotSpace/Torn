@@ -100,7 +100,7 @@ global.loadAllImages = function() {
   // space
   loadImage("vort", "/img/space/vort.png");
   loadImage("worm", "/img/space/worm.png");
-  loadImage("spc", "/img/space/NewBackground.png");
+  loadImage("spc", "/img/space/Background.png");
 
   // baseGui
   loadImage("q", "/img/baseGui/q.png");

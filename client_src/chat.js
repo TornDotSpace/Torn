@@ -1,12 +1,28 @@
 const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
 var messages = [{}, {}, {}];
+var serverMessages = {};
 
-const colorCircumfix = "~`";
+//Chat circumfix codes. Code assumes they are length 2.
+const colorCircumfix = "`c";
+const weaponCircumfix = "`w";
+const translateCircumfix = "`t";
+
+const chatcanvas = document.createElement("canvas");
+chatcanvas.width = 650;
+chatcanvas.height = 350;
+const chatctx = chatcanvas.getContext("2d", {alpha: true});
+
+const chatLength = 40;
+const serverChatLength = 5;
+let chatScroll = 0;
+let globalChat = 0;
+let preChatArr = {};
+let chati = 0;
 
 socket.on("chat", function(data) {
   // Optimization: Don't do expensive string manipulation if nobody is in the mute list
   if (clientmutes.size == 0 || !data.msg.includes(":")) {
-    _chat(data);
+    onReceiveChat(data);
     return;
   }
 
@@ -23,7 +39,7 @@ socket.on("chat", function(data) {
     }
   }
 
-  _chat(data);
+  onReceiveChat(data);
 });
 
 socket.on("mute", function(data) {
@@ -54,6 +70,8 @@ global.rChat = function() {
   chatctx.restore();
 
   chatctx.save();
+
+  //Draw all the messages in the current chatroom
   for (let ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
     chatctx.fillStyle = "yellow";
     const fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
@@ -69,29 +87,60 @@ global.rChat = function() {
       }
     }
   }
+
+  //Repeat for the server messages
+  for (let i = 0; i < serverChatLength; i++) {
+    chatctx.globalAlpha = 1-i/serverChatLength;
+    chatctx.fillStyle = "yellow";
+    let curx = 0;
+    const splitStr = serverMessages[i].split(colorCircumfix);
+    for (let j = 0; j < splitStr.length; j++) {
+      if (j % 2 == 0) {
+        chatctx.fillText(splitStr[j], 16 + curx, chatcanvas.height - 168 - 24 - 16 * i);
+        curx += chatctx.measureText(splitStr[j]).width;
+      } else {
+        chatctx.fillStyle = brighten(splitStr[j]);
+      }
+    }
+  }
+
   chatctx.restore();
 }
 global.pasteChat = function() {
   ctx.drawImage(chatcanvas, 0, h-chatcanvas.height);
 }
-global._chat = function(data) {
-  if (data.msg.includes("`~")) {
-    const find1 = getPosition(data.msg, "`~", 1);
-    const find2 = getPosition(data.msg, "`~", 2);
+function onReceiveChat(data) {
+  while (data.msg.includes(weaponCircumfix)) {
+    const find1 = getPosition(data.msg, translateCircumfix, 1);
+    const find2 = getPosition(data.msg, translateCircumfix, 2);
 
     if (find1 == -1 || find2 == -1) return;
 
     const num = parseFloat(data.msg.substring(find1 + 2, find2));
-    data.msg = data.msg.replace("`~" + num + "`~", wepns[num].name);
+    data.msg = data.msg.replace(weaponCircumfix + num + weaponCircumfix, wepns[num].name);
   }
 
-  for (let room = 0; room < 3; room++) {
-    if (room == data.gc || typeof data.gc === "undefined") {
-      for (let i = chatLength; i > 0; i--) {
-        messages[room][i] = messages[room][i - 1];
-      }
-      messages[room][0] = data.msg;
+  while (data.msg.includes(translateCircumfix)) {
+    const find1 = getPosition(data.msg, translateCircumfix, 1);
+    const find2 = getPosition(data.msg, translateCircumfix, 2);
+
+    if (find1 == -1 || find2 == -1) return;
+
+    const str = data.msg.substring(find1 + 2, find2);
+    data.msg = data.msg.replace(translateCircumfix + str + translateCircumfix, translate(str));
+  }
+
+  if(typeof data.gc === "undefined") {
+    for (let i = chatLength; i > 0; i--) {
+      serverMessages[i] = serverMessages[i - 1];
     }
+    serverMessages[0] = data.msg;
+  }
+  else {
+    for (let i = serverChatLength; i > 0; i--) {
+      messages[data.gc][i] = messages[data.gc][i - 1];
+    }
+    messages[data.gc][0] = data.msg;
   }
 
   chatScroll = 0;
@@ -100,7 +149,7 @@ global._chat = function(data) {
 };
 
 
-global.preProcessChat = function() { // This is slow and buggy. We should rewrite it.
+function preProcessChat() { // This is slow and buggy. We should rewrite it.
   const chatList = messages[globalChat];
   preChatArr = {};
   chati = 0;
@@ -123,11 +172,15 @@ global.preProcessChat = function() { // This is slow and buggy. We should rewrit
   }
   chati--;
 }
-global.clearChat = function() {
+function clearChat() {
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < chatLength; j++) {
       messages[i][j] = "";
     }
+  }
+  for (let j = 0; j < serverChatLength; j++) {
+    serverMessages[j] = "";
+    serverMessagesFade = 1;
   }
 }
 
