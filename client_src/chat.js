@@ -31,7 +31,7 @@ const chatctx = chatcanvas.getContext("2d", {alpha: true});
 const chatLength = 40;
 const serverChatLength = 5;
 let chatScroll = 0;
-const globalChat = 0;
+global.whichChatMenu = 0;
 let preChatArr = {};
 let chati = 0;
 
@@ -81,7 +81,7 @@ global.rChat = function() {
 
   for (let i = 0; i < 3; i++) {
     chatctx.fillStyle = ((seller != 800 + i) ? "violet" : "yellow");
-    chatctx.fillText((i==globalChat?">":" ")+chatRooms[i], 532, chatcanvas.height - 48+16*i);
+    chatctx.fillText((i==whichChatMenu?">":" ")+chatRooms[i], 532, chatcanvas.height - 48+16*i);
   }
   chatctx.restore();
 
@@ -165,8 +165,8 @@ function onReceiveChat(data) {
 };
 
 
-function preProcessChat() { // This is slow and buggy. We should rewrite it.
-  const chatList = messages[globalChat];
+global.preProcessChat = function() { // This is slow and buggy. We should rewrite it.
+  const chatList = messages[whichChatMenu];
   preChatArr = {};
   chati = 0;
   const regex = new RegExp(colorCircumfix + ".*?" + colorCircumfix, "g");
@@ -187,7 +187,7 @@ function preProcessChat() { // This is slow and buggy. We should rewrite it.
     preChatArr[chati++] = line;
   }
   chati--;
-}
+};
 function clearChat() {
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < chatLength; j++) {

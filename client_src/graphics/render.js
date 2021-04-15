@@ -1552,7 +1552,7 @@ global.rBases = function() {
     const rendX = basesInfo.x - px + w / 2 + scrx;
     const rendY = basesInfo.y - py + h / 2 + scry;
     if (basesInfo.color !== pc) currAlert = translate("Enemy Base Nearby!");
-    console.log(basesInfo.baseType)
+    console.log(basesInfo.baseType);
 
     if (basesInfo.baseType == DEADBASE || basesInfo.baseType == LIVEBASE) {
       ctx.save();

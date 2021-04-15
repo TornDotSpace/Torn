@@ -292,8 +292,8 @@ document.addEventListener("mousedown", function(evt) {
   if (i >= 700 && i < 705) socket.emit("trail", {trail: i - 700});
   if (i == 900) socket.emit("jettison", {});
   if (i >= 800 && i < 803) {
-    globalChat = i-800;
-    socket.emit("toggleGlobal", {gc: globalChat});
+    whichChatMenu = i-800;
+    socket.emit("toggleGlobal", {gc: whichChatMenu});
     preProcessChat();
     rChat();
   }

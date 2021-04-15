@@ -6,7 +6,7 @@ const Beam = require("../battle/beam.js");
 
 const fs = require("fs");
 
-//Base types
+// Base types
 global.LIVEBASE = 0;
 global.DEADBASE = 1;
 global.TURRET = 2;
@@ -160,8 +160,8 @@ module.exports = class Base {
     const bullet = new Bullet(this, r, 5, this.angle, 0);
     bullets[this.sy][this.sx][r] = bullet;
     sendAllSector("sound", {file: "shot", x: this.x, y: this.y}, this.sx, this.sy);
-    if(this.shots > 5000)
-      this.die(0);
+    if (this.shots > 5000)
+    {this.die(0);}
   }
   shootMissile() {// this is a torpedo
     this.reload = wepns[14].charge/2;
@@ -206,7 +206,7 @@ module.exports = class Base {
       for (let i = 0; i < numBotsToSpawn; i++) spawnBot(this.sx, this.sy, this.color, true);
     }
 
-    if(b === 0){
+    if (b === 0) {
       return;
     }
 
@@ -250,10 +250,10 @@ module.exports = class Base {
     saveTurret(this);
   }
   sendDeathMsg(killedBy) {
-    const baseName = "base"
-    if (this.baseType == SENTRY){
+    const baseName = "base";
+    if (this.baseType == SENTRY) {
       baseName = "Sentry";
-    } else if (this.baseType == TURRET){
+    } else if (this.baseType == TURRET) {
       baseName = "Turret";
     }
     chatAll("The " + baseName + " at sector " + this.nameWithColor() + " was destroyed by " + killedBy + ".");
