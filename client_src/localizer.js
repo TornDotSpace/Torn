@@ -92,3 +92,14 @@ global.loadLang = function(name) {
   global.splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
   if (!splash.endsWith('!') && !splash.endsWith('?')) splash += '...';
 };
+loadLang();
+
+global.translate = function(english, arr) {
+  if (typeof mEng[english] === "undefined")
+  {return "TRANSLATION ERROR";}
+  let translated = (languageNumber == 0)? english : mEng[english][languageNumber-1];
+  if (arr !== undefined)
+  {while (arr.length > 0)
+  {translated = translated.replace("#", arr.shift());}}
+  return translated;
+}
