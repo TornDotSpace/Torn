@@ -53,7 +53,7 @@ module.exports = class Blast {
       }
 
       const base = bases[this.sy][this.sx];
-      if (base.color == this.owner.color || !base.turretLive) return;
+      if (base.color == this.owner.color || base.baseType == DEADBASE) return;
       if ((this.bx - base.x) * Math.cos(this.angle) + (this.by - base.y) * Math.sin(this.angle) > 0) return;
       const pDist = Math.hypot(base.x - this.bx, base.y - this.by);
       const fx = base.x - Math.cos(this.angle) * pDist;

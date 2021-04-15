@@ -58,7 +58,7 @@ module.exports = class Bullet {
     if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die();
 
     const b = bases[this.sy][this.sx];
-    if (b != 0 && b.turretLive && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
+    if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
       b.dmg(this.dmg, this);
       this.die();
     }

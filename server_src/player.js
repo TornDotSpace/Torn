@@ -178,7 +178,7 @@ class Player {
     if (this.bulletQueue > 0) this.shootBullet(40); // SMG
     const wepId = this.weapons[this.equipped];
     const wep = wepns[wepId];
-    if (!wep.enabled){
+    if (!wep.enabled) {
       return;
     }
 
@@ -350,7 +350,7 @@ class Player {
           return;
         }
         const r = Math.random();
-        const b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, false);
+        const b = new Base(r, TURRET, this.sx, this.sy, this.color, this.x, this.y);
         b.owner = this.name;
         bases[this.sy][this.sx] = b;
         this.emit("chat", {msg: "`tYou placed a turret! Name it with \"/nameturret <name>\".`t", color: "lime"});
@@ -361,7 +361,7 @@ class Player {
           return;
         }
         const r = Math.random();
-        const b = new Base(r, false, this.sx, this.sy, this.color, this.x, this.y, true);
+        const b = new Base(r, SENTRY, this.sx, this.sy, this.color, this.x, this.y);
         b.owner = this.name;
         bases[this.sy][this.sx] = b;
         this.emit("chat", {msg: "`tYou placed a turret! Name it with \"/nameturret <name>\".`t", color: "lime"});
@@ -440,7 +440,7 @@ class Player {
 
       // base
       const b = bases[this.sy][this.sx];
-      if ((b != 0) && b.turretLive && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2) ) {
+      if ((b != 0) && b.baseType != DEADBASE && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2) ) {
         nearBEnemy = b;
       }
 
@@ -805,7 +805,7 @@ class Player {
           break;
         }
       }
-      if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].turretLive) cleared = false;// also check base is dead
+      if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].baseType != DEADBASE) cleared = false;// also check base is dead
 
       if (cleared) { // 2 ifs needed, don't merge this one with the last one
         this.hasPackage = true;
@@ -908,7 +908,7 @@ class Player {
     if (!restricted) {
       if (this.weapons[this.equipped] == 7 || this.weapons[this.equipped] == 8 || this.weapons[this.equipped] == 9 || this.weapons[this.equipped] == 45) {
         const b = bases[this.sy][this.sx];
-        if (b != 0 && ((b.color == this.color) == (this.weapons[this.equipped] == 45)) && !(this.weapons[this.equipped] == 45 && b.health > baseHealth*.9995) && b.turretLive && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
+        if (b != 0 && ((b.color == this.color) == (this.weapons[this.equipped] == 45)) && !(this.weapons[this.equipped] == 45 && b.health > baseHealth*.9995) && b.baseType != DEADBASE && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
       }
     }
 
@@ -1014,7 +1014,7 @@ class Player {
           else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
         }
       }
-      if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive) {
+      if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE) {
         const b = bases[this.sy][this.sx];
         b.EMP(150);
       }

@@ -76,7 +76,7 @@ global.saveTurrets = function() {
   for (let i = 0; i < mapSz; i++) {
     for (let j = 0; j < mapSz; j++) {
       const base = bases[i][j];
-      if (base != 0 && !base.isBase) {
+      if (base != 0 && (base.baseType == TURRET || base.baseType == SENTRY)) {
         base.save();
       }
     }
@@ -334,7 +334,6 @@ function init() { // start the server!
   // meta
   setTimeout(initReboot, 86400 * 1000 - 6 * 60 * 1000);
   setTimeout(idleSocketCheck, 1000 * 60 * 5);
-  saveTurrets();
 
   // make asteroids. Make 10 times the number of sectors.
   for (let i = 0; i < mapSz * mapSz * minSectorAsteroidCount; i++) spawnAsteroid();
@@ -731,7 +730,7 @@ function update() {
 
         // Check for creation (only happens once, on first tick, or when a turret is placd)
         if (pack === undefined) {
-          pack = basePack[y][x] = {id: base.id, turretLive: base.turretLive, isBase: base.isBase, isMini: base.isMini, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, spinAngle: base.spinAngle, name: base.name};
+          pack = basePack[y][x] = {id: base.id, baseType: base.baseType, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, name: base.name};
           sendAllSector("base_create", pack, x, y);
           continue;
         }

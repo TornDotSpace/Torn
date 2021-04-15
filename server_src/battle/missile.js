@@ -93,7 +93,7 @@ module.exports = class Missile {
       if (this.locked != 0) return;
 
       // check base
-      if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
+      if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
         this.locked = bases[this.sy][this.sx].id;
         return;
       }
@@ -123,7 +123,7 @@ module.exports = class Missile {
         if (target.type === "Player") target.isLocked = true;
 
         // on impact
-        if (target.sx == this.sx && target.sy == this.sy && squaredDist(target, this) < 10000 * (this.wepnID == 38 ? 5 : 1) && target.turretLive != false /* we don't know it's a base. can't just say ==true.*/) {
+        if (target.sx == this.sx && target.sy == this.sy && squaredDist(target, this) < 10000 * (this.wepnID == 38 ? 5 : 1) && (target.baseType != DEADBASE) != false /* we don't know it's a base. can't just say ==true.*/) {
           target.dmg(this.dmg, this);
           this.die();
           if (this.wepnID == 12 && (target.type === "Player" || target.type === "Base")) target.EMP(54); // emp missile
@@ -172,7 +172,7 @@ module.exports = class Missile {
         missiles[this.sy][this.sx][r] = missile;
       }
     }
-    if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].turretLive && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
+    if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
       const r = Math.random();
       const bAngle = this.angle + r * 2 - 1;
       let wepid = 10; // Normal Missile

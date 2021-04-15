@@ -6,8 +6,14 @@ const Beam = require("../battle/beam.js");
 
 const fs = require("fs");
 
+//Base types
+global.LIVEBASE = 0;
+global.DEADBASE = 1;
+global.TURRET = 2;
+global.SENTRY = 3;
+
 module.exports = class Base {
-  constructor(i, b, sx, syy, col, x, y, m) {
+  constructor(i, type, sx, syy, col, x, y) {
     this.type = "Base",
     this.kills = 0,
     this.experience = 0,
@@ -16,9 +22,7 @@ module.exports = class Base {
     this.color = col,
     this.owner = 0,
     this.name = "",
-    this.isBase = b, // This differentiates between turrets and turrets connected to bases
-    this.isMini = m, // This differentiates between mini turrets and normal turrets
-    this.turretLive = true, // When killed, this becomes false and turret vanishes
+    this.baseType = type, // Constants above
     this.angle = 0, // angle of the turret
 
     this.x = x,
@@ -26,15 +30,16 @@ module.exports = class Base {
     this.sx = sx,
     this.sy = syy,
 
+    this.shots = 0,
     this.reload = 0, // timer for shooting
-    this.health = (m?.2:1)*baseHealth,
-    this.maxHealth = (m?.2:1)*baseHealth,
+    this.health = (type == SENTRY?.2:1)*baseHealth,
+    this.maxHealth = (type == SENTRY?.2:1)*baseHealth,
     this.empTimer = -1,
     this.speed = 0; // vs unused but there for bullets,
   }
   tick() {
     // spawn a bot if we need more bots
-    if (!this.isMini) {
+    if (!this.baseType == SENTRY) {
       const botSpawn = Math.random();
       const healthPercent = Math.max(this.health/this.maxHealth, .1);
       if (botSpawn*healthPercent < botFrequency) {
@@ -42,7 +47,7 @@ module.exports = class Base {
       }
     }
 
-    if (!this.turretLive && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) this.turretLive = true; // revive. TODO: add a timer
+    if (this.baseType == DEADBASE && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) this.baseType = LIVEBASE; // revive. TODO: add a timer
 
     this.move(); // aim and fire
 
@@ -50,7 +55,7 @@ module.exports = class Base {
     this.reload--;
 
     if (this.health < this.maxHealth) this.health += baseRegenSpeed;
-    if (tick % 50 == 0 && !this.isBase) this.tryGiveToOwner();
+    if (tick % 50 == 0 && (this.baseType == SENTRY || this.baseType == TURRET)) this.tryGiveToOwner();
   }
   tryGiveToOwner() { // if a base's owner stands over it, they get the stuff it's earned from killing people
     let player = 0; // find owner
@@ -71,11 +76,11 @@ module.exports = class Base {
     this.experience = this.money = this.kills = 0; // and delete my earnings
   }
   move() { // aim and fire
-    if (!this.turretLive) return;
+    if (this.baseType == DEADBASE) return;
 
     if (this.empTimer > 0) return; // can't do anything if emp'd
 
-    if (this.isMini) this.fireMini();
+    if (this.baseType == SENTRY) this.fireMini();
     else this.fire();
   }
   fire() {
@@ -149,11 +154,14 @@ module.exports = class Base {
     sendAllSector("sound", {file: "shot", x: this.x, y: this.y}, this.sx, this.sy);
   }
   shootMachineGun() {
+    this.shots++;
     this.reload = wepns[5].charge/2;
     const r = Math.random();
     const bullet = new Bullet(this, r, 5, this.angle, 0);
     bullets[this.sy][this.sx][r] = bullet;
     sendAllSector("sound", {file: "shot", x: this.x, y: this.y}, this.sx, this.sy);
+    if(this.shots > 5000)
+      this.die(0);
   }
   shootMissile() {// this is a torpedo
     this.reload = wepns[14].charge/2;
@@ -183,20 +191,23 @@ module.exports = class Base {
     this.reload = wepns[8].charge / 2;
   }
   die(b) {
-    if (!this.turretLive) return;
+    if (this.baseType == DEADBASE) return;
 
     deleteTurret(this);
 
     this.health = this.maxHealth;
-    this.turretLive = false;
     sendAllSector("sound", {file: "bigboom", x: this.x, y: this.y, dx: 0, dy: 0}, this.sx, this.sy);
 
-    if (!this.isBase) {
+    if (this.baseType != LIVEBASE) {
       bases[this.sy][this.sx] = 0;
       this.die = function() { };
     } else {
       const numBotsToSpawn = 2+4*Math.random()*Math.random();
       for (let i = 0; i < numBotsToSpawn; i++) spawnBot(this.sx, this.sy, this.color, true);
+    }
+
+    if(b === 0){
+      return;
     }
 
     // If I was killed by an asteroid...
@@ -239,7 +250,13 @@ module.exports = class Base {
     saveTurret(this);
   }
   sendDeathMsg(killedBy) {
-    chatAll("The " + (this.isBase ? "base" : (this.isMini?"Sentry":"Turret")) + " at sector " + this.nameWithColor() + " was destroyed by " + killedBy + ".");
+    const baseName = "base"
+    if (this.baseType == SENTRY){
+      baseName = "Sentry";
+    } else if (this.baseType == TURRET){
+      baseName = "Turret";
+    }
+    chatAll("The " + baseName + " at sector " + this.nameWithColor() + " was destroyed by " + killedBy + ".");
   }
   getSectorName() {
     return String.fromCharCode(97 + this.sx).toUpperCase() + "" + (this.sy + 1);

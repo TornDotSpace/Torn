@@ -56,17 +56,17 @@ class Bot extends Player {
     const theirY3 = owner.y + owner.sy+mapSz * sectorWidth;
     const dist3 = hypot2(myX, theirX3, myY, theirY3);
 
-    //Determine which way to wrap is fastest
+    // Determine which way to wrap is fastest
     let finalX = theirX3;
     let finalY = theirY3;
-    if(dist1 < dist2 && dist1 < dist3){
+    if (dist1 < dist2 && dist1 < dist3) {
       finalX = theirX1;
       finalY = theirY1;
-    } else if(dist2 < dist3){
+    } else if (dist2 < dist3) {
       finalX = theirX2;
       finalY = theirY2;
     }
-    
+
     const turn = -(this.angle - Math.atan2(finalY - myY, finalX - myX) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
     this.d = turn > this.cva * this.cva * 10;
     this.a = turn < -this.cva * this.cva * 10;

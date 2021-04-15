@@ -15,6 +15,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+global.LIVEBASE = 0;
+global.DEADBASE = 1;
+global.TURRET = 2;
+global.SENTRY = 3;
+
 global.render = function() {
   if (dead) {
     ctx.globalAlpha = .02;
@@ -1547,8 +1552,9 @@ global.rBases = function() {
     const rendX = basesInfo.x - px + w / 2 + scrx;
     const rendY = basesInfo.y - py + h / 2 + scry;
     if (basesInfo.color !== pc) currAlert = translate("Enemy Base Nearby!");
+    console.log(basesInfo.baseType)
 
-    if (basesInfo.isBase) {
+    if (basesInfo.baseType == DEADBASE || basesInfo.baseType == LIVEBASE) {
       ctx.save();
       ctx.translate(rendX, rendY);
       ctx.rotate(tick/1000 + Math.PI / 2);
@@ -1570,9 +1576,9 @@ global.rBases = function() {
       write(basesInfo.name, rendX, rendY - 64);
     }
 
-    if (basesInfo.turretLive) {
+    if (basesInfo.baseType != DEADBASE) {
       let timage = 0;
-      if (basesInfo.isMini) timage = colorSelect(basesInfo.color, Img.rsentry, Img.bsentry, Img.gsentry);
+      if (basesInfo.baseType == SENTRY) timage = colorSelect(basesInfo.color, Img.rsentry, Img.bsentry, Img.gsentry);
       else timage = colorSelect(basesInfo.color, Img.rt, Img.bt, Img.gt);
       pw = timage.width; // render turrets
       ph = timage.height;

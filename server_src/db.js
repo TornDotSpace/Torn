@@ -42,8 +42,8 @@ global.connectToDB = function() {
     TURRET_DATABASE = db.collection("turrets");
 
     loadTurretData();
-    setTimeout(saveTurrets, 1000);
     console.log("[DB] Connection successful!");
+    setTimeout(saveTurrets, 1000);
   });
 };
 
@@ -105,6 +105,7 @@ global.saveTurret = function(turret) {
     y: turret.y,
     sx: turret.sx,
     sy: turret.sy,
+    baseType: turret.baseType,
     name: turret.name,
   };
   TURRET_DATABASE.replaceOne( {id: turret.id}, record, {upsert: true});
@@ -119,7 +120,7 @@ global.loadTurretData = async function() {
   const items = await TURRET_DATABASE.find();
 
   items.forEach((i) => {
-    const b = new Base(0, false, 0, 0, 0, 0, 0);
+    const b = new Base(0, 0, 0, 0, 0, 0);
     for (const x in i) {
       b[x] = i[x];
     }

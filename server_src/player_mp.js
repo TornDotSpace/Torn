@@ -322,7 +322,7 @@ class PlayerMP extends Player {
 
     let base = 0;
     const b = bases[this.sy][this.sx];
-    if (b.isBase && b.color == this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
+    if ((b.baseType == LIVEBASE || b.baseType == DEADBASE) && b.color == this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
     if (base == 0) return;
 
     this.refillAllAmmo();
