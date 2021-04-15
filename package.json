@@ -7,19 +7,23 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack --progress --hot --config ./deploy/webpack.dev.js",
     "build": "webpack --progress --config ./deploy/webpack.prod.js",
-    "test-build": "webpack --progress --config ./deploy/webpack.test.js"
+    "test-build": "webpack --progress --config ./deploy/webpack.test.js",
+    "lint": "eslint . --fix"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TornDotSpace/Torn.git"
   },
+  "pre-commit": [
+    "lint"
+  ],
   "keywords": [
     "react",
     "webpack",
     "babel"
   ],
   "author": "The Torn.Space Team",
-  "license": "All Rights Reserved",
+  "license": "AGPL v3.0",
   "devDependencies": {
     "@babel/core": "^7.13.15",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
@@ -33,10 +37,11 @@
     "eslint-plugin-react": "^7.23.2",
     "git-revision-webpack-plugin": "^3.0.6",
     "node-forge": ">=0.10.0",
-    "react": "^17.0.1",
+    "pre-commit": "^1.2.2",
+    "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hot-loader": "^4.13.0",
-    "webpack": "^5.32.0",
+    "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"

@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2021  torn.space (https://torn.space)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 global.render = function() {
   if (dead) {
     ctx.globalAlpha = .02;
@@ -119,7 +136,7 @@ global.render = function() {
   lagMath(arr);
   rTexts(clientLag);
   ops--;
-}
+};
 
 global.wrapText = function(text, x, y, maxWidth, lineHeight) {
   if (typeof text === "undefined") {
@@ -140,7 +157,7 @@ global.wrapText = function(text, x, y, maxWidth, lineHeight) {
     } else line = testLine;
   }
   write(line, x, y);
-}
+};
 
 global.rWeapons = function() { // Weapon selector on right side of game
   if (equipped === 0) return;
@@ -174,7 +191,7 @@ global.rWeapons = function() { // Weapon selector on right side of game
   write(translate("Scroll to Change Weapons"), w - 16, h - 96);
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
-}
+};
 global.rCurrQuest = function() {
   ctx.fillStyle = "cyan";
   ctx.textAlign = "center";
@@ -187,7 +204,7 @@ global.rCurrQuest = function() {
   if (quest.type == "Secret3") desc = translate("Deliver package to a permanent black hole sector.");
   write(desc, w / 2, h - 56);
   ctx.textAlign = "left";
-}
+};
 global.rEMP = function() {
   ctx.font = "24px ShareTech";
   ctx.textAlign = "center";
@@ -202,7 +219,7 @@ global.rEMP = function() {
   }
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
-}
+};
 global.rStars = function() {
   const mirrors = 3;
   const wm = w/mirrors;
@@ -234,7 +251,7 @@ global.rStars = function() {
       ctx.stroke();
     }
   }
-}
+};
 global.rSectorEdge = function() {
   ctx.textAlign = "center";
   ctx.font = "14px ShareTech";
@@ -262,7 +279,7 @@ global.rSectorEdge = function() {
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
   ctx.setLineDash([]);
-}
+};
 // misc rendering
 global.rLoadingBar = function() {
   ctx.fillStyle = "black";
@@ -280,7 +297,7 @@ global.rLoadingBar = function() {
   if (Img_prgs[0] == Img_prgs[1]) ctx.fillText("All images loaded.", w / 2, h / 2 + 64);
   if (Aud_prgs[0] == Aud_prgs[1]) ctx.fillText("All sounds loaded", w / 2, h / 2 + 80);
   ctx.fillText(currLoading, w / 2, h / 2 + 96);
-}
+};
 
 global.updateNotes = function() {
   for (const i in notes) {
@@ -289,7 +306,7 @@ global.updateNotes = function() {
       delete notes[i];
     }
   }
-}
+};
 global.updateTrails = function() {
   /* trails:
     0 -> default
@@ -353,7 +370,7 @@ global.updateTrails = function() {
       }
     }
   }
-}
+};
 global.updateBooms = function() {
   for (const i in booms) {
     const b = booms[i];
@@ -371,7 +388,7 @@ global.updateBooms = function() {
     selfo.x += cosLow(selfo.angle) * 25 + selfo.dx;
     selfo.y += sinLow(selfo.angle) * 25 + selfo.dy;
   }
-}
+};
 global.rLore = function() {
   ctx.fillStyle = brighten(pc);
   ctx.font = "22px ShareTech";
@@ -381,7 +398,7 @@ global.rLore = function() {
   const t = (new Date()).getTime() / 6000;
   ctx.font = ((32 + 6 * Math.sin(24 * t))*(loreTimer/(loreTimer+50))) + "px ShareTech";
   ctx.fillText(translate("Click to play!"), w/2, h - 48);
-}
+};
 global.rEnergyBar = function() {
   if (equipped === 0) return;
   let Charge = wepns[equipped[scroll]].charge;
@@ -400,7 +417,7 @@ global.rEnergyBar = function() {
   ctx.fillRect(0, h-(h/2) * div, 4, (h/2) * div);
   ctx.fillRect(w-4, h-(h/2) * div, 4, (h/2) * div);
   ctx.globalAlpha = 1;
-}
+};
 
 global.rVolumeBar = function() {
   if (volTransparency <= 0) return;
@@ -427,7 +444,7 @@ global.rVolumeBar = function() {
   ctx.fill();
   ctx.closePath();
   ctx.restore();
-}
+};
 global.rExpBar = function() {
   if (guest) return;
 
@@ -464,7 +481,7 @@ global.rExpBar = function() {
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
   ctx.globalAlpha = 1;
-}
+};
 global.rNotes = function() {
   ctx.textAlign = "center";
   ctx.fillStyle = "pink";
@@ -479,7 +496,7 @@ global.rNotes = function() {
   ctx.globalAlpha = 1;
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
-}
+};
 global.rBooms = function() {
   if (!login) {
     updateBooms();
@@ -523,7 +540,7 @@ global.rBooms = function() {
     ctx.closePath();
     ctx.globalAlpha = 1;
   }
-}
+};
 global.rTrails = function() {
   for (const i in trails) {
     const selfo = trails[i];
@@ -533,7 +550,7 @@ global.rTrails = function() {
     else drawStar(selfo.x - px + w / 2 + scrx, selfo.y - py + scry + h / 2, 5, 3, 8);
   }
   ctx.globalAlpha = 1;
-}
+};
 global.drawStar = function(ox, oy, spikes, outerRadius, innerRadius) {
   ctx.lineWidth = 1;
   let rot = Math.PI / 2 * 3;
@@ -555,7 +572,7 @@ global.drawStar = function(ox, oy, spikes, outerRadius, innerRadius) {
   ctx.lineTo(ox, oy - outerRadius);
   ctx.closePath();
   ctx.fill();
-}
+};
 global.rTexts = function(lag, arr) {
   ctx.font = "14px ShareTech";
   ctx.textAlign = "right";
@@ -606,7 +623,7 @@ global.rTexts = function(lag, arr) {
     write(i < il? info[i] : (lagNames[i - il] + translate("Gui2") + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
   }
   ctx.textAlign = "left";
-}
+};
 global.renderBG = function(more) {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, w, h);
@@ -623,7 +640,7 @@ global.renderBG = function(more) {
   }
 
   ctx.globalAlpha = 1;
-}
+};
 global.rLB = function() {
   if (guest) return;
   ctx.save();
@@ -664,7 +681,7 @@ global.rLB = function() {
     write(abbrevInt(lb[i].exp), w - 48 - 16, (i + 4) * 16);
     write(lb[i].rank, w - 16, (i + 4) * 16);
   }
-}
+};
 global.rCargo = function() {
   if (quest.type === "Mining") {
     ctx.fillStyle = "#d44";
@@ -717,7 +734,7 @@ global.rCargo = function() {
   ctx.fillRect(224, 8, 16, runningY-8);
 
   ctx.globalAlpha = 1;
-}
+};
 global.rRadar = function() {
   if (va2 < 1.12) return;
   const radarZoom = 1;
@@ -871,7 +888,7 @@ global.rRadar = function() {
   }
   ctx.globalAlpha = 1;
   ctx.lineWidth = 3;
-}
+};
 global.rAfk = function() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "center";
@@ -879,7 +896,7 @@ global.rAfk = function() {
   write(translate("Disconnected: AFK!"), rx + 128 * 3, ry + 512);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
-}
+};
 global.rDead = function() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "center";
@@ -890,7 +907,7 @@ global.rDead = function() {
   if (lives > 0) write(translate("Press E to respawn."), rx + 128 * 3, ry + 512);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
-}
+};
 global.rCreds = function() {
   ctx.fillStyle = "pink";
   ctx.textAlign = "center";
@@ -907,14 +924,14 @@ global.rCreds = function() {
   write(str, w / 2, h - 64);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
-}
+};
 global.rFlash = function() {
   ctx.globalAlpha = (.3 * flash + .01) * .2;
   flash -= .2;
   ctx.fillStyle = "pink";
   ctx.fillRect(0, 0, w, h);
   ctx.globalAlpha = 1;
-}
+};
 global.rTut = function() {
   const ore = iron + silver + platinum + copper;
   let text = "";
@@ -953,7 +970,7 @@ global.rTut = function() {
   write(text, w / 2, 40);
   write(line2, w / 2, 88);
   ctx.restore();
-}
+};
 global.rDmg = function(r) {
   const scale = dmgTimer / 16.;
   ctx.fillStyle = "red";
@@ -961,12 +978,12 @@ global.rDmg = function(r) {
   ctx.fillRect(0, 0, w, h);
   ctx.globalAlpha = 1;
   ctx.translate(scale * (r % 5 - 2), scale * (r / 5 - 2));
-}
+};
 global.undoDmg = function(r) {
   const scale = dmgTimer / 16.;
   ctx.translate(-scale * (r % 5 - 2), -scale * (r / 5 - 2));
   dmgTimer--;
-}
+};
 global.rAlert = function() {
   ctx.fillStyle = tick % 6 < 3 ? "orange" : "yellow";
   if (lives < 5) currAlert = translate("Low Lives");
@@ -982,7 +999,7 @@ global.rAlert = function() {
     ctx.textAlign = "center";
     write(translate("Alert: ") + bigAlert, w/2, h/4);
   }
-}
+};
 global.rSavedNote = function() {
   ctx.save();
   ctx.textAlign = "center";
@@ -993,7 +1010,7 @@ global.rSavedNote = function() {
   ctx.fillText(translate("Progress Saved!"), w / 2, h / 2);
   ctx.strokeText(translate("Progress Saved!"), w / 2, h / 2);
   ctx.restore();
-}
+};
 global.roundRect = function(whatctx, x, y, width, height, radius, fill, stroke) {
   whatctx.lineWidth = 2;
   if (typeof stroke == "undefined") stroke = true;
@@ -1016,7 +1033,7 @@ global.roundRect = function(whatctx, x, y, width, height, radius, fill, stroke) 
   whatctx.closePath();
   if (fill) whatctx.fill();
   if (stroke) whatctx.stroke();
-}
+};
 global.infoBox = function(x, y, width, height, fill, stroke) {
   ctx.save();
   ctx.lineWidth = 1;
@@ -1043,7 +1060,7 @@ global.infoBox = function(x, y, width, height, fill, stroke) {
   }
 
   ctx.restore();
-}
+};
 global.rRaid = function() {
   if (guest || rank < 6) return;
   ctx.save();
@@ -1074,7 +1091,7 @@ global.rRaid = function() {
     write(raidBlue, w / 2 + 24, h - 100);
   } else if (docked && minutes > 5) write(translate("Next raid in: ") + (minutes - 10) + ":" + seconds, w / 2, h - 120);
   ctx.restore();
-}
+};
 global.rBigNotes = function() {
   if (bigNotes[0] === -1) return;
   bigNotes[0][0] -= bigNotes[0][2] === "" ? 2 : 1.25;
@@ -1105,7 +1122,7 @@ global.rBigNotes = function() {
   write(bigNotes[0][3], x, h/2+64);
   ctx.globalAlpha = 1;
   ctx.font = "15px ShareTech";
-}
+};
 global.rKillStreak = function() {
   if (killStreakTimer < 0 || killStreak < 1) return;
 
@@ -1126,7 +1143,7 @@ global.rKillStreak = function() {
   write(strTime, w / 2, 88);
 
   ctx.restore();
-}
+};
 
 
 // object rendering
@@ -1137,7 +1154,7 @@ global.updateBullets = function() {
     selfo.y += selfo.vy;
     selfo.tick++;
   }
-}
+};
 global.rBullets = function() {
   if (!login) updateBullets();
   for (const i in bullets) {
@@ -1174,7 +1191,7 @@ global.rBullets = function() {
     ctx.drawImage(img, -pw / 2, -ph / 2);
     ctx.restore();
   }
-}
+};
 global.rMissiles = function() {
   for (const i in missilesInfo) {
   // for (let selfo in missilesInfo) {
@@ -1201,7 +1218,7 @@ global.rMissiles = function() {
     ctx.drawImage(img, -pw / 2, -ph / 2);
     ctx.restore();
   }
-}
+};
 global.rOrbs = function() {
   for (const i in orbsInfo) {
     const selfo = orbsInfo[i];
@@ -1219,7 +1236,7 @@ global.rOrbs = function() {
     ctx.drawImage(img, -pw / 2, -ph / 2);
     ctx.restore();
   }
-}
+};
 global.rMines = function() {
   for (let selfo in minesInfo) {
     selfo = minesInfo[selfo];
@@ -1267,7 +1284,7 @@ global.rMines = function() {
     ctx.arc(rendX, rendY, 4, 0, 2 * Math.PI, false);
     ctx.fill();
   }
-}
+};
 global.rBeams = function() {
   ctx.lineWidth = 6;
   for (const i in beamsInfo) {
@@ -1290,7 +1307,7 @@ global.rBeams = function() {
     ctx.closePath();
   }
   ctx.globalAlpha = 1;
-}
+};
 global.rBlasts = function() {
   ctx.lineWidth = 12;
   ctx.strokeStyle = "gold";
@@ -1311,7 +1328,7 @@ global.rBlasts = function() {
     ctx.closePath();
   }
   ctx.globalAlpha = 1;
-}
+};
 global.rAsteroids = function() {
   let nearA = 0;
   for (let selfo in astsInfo) {
@@ -1339,7 +1356,7 @@ global.rAsteroids = function() {
     }
   }
   rAstPointer(nearA);
-}
+};
 global.rPlanets = function() {
   if (planets == 0) return;
   const selfo = planets;
@@ -1377,7 +1394,7 @@ global.rPlanets = function() {
   write(translate("Planet ") + selfo.name, rendX, rendY - 196);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
-}
+};
 global.rPacks = function() {
   for (let selfo in packsInfo) {
     selfo = packsInfo[selfo];
@@ -1393,7 +1410,7 @@ global.rPacks = function() {
     ctx.drawImage(img, -img.width/2, -img.height/2);
     ctx.restore();
   }
-}
+};
 global.rVorts = function() {
   const d = new Date();
   const angleT = d.getTime() / 1000;
@@ -1415,7 +1432,7 @@ global.rVorts = function() {
     else bigAlert = translate("Black Hole Nearby!");
     rBlackHoleWarning(selfo.x, selfo.y);
   }
-}
+};
 global.rPlayers = function() {
   const pointers = [0, 0, 0];
   for (let selfo in playersInfo) {
@@ -1481,7 +1498,7 @@ global.rPlayers = function() {
     ctx.stroke();
   }
   rTeamPointers(pointers);
-}
+};
 global.rSelfCloaked = function() {
   ctx.strokeStyle = "grey";
   const img = (pc==="red"?redShips:(pc==="blue"?blueShips:greenShips))[ship];
@@ -1521,7 +1538,7 @@ global.rSelfCloaked = function() {
   ctx.beginPath();
   ctx.arc(rendX, rendY, pw / 1.5, (2.5 - phealth / pmaxHealth * .99) * Math.PI, (.501 + phealth / pmaxHealth) * Math.PI, false);
   ctx.stroke();
-}
+};
 global.rBases = function() {
   if (basesInfo !== undefined) { // render bases
     const image = colorSelect(basesInfo.color, Img.rss, Img.bss, Img.gss);
@@ -1579,7 +1596,7 @@ global.rBases = function() {
 
     rBasePointer(basesInfo);
   }
-}
+};
 global.rBackPack = function(selfo) {
   const img = Img.pack;
   const rendX = selfo.x - px + w / 2 + scrx;
@@ -1588,4 +1605,4 @@ global.rBackPack = function(selfo) {
   ctx.translate(rendX, rendY);
   ctx.drawImage(img, -16, -16, 32, 32);
   ctx.restore();
-}
+};

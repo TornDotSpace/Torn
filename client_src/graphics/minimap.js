@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2021  torn.space (https://torn.space)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 global.dots = [];
 const armCount = 5;
 dots[0] = {x: 0, y: 0, z: 0};
@@ -51,7 +68,7 @@ global.roll = function(v) {
       dot.z = sin;
     }
   }
-}
+};
 global.spin = function(v) {
   for (const i in dots) {
     const dot = dots[i];
@@ -82,7 +99,7 @@ global.spin = function(v) {
       dot.z = sin;
     }
   }
-}
+};
 /* global.rotate = function(v) {        Upcoming feature. DO NOT REMOVE!
   for (const i in dots) {
     const dot = dots[i];
@@ -132,7 +149,7 @@ global.center3D = function(xxp, yyp, zzp) {
       sectorPoints[i][j].z-=zzp;
     }
   }
-}
+};
 global.r3DMap = function() {
   if (sectorPoints == 0) return;
 
@@ -344,7 +361,7 @@ global.r3DMap = function() {
   }
 
   minictx.globalAlpha = 1;
-}
+};
 global.paste3DMap = function(xp, yp) {
   if (sectorPoints == 0) return;
   /* let d = new Date();
@@ -380,4 +397,4 @@ global.paste3DMap = function(xp, yp) {
   ctx.globalAlpha = 1;
   ctx.font = "12px ShareTech";
   write(translate("Press M to use the "+(useOldMap?"3D":"flat")+" map"), 8, 232);
-}
+};

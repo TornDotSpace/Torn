@@ -1,8 +1,24 @@
-const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
-var messages = [{}, {}, {}];
-var serverMessages = {};
+/*
+Copyright (C) 2021  torn.space (https://torn.space)
 
-//Chat circumfix codes. Code assumes they are length 2.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
+const messages = [{}, {}, {}];
+const serverMessages = {};
+
+// Chat circumfix codes. Code assumes they are length 2.
 const colorCircumfix = "~`";
 const weaponCircumfix = "`~";
 const translateCircumfix = "`t";
@@ -15,7 +31,7 @@ const chatctx = chatcanvas.getContext("2d", {alpha: true});
 const chatLength = 40;
 const serverChatLength = 5;
 let chatScroll = 0;
-let globalChat = 0;
+const globalChat = 0;
 let preChatArr = {};
 let chati = 0;
 
@@ -71,7 +87,7 @@ global.rChat = function() {
 
   chatctx.save();
 
-  //Draw all the messages in the current chatroom
+  // Draw all the messages in the current chatroom
   for (let ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
     chatctx.fillStyle = "yellow";
     const fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
@@ -88,7 +104,7 @@ global.rChat = function() {
     }
   }
 
-  //Repeat for the server messages
+  // Repeat for the server messages
   for (let i = 0; i < serverChatLength; i++) {
     chatctx.globalAlpha = 1-i/serverChatLength;
     chatctx.fillStyle = "yellow";
@@ -105,10 +121,10 @@ global.rChat = function() {
   }
 
   chatctx.restore();
-}
+};
 global.pasteChat = function() {
   ctx.drawImage(chatcanvas, 0, h-chatcanvas.height);
-}
+};
 function onReceiveChat(data) {
   while (data.msg.includes(weaponCircumfix)) {
     const find1 = getPosition(data.msg, translateCircumfix, 1);
@@ -130,7 +146,7 @@ function onReceiveChat(data) {
     data.msg = data.msg.replace(translateCircumfix + str + translateCircumfix, translate(str));
   }
 
-  if(typeof data.gc === "undefined") {
+  if (typeof data.gc === "undefined") {
     for (let i = chatLength; i > 0; i--) {
       serverMessages[i] = serverMessages[i - 1];
     }

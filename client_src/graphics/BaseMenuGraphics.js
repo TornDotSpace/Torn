@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2021  torn.space (https://torn.space)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 global.rBuyShipWindow = function() {
   ctx.fillStyle = "white";
   roundRect(ctx, rx + 16, ry + 256 - 16, 256, 256, 8, false, true);
@@ -62,7 +79,7 @@ global.rBuyShipWindow = function() {
     ctx.drawImage(Img.arrow, - 16, - 16);
     ctx.restore();
   }
-}
+};
 global.rOreShop = function() {
   const mult1 = (myTrail % 16 == 2)?1.05:1;
 
@@ -97,7 +114,7 @@ global.rOreShop = function() {
   ctx.translate(rx + 128 - 16, ry + (256 - 32 - 40) / 2 + 40);
   ctx.drawImage(astImg, spx, Secret, 128, 128, -64, -64, 128, 128);
   ctx.restore();
-}
+};
 global.rBuyLifeShop = function() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "right";
@@ -105,7 +122,7 @@ global.rBuyLifeShop = function() {
   ctx.fillStyle = (lives >= 20 || money < expToLife()) ? "red" : ((seller == 611) ? "lime" : "yellow");
   write(translate("[BUY]"), rx + 768 - 16, ry + 512 - 16);
   ctx.textAlign = "left";
-}
+};
 global.rWeaponsInShop = function() {
   ctx.fillStyle = "yellow";
   ctx.font = "24px ShareTech";
@@ -126,7 +143,7 @@ global.rWeaponsInShop = function() {
     else if (equipped[i] > -1) tag = translate("[SELL]") + " ";
     write(tag + (" " + (i + 1)).slice(-2) + ": " + wepns[equipped[i]].name, rx + 256 + 32, ry + 256 + i * 16);
   }
-}
+};
 global.rShop = function() {
   rOreShop();
 
@@ -135,7 +152,7 @@ global.rShop = function() {
   rWeaponsInShop();
 
   rBuyShipWindow();
-}
+};
 global.rConfirm = function() {
   ctx.fillStyle = "cyan";
   ctx.textAlign = "center";
@@ -145,7 +162,7 @@ global.rConfirm = function() {
   write(translate("Press Y to confirm or N to return."), rx + 128 * 3, ry + 192);
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
-}
+};
 global.rQuests = function() {
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
@@ -186,7 +203,7 @@ global.rQuests = function() {
       wrapText(translate("Description: ") + desc, xv + rx + 16 + 16, ry + 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
     }
   }
-}
+};
 global.rStats = function() {
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
@@ -316,7 +333,7 @@ global.rStats = function() {
     if(typeof txt !== "undefined")
       write("Current: " + txt, rx+512, ry+384);
   }*/
-}
+};
 global.rAchievements = function() {
   ctx.save();
   ctx.fillStyle = "yellow";
@@ -335,7 +352,7 @@ global.rAchievements = function() {
     write(achs[i] ? jsn.achNames[i].split(":")[0] : translate("???"), rx + 768 * (1 + (i % 5) * 2) / 10, ry + 8 + 40 * Math.floor(i / 5) + 60);
   }
   ctx.restore();
-}
+};
 global.rMore = function() {
   ctx.textAlign = "center";
   ctx.font = "26px ShareTech";
@@ -350,7 +367,7 @@ global.rMore = function() {
   }
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
-}
+};
 global.rWeaponStore = function() {
   ctx.font = "14px ShareTech";
   ctx.textAlign = "right";
@@ -372,13 +389,13 @@ global.rWeaponStore = function() {
 
     let starCol = "white";
     const type = weapon.type;
-    if (type === "Gun")   starCol = "red";
+    if (type === "Gun") starCol = "red";
     if (type === "Missile") starCol = "orange";
-    if (type === "Orb")   starCol = "tan";
-    if (type === "Beam")  starCol = "lime";
-    if (type === "Blast")   starCol = "green";
-    if (type === "Mine")  starCol = "blue";
-    if (type === "Misc")  starCol = "purple";
+    if (type === "Orb") starCol = "tan";
+    if (type === "Beam") starCol = "lime";
+    if (type === "Blast") starCol = "green";
+    if (type === "Mine") starCol = "blue";
+    if (type === "Misc") starCol = "purple";
     ctx.fillStyle = starCol;
 
     write("*", wx, wy);
@@ -387,7 +404,7 @@ global.rWeaponStore = function() {
     if (seller - 20 == i)
     {rWeaponStats(i);}
   }
-}
+};
 global.rWeaponStats = function(i) {
   ctx.font = "14px ShareTech";
   write(wepns[i].name, rx + 32, ry + 364 + 16 * 1);
@@ -408,7 +425,7 @@ global.rWeaponStats = function(i) {
     write(buyText, rx + 512 + 16, ry + 256 + 100 + 16 * 7);
   }
   ctx.font = "14px ShareTech";
-}
+};
 global.rBaseGui = function() {
   ctx.lineWidth = 2;
   ctx.textAlign = "right";
@@ -447,7 +464,7 @@ global.rBaseGui = function() {
   // ctx.drawImage(Img.baseOutline, rx - 4, ry - 4);
   paste3DMap(8, 8);
   rCargo();
-}
+};
 global.rInBase = function() {
   tick++;
   canvas.width = canvas.width;
@@ -492,4 +509,4 @@ global.rInBase = function() {
   rTut();
   rVolumeBar();
   rBigNotes();
-}
+};
