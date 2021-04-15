@@ -180,12 +180,14 @@ ReactRoot.socket = socket; // Just to make socket accessible in react.js
 
 
 ReactDOM.render(
+    /* eslint-disable */
     <ReactRoot data={{
       toggleMusic: toggleMusic,
       toggleAudio: toggleAudio,
     }} />,
     // Not rendering to body so canvas will not be affected
     document.getElementById("a"),
+    /* eslint-enable */
 );
 ReactRoot.turnOnDisplay("LoginOverlay");
 
