@@ -70,9 +70,6 @@ global.ReactRoot = ReactRootJS;
 const {Howl, Howler} = require("howler"); // audio
 
 
-
-
-
 global.teamColors = ["red", "blue", "green"];
 global.sectorWidth = 14336;
 global.mx = 0; global.my = 0; global.mb = 0;
@@ -250,13 +247,9 @@ global.achs = [false, false, false, false, false, false, false, false, false, fa
 global.bigNotes = [-1, -1, -1, -1];
 
 
-
-
 function forceRefresh() {
   window.location.reload(true);
 }
-
-
 
 
 setInterval(function() {

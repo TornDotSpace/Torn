@@ -10,7 +10,7 @@ global.loadImage = function(name, src) {
   });
   Img[name].src = src;
   Img_prgs[1]++;
-}
+};
 global.loadImageEnd = function() {
   const loaded = () => {
     if (Img_prgs[0] === Img_prgs[1]) {
@@ -26,7 +26,7 @@ global.loadImageEnd = function() {
       if (loaded()) clearInterval(interval);
     }, 100);
   }
-}
+};
 global.loadShipImg = function(color, i) {
   if (color === "red") {
     redShips[i] = new Image();
@@ -38,7 +38,7 @@ global.loadShipImg = function(color, i) {
     greenShips[i] = new Image();
     greenShips[i].src = "/img/green/g" + (i + 1) + ".png";
   }
-}
+};
 global.loadAllImages = function() {
   // misc
   loadImage("grad", "/img/grad.png");
@@ -132,4 +132,4 @@ global.loadAllImages = function() {
     planetImgs[i] = new Image();
     planetImgs[i].src = "/img/space/planets/pt" + i + ".jpg";
   }
-}
+};

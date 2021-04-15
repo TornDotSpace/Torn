@@ -1,8 +1,8 @@
 const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
-var messages = [{}, {}, {}];
-var serverMessages = {};
+const messages = [{}, {}, {}];
+const serverMessages = {};
 
-//Chat circumfix codes. Code assumes they are length 2.
+// Chat circumfix codes. Code assumes they are length 2.
 const colorCircumfix = "~`";
 const weaponCircumfix = "`~";
 const translateCircumfix = "`t";
@@ -15,7 +15,7 @@ const chatctx = chatcanvas.getContext("2d", {alpha: true});
 const chatLength = 40;
 const serverChatLength = 5;
 let chatScroll = 0;
-let globalChat = 0;
+const globalChat = 0;
 let preChatArr = {};
 let chati = 0;
 
@@ -71,7 +71,7 @@ global.rChat = function() {
 
   chatctx.save();
 
-  //Draw all the messages in the current chatroom
+  // Draw all the messages in the current chatroom
   for (let ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
     chatctx.fillStyle = "yellow";
     const fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
@@ -88,7 +88,7 @@ global.rChat = function() {
     }
   }
 
-  //Repeat for the server messages
+  // Repeat for the server messages
   for (let i = 0; i < serverChatLength; i++) {
     chatctx.globalAlpha = 1-i/serverChatLength;
     chatctx.fillStyle = "yellow";
@@ -105,10 +105,10 @@ global.rChat = function() {
   }
 
   chatctx.restore();
-}
+};
 global.pasteChat = function() {
   ctx.drawImage(chatcanvas, 0, h-chatcanvas.height);
-}
+};
 function onReceiveChat(data) {
   while (data.msg.includes(weaponCircumfix)) {
     const find1 = getPosition(data.msg, translateCircumfix, 1);
@@ -130,7 +130,7 @@ function onReceiveChat(data) {
     data.msg = data.msg.replace(translateCircumfix + str + translateCircumfix, translate(str));
   }
 
-  if(typeof data.gc === "undefined") {
+  if (typeof data.gc === "undefined") {
     for (let i = chatLength; i > 0; i--) {
       serverMessages[i] = serverMessages[i - 1];
     }

@@ -22,7 +22,7 @@ global.socket = io(GAMESERVER_URL,
 
 global.connect = function() {
   if (socket.connected)
-    return;
+  {return;}
   socket.open();
 };
 

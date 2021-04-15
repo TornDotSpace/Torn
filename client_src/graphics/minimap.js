@@ -51,7 +51,7 @@ global.roll = function(v) {
       dot.z = sin;
     }
   }
-}
+};
 global.spin = function(v) {
   for (const i in dots) {
     const dot = dots[i];
@@ -82,7 +82,7 @@ global.spin = function(v) {
       dot.z = sin;
     }
   }
-}
+};
 /* global.rotate = function(v) {        Upcoming feature. DO NOT REMOVE!
   for (const i in dots) {
     const dot = dots[i];
@@ -132,7 +132,7 @@ global.center3D = function(xxp, yyp, zzp) {
       sectorPoints[i][j].z-=zzp;
     }
   }
-}
+};
 global.r3DMap = function() {
   if (sectorPoints == 0) return;
 
@@ -344,7 +344,7 @@ global.r3DMap = function() {
   }
 
   minictx.globalAlpha = 1;
-}
+};
 global.paste3DMap = function(xp, yp) {
   if (sectorPoints == 0) return;
   /* let d = new Date();
@@ -380,4 +380,4 @@ global.paste3DMap = function(xp, yp) {
   ctx.globalAlpha = 1;
   ctx.font = "12px ShareTech";
   write(translate("Press M to use the "+(useOldMap?"3D":"flat")+" map"), 8, 232);
-}
+};
