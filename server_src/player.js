@@ -173,6 +173,7 @@ class Player {
     else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
   }
   fire() {
+    if (this.empTimer > 0) return; // Can't shoot while EMP'd
     if (this.c && this.charge > 0) this.shootEliteWeapon();
     if (this.bulletQueue > 0) this.shootBullet(40); // SMG
     const wepId = this.weapons[this.equipped];
@@ -988,14 +989,8 @@ class Player {
     return this.health < 0;
   }
   EMP(t) {
-    if (!this.isBot && this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship. THIS IS A TEMPORARY MEASURE UNTIL THE EMP NONSENSE GETS FIXED
-    if (this.ship >= 16 && this.ship<=20) t *= 1.5; // Emp works better on elites
-    this.charge += -t*this.energy2; // Emp jams the ship. multiplying by energy2 ensures that regardless of energy tech, you remain jammed the same time
-    if (this.isBot) {
-      this.empTimer += t; // Adding a condition, checking that this doesn't cause the EMP bug.
-      this.w = this.e = this.a = this.s = this.d = this.c = this.space = false; // Bot brains will seem to short-circuit due to the EMP
-    }
-    if (this.ship == 21 && this.health*1.05 < this.maxHealth) this.health*=1.05; // It will also heal the ship a very small bit.
+    if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship.
+    this.empTimer = t;
     if (!this.isBot) this.emit("emp", {t: t});
   }
   save() {}

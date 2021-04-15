@@ -27,12 +27,11 @@ document.onkeydown = function(event) {
     }
     return;
   }
-  if (autopilot) {
-    return;
-  }
   if (event.keyCode == 13) {
     ReactRoot.focusChat();
     typing = true;
+  } else if (autopilot) {
+    return;
   } else if (event.keyCode == 78 && docked && tab == 8) { // n
     confirmer = -1;
     tab = 0;
@@ -50,8 +49,7 @@ document.onkeydown = function(event) {
   } else if (event.keyCode === 83 || event.keyCode === 40) {// s
     if (keys[1] != true) socket.emit("key", {inputId: "s", state: true});
     keys[1] = true;
-  } else if (event.keyCode === 192)// `
-  {
+  } else if (event.keyCode === 192) {// `
     dev = !dev;
   } else if (event.keyCode === 77) {// m
     useOldMap = !useOldMap;
@@ -98,8 +96,7 @@ document.onkeyup = function(event) {
   if (event.keyCode === 83 || event.keyCode === 40) {// s
     keys[1] = false;
     socket.emit("key", {inputId: "s", state: false});
-  } else if (event.keyCode === 69)// e
-  {
+  } else if (event.keyCode === 69) {// e
     keys[2] = false;
   } else if (event.keyCode === 87 || event.keyCode === 38) {// w
     keys[3] = false;
@@ -113,11 +110,9 @@ document.onkeyup = function(event) {
   } else if (event.keyCode === 32) {// space
     keys[6] = false;
     socket.emit("key", {inputId: " ", state: false});
-  } else if (event.keyCode === 81)// q
-  {
+  } else if (event.keyCode === 81) {// q
     keys[7] = false;
-  } else if (event.keyCode === 88 || event.keyCode === 27)// x
-  {
+  } else if (event.keyCode === 88 || event.keyCode === 27) {// x
     keys[8] = false;
   } else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) {// c/v
     if (keys[9] == true) socket.emit("key", {inputId: "c", state: false});
