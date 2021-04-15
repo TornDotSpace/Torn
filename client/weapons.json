@@ -37,7 +37,7 @@
 			"level":1,
 			"type":"Gun",
 			"bot":false,
-			"enabled":true
+			"enabled":false
 		},
 		"3":{
 			"name":"Rifle",
@@ -375,7 +375,7 @@
 			"level":10,
 			"type":"Misc",
 			"bot":false,
-			"enabled":true
+			"enabled":false
 		},
 		"29":{
 			"name":"Warp Drive",
@@ -414,7 +414,7 @@
 			"level":6,
 			"type":"Beam",
 			"bot":true,
-			"enabled":true
+			"enabled":false
 		},
 		"32":{
 			"name":"Impulse Mine",
@@ -440,7 +440,7 @@
 			"level":3,
 			"type":"Mine",
 			"bot":false,
-			"enabled":true
+			"enabled":false
 		},
 		"34":{
 			"name":"Muon Ray",

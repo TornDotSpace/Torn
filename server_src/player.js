@@ -178,6 +178,9 @@ class Player {
     if (this.bulletQueue > 0) this.shootBullet(40); // SMG
     const wepId = this.weapons[this.equipped];
     const wep = wepns[wepId];
+    if (!wep.enabled){
+      return;
+    }
 
     // In case of insufficient ammo
     if (this.ammos[this.equipped] == 0 && this.charge > 10) {
