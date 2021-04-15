@@ -44,11 +44,30 @@ class Bot extends Player {
       this.isBrainwashedBy = 0;
       return;
     }
-    const myX = this.x + this.sx * sectorWidth;
+    const myX = this.x + this.sx * sectorWidth; // Universal coordinates of this bot
     const myY = this.y + this.sy * sectorWidth;
-    const theirX = owner.x + owner.sx * sectorWidth;
-    const theirY = owner.y + owner.sy * sectorWidth;
-    const turn = -(this.angle - Math.atan2(theirY - myY, theirX - myX) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+    const theirX1 = owner.x + owner.sx * sectorWidth; // Coords of owner
+    const theirY1 = owner.y + owner.sy * sectorWidth;
+    const dist1 = hypot2(myX, theirX1, myY, theirY1);
+    const theirX2 = owner.x + owner.sx-mapSz * sectorWidth; // Coords of owner, wrapped backwards one to handle left/right universe wrapping
+    const theirY2 = owner.y + owner.sy-mapSz * sectorWidth;
+    const dist2 = hypot2(myX, theirX2, myY, theirY2);
+    const theirX3 = owner.x + owner.sx+mapSz * sectorWidth; // Coords of owner, wrapped forwards one
+    const theirY3 = owner.y + owner.sy+mapSz * sectorWidth;
+    const dist3 = hypot2(myX, theirX3, myY, theirY3);
+
+    //Determine which way to wrap is fastest
+    let finalX = theirX3;
+    let finalY = theirY3;
+    if(dist1 < dist2 && dist1 < dist3){
+      finalX = theirX1;
+      finalY = theirY1;
+    } else if(dist2 < dist3){
+      finalX = theirX2;
+      finalY = theirY2;
+    }
+    
+    const turn = -(this.angle - Math.atan2(finalY - myY, finalX - myX) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
     this.d = turn > this.cva * this.cva * 10;
     this.a = turn < -this.cva * this.cva * 10;
     this.w = true;
@@ -70,7 +89,7 @@ class Bot extends Player {
     this.s = this.space && Math.abs(turn) > Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
     this.w = Math.abs(turn) < Math.PI / 2 && close > Math.min(range * .75, 60 * 60);
   }
-  botPlay() { // don't mess with this pls
+  botPlay() {
     if (tick % 8 != Math.floor(this.id * 8)) return; // Lag prevention, also makes the bots a bit easier
     if (this.empTimer > 0) return; // cant move if i'm emp'd
 
