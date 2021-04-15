@@ -3,8 +3,8 @@ var messages = [{}, {}, {}];
 var serverMessages = {};
 
 //Chat circumfix codes. Code assumes they are length 2.
-const colorCircumfix = "`c";
-const weaponCircumfix = "`w";
+const colorCircumfix = "~`";
+const weaponCircumfix = "`~";
 const translateCircumfix = "`t";
 
 const chatcanvas = document.createElement("canvas");
