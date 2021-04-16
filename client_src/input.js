@@ -93,7 +93,6 @@ document.onkeydown = function(event) {
     keys[7] = true;
   } else if (event.keyCode === 88 || event.keyCode === 27) {// x
     if (dead) return;
-    if (quest == 0) qsx = qsy = qdsx = qdsy = -1;
     if (keys[8] != true) socket.emit("key", {inputId: "x", state: true});
     keys[8] = true;
     ReactRoot.turnOffRegister("");
@@ -104,6 +103,9 @@ document.onkeydown = function(event) {
     keys[9] = true;
   }
 };
+
+
+
 document.onkeyup = function(event) {
   if (!login || tab == -1 || autopilot) {
     return;
@@ -137,6 +139,9 @@ document.onkeyup = function(event) {
     socket.emit("key", {inputId: "shift", state: false});
   }
 };
+
+
+
 document.addEventListener("mousemove", function(evt) {
   const omx = mx;
   const omy = my;
@@ -169,80 +174,37 @@ document.addEventListener("mousemove", function(evt) {
 
   // Shop
   else if (docked && tab == 0) {
-    if (mx > rx + 256 + 48 && mx < rx + 256 + 48 + ctx.measureText(translate("[Sell All]")).width && my > ry + 64 && my < ry + 80) seller = 610;
-    else if (mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
-      seller = 5 + Math.floor((my - 84 - ry) / 32);
-      if (Math.floor((my - 84 - ry) / 16) % 2 == 1) seller = 0;
-    } else if (my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) seller = Math.floor((my - ry - 246) / 16 + 10);
-    else if (my > ry + 256 - 30 && my < ry + 256 - 16 && mx > rx + 512 - 64 && mx < rx + 512 - 64 + ctx.measureText(translate("[View All]")).width) seller = 601;
-    else if (mx > rx + 768 - 16 - ctx.measureText(translate("[BUY]")).width && mx < rx + 768 - 16 && my > ry + 512 - 32 && my < ry + 512 - 16) seller = 611;
-    else if (my > ry + 256 - 16 && my < ry + 512 - 16 && mx > rx + 16 && mx < rx + 256 + 16) {
-      if (my > ry + 256 + 128 + 32) seller = 100;
-      else seller = 0;
-    } else seller = 0;
+    shopOnHover();
   }
 
   // Quests
-  else if (docked && tab == 1 && mx > 16 + rx && mx < rx + 128 * 6 - 16 && my > ry + 40 + 32 && my < ry + 512 - 48 && quest == 0) {
-    seller = Math.floor((my - ry - 40 - 32) / 80) + 300;
-    if (mx > rx + 128 * 3) seller += 5;
-    if (preSeller != seller) {
-      const questi = quests[seller-300];
-      qsx = questi.sx;
-      qsy = questi.sy;
-      qdsx = questi.dsx;
-      qdsy = questi.dsy;
-      r3DMap();
-    }
+  else if (docked && tab == 1) {
+    questsOnHover(preSeller);
   }
 
   // Stats
   else if (docked && tab == 2) {
-    if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 200;
-    else if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 201;
-    else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 64 && mx < rx + 64 + 112) seller = 202;
-    else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 192 && mx < rx + 192 + 112) seller = 203;
-    else if (my > ry + 416 - 64 + 16 && my < ry + 416 - 64 + 30 && mx > rx + 320 && mx < rx + 320 + 112) seller = 204;
-    else if (my > ry + 416 + 16 && my < ry + 416 + 30 && mx > rx + 320 && mx < rx + 320 + 112) seller = 205;
-
-    else if (my > ry + 416 - 64 + 32 && my < ry + 416 - 64 + 46 && mx > rx + 64 && mx < rx + 64 + 112) seller = 206;
-    else if (my > ry + 416 - 64 + 32 && my < ry + 416 - 64 + 46 && mx > rx + 192 && mx < rx + 192 + 112) seller = 207;
-    else if (my > ry + 416 + 32 && my < ry + 416 + 46 && mx > rx + 64 && mx < rx + 64 + 112) seller = 208;
-    else if (my > ry + 416 + 32 && my < ry + 416 + 46 && mx > rx + 192 && mx < rx + 192 + 112) seller = 209;
-    else if (my > ry + 416 - 64 + 32 && my < ry + 416 - 64 + 46 && mx > rx + 320 && mx < rx + 320 + 112) seller = 210;
-    else if (my > ry + 416 + 32 && my < ry + 416 + 46 && mx > rx + 320 && mx < rx + 320 + 112) seller = 211;
-
-    else if (my > ry + 44 + 64 - 24 && my < ry + 44 + 64 + 8 * 21 && mx > rx + 512 && mx < rx + 768) {
-      seller = 700 + Math.floor((my - ry - 44 - 64 + 24) / 32);
-      if ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && true)) seller = 0;
-    } else seller = 0;
+    statsOnHover();
   }
 
   // Buy weapon
   else if (docked && tab == 7) {
-    if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16 && mx < rx + 16 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 )) + 20;
-    else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16 + 240 && mx < rx + 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepnCount / 3) )) + 20;
-    else if (my > ry + 40 + 52 && my < ry + 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && mx > rx + 16 + 240 * 2 && mx < rx + 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((my - ry - 40 - 52) / 16 + Math.ceil(wepnCount / 3) * 2)) + 20;
-
-    else seller = 0;
+    weaponStoreOnHover();
   }
 
   // More
-  else if (docked && tab == 4 && my > ry + 40 && my < ry + 512 && mx > rx && mx < rx + 768) {
-    const ticX = Math.floor((mx - rx) / 256);
-    const ticY = Math.floor((my - ry - 40) / ((512 - 40) / 2));
-    seller = 500 + ticX + ticY * 3;
-  } else seller = 0;
+  else if (docked && tab == 4) {
+    moreOnHover();
+  }
+
+  else seller = 0;
+
   if (seller != 0 && seller != preSeller) playAudio("button2", .2);
   if (preSeller!=seller && (Math.abs(preSeller-801)<=1 || Math.abs(seller-801)<=1)) rChat();
-  if (quest == 0 && (seller < 300 || seller >= 400)) {
-    qsx = -1;
-    qsy = -1;
-    qdsx = -1;
-    qdsy = -1;
-    r3DMap();
-  }
+
 }, false);
+
+
 
 document.addEventListener("mousedown", function(evt) {
   soundAllowed = true;
@@ -270,56 +232,22 @@ document.addEventListener("mousedown", function(evt) {
   /* if(i == 350)
     socket.emit('cancelquest', {});*/
 
-  // more page
-  if (i == 500) window.open("https://tornspace.wikia.com/wiki/Torn.space_Wiki", "_blank");
-  if (i == 501) window.open("/store", "_blank");
-  if (i == 502) window.open("/leaderboard", "_blank");
-  // row 2
-  if (i == 503) window.open("https://github.com/TornDotSpace/Torn", "_blank");
-  if (i == 504) window.open("https://discord.gg/tGrYXwP", "_blank");
-  if (i == 505) window.open("/credits", "_blank");
-
   if (i == 601) {
     tab = 7;
     actuallyBuying = false;
   }
-  if (i == 610) socket.emit("sell", {item: "all"});
-  if (i == 611) socket.emit("buyLife", {});
-  if (i >= 300 && i < 310 && quest == 0) socket.emit("quest", {quest: i - 300});
-  if (docked && tab == 2 && i > 199 && i < 206) socket.emit("upgrade", {item: i - 200});
-  if (docked && tab == 2 && i > 205 && i < 212) socket.emit("downgrade", {item: i - 206});
-  if (docked && mx > rx && mx < rx + 128 * 6 && my > ry && my < ry + 40) tab = Math.floor((mx - rx) / (768/5));
-  if (i >= 700 && i < 705) socket.emit("trail", {trail: i - 700});
+  if (docked) {
+    baseMenuOnClick(i);
+  }
   if (i == 900) socket.emit("jettison", {});
   if (i >= 800 && i < 803) {
-    whichChatMenu = i-800;
-    socket.emit("toggleGlobal", {gc: whichChatMenu});
-    preProcessChat();
-    rChat();
-  }
-  if (docked && mx > rx + 256 - 32 && mx < rx + 264 && my < ry + 84 + 4 * 32 - 16 && my > ry + 84) {
-    let item = "";
-    if (i == 5) item = "iron";
-    else if (i == 6) item = "silver";
-    else if (i == 7) item = "platinum";
-    else if (i == 8) item = "copper";
-    socket.emit("sell", {item: item});
-  } else if (docked && tab == 0 && my > ry + 246 && my < ry + 240 + 160 && mx > rx + 256 + 32 && mx < rx + 256 + 78) {
-    if (equipped[i - 10] == -1) {
-      tab = 7;
-      actuallyBuying = true;
-      scroll = i - 10;
-    } else if (equipped[i - 10] > -1) {
-      tab = 8;
-      confirmer = i - 10;
-    }
-  } else if (docked && tab == 0 && my > ry + 256 - 16 && my < ry + 512 - 16 && mx > rx + 16 && mx < rx + 256 + 16) {
-    if (my > ry + 256 + 128 + 32) socket.emit("buyShip", {ship: shipView});
-    else if (mx > rx + 16 + 128 && shipView < ships.length - 1) shipView++;
-    else if (mx < rx + 16 + 128 && shipView > 0) shipView--;
+    chatMenuButtonClick(i);
   }
   if (i != 0 && i != 600) ReactRoot.turnOffRegister("");
 }, false);
+
+
+
 document.addEventListener("mouseup", function(evt) {
   mb = 0;
   if (mouseDown) {
@@ -328,22 +256,34 @@ document.addEventListener("mouseup", function(evt) {
   }
 }, false);
 
+
+
 canvas.addEventListener("wheel", function() {
+  
   if (typeof event=="undefined") return;
   const d = -Math.sign(event.deltaY);
+
+  //3d Map Zooming
   if (mx < 256 && my < 450) {
     mapZoom*=d>0?.93:1.08;
     mapZoom = Math.max(Math.min(mapZoom, 1), .1);
     r3DMap();
     return;
   }
+
+  //Scrolling up the chat menu
   if (mx < 512 + 32 && my > h - 216) {
     chatScroll = Math.max(0, Math.min(chatLength - 10, chatScroll + d));
     rChat();
     return;
   }
+
+  //Weapon scrolling
   if ((equipped[scroll] > 0 && (docked || scroll - d < 0 || scroll - d >= equipped.length || equipped[scroll - d] < -1)) || equipped[scroll - d] == -2) {
     return;
   }
   socket.emit("equip", {scroll: (scroll - d)});
+
+
+
 });

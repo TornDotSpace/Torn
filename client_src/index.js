@@ -59,10 +59,6 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 global.ctx = canvas.getContext("2d", {alpha: false});
 
-global.minimapcanvas = document.createElement("canvas");
-minimapcanvas.width = minimapcanvas.height = 208;
-global.minictx = minimapcanvas.getContext("2d", {alpha: true});
-
 import React from "react";
 import ReactDOM from "react-dom";
 import ReactRootJS from "./react.js";
@@ -76,7 +72,7 @@ global.mx = 0; global.my = 0; global.mb = 0;
 global.tick = 0;
 global.scrx = 0; global.scry = 0;
 global.mapSz = -1;
-global.quests = 0; global.quest = 0; global.qsy = -1; global.qsx = -1; global.qdsy = -1; global.qdsx = -1;
+global.quests = 0; global.quest = 0;
 global.login = false; global.lore = false;
 global.px = 0; global.py = 0; global.pc = 0; global.pangle = 0; global.isLocked = false; global.pvx = 0; global.pvy = 0;
 global.phealth = 0;
@@ -100,7 +96,6 @@ global.afk = false;
 global.baseMap2D = {};
 global.planetMap2D = {};
 global.myGuild = {};
-global.useOldMap = false;
 
 global.homepageTimer = 0; global.loreTimer = 0;
 global.raidTimer = -1; global.raidRed = 0; global.raidBlue = 0; global.raidGreen = 0; global.points = 0;
@@ -128,7 +123,6 @@ global.keys = []; global.lagArr = 0;
 
 global.w = window.innerWidth;
 global.h = window.innerHeight; // Canvas width and height
-global.rx = w / 2 - 128 * 3; global.ry = h / 4 - 128;
 
 global.basesInfo = undefined;
 global.playersInfo = { };
@@ -173,7 +167,7 @@ require("./network.js");
 require("./graphics/render.js");
 require("./graphics/ArrowGraphics.js");
 require("./graphics/minimap.js");
-require("./graphics/BaseMenuGraphics.js");
+require("./BaseMenu/BaseMenu.js");
 require("./input.js");
 require("./chat.js");
 ReactRoot.socket = socket; // Just to make socket accessible in react.js
@@ -269,7 +263,7 @@ setInterval(function() {
     canvas.width = w;
     canvas.height = h;
   }
-  rx = w / 2 - 128 * 3, ry = h / 4 - 128;
+  baseMenuX = w / 2 - 128 * 3, baseMenuY = h / 4 - 128;
 }, 40);
 
 window.requestAnimationFrame(loop);

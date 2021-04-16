@@ -100,7 +100,7 @@ global.render = function() {
   rNotes();// Fast
   rKillStreak();
   if (afk) rAfk();
-  if (self.quests != 0) rCurrQuest();
+  if (quest != 0) rCurrQuest();
   rRaid();
   rWeapons();// fast
   rEMP();
@@ -143,7 +143,7 @@ global.render = function() {
   ops--;
 };
 
-global.wrapText = function(text, x, y, maxWidth, lineHeight) {
+global.wrapText = function(context, text, x, y, maxWidth, lineHeight) {
   if (typeof text === "undefined") {
     console.log("Undefined text");
     return;
@@ -153,15 +153,15 @@ global.wrapText = function(text, x, y, maxWidth, lineHeight) {
 
   for (let n = 0; n < words.length; n++) {
     const testLine = line + words[n] + " ";
-    const metrics = ctx.measureText(testLine);
+    const metrics = context.measureText(testLine);
     const testWidth = metrics.width;
     if (testWidth > maxWidth && n > 0) {
-      write(line, x, y);
+      write(context, line, x, y);
       line = words[n] + " ";
       y += lineHeight;
     } else line = testLine;
   }
-  write(line, x, y);
+  write(context, line, x, y);
 };
 
 global.rWeapons = function() { // Weapon selector on right side of game
@@ -179,35 +179,29 @@ global.rWeapons = function() { // Weapon selector on right side of game
   ctx.textAlign = "right";
   ctx.globalAlpha = Math.max(weaponTimer--, 0) / 100 * .7 + .3;
 
-  write(translate("Weapon"), w - 80, h - 432 + (-1 + 10) * 16);
-  write(translate("Ammo"), w - 16, h - 432 + (-1 + 10) * 16);
+  write(ctx, translate("Weapon"), w - 80, h - 432 + (-1 + 10) * 16);
+  write(ctx, translate("Ammo"), w - 16, h - 432 + (-1 + 10) * 16);
   for (let i = 0; i < 10; i++) {
     ctx.fillStyle = scroll == i ? "lime" : "yellow";
     if (i >= ships[ship].weapons) ctx.fillStyle = "orange";
     if (ship < wepns[equipped[i]].Level) ctx.fillStyle = "red";
-    if (typeof wepns[equipped[i]] !== "undefined") write(wepns[equipped[i]].name + ": " + ((i + 1) % 10), w - 80, h - 432 + (i + 10) * 16);
-    if (equipped[i] > -1) write(ammoCodeToString(ammos[i]), w - 16, h - 432 + (i + 10) * 16);
+    if (typeof wepns[equipped[i]] !== "undefined") write(ctx, wepns[equipped[i]].name + ": " + ((i + 1) % 10), w - 80, h - 432 + (i + 10) * 16);
+    if (equipped[i] > -1) write(ctx, ammoCodeToString(ammos[i]), w - 16, h - 432 + (i + 10) * 16);
   }
 
   ctx.globalAlpha = 1;
   ctx.fillStyle = "yellow";
   badWeapon = (badWeapon < 1) ? 0 : (badWeapon - 1);
   ctx.font = (16 + badWeapon) + "px ShareTech";
-  write(translate("Scroll to Change Weapons"), w - 16, h - 96);
+  write(ctx, translate("Scroll to Change Weapons"), w - 16, h - 96);
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
 };
 global.rCurrQuest = function() {
   ctx.fillStyle = "cyan";
   ctx.textAlign = "center";
-  let desc = "";
-  if (quest.type == "Mining") desc = translate("Bring ") + numToLS(quest.amt) + translate(" units of ") + quest.metal + translate(" to sector ") + getSectorName(quest.sx, quest.sy) + translate(".");
-  if (quest.type == "Base") desc = translate("Eliminate enemy base in sector ") + getSectorName(quest.sx, quest.sy) + translate(".");
-  if (quest.type == "Delivery") desc = translate("Obtain package from planet ") + getSectorName(quest.sx, quest.sy) + translate(" and deliver it to planet ") + getSectorName(quest.dsx, quest.dsy) + translate(".");
-  if (quest.type == "Secret") desc = translate("Proceed to sector ") + getSectorName(quest.sx, quest.sy) + translate(" for further instructions.");
-  if (quest.type == "Secret2") desc = translate("Eliminate all enemy players and turrets in ") + getSectorName(quest.sx, quest.sy) + translate(" and visit planet ") + secret2PlanetName + translate(".");
-  if (quest.type == "Secret3") desc = translate("Deliver package to a permanent black hole sector.");
-  write(desc, w / 2, h - 56);
+  let desc = getQuestDescription(quest);
+  write(ctx, desc, w / 2, h - 56);
   ctx.textAlign = "left";
 };
 global.rEMP = function() {
@@ -215,11 +209,11 @@ global.rEMP = function() {
   ctx.textAlign = "center";
   ctx.fillStyle = "orange";
   if (empTimer > 0) {
-    write(translate("EMP in Effect for ") + Math.round(empTimer / 25) + translate(" Seconds") + translate("!"), w / 2, 256);
+    write(ctx, translate("EMP in Effect for ") + Math.round(empTimer / 25) + translate(" Seconds") + translate("!"), w / 2, 256);
     currAlert = translate("Power Lost due to EMP!");
   }
   if (gyroTimer > 0) {
-    write(translate("Gyrodynamite in Effect for ") + Math.round(gyroTimer / 25) + translate(" Seconds") + translate("!"), w / 2, 256);
+    write(ctx, translate("Gyrodynamite in Effect for ") + Math.round(gyroTimer / 25) + translate(" Seconds") + translate("!"), w / 2, 256);
     currAlert = translate("Stabilization Lost due to Gyrodynamite!");
   }
   ctx.font = "14px ShareTech";
@@ -279,7 +273,7 @@ global.rSectorEdge = function() {
     ctx.moveTo(0, i + scry);
     ctx.lineTo(w, i + scry);
     ctx.stroke();
-    write(translate("Edge of Sector"), w / 2, i);
+    write(ctx, translate("Edge of Sector"), w / 2, i);
   }
   ctx.font = "14px ShareTech";
   ctx.textAlign = "left";
@@ -397,12 +391,12 @@ global.updateBooms = function() {
 global.rLore = function() {
   ctx.fillStyle = brighten(pc);
   ctx.font = "22px ShareTech";
-  wrapText(jsn.lore[colorSelect(pc, 0, 1, 2)], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
+  wrapText(ctx, jsn.lore[colorSelect(pc, 0, 1, 2)], 48, h/2-22*5-10000/(loreTimer+1), w - 96, 40);
   ctx.textAlign = "center";
   ctx.fillStyle = "yellow";
   const t = (new Date()).getTime() / 6000;
   ctx.font = ((32 + 6 * Math.sin(24 * t))*(loreTimer/(loreTimer+50))) + "px ShareTech";
-  ctx.fillText(translate("Click to play!"), w/2, h - 48);
+  write(ctx, translate("Click to play!"), w/2, h - 48);
 };
 global.rEnergyBar = function() {
   if (equipped === 0) return;
@@ -472,15 +466,15 @@ global.rExpBar = function() {
 
   // Write right and left xp requirements
   ctx.textAlign = "right";
-  write("" + Math.max(r2x(rank - 1), 0), w / 2 - 140, h - 14);
+  write(ctx, "" + Math.max(r2x(rank - 1), 0), w / 2 - 140, h - 14);
   ctx.textAlign = "left";
-  write("" + r2x(rank), w / 2 + 140, h - 14);
+  write(ctx, "" + r2x(rank), w / 2 + 140, h - 14);
 
   // write current xp
   ctx.font = "11px ShareTech";
   ctx.textAlign = (dec > 126) ? "right" : "left";
   ctx.fillStyle = (dec > 126) ? "black" : "white";
-  write("" + Math.round(experience), w / 2 - 128 + dec + (dec > 126 ? -8 : 8), h - 16);
+  write(ctx, "" + Math.round(experience), w / 2 - 128 + dec + (dec > 126 ? -8 : 8), h - 16);
 
   // revert canvas state
   ctx.font = "14px ShareTech";
@@ -496,7 +490,7 @@ global.rNotes = function() {
     ctx.globalAlpha = (39 - note.time) / 39;
     const x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + (note.local ? px : 0));
     const y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + (note.local ? py : 0));
-    write(note.msg, x, y);
+    write(ctx, note.msg, x, y);
   }
   ctx.globalAlpha = 1;
   ctx.textAlign = "left";
@@ -625,7 +619,7 @@ global.rTexts = function(lag, arr) {
   const il = 13;
 
   for (let i = 0; i < ((dev && lag!=-1) ? il + lagArr.length : 8); i++) {
-    write(i < il? info[i] : (lagNames[i - il] + translate("Gui2") + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
+    write(ctx, i < il? info[i] : (lagNames[i - il] + translate("Gui2") + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
   }
   ctx.textAlign = "left";
 };
@@ -650,7 +644,7 @@ global.rLB = function() {
   if (guest) return;
   ctx.save();
   ctx.globalAlpha = .5;
-  infoBox(w - 260, -2, 262, (lb.length + 4) * 16 + 2, "black", "white");
+  infoBox(ctx, w - 260, -2, 262, (lb.length + 4) * 16 + 2, "black", "white");
   ctx.fillStyle = pc;
   roundRect(ctx, w - 221, Math.min(youi, 16) * 16 + 52, myName.length * 8 + 7, 16, 7, true, false);
   ctx.restore();
@@ -658,33 +652,33 @@ global.rLB = function() {
   ctx.fillStyle = "yellow";
   ctx.font = "24px ShareTech";
   ctx.textAlign = "center";
-  write(translate("Leaderboard"), w - 128, 28);
+  write(ctx, translate("Leaderboard"), w - 128, 28);
   ctx.font = "14px ShareTech";
   ctx.fillStyle = "yellow";
-  write(translate("Name"), w - 208, 48);
+  write(ctx, translate("Name"), w - 208, 48);
   ctx.textAlign = "right";
-  write(translate("Exp"), w - 48 - 16, 48);
-  write(translate("Rank"), w - 16, 48);
+  write(ctx, translate("Exp"), w - 48 - 16, 48);
+  write(ctx, translate("Rank"), w - 16, 48);
   for (let i = 0; i < lb.length; i++) {
     const place = 1 + ((i != 20) ? i : parseInt(lb[i].id));
     ctx.textAlign = "left";
     ctx.fillStyle = brighten(lb[i].color);
     if (lb[i].name.includes(" ")) {
       ctx.font = "10px ShareTech";
-      write(lb[i].name.charAt(1), w - 224, (i + 4) * 16);
+      write(ctx, lb[i].name.charAt(1), w - 224, (i + 4) * 16);
       ctx.font = "14px ShareTech";
       const d = new Date();
       const t = d.getTime() / (35 * 16);
       if (lb[i].name.includes("V")||lb[i].name.includes("B")) {
         ctx.fillStyle = "rgba("+Math.floor(16*Math.sqrt(Math.sin(t)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*2/3)*128+128))+", "+Math.floor(16*Math.sqrt(Math.sin(t+Math.PI*4/3)*128+128))+", 1)";
       }
-      write(lb[i].name.substring(4), w - 216, (i + 4) * 16);
-    } else write(lb[i].name, w - 216, (i + 4) * 16);
+      write(ctx, lb[i].name.substring(4), w - 216, (i + 4) * 16);
+    } else write(ctx, lb[i].name, w - 216, (i + 4) * 16);
     ctx.fillStyle = "yellow";
-    write(place + translate("."), w - 248, (i + 4) * 16);
+    write(ctx, place + translate("."), w - 248, (i + 4) * 16);
     ctx.textAlign = "right";
-    write(abbrevInt(lb[i].exp), w - 48 - 16, (i + 4) * 16);
-    write(lb[i].rank, w - 16, (i + 4) * 16);
+    write(ctx, abbrevInt(lb[i].exp), w - 48 - 16, (i + 4) * 16);
+    write(ctx, lb[i].rank, w - 16, (i + 4) * 16);
   }
 };
 global.rCargo = function() {
@@ -698,11 +692,11 @@ global.rCargo = function() {
     } else if (quest.metal === "silver") {
       ctx.fillStyle = "#eef"; metalWeHave = silver;
     }
-    write(metalWeHave + "/" + quest.amt + " " + quest.metal, 248, 16);
+    write(ctx, metalWeHave + "/" + quest.amt + " " + quest.metal, 248, 16);
   }
   if (seller == 900) {
     ctx.fillStyle = "white";
-    write("JETTISON CARGO", 248, 32);
+    write(ctx, "JETTISON CARGO", 248, 32);
   }
 
   ctx.globalAlpha = .4;
@@ -898,7 +892,7 @@ global.rAfk = function() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "center";
   ctx.font = "40px ShareTech";
-  write(translate("Disconnected: AFK!"), rx + 128 * 3, ry + 512);
+  write(ctx, translate("Disconnected: AFK!"), rx + 128 * 3, ry + 512);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
 };
@@ -906,10 +900,10 @@ global.rDead = function() {
   ctx.fillStyle = "yellow";
   ctx.textAlign = "center";
   ctx.font = "50px ShareTech";
-  write(translate("You Died!"), rx + 128 * 3, ry + 128);
+  write(ctx, translate("You Died!"), rx + 128 * 3, ry + 128);
   ctx.font = "34px ShareTech";
-  write(translate("Lives Remaining: ") + lives, rx + 128 * 3, ry + 384);
-  if (lives > 0) write(translate("Press E to respawn."), rx + 128 * 3, ry + 512);
+  write(ctx, translate("Lives Remaining: ") + lives, rx + 128 * 3, ry + 384);
+  if (lives > 0) write(ctx, translate("Press E to respawn."), rx + 128 * 3, ry + 512);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
 };
@@ -926,7 +920,7 @@ global.rCreds = function() {
   if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
   if (credentialState == 8) str = "You must be rank 1 to create an account!";
   if (credentialState == 30) str = "Invalid playcookie";
-  write(str, w / 2, h - 64);
+  write(ctx, str, w / 2, h - 64);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
 };
@@ -972,8 +966,8 @@ global.rTut = function() {
   const date = new Date();
   const ms = date.getTime();
   ctx.font = (5 * sinLow(ms / 180) + 25) + "px ShareTech";
-  write(text, w / 2, 40);
-  write(line2, w / 2, 88);
+  write(ctx, text, w / 2, 40);
+  write(ctx, line2, w / 2, 88);
   ctx.restore();
 };
 global.rDmg = function(r) {
@@ -997,12 +991,12 @@ global.rAlert = function() {
   if (currAlert !== "") {
     ctx.font = "20px ShareTech";
     ctx.textAlign = "right";
-    write(translate("Alert: ") + currAlert, w - 16, h - 320);
+    write(ctx, translate("Alert: ") + currAlert, w - 16, h - 320);
   }
   if (bigAlert !== "") {
     ctx.font = "30px ShareTech";
     ctx.textAlign = "center";
-    write(translate("Alert: ") + bigAlert, w/2, h/4);
+    write(ctx, translate("Alert: ") + bigAlert, w/2, h/4);
   }
 };
 global.rSavedNote = function() {
@@ -1016,8 +1010,8 @@ global.rSavedNote = function() {
   ctx.strokeText(translate("Progress Saved!"), w / 2, h / 2);
   ctx.restore();
 };
-global.roundRect = function(whatctx, x, y, width, height, radius, fill, stroke) {
-  whatctx.lineWidth = 2;
+global.roundRect = function(context, x, y, width, height, radius, fill, stroke) {
+  context.lineWidth = 2;
   if (typeof stroke == "undefined") stroke = true;
   if (typeof radius === "undefined") radius = 0;
   if (typeof radius === "number") radius = {tl: radius, tr: radius, br: radius, bl: radius};
@@ -1025,46 +1019,46 @@ global.roundRect = function(whatctx, x, y, width, height, radius, fill, stroke) 
     const defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
     for (const side in defaultRadius) radius[side] = radius[side] || defaultRadius[side];
   }
-  whatctx.beginPath();
-  whatctx.moveTo(x + radius.tl, y);
-  whatctx.lineTo(x + width - radius.tr, y);
-  whatctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
-  whatctx.lineTo(x + width, y + height - radius.br);
-  whatctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
-  whatctx.lineTo(x + radius.bl, y + height);
-  whatctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
-  whatctx.lineTo(x, y + radius.tl);
-  whatctx.quadraticCurveTo(x, y, x + radius.tl, y);
-  whatctx.closePath();
-  if (fill) whatctx.fill();
-  if (stroke) whatctx.stroke();
+  context.beginPath();
+  context.moveTo(x + radius.tl, y);
+  context.lineTo(x + width - radius.tr, y);
+  context.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  context.lineTo(x + width, y + height - radius.br);
+  context.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+  context.lineTo(x + radius.bl, y + height);
+  context.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  context.lineTo(x, y + radius.tl);
+  context.quadraticCurveTo(x, y, x + radius.tl, y);
+  context.closePath();
+  if (fill) context.fill();
+  if (stroke) context.stroke();
 };
-global.infoBox = function(x, y, width, height, fill, stroke) {
-  ctx.save();
-  ctx.lineWidth = 1;
-  ctx.globalAlpha = .5;
+global.infoBox = function(context, x, y, width, height, fill, stroke) {
+  context.save();
+  context.lineWidth = 1;
+  context.globalAlpha = .5;
 
   if (fill) {
-    ctx.fillStyle = fill;
-    ctx.fillRect(x, y, width, height);
+    context.fillStyle = fill;
+    context.fillRect(x, y, width, height);
   }
 
   if (stroke) {
-    ctx.strokeStyle = stroke;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + width, y);
-    ctx.closePath();
-    ctx.stroke();
+    context.strokeStyle = stroke;
+    context.beginPath();
+    context.moveTo(x, y);
+    context.lineTo(x + width, y);
+    context.closePath();
+    context.stroke();
 
-    ctx.beginPath();
-    ctx.moveTo(x, y + height);
-    ctx.lineTo(x + width, y + height);
-    ctx.closePath();
-    ctx.stroke();
+    context.beginPath();
+    context.moveTo(x, y + height);
+    context.lineTo(x + width, y + height);
+    context.closePath();
+    context.stroke();
   }
 
-  ctx.restore();
+  context.restore();
 };
 global.rRaid = function() {
   if (guest || rank < 6) return;
@@ -1077,24 +1071,24 @@ global.rRaid = function() {
   ctx.font = "16px ShareTech";
 
   if (raidTimer >= 0 && raidTimer < 15000) {
-    write(translate("Raid In Progress: ") + minutes + ":" + seconds, w / 2, h - 120);
-    write(translate("Points: ") + points, w / 2, h - 80);
+    write(ctx, translate("Raid In Progress: ") + minutes + ":" + seconds, w / 2, h - 120);
+    write(ctx, translate("Points: ") + points, w / 2, h - 80);
 
     ctx.font = "14px ShareTech";
-    write("/   /", w / 2, h - 100);
+    write(ctx, "/   /", w / 2, h - 100);
 
     ctx.fillStyle = "pink";
     ctx.textAlign = "right";
-    write(raidRed, w / 2 - 24, h - 100);
+    write(ctx, raidRed, w / 2 - 24, h - 100);
 
     ctx.fillStyle = "lime";
     ctx.textAlign = "center";
-    write(raidGreen, w / 2, h - 100);
+    write(ctx, raidGreen, w / 2, h - 100);
 
     ctx.fillStyle = "cyan";
     ctx.textAlign = "left";
-    write(raidBlue, w / 2 + 24, h - 100);
-  } else if (docked && minutes > 5) write(translate("Next raid in: ") + (minutes - 10) + ":" + seconds, w / 2, h - 120);
+    write(ctx, raidBlue, w / 2 + 24, h - 100);
+  } else if (docked && minutes > 5) write(ctx, translate("Next raid in: ") + (minutes - 10) + ":" + seconds, w / 2, h - 120);
   ctx.restore();
 };
 global.rBigNotes = function() {
@@ -1120,11 +1114,11 @@ global.rBigNotes = function() {
 
   ctx.globalAlpha = .7;
   ctx.font = "48px ShareTech";
-  write(bigNotes[0][1], x, h/2 - 64);
+  write(ctx, bigNotes[0][1], x, h/2 - 64);
   ctx.font = "36px ShareTech";
-  write(bigNotes[0][2], x, h/2);
+  write(ctx, bigNotes[0][2], x, h/2);
   ctx.font = "24px ShareTech";
-  write(bigNotes[0][3], x, h/2+64);
+  write(ctx, bigNotes[0][3], x, h/2+64);
   ctx.globalAlpha = 1;
   ctx.font = "15px ShareTech";
 };
@@ -1142,10 +1136,10 @@ global.rKillStreak = function() {
   ctx.textAlign = "center";
 
   ctx.font = (sizeMult * 30.) + "px ShareTech";
-  write(strMult, w / 2, 64);
+  write(ctx, strMult, w / 2, 64);
 
   ctx.font = (sizeMult * 20.) + "px ShareTech";
-  write(strTime, w / 2, 88);
+  write(ctx, strTime, w / 2, 88);
 
   ctx.restore();
 };
@@ -1396,7 +1390,7 @@ global.rPlanets = function() {
   ctx.textAlign = "center";
   ctx.fillStyle = brighten(selfo.color);
   ctx.font = "30px ShareTech";
-  write(translate("Planet ") + selfo.name, rendX, rendY - 196);
+  write(ctx, translate("Planet ") + selfo.name, rendX, rendY - 196);
   ctx.textAlign = "left";
   ctx.font = "14px ShareTech";
 };
@@ -1470,7 +1464,7 @@ global.rPlayers = function() {
 
     ctx.fillStyle = brighten(selfo.color);
     ctx.textAlign = "center";
-    write(selfo.name, rendX, rendY - ships[selfo.ship].width * .5);
+    write(ctx, selfo.name, rendX, rendY - ships[selfo.ship].width * .5);
     ctx.textAlign = "left";
 
     if (selfo.name === myName) {
@@ -1552,7 +1546,6 @@ global.rBases = function() {
     const rendX = basesInfo.x - px + w / 2 + scrx;
     const rendY = basesInfo.y - py + h / 2 + scry;
     if (basesInfo.color !== pc) currAlert = translate("Enemy Base Nearby!");
-    console.log(basesInfo.baseType);
 
     if (basesInfo.baseType == DEADBASE || basesInfo.baseType == LIVEBASE) {
       ctx.save();
@@ -1565,7 +1558,7 @@ global.rBases = function() {
       ctx.fillStyle = "lime";
       if (experience < 64 && basesInfo.color == pc && square(px - basesInfo.x) + square(py - basesInfo.y) < square(512)) {
         ctx.font = "" + (2.5 * sinLow(tick / 8) + 15) + "px ShareTech";
-        write(translate("X TO DOCK WITH BASE"), rendX, rendY - 96);
+        write(ctx, translate("X TO DOCK WITH BASE"), rendX, rendY - 96);
         ctx.font = "14px ShareTech";
       }
       ctx.textAlign = "left";
@@ -1573,7 +1566,7 @@ global.rBases = function() {
       ctx.textAlign = "center";
       ctx.fillStyle = "white";
       ctx.font = "14px ShareTech";
-      write(basesInfo.name, rendX, rendY - 64);
+      write(ctx, basesInfo.name, rendX, rendY - 64);
     }
 
     if (basesInfo.baseType != DEADBASE) {

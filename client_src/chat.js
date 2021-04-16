@@ -112,7 +112,7 @@ global.rChat = function() {
     const splitStr = serverMessages[i].split(colorCircumfix);
     for (let j = 0; j < splitStr.length; j++) {
       if (j % 2 == 0) {
-        chatctx.fillText(splitStr[j], 16 + curx, chatcanvas.height - 168 - 24 - 16 * i);
+        chatctx.fillText(splitStr[j], 12 + curx, chatcanvas.height - 184 - 16 * i);
         curx += chatctx.measureText(splitStr[j]).width;
       } else {
         chatctx.fillStyle = brighten(splitStr[j]);
@@ -203,3 +203,10 @@ function clearChat() {
 // On startup, clear the chat
 clearChat();
 preProcessChat();
+
+
+global.chatMenuButtonClick = function(buttonID){
+  socket.emit("toggleGlobal", {gc: buttonID-800});
+  preProcessChat();
+  rChat();
+}

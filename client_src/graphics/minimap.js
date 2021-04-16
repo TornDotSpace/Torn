@@ -15,6 +15,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+let minimapcanvas = document.createElement("canvas");
+minimapcanvas.width = minimapcanvas.height = 208;
+let minictx = minimapcanvas.getContext("2d", {alpha: true});
+
+global.useOldMap = true;
+
 global.dots = [];
 const armCount = 5;
 dots[0] = {x: 0, y: 0, z: 0};
@@ -182,6 +188,27 @@ global.r3DMap = function() {
   let avgZ = 0;
   let avgi = 0;
 
+
+  let qdsx = -1;
+  let qdsy = -1;
+  let qsx = -1;
+  let qsy = -1;
+  if(quest != 0){
+    qdsx = quest.dsx;
+    qdsy = quest.dsy;
+    qsx = quest.sx;
+    qsy = quest.sy;
+    console.log("aaaaa");
+  } else if (seller >= 300 && seller <= 309){
+    const hoverquest = quests[seller-300];
+    console.log(hoverquest);
+    qdsx = hoverquest.dsx;
+    qdsy = hoverquest.dsy;
+    qsx = hoverquest.sx;
+    qsy = hoverquest.sy;
+  }
+    console.log("a");
+
   for (let i = 0; i < mapSz; i++) {
     for (let j = 0; j < mapSz; j++) {
       let dot1 = sectorPoints[i][j];
@@ -229,7 +256,7 @@ global.r3DMap = function() {
       if (ga > .3 && fontsz > 5 && baseMap2D[i][j]===0 && !(useOldMap && i*j!=0)) {
         minictx.font = fontsz+"px ShareTech";
         minictx.fillStyle = "white";
-        minictx.fillText(getSectorName(i, j), (xx2+xx3)/2+104, (yy2+yy3+fontsz*.65)/2+104);
+        write(minictx, getSectorName(i, j), (xx2+xx3)/2+104, (yy2+yy3+fontsz*.65)/2+104);
       }
 
       const cx = (xx1+xx4)/2;
@@ -396,5 +423,5 @@ global.paste3DMap = function(xp, yp) {
   ctx.fillStyle = "yellow";
   ctx.globalAlpha = 1;
   ctx.font = "12px ShareTech";
-  write(translate("Press M to use the "+(useOldMap?"3D":"flat")+" map"), 8, 232);
+  write(ctx, translate("Press M to use the "+(useOldMap?"3D":"flat")+" map"), 8, 232); // outside of the minimap canvas, gotta use ctx
 };

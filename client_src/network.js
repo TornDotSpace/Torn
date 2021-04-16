@@ -532,11 +532,8 @@ socket.on("rank", function(data) {
 });
 socket.on("quest", function(data) {
   quest = data.quest;
+  console.log("Received quest status update");
   if (data.complete) addBigNote([256, "Quest Complete!", "", ""]);
-  qsx = quest.sx;
-  qsy = quest.sy;
-  qdsx = quest.dsx;
-  qdsy = quest.dsy;
 });
 socket.on("achievementsKill", function(data) {
   for (let a in data.achs) {

@@ -74,6 +74,6 @@ global.rPointerArrow = function(img, angle, dist, textColor) {
   ctx.drawImage(img, -hw, -hw);
   ctx.restore();
   ctx.textAlign = "center";
-  write(dist, rendXt, rendYt + 6);
+  write(ctx, dist, rendXt, rendYt + 6);
   ctx.textAlign = "left";
 };
