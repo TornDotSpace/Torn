@@ -145,7 +145,7 @@ global.rWeaponsInShop = function() {
   }
 };
 
-//Render the base menu for selling weapons
+// Render the base menu for selling weapons
 global.rConfirm = function() {
   baseMenuCtx.fillStyle = "cyan";
   baseMenuCtx.textAlign = "center";
@@ -157,7 +157,7 @@ global.rConfirm = function() {
   baseMenuCtx.textAlign = "left";
 };
 
-//Render the shop tab
+// Render the shop tab
 global.rShop = function() {
   rOreShop();
 
@@ -228,11 +228,9 @@ global.rWeaponStats = function(i) {
 };
 
 
-
-global.shopOnHover = function(){
-
-  let x = mx-baseMenuX;
-  let y = my-baseMenuY; // mouse coordinates
+global.shopOnHover = function() {
+  const x = mx-baseMenuX;
+  const y = my-baseMenuY; // mouse coordinates
 
   if (x > 256 + 48 && x < 256 + 48 + ctx.measureText(translate("[Sell All]")).width && y > 64 && y < 80) seller = 610;
   else if (x > 256 - 32 && x <264 && y < 84 + 4 * 32 - 16 && y > 84) {
@@ -245,22 +243,21 @@ global.shopOnHover = function(){
     if (y > 256 + 128 + 32) seller = 100;
     else seller = 0;
   } else seller = 0;
-}
+};
 
-global.weaponStoreOnHover = function(){
+global.weaponStoreOnHover = function() {
+  const x = mx-baseMenuX;
+  const y = my-baseMenuY; // mouse coordinates
 
-  let x = mx-baseMenuX;
-  let y = my-baseMenuY; // mouse coordinates
-
-       if (y > 40 + 52 && y < 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && x > 16           && x < 16 +           8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16                               )) + 20;
-  else if (y > 40 + 52 && y < 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && x > 16 + 240     && x < 16 + 240 +     8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 + Math.ceil(wepnCount / 3)    )) + 20;
+  if (y > 40 + 52 && y < 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && x > 16 && x < 16 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 )) + 20;
+  else if (y > 40 + 52 && y < 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && x > 16 + 240 && x < 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 + Math.ceil(wepnCount / 3) )) + 20;
   else if (y > 40 + 52 && y < 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && x > 16 + 240 * 2 && x < 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 + Math.ceil(wepnCount / 3) * 2)) + 20;
 
   else seller = 0;
-}
+};
 
-global.shopOnClick = function(buttonID){
-  //Ore Shop
+global.shopOnClick = function(buttonID) {
+  // Ore Shop
   if (buttonID == 610) socket.emit("sell", {item: "all"});
   if (buttonID <= 8 && buttonID >= 5) {
     let item = "";
@@ -274,8 +271,8 @@ global.shopOnClick = function(buttonID){
 
   if (buttonID == 611) socket.emit("buyLife", {});
 
-  let x = mx-baseMenuX;
-  let y = my-baseMenuY; // mouse coordinates
+  const x = mx-baseMenuX;
+  const y = my-baseMenuY; // mouse coordinates
 
   //
   if (y > 246 && y < 240 + 160 && x > 256 + 32 && x < 256 + 78) {
@@ -290,10 +287,10 @@ global.shopOnClick = function(buttonID){
     return;
   }
 
-  //Buy Ship
+  // Buy Ship
   if (y > 256 - 16 && y < 512 - 16 && x > 16 && x < 256 + 16) {
     if (y > 256 + 128 + 32) socket.emit("buyShip", {ship: shipView});
     else if (x > 16 + 128 && shipView < ships.length - 1) shipView++;
     else if (x < 16 + 128 && shipView > 0) shipView--;
   }
-}
+};

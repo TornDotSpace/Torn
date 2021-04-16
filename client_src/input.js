@@ -105,7 +105,6 @@ document.onkeydown = function(event) {
 };
 
 
-
 document.onkeyup = function(event) {
   if (!login || tab == -1 || autopilot) {
     return;
@@ -139,7 +138,6 @@ document.onkeyup = function(event) {
     socket.emit("key", {inputId: "shift", state: false});
   }
 };
-
 
 
 document.addEventListener("mousemove", function(evt) {
@@ -201,9 +199,7 @@ document.addEventListener("mousemove", function(evt) {
 
   if (seller != 0 && seller != preSeller) playAudio("button2", .2);
   if (preSeller!=seller && (Math.abs(preSeller-801)<=1 || Math.abs(seller-801)<=1)) rChat();
-
 }, false);
-
 
 
 document.addEventListener("mousedown", function(evt) {
@@ -247,7 +243,6 @@ document.addEventListener("mousedown", function(evt) {
 }, false);
 
 
-
 document.addEventListener("mouseup", function(evt) {
   mb = 0;
   if (mouseDown) {
@@ -257,13 +252,11 @@ document.addEventListener("mouseup", function(evt) {
 }, false);
 
 
-
 canvas.addEventListener("wheel", function() {
-  
   if (typeof event=="undefined") return;
   const d = -Math.sign(event.deltaY);
 
-  //3d Map Zooming
+  // 3d Map Zooming
   if (mx < 256 && my < 450) {
     mapZoom*=d>0?.93:1.08;
     mapZoom = Math.max(Math.min(mapZoom, 1), .1);
@@ -271,19 +264,16 @@ canvas.addEventListener("wheel", function() {
     return;
   }
 
-  //Scrolling up the chat menu
+  // Scrolling up the chat menu
   if (mx < 512 + 32 && my > h - 216) {
     chatScroll = Math.max(0, Math.min(chatLength - 10, chatScroll + d));
     rChat();
     return;
   }
 
-  //Weapon scrolling
+  // Weapon scrolling
   if ((equipped[scroll] > 0 && (docked || scroll - d < 0 || scroll - d >= equipped.length || equipped[scroll - d] < -1)) || equipped[scroll - d] == -2) {
     return;
   }
   socket.emit("equip", {scroll: (scroll - d)});
-
-
-
 });

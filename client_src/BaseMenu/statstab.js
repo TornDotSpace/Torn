@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//Render the stats tab
+// Render the stats tab
 global.rStats = function() {
   baseMenuCtx.font = "14px ShareTech";
   baseMenuCtx.textAlign = "left";
@@ -71,8 +71,7 @@ global.rStats = function() {
   }*/
 };
 
-function renderStatistics(){
-
+function renderStatistics() {
   const ore = iron + silver + platinum + copper;
   let upgradeCosts = 0;
   upgradeCosts += techEnergy(t2) + techEnergy(va2) + techEnergy(ag2) + techEnergy(c2) + techEnergy(mh2) + techEnergy(e2)*8;
@@ -85,10 +84,10 @@ function renderStatistics(){
   baseMenuCtx.textAlign = "center";
   write(baseMenuCtx, myName, 192, 96);
   baseMenuCtx.font = "14px ShareTech";
-  let activeGens = 0;
+  const activeGens = 0;
 
-  let eMult = e2;
-  /*if (ship >= wepns[20].level) {
+  const eMult = e2;
+  /* if (ship >= wepns[20].level) {
     for (let i = 0; i < ships[ship].weapons; i++) {
       if (equipped[i] == 20) activeGens++;
     }
@@ -108,7 +107,7 @@ function renderStatistics(){
   for (let i = 0; i < stats.length; i++) write(baseMenuCtx, stats[i], 512 - 64, 44 + 32 + i * 16);
 }
 
-function renderTrailSelector(){
+function renderTrailSelector() {
   baseMenuCtx.fillStyle = seller == 700 ? "yellow" : "red";
   write(baseMenuCtx, translate("[Default Trail]"), 512 + 128, 44 + 64 - 1 * 16);
   if (achs[12]) {
@@ -129,7 +128,7 @@ function renderTrailSelector(){
   }
 }
 
-function renderUpgradeButtons(){
+function renderUpgradeButtons() {
   // upgrades
   baseMenuCtx.fillStyle = (seller == 200) ? "lime" : "white";
   write(baseMenuCtx, "[+] $" + numToLS(techPrice(t2)), 64 + 54, 416 - 64 + 28);
@@ -160,11 +159,9 @@ function renderUpgradeButtons(){
 }
 
 
-
-global.statsOnHover = function(){
-
-  let x = mx-baseMenuX;
-  let y = my-baseMenuY; // mouse coordinates
+global.statsOnHover = function() {
+  const x = mx-baseMenuX;
+  const y = my-baseMenuY; // mouse coordinates
 
   if (y > 416 - 64 + 16 && y < 416 - 64 + 30 && x > 64 && x < 64 + 112) seller = 200;
   else if (y > 416 - 64 + 16 && y < 416 - 64 + 30 && x > 192 && x < 192 + 112) seller = 201;
@@ -184,14 +181,13 @@ global.statsOnHover = function(){
     seller = 700 + Math.floor((y - 44 - 64 + 24) / 32);
     if ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && true)) seller = 0;
   } else seller = 0;
-}
+};
 
-global.statsOnClick = function(buttonID){
-
-  //Upgrades and Downgrades
+global.statsOnClick = function(buttonID) {
+  // Upgrades and Downgrades
   if (buttonID > 199 && buttonID < 206) socket.emit("upgrade", {item: buttonID - 200});
   if (buttonID > 205 && buttonID < 212) socket.emit("downgrade", {item: buttonID - 206});
 
-  //Trails
+  // Trails
   if (buttonID >= 700 && buttonID < 705) socket.emit("trail", {trail: buttonID - 700});
-}
+};

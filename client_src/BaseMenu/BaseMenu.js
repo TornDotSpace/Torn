@@ -27,7 +27,7 @@ require("./queststab.js");
 
 global.baseMenuX = w / 2 - 128 * 3; global.baseMenuY = h / 4 - 128; // Where do we render the base menu subcanvas?
 
-//Render the Achievements tab
+// Render the Achievements tab
 global.rAchievements = function() {
   baseMenuCtx.save();
   baseMenuCtx.fillStyle = "yellow";
@@ -95,7 +95,7 @@ global.rBaseGui = function() {
 global.rInBase = function() {
   tick++;
   canvas.width = canvas.width;
-  baseMenuCanvas.width = baseMenuCanvas.width
+  baseMenuCanvas.width = baseMenuCanvas.width;
   renderBG();
   rStars();
   pasteChat();
@@ -141,26 +141,26 @@ global.rInBase = function() {
   mergeBaseCanvas();
 };
 
-function mergeBaseCanvas(){
+function mergeBaseCanvas() {
   ctx.drawImage(baseMenuCanvas, baseMenuX, baseMenuY);
 }
 
-global.baseMenuOnClick = function(buttonID){
-  if (tab == 0){
+global.baseMenuOnClick = function(buttonID) {
+  if (tab == 0) {
     shopOnClick(buttonID);
   }
-  if (tab == 1){
+  if (tab == 1) {
     questsOnClick(buttonID);
   }
-  if (tab == 2){
+  if (tab == 2) {
     statsOnClick(buttonID);
   }
-  if (tab == 4){
+  if (tab == 4) {
     moreOnClick(buttonID);
   }
 
-  let x = mx-baseMenuX;
-  let y = my-baseMenuY; // mouse coordinates
+  const x = mx-baseMenuX;
+  const y = my-baseMenuY; // mouse coordinates
 
   if (x > 0 && x < 128 * 6 && y > 0 && y < 40) tab = Math.floor(x / (768/5));
-}
+};

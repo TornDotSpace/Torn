@@ -200,7 +200,7 @@ global.rWeapons = function() { // Weapon selector on right side of game
 global.rCurrQuest = function() {
   ctx.fillStyle = "cyan";
   ctx.textAlign = "center";
-  let desc = getQuestDescription(quest);
+  const desc = getQuestDescription(quest);
   write(ctx, desc, w / 2, h - 56);
   ctx.textAlign = "left";
 };

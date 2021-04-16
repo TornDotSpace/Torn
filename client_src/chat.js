@@ -205,8 +205,8 @@ clearChat();
 preProcessChat();
 
 
-global.chatMenuButtonClick = function(buttonID){
+global.chatMenuButtonClick = function(buttonID) {
   socket.emit("toggleGlobal", {gc: buttonID-800});
   preProcessChat();
   rChat();
-}
+};

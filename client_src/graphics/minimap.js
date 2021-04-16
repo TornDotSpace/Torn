@@ -15,9 +15,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-let minimapcanvas = document.createElement("canvas");
+const minimapcanvas = document.createElement("canvas");
 minimapcanvas.width = minimapcanvas.height = 208;
-let minictx = minimapcanvas.getContext("2d", {alpha: true});
+const minictx = minimapcanvas.getContext("2d", {alpha: true});
 
 global.useOldMap = true;
 
@@ -193,13 +193,13 @@ global.r3DMap = function() {
   let qdsy = -1;
   let qsx = -1;
   let qsy = -1;
-  if(quest != 0){
+  if (quest != 0) {
     qdsx = quest.dsx;
     qdsy = quest.dsy;
     qsx = quest.sx;
     qsy = quest.sy;
     console.log("aaaaa");
-  } else if (seller >= 300 && seller <= 309){
+  } else if (seller >= 300 && seller <= 309) {
     const hoverquest = quests[seller-300];
     console.log(hoverquest);
     qdsx = hoverquest.dsx;
@@ -207,7 +207,7 @@ global.r3DMap = function() {
     qsx = hoverquest.sx;
     qsy = hoverquest.sy;
   }
-    console.log("a");
+  console.log("a");
 
   for (let i = 0; i < mapSz; i++) {
     for (let j = 0; j < mapSz; j++) {

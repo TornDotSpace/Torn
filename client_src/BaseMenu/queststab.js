@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//Render the quests tab
+// Render the quests tab
 global.rQuests = function() {
   baseMenuCtx.font = "14px ShareTech";
   baseMenuCtx.textAlign = "left";
@@ -26,7 +26,7 @@ global.rQuests = function() {
     baseMenuCtx.font = "30px ShareTech";
     write(baseMenuCtx, translate("Quest Accepted!"), 128 * 3, 128);
     baseMenuCtx.font = "14px ShareTech";
-    let desc = getQuestDescription(quest);
+    const desc = getQuestDescription(quest);
     write(baseMenuCtx, desc, 128 * 3, 192);
     baseMenuCtx.textAlign = "left";
   } else {
@@ -52,10 +52,9 @@ global.rQuests = function() {
   }
 };
 
-global.questsOnHover = function(preSeller){
-
-  let x = mx-baseMenuX;
-  let y = my-baseMenuY; // mouse coordinates
+global.questsOnHover = function(preSeller) {
+  const x = mx-baseMenuX;
+  const y = my-baseMenuY; // mouse coordinates
 
   if (x > 16 && x < 128 * 6 - 16 && y > 40 + 32 && y < 512 - 48 && quest == 0) {
     seller = Math.floor((y - 40 - 32) / 80) + 300;
@@ -68,8 +67,8 @@ global.questsOnHover = function(preSeller){
   } else {
     seller = 0;
   }
-}
+};
 
-global.questsOnClick = function(buttonID){
+global.questsOnClick = function(buttonID) {
   if (buttonID >= 300 && buttonID < 310 && quest == 0) socket.emit("quest", {quest: buttonID - 300});
-}
+};

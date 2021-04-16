@@ -18,7 +18,7 @@ global.getSectorName = function(inx, iny) {
   return String.fromCharCode(97 + inx).toUpperCase() + "" + (iny + 1);
 };
 
-global.getQuestDescription = function(q){
+global.getQuestDescription = function(q) {
   if (q.type === "Mining") return translate("Bring # units of # to sector #.", [numToLS(q.amt), q.metal, getSectorName(q.sx, q.sy)]);
   if (q.type === "Base") return translate("Eliminate enemy base in sector #.", [getSectorName(q.sx, q.sy)]);
   if (q.type === "Delivery") return translate("Obtain package from planet # and deliver it to planet #.", [getSectorName(q.sx, q.sy), getSectorName(q.dsx, q.dsy)]);
@@ -27,7 +27,7 @@ global.getQuestDescription = function(q){
   if (q.type === "Secret3") return translate("Deliver package to a permanent black hole sector.");
   console.log(q);
   return "QUEST_DESCRIPTION_ERROR";
-}
+};
 
 global.write = function(context, str, x, y) {
   context.fillText(str, x, y);
