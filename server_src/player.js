@@ -178,7 +178,7 @@ class Player {
     if (this.bulletQueue > 0) this.shootBullet(40); // SMG
     const wepId = this.weapons[this.equipped];
     const wep = wepns[wepId];
-    if (!wep.enabled) {
+    if (!wep || !wep.enabled) {
       return;
     }
 
