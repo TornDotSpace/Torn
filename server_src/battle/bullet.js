@@ -26,8 +26,8 @@ module.exports = class Bullet {
         this.dist = 0, // TRACKS distance. Doesn't control it.
         this.dmg = wepns[wepnID].damage,
 
-        this.x = ownr.x + (wepnID == 6 ? Math.sin(angl) * 16 * info : 0), // spawn where my owner was
-        this.y = ownr.y - (wepnID == 6 ? Math.cos(angl) * 16 * info : 0), // if minigun, move left or right based on which bullet I am
+        this.x = ownr.x + (wepnID === 6 ? Math.sin(angl) * 16 * info : 0), // spawn where my owner was
+        this.y = ownr.y - (wepnID === 6 ? Math.cos(angl) * 16 * info : 0), // if minigun, move left or right based on which bullet I am
         this.sx = ownr.sx,
         this.sy = ownr.sy,
         this.vx = Math.cos(angl) * wepns[wepnID].speed,
@@ -40,14 +40,14 @@ module.exports = class Bullet {
     }
 
     tick () {
-        if (this.time++ == 0) { // if this was just spawned
+        if (this.time++ === 0) { // if this was just spawned
             sendAllSector("newBullet", { x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color }, this.sx, this.sy);
             // this.x -= this.vx; //These were here before Alex's refactor. Not sure if they should exist.
             // this.y -= this.vy;
         }
         this.move();
         this.dist += wepns[this.wepnID].speed / 10;
-        if (this.wepnID == 28 && this.time > 25 * 3) { // gravity bomb has 3 seconds to explode
+        if (this.wepnID === 28 && this.time > 25 * 3) { // gravity bomb has 3 seconds to explode
             const base = bases[this.sy][this.sx];
             if (squaredDist(base, this) < square(5000)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 500 units away
             this.dieAndMakeVortex(); // collapse into black hole
@@ -68,7 +68,7 @@ module.exports = class Bullet {
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
             if (p.color !== this.color && squaredDist(p, this) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
-                if (this.wepnID == 28) // if a grav bomb hits a player, just die
+                if (this.wepnID === 28) // if a grav bomb hits a player, just die
                 {
                     return;
                 }
@@ -77,11 +77,11 @@ module.exports = class Bullet {
                 break;
             }
         }
-        if (this.time % 2 == 0 || wepns[this.wepnID].speed > 75) { // Only check for collisions once every 2 ticks, unless this weapon is really fast (in which case the bullet would skip over it)
+        if (this.time % 2 === 0 || wepns[this.wepnID].speed > 75) { // Only check for collisions once every 2 ticks, unless this weapon is really fast (in which case the bullet would skip over it)
             for (const i in asts[this.sy][this.sx]) {
                 const a = asts[this.sy][this.sx][i];
                 if (squaredDist(a, this) < square(bulletWidth + 64)) { // if we collide
-                    a.dmg(this.dmg * (this.wepnID == 0 ? 2 : 1), this); // hurt the asteroid. ternary: Stock Gun does double damage.
+                    a.dmg(this.dmg * (this.wepnID === 0 ? 2 : 1), this); // hurt the asteroid. ternary: Stock Gun does double damage.
                     a.vx += this.vx / 256; // push the asteroid
                     a.vy += this.vy / 256;
                     this.die(); // delete this bullet
@@ -93,7 +93,7 @@ module.exports = class Bullet {
 
     die () {
         sendAllSector("delBullet", { id: this.id }, this.sx, this.sy);
-        const reverse = this.wepnID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
+        const reverse = this.wepnID === 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
         sendAllSector("sound", { file: "boom", x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy }, this.sx, this.sy);
         delete bullets[this.sy][this.sx][this.id];
     }

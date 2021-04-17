@@ -27,7 +27,7 @@ class Asteroid {
         this.vy = vy,
         this.metal = metal,
         this.va = (Math.random() - 0.5) / 10;
-        if (this.vx == 0 && this.vy == 0) {
+        if (this.vx === 0 && this.vy === 0) {
             this.vx = 3 * (Math.random() - 0.5);
             this.vy = 3 * (Math.random() - 0.5);
         }
@@ -107,7 +107,7 @@ class Asteroid {
             this.x = (sectorWidth - 1);
             this.sx = (this.sx - 1 + mapSz) % mapSz;
         } else if (this.y < 0) {
-            if (this.sy == 0) {
+            if (this.sy === 0) {
       	delete asts[old_sy][old_sx][this.id];
             } else {
                 this.y = (sectorWidth - 1);
@@ -126,9 +126,9 @@ class Asteroid {
         this.die = function () { };
 
         delete asts[this.sy][this.sx][this.id];
-        if (b == 0) return;
+        if (b === 0) return;
 
-        if (b.owner.type == "Player") {
+        if (b.owner.type === "Player") {
             switch (this.metal) {
                 case 0:
                     b.owner.iron += this.maxHealth;
@@ -174,7 +174,7 @@ class Asteroid {
         if (this.health < 0) this.die(origin);
 
         if (d > 0) note(`-${Math.floor(d)}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-        if (d == 0) note("No dmg", this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
+        if (d === 0) note("No dmg", this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
         if (d < 0) note(`+${Math.floor(Math.abs(d))}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
 
         // note("-" + Math.floor(d), this.x, this.y - 64, this.sx, this.sy);

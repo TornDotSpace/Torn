@@ -32,15 +32,15 @@ module.exports = class Base {
 
         this.shots = 0,
         this.reload = 0, // timer for shooting
-        this.health = (type == SENTRY ? 0.2 : 1) * baseHealth,
-        this.maxHealth = (type == SENTRY ? 0.2 : 1) * baseHealth,
+        this.health = (type === SENTRY ? 0.2 : 1) * baseHealth,
+        this.maxHealth = (type === SENTRY ? 0.2 : 1) * baseHealth,
         this.empTimer = -1,
         this.speed = 0; // vs unused but there for bullets,
     }
 
     tick () {
     // spawn a bot if we need more bots
-        if (!this.baseType == SENTRY) {
+        if (!this.baseType === SENTRY) {
             const botSpawn = Math.random();
             const healthPercent = Math.max(this.health / this.maxHealth, 0.1);
             if (botSpawn * healthPercent < botFrequency) {
@@ -48,7 +48,7 @@ module.exports = class Base {
             }
         }
 
-        if (this.baseType == DEADBASE && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) this.baseType = LIVEBASE; // revive. TODO: add a timer
+        if (this.baseType === DEADBASE && (tick % (25 * 60 * 10) === 0 || (raidTimer < 15000 && tick % (25 * 150) === 0))) this.baseType = LIVEBASE; // revive. TODO: add a timer
 
         this.move(); // aim and fire
 
@@ -56,7 +56,7 @@ module.exports = class Base {
         this.reload--;
 
         if (this.health < this.maxHealth) this.health += baseRegenSpeed;
-        if (tick % 50 == 0 && (this.baseType == SENTRY || this.baseType == TURRET)) this.tryGiveToOwner();
+        if (tick % 50 === 0 && (this.baseType === SENTRY || this.baseType === TURRET)) this.tryGiveToOwner();
     }
 
     tryGiveToOwner () { // if a base's owner stands over it, they get the stuff it's earned from killing people
@@ -67,7 +67,7 @@ module.exports = class Base {
                 break;
             }
         }
-        if (player == 0) return;// if we couldn't find them (they aren't in the sector)
+        if (player === 0) return;// if we couldn't find them (they aren't in the sector)
 
         if (squaredDist(player, this) > 40000) return;
 
@@ -79,11 +79,11 @@ module.exports = class Base {
     }
 
     move () { // aim and fire
-        if (this.baseType == DEADBASE) return;
+        if (this.baseType === DEADBASE) return;
 
         if (this.empTimer > 0) return; // can't do anything if emp'd
 
-        if (this.baseType == SENTRY) this.fireMini();
+        if (this.baseType === SENTRY) this.fireMini();
         else this.fire();
     }
 
@@ -92,14 +92,14 @@ module.exports = class Base {
         let cDist2 = 1000000000; // min dist to player
         for (const i in players[this.sy][this.sx]) {
             const player = players[this.sy][this.sx][i];
-            if (player.color == this.color || player.disguise > 0) continue; // don't shoot at friendlies
+            if (player.color === this.color || player.disguise > 0) continue; // don't shoot at friendlies
             const dist2 = squaredDist(player, this);
             if (dist2 < cDist2) {
                 c = player; cDist2 = dist2;
             } // update nearest player
         }
 
-        if (c == 0) return;
+        if (c === 0) return;
 
         const shouldMuon = this.reload < 0 && Math.random() < 0.015;
         const newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, shouldMuon ? 10000 : wepns[3].speed);
@@ -121,14 +121,14 @@ module.exports = class Base {
         let cDist2 = 1000000000; // min dist to player
         for (const i in players[this.sy][this.sx]) {
             const player = players[this.sy][this.sx][i];
-            if (player.color == this.color || player.disguise > 0) continue; // don't shoot at friendlies
+            if (player.color === this.color || player.disguise > 0) continue; // don't shoot at friendlies
             const dist2 = squaredDist(player, this);
             if (dist2 < cDist2) {
                 c = player; cDist2 = dist2;
             } // update nearest player
         }
 
-        if (c == 0) return;
+        if (c === 0) return;
 
         const newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, wepns[5].speed);
         this.angle = (this.angle + newAngle * 2) / 3;
@@ -185,15 +185,15 @@ module.exports = class Base {
         let nearP = 0;
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
-            if (p.color == this.color || p.sx !== this.sx || p.sy !== this.sy) continue;
-            if (nearP == 0) {
+            if (p.color === this.color || p.sx !== this.sx || p.sy !== this.sy) continue;
+            if (nearP === 0) {
                 nearP = p;
                 continue;
             }
             const dx = p.x - this.x; const dy = p.y - this.y;
             if (dx * dx + dy * dy < squaredDist(nearP, this)) nearP = p;
         }
-        if (nearP == 0) return;
+        if (nearP === 0) return;
         const r = Math.random();
         const beam = new Beam(this, r, 8, nearP, this);
         beams[this.sy][this.sx][r] = beam;
@@ -202,7 +202,7 @@ module.exports = class Base {
     }
 
     die (b) {
-        if (this.baseType == DEADBASE) return;
+        if (this.baseType === DEADBASE) return;
 
         deleteTurret(this);
 
@@ -222,7 +222,7 @@ module.exports = class Base {
         }
 
         // If I was killed by an asteroid...
-        if (b.type == "Asteroid") {
+        if (b.type === "Asteroid") {
             this.sendDeathMsg("an asteroid");
             return;
         }
@@ -263,9 +263,9 @@ module.exports = class Base {
 
     sendDeathMsg (killedBy) {
         const baseName = "base";
-        if (this.baseType == SENTRY) {
+        if (this.baseType === SENTRY) {
             baseName = "Sentry";
-        } else if (this.baseType == TURRET) {
+        } else if (this.baseType === TURRET) {
             baseName = "Turret";
         }
         chatAll(`The ${baseName} at sector ${this.nameWithColor()} was destroyed by ${killedBy}.`);
@@ -288,7 +288,7 @@ module.exports = class Base {
         if (this.health < 0) this.die(origin);
 
         if (d > 0) note(`-${Math.floor(d)}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-        if (d == 0) note("No dmg", this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
+        if (d === 0) note("No dmg", this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
         if (d < 0) note(`+${Math.floor(Math.abs(d))}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
 
         // note("-" + d, this.x, this.y - 64, this.sx, this.sy);

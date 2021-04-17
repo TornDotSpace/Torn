@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const fetch = require("node-fetch");
 // Miscellaneous Networking
 global.sendWeapons = function (player) { // tells a client what weapons that player has;
-    if (player == 0) return;
+    if (player === 0) return;
     const worth = ships[player.ship].price * 0.75;
     player.emit("weapons", { weapons: player.weapons, worth: worth, ammos: player.ammos });
 };
@@ -29,7 +29,7 @@ global.modmute = function (msg) {
     } // split looks like {"/mute", "name", "minutesToMute"}
     const name = msg.split(" ")[1];
     const player = getPlayerFromName(name);
-    if (player == -1) {
+    if (player === -1) {
         return `Player '${name}' not found.`;
     }
     const minutes = parseFloat(msg.split(" ")[2]);
@@ -48,7 +48,7 @@ global.ipmute = function (msg) {
     } // split looks like {"/mute", "name", "minutesToMute"}
     const name = msg.split(" ")[1];
     const player = getPlayerFromName(name);
-    if (player == -1) {
+    if (player === -1) {
         return `Player '${name}' not found.`;
     }
     const minutes = parseFloat(msg.split(" ")[2]);
@@ -71,7 +71,7 @@ global.sendAllSector = function (out, data, sx, sy) {
 global.sendAllGlobal = function (out, data) {
     for (const i in sockets) {
         const p = sockets[i].player;
-        if (p.globalChat == 0) p.emit(out, data);
+        if (p.globalChat === 0) p.emit(out, data);
     }
 };
 
@@ -110,8 +110,8 @@ global.playerChat = function (msg, gc, team, guild) { // chat in whatever chat r
     for (const i in sockets) {
         const player = sockets[i].player;
         if (typeof player === "undefined") continue;
-        if (gc == 1 && player.color !== team) continue; // they arent on the same team
-        if (gc == 2 && guild !== undefined && (player.guild !== guild)) continue; // they arent in the same guild
+        if (gc === 1 && player.color !== team) continue; // they arent on the same team
+        if (gc === 2 && guild !== undefined && (player.guild !== guild)) continue; // they arent in the same guild
         sockets[i].emit("chat", { msg: msg, gc: gc });
     }
 };

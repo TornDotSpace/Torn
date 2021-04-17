@@ -37,7 +37,7 @@ let chati = 0;
 
 socket.on("chat", (data) => {
     // Optimization: Don't do expensive string manipulation if nobody is in the mute list
-    if (clientmutes.size == 0 || !data.msg.includes(":")) {
+    if (clientmutes.size === 0 || !data.msg.includes(":")) {
         onReceiveChat(data);
         return;
     }
@@ -51,7 +51,7 @@ socket.on("chat", (data) => {
         chatName = chatName.trim();
         // If they're muted, don't chat!
         for (const mut in clientmutes) {
-            if (mut.localeCompare(chatName, undefined, { sensitivity: "accent" }) == 0) return;
+            if (mut.localeCompare(chatName, undefined, { sensitivity: "accent" }) === 0) return;
         }
     }
 
@@ -81,7 +81,7 @@ global.rChat = function () {
 
     for (let i = 0; i < 3; i++) {
         chatctx.fillStyle = ((seller != 800 + i) ? "violet" : "yellow");
-        chatctx.fillText((i == whichChatMenu ? ">" : " ") + chatRooms[i], 532, chatcanvas.height - 48 + 16 * i);
+        chatctx.fillText((i === whichChatMenu ? ">" : " ") + chatRooms[i], 532, chatcanvas.height - 48 + 16 * i);
     }
     chatctx.restore();
 
@@ -95,7 +95,7 @@ global.rChat = function () {
         let curx = 0;
         const splitStr = preChatArr[ri].split(colorCircumfix);
         for (let j = 0; j < splitStr.length; j++) {
-            if (j % 2 == 0) {
+            if (j % 2 === 0) {
                 chatctx.fillText(splitStr[j], 16 + curx, chatcanvas.height - 24 + 16 * fromTop);
                 curx += chatctx.measureText(splitStr[j]).width;
             } else {
@@ -111,7 +111,7 @@ global.rChat = function () {
         let curx = 0;
         const splitStr = serverMessages[i].split(colorCircumfix);
         for (let j = 0; j < splitStr.length; j++) {
-            if (j % 2 == 0) {
+            if (j % 2 === 0) {
                 chatctx.fillText(splitStr[j], 12 + curx, chatcanvas.height - 184 - 16 * i);
                 curx += chatctx.measureText(splitStr[j]).width;
             } else {
@@ -130,7 +130,7 @@ function onReceiveChat (data) {
         const find1 = getPosition(data.msg, translateCircumfix, 1);
         const find2 = getPosition(data.msg, translateCircumfix, 2);
 
-        if (find1 == -1 || find2 == -1) return;
+        if (find1 === -1 || find2 === -1) return;
 
         const num = parseFloat(data.msg.substring(find1 + 2, find2));
         data.msg = data.msg.replace(weaponCircumfix + num + weaponCircumfix, wepns[num].name);
@@ -140,7 +140,7 @@ function onReceiveChat (data) {
         const find1 = getPosition(data.msg, translateCircumfix, 1);
         const find2 = getPosition(data.msg, translateCircumfix, 2);
 
-        if (find1 == -1 || find2 == -1) return;
+        if (find1 === -1 || find2 === -1) return;
 
         const str = data.msg.substring(find1 + 2, find2);
         data.msg = data.msg.replace(translateCircumfix + str + translateCircumfix, translate(str));

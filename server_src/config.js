@@ -43,15 +43,15 @@ function parseValue (value) {
         return true;
     }
 
-    if (value == "f") {
+    if (value === "f") {
         return false;
     }
 
-    if (value == "true") {
+    if (value === "true") {
         return true;
     }
 
-    if (value == "false") {
+    if (value === "false") {
         return false;
     }
 
@@ -83,14 +83,14 @@ module.exports = function loadConfig (environment) {
 
             while (index < cfgData.length) {
                 line = cfgData[index++].trim();
-                if (line == (copy)) {
+                if (line === (copy)) {
                     ++skips;
                 }
 
-                if (line == stop) {
+                if (line === stop) {
                     --skips;
 
-                    if (skips == -1) {
+                    if (skips === -1) {
                         break;
                     }
                 }

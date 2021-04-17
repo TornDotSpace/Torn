@@ -99,7 +99,7 @@ class Bot extends Player {
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
         this.equipped = 0;
-        while (this.ammos[this.equipped] == 0) this.equipped++; // select the first available weapon with ammo
+        while (this.ammos[this.equipped] === 0) this.equipped++; // select the first available weapon with ammo
 
         this.w = this.e = this.s = this.c = this.space = false; // release all keys
 
@@ -108,7 +108,7 @@ class Bot extends Player {
         let friendlies = 0; let enemies = 0; // keep track of the player counts in the sector
         for (const p in players[this.sy][this.sx]) {
             const player = players[this.sy][this.sx][p];
-            if (this.id == player.id || player.disguise > 0) continue;
+            if (this.id === player.id || player.disguise > 0) continue;
             if (player.color === this.color) {
                 friendlies++; continue;
             }
@@ -120,18 +120,18 @@ class Bot extends Player {
         }
 
         // at random, fill my ammo or die if there are no enemies to fight
-        if (enemies == 0 && Math.random() < 0.001) this.refillAllAmmo();
+        if (enemies === 0 && Math.random() < 0.001) this.refillAllAmmo();
         let myDespawnRate = botDespawnRate;
         if (this.brainwashedBy !== 0) myDespawnRate /= 4;
-        if (enemies == 0 && Math.random() < myDespawnRate) this.die();
+        if (enemies === 0 && Math.random() < myDespawnRate) this.die();
 
         const base = bases[this.sy][this.sx];
         if (base !== 0 && hypot2(base.x, this.x, base.y, this.y) < close * 3 + square(150) && base.color !== this.color) {
             target = base; enemies++;
         }
 
-        if (this.brainwashedBy !== 0 && (!(this.brainwashedBy in players[this.sy][this.sx]) || target == 0)) this.goToOwner();
-        else if (target == 0) this.flock();
+        if (this.brainwashedBy !== 0 && (!(this.brainwashedBy in players[this.sy][this.sx]) || target === 0)) this.goToOwner();
+        else if (target === 0) this.flock();
         else if (this.health < this.maxHealth / 5.5 && this.brainwashedBy === 0) this.flee(target);
         else this.fight(target, close);
     }
@@ -183,7 +183,7 @@ class NeuralNetBot extends Bot {
         if (this.empTimer > 0) return;// cant move if i'm emp'd
 
         this.equipped = 0; // select first weapon with ammo
-        while (this.ammos[this.equipped] == 0) this.equipped++;
+        while (this.ammos[this.equipped] === 0) this.equipped++;
         const range = square(wepns[this.equipped].range * 10);
 
         let totalFriends = 0; // in sector
@@ -195,7 +195,7 @@ class NeuralNetBot extends Bot {
         let target = 0; let friend = 0; let closeE = 100000000; let closeF = 100000000;
         for (const p in players[this.sy][this.sx]) {
             const player = players[this.sy][this.sx][p];
-            if (this.id == player.id || player.disguise > 0) continue;
+            if (this.id === player.id || player.disguise > 0) continue;
             if (player.color === this.color) {
                 totalFriends++;
                 const dist2 = squaredDist(player, this);
@@ -212,8 +212,8 @@ class NeuralNetBot extends Bot {
         }
 
         // same as in botPlay
-        if (totalEnemies == 0 && Math.random() < 0.005) this.refillAllAmmo();
-        if (totalEnemies == 0 && Math.random() < botDespawnRate) this.die();
+        if (totalEnemies === 0 && Math.random() < 0.005) this.refillAllAmmo();
+        if (totalEnemies === 0 && Math.random() < botDespawnRate) this.die();
 
         // make input array (into neural net). Normalize the variables to prevent overflow
         const input = {};
@@ -225,17 +225,17 @@ class NeuralNetBot extends Bot {
         input[5] = this.speed / 100;
         input[6] = this.cva;
 
-        input[7] = target == 0 ? 0 : 1;
-        input[8] = target == 0 ? 0 : Math.atan2(target.y - this.y, target.x - this.x) - this.angle;
+        input[7] = target === 0 ? 0 : 1;
+        input[8] = target === 0 ? 0 : Math.atan2(target.y - this.y, target.x - this.x) - this.angle;
         input[9] = Math.sqrt(closeE) / 100;
 
-        input[10] = friend == 0 ? 0 : 1;
-        input[11] = friend == 0 ? 0 : Math.atan2(friend.y - this.y, friend.x - this.x) - this.angle;
+        input[10] = friend === 0 ? 0 : 1;
+        input[11] = friend === 0 ? 0 : Math.atan2(friend.y - this.y, friend.x - this.x) - this.angle;
         input[12] = Math.sqrt(closeF) / 100;
 
-        input[13] = target == 0 ? 0 : target.angle;
-        input[14] = target == 0 ? 0 : target.speed;
-        input[15] = target == 0 ? 0 : target.ship;
+        input[13] = target === 0 ? 0 : target.angle;
+        input[14] = target === 0 ? 0 : target.speed;
+        input[15] = target === 0 ? 0 : target.ship;
 
         // forward NN
         const out = this.net.passThrough(input);
