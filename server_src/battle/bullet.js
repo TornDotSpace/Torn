@@ -60,14 +60,14 @@ module.exports = class Bullet {
         if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die();
 
         const b = bases[this.sy][this.sx];
-        if (b !== 0 && b.baseType !== DEADBASE && b.color !== this.color && squaredDist(b, this) < square(16 + 32)) {
+        if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
             b.dmg(this.dmg, this);
             this.die();
         }
 
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
-            if (p.color !== this.color && squaredDist(p, this) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
+            if (p.color != this.color && squaredDist(p, this) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
                 if (this.wepnID == 28) // if a grav bomb hits a player, just die
                 {
                     return;

@@ -185,7 +185,7 @@ module.exports = class Base {
         let nearP = 0;
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
-            if (p.color == this.color || p.sx !== this.sx || p.sy !== this.sy) continue;
+            if (p.color == this.color || p.sx != this.sx || p.sy != this.sy) continue;
             if (nearP == 0) {
                 nearP = p;
                 continue;
@@ -209,7 +209,7 @@ module.exports = class Base {
         this.health = this.maxHealth;
         sendAllSector("sound", { file: "bigboom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
-        if (this.baseType !== LIVEBASE) {
+        if (this.baseType != LIVEBASE) {
             bases[this.sy][this.sx] = 0;
             this.die = function () { };
         } else {

@@ -130,7 +130,7 @@ cmds["/changeteam"] = new Command("/changeteam", REGISTERED, (player, msg) => {
 cmds["/nameturret"] = new Command("/nameturret <name>", REGISTERED, (player, msg) => {
     let num = 0;
     const base = bases[player.sy][player.sx];
-    if (base !== 0 && base.owner == player.name) {
+    if (base != 0 && base.owner == player.name) {
         base.name = msg.substring(12); num++;
     }
     player.socket.emit("chat", { msg: `${num} turret(s) renamed.` });
@@ -142,7 +142,7 @@ cmds["/joinguild"] = new Command("/joinguild <guildName> <optionalinvite> - Join
         player.socket.emit("chat", { msg: `You are already in ${player.guild}! Use /leaveguild to leave it.` });
         return;
     }
-    if (split.length !== 2 && split.length !== 3) {
+    if (split.length != 2 && split.length != 3) {
         player.socket.emit("chat", { msg: "You must specify a guild name." });
         return;
     }
@@ -153,7 +153,7 @@ cmds["/joinguild"] = new Command("/joinguild <guildName> <optionalinvite> - Join
         return;
     }
     if (guildObj.public !== "public") {
-        if (split.length !== 3) {
+        if (split.length != 3) {
             player.socket.emit("chat", { msg: `That guild is private- you must be invited by its owner, ${guildObj.owner}! Use /joinguild <guild> <invitenumber>!` });
             return;
         }
@@ -191,7 +191,7 @@ cmds["/swap"] = new Command("/swap", REGISTERED, (player, msg) => {
 
 cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player's chat messages.", EVERYONE, (ply, msg) => {
     const split = msg.split(" ");
-    if (split.length !== 2) {
+    if (split.length != 2) {
         ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playernamewithouttag'" }); return;
     } // split looks like {"/mute", "name"}
     const name = split[1];
@@ -205,7 +205,7 @@ cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player
 });
 
 cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the player's chat messages again.", EVERYONE, (ply, msg) => {
-    if (msg.split(" ").length !== 2) {
+    if (msg.split(" ").length != 2) {
         ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/mute playernamewithouttag'" }); return;
     } // split looks like {"/unmute", "name"}
     const name = msg.split(" ")[1];
@@ -232,7 +232,7 @@ cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for pass
 
 cmds["/createguild"] = new Command("/createguild <guildname> - Creates a new guild", VIPPLUS, (player, msg) => {
     const split = msg.split(" ");
-    if (split.length !== 2) {
+    if (split.length != 2) {
         player.socket.emit("chat", { msg: "Bad syntax! The message should look like '/createguild mynewguildname'" });
         return;
     }
@@ -252,7 +252,7 @@ cmds["/createguild"] = new Command("/createguild <guildname> - Creates a new gui
 
 cmds["/guildprivacy"] = new Command("/guildprivacy - Toggle guild's privacy.", VIPPLUS, (player, msg) => {
     const split = msg.split(" ");
-    if (split.length !== 1) {
+    if (split.length != 1) {
         player.socket.emit("chat", { msg: "Bad syntax! The message should look like '/guildprivacy'" });
         return;
     }
@@ -267,7 +267,7 @@ cmds["/guildprivacy"] = new Command("/guildprivacy - Toggle guild's privacy.", V
 
 cmds["/guildinvite"] = new Command("/guildinvite - Get guild invite code.", VIPPLUS, (player, msg) => {
     const split = msg.split(" ");
-    if (split.length !== 1) {
+    if (split.length != 1) {
         player.socket.emit("chat", { msg: "Bad syntax! The message should look like '/guildinvite'" });
         return;
     }
@@ -312,7 +312,7 @@ cmds["/reboot"] = new Command("/reboot - Schedules a restart of the shard with 1
 cmds["/fastreboot"] = new Command("/fastreboot - Schedules a restart of the shard, with 10 second countdown instead of 120", ADMINPLUS, initFastReboot);
 
 cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, (ply, msg) => {
-    if (msg.split(" ").length !== 2) {
+    if (msg.split(" ").length != 2) {
         ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/tp playernamewithouttag'" }); return;
     }
     const name = msg.split(" ")[1];
@@ -336,7 +336,7 @@ cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, (
 });
 
 cmds["/settag"] = new Command("/settag <player> <tag> - Sets a player's tag. tag should not contain brackets.", ADMINPLUS, (ply, msg) => {
-    if (msg.split(" ").length !== 3) {
+    if (msg.split(" ").length != 3) {
         ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/settag playernamewithouttag tag'" }); return;
     }
     const name = msg.split(" ")[1];
@@ -353,7 +353,7 @@ cmds["/settag"] = new Command("/settag <player> <tag> - Sets a player's tag. tag
 });
 
 cmds["/deltag"] = new Command("/deltag <player> <tag> - Removes a player's tag.", ADMINPLUS, (ply, msg) => {
-    if (msg.split(" ").length !== 2) {
+    if (msg.split(" ").length != 2) {
         ply.socket.emit("chat", { msg: "Bad syntax! The message should look like '/settag playernamewithouttag'" }); return;
     }
     const name = msg.split(" ")[1];
@@ -369,7 +369,7 @@ cmds["/deltag"] = new Command("/deltag <player> <tag> - Removes a player's tag."
 });
 
 cmds["/smite"] = new Command("/smite <player> - Smites the specified player", ADMINPLUS, (ply, msg) => {
-    if (msg.split(" ").length !== 2) return;
+    if (msg.split(" ").length != 2) return;
     const name = msg.split(" ")[1];
 
     const player = getPlayerFromName(name);
@@ -382,7 +382,7 @@ cmds["/smite"] = new Command("/smite <player> - Smites the specified player", AD
 });
 
 cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMINPLUS, (ply, msg) => {
-    if (msg.split(" ").length !== 2) return;
+    if (msg.split(" ").length != 2) return;
     const name = msg.split(" ")[1];
 
     const player = getPlayerFromName(name);

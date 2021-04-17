@@ -76,7 +76,7 @@ global.saveTurrets = function () {
     for (let i = 0; i < mapSz; i++) {
         for (let j = 0; j < mapSz; j++) {
             const base = bases[i][j];
-            if (base !== 0 && (base.baseType == TURRET || base.baseType == SENTRY)) {
+            if (base != 0 && (base.baseType == TURRET || base.baseType == SENTRY)) {
                 base.save();
             }
         }
@@ -350,7 +350,7 @@ function init () { // start the server!
 
     // 3 Black Holes
     for (let vortno = 0; vortno < 9; vortno++) {
-        if (vortno % 3 !== 2) continue;
+        if (vortno % 3 != 2) continue;
         id = Math.random();
         v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, vortno, 4, 0.15, 0, false);
         vorts[v.sy][v.sx][id] = v;
@@ -679,7 +679,7 @@ function update () {
                     }
                 }
 
-                if (beam.sy !== y || beam.sx !== x) {
+                if (beam.sy != y || beam.sx != x) {
                     beam.sy = y;
                     beam.sx = x;
                 }

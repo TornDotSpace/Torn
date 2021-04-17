@@ -76,7 +76,7 @@ module.exports = function loadConfig (environment) {
         let line = cfgData[index++].trim();
 
         let skips = 0;
-        if (line.startsWith("<") && line !== (env_start)) {
+        if (line.startsWith("<") && line != (env_start)) {
             // skip to next stop
             const copy = line;
             const stop = `</${line.substring(1)}`;
