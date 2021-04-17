@@ -16,10 +16,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Socket } from "socket.io";
+import { translate } from "./localizer.ts";
 
 
 // BEGIN TYPESCRIPT TRANSITION HACKS
-declare var translate: any;
 declare var socket: Socket;
 declare var clientmutes: any;
 declare var roundRect: Function;

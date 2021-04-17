@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const io = require("socket.io-client");
 const msgpack = require("socket.io-msgpack-parser");
+import {jsn, translate} from "./localizer.ts";
 
 global.API_URL = TORN_API_URL + "/api";
 global.GAMESERVER_URL = TORN_GAMESERVER_URL;

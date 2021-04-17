@@ -155,13 +155,10 @@ global.didW = false; global.didSteer = false; global.currTut = 0;
 
 global.sectorPoints = 0;
 
-global.wepns = jsn.weapons;
-global.ships = jsn.ships;
-
 
 require("./audio.js");
 require("./image.js");
-require("./localizer.js");
+require("./localizer.ts");
 require("./helper.js");
 require("./network.js");
 require("./graphics/render.js");
@@ -170,6 +167,11 @@ require("./graphics/minimap.js");
 require("./BaseMenu/BaseMenu.js");
 require("./input.js");
 require("./chat.ts");
+
+import {jsn, translate} from "./localizer.ts";
+
+global.wepns = jsn.weapons;
+global.ships = jsn.ships;
 
 ReactRoot.socket = socket; // Just to make socket accessible in react.js
 
