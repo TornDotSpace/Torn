@@ -24,7 +24,7 @@
     "rules": {
         "func-call-spacing": 1,
         "no-unexpected-multiline": 1,
-        "eqeqeq": 0,
+        "eqeqeq": 1,
         "no-eval": 2,
         "array-bracket-newline": 1,
         "brace-style": 1,
