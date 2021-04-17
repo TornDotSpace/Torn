@@ -23,7 +23,7 @@ document.onkeydown = function (event) {
     }
     if (!login || tab == -1) return;
     if (event.keyCode === 16) {
-        if (keys[0] != true) socket.emit("key", { inputId: "shift", state: true });
+        if (keys[0] !== true) socket.emit("key", { inputId: "shift", state: true });
         keys[0] = true;
         return;
     }
@@ -54,15 +54,15 @@ document.onkeydown = function (event) {
         socket.emit("sellW", { slot: confirmer });
         confirmer = -1;
         tab = 0;
-    } else if (event.keyCode == 66 && docked && tab == 7 && seller != 0 && actuallyBuying) { // b
+    } else if (event.keyCode == 66 && docked && tab == 7 && seller !== 0 && actuallyBuying) { // b
         socket.emit("buyW", { slot: scroll, weapon: seller - 20 });
         tab = 0;
-    } else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] != -2) {
+    } else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] !== -2) {
         socket.emit("equip", { scroll: event.keyCode - 49 });
-    } else if (event.keyCode == 48 && equipped[event.keyCode - 49] != -2) {
+    } else if (event.keyCode == 48 && equipped[event.keyCode - 49] !== -2) {
         socket.emit("equip", { scroll: 9 });
     } else if (event.keyCode === 83 || event.keyCode === 40) { // s
-        if (keys[1] != true) socket.emit("key", { inputId: "s", state: true });
+        if (keys[1] !== true) socket.emit("key", { inputId: "s", state: true });
         keys[1] = true;
     } else if (event.keyCode === 192) { // `
         dev = !dev;
@@ -70,36 +70,36 @@ document.onkeydown = function (event) {
         useOldMap = !useOldMap;
         r3DMap();
     } else if (event.keyCode === 69) { // e
-        if (keys[2] != true) socket.emit("key", { inputId: "e", state: true });
+        if (keys[2] !== true) socket.emit("key", { inputId: "e", state: true });
         keys[2] = true;
     } else if (event.keyCode === 87 || event.keyCode === 38) { // w
-        if (keys[3] != true) socket.emit("key", { inputId: "w", state: true });
+        if (keys[3] !== true) socket.emit("key", { inputId: "w", state: true });
         keys[3] = true;
         didW = true;
     } else if (event.keyCode === 65 || event.keyCode === 37) { // a
-        if (keys[4] != true) socket.emit("key", { inputId: "a", state: true });
+        if (keys[4] !== true) socket.emit("key", { inputId: "a", state: true });
         keys[4] = true;
         didSteer = true;
     } else if (event.keyCode === 68 || event.keyCode === 39) { // d
-        if (keys[5] != true) socket.emit("key", { inputId: "d", state: true });
+        if (keys[5] !== true) socket.emit("key", { inputId: "d", state: true });
         keys[5] = true;
         didSteer = true;
     } else if (event.keyCode === 32) { // space
-        if (keys[6] != true) socket.emit("key", { inputId: " ", state: true });
+        if (keys[6] !== true) socket.emit("key", { inputId: " ", state: true });
         keys[6] = true;
         if (equipped[scroll] < 0) badWeapon = 20;
     } else if (event.keyCode === 81) { // q
-        if (keys[7] != true) socket.emit("key", { inputId: "q", state: true });
+        if (keys[7] !== true) socket.emit("key", { inputId: "q", state: true });
         keys[7] = true;
     } else if (event.keyCode === 88 || event.keyCode === 27) { // x
         if (dead) return;
-        if (keys[8] != true) socket.emit("key", { inputId: "x", state: true });
+        if (keys[8] !== true) socket.emit("key", { inputId: "x", state: true });
         keys[8] = true;
         ReactRoot.turnOffRegister("");
         socket.emit("equip", { scroll: scroll });
     } else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) { // c/v
         if (dead) return;
-        if (keys[9] != true) socket.emit("key", { inputId: "c", state: true });
+        if (keys[9] !== true) socket.emit("key", { inputId: "c", state: true });
         keys[9] = true;
     }
 };
@@ -193,8 +193,8 @@ document.addEventListener("mousemove", (evt) => {
         moreOnHover();
     } else seller = 0;
 
-    if (seller != 0 && seller != preSeller) playAudio("button2", 0.2);
-    if (preSeller != seller && (Math.abs(preSeller - 801) <= 1 || Math.abs(seller - 801) <= 1)) rChat();
+    if (seller !== 0 && seller !== preSeller) playAudio("button2", 0.2);
+    if (preSeller !== seller && (Math.abs(preSeller - 801) <= 1 || Math.abs(seller - 801) <= 1)) rChat();
 }, false);
 
 document.addEventListener("mousedown", (evt) => {
@@ -234,7 +234,7 @@ document.addEventListener("mousedown", (evt) => {
     if (i >= 800 && i < 803) {
         chatMenuButtonClick(i);
     }
-    if (i != 0 && i != 600) ReactRoot.turnOffRegister("");
+    if (i !== 0 && i !== 600) ReactRoot.turnOffRegister("");
 }, false);
 
 document.addEventListener("mouseup", (evt) => {

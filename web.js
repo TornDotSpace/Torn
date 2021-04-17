@@ -14,14 +14,19 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 const http = require("http");
 const express = require("express");
 const app = express();
 const cors = require("cors");
 
+const path = require("path");
+
 console.log("\n\nWeb Server started");
+
 app.use(cors());
-app.use("/", express.static(`${__dirname}/client`));
+app.use("/", express.static(path.resolve(__dirname, "/client")));
+
 const httpServer = http.Server(app);
 httpServer.listen(parseInt(process.argv[2]));// normal is 8443, dev 7301
 console.log("Express started");

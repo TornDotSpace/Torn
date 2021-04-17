@@ -24,7 +24,7 @@ global.sendWeapons = function (player) { // tells a client what weapons that pla
 };
 
 global.modmute = function (msg) {
-    if (msg.split(" ").length != 3) {
+    if (msg.split(" ").length !== 3) {
         return "Bad syntax! The message should look like '/modmute playernamewithouttag minutes'";
     } // split looks like {"/mute", "name", "minutesToMute"}
     const name = msg.split(" ")[1];
@@ -43,7 +43,7 @@ global.modmute = function (msg) {
 };
 
 global.ipmute = function (msg) {
-    if (msg.split(" ").length != 3) {
+    if (msg.split(" ").length !== 3) {
         return "Bad syntax! The message should look like '/ipmute playernamewithouttag minutes'";
     } // split looks like {"/mute", "name", "minutesToMute"}
     const name = msg.split(" ")[1];
@@ -110,8 +110,8 @@ global.playerChat = function (msg, gc, team, guild) { // chat in whatever chat r
     for (const i in sockets) {
         const player = sockets[i].player;
         if (typeof player === "undefined") continue;
-        if (gc == 1 && player.color != team) continue; // they arent on the same team
-        if (gc == 2 && guild != undefined && (player.guild !== guild)) continue; // they arent in the same guild
+        if (gc == 1 && player.color !== team) continue; // they arent on the same team
+        if (gc == 2 && guild !== undefined && (player.guild !== guild)) continue; // they arent in the same guild
         sockets[i].emit("chat", { msg: msg, gc: gc });
     }
 };

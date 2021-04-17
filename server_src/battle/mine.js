@@ -175,7 +175,7 @@ module.exports = class Mine {
         let power = 0; // how strongly this mine pushes people away on explosion
         if (this.wepnID == 15 || this.wepnID == 33) power = 400; // mine, grenade
         else if (this.wepnID == 32) power = 2000;
-        if (power != 0) {
+        if (power !== 0) {
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
                 if (squaredDist(p, this) < square(1024)) {

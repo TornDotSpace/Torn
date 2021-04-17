@@ -95,7 +95,7 @@ class Bot extends Player {
     }
 
     botPlay () {
-        if (tick % 8 != Math.floor(this.id * 8)) return; // Lag prevention, also makes the bots a bit easier
+        if (tick % 8 !== Math.floor(this.id * 8)) return; // Lag prevention, also makes the bots a bit easier
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
         this.equipped = 0;
@@ -126,7 +126,7 @@ class Bot extends Player {
         if (enemies == 0 && Math.random() < myDespawnRate) this.die();
 
         const base = bases[this.sy][this.sx];
-        if (base != 0 && hypot2(base.x, this.x, base.y, this.y) < close * 3 + square(150) && base.color != this.color) {
+        if (base !== 0 && hypot2(base.x, this.x, base.y, this.y) < close * 3 + square(150) && base.color !== this.color) {
             target = base; enemies++;
         }
 
@@ -152,7 +152,7 @@ class Bot extends Player {
         }
 
         // give the killer stuff
-        if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
+        if ((b.owner !== 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
             b.owner.onKill(this);
             b.owner.spoils("experience", (10 + diff * (this.color === b.owner.color ? -1 : 1)));
             // Prevent farming and disincentivize targetting guests
@@ -173,7 +173,7 @@ class NeuralNetBot extends Bot {
 
     botPlay () {
     // Play for a neural network bot
-        if (tick % 8 != Math.floor(this.id * 8)) return; // Don't go too crazy running the whole network each tick. Lag prevention.
+        if (tick % 8 !== Math.floor(this.id * 8)) return; // Don't go too crazy running the whole network each tick. Lag prevention.
 
         if (this.net === 1) { // If we haven't yet initialized a neural net
             this.net = new NeuralNet();

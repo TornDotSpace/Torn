@@ -28,7 +28,7 @@ global.toggleAudio = function () {
 global.toggleMusic = function () {
     musicMuted ^= true;
     if (musicMuted && login) Aud.music1.pause();
-    else if (musicAudio != 0) Aud.music1.play();
+    else if (musicAudio !== 0) Aud.music1.play();
     return musicMuted;
 };
 
