@@ -47,6 +47,7 @@ module.exports = {
           plugins: ["@babel/proposal-class-properties"],
         },
       }],
+      exclude: /node_modules/,
     }],
   },
   resolve: {

@@ -169,7 +169,7 @@ require("./graphics/ArrowGraphics.js");
 require("./graphics/minimap.js");
 require("./BaseMenu/BaseMenu.js");
 require("./input.js");
-require("./chat.js");
+require("./chat.ts");
 ReactRoot.socket = socket; // Just to make socket accessible in react.js
 
 

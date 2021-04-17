@@ -14,6 +14,28 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
+// BEGIN TYPESCRIPT TRANSITION HACKS
+declare var translate: any;
+declare var socket: any;
+declare var clientmutes: any;
+declare var rChat: Function;
+declare var roundRect: Function;
+declare var seller: Number;
+declare var whichChatMenu: any;
+declare var ctx: any;
+declare var square: any;
+declare var brighten: any;
+declare var pasteChat: any;
+declare var h: any;
+declare var getPosition: any;
+declare var wepns: any;
+declare var preProcessChat: any;
+declare var serverMessagesFade: any;
+declare var chatMenuButtonClick: any;
+// END TYPESCRIPT TRANSITION HACKS
+
 const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
 const messages = [{}, {}, {}];
 const serverMessages = {};
@@ -34,6 +56,7 @@ let chatScroll = 0;
 global.whichChatMenu = 0;
 let preChatArr = {};
 let chati = 0;
+
 
 socket.on("chat", function(data) {
   // Optimization: Don't do expensive string manipulation if nobody is in the mute list
