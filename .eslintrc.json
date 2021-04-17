@@ -1,0 +1,56 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true
+    },
+    "extends": [
+        "standard",
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ],
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "func-call-spacing": 1,
+        "no-unexpected-multiline": 1,
+        "eqeqeq": 1,
+        "no-eval": 2,
+        "array-bracket-newline": 1,
+        "brace-style": 1,
+        "comma-spacing": 1,
+        "no-var": 0,
+        "indent": ["warn", 4, {
+            "SwitchCase": 1
+        }],
+        "semi": [1, "always"],
+        "quotes": [2, "double", "avoid-escape"],
+        "no-undef": 0,
+        "no-unused-vars": 0,
+        "prefer-const": 0,
+        "no-mixed-operators": 0,
+        "no-prototype-builtins": 1,
+        "curly": 0,
+        "prefer-arrow-callback": 1,
+        "prefer-template": 1,
+        "no-unreachable-loop": 1,
+        "no-unused-expressions": 0,
+        "no-useless-escape": 0,
+        "camelcase": 0,
+        "node/no-callback-literal": 0,
+        "no-return-assign": 0,
+        "eol-last": 1,
+        "arrow-body-style": ["warn", "as-needed"],
+        "func-style": 1
+    }
+}

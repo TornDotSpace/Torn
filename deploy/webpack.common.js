@@ -19,43 +19,45 @@ const webpack = require("webpack");
 
 const git = require("git-revision-webpack-plugin");
 const gitRevisionPlugin = new git({
-  lightweightTags: true,
+    lightweightTags: true
 });
 
 module.exports = {
-  entry: ["./client_src/index.js"],
-  output: {
-    path: path.resolve("./", "client"),
-    filename: "client.js",
-  },
-  module: {
-    rules: [{
-      test: /\.jsx?$/,
-      exclude: /node_modules/,
-      loader: "babel-loader",
-	    options: {
-        presets: ["@babel/react", "@babel/preset-env"],
-        plugins: ["@babel/proposal-class-properties"],
-	    },
-    }],
-  },
-  resolve: {
-    extensions: ["*", ".js", ".jsx"],
-  },
-  devServer: {
-    contentBase: "./client",
-    hot: true,
-  },
-  optimization: {
-    splitChunks: {
-      // chunks: "initial",
+    entry: ["./client_src/index.js"],
+    output: {
+        path: path.resolve("./", "client"),
+        filename: "client.js"
     },
-  },
-  plugins: [
+    module: {
+        rules: [
+            {
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                loader: "babel-loader",
+	    options: {
+                    presets: ["@babel/react", "@babel/preset-env"],
+                    plugins: ["@babel/proposal-class-properties"]
+	    }
+            }
+        ]
+    },
+    resolve: {
+        extensions: ["*", ".js", ".jsx"]
+    },
+    devServer: {
+        contentBase: "./client",
+        hot: true
+    },
+    optimization: {
+        splitChunks: {
+            // chunks: "initial",
+        }
+    },
+    plugins: [
 	    new webpack.DefinePlugin({
-      VERSION: JSON.stringify(gitRevisionPlugin.version()),
-      COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
-      BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
-    }),
-  ],
+            VERSION: JSON.stringify(gitRevisionPlugin.version()),
+            COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
+            BRANCH: JSON.stringify(gitRevisionPlugin.branch())
+        })
+    ]
 };
