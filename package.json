@@ -8,14 +8,18 @@
     "dev": "webpack --progress --hot --config ./deploy/webpack.dev.js",
     "build": "webpack --progress --config ./deploy/webpack.prod.js",
     "test-build": "webpack --progress --config ./deploy/webpack.test.js",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix",
+    "lint-staged": "lint-staged"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TornDotSpace/Torn.git"
   },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx}": "eslint --fix"
+  },
   "pre-commit": [
-    "lint"
+    "lint-staged"
   ],
   "keywords": [
     "react",
@@ -35,7 +39,9 @@
     "eslint": "^7.24.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-react": "^7.23.2",
+    "git-format-staged": "^2.1.1",
     "git-revision-webpack-plugin": "^3.0.6",
+    "lint-staged": "^10.5.4",
     "node-forge": ">=0.10.0",
     "pre-commit": "^1.2.2",
     "react": "^17.0.2",
