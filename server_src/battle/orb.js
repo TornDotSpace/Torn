@@ -76,17 +76,17 @@ module.exports = class Orb {
             // search players
             for (const i in players[this.sy][this.sx]) {
                 const player = players[this.sy][this.sx][i];
-                if (player.disguise > 0 && this.wepnID != 42) continue;
+                if (player.disguise > 0 && this.wepnID !== 42) continue;
                 const dist = squaredDist(player, this);
-                if ((player.color != this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked == 0 || dist < closest)) {
+                if ((player.color !== this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked == 0 || dist < closest)) {
                     this.locked = player.id;
                     closest = dist;
                 }
             }
-            if (this.locked != 0) return;
+            if (this.locked !== 0) return;
 
             // check base
-            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
+            if (bases[this.sy][this.sx] !== 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType !== DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
                 this.locked = bases[this.sy][this.sx].id;
                 return;
             }
@@ -104,18 +104,18 @@ module.exports = class Orb {
     }
 
     move () {
-        if (this.locked != 0) {
+        if (this.locked !== 0) {
             if (this.lockedTimer++ > secs(2.5)) this.die(); // after 2.5 seconds of being locked on -> delete this
 
             const baseHere = bases[this.sy][this.sx];
             let target = players[this.sy][this.sx][this.locked];
-            if (typeof target === "undefined" && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
+            if (typeof target === "undefined" && bases[this.sy][this.sx].color !== this.color) target = bases[this.sy][this.sx];
             if (target == 0) target = asts[this.sy][this.sx][this.locked];
             if (typeof target === "undefined") this.locked = 0;
             else { // if we are locked onto something
                 if (target.type === "Player") target.isLocked = true; // tell the player they're locked on so they will get an alert message
                 const dist = Math.hypot(target.x - this.x, target.y - this.y);
-                if (dist < 64 && (target.baseType != DEADBASE) !== false) { // if it's a base we can't attack when it's dead. !== false works in case of non-bases
+                if (dist < 64 && (target.baseType !== DEADBASE) !== false) { // if it's a base we can't attack when it's dead. !== false works in case of non-bases
                     target.dmg(this.dmg, this);
                     this.die();
                     return;

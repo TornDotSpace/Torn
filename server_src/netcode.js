@@ -70,8 +70,8 @@ module.exports = function initNetcode () {
 
     const options = (protocol === https)
         ? {
-            key: (key != null) ? fs.readFileSync(key) : key,
-            cert: (cert != null) ? fs.readFileSync(cert) : cert
+            key: (key !== null) ? fs.readFileSync(key) : key,
+            cert: (cert !== null) ? fs.readFileSync(cert) : cert
         }
         : {};
 
@@ -282,7 +282,7 @@ module.exports = function initNetcode () {
             let wait_time = 0;
             for (const p in sockets) {
                 const curr_socket = sockets[p];
-                if (curr_socket.player !== undefined && curr_socket.player._id == name && curr_socket != socket) {
+                if (curr_socket.player !== undefined && curr_socket.player._id == name && curr_socket !== socket) {
                     curr_socket.player.kickMsg = "A user has logged into this account from another location.";
                     curr_socket.player.socket.disconnect();
                     wait_time = 6000;
@@ -466,7 +466,7 @@ module.exports = function initNetcode () {
             }
         });
         socket.on("toggleGlobal", (data) => { // player wants to switch what chat room they're in
-            if (player == 0 || typeof data.gc !== "number" || data.gc != Math.floor(data.gc) || data.gc < 0 || data.gc >= 3) return;
+            if (player == 0 || typeof data.gc !== "number" || data.gc !== Math.floor(data.gc) || data.gc < 0 || data.gc >= 3) return;
             player.globalChat = data.gc;
         });
         socket.on("jettison", (data) => { // Drop all ores
@@ -515,7 +515,7 @@ module.exports = function initNetcode () {
             if (typeof wepns[data.weapon] === "undefined") return;
 
             // they cant buy when not docked. That slot must be unlocked. They need to have enough money. They need to have sufficiently high of a ship.
-            if (!player.docked || player.weapons[data.slot] != -1 || player.money < wepns[data.weapon].price || wepns[data.weapon].level > player.ship) return;
+            if (!player.docked || player.weapons[data.slot] !== -1 || player.money < wepns[data.weapon].price || wepns[data.weapon].level > player.ship) return;
 
             player.money -= wepns[data.weapon].price; // take their money
             player.weapons[data.slot] = data.weapon; // give them the weapon
@@ -674,7 +674,7 @@ module.exports = function initNetcode () {
             player.save();
         });
         socket.on("quest", (data) => { // wants to accept a quest
-            if (typeof data === "undefined" || player == 0 || !player.docked || player.quest != 0 || typeof data.quest !== "number" || data.quest < 0 || data.quest > 9) return;
+            if (typeof data === "undefined" || player == 0 || !player.docked || player.quest !== 0 || typeof data.quest !== "number" || data.quest < 0 || data.quest > 9) return;
 
             const qid = Math.floor(data.quest); // Find the correct quest.
             const quest = teamQuests[player.color][qid];

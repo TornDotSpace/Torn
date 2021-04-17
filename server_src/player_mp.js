@@ -58,7 +58,7 @@ class PlayerMP extends Player {
             return;
         }
         const spl = msg.split(" ");
-        if (spl.length != 3) { // not enough arguments
+        if (spl.length !== 3) { // not enough arguments
             this.emit("chat", { msg: "~`red~`Invalid Syntax!" });
             return;
         }
@@ -226,7 +226,7 @@ class PlayerMP extends Player {
         const diff = playerKillExpFraction * this.experience;
         const moneyEarned = Math.max(0, playerKillMoneyFraction * this.money);
         // give the killer stuff
-        if (b.owner != 0 && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
+        if (b.owner !== 0 && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
             b.owner.onKill(this);
 
             // Award (or punish for teamkills)
@@ -448,7 +448,7 @@ class PlayerMP extends Player {
         this.sendAchievementsKill(true);
 
         // base quest checking
-        if (this.quest != 0 && this.quest.type == "Base") {
+        if (this.quest !== 0 && this.quest.type == "Base") {
             if (this.sx == this.quest.sx && this.sy == this.quest.sy) {
                 // reward player
                 this.spoils("money", this.quest.exp);
@@ -547,7 +547,7 @@ class PlayerMP extends Player {
         this.killsAchs[3] = this.kills >= 1000;
         this.killsAchs[4] = this.kills >= 4000;
         this.killsAchs[5] = this.kills >= 10000;
-        if (p.trail != 0) this.killsAchs[6] = true;
+        if (p.trail !== 0) this.killsAchs[6] = true;
         if (p.hasPackage) this.killsAchs[10] = true;
         if (p.name === this.name) this.killsAchs[11] = true;
         else if (p.color === this.color) this.killsAchs[9] = true;
