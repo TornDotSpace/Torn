@@ -15,17 +15,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const { merge } = require("webpack-merge");
+const {merge} = require("webpack-merge");
 const common = require("./webpack.common.js");
 const webpack = require("webpack");
 
 module.exports = merge(common, {
-    mode: "production",
-    plugins: [
-        new webpack.DefinePlugin({
-            TORN_GAMESERVER_URL: "\"https://torn.space\"",
-            TORN_API_URL: "\"https://torn.space\""
-        })
-    ]
+  mode: "production",
+  plugins: [
+    new webpack.DefinePlugin({
+      TORN_GAMESERVER_URL: "\"https://torn.space\"",
+      TORN_API_URL: "\"https://torn.space\"",
+    }),
+  ],
 
 });

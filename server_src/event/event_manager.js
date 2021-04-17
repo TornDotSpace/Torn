@@ -16,13 +16,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 class Event {
-    constructor (name, start, end) {
-        this.name = name;
-        this.startTime = start;
-        this.endTime = end;
-    }
+  constructor(name, start, end) {
+    this.name = name;
+    this.startTime = start;
+    this.endTime = end;
+  }
 
-    isActive () {
-        return false;
-    }
-}
+  isActive() {
+    return false;
+  }
+};
