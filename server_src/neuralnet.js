@@ -15,10 +15,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const mutate = () => // Low change of high variability, high chance of low.
-    Math.tan(Math.random() * Math.PI * 2) / 100;
-const activate = (x) => // Softsign activation function. See wikipedia.
-    x / (1 + Math.abs(x));
+const mutate = function () { // Low change of high variability, high chance of low.
+    return Math.tan(Math.random() * Math.PI * 2) / 100;
+};
+const activate = function (x) { // Softsign activation function. See wikipedia.
+    return x / (1 + Math.abs(x));
+};
 
 module.exports = class NeuralNet {
     constructor () {

@@ -98,7 +98,9 @@ global.strong = function (msg, x, y, sx, sy) { // a bigger note
     sendAllSector("strong", { msg: msg, x: x, y: y, local: false }, sx, sy);
 };
 
-global.parseBoolean = (s) => (s === "true");
+global.parseBoolean = function (s) {
+    return (s === "true");
+};
 
 module.exports = function () {
 
@@ -114,8 +116,10 @@ global.playerChat = function (msg, gc, team, guild) { // chat in whatever chat r
     }
 };
 
-global.send_rpc = async (endpoint, data) => await fetch(`${Config.getValue("rpc_server", undefined)}/rpc${endpoint}`, {
-    method: "post",
-    body: data,
-    headers: { "Content-Type": "x-www-form-urlencoded" }
-});
+global.send_rpc = async function (endpoint, data) {
+    return await fetch(`${Config.getValue("rpc_server", undefined)}/rpc${endpoint}`, {
+        method: "post",
+        body: data,
+        headers: { "Content-Type": "x-www-form-urlencoded" }
+    });
+};

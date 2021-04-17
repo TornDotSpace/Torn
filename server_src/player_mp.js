@@ -171,7 +171,9 @@ class PlayerMP extends Player {
         if (this.afkTimer-- < 0) {
             this.emit("AFK");
             this.kick("AFK!");
-            this.testAfk = () => false;
+            this.testAfk = function () {
+                return false;
+            };
             return true;
         }
         return false;

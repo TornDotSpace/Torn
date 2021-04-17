@@ -1,5 +1,6 @@
-const isOutOfBounds = (obj) => // TODO this works but I'm not even using it anywhere. it would simplify some code if used.
-    obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
+function isOutOfBounds (obj) { // TODO this works but I'm not even using it anywhere. it would simplify some code if used.
+    return obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
+}
 
 global.astCount = new Array(mapSz);
 

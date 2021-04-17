@@ -219,8 +219,9 @@ function sendRaidData () { // tell everyone when the next raid is happening
     sendAll("raid", { raidTimer: raidTimer });
 }
 
-const getPlayer = (i) => // given a socket id, find the corresponding player object.
-    sockets[i].player;
+function getPlayer (i) { // given a socket id, find the corresponding player object.
+    return sockets[i].player;
+}
 
 global.getPlayerFromName = function (name) { // given a socket id, find the corresponding player object.
     for (const p in sockets) {
