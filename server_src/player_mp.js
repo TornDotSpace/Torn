@@ -63,13 +63,13 @@ class PlayerMP extends Player {
             return;
         }
         let slot1 = parseFloat(spl[1]); let slot2 = parseFloat(spl[2]);
-        if (slot1 === 0) slot1 = 10;
-        if (slot2 === 0) slot2 = 10;
+        if (slot1 == 0) slot1 = 10;
+        if (slot2 == 0) slot2 = 10;
         if (slot1 > 10 || slot2 > 10 || slot1 < 1 || slot2 < 1 || !slot1 || !slot2 || !Number.isInteger(slot1) || !Number.isInteger(slot2)) {
             this.emit("chat", { msg: "~`red~`Invalid Syntax!" });
             return;
         }
-        if (this.weapons[slot1] === -2 || this.weapons[slot2] === -2) {
+        if (this.weapons[slot1] == -2 || this.weapons[slot2] == -2) {
             this.emit("chat", { msg: "~`orange~`You haven't unlocked that slot yet!" });
             return;
         }
@@ -83,8 +83,8 @@ class PlayerMP extends Player {
         this.ammos[slot1] = this.ammos[slot2];
         this.ammos[slot2] = temp;
 
-        if (this.equipped === slot1) this.equipped = slot2;
-        else if (this.equipped === slot2) this.equipped = slot1;
+        if (this.equipped == slot1) this.equipped = slot2;
+        else if (this.equipped == slot2) this.equipped = slot1;
 
         sendWeapons(this);
         this.emit("equip", { scroll: this.equipped });
@@ -110,7 +110,7 @@ class PlayerMP extends Player {
         for (const sock in sockets) {
             const player = sockets[sock].player;
 
-            if (player === undefined) {
+            if (player == undefined) {
                 continue;
             }
 
@@ -137,7 +137,7 @@ class PlayerMP extends Player {
             return;
         }
 
-        if (pass === this.name) {
+        if (pass == this.name) {
             this.emit("chat", { msg: "~`red~`Password cannot be the same as your username!" });
             return;
         }
@@ -232,7 +232,7 @@ class PlayerMP extends Player {
             // Award (or punish for teamkills)
             // const diff = playerKillExpFraction * this.experience;
             const other_ip = b.owner.ip;
-            if (!this.guest && !(other_ip !== undefined && other_ip === this.ip)) { // Only award them if their IP differs and they didn't kill a guest
+            if (!this.guest && !(other_ip !== undefined && other_ip == this.ip)) { // Only award them if their IP differs and they didn't kill a guest
     	if (this.color !== b.owner.color) b.owner.spoils("experience", 10 + Math.min(this.experience * 2, diff)); // Self-feeding protection
     	else b.owner.spoils("experience", -5 * Math.min(diff, b.owner.experience * playerKillExpFraction)); // Punishment equals -5 times what the reward would have been, unless it's large in proportant to the punished person's exp
                 b.owner.spoils("money", moneyEarned + (b.owner.type === "Player" ? b.owner.killStreak * playerKillMoney : playerKillMoney));
@@ -285,16 +285,16 @@ class PlayerMP extends Player {
 
     sellOre (oretype) {
     // pay them appropriately
-        if (oretype === "iron" || oretype === "all") {
+        if (oretype == "iron" || oretype == "all") {
             this.spoils("money", this.iron);
             this.iron = 0;
-        } if (oretype === "silver" || oretype === "all") {
+        } if (oretype == "silver" || oretype == "all") {
             this.spoils("money", this.silver);
             this.silver = 0;
-        } if (oretype === "platinum" || oretype === "all") {
+        } if (oretype == "platinum" || oretype == "all") {
             this.spoils("money", this.platinum);
             this.platinum = 0;
-        } if (oretype === "copper" || oretype === "all") {
+        } if (oretype == "copper" || oretype == "all") {
             this.spoils("money", this.copper);
             this.copper = 0;
         }
@@ -321,8 +321,8 @@ class PlayerMP extends Player {
 
         let base = 0;
         const b = bases[this.sy][this.sx];
-        if ((b.baseType === LIVEBASE || b.baseType === DEADBASE) && b.color === this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
-        if (base === 0) return;
+        if ((b.baseType == LIVEBASE || b.baseType == DEADBASE) && b.color == this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
+        if (base == 0) return;
 
         this.refillAllAmmo();
         this.x = this.y = sectorWidth / 2;
@@ -340,7 +340,7 @@ class PlayerMP extends Player {
         if (type === "experience") {
             this.experience += amt;
             this.updateRank();
-        } else if (type === "money") this.money += amt * ((amt > 0 && this.trail % 16 === 2) ? 1.05 : 1);
+        } else if (type === "money") this.money += amt * ((amt > 0 && this.trail % 16 == 2) ? 1.05 : 1);
         else if (type === "life" && this.lives < 20) this.lives += amt;
         this.experience = Math.max(this.experience, 0);
         this.emit("spoils", { type: type, amt: amt });
@@ -348,10 +348,10 @@ class PlayerMP extends Player {
 
     onMined (a) {
     // bitmask of what types of ores this player has mined
-        if ((this.oresMined & (1 << a)) === 0) this.oresMined += 1 << a;
+        if ((this.oresMined & (1 << a)) == 0) this.oresMined += 1 << a;
 
         // achievementy stuff
-        if (this.oresMined === 15 && !this.moneyAchs[1]) this.moneyAchs[1] = true;
+        if (this.oresMined == 15 && !this.moneyAchs[1]) this.moneyAchs[1] = true;
         else if (!this.moneyAchs[0]) this.moneyAchs[0] = true;
         else if (!this.moneyAchs[2] && this.iron + this.silver + this.copper + this.platinum >= 4000) this.moneyAchs[2] = true;
         else if (!this.moneyAchs[3] && this.iron + this.silver + this.copper + this.platinum >= 15000) this.moneyAchs[3] = true;
@@ -448,15 +448,15 @@ class PlayerMP extends Player {
         this.sendAchievementsKill(true);
 
         // base quest checking
-        if (this.quest !== 0 && this.quest.type === "Base") {
-            if (this.sx === this.quest.sx && this.sy === this.quest.sy) {
+        if (this.quest !== 0 && this.quest.type == "Base") {
+            if (this.sx == this.quest.sx && this.sy == this.quest.sy) {
                 // reward player
                 this.spoils("money", this.quest.exp);
                 this.spoils("experience", Math.floor(this.quest.exp / 4000));
 
                 this.quest = 0; // tell client it's done
                 this.emit("quest", { quest: this.quest, complete: true });
-                if ((this.questsDone & 4) === 0) this.questsDone += 4;
+                if ((this.questsDone & 4) == 0) this.questsDone += 4;
 
                 if (!this.moneyAchs[9]) { // Questor
                     this.moneyAchs[9] = true;
@@ -465,27 +465,27 @@ class PlayerMP extends Player {
             }
         }
 
-        if (this.questsDone === 15 && !this.moneyAchs[10]) { // Adventurer
+        if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
             this.moneyAchs[10] = true;
             this.sendAchievementsCash(true);
         }
     }
 
     checkQuestStatus (touchingPlanet) {
-        if (this.quest === 0) return;// no point if the person hasn't got a quest rn.
+        if (this.quest == 0) return;// no point if the person hasn't got a quest rn.
 
-        if (this.quest.type === "Mining" && this.sx === this.quest.sx && this.sy === this.quest.sy) {
+        if (this.quest.type === "Mining" && this.sx == this.quest.sx && this.sy == this.quest.sy) {
             // check the player has sufficient metal according to quest
-            if (this.quest.metal === "copper" && this.copper < this.quest.amt) return;
-            if (this.quest.metal === "iron" && this.iron < this.quest.amt) return;
-            if (this.quest.metal === "silver" && this.silver < this.quest.amt) return;
-            if (this.quest.metal === "platinum" && this.platinum < this.quest.amt) return;
+            if (this.quest.metal == "copper" && this.copper < this.quest.amt) return;
+            if (this.quest.metal == "iron" && this.iron < this.quest.amt) return;
+            if (this.quest.metal == "silver" && this.silver < this.quest.amt) return;
+            if (this.quest.metal == "platinum" && this.platinum < this.quest.amt) return;
 
             // take the amount from them
-            if (this.quest.metal === "copper") this.copper -= this.quest.amt;
-            if (this.quest.metal === "iron") this.iron -= this.quest.amt;
-            if (this.quest.metal === "silver") this.silver -= this.quest.amt;
-            if (this.quest.metal === "platinum") this.platinum -= this.quest.amt;
+            if (this.quest.metal == "copper") this.copper -= this.quest.amt;
+            if (this.quest.metal == "iron") this.iron -= this.quest.amt;
+            if (this.quest.metal == "silver") this.silver -= this.quest.amt;
+            if (this.quest.metal == "platinum") this.platinum -= this.quest.amt;
 
             // reward them
             this.spoils("money", this.quest.exp);
@@ -499,23 +499,23 @@ class PlayerMP extends Player {
                 this.sendAchievementsCash(true);
             }
 
-            if ((this.questsDone & 1) === 0) this.questsDone += 1;
+            if ((this.questsDone & 1) == 0) this.questsDone += 1;
         } else if (this.quest.type === "Delivery" && touchingPlanet) {
             // pickup
-            if (this.sx === this.quest.sx && this.sy === this.quest.sy && !this.hasPackage) {
+            if (this.sx == this.quest.sx && this.sy == this.quest.sy && !this.hasPackage) {
                 this.hasPackage = true;
                 this.strongLocal("Package obtained!", this.x, this.y - 192);
             }
 
             // dropoff
-            if (this.hasPackage && this.sx === this.quest.dsx && this.sy === this.quest.dsy) {
+            if (this.hasPackage && this.sx == this.quest.dsx && this.sy == this.quest.dsy) {
                 this.spoils("money", this.quest.exp);// reward
                 this.spoils("experience", Math.floor(this.quest.exp / 1500));
 
                 this.hasPackage = false;
                 this.quest = 0;
                 this.emit("quest", { quest: this.quest, complete: true }); // tell client it's over
-                if ((this.questsDone & 2) === 0) this.questsDone += 2;
+                if ((this.questsDone & 2) == 0) this.questsDone += 2;
 
                 if (!this.moneyAchs[9]) { // Questor
                     this.moneyAchs[9] = true;
@@ -524,7 +524,7 @@ class PlayerMP extends Player {
             }
         }
 
-        if (this.questsDone === 15 && !this.moneyAchs[10]) { // Adventurer
+        if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
             this.moneyAchs[10] = true;
             this.sendAchievementsCash(true);
         }

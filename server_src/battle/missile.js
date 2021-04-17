@@ -45,14 +45,14 @@ module.exports = class Missile {
         this.move();
         this.timer++; // time needs to flow.
         if (this.distTravelled >= 10 * wepns[this.wepnID].range) this.die(); // out of range -> die
-        if (this.wepnID === 14) { // If torpedo... yeah we need a reason to make torpedo needed at such a high level with so little damage, ammo and recharge.
+        if (this.wepnID == 14) { // If torpedo... yeah we need a reason to make torpedo needed at such a high level with so little damage, ammo and recharge.
             const old_sx = this.sx;
             const old_sy = this.sy;
             if (this.x > sectorWidth) { // check each edge of the 4 they could cross.
                 this.x = 1;
                 this.sx = (this.sx + 1 + mapSz) % mapSz;
             } else if (this.y > sectorWidth) {
-                if (this.sy === mapSz - 1) {
+                if (this.sy == mapSz - 1) {
                     this.die();
                 } else {
                     this.y = 1;
@@ -62,7 +62,7 @@ module.exports = class Missile {
                 this.x = (sectorWidth - 1);
                 this.sx = (this.sx - 1 + mapSz) % mapSz;
             } else if (this.y < 0) {
-                if (this.sy === 0) {
+                if (this.sy == 0) {
                     this.die();
                 } else {
                     this.y = (sectorWidth - 1);
@@ -77,16 +77,16 @@ module.exports = class Missile {
             }
         } else if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // out of sector
 
-        if (this.timer === 20 && this.wepnID === 13) this.missileSwarmExplode();
+        if (this.timer == 20 && this.wepnID == 13) this.missileSwarmExplode();
 
-        if (tick % 5 === 0 && this.locked === 0) {
+        if (tick % 5 == 0 && this.locked == 0) {
             let closest = Number.MAX_SAFE_INTEGER;
             // search players
             for (const i in players[this.sy][this.sx]) {
                 const player = players[this.sy][this.sx][i];
                 if (player.disguise > 0) continue;
                 const dist = squaredDist(player, this);
-                if ((player.color !== this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked === 0 || dist < closest)) {
+                if ((player.color !== this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked == 0 || dist < closest)) {
                     this.locked = player.id;
                     closest = dist;
                 }
@@ -103,7 +103,7 @@ module.exports = class Missile {
             for (const i in asts[this.sy][this.sx]) {
                 const ast = asts[this.sy][this.sx][i];
                 const dist = squaredDist(ast, this);
-                if (dist < square(wepns[this.wepnID].range * 10) && (this.locked === 0 || dist < closest)) {
+                if (dist < square(wepns[this.wepnID].range * 10) && (this.locked == 0 || dist < closest)) {
                     this.locked = ast.id;
                     closest = dist;
                 }
@@ -117,22 +117,22 @@ module.exports = class Missile {
 
             let target = players[this.sy][this.sx][this.locked]; // try 2 find the target object
             if (typeof target === "undefined" && bases[this.sy][this.sx].color !== this.color) target = bases[this.sy][this.sx];
-            if (target === 0) target = asts[this.sy][this.sx][this.locked];
+            if (target == 0) target = asts[this.sy][this.sx][this.locked];
             if (typeof target === "undefined") this.locked = 0;
 
             else { // if we found it, then...
                 if (target.type === "Player") target.isLocked = true;
 
                 // on impact
-                if (target.sx === this.sx && target.sy === this.sy && squaredDist(target, this) < 10000 * (this.wepnID === 38 ? 5 : 1) && (target.baseType !== DEADBASE) !== false /* we don't know it's a base. can't just say ==true. */) {
+                if (target.sx == this.sx && target.sy == this.sy && squaredDist(target, this) < 10000 * (this.wepnID == 38 ? 5 : 1) && (target.baseType !== DEADBASE) !== false /* we don't know it's a base. can't just say ==true. */) {
                     target.dmg(this.dmg, this);
                     this.die();
-                    if (this.wepnID === 12 && (target.type === "Player" || target.type === "Base")) target.EMP(54); // emp missile
+                    if (this.wepnID == 12 && (target.type === "Player" || target.type === "Base")) target.EMP(54); // emp missile
                     return;
                 }
 
                 if (this.wepnID !== 38) { // 38: proximity fuze
-                    if (this.timer === 1 || tick % 4 === 0) this.goalAngle = angleBetween(target, this);
+                    if (this.timer == 1 || tick % 4 == 0) this.goalAngle = angleBetween(target, this);
                     this.angle = findBisector(findBisector(this.goalAngle, this.angle), this.angle);// turn towards goal
                 }
                 this.vx = Math.cos(this.angle) * wepns[this.wepnID].speed; // update velocity
@@ -140,7 +140,7 @@ module.exports = class Missile {
             }
         }
 
-        if (this.locked === 0) this.lockedTimer = 0;
+        if (this.locked == 0) this.lockedTimer = 0;
 
         const accelMult = 1 - 25 / (this.timer + 25); // pick up speed w/ time
         const velx = this.vx * accelMult;

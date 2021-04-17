@@ -38,17 +38,17 @@ module.exports = class Mine {
     }
 
     tick () {
-        if (this.time === 0 && this.wepnID < 32 || this.wepnID > 47) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
-        if ((this.wepnID === 33 || this.wepnID === 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
+        if (this.time == 0 && this.wepnID < 32 || this.wepnID > 47) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
+        if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
         if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
 
         this.move(); // not only grenade, anything EM'ed
-        if (this.wepnID === 43 && this.time % 8 === 0) this.doPulse(); // pulse
-        if (this.wepnID === 44 && this.time % 25 === 0) this.doHeal(); // campfire
+        if (this.wepnID == 43 && this.time % 8 == 0) this.doPulse(); // pulse
+        if (this.wepnID == 44 && this.time % 25 == 0) this.doHeal(); // campfire
     }
 
     move () {
-        if (this.wepnID === 48) { // Magnetic Mine
+        if (this.wepnID == 48) { // Magnetic Mine
             let magvx = 0;
             let magvy = 0;
             for (const i in players[this.sy][this.sx]) {
@@ -69,14 +69,14 @@ module.exports = class Mine {
         this.x += this.vx;
         this.y += this.vy;
 
-        if (this.wepnID === 44) { // Campfire
+        if (this.wepnID == 44) { // Campfire
             const old_sx = this.sx;
             const old_sy = this.sy;
             if (this.x > sectorWidth) { // check each edge of the 4 they could cross.
                 this.x = 1;
                 this.sx = (this.sx + 1 + mapSz) % mapSz;
             } else if (this.y > sectorWidth) {
-                if (this.sy === mapSz - 1) {
+                if (this.sy == mapSz - 1) {
                     this.die();
                 } else {
                     this.y = 1;
@@ -86,7 +86,7 @@ module.exports = class Mine {
                 this.x = (sectorWidth - 1);
                 this.sx = (this.sx - 1 + mapSz) % mapSz;
             } else if (this.y < 0) {
-                if (this.sy === 0) {
+                if (this.sy == 0) {
                     this.die();
                 } else {
                     this.y = (sectorWidth - 1);
@@ -140,14 +140,14 @@ module.exports = class Mine {
         // check there's 2 people
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
-            if (p.color === this.color && squaredDist(p, this) < square(this.range * 10)) playerFound++;
+            if (p.color == this.color && squaredDist(p, this) < square(this.range * 10)) playerFound++;
         }
         if (playerFound < 2) return;
 
         // heal them
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
-            if (p.color === this.color && squaredDist(p, this) < square(this.range * 10)) {
+            if (p.color == this.color && squaredDist(p, this) < square(this.range * 10)) {
                 p.health = Math.min(p.health - this.dmg, p.maxHealth); // heal them
 
                 const r = Math.random(); // Laser Mine
@@ -161,7 +161,7 @@ module.exports = class Mine {
     collideWithMines () { // When the mine is created, make sure it isn't placed on top of any other mines.
         for (const m in mines[this.sy][this.sx]) {
             const mine = mines[this.sy][this.sx][m];
-            if (mine.id === this.id) continue; // ofc the mine is on top of itthis
+            if (mine.id == this.id) continue; // ofc the mine is on top of itthis
             if (squaredDist(mine, this) < square(wepns[this.wepnID].range)) { // if that mine is in this mine's "attack range"
                 mine.die(); // destroy both
                 this.die();
@@ -173,8 +173,8 @@ module.exports = class Mine {
     die () {
         this.die = function () { }; // Purpose unclear, please comment
         let power = 0; // how strongly this mine pushes people away on explosion
-        if (this.wepnID === 15 || this.wepnID === 33) power = 400; // mine, grenade
-        else if (this.wepnID === 32) power = 2000;
+        if (this.wepnID == 15 || this.wepnID == 33) power = 400; // mine, grenade
+        else if (this.wepnID == 32) power = 2000;
         if (power !== 0) {
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
@@ -187,7 +187,7 @@ module.exports = class Mine {
                 }
             }
         }
-        if (this.wepnID === 33) // if i'm a grenade
+        if (this.wepnID == 33) // if i'm a grenade
         {
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];

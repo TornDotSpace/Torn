@@ -157,7 +157,7 @@ global.center3D = function (xxp, yyp, zzp) {
     }
 };
 global.r3DMap = function () {
-    if (sectorPoints === 0) return;
+    if (sectorPoints == 0) return;
 
     minimapcanvas.width = minimapcanvas.width;
     minictx.globalAlpha = 0.4;
@@ -167,11 +167,11 @@ global.r3DMap = function () {
     minictx.fillRect(0, 0, 208, 208); // Draw map
     minictx.strokeRect(0, 0, 208, 208); // Draw map
 
-    if (hmap === 0 || typeof hmap[sx] === "undefined") return;
+    if (hmap == 0 || typeof hmap[sx] === "undefined") return;
 
     // if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = translate("Enemy Swarm In Sector"); // GREENTODO enemy swarm
 
-    if (pscx === 0) {
+    if (pscx == 0) {
         roll(40);
         spin(-(sx + 5) * 20);
     }
@@ -265,15 +265,15 @@ global.r3DMap = function () {
             avgZ += cz;
             avgi++;
 
-            if ((i === sx && j === sy) || (i === qsx && j === qsy) || (i === qdsx && j === qdsy)) {
+            if ((i == sx && j == sy) || (i === qsx && j === qsy) || (i === qdsx && j === qdsy)) {
                 // Highlight the player's sector
                 minictx.lineWidth = 3;
-                minictx.strokeStyle = minictx.fillStyle = (i === sx && j === sy) ? brighten(pc) : "yellow";
+                minictx.strokeStyle = minictx.fillStyle = (i == sx && j == sy) ? brighten(pc) : "yellow";
                 minictx.stroke();
                 minictx.lineWidth = 0.35;
                 minictx.strokeStyle = "gray";
 
-                if (i === sx && j === sy) {
+                if (i == sx && j == sy) {
                     myxx1 = xx1;
                     myxx2 = xx2;
                     myxx3 = xx3;
@@ -318,7 +318,7 @@ global.r3DMap = function () {
             }
 
             if (va2 > 1.9) {
-                if (Math.floor(bx * mapSz) === i && Math.floor(by * mapSz) === j) { // render wormhole
+                if (Math.floor(bx * mapSz) == i && Math.floor(by * mapSz) == j) { // render wormhole
                     minictx.strokeStyle = "white";
                     minictx.fillStyle = "black";
                     minictx.beginPath();
@@ -334,7 +334,7 @@ global.r3DMap = function () {
                     minictx.stroke();
                     minictx.closePath();
                 }
-                if (Math.floor(bxo * mapSz) === i && Math.floor(byo * mapSz) === j) { // render wormhole output
+                if (Math.floor(bxo * mapSz) == i && Math.floor(byo * mapSz) == j) { // render wormhole output
                     minictx.fillStyle = "white";
                     minictx.beginPath();
                     const bxin = bxo * mapSz - Math.floor(bxo * mapSz); const byin = byo * mapSz - Math.floor(byo * mapSz);
@@ -388,7 +388,7 @@ global.r3DMap = function () {
     minictx.globalAlpha = 1;
 };
 global.paste3DMap = function (xp, yp) {
-    if (sectorPoints === 0) return;
+    if (sectorPoints == 0) return;
     /* let d = new Date();
   let t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
   t/=1000;

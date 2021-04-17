@@ -34,7 +34,7 @@ global.render = function () {
         updateNotes();
         rInBase();
     }
-    if (docked || (playersInfo === 0 && !(disguise > 0))) return;
+    if (docked || (playersInfo == 0 && !(disguise > 0))) return;
     if (ops > 0 || clientLag >= 35) {
         rTexts(clientLag);
         clientLag = 34;
@@ -166,7 +166,7 @@ global.wrapText = function (context, text, x, y, maxWidth, lineHeight) {
 
 global.rWeapons = function () { // Weapon selector on right side of game
     if (equipped === 0) return;
-    if (equipped[1] === -2) return;
+    if (equipped[1] == -2) return;
     ctx.save();
     ctx.globalAlpha = 0.5;
     ctx.fillStyle = "black";
@@ -182,7 +182,7 @@ global.rWeapons = function () { // Weapon selector on right side of game
     write(ctx, translate("Weapon"), w - 80, h - 432 + (-1 + 10) * 16);
     write(ctx, translate("Ammo"), w - 16, h - 432 + (-1 + 10) * 16);
     for (let i = 0; i < 10; i++) {
-        ctx.fillStyle = scroll === i ? "lime" : "yellow";
+        ctx.fillStyle = scroll == i ? "lime" : "yellow";
         if (i >= ships[ship].weapons) ctx.fillStyle = "orange";
         if (ship < wepns[equipped[i]].Level) ctx.fillStyle = "red";
         if (typeof wepns[equipped[i]] !== "undefined") write(ctx, `${wepns[equipped[i]].name}: ${(i + 1) % 10}`, w - 80, h - 432 + (i + 10) * 16);
@@ -293,8 +293,8 @@ global.rLoadingBar = function () {
     ctx.font = "30px ShareTech";
     ctx.fillText(splash, w / 2, h / 2 - 96);
     ctx.font = "15px ShareTech";
-    if (Img_prgs[0] === Img_prgs[1]) ctx.fillText("All images loaded.", w / 2, h / 2 + 64);
-    if (Aud_prgs[0] === Aud_prgs[1]) ctx.fillText("All sounds loaded", w / 2, h / 2 + 80);
+    if (Img_prgs[0] == Img_prgs[1]) ctx.fillText("All images loaded.", w / 2, h / 2 + 64);
+    if (Aud_prgs[0] == Aud_prgs[1]) ctx.fillText("All sounds loaded", w / 2, h / 2 + 80);
     ctx.fillText(currLoading, w / 2, h / 2 + 96);
 };
 
@@ -345,17 +345,17 @@ global.updateTrails = function () {
             for (let j = 0; j < particleCount; j++) {
                 const rando = Math.random() * selfo.speed;
                 let col = (((96 + Math.floor(Math.random() * 64)) << 16) + ((96 + Math.floor(Math.random() * 128)) << 8) + 255 - Math.floor(Math.random() * 64)).toString(16);
-                if (mod === 1) col = (((192 + Math.floor(Math.random() * 64)) << 16) + (Math.floor(Math.random() * 64) << 8) + Math.floor(Math.random() * 92)).toString(16);
-                else if (mod === 2) {
+                if (mod == 1) col = (((192 + Math.floor(Math.random() * 64)) << 16) + (Math.floor(Math.random() * 64) << 8) + Math.floor(Math.random() * 92)).toString(16);
+                else if (mod == 2) {
                     if (Math.random() < 0.5) col = (((255 - Math.floor(Math.random()) * 64) << 16) + ((183 + Math.floor(Math.random() * 64)) << 8)).toString(16);
                     else col = (((Math.floor(Math.random() * 64)) << 16) + ((192 + Math.floor(Math.random() * 64)) << 8) + Math.floor(Math.random() * 64)).toString(16);
-                } else if (mod === 3) {
+                } else if (mod == 3) {
                     const r = Math.random() < 0.5 ? 255 : 1;
                     col = ((r << 16) + (r << 8) + r).toString(16);
-                } else if (mod === 4) {
+                } else if (mod == 4) {
                     t = Math.random() * Math.PI * 60;
                     col = ((Math.floor(Math.cos(t) * 128 + 128) << 16) + (Math.floor(Math.cos(t + Math.PI * 2 / 3) * 128 + 128) << 8) + Math.floor(Math.cos(t + Math.PI * 4 / 3) * 128 + 128)).toString(16);
-                } else if (mod === 5) col = ((Math.floor(Math.cos(t) * 128 + 128) << 16) + (Math.floor(Math.cos(t + Math.PI * 2 / 3) * 128 + 128) << 8) + Math.floor(Math.cos(t + Math.PI * 4 / 3) * 128 + 128)).toString(16);
+                } else if (mod == 5) col = ((Math.floor(Math.cos(t) * 128 + 128) << 16) + (Math.floor(Math.cos(t + Math.PI * 2 / 3) * 128 + 128) << 8) + Math.floor(Math.cos(t + Math.PI * 4 / 3) * 128 + 128)).toString(16);
                 while (col.length < 6) col = `0${col}`;
                 trails[Math.random()] = {
                     vip: trail > 15,
@@ -636,7 +636,7 @@ global.renderBG = function (more) {
     const add = more ? 1 : 0;
     const img = Img.spc;
     for (let i = 0; i < ((hyperdriveTimer > 0) ? 3 : 1); i++) {
-        ctx.globalAlpha = i === 0 ? 0.5 : ((10000 - square(100 - hyperdriveTimer)) / (i * 10000));
+        ctx.globalAlpha = i == 0 ? 0.5 : ((10000 - square(100 - hyperdriveTimer)) / (i * 10000));
         for (let x = -add; x < 2 + Math.floor(w / 2048) + add; x++) {
             for (let y = -add; y < 2 + Math.floor(h / 2048) + add; y++) {
                 ctx.drawImage(img, bgPos(x, px, scrx, i, 2048), bgPos(y, py, scry, i, 2048));
@@ -700,7 +700,7 @@ global.rCargo = function () {
         }
         write(ctx, `${metalWeHave}/${quest.amt} ${quest.metal}`, 248, 16);
     }
-    if (seller === 900) {
+    if (seller == 900) {
         ctx.fillStyle = "white";
         write(ctx, "JETTISON CARGO", 248, 32);
     }
@@ -708,11 +708,11 @@ global.rCargo = function () {
     ctx.globalAlpha = 0.4;
 
     ctx.strokeStyle = "white";
-    ctx.lineWidth = seller === 900 ? 2 : 1;
+    ctx.lineWidth = seller == 900 ? 2 : 1;
     ctx.strokeRect(224, 8, 16, 208);
 
     let myCapacity = ships[ship].capacity * c2;
-    if (ship === 17) myCapacity = iron + platinum + silver + copper; // because it has infinite cargo
+    if (ship == 17) myCapacity = iron + platinum + silver + copper; // because it has infinite cargo
 
     const ironBarHeight = iron * 208 / myCapacity;
     const silvBarHeight = silver * 208 / myCapacity;
@@ -873,10 +873,10 @@ global.rRadar = function () {
         ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
         if (va2 > 1.24) ctx.strokeStyle = ctx.fillStyle = "orange";
         if (va2 > 1.74) {
-            if (a.metal === 0) ctx.strokeStyle = ctx.fillStyle = "#d44";
-            else if (a.metal === 1) ctx.strokeStyle = ctx.fillStyle = "#eef";
-            else if (a.metal === 2) ctx.strokeStyle = ctx.fillStyle = "#960";
-            else if (a.metal === 3) ctx.strokeStyle = ctx.fillStyle = "#90f";
+            if (a.metal == 0) ctx.strokeStyle = ctx.fillStyle = "#d44";
+            else if (a.metal == 1) ctx.strokeStyle = ctx.fillStyle = "#eef";
+            else if (a.metal == 2) ctx.strokeStyle = ctx.fillStyle = "#960";
+            else if (a.metal == 3) ctx.strokeStyle = ctx.fillStyle = "#90f";
         }
         if (va2 > 1.62) ctx.stroke();
         else ctx.fill();
@@ -918,14 +918,14 @@ global.rCreds = function () {
     ctx.textAlign = "center";
     ctx.font = "20px ShareTech";
     let str = "";
-    if (credentialState === 1) str = translate("Invalid user/pass combo!");
-    if (credentialState === 2) str = translate("Username must be alphanumeric, with 4-16 characters!");
-    if (credentialState === 3) str = translate("Password must be 6-128 characters long and not the same as your username!");
-    if (credentialState === 4) str = translate("Username taken!");
-    if (credentialState === 5) str = "Username is profane!";
-    if (credentialState === 20) str = "Outdated client! Please clear your cache or try incongito mode!";
-    if (credentialState === 8) str = "You must be rank 1 to create an account!";
-    if (credentialState === 30) str = "Invalid playcookie";
+    if (credentialState == 1) str = translate("Invalid user/pass combo!");
+    if (credentialState == 2) str = translate("Username must be alphanumeric, with 4-16 characters!");
+    if (credentialState == 3) str = translate("Password must be 6-128 characters long and not the same as your username!");
+    if (credentialState == 4) str = translate("Username taken!");
+    if (credentialState == 5) str = "Username is profane!";
+    if (credentialState == 20) str = "Outdated client! Please clear your cache or try incongito mode!";
+    if (credentialState == 8) str = "You must be rank 1 to create an account!";
+    if (credentialState == 30) str = "Invalid playcookie";
     write(ctx, str, w / 2, h - 64);
     ctx.textAlign = "left";
     ctx.font = "14px ShareTech";
@@ -957,13 +957,13 @@ global.rTut = function () {
             text = translate("Press A and D to steer!"); if (currTut < 2) {
                 currTut = 2; addBigNote([256, text, "", ""]);
             }
-        } else if (ship === 0 && ore === 0) {
+        } else if (ship == 0 && ore == 0) {
             text = translate("Follow the orange arrow!");
             line2 = translate("Shoot asteroids with spacebar!");
             if (currTut < 3) {
                 currTut = 3; addBigNote([256, text, line2, ""]);
             }
-        } else if (ship === 0) {
+        } else if (ship == 0) {
             text = docked ? translate("Sell your ore in the Base Shop!") : translate("Follow the white arrow and press X to Dock!"); if (currTut < 4) {
                 currTut = 4; addBigNote([256, text, "", ""]);
             }
@@ -992,8 +992,8 @@ global.undoDmg = function (r) {
 global.rAlert = function () {
     ctx.fillStyle = tick % 6 < 3 ? "orange" : "yellow";
     if (lives < 5) currAlert = translate("Low Lives");
-    if (lives === 2) bigAlert = translate("TWO LIVES LEFT");
-    if (lives === 1) bigAlert = translate("ONE LIFE LEFT");
+    if (lives == 2) bigAlert = translate("TWO LIVES LEFT");
+    if (lives == 1) bigAlert = translate("ONE LIFE LEFT");
     if (currAlert !== "") {
         ctx.font = "20px ShareTech";
         ctx.textAlign = "right";
@@ -1073,7 +1073,7 @@ global.rRaid = function () {
     ctx.textAlign = "center";
     const secs = raidTimer / 25;
     const minutes = Math.floor(secs / 60); let seconds = `${Math.floor(secs) % 60}`;
-    if (seconds.length === 1) seconds = `0${seconds}`;
+    if (seconds.length == 1) seconds = `0${seconds}`;
     ctx.font = "16px ShareTech";
 
     if (raidTimer >= 0 && raidTimer < 15000) {
@@ -1166,7 +1166,7 @@ global.rBullets = function () {
         let img = Img.redbullet;
         const rendX = selfo.x - px + w / 2 + scrx;
         const rendY = selfo.y - py + h / 2 + scry;
-        if (selfo.wepnID === 28) {
+        if (selfo.wepnID == 28) {
             ctx.save();
             ctx.globalAlpha = 0.1;
             ctx.fillStyle = "white";
@@ -1184,9 +1184,9 @@ global.rBullets = function () {
             if (selfo.tick > 750) delete bullets[i];
             continue;
         }
-        if (selfo.color === "blue") img = Img.bluebullet;
-        if (selfo.color === "green") img = Img.greenbullet;
-        if (selfo.wepnID === 1 || selfo.wepnID === 23) img = Img.bigBullet;
+        if (selfo.color == "blue") img = Img.bluebullet;
+        if (selfo.color == "green") img = Img.greenbullet;
+        if (selfo.wepnID == 1 || selfo.wepnID == 23) img = Img.bigBullet;
         const pw = img.width;
         const ph = img.height;
         ctx.save();
@@ -1201,15 +1201,15 @@ global.rMissiles = function () {
         // for (let selfo in missilesInfo) {
         const selfo = missilesInfo[i];
         let img = Img.missile;
-        if (selfo.wepnID === 10 && (selfo.color === "red" || selfo.color === "green")) {
+        if (selfo.wepnID == 10 && (selfo.color == "red" || selfo.color == "green")) {
             img = Img.alienMissile;
-        } else if (selfo.wepnID === 11 || (selfo.weaponID === 13 && selfo.color === "blue")) {
+        } else if (selfo.wepnID == 11 || (selfo.weaponID == 13 && selfo.color == "blue")) {
             img = Img.heavyMissile;
-        } else if (selfo.weaponID === 13) { // && (selfo.color === "red" || selfo.color === "green") FOR SOME REASON THE TEAM THINGY NEVER WORKS
+        } else if (selfo.weaponID == 13) { // && (selfo.color == "red" || selfo.color == "green") FOR SOME REASON THE TEAM THINGY NEVER WORKS
             img = Img.alienMissileSwarm;
-        } else if (selfo.wepnID === 12) {
+        } else if (selfo.wepnID == 12) {
             img = Img.empMissile;
-        } else if (selfo.wepnID === 14) {
+        } else if (selfo.wepnID == 14) {
             img = Img.torpedo;
         }
         const pw = img.width;
@@ -1227,7 +1227,7 @@ global.rOrbs = function () {
     for (const i in orbsInfo) {
         const selfo = orbsInfo[i];
         let img = Img.energyDisk;
-        if (selfo.wepnID === 42) {
+        if (selfo.wepnID == 42) {
             img = Img.photonOrb;
         }
         const pw = img.width;
@@ -1249,19 +1249,19 @@ global.rMines = function () {
         const ph = img.height;
         const rendX = selfo.x - px + w / 2 + scrx;
         const rendY = selfo.y - py + h / 2 + scry;
-        if (selfo.wepnID === 16) {
+        if (selfo.wepnID == 16) {
             img = Img.laserMine;
-        } else if (selfo.wepnID === 17) {
+        } else if (selfo.wepnID == 17) {
             img = Img.empMine;
-        } else if (selfo.wepnID === 33) {
+        } else if (selfo.wepnID == 33) {
             img = Img.grenade;
-        } else if (selfo.wepnID === 43) {
+        } else if (selfo.wepnID == 43) {
             img = Img.pulseMine;
-        } else if (selfo.wepnID === 44) {
+        } else if (selfo.wepnID == 44) {
             img = Img.campfire;
-        } else if (selfo.wepnID === 48) {
+        } else if (selfo.wepnID == 48) {
             img = Img.magneticMine;
-        } else if (selfo.wepnID === 32) {
+        } else if (selfo.wepnID == 32) {
             ctx.save();
             ctx.globalAlpha = 0.1;
             ctx.fillStyle = "white";
@@ -1293,11 +1293,11 @@ global.rBeams = function () {
     ctx.lineWidth = 6;
     for (const i in beamsInfo) {
         const selfo = beamsInfo[i];
-        if (selfo.wepnID === 7) ctx.strokeStyle = "mediumpurple";
-        else if (selfo.wepnID === 9) ctx.strokeStyle = "lime";
-        else if (selfo.wepnID === 24) ctx.strokeStyle = "yellow";
-        else if (selfo.wepnID === 45) ctx.strokeStyle = "cyan";
-        else if (selfo.wepnID === 33 || selfo.wepnID === 26 || selfo.wepnID === 30) ctx.strokeStyle = "#d0c090";
+        if (selfo.wepnID == 7) ctx.strokeStyle = "mediumpurple";
+        else if (selfo.wepnID == 9) ctx.strokeStyle = "lime";
+        else if (selfo.wepnID == 24) ctx.strokeStyle = "yellow";
+        else if (selfo.wepnID == 45) ctx.strokeStyle = "cyan";
+        else if (selfo.wepnID == 33 || selfo.wepnID == 26 || selfo.wepnID == 30) ctx.strokeStyle = "#d0c090";
         else ctx.strokeStyle = "red";
         const bx = selfo.bx - px + w / 2 + scrx;
         const by = selfo.by - py + h / 2 + scry;
@@ -1317,7 +1317,7 @@ global.rBlasts = function () {
     ctx.strokeStyle = "gold";
     for (const i in blastsInfo) {
         const selfo = blastsInfo[i];
-        if (selfo.wepnID === 25) {
+        if (selfo.wepnID == 25) {
             ctx.strokeStyle = "white";
         }
         const bx = selfo.bx - px + w / 2 + scrx;
@@ -1338,7 +1338,7 @@ global.rAsteroids = function () {
     for (let selfo in astsInfo) {
         selfo = astsInfo[selfo];
 
-        const img = (selfo.metal === 0 ? Img.iron : (selfo.metal === 3 ? Img.platinum : (selfo.metal === 1 ? Img.silver : Img.copper)));
+        const img = (selfo.metal == 0 ? Img.iron : (selfo.metal == 3 ? Img.platinum : (selfo.metal == 1 ? Img.silver : Img.copper)));
         const rendX = selfo.x - px + w / 2 + scrx;
         const rendY = selfo.y - py + h / 2 + scry;
         const d = new Date();
@@ -1354,7 +1354,7 @@ global.rAsteroids = function () {
         ctx.restore();
 
         if (selfo.color !== pc) { // update nearest enemy for pointer
-            if (nearA === 0 || square(selfo.x - px) + square(selfo.y - py) < square(nearA.x - px) + square(nearA.y - py)) {
+            if (nearA == 0 || square(selfo.x - px) + square(selfo.y - py) < square(nearA.x - px) + square(nearA.y - py)) {
                 nearA = selfo;
             }
         }
@@ -1362,7 +1362,7 @@ global.rAsteroids = function () {
     rAstPointer(nearA);
 };
 global.rPlanets = function () {
-    if (planets === 0) return;
+    if (planets == 0) return;
     const selfo = planets;
     const rendX = (selfo.x - px + scrx) / 4 + w / 2;
     const rendY = (selfo.y - py + scry) / 4 + h / 2;
@@ -1402,7 +1402,7 @@ global.rPlanets = function () {
 global.rPacks = function () {
     for (let selfo in packsInfo) {
         selfo = packsInfo[selfo];
-        const img = selfo.type === 0 ? Img.pack : (selfo.type === 1 ? Img.bonus : (selfo.type === 2 ? Img.life : Img.ammo));
+        const img = selfo.type == 0 ? Img.pack : (selfo.type == 1 ? Img.bonus : (selfo.type == 2 ? Img.life : Img.ammo));
         const rendX = selfo.x - px + w / 2 + scrx;
         const rendY = selfo.y - py + h / 2 + scry;
         const d = new Date();
@@ -1448,7 +1448,7 @@ global.rPlayers = function () {
 
         const pw = img.width;
         const ph = img.height;
-        if (pw === 0 || ph === 0) return;
+        if (pw == 0 || ph == 0) return;
         const rendX = selfo.x - px + w / 2 + scrx;
         const rendY = selfo.y - py + h / 2 + scry;
 
@@ -1552,7 +1552,7 @@ global.rBases = function () {
         const rendY = basesInfo.y - py + h / 2 + scry;
         if (basesInfo.color !== pc) currAlert = translate("Enemy Base Nearby!");
 
-        if (basesInfo.baseType === DEADBASE || basesInfo.baseType === LIVEBASE) {
+        if (basesInfo.baseType == DEADBASE || basesInfo.baseType == LIVEBASE) {
             ctx.save();
             ctx.translate(rendX, rendY);
             ctx.rotate(tick / 1000 + Math.PI / 2);
@@ -1561,7 +1561,7 @@ global.rBases = function () {
             ctx.restore();
             ctx.textAlign = "center";
             ctx.fillStyle = "lime";
-            if (experience < 64 && basesInfo.color === pc && square(px - basesInfo.x) + square(py - basesInfo.y) < square(512)) {
+            if (experience < 64 && basesInfo.color == pc && square(px - basesInfo.x) + square(py - basesInfo.y) < square(512)) {
                 ctx.font = `${2.5 * sinLow(tick / 8) + 15}px ShareTech`;
                 write(ctx, translate("X TO DOCK WITH BASE"), rendX, rendY - 96);
                 ctx.font = "14px ShareTech";
@@ -1576,7 +1576,7 @@ global.rBases = function () {
 
         if (basesInfo.baseType !== DEADBASE) {
             let timage = 0;
-            if (basesInfo.baseType === SENTRY) timage = colorSelect(basesInfo.color, Img.rsentry, Img.bsentry, Img.gsentry);
+            if (basesInfo.baseType == SENTRY) timage = colorSelect(basesInfo.color, Img.rsentry, Img.bsentry, Img.gsentry);
             else timage = colorSelect(basesInfo.color, Img.rt, Img.bt, Img.gt);
             pw = timage.width; // render turrets
             ph = timage.height;
