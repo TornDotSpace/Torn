@@ -24,6 +24,18 @@
   ],
   "author": "The Torn.Space Team",
   "license": "AGPL v3.0",
+  "dependencies": {
+    "bad-words": "^3.0.4",
+    "cors": "^2.8.5",
+    "discord.js": "^12.5.3",
+    "express": "^4.17.1",
+    "howler": "^2.2.1",
+    "mongodb": "^3.6.6",
+    "node-fetch": "^2.6.1",
+    "socket.io": "^4.0.1",
+    "socket.io-client": "^4.0.1",
+    "socket.io-msgpack-parser": "^3.0.1"
+  },
   "devDependencies": {
     "@babel/core": "^7.13.15",
     "@babel/eslint-parser": "^7.13.14",
@@ -47,17 +59,5 @@
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"
-  },
-  "dependencies": {
-    "bad-words": "^3.0.4",
-    "cors": "^2.8.5",
-    "discord.js": "^12.5.3",
-    "express": "^4.17.1",
-    "howler": "^2.2.1",
-    "mongodb": "^3.6.6",
-    "node-fetch": "^2.6.1",
-    "socket.io": "^4.0.1",
-    "socket.io-client": "^4.0.1",
-    "socket.io-msgpack-parser": "^3.0.1"
   }
 }
