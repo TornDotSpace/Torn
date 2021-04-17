@@ -28,12 +28,12 @@ myPlayerCount = 0; // cache the number to not excessively do discord calls
 
 global.setDiscordActivity = function () {
     if (myPlayerCount === playerCount) return;
-    client.user.setActivity(`torn.space with ${  playerCount  } players`);
+    client.user.setActivity(`torn.space with ${playerCount} players`);
     myPlayerCount = playerCount;
 };
 
 global.detectSpam = function (user, msg) {
-    client.channels.cache.get("766664211581239326").send(`${user  }: ${  msg}`);
+    client.channels.cache.get("766664211581239326").send(`${user}: ${msg}`);
 };
 
 global.autoMuteNote = function (msg) {
@@ -50,15 +50,15 @@ client.on("message", async (message) => {
 
     if (args[0] === "/modmute") {
         returnmsg = modmute(message.content.trim());
-        client.channels.cache.get("766664211581239326").send(`${returnmsg  } Please say your reason for muting in chat now.`);
+        client.channels.cache.get("766664211581239326").send(`${returnmsg} Please say your reason for muting in chat now.`);
     } else if (args[0] === "/ipmute") {
         returnmsg = ipmute(message.content.trim());
-        client.channels.cache.get("766664211581239326").send(`${returnmsg  } Please say your reason for muting in chat now. REMINDER: ONLY USE IP-MUTE WHEN SOMEONE EVADES NORMAL MUTE. IP MUTE SHOULD NOT BE YOUR FIRST RESPONSE.`);
+        client.channels.cache.get("766664211581239326").send(`${returnmsg} Please say your reason for muting in chat now. REMINDER: ONLY USE IP-MUTE WHEN SOMEONE EVADES NORMAL MUTE. IP MUTE SHOULD NOT BE YOUR FIRST RESPONSE.`);
     } else if (args[0] === "/mute") {
         client.channels.cache.get("766664211581239326").send("You must either use /modmute or /ipmute!");
     } else if (args[0] === "/broadcast") {
         if (args.length == 0) return;
-        chatAll(`~\`#f66~\`       BROADCAST: ~\`lime~\`${  message.content.trim().substring(11)}`);
+        chatAll(`~\`#f66~\`       BROADCAST: ~\`lime~\`${message.content.trim().substring(11)}`);
         client.channels.cache.get("766664211581239326").send("Message broadcasted.");
     } else if (args[0] === "/reboot") {
         if (!message.member.roles.cache.some((r) => ["Developer"].includes(r.name))) { return message.reply("Sorry, you don't have permissions to use this!"); }
@@ -70,10 +70,7 @@ client.on("message", async (message) => {
     }
 });
 
-client.on("error", (error)
-=> {
-    console.err(error);
-});
+client.on("error", (error) => console.err(error));
 
 try {
     client.login(config.token);

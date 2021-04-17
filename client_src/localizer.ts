@@ -14,102 +14,99 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-const eng = 'english.json';
-const esp = 'translations/spanish.json';
-const tki = 'translations/tokipona.json';
-const chn = 'translations/chinese.json';
+const eng = "english.json";
+const esp = "translations/spanish.json";
+const tki = "translations/tokipona.json";
+const chn = "translations/chinese.json";
 
 let languagejson = null;
-let mEng = require('../client/translate.json');
+let mEng = require("../client/translate.json");
 
-export let jsn = require('../client/weapons.json');
+export let jsn = require("../client/weapons.json");
 
 let languageNumber = 0;
 
 let splash = "";
 
-export function getSplash()
-{
-  return splash;
+export const getSplash = ()
+=> splash;
+
+export function setLang (name) {
+    document.cookie = ("lang=" + name);
+    loadLang(name);
 }
 
-export function setLang(name) {
-  document.cookie = ('lang=' + name);
-  loadLang(name);
-};
+function load (lang) {
+    const request = new XMLHttpRequest();
+    request.open("GET", lang, false);
 
-function load(lang) {
-  const request = new XMLHttpRequest();
-  request.open('GET', lang, false);
+    let data = "";
+    request.onload = function (e) {
+        if (request.readyState === 4) {
+            data = request.responseText;
+        }
+    };
 
-  let data = '';
-  request.onload = function(e) {
-    if (request.readyState === 4) {
-      data = request.responseText;
+    request.send(null);
+    return JSON.parse(data);
+}
+
+function loadLang (name) {
+    let assigned = null;
+
+    if (location.href.includes("eng") || name === "eng") { assigned = languagejson = eng; languageNumber = 0; }
+    if (location.href.includes("esp") || name === "esp") { assigned = languagejson = esp; languageNumber = 1; }
+    if (location.href.includes("tki") || name === "tki") { assigned = languagejson = tki; languageNumber = 2; }
+    if (location.href.includes("chn") || name === "chn") { assigned = languagejson = chn; languageNumber = 3; }
+
+    if (!assigned) {
+        let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+        if (lang === "esp") {
+            languagejson = esp;
+            languageNumber = 1;
+        } else if (lang === "eng") {
+            languagejson = eng;
+        } else if (lang === "tki") {
+            languagejson = tki;
+            languageNumber = 2;
+        } else if (lang === "chn") {
+            languagejson = chn;
+            languageNumber = 3;
+        }
     }
-  };
 
-  request.send(null);
-  return JSON.parse(data);
-}
-
-function loadLang(name) {
-  let assigned = null;
-  
-  if (location.href.includes("eng") || name === "eng") {assigned = languagejson = eng; languageNumber = 0;}
-  if (location.href.includes("esp") || name === "esp") {assigned = languagejson = esp; languageNumber = 1;}
-  if (location.href.includes("tki") || name === "tki") {assigned = languagejson = tki; languageNumber = 2;}
-  if (location.href.includes("chn") || name === "chn") {assigned = languagejson = chn; languageNumber = 3;}
-
-  if (!assigned) {
-      let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-      if (lang === "esp") {
-        languagejson = esp;
-        languageNumber = 1;
-      } else if (lang === "eng") {
+    if (languagejson == null) {
         languagejson = eng;
-      } else if (lang === "tki") {
-        languagejson = tki;
-        languageNumber = 2;
-      } else if (lang === "chn") {
-        languagejson = chn;
-        languageNumber = 3;
-      }
-  }
+    }
 
-  if (languagejson == null) {
-      languagejson = eng;
-  }
+    languagejson = load(languagejson);
 
-  languagejson = load(languagejson);
+    jsn.achNames = languagejson.achNames;
+    jsn.splashes = languagejson.splashes;
 
-  jsn.achNames = languagejson.achNames;
-  jsn.splashes = languagejson.splashes;
+    jsn.lore = languagejson.lore;
+    for (let i = 0; i < Object.keys(jsn.weapons).length; i++) {
+        jsn.weapons[i].name = languagejson.weapons[i].name;
+        jsn.weapons[i].desc = languagejson.weapons[i].desc;
+    }
+    for (let i = 0; i < Object.keys(jsn.ships).length; i++) {
+        jsn.ships[i].nameA = languagejson.ships[i].nameA;
+        jsn.ships[i].nameH = languagejson.ships[i].nameH;
+        jsn.ships[i].nameC = languagejson.ships[i].nameC;
+        jsn.ships[i].desc = languagejson.ships[i].desc;
+    }
 
-  jsn.lore = languagejson.lore;
-  for (let i = 0; i < Object.keys(jsn.weapons).length; i++) {
-    jsn.weapons[i].name = languagejson.weapons[i].name;
-    jsn.weapons[i].desc = languagejson.weapons[i].desc;
-  }
-  for (let i = 0; i < Object.keys(jsn.ships).length; i++) {
-    jsn.ships[i].nameA = languagejson.ships[i].nameA;
-    jsn.ships[i].nameH = languagejson.ships[i].nameH;
-    jsn.ships[i].nameC = languagejson.ships[i].nameC;
-    jsn.ships[i].desc = languagejson.ships[i].desc;
-  }
-
-  splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
-  if (!splash.endsWith('!') && !splash.endsWith('?')) splash += '...';
-};
+    splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
+    if (!splash.endsWith("!") && !splash.endsWith("?")) splash += "...";
+}
 loadLang(null);
 
-export function translate(english, arr=undefined) {
-  if (typeof mEng[english] === "undefined")
-  {return "TRANSLATION ERROR";}
-  let translated = (languageNumber == 0)? english : mEng[english][languageNumber-1];
-  if (arr !== undefined)
-  {while (arr.length > 0)
-  {translated = translated.replace("#", arr.shift());}}
-  return translated;
+export function translate (english, arr = undefined) {
+    if (typeof mEng[english] === "undefined") { return "TRANSLATION ERROR"; }
+    let translated = (languageNumber == 0) ? english : mEng[english][languageNumber - 1];
+    if (arr !== undefined) {
+while (arr.length > 0) { translated = translated.replace("#", arr.shift()); }
+}
+    return translated;
 }

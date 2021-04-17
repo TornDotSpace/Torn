@@ -58,6 +58,11 @@
             "singleReturnOnly": true,
             "classPropertiesAllowed": false
         }],
-        "no-sequences":0
+        // These can be removed when someone has time to fix them... but for now they're just not worth it
+        "no-sequences":0,
+        "no-mixed-spaces-and-tabs":0,
+        "no-tabs":0,
+        "no-global-assign":0,
+        "no-func-assign":0
     }
 }

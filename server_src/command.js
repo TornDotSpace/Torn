@@ -218,7 +218,7 @@ cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the pla
     ply.socket.emit("chat", { msg: `Unmuted ${name}.` });
 });
 
-const valid_email_regex = new RegExp("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$");
+const valid_email_regex = /^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$/;
 cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", REGISTERED, (player, msg) => {
     const email = msg.substring(7);
     if (!valid_email_regex.test(email)) {
@@ -399,6 +399,7 @@ cmds["/saveturrets"] = new Command("/saveTurrets - Runs a manual save on the ser
 if (Config.getValue("debug", false)) {
     cmds["/eval"] = new Command("/eval .... - Evaluates arbitrary JS on the server", ADMINPLUS, (player, msg) => {
         try {
+            // eslint-disable-next-line no-eval
             player.socket.emit("chat", { msg: eval(msg.substring(5)) });
         } catch (e) {
             player.socket.emit("chat", { msg: `An error occurred: ${e}` });
