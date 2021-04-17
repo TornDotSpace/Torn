@@ -14,7 +14,7 @@ module.exports = class Planet {
 
     tick () {
         this.cooldown--;
-        if (tick % 12 == 6 && this.owner !== 0) {
+        if (tick % 12 === 6 && this.owner !== 0) {
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
                 if (this.owner === p.name) p.money = p.money + 1 + Math.floor(Math.random() * 5); // give money to owner

@@ -263,14 +263,14 @@ class LoginOverlay extends Component {
 		let user = this.state.user;
 		let pass = this.state.pass;
 
-		if (user == "" || pass == "") {
+		if (user === "" || pass === "") {
 			return;
 		}
 
 		if (typeof ReactRoot.socket !== "undefined") {
 			let playcookie = await send_api("/login/", user + "%" + pass);
 
-			if (playcookie.status == 403) {
+			if (playcookie.status === 403) {
 				credentialState = 1;
 				loginInProgress = false;
 				return;

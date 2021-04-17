@@ -76,7 +76,7 @@ global.saveTurrets = function () {
     for (let i = 0; i < mapSz; i++) {
         for (let j = 0; j < mapSz; j++) {
             const base = bases[i][j];
-            if (base !== 0 && (base.baseType == TURRET || base.baseType == SENTRY)) {
+            if (base !== 0 && (base.baseType === TURRET || base.baseType === SENTRY)) {
                 base.save();
             }
         }
@@ -244,7 +244,7 @@ function updateQuests () {
             if (i < 4) {
                 const dsxv = Math.floor(r2 * 100 % 1 * mapSz); const dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
                 const sxv = Math.floor(r2 * mapSz); const syv = Math.floor(r2 * 10 % 1 * mapSz);
-                if (dsxv == sxv && dsyv == syv) return;
+                if (dsxv === sxv && dsyv === syv) return;
                 nm = { type: "Delivery", metal: metals[Math.floor(r * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 20000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
             } else if (i < 7) nm = { type: "Mining", metal: metals[Math.floor(r * 4)], exp: 65000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * basesPerTeam) * 2], sy: thisMap[Math.floor(r2 * basesPerTeam) * 2 + 1] };
             else if (i < 9) nm = { type: "Base", 	exp: 500000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
@@ -451,7 +451,7 @@ function update () {
 
     for (let i = 0; i < mapSz; i++) {
         for (let j = 0; j < mapSz; j++) {
-            if (bases[i][j] == 0 && Math.random() < 0.000005) {
+            if (bases[i][j] === 0 && Math.random() < 0.000005) {
                 const r = Math.random();
                 const b = new Base(r, false, j, i, j < 3 ? "red" : (j < 6 ? "blue" : "green"), sectorWidth * Math.random(), sectorWidth * Math.random(), true);
                 bases[i][j] = b;
@@ -463,7 +463,7 @@ function update () {
         const player = dockers[i];
         if (player.dead) continue;
         if (player.testAfk()) continue;
-        if (tick % 30 == 0) player.checkMoneyAchievements();
+        if (tick % 30 === 0) player.checkMoneyAchievements();
         if (player.chatTimer > 0) player.chatTimer--;
         player.muteTimer--;
     }
@@ -599,7 +599,7 @@ function update () {
             planets[y][x].tick();
 
             // We only pulse these every 5 ticks
-            if (tick % 5 == 0) {
+            if (tick % 5 === 0) {
                 for (const i in packs[y][x]) {
                     const boon = packs[y][x][i];
                     let pack = packPack[y][x][i];
@@ -638,7 +638,7 @@ function update () {
                 beam.tick();
 
                 // Check for creation
-                if (pack == undefined) {
+                if (pack === undefined) {
                     // Store pack for joining clients & delta calculation
                     pack = beamPack[y][x][i] = { time: beam.time, wepnID: beam.wepnID, bx: beam.origin.x, by: beam.origin.y, ex: beam.enemy.x, ey: beam.enemy.y };
                     // Send create
@@ -929,7 +929,7 @@ function update () {
             for (const i in players[y][x]) {
                 const player = players[y][x][i];
                 if (player.isBot) continue;
-                if (tick % 12 == 0) { // LAG CONTROL
+                if (tick % 12 === 0) { // LAG CONTROL
                     player.socket.emit("online", { lag: lag });
                     player.socket.emit("you", { trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper });
                 }
@@ -946,21 +946,21 @@ function update () {
     for (const i in astCount) for (const j in astCount[i])sumAsts += astCount[i][j];
     if (sumAsts < 8 * mapSz * mapSz)spawnAsteroid();
 
-    if (tick % 12 == 0) // LAG CONTROL
+    if (tick % 12 === 0) // LAG CONTROL
     {
         for (const i in deads) {
             const player = deads[i];
             player.socket.emit("online", { lag: lag });
         }
     }
-    if (tick % 12 == 0) { // LAG CONTROL
+    if (tick % 12 === 0) { // LAG CONTROL
         for (const i in dockers) {
             const player = dockers[i];
             player.socket.emit("you", { trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper });
             player.socket.emit("quests", { quests: teamQuests[player.color] });
         }
     }
-    if (raidTimer-- % 4000 == 0) sendRaidData();
+    if (raidTimer-- % 4000 === 0) sendRaidData();
     if (raidTimer <= 0) endRaid();
 
     d = new Date();

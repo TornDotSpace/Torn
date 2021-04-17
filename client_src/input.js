@@ -17,18 +17,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // input
 document.onkeydown = function (event) {
     // Grab enter on homepage
-    if (!login && !lore && event.keyCode == 13) {
+    if (!login && !lore && event.keyCode === 13) {
         document.getElementById("loginButton").click();
         return;
     }
-    if (!login || tab == -1) return;
+    if (!login || tab === -1) return;
     if (event.keyCode === 16) {
         if (keys[0] !== true) socket.emit("key", { inputId: "shift", state: true });
         keys[0] = true;
         return;
     }
     if (typing) {
-        if (event.keyCode == 13) {
+        if (event.keyCode === 13) {
             ReactRoot.unfocusChat();
             typing = false;
         }
@@ -36,30 +36,30 @@ document.onkeydown = function (event) {
     }
     if (login && !typing && event.keyCode === 80 && !docked) {
         autopilot ^= true;
-        if (bigNotes[0] == -1)/* to prevent spam */
+        if (bigNotes[0] === -1)/* to prevent spam */
         {
             addBigNote([256, `Autopilot ${autopilot ? "E" : "Dise"}ngaged!`, "Press P to toggle.", ""]);
         }
         return;
     }
-    if (event.keyCode == 13) {
+    if (event.keyCode === 13) {
         ReactRoot.focusChat();
         typing = true;
     } else if (autopilot) {
 
-    } else if (event.keyCode == 78 && docked && tab == 8) { // n
+    } else if (event.keyCode === 78 && docked && tab === 8) { // n
         confirmer = -1;
         tab = 0;
-    } else if (event.keyCode == 89 && docked && tab == 8) { // y
+    } else if (event.keyCode === 89 && docked && tab === 8) { // y
         socket.emit("sellW", { slot: confirmer });
         confirmer = -1;
         tab = 0;
-    } else if (event.keyCode == 66 && docked && tab == 7 && seller !== 0 && actuallyBuying) { // b
+    } else if (event.keyCode === 66 && docked && tab === 7 && seller !== 0 && actuallyBuying) { // b
         socket.emit("buyW", { slot: scroll, weapon: seller - 20 });
         tab = 0;
     } else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] !== -2) {
         socket.emit("equip", { scroll: event.keyCode - 49 });
-    } else if (event.keyCode == 48 && equipped[event.keyCode - 49] !== -2) {
+    } else if (event.keyCode === 48 && equipped[event.keyCode - 49] !== -2) {
         socket.emit("equip", { scroll: 9 });
     } else if (event.keyCode === 83 || event.keyCode === 40) { // s
         if (keys[1] !== true) socket.emit("key", { inputId: "s", state: true });
@@ -105,7 +105,7 @@ document.onkeydown = function (event) {
 };
 
 document.onkeyup = function (event) {
-    if (!login || tab == -1 || autopilot) {
+    if (!login || tab === -1 || autopilot) {
         return;
     }
     if (event.keyCode === 83 || event.keyCode === 40) { // s
@@ -130,7 +130,7 @@ document.onkeyup = function (event) {
     } else if (event.keyCode === 88 || event.keyCode === 27) { // x
         keys[8] = false;
     } else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) { // c/v
-        if (keys[9] == true) socket.emit("key", { inputId: "c", state: false });
+        if (keys[9] === true) socket.emit("key", { inputId: "c", state: false });
         keys[9] = false;
     } else if (event.keyCode === 16) {
         keys[0] = false;
@@ -144,12 +144,12 @@ document.addEventListener("mousemove", (evt) => {
     const mousePos = getMousePos(canvas, evt);
     mx = mousePos.x;
     my = mousePos.y;
-    if (mb == 1 && mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
+    if (mb === 1 && mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
     if (mx > w - 32 - 20 - 128 && my > h - 52) volTransparency = 1;
     const preSeller = seller;
 
     // Map movement
-    if (mb == 1 && mx > 8 && mx < 216 && my < 216 && my > 8) {
+    if (mb === 1 && mx > 8 && mx < 216 && my < 216 && my > 8) {
         const mxn = mx - omx;
         const myn = my - omy;
         roll(myn / 4);
@@ -169,27 +169,27 @@ document.addEventListener("mousemove", (evt) => {
     }
 
     // Shop
-    else if (docked && tab == 0) {
+    else if (docked && tab === 0) {
         shopOnHover();
     }
 
     // Quests
-    else if (docked && tab == 1) {
+    else if (docked && tab === 1) {
         questsOnHover(preSeller);
     }
 
     // Stats
-    else if (docked && tab == 2) {
+    else if (docked && tab === 2) {
         statsOnHover();
     }
 
     // Buy weapon
-    else if (docked && tab == 7) {
+    else if (docked && tab === 7) {
         weaponStoreOnHover();
     }
 
     // More
-    else if (docked && tab == 4) {
+    else if (docked && tab === 4) {
         moreOnHover();
     } else seller = 0;
 
@@ -213,24 +213,24 @@ document.addEventListener("mousedown", (evt) => {
         ReactRoot.focusChat();
     } else typing = false;
     const i = seller;
-    if (i == 0 && !mouseDown) {
+    if (i === 0 && !mouseDown) {
         mouseDown = true;
         if ((mx < w - 32 - 20 - 128 - 16 || my < h - 92) && (mx > 512 + 32 || my < h - 216) && !(mx < 256 && my < 450)) { // not in vol section or chat section or map
             socket.emit("key", { inputId: " ", state: true });
         }
         if (equipped[scroll] < 0) badWeapon = 20;
     }
-    /* if(i == 350)
+    /* if(i === 350)
     socket.emit('cancelquest', {}); */
 
-    if (i == 601) {
+    if (i === 601) {
         tab = 7;
         actuallyBuying = false;
     }
     if (docked) {
         baseMenuOnClick(i);
     }
-    if (i == 900) socket.emit("jettison", {});
+    if (i === 900) socket.emit("jettison", {});
     if (i >= 800 && i < 803) {
         chatMenuButtonClick(i);
     }
@@ -265,7 +265,7 @@ canvas.addEventListener("wheel", () => {
     }
 
     // Weapon scrolling
-    if ((equipped[scroll] > 0 && (docked || scroll - d < 0 || scroll - d >= equipped.length || equipped[scroll - d] < -1)) || equipped[scroll - d] == -2) {
+    if ((equipped[scroll] > 0 && (docked || scroll - d < 0 || scroll - d >= equipped.length || equipped[scroll - d] < -1)) || equipped[scroll - d] === -2) {
         return;
     }
     socket.emit("equip", { scroll: (scroll - d) });

@@ -68,7 +68,7 @@ global.calculateInterceptionAngle = function (ax, ay, vx, vy, bx, by, s) { // fo
     const h1 = vx * vx + vy * vy - s * s;
     const h2 = ox * vx + oy * vy;
     let t;
-    if (h1 == 0) { // problem collapses into a simple linear equation
+    if (h1 === 0) { // problem collapses into a simple linear equation
         t = -(ox * ox + oy * oy) / (2 * h2);
     } else { // solve the quadratic equation
         const minusPHalf = -h2 / h1;

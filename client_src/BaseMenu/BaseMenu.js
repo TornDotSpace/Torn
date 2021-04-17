@@ -70,7 +70,7 @@ global.rBaseGui = function () {
     baseMenuCtx.textAlign = "center";
     for (let i = 0; i < 5; i++) // Fill Tabs In
     {
-        infoBox(baseMenuCtx, i * 768 / 5 + 8, 4, 768 / 5 - 8, 32, (tab == i) ? "darkgray" : "black", "white");
+        infoBox(baseMenuCtx, i * 768 / 5 + 8, 4, 768 / 5 - 8, 32, (tab === i) ? "darkgray" : "black", "white");
     }
 
     baseMenuCtx.globalAlpha = 1;
@@ -100,7 +100,7 @@ global.rInBase = function () {
     rStars();
     pasteChat();
     rBaseGui();
-    if (tab != -1) ReactRoot.turnOffRegister("LoginOverlay");
+    if (tab !== -1) ReactRoot.turnOffRegister("LoginOverlay");
     switch (tab) {
         case 0:
             rShop();
@@ -129,9 +129,9 @@ global.rInBase = function () {
     if (savedNote-- > 0 && !guest) {
         rSavedNote();
     }
-    if (tab == -1) rCreds();
-    if (quest != 0) rCurrQuest();
-    if (lb != 0) rLB();
+    if (tab === -1) rCreds();
+    if (quest !== 0) rCurrQuest();
+    if (lb !== 0) rLB();
     rRaid();
     updateBullets();
     rTut();
@@ -146,16 +146,16 @@ function mergeBaseCanvas () {
 }
 
 global.baseMenuOnClick = function (buttonID) {
-    if (tab == 0) {
+    if (tab === 0) {
         shopOnClick(buttonID);
     }
-    if (tab == 1) {
+    if (tab === 1) {
         questsOnClick(buttonID);
     }
-    if (tab == 2) {
+    if (tab === 2) {
         statsOnClick(buttonID);
     }
-    if (tab == 4) {
+    if (tab === 4) {
         moreOnClick(buttonID);
     }
 
