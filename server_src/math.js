@@ -21,17 +21,12 @@ global.pdist = function (x, sx, sy) { // used in blast collision algorithm
     return (Math.cbrt(Math.abs(Math.tan(x))) % i2) * 3500 * i2 + 800 * i1 + 600;
 };
 
-global.squaredDist = function (a, b) { // distance between two points squared. i.e. c^2
-    return Math.pow(a.y - b.y, 2) + Math.pow(a.x - b.x, 2);
-};
+global.squaredDist = (a, b) => // distance between two points squared. i.e. c^2
+    Math.pow(a.y - b.y, 2) + Math.pow(a.x - b.x, 2);
 
-global.square = function (x) {
-    return Math.pow(x, 2);
-};
+global.square = (x) => Math.pow(x, 2);
 
-global.secs = function (x) {
-    return 25 * x;
-};
+global.secs = (x) => 25 * x;
 
 global.colorSelect = function (col, red, blue, green) {
     if (col === "red") return red;
@@ -93,18 +88,12 @@ global.calculateInterceptionAngle = function (ax, ay, vx, vy, bx, by, s) { // fo
     return Math.atan2(by - iy, bx - ix) + Math.PI;
 };
 
-global.angleBetween = function (a, b) { // delimited to [-pi,pi]
-    return Math.atan2(a.y - b.y, a.x - b.x);
-};
-global.squaredDist = function (a, b) { // distance between two points squared. i.e. c^2
-    return square(a.y - b.y) + square(a.x - b.x);
-};
-global.hypot2 = function (a, b, c, d) {
-    return square(a - b) + square(c - d);
-};
-global.expToLife = function (exp, guest) {
-    return Math.floor(guest ? 0 : 800000 * Math.atan(exp / 600000.0)) + 500;
-};
+global.angleBetween = (a, b) => // delimited to [-pi,pi]
+    Math.atan2(a.y - b.y, a.x - b.x);
+global.squaredDist = (a, b) => // distance between two points squared. i.e. c^2
+    square(a.y - b.y) + square(a.x - b.x);
+global.hypot2 = (a, b, c, d) => square(a - b) + square(c - d);
+global.expToLife = (exp, guest) => Math.floor(guest ? 0 : 800000 * Math.atan(exp / 600000.0)) + 500;
 global.mod = function (n, m) { // used in findBisector
     const remain = n % m;
     return Math.floor(remain >= 0 ? remain : remain + m);
@@ -115,18 +104,12 @@ global.techPriceForDowngrade = function (x, isVip) { // money required to upgrad
     return Math.max(techEnergy(lastTechLevel(x)) - techEnergy(x), -300000000);
 };
 
-global.techPrice = function (x) { // money required to upgrade Tech
-    return techEnergy(nextTechLevel(x)) - techEnergy(x);
-};
+global.techPrice = (x) => // money required to upgrade Tech
+    techEnergy(nextTechLevel(x)) - techEnergy(x);
 
-global.techEnergy = function (x) { // Net price of some tech level
-    return Math.round(Math.pow(1024, x) / 1000) * 500;
-};
+global.techEnergy = (x) => // Net price of some tech level
+    Math.round(Math.pow(1024, x) / 1000) * 500;
 
-global.nextTechLevel = function (x) {
-    return Math.floor(x * 8.0 + 1) / 8.0;
-};
+global.nextTechLevel = (x) => Math.floor(x * 8.0 + 1) / 8.0;
 
-global.lastTechLevel = function (x) {
-    return Math.floor(x * 8.0 - 0.001) / 8.0;
-};
+global.lastTechLevel = (x) => Math.floor(x * 8.0 - 0.001) / 8.0;

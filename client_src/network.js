@@ -23,13 +23,11 @@ global.GAMESERVER_URL = TORN_GAMESERVER_URL;
 console.log(`:TornNetworkRepository: Setting API_URL to ${API_URL}`);
 console.log(`:TornNetworkRepository: Setting GAMESERVER_URL to ${GAMESERVER_URL}`);
 
-global.send_api = async function (endpoint, data) {
-    return await fetch(API_URL + endpoint, {
-        method: "post",
-        body: data,
-        headers: { "Content-Type": "x-www-form-urlencoded" }
-    });
-};
+global.send_api = async (endpoint, data) => await fetch(API_URL + endpoint, {
+    method: "post",
+    body: data,
+    headers: { "Content-Type": "x-www-form-urlencoded" }
+});
 
 global.socket = io(GAMESERVER_URL,
     {

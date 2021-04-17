@@ -19,7 +19,8 @@
         "sourceType": "module"
     },
     "plugins": [
-        "react"
+        "react",
+        "prefer-arrow"
     ],
     "rules": {
         "func-call-spacing": 1,
@@ -51,6 +52,11 @@
         "no-return-assign": 0,
         "eol-last": 1,
         "arrow-body-style": ["warn", "as-needed"],
-        "func-style": 1
+        "func-style": 1,
+        "prefer-arrow/prefer-arrow-functions": ["warn", {
+            "disallowPrototype": true,
+            "singleReturnOnly": true,
+            "classPropertiesAllowed": false
+        }]
     }
 }
