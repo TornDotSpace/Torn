@@ -218,7 +218,8 @@ cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the pla
     ply.socket.emit("chat", { msg: `Unmuted ${name}.` });
 });
 
-const valid_email_regex = /^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$/;
+const valid_email_regex = new RegExp("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$");
+
 cmds["/email"] = new Command("/email <you@domain.tld> - Sets your email for password resets", REGISTERED, (player, msg) => {
     const email = msg.substring(7);
     if (!valid_email_regex.test(email)) {
