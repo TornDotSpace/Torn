@@ -1,9 +1,33 @@
-# Torn.Space, a somewhat popular online space MMO
+<h1 align="center">Torn.Space</h1>
+<h3 align="center">A somewhat popular online space MMO.</h3>
+<br>
+<p align="center">
+    <img src="https://img.shields.io/github/contributors/TornDotSpace/Torn?style=for-the-badge&color=ff1f44">
+    <img src="https://img.shields.io/github/last-commit/TornDotSpace/Torn?style=for-the-badge&color=ff1f44">
+    <img src="https://img.shields.io/github/languages/code-size/TornDotSpace/Torn?style=for-the-badge&color=ff1f44">
+</p>
 
-## How to start a server locally:
-1. Clone this repo, install node.js and npm if not already installed.
-2. Open a terminal in the top level folder- the one that contains "app.js". Type npm install in that folder. This will install all the required node.js packages.
-3. Run the server! In the top level folder, typing "./start_dev_server.sh". You should see a message that says "Server initialized successfully. Game log below."
-4. Navigate to "127.0.0.1:7301" in your browser and you should be able to play.
+## Prerequisites
+* Node.JS v14+
+* NPM v7
+* MongoDB
+* Python 3.x (with additional packages: aiohttp, aiosmtplib, aiohttp_cors, asyncio, discord_webhook, motor, pymongo, and bcrypt)
 
-## Happy spacewarring!
+## Local Development Setup
+* Navigate to the directory you wish to put the repository in.
+* Clone the repo.
+```sh
+git clone https://github.com/TornDotSpace/Torn
+```
+* Install Node.JS from [here](https://nodejs.org).
+* Update NPM to v7
+```sh
+npm i -g npm
+```
+* Run the shell script to start the server!
+```sh
+./start_dev_server.sh # UNIX
+./devServer-win.sh # Windows
+```
+* Navigate to `http://localhost:7301` in your browser, and you should be able to play.
+
