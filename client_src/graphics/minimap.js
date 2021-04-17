@@ -207,7 +207,6 @@ global.r3DMap = function() {
     qsx = hoverquest.sx;
     qsy = hoverquest.sy;
   }
-  console.log("a");
 
   for (let i = 0; i < mapSz; i++) {
     for (let j = 0; j < mapSz; j++) {

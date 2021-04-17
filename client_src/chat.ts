@@ -15,25 +15,21 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Socket } from "socket.io";
+
 
 // BEGIN TYPESCRIPT TRANSITION HACKS
 declare var translate: any;
-declare var socket: any;
+declare var socket: Socket;
 declare var clientmutes: any;
-declare var rChat: Function;
 declare var roundRect: Function;
 declare var seller: Number;
-declare var whichChatMenu: any;
 declare var ctx: any;
 declare var square: any;
 declare var brighten: any;
-declare var pasteChat: any;
 declare var h: any;
 declare var getPosition: any;
 declare var wepns: any;
-declare var preProcessChat: any;
-declare var serverMessagesFade: any;
-declare var chatMenuButtonClick: any;
 // END TYPESCRIPT TRANSITION HACKS
 
 const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
@@ -53,10 +49,9 @@ const chatctx = chatcanvas.getContext("2d", {alpha: true});
 const chatLength = 40;
 const serverChatLength = 5;
 let chatScroll = 0;
-global.whichChatMenu = 0;
+let whichChatMenu = 0;
 let preChatArr = {};
 let chati = 0;
-
 
 socket.on("chat", function(data) {
   // Optimization: Don't do expensive string manipulation if nobody is in the mute list
@@ -88,7 +83,7 @@ socket.on("unmute", function(data) {
   delete clientmutes[data.player];
 });
 
-global.rChat = function() {
+export function rChat() {
   chatcanvas.width = chatcanvas.width;
   chatctx.font = "14px ShareTech";
   chatctx.save();
@@ -145,9 +140,10 @@ global.rChat = function() {
 
   chatctx.restore();
 };
-global.pasteChat = function() {
+export function pasteChat() {
   ctx.drawImage(chatcanvas, 0, h-chatcanvas.height);
 };
+
 function onReceiveChat(data) {
   while (data.msg.includes(weaponCircumfix)) {
     const find1 = getPosition(data.msg, translateCircumfix, 1);
@@ -188,7 +184,7 @@ function onReceiveChat(data) {
 };
 
 
-global.preProcessChat = function() { // This is slow and buggy. We should rewrite it.
+function preProcessChat() { // This is slow and buggy. We should rewrite it.
   const chatList = messages[whichChatMenu];
   preChatArr = {};
   chati = 0;
@@ -219,7 +215,6 @@ function clearChat() {
   }
   for (let j = 0; j < serverChatLength; j++) {
     serverMessages[j] = "";
-    serverMessagesFade = 1;
   }
 }
 
@@ -228,7 +223,7 @@ clearChat();
 preProcessChat();
 
 
-global.chatMenuButtonClick = function(buttonID) {
+export function chatMenuButtonClick(buttonID) {
   socket.emit("toggleGlobal", {gc: buttonID-800});
   preProcessChat();
   rChat();

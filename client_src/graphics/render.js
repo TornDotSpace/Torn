@@ -20,6 +20,8 @@ global.DEADBASE = 1;
 global.TURRET = 2;
 global.SENTRY = 3;
 
+import {pasteChat} from "../chat.ts";
+
 global.render = function() {
   if (dead) {
     ctx.globalAlpha = .02;
