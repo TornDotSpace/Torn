@@ -19,54 +19,58 @@ const webpack = require("webpack");
 
 const git = require("git-revision-webpack-plugin");
 const gitRevisionPlugin = new git({
-  lightweightTags: true,
+    lightweightTags: true
 });
 
 module.exports = {
-  entry: ["./client_src/index.js"],
-  output: {
-    path: path.resolve("./", "client"),
-    filename: "client.js",
-  },
-  module: {
-    rules: [{
-      test: /\.tsx?$/,
-      use: [
-        {
-          loader: "ts-loader",
-        },
-      ],
-      exclude: /node_modules/,
+    entry: ["./client_src/index.js"],
+    output: {
+        path: path.resolve("./", "client"),
+        filename: "client.js"
     },
-    {
-      test: /\.jsx?$/,
-      use: [{
-        loader: "babel-loader",
-        options: {
-          presets: ["@babel/react", "@babel/preset-env"],
-          plugins: ["@babel/proposal-class-properties"],
-        },
-      }],
-      exclude: /node_modules/,
-    }],
-  },
-  resolve: {
-    extensions: ["*", ".js", ".tsx", ".ts", ".jsx"],
-  },
-  devServer: {
-    contentBase: "./client",
-    hot: true,
-  },
-  optimization: {
-    splitChunks: {
-      // chunks: "initial",
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                use: [
+                    {
+                        loader: "ts-loader"
+                    }
+                ],
+                exclude: /node_modules/
+            },
+            {
+                test: /\.jsx?$/,
+                use: [
+                    {
+                        loader: "babel-loader",
+                        options: {
+                            presets: ["@babel/react", "@babel/preset-env"],
+                            plugins: ["@babel/proposal-class-properties"]
+                        }
+                    }
+                ],
+                exclude: /node_modules/
+            }
+        ]
     },
-  },
-  plugins: [
+    resolve: {
+        extensions: ["*", ".js", ".tsx", ".ts", ".jsx"]
+    },
+    devServer: {
+        contentBase: "./client",
+        hot: true
+    },
+    optimization: {
+        splitChunks: {
+            // chunks: "initial",
+        }
+    },
+    plugins: [
 	    new webpack.DefinePlugin({
-      VERSION: JSON.stringify(gitRevisionPlugin.version()),
-      COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
-      BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
-    }),
-  ],
+            VERSION: JSON.stringify(gitRevisionPlugin.version()),
+            COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
+            BRANCH: JSON.stringify(gitRevisionPlugin.branch())
+        })
+    ]
 };
