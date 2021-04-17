@@ -19,14 +19,25 @@ const esp = 'translations/spanish.json';
 const tki = 'translations/tokipona.json';
 const chn = 'translations/chinese.json';
 
-global.languagejson = null;
+let languagejson = null;
+let mEng = require('../client/translate.json');
 
-global.jsn = require('../client/weapons.json');
+export let jsn = require('../client/weapons.json');
 
-global.setLang = function(name) {
+let languageNumber = 0;
+
+let splash = "";
+
+export function getSplash()
+{
+  return splash;
+}
+
+export function setLang(name) {
   document.cookie = ('lang=' + name);
   loadLang(name);
 };
+
 function load(lang) {
   const request = new XMLHttpRequest();
   request.open('GET', lang, false);
@@ -42,8 +53,7 @@ function load(lang) {
   return JSON.parse(data);
 }
 
-global.loadLang = function(name) {
-  global.languageNumber = 0;
+function loadLang(name) {
   let assigned = null;
   
   if (location.href.includes("eng") || name === "eng") {assigned = languagejson = eng; languageNumber = 0;}
@@ -88,13 +98,13 @@ global.loadLang = function(name) {
     jsn.ships[i].nameC = languagejson.ships[i].nameC;
     jsn.ships[i].desc = languagejson.ships[i].desc;
   }
-  global.mEng = load("translate.json");
-  global.splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
+
+  splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
   if (!splash.endsWith('!') && !splash.endsWith('?')) splash += '...';
 };
-loadLang();
+loadLang(null);
 
-global.translate = function(english, arr) {
+export function translate(english, arr=undefined) {
   if (typeof mEng[english] === "undefined")
   {return "TRANSLATION ERROR";}
   let translated = (languageNumber == 0)? english : mEng[english][languageNumber-1];

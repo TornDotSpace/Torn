@@ -15,6 +15,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import {translate} from "../localizer.ts";
+
 const minimapcanvas = document.createElement("canvas");
 minimapcanvas.width = minimapcanvas.height = 208;
 const minictx = minimapcanvas.getContext("2d", {alpha: true});
@@ -207,7 +209,6 @@ global.r3DMap = function() {
     qsx = hoverquest.sx;
     qsy = hoverquest.sy;
   }
-  console.log("a");
 
   for (let i = 0; i < mapSz; i++) {
     for (let j = 0; j < mapSz; j++) {

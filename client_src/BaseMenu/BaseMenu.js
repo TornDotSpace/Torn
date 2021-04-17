@@ -25,6 +25,9 @@ require("./statstab.js");
 require("./moretab.js");
 require("./queststab.js");
 
+import {jsn, translate} from "../localizer.ts";
+import {pasteChat} from "../chat.ts";
+
 global.baseMenuX = w / 2 - 128 * 3; global.baseMenuY = h / 4 - 128; // Where do we render the base menu subcanvas?
 
 // Render the Achievements tab

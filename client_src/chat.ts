@@ -14,6 +14,24 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+import { Socket } from "socket.io";
+import { translate } from "./localizer.ts";
+
+
+// BEGIN TYPESCRIPT TRANSITION HACKS
+declare var socket: Socket;
+declare var clientmutes: any;
+declare var roundRect: Function;
+declare var seller: Number;
+declare var ctx: any;
+declare var square: any;
+declare var brighten: any;
+declare var h: any;
+declare var getPosition: any;
+declare var wepns: any;
+// END TYPESCRIPT TRANSITION HACKS
+
 const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
 const messages = [{}, {}, {}];
 const serverMessages = {};
@@ -31,7 +49,7 @@ const chatctx = chatcanvas.getContext("2d", {alpha: true});
 const chatLength = 40;
 const serverChatLength = 5;
 let chatScroll = 0;
-global.whichChatMenu = 0;
+let whichChatMenu = 0;
 let preChatArr = {};
 let chati = 0;
 
@@ -65,7 +83,7 @@ socket.on("unmute", function(data) {
   delete clientmutes[data.player];
 });
 
-global.rChat = function() {
+export function rChat() {
   chatcanvas.width = chatcanvas.width;
   chatctx.font = "14px ShareTech";
   chatctx.save();
@@ -122,9 +140,10 @@ global.rChat = function() {
 
   chatctx.restore();
 };
-global.pasteChat = function() {
+export function pasteChat() {
   ctx.drawImage(chatcanvas, 0, h-chatcanvas.height);
 };
+
 function onReceiveChat(data) {
   while (data.msg.includes(weaponCircumfix)) {
     const find1 = getPosition(data.msg, translateCircumfix, 1);
@@ -165,7 +184,7 @@ function onReceiveChat(data) {
 };
 
 
-global.preProcessChat = function() { // This is slow and buggy. We should rewrite it.
+function preProcessChat() { // This is slow and buggy. We should rewrite it.
   const chatList = messages[whichChatMenu];
   preChatArr = {};
   chati = 0;
@@ -196,7 +215,6 @@ function clearChat() {
   }
   for (let j = 0; j < serverChatLength; j++) {
     serverMessages[j] = "";
-    serverMessagesFade = 1;
   }
 }
 
@@ -205,7 +223,7 @@ clearChat();
 preProcessChat();
 
 
-global.chatMenuButtonClick = function(buttonID) {
+export function chatMenuButtonClick(buttonID) {
   socket.emit("toggleGlobal", {gc: buttonID-800});
   preProcessChat();
   rChat();

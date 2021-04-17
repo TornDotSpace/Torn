@@ -15,6 +15,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import {translate} from "../localizer.ts";
+
 global.rBuyShipWindow = function() {
   baseMenuCtx.fillStyle = baseMenuCtx.strokeStyle = "white";
   roundRect(baseMenuCtx, 16, 256 - 16, 256, 256, 8, false, true);

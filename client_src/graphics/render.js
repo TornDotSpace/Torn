@@ -20,6 +20,9 @@ global.DEADBASE = 1;
 global.TURRET = 2;
 global.SENTRY = 3;
 
+import {pasteChat} from "../chat.ts";
+import {getSplash, jsn, translate} from "../localizer.ts";
+
 global.render = function() {
   if (dead) {
     ctx.globalAlpha = .02;
@@ -291,7 +294,7 @@ global.rLoadingBar = function() {
   ctx.fillRect(w / 2 - 128 + 16, h / 2 - 32 + 16, (256 - 32) * ((Aud_prgs[0] + Img_prgs[0]) / (Aud_prgs[1] + Img_prgs[1])), 64 - 32);
   ctx.textAlign = "center";
   ctx.font = "30px ShareTech";
-  ctx.fillText(splash, w / 2, h / 2 - 96);
+  ctx.fillText(getSplash(), w / 2, h / 2 - 96);
   ctx.font = "15px ShareTech";
   if (Img_prgs[0] == Img_prgs[1]) ctx.fillText("All images loaded.", w / 2, h / 2 + 64);
   if (Aud_prgs[0] == Aud_prgs[1]) ctx.fillText("All sounds loaded", w / 2, h / 2 + 80);
