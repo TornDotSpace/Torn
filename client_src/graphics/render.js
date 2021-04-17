@@ -100,7 +100,7 @@ global.render = function () {
     rNotes();// Fast
     rKillStreak();
     if (afk) rAfk();
-    if (quest !== 0) rCurrQuest();
+    if (quest != 0) rCurrQuest();
     rRaid();
     rWeapons();// fast
     rEMP();
@@ -120,7 +120,7 @@ global.render = function () {
 
     let timeA = -performance.now();
     time9 -= timeA;
-    if (lb !== 0) rLB();
+    if (lb != 0) rLB();
     rExpBar();// Maybe a little slow
     // Everything past here is fast
     rVolumeBar();
@@ -341,7 +341,7 @@ global.updateTrails = function () {
             let particleCount = square(ships[selfo.ship].width / 96) * 0.66;
             particleCount *= Math.min(Math.abs(selfo.driftAngle - selfo.angle) * 8, 16);
             if (trail > 15) particleCount /= 6;
-            else if (mod !== 0) particleCount *= 2.5;
+            else if (mod != 0) particleCount *= 2.5;
             for (let j = 0; j < particleCount; j++) {
                 const rando = Math.random() * selfo.speed;
                 let col = (((96 + Math.floor(Math.random() * 64)) << 16) + ((96 + Math.floor(Math.random() * 128)) << 8) + 255 - Math.floor(Math.random() * 64)).toString(16);
@@ -624,7 +624,7 @@ global.rTexts = function (lag, arr) {
 
     const il = 13;
 
-    for (let i = 0; i < ((dev && lag !== -1) ? il + lagArr.length : 8); i++) {
+    for (let i = 0; i < ((dev && lag != -1) ? il + lagArr.length : 8); i++) {
         write(ctx, i < il ? info[i] : (lagNames[i - il] + translate("Gui2") + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
     }
     ctx.textAlign = "left";
@@ -666,7 +666,7 @@ global.rLB = function () {
     write(ctx, translate("Exp"), w - 48 - 16, 48);
     write(ctx, translate("Rank"), w - 16, 48);
     for (let i = 0; i < lb.length; i++) {
-        const place = 1 + ((i !== 20) ? i : parseInt(lb[i].id));
+        const place = 1 + ((i != 20) ? i : parseInt(lb[i].id));
         ctx.textAlign = "left";
         ctx.fillStyle = brighten(lb[i].color);
         if (lb[i].name.includes(" ")) {
@@ -945,7 +945,7 @@ global.rTut = function () {
     ctx.textAlign = "center";
     ctx.fillStyle = "yellow";
     if (guest) {
-        if (money !== 8000 && currTut > 3) {
+        if (money != 8000 && currTut > 3) {
             text = translate("Go to the Base and make an account!"); if (currTut < 5) {
                 currTut = 5; addBigNote([256, text, "", ""]);
             }
@@ -1353,7 +1353,7 @@ global.rAsteroids = function () {
         ctx.drawImage(img, sx, sy, 128, 128, -64 * healthDec, -64 * healthDec, 128 * healthDec, 128 * healthDec);
         ctx.restore();
 
-        if (selfo.color !== pc) { // update nearest enemy for pointer
+        if (selfo.color != pc) { // update nearest enemy for pointer
             if (nearA == 0 || square(selfo.x - px) + square(selfo.y - py) < square(nearA.x - px) + square(nearA.y - py)) {
                 nearA = selfo;
             }
@@ -1574,7 +1574,7 @@ global.rBases = function () {
             write(ctx, basesInfo.name, rendX, rendY - 64);
         }
 
-        if (basesInfo.baseType !== DEADBASE) {
+        if (basesInfo.baseType != DEADBASE) {
             let timage = 0;
             if (basesInfo.baseType == SENTRY) timage = colorSelect(basesInfo.color, Img.rsentry, Img.bsentry, Img.gsentry);
             else timage = colorSelect(basesInfo.color, Img.rt, Img.bt, Img.gt);

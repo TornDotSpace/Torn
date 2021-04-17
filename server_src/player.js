@@ -154,12 +154,12 @@ class Player {
 
         const amDrifting = this.e || this.gyroTimer > 0;
         this.shield = (this.s && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
-        if ((this.disguise > 0 && this.weapons[this.equipped] !== 18 && this.weapons[this.equipped] !== 19 && this.weapons[this.equipped] !== 21 && this.weapons[this.equipped] !== 22 && this.weapons[this.equipped] !== 29 && this.weapons[this.equipped] !== 36) || (this.shield && this.weapons[this.equipped] > 0 && wepns[this.weapons[this.equipped]].type !== "Misc" && wepns[this.weapons[this.equipped]].type !== "Mine" && this.space)) this.charge = Math.min(this.charge, 0);
+        if ((this.disguise > 0 && this.weapons[this.equipped] != 18 && this.weapons[this.equipped] != 19 && this.weapons[this.equipped] != 21 && this.weapons[this.equipped] != 22 && this.weapons[this.equipped] != 29 && this.weapons[this.equipped] != 36) || (this.shield && this.weapons[this.equipped] > 0 && wepns[this.weapons[this.equipped]].type !== "Misc" && wepns[this.weapons[this.equipped]].type !== "Mine" && this.space)) this.charge = Math.min(this.charge, 0);
         this.leaveBaseShield--;
 
         if (!this.isBot) {
             this.checkPlanetCollision();
-            if (tick % 50 === 0 && planets[this.sy][this.sx].color === this.color && !this.guest) this.money++; // Earn $.5/sec for being in a sector w/ your color planet
+            if (tick % 50 == 0 && planets[this.sy][this.sx].color === this.color && !this.guest) this.money++; // Earn $.5/sec for being in a sector w/ your color planet
         }
 
         this.move();
@@ -184,14 +184,14 @@ class Player {
         }
 
         // In case of insufficient ammo
-        if (this.ammos[this.equipped] === 0 && this.charge > 10) {
+        if (this.ammos[this.equipped] == 0 && this.charge > 10) {
             this.charge = 0;
             this.emit("sound", { file: "noammo", x: this.x, y: this.y });
             return;
         }
 
         if (this.canShoot(wepId)) {
-            if (this.ammos[this.equipped] === 0) return;
+            if (this.ammos[this.equipped] == 0) return;
 
             if (wep.level > this.ship) {
                 this.emit("chat", { msg: "`tThis weapon is incompatible with your current ship!`t", color: "red" });
@@ -199,7 +199,7 @@ class Player {
             }
 
             if (wep.name === "Submachinegun") { // Submachinegun physics
-                if (this.bulletQueue === 0) {
+                if (this.bulletQueue == 0) {
                     this.bulletQueue += 5;
                     this.ammos[this.equipped] -= 5;
                     this.reload(false, wepId);
@@ -224,14 +224,14 @@ class Player {
 
             // Timery Weapons
 
-            else if (wepId === 36 || wepId === 18 || wepId === 19 || wepId === 29) {
+            else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
                 if (wep.name === "Supercharger") {
-                    if (this.superchargerTimer <= 0) this.superchargerTimer = 1500 * (this.ship === 21 ? 2 : 1); // 1 min, more if rank 21
-                    else this.superchargerTimer += 1500 * (this.ship === 21 ? 2 : 1); // Stackable
+                    if (this.superchargerTimer <= 0) this.superchargerTimer = 1500 * (this.ship == 21 ? 2 : 1); // 1 min, more if rank 21
+                    else this.superchargerTimer += 1500 * (this.ship == 21 ? 2 : 1); // Stackable
                 } else if (wep.name === "Hull Nanobots") this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth * 0.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
                 else if (wep.name === "Photon Cloak") this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
                 else if (wep.name === "Warp Drive") {
-                    this.speed = (wepns[29].speed * (this.ship === 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a !== this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
+                    this.speed = (wepns[29].speed * (this.ship == 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
                 }
             }
 
@@ -282,7 +282,7 @@ class Player {
                     }
                 }
             } else if (wep.name === "Electromagnet") { // identical structurally to pulse wave, see above for comments.
-                if (global.tick % 2 === 0) {
+                if (global.tick % 2 == 0) {
                     for (const i in players[this.sy][this.sx]) {
                         const p = players[this.sy][this.sx][i];
                         if (p.color !== this.color) { // only enemies
@@ -343,7 +343,7 @@ class Player {
                     this.space = false;
                     return;
                 }
-                if (bases[this.sy][this.sx] !== 0) {
+                if (bases[this.sy][this.sx] != 0) {
                     this.emit("chat", { msg: "`tThere can only be one turret or sentry in any sector!`t", color: "yellow" });
                     this.space = false;
                     return;
@@ -354,7 +354,7 @@ class Player {
                 bases[this.sy][this.sx] = b;
                 this.emit("chat", { msg: "`tYou placed a turret! Name it with \"/nameturret <name>\".`t", color: "lime" });
             } else if (wep.name === "Sentry") {
-                if (bases[this.sy][this.sx] !== 0) {
+                if (bases[this.sy][this.sx] != 0) {
                     this.emit("chat", { msg: "`tThere can only be one turret or sentry in any sector!`t", color: "orange" });
                     this.space = false;
                     return;
@@ -365,7 +365,7 @@ class Player {
                 bases[this.sy][this.sx] = b;
                 this.emit("chat", { msg: "`tYou placed a turret! Name it with \"/nameturret <name>\".`t", color: "lime" });
             } else if (wep.name === "Turbo") {
-                const isDrifting = (this.e || this.gyroTimer > 0) && (this.a !== this.d);
+                const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
                 const mult = wepns[21].speed * (isDrifting ? 1.014 : 1); // Faster when drifting.
                 this.speed *= mult;
                 this.vx *= mult;
@@ -380,7 +380,7 @@ class Player {
                     this.sendAchievementsDrift(true);
                 }
             } else if (wep.name === "Hyperdrive") {
-                const isDrifting = (this.e || this.gyroTimer > 0) && (this.a !== this.d);
+                const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
                 this.emit("sound", { file: "hyperspace", x: this.x, y: this.y });
                 this.hyperdriveTimer = 200;
                 if (isDrifting && this.w && !this.driftAchs[6]) { // Hyper-drift
@@ -390,7 +390,7 @@ class Player {
             }
 
             // If we run out of ammo on a one-use weapon, delete that weapon.
-            if (this.ammos[this.equipped] === -2) {
+            if (this.ammos[this.equipped] == -2) {
                 this.weapons[this.equipped] = -1;
                 this.save(); // And save, to prevent people from shooting then logging out if they don't succeed with it.
             }
@@ -402,14 +402,14 @@ class Player {
 
     shootEliteWeapon () {
         if (this.rank < this.ship) return;
-        if (this.ship === 16) { // Elite Raider
+        if (this.ship == 16) { // Elite Raider
             // if (this.disguise > 0) return;
             // This effectively just shoots turbo.
-            const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a !== this.d)) ? 1.016 : 1.01);
+            const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.016 : 1.01);
             this.speed *= mult;
             this.vx *= mult;
             this.vy *= mult;
-        } else if (this.ship === 17 && this.iron >= 250 && this.silver >= 250 && this.copper >= 250 && this.platinum >= 250) { // Quarrier
+        } else if (this.ship == 17 && this.iron >= 250 && this.silver >= 250 && this.copper >= 250 && this.platinum >= 250) { // Quarrier
             if (this.disguise > 0 || this.shield) return;
             this.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
             this.silver -= 250;
@@ -418,19 +418,19 @@ class Player {
             const randId = Math.random();
             const ast = new Asteroid(randId, health, this.sx, this.sy, this.x + Math.cos(this.angle) * 256, this.y + Math.sin(this.angle) * 256, Math.cos(this.angle) * 15, Math.sin(this.angle) * 15, Math.floor(Math.random() * 4));
             asts[this.sy][this.sx][randId] = ast;
-        } else if (this.ship === 18) {
+        } else if (this.ship == 18) {
             if (this.disguise > 0 || this.shield) return;
             this.shootBullet(39);
         } // Built in spreadshot
-        else if (this.ship === 19) {
+        else if (this.ship == 19) {
             // if (this.disguise > 0) return;
             if (this.health < this.maxHealth) this.health++;
         } // Heals you
-        else if (this.ship === 20) {
+        else if (this.ship == 20) {
             this.shootBlast(41);
             this.save();
         } // Built in Hypno
-        else if (this.ship === 22 && tick % 10 === 0) {
+        else if (this.ship == 22 && tick % 10 == 0) {
             const ox = this.x; const oy = this.y; // Current emitter coordinates
             let nearBEnemy = 0; // enemy turret target, which we will compute
             let nearPFriendly = 0; // friendly ship target, which we will compute
@@ -440,22 +440,22 @@ class Player {
 
             // base
             const b = bases[this.sy][this.sx];
-            if ((b !== 0) && b.baseType !== DEADBASE && b.color !== this.color && (hypot2(b.x, ox, b.y, oy) < range2)) {
+            if ((b != 0) && b.baseType != DEADBASE && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2)) {
                 nearBEnemy = b;
             }
 
             // search players
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
-                if (!(p.disguise > 0 || this.id === p.id)) { // You can only heal decloaked teammates.
+                if (!(p.disguise > 0 || this.id == p.id)) { // You can only heal decloaked teammates.
                     const dx = p.x - ox; const dy = p.y - oy;
                     const dist2 = dx * dx + dy * dy;
 
                     if (dist2 < range2) {
-                        if (p.color === this.color) {
-                            if (nearPFriendly === 0 || dist2 < square(nearPFriendly.x - ox) + square(nearPFriendly.y - oy)) nearPFriendly = p;
+                        if (p.color == this.color) {
+                            if (nearPFriendly == 0 || dist2 < square(nearPFriendly.x - ox) + square(nearPFriendly.y - oy)) nearPFriendly = p;
                         } else {
-                            if (nearPEnemy === 0 || dist2 < square(nearPEnemy.x - ox) + square(nearPEnemy.y - oy)) nearPEnemy = p;
+                            if (nearPEnemy == 0 || dist2 < square(nearPEnemy.x - ox) + square(nearPEnemy.y - oy)) nearPEnemy = p;
                         }
                     }
                 }
@@ -464,13 +464,13 @@ class Player {
             // search asteroids
             for (const i in asts[this.sy][this.sx]) {
                 const a = asts[this.sy][this.sx][i];
-                if (a.sx !== this.sx || a.sy !== this.sy || a.hit) continue;
+                if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
                 const dx = a.x - ox; const dy = a.y - oy;
                 const dist2 = dx * dx + dy * dy;
-                if (dist2 < range2 && (nearA === 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
+                if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
             }
 
-            if (nearA !== 0) {
+            if (nearA != 0) {
                 const rM = Math.random();
                 const beamMe = new Beam(this, rM, 45, this, this); // Healing beam for myself when mining asteroids
                 beams[this.sy][this.sx][rM] = beamMe;
@@ -479,18 +479,18 @@ class Player {
                 beams[this.sy][this.sx][rA] = beamA;
             }
 
-            if (nearPFriendly === 0 || (nearPEnemy === 0 && nearBEnemy === 0 && nearA === 0)) return;
+            if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
             this.spoils("money", 250); // reward the player for healing a teammate
             this.spoils("experience", 10); // The medic gets more experience from healing
             const rfP = Math.random();
 
-            if (nearA !== 0) {
+            if (nearA != 0) {
                 if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
                     const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
                     beams[this.sy][this.sx][rfP] = beamfP;
                 }
             }
-            if (nearPEnemy !== 0) {
+            if (nearPEnemy != 0) {
                 const reP = Math.random();
                 if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
                     const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
@@ -499,7 +499,7 @@ class Player {
                 const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
                 beams[this.sy][this.sx][reP] = beameP;
             }
-            if (nearBEnemy !== 0) {
+            if (nearBEnemy != 0) {
                 const reB = Math.random();
                 if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
                     const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
@@ -517,10 +517,10 @@ class Player {
 
     reload (elite, wepId) {
         if (elite) {
-            if (this.ship === 20) this.charge = -wepns[41].charge * 0.95;
-            if (this.ship === 18) this.charge = -wepns[39].charge * 0.95;
-            if (this.ship === 19 && this.charge > -200) this.charge -= 10 / this.energy2;
-            if (this.ship === 17) this.charge = -140;
+            if (this.ship == 20) this.charge = -wepns[41].charge * 0.95;
+            if (this.ship == 18) this.charge = -wepns[39].charge * 0.95;
+            if (this.ship == 19 && this.charge > -200) this.charge -= 10 / this.energy2;
+            if (this.ship == 17) this.charge = -140;
             return;
         }
         if (wepns[wepId].charge > 12) this.charge = 0;
@@ -529,7 +529,7 @@ class Player {
 
     canShoot (wepId) {
         if (typeof wepns[wepId] === "undefined") return false;
-        if ((this.disguise > 0 && wepId !== 18 && wepId !== 19 && wepId !== 21 && wepId !== 22 && wepId !== 29 && wepId !== 36) || (this.shield && wepns[wepId].type !== "Misc")) return false;
+        if ((this.disguise > 0 && wepId != 18 && wepId != 19 && wepId != 21 && wepId != 22 && wepId != 29 && wepId != 36) || (this.shield && wepns[wepId].type !== "Misc")) return false;
         const sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
         return this.space && sufficientCharge;
     }
@@ -537,7 +537,7 @@ class Player {
     move () {
         if (this.hyperdriveTimer > 0) {
             this.hyperdriveTimer--;
-            this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship === 16 ? 7 : 10);
+            this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
         }
 
         if (this.isBot) this.botPlay(); // simulates a player and presses keys.
@@ -546,7 +546,7 @@ class Player {
         const ore = this.iron + this.silver + this.platinum + this.copper;
 
         // In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
-        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a !== this.d)) ? (this.ship === 16 ? 1.6 : 1.45) : 1);
+        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1);
 
         // Reusable Trig
         const ssa = Math.sin(this.angle); const ssd = Math.sin(this.driftAngle); const csa = Math.cos(this.angle); const csd = Math.cos(this.driftAngle);
@@ -576,7 +576,7 @@ class Player {
             else this.driftAngle = findBisector(findBisector(findBisector(findBisector(this.driftAngle, this.angle), this.driftAngle), this.driftAngle), this.driftAngle);// This happens immediately after shift released, noDrift increases with time.
         } else { // In drift.
             this.gyroTimer--;
-            if (this.a !== this.d) {
+            if (this.a != this.d) {
                 if (this.w) this.driftTimer++;
                 else if (this.s && !this.driftAchs[7]) { // I can go backwards!?!
                     this.driftAchs[7] = true;
@@ -602,7 +602,7 @@ class Player {
         if (!this.d && !this.a && !amDrifting) this.cva /= 2; // When not drifting, apply air resistance to angular velocity.
 
         // If we have a drift trail, we turn faster. Generators reduce turning speed.
-        this.angle += this.cva * (1 - this.generators / 10) * (this.trail % 16 === 3 ? 1.05 : 1) / 1.5;
+        this.angle += this.cva * (1 - this.generators / 10) * (this.trail % 16 == 3 ? 1.05 : 1) / 1.5;
 
         // Make sure everything is in the range 0-2pi
         this.driftAngle += Math.PI * 4;
@@ -612,8 +612,8 @@ class Player {
 
         this.testSectorChange();
 
-        if (tick % 15 === 0) this.checkQuestStatus(false);
-        if (tick % 2 === 0) return;
+        if (tick % 15 == 0) this.checkQuestStatus(false);
+        if (tick % 2 == 0) return;
 
         this.checkMineCollision();
     }
@@ -621,13 +621,13 @@ class Player {
     checkMineCollision () {
         for (const i in mines[this.sy][this.sx]) {
             const m = mines[this.sy][this.sx][i];
-            if (m.color !== this.color && m.wepnID !== 32 && m.wepnID !== 44) { // enemy mine and not either impulse or campfire
-                if (m.wepnID !== 16 && squaredDist(m, this) < square(16 + ships[this.ship].width)) {
+            if (m.color != this.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
+                if (m.wepnID != 16 && squaredDist(m, this) < square(16 + ships[this.ship].width)) {
                     this.dmg(m.dmg, m); // damage me
-                    if (m.wepnID === 17) this.EMP(160); // emp mine
+                    if (m.wepnID == 17) this.EMP(160); // emp mine
                     m.die();
                     break;
-                } else if (m.wepnID === 16 && squaredDist(m, this) < square(wepns[m.wepnID].range + ships[this.ship].width)) { // TODO range * 10?
+                } else if (m.wepnID == 16 && squaredDist(m, this) < square(wepns[m.wepnID].range + ships[this.ship].width)) { // TODO range * 10?
                     const r = Math.random(); // Laser Mine
                     const beam = new Beam(m.owner, r, m.wepnID, this, m); // m.owner is the owner, m is the origin location
                     beams[this.sy][this.sx][r] = beam;
@@ -656,7 +656,7 @@ class Player {
             }
         } else if (this.y > sectorWidth) {
             this.y = 1;
-            if (this.sy === mapSz - 1 || this.guest || (trainingMode && this.isNNBot)) {
+            if (this.sy == mapSz - 1 || this.guest || (trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.y = (sectorWidth - 5);
                 this.driftAngle = this.angle = -this.angle;
@@ -678,7 +678,7 @@ class Player {
             }
         } else if (this.y < 0) {
             this.y = (sectorWidth - 1);
-            if (this.sy === 0 || this.guest || (trainingMode && this.isNNBot)) {
+            if (this.sy == 0 || this.guest || (trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.y = 5;
                 this.driftAngle = this.angle = -this.angle;
@@ -712,7 +712,7 @@ class Player {
     juke (left) {
         if (this.charge < 0) return;
         this.charge = -10;
-        this.jukeTimer = (this.trail % 16 === 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
+        this.jukeTimer = (this.trail % 16 == 4 ? 1.25 : 1) * (left ? 50 : -50); // misc trail makes you juke further.
     }
 
     mute (minutes) {
@@ -721,24 +721,24 @@ class Player {
 
     onChangeSectors () {
     // track my touched corners
-        if (this.sx === 0) {
-            if (this.sy === 0 && (this.cornersTouched & 1) !== 1) this.cornersTouched++;
-            else if (this.sy === mapSz - 1 && (this.cornersTouched & 2) !== 2) this.cornersTouched += 2;
-        } else if (this.sx === mapSz - 1) {
-            if (this.sy === 0 && (this.cornersTouched & 4) !== 4) this.cornersTouched += 4;
-            else if (this.sy === mapSz - 1 && (this.cornersTouched & 8) !== 8) this.cornersTouched += 8;
+        if (this.sx == 0) {
+            if (this.sy == 0 && (this.cornersTouched & 1) != 1) this.cornersTouched++;
+            else if (this.sy == mapSz - 1 && (this.cornersTouched & 2) != 2) this.cornersTouched += 2;
+        } else if (this.sx == mapSz - 1) {
+            if (this.sy == 0 && (this.cornersTouched & 4) != 4) this.cornersTouched += 4;
+            else if (this.sy == mapSz - 1 && (this.cornersTouched & 8) != 8) this.cornersTouched += 8;
         }
-        if (this.cornersTouched === 15) {
+        if (this.cornersTouched == 15) {
             this.randmAchs[7] = true;
             this.sendAchievementsMisc(true);
         }
 
-        if ((this.sx % 3 === 2 && this.sy === 4) && this.quest.type === "Secret3") {
+        if ((this.sx % 3 == 2 && this.sy == 4) && this.quest.type === "Secret3") {
             this.spoils("money", this.quest.exp); // reward the player
             this.spoils("experience", Math.floor(this.quest.exp / 4000));
 
             this.hasPackage = false;
-            if ((this.questsDone & 8) === 0) this.questsDone += 8;
+            if ((this.questsDone & 8) == 0) this.questsDone += 8;
 
             this.quest = 0; // reset quest and tell the client
             this.emit("quest", { quest: this.quest, complete: true });
@@ -747,13 +747,13 @@ class Player {
                 this.moneyAchs[9] = true;
                 this.sendAchievementsCash(true);
             }
-            if (this.questsDone === 15 && !this.moneyAchs[10]) { // Adventurer
+            if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
                 this.moneyAchs[10] = true;
                 this.sendAchievementsCash(true);
             }
         }
 
-        if (this.quest !== 0 && this.quest.type === "Secret" && this.sx === this.quest.sx && this.sy === this.quest.sy) { // advance in secret quest to phase 2
+        if (this.quest != 0 && this.quest.type === "Secret" && this.sx == this.quest.sx && this.sy == this.quest.sy) { // advance in secret quest to phase 2
             this.quest = { type: "Secret2", exp: this.quest.exp, sx: this.quest.sx, sy: this.quest.sy };
             this.emit("quest", { quest: this.quest, complete: false });
         }
@@ -789,7 +789,7 @@ class Player {
         const p = planets[this.sy][this.sx];
 
         // if out of range, return. Only try this once every fifth of second.
-        if (tick % 2 !== 0 || squaredDist(p, this) > square(512)) return;
+        if (tick % 2 != 0 || squaredDist(p, this) > square(512)) return;
 
         // cooldown to prevent chat spam when 2 people are on the planet
         const cool = p.cooldown;
@@ -802,7 +802,7 @@ class Player {
 
         if (this.guest) return; // You must create an account in the base before you can claim planets!
 
-        if (typeof this.quest !== "undefined" && this.quest !== 0 && this.quest.type === "Secret2" && this.quest.sx === this.sx && this.quest.sy === this.sy) { // move on to last secret stage
+        if (typeof this.quest !== "undefined" && this.quest != 0 && this.quest.type === "Secret2" && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
             // compute whether there are any unkilled enemies in this sector
             let cleared = true;
             for (const i in players[this.sy][this.sx]) {
@@ -812,7 +812,7 @@ class Player {
                     break;
                 }
             }
-            if (bases[this.sy][this.sx] !== 0 && bases[this.sy][this.sx].baseType !== DEADBASE) cleared = false;// also check base is dead
+            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].baseType != DEADBASE) cleared = false;// also check base is dead
 
             if (cleared) { // 2 ifs needed, don't merge this one with the last one
                 this.hasPackage = true;
@@ -857,23 +857,23 @@ class Player {
 
         // how many bullets are we firing?
         let n = 1;
-        if (currWep === 4) n = 4; // shotgun
-        if (currWep === 39) n = 3; // spreadshot
-        if (currWep === 6) n = 2; // minigun
+        if (currWep == 4) n = 4; // shotgun
+        if (currWep == 39) n = 3; // spreadshot
+        if (currWep == 6) n = 2; // minigun
 
         for (let i = 0; i < n; i++) {
             const r = Math.random();
 
             // find the angle of the bullets. Manipulate if one of the multi-bullet weapons.
             let bAngle = this.angle;
-            if (currWep === 2) bAngle -= 3.1415; // reverse gun
-            if (currWep === 39) bAngle += ((i - 1) / 3.5); // spreadshot
-            if (currWep === 4) bAngle += Math.random() - 0.5; // shotgun
-            if (currWep === 40) bAngle += (Math.random() - 0.5) * 0.08; // smg
+            if (currWep == 2) bAngle -= 3.1415; // reverse gun
+            if (currWep == 39) bAngle += ((i - 1) / 3.5); // spreadshot
+            if (currWep == 4) bAngle += Math.random() - 0.5; // shotgun
+            if (currWep == 40) bAngle += (Math.random() - 0.5) * 0.08; // smg
 
             const bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
             bullets[this.sy][this.sx][r] = bullet;
-            sendAllSector("sound", { file: (currWep === 5 || currWep === 6 || currWep === 39) ? "minigun" : "shot", x: this.x, y: this.y }, this.sx, this.sy);
+            sendAllSector("sound", { file: (currWep == 5 || currWep == 6 || currWep == 39) ? "minigun" : "shot", x: this.x, y: this.y }, this.sx, this.sy);
         }
     }
 
@@ -893,7 +893,7 @@ class Player {
     }
 
     shootMine () {
-        if (Object.keys(mines[this.sy][this.sx]).length >= 20 && (this.weapons[this.equipped] < 30 || this.weapons[this.equipped] === 48 || this.weapons[this.equipped] === 43)) {
+        if (Object.keys(mines[this.sy][this.sx]).length >= 20 && (this.weapons[this.equipped] < 30 || this.weapons[this.equipped] == 48 || this.weapons[this.equipped] == 43)) {
             this.ammos[this.equipped]++;
             this.emit("chat", { msg: "`tThis sector has reached its limit of 20 mines.`t" });
             return;
@@ -916,9 +916,9 @@ class Player {
 
         // base
         if (!restricted) {
-            if (this.weapons[this.equipped] === 7 || this.weapons[this.equipped] === 8 || this.weapons[this.equipped] === 9 || this.weapons[this.equipped] === 45) {
+            if (this.weapons[this.equipped] == 7 || this.weapons[this.equipped] == 8 || this.weapons[this.equipped] == 9 || this.weapons[this.equipped] == 45) {
                 const b = bases[this.sy][this.sx];
-                if (b !== 0 && ((b.color === this.color) === (this.weapons[this.equipped] === 45)) && !(this.weapons[this.equipped] === 45 && b.health > baseHealth * 0.9995) && b.baseType !== DEADBASE && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
+                if (b != 0 && ((b.color == this.color) == (this.weapons[this.equipped] == 45)) && !(this.weapons[this.equipped] == 45 && b.health > baseHealth * 0.9995) && b.baseType != DEADBASE && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
             }
         }
 
@@ -926,36 +926,36 @@ class Player {
         if (!restricted) {
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
-                if (p.ship !== 17 && (this.weapons[this.equipped] === 26 || this.weapons[this.equipped] === 30)) continue; // elite quarrier is affected
-                if (((p.color === this.color) !== (this.weapons[this.equipped] === 45)) || p.disguise > 0 || this.id === p.id) continue;
-                if (this.weapons[this.equipped] === 45 && p.health > p.maxHealth * 0.9995) continue;
+                if (p.ship != 17 && (this.weapons[this.equipped] == 26 || this.weapons[this.equipped] == 30)) continue; // elite quarrier is affected
+                if (((p.color == this.color) != (this.weapons[this.equipped] == 45)) || p.disguise > 0 || this.id == p.id) continue;
+                if (this.weapons[this.equipped] == 45 && p.health > p.maxHealth * 0.9995) continue;
                 const dx = p.x - ox; const dy = p.y - oy;
                 const dist2 = dx * dx + dy * dy;
-                if (dist2 < range2 && (nearP === 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = p;
+                if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = p;
             }
         }
 
         // search asteroids
-        if (nearP === 0 && this.weapons[this.equipped] !== 35 && this.weapons[this.equipped] !== 31 && this.weapons[this.equipped] !== 45) {
+        if (nearP == 0 && this.weapons[this.equipped] != 35 && this.weapons[this.equipped] != 31 && this.weapons[this.equipped] != 45) {
             for (const i in asts[this.sy][this.sx]) {
                 const a = asts[this.sy][this.sx][i];
-                if (a.sx !== this.sx || a.sy !== this.sy || a.hit) continue;
+                if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
                 const dx = a.x - ox; const dy = a.y - oy;
                 const dist2 = dx * dx + dy * dy;
-                if (dist2 < range2 && (nearP === 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = a;
+                if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = a;
             }
         }
 
-        if (nearP === 0) return;
+        if (nearP == 0) return;
 
         // gyrodynamite
-        if (this.weapons[this.equipped] === 31 && nearP.sx === this.sx && nearP.sy === this.sy && nearP.color !== this.color) {
+        if (this.weapons[this.equipped] == 31 && nearP.sx == this.sx && nearP.sy == this.sy && nearP.color != this.color) {
             nearP.gyroTimer = 250;
             nearP.emit("gyro", { t: 250 });
         }
 
         // elite quarrier
-        if (this.ship === 17 && nearP !== 0 && nearP.type === "Asteroid") {
+        if (this.ship == 17 && nearP != 0 && nearP.type === "Asteroid") {
             nearP.hit = true;
             for (let i = 0; i < 3; i++) this.shootBeam(nearP, true);
         }
@@ -981,14 +981,14 @@ class Player {
         if (!players[this.sy][this.sx][this.id]) return; // multi-kill bug
 
         // reward nn bots for hurting other players
-        if (this.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net !== 0) {
+        if (this.isNNBot && origin.type === "Bullet" && origin.owner.type === "Player" && origin.owner.net != 0) {
             origin.owner.net.save(this.isNNBot ? this.net.id : Math.floor(Math.random()));
             this.health -= 10000;
         }
 
-        d /= (this.trail % 16 === 1 ? 1.05 : 1); // blood trail: less damage
+        d /= (this.trail % 16 == 1 ? 1.05 : 1); // blood trail: less damage
         d *= ((this.shield && d > 0) ? 0.25 : 1); // Shield- 1/4th damage. Won't block healing items
-        d *= ((this.shield && this.ship === 19) ? 0.5 : 1); // Rank 19 suffers less damage when shielded.
+        d *= ((this.shield && this.ship == 19) ? 0.5 : 1); // Rank 19 suffers less damage when shielded.
         d *= ((this.shield && this.ship > 19) ? 0.75 : 1); // Ranks above 19 suffer slightly less damage when shielded.
         d *= (this.superchargerTimer > 1 ? 2 : 1); // supercharger inflicts double damage
         if ((this.ship >= 19) && d < 1.5 && d > 0) d = 0; // Too weak attacks won't strain the hull of the ship.
@@ -998,7 +998,7 @@ class Player {
         if (this.health < 0) this.die(origin);
 
         if (d > 0) note(`-${Math.floor(d)}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-        if (d === 0) note("No dmg", this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
+        if (d == 0) note("No dmg", this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
         if (d < 0) note(`+${Math.floor(Math.abs(d))}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
         this.emit("dmg", {});
         return this.health < 0;
@@ -1020,7 +1020,7 @@ class Player {
             this.killStreakTimer = 750;// 30s
         }
 
-        if (this.ship === 19) {
+        if (this.ship == 19) {
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
                 if (p.color !== this.color) {
@@ -1028,7 +1028,7 @@ class Player {
                     else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
                 }
             }
-            if (bases[this.sy][this.sx] !== 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType !== DEADBASE) {
+            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE) {
                 const b = bases[this.sy][this.sx];
                 b.EMP(150);
             }
@@ -1065,7 +1065,7 @@ class Player {
         for (let i = 0; i < 10; i++) {
     	const beforeAmmo = this.ammos[i];
             this.refillAmmo(i);
-            if (beforeAmmo !== this.ammos[i]) ammoHasChanged = true;
+            if (beforeAmmo != this.ammos[i]) ammoHasChanged = true;
         }
         if (!ammoHasChanged) return;
         sendWeapons(this);
@@ -1078,13 +1078,13 @@ class Player {
 
     calculateGenerators () { // count how many gens I have
         this.generators = 0;
-        if (this.ship === 22) {
+        if (this.ship == 22) {
             for (let slot = 0; slot < 10; slot++) {
-                if (this.weapons[slot] === 20) this.generators++;
+                if (this.weapons[slot] == 20) this.generators++;
             }
         } else {
             for (let slot = 0; slot < ships[this.ship].weapons; slot++) {
-                if (this.weapons[slot] === 20) this.generators++;
+                if (this.weapons[slot] == 20) this.generators++;
             }
         }
         if (this.ship <= wepns[20].level) this.generators = 0; // gotta have sufficiently high ship

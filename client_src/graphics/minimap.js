@@ -191,7 +191,7 @@ global.r3DMap = function () {
     let qdsy = -1;
     let qsx = -1;
     let qsy = -1;
-    if (quest !== 0) {
+    if (quest != 0) {
         qdsx = quest.dsx;
         qdsy = quest.dsy;
         qsx = quest.sx;
@@ -251,7 +251,7 @@ global.r3DMap = function () {
 
             // render sector labels
             const fontsz = Math.hypot(xx3 - xx2, yy3 - yy2) / 3;
-            if (ga > 0.3 && fontsz > 5 && baseMap2D[i][j] === 0 && !(useOldMap && i * j !== 0)) {
+            if (ga > 0.3 && fontsz > 5 && baseMap2D[i][j] === 0 && !(useOldMap && i * j != 0)) {
                 minictx.font = `${fontsz}px ShareTech`;
                 minictx.fillStyle = "white";
                 write(minictx, getSectorName(i, j), (xx2 + xx3) / 2 + 104, (yy2 + yy3 + fontsz * 0.65) / 2 + 104);

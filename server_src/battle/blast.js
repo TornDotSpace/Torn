@@ -42,7 +42,7 @@ module.exports = class Blast {
                 const fy = player.y - Math.sin(this.angle) * pDist;
                 if (Math.hypot(fx - this.bx, fy - this.by) < ships[player.ship].width * 2 / 3) this.hit(player);
             }
-            if (this.wepnID !== 25) {
+            if (this.wepnID != 25) {
                 for (const i in asts[this.sy][this.sx]) {
                     const ast = asts[this.sy][this.sx][i];
                     if ((this.bx - ast.x) * Math.cos(this.angle) + (this.by - ast.y) * Math.sin(this.angle) > 0) continue;

@@ -190,7 +190,7 @@ global.maxShipAgility = -1000;
 for (const i in ships) {
     const ship = ships[i];
     if (ship.thrust > maxShipThrust) maxShipThrust = ship.thrust;
-    if (ship.capacity > maxShipCapacity && i !== 17) maxShipCapacity = ship.capacity;
+    if (ship.capacity > maxShipCapacity && i != 17) maxShipCapacity = ship.capacity;
     if (ship.agility > maxShipAgility) maxShipAgility = ship.agility;
     if (ship.health > maxShipHealth) maxShipHealth = ship.health;
 }
@@ -252,7 +252,7 @@ setInterval(() => {
     hyperdriveTimer--;
     w = window.innerWidth;
     h = window.innerHeight;
-    if (canvas.width !== w || canvas.height !== h) {
+    if (canvas.width != w || canvas.height != h) {
         canvas.width = w;
         canvas.height = h;
     }

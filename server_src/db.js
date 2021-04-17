@@ -24,7 +24,7 @@ const Base = require("./universe/base.js");
 // TODO: Implement failover in the event we lose connection
 // to MongoDB
 global.connectToDB = function () {
-    if (PLAYER_DATABASE !== null) {
+    if (PLAYER_DATABASE != null) {
         console.log("[DB] Already connected to MongoDB database...");
         return;
     }
@@ -75,7 +75,7 @@ global.loadPlayerData = async function (player) {
         player[key] = record[key];
     }
 
-    if (bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx].color !== player.color) {
+    if (bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx].color != player.color) {
         player.sx = baseMap[player.color][0];
         player.sy = baseMap[player.color][1];
     }

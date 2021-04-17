@@ -83,7 +83,7 @@ socket.on("posUp", (data) => {
     orbsInfo = data.orbs;
     minesInfo = data.mines;
     vortsInfo = data.vorts;
-    if (sx !== data.sx || sy !== data.sy) {
+    if (sx != data.sx || sy != data.sy) {
         sx = data.sx;
         sy = data.sy;
         playAudio("sector", 1);
@@ -447,7 +447,7 @@ socket.on("you", (data) => {
 socket.on("weapons", (data) => {
     let diff = false;
     for (const i in equipped) {
-        if (equipped[i] !== data.weapons[i]) {
+        if (equipped[i] != data.weapons[i]) {
             diff = true;
         }
     }
@@ -536,7 +536,7 @@ socket.on("quest", (data) => {
 socket.on("achievementsKill", (data) => {
     for (let a in data.achs) {
         a = Number(a);
-        if (achs[a] !== data.achs[a]) {
+        if (achs[a] != data.achs[a]) {
             achs[a] = data.achs[a];
             if (data.note && !guest) addBigNote([256, "Achievement Get!", jsn.achNames[a].split(":")[0], jsn.achNames[a].split(":")[1]]);
         }
@@ -545,7 +545,7 @@ socket.on("achievementsKill", (data) => {
 socket.on("achievementsCash", (data) => {
     for (let a in data.achs) {
         a = Number(a);
-        if (achs[a + 13] !== data.achs[a]) {
+        if (achs[a + 13] != data.achs[a]) {
             achs[a + 13] = data.achs[a];
             if (data.note && !guest) addBigNote([256, "Achievement Get!", jsn.achNames[a + 13].split(":")[0], jsn.achNames[a + 13].split(":")[1]]);
         }
@@ -554,7 +554,7 @@ socket.on("achievementsCash", (data) => {
 socket.on("achievementsDrift", (data) => {
     for (let a in data.achs) {
         a = Number(a);
-        if (achs[a + 25] !== data.achs[a]) {
+        if (achs[a + 25] != data.achs[a]) {
             achs[a + 25] = data.achs[a];
             if (data.note && !guest) addBigNote([256, "Achievement Get!", jsn.achNames[a + 25].split(":")[0], jsn.achNames[a + 25].split(":")[1]]);
         }
@@ -563,7 +563,7 @@ socket.on("achievementsDrift", (data) => {
 socket.on("achievementsMisc", (data) => {
     for (let a in data.achs) {
         a = Number(a);
-        if (achs[a + 37] !== data.achs[a]) {
+        if (achs[a + 37] != data.achs[a]) {
             achs[a + 37] = data.achs[a];
             if (data.note && !guest) addBigNote([256, "Achievement Get!", jsn.achNames[a + 37].split(":")[0], jsn.achNames[a + 37].split(":")[1]]);
         }
@@ -581,7 +581,7 @@ socket.on("status", (data) => {
 });
 socket.on("planets", (data) => {
     planets = data.pack;
-    if (quest !== 0 && quest.type === "Secret2" && sx == quest.sx && sy == quest.sy) {
+    if (quest != 0 && quest.type === "Secret2" && sx == quest.sx && sy == quest.sy) {
         secret2PlanetName = planets.name;
     }
 });

@@ -86,15 +86,15 @@ module.exports = class Missile {
                 const player = players[this.sy][this.sx][i];
                 if (player.disguise > 0) continue;
                 const dist = squaredDist(player, this);
-                if ((player.color !== this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked == 0 || dist < closest)) {
+                if ((player.color != this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked == 0 || dist < closest)) {
                     this.locked = player.id;
                     closest = dist;
                 }
             }
-            if (this.locked !== 0) return;
+            if (this.locked != 0) return;
 
             // check base
-            if (bases[this.sy][this.sx] !== 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType !== DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
+            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
                 this.locked = bases[this.sy][this.sx].id;
                 return;
             }
@@ -112,11 +112,11 @@ module.exports = class Missile {
     }
 
     move () {
-        if (this.locked !== 0) {
+        if (this.locked != 0) {
             if (this.lockedTimer++ > missileLockTimeout) this.die();
 
             let target = players[this.sy][this.sx][this.locked]; // try 2 find the target object
-            if (typeof target === "undefined" && bases[this.sy][this.sx].color !== this.color) target = bases[this.sy][this.sx];
+            if (typeof target === "undefined" && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
             if (target == 0) target = asts[this.sy][this.sx][this.locked];
             if (typeof target === "undefined") this.locked = 0;
 
@@ -124,14 +124,14 @@ module.exports = class Missile {
                 if (target.type === "Player") target.isLocked = true;
 
                 // on impact
-                if (target.sx == this.sx && target.sy == this.sy && squaredDist(target, this) < 10000 * (this.wepnID == 38 ? 5 : 1) && (target.baseType !== DEADBASE) !== false /* we don't know it's a base. can't just say ==true. */) {
+                if (target.sx == this.sx && target.sy == this.sy && squaredDist(target, this) < 10000 * (this.wepnID == 38 ? 5 : 1) && (target.baseType != DEADBASE) != false /* we don't know it's a base. can't just say ==true. */) {
                     target.dmg(this.dmg, this);
                     this.die();
                     if (this.wepnID == 12 && (target.type === "Player" || target.type === "Base")) target.EMP(54); // emp missile
                     return;
                 }
 
-                if (this.wepnID !== 38) { // 38: proximity fuze
+                if (this.wepnID != 38) { // 38: proximity fuze
                     if (this.timer == 1 || tick % 4 == 0) this.goalAngle = angleBetween(target, this);
                     this.angle = findBisector(findBisector(this.goalAngle, this.angle), this.angle);// turn towards goal
                 }
@@ -162,7 +162,7 @@ module.exports = class Missile {
             const r = Math.random();
             const bAngle = this.angle + r * 2 - 1;
             const dist = squaredDist(player, this);
-            if ((player.color !== this.color && player.disguise <= 0) && (dist < square(wepns[this.wepnID].range * 10))) {
+            if ((player.color != this.color && player.disguise <= 0) && (dist < square(wepns[this.wepnID].range * 10))) {
                 const r = Math.random();
                 const bAngle = this.angle + r * 2 - 1;
                 const missile = new Missile(this.owner, r, 10, bAngle);
@@ -174,7 +174,7 @@ module.exports = class Missile {
                 missiles[this.sy][this.sx][r] = missile;
             }
         }
-        if (bases[this.sy][this.sx] !== 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType !== DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
+        if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
             const r = Math.random();
             const bAngle = this.angle + r * 2 - 1;
             let wepid = 10; // Normal Missile

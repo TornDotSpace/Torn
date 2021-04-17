@@ -131,7 +131,7 @@ global.numToLS = function (x) {
     const decimal = x - intx;
     let str = (`${parseFloat(decimal.toFixed(4))}`).substring(1);
     x = intx;
-    while (x !== 0) {
+    while (x != 0) {
         let nextBit = `${x % 1000}`;
         if (x < 1000) str = nextBit + str;
         else {
