@@ -262,7 +262,7 @@ module.exports = class Base {
     }
 
     sendDeathMsg (killedBy) {
-        const baseName = "base";
+        let baseName = "base";
         if (this.baseType == SENTRY) {
             baseName = "Sentry";
         } else if (this.baseType == TURRET) {

@@ -57,6 +57,7 @@
             "disallowPrototype": true,
             "singleReturnOnly": true,
             "classPropertiesAllowed": false
-        }]
+        }],
+        "no-sequences":0
     }
 }
