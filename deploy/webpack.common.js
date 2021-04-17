@@ -30,17 +30,27 @@ module.exports = {
   },
   module: {
     rules: [{
-      test: /\.jsx?$/,
+      test: /\.tsx?$/,
+      use: [
+        {
+          loader: "ts-loader",
+        },
+      ],
       exclude: /node_modules/,
-      loader: "babel-loader",
-	    options: {
-        presets: ["@babel/react", "@babel/preset-env"],
-        plugins: ["@babel/proposal-class-properties"],
-	    },
+    },
+    {
+      test: /\.jsx?$/,
+      use: [{
+        loader: "babel-loader",
+        options: {
+          presets: ["@babel/react", "@babel/preset-env"],
+          plugins: ["@babel/proposal-class-properties"],
+        },
+      }],
     }],
   },
   resolve: {
-    extensions: ["*", ".js", ".jsx"],
+    extensions: ["*", ".js", ".tsx", ".ts", ".jsx"],
   },
   devServer: {
     contentBase: "./client",
