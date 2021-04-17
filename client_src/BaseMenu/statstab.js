@@ -126,10 +126,11 @@ function renderTrailSelector () {
     } if (achs[47]) {
         baseMenuCtx.fillStyle = seller == 704 ? "yellow" : "cyan";
         write(baseMenuCtx, translate("[Random Trail]"), 512 + 128, 44 + 64 + 7 * 16);
-    } if (false) {
+    }
+    /* if (false) {
         baseMenuCtx.fillStyle = seller == 705 ? "yellow" : "cyan";
         write(baseMenuCtx, translate("[Rainbow Trail]"), 512 + 128, 44 + 64 + 9 * 16);
-    }
+    } */
 }
 
 function renderUpgradeButtons () {

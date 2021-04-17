@@ -19,6 +19,7 @@ import { Socket } from "socket.io";
 import { translate } from "./localizer.ts";
 
 
+/* eslint-disable */
 // BEGIN TYPESCRIPT TRANSITION HACKS
 declare var socket: Socket;
 declare var clientmutes: any;
@@ -31,6 +32,7 @@ declare var h: any;
 declare var getPosition: any;
 declare var wepns: any;
 // END TYPESCRIPT TRANSITION HACKS
+/* eslint-enable */
 
 const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
 const messages = [{}, {}, {}];

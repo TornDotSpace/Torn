@@ -17,8 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const path = require("path");
 const webpack = require("webpack");
 
-const git = require("git-revision-webpack-plugin");
-const gitRevisionPlugin = new git({
+const Git = require("git-revision-webpack-plugin");
+
+const gitRevisionPlugin = new Git({
     lightweightTags: true
 });
 

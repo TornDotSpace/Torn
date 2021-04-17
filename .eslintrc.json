@@ -63,6 +63,7 @@
         "no-mixed-spaces-and-tabs":0,
         "no-tabs":0,
         "no-global-assign":0,
-        "no-func-assign":0
+        "no-func-assign":0,
+        "no-self-assign":0
     }
 }

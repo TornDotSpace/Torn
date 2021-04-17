@@ -48,7 +48,7 @@ document.onkeydown = function (event) {
         ReactRoot.focusChat();
         typing = true;
     } else if (autopilot) {
-
+        // eslint-disable no-empty
     } else if (event.keyCode == 78 && docked && tab == 8) { // n
         confirmer = -1;
         tab = 0;

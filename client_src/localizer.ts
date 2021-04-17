@@ -28,11 +28,10 @@ let languageNumber = 0;
 
 let splash = "";
 
-export const getSplash = ()
-=> splash;
+export const getSplash = () => splash;
 
 export function setLang (name) {
-    document.cookie = ("lang=" + name);
+    document.cookie = (`lang=${name}`);
     loadLang(name);
 }
 
@@ -106,7 +105,7 @@ export function translate (english, arr = undefined) {
     if (typeof mEng[english] === "undefined") { return "TRANSLATION ERROR"; }
     let translated = (languageNumber == 0) ? english : mEng[english][languageNumber - 1];
     if (arr !== undefined) {
-while (arr.length > 0) { translated = translated.replace("#", arr.shift()); }
-}
+        while (arr.length > 0) { translated = translated.replace("#", arr.shift()); }
+    }
     return translated;
 }
