@@ -89,7 +89,7 @@ function renderStatistics () {
     const eMult = e2;
     /* if (ship >= wepns[20].level) {
     for (let i = 0; i < ships[ship].weapons; i++) {
-      if (equipped[i] === 20) activeGens++;
+      if (equipped[i] == 20) activeGens++;
     }
   }
   for (let i = 0; i < activeGens; i++) eMult *= 1.06; */
@@ -110,53 +110,53 @@ function renderStatistics () {
 }
 
 function renderTrailSelector () {
-    baseMenuCtx.fillStyle = seller === 700 ? "yellow" : "red";
+    baseMenuCtx.fillStyle = seller == 700 ? "yellow" : "red";
     write(baseMenuCtx, translate("[Default Trail]"), 512 + 128, 44 + 64 - 1 * 16);
     if (achs[12]) {
-        baseMenuCtx.fillStyle = seller === 701 ? "yellow" : "red";
+        baseMenuCtx.fillStyle = seller == 701 ? "yellow" : "red";
         write(baseMenuCtx, translate("[Blood Trail]"), 512 + 128, 44 + 64 + 1 * 16);
     } if (achs[24]) {
-        baseMenuCtx.fillStyle = seller === 702 ? "yellow" : "gold";
+        baseMenuCtx.fillStyle = seller == 702 ? "yellow" : "gold";
         write(baseMenuCtx, translate("[Money Trail]"), 512 + 128, 44 + 64 + 3 * 16);
     } if (achs[36]) {
-        baseMenuCtx.fillStyle = seller === 703 ? "yellow" : "lightgray";
+        baseMenuCtx.fillStyle = seller == 703 ? "yellow" : "lightgray";
         write(baseMenuCtx, translate("[Panda Trail]"), 512 + 128, 44 + 64 + 5 * 16);
     } if (achs[47]) {
-        baseMenuCtx.fillStyle = seller === 704 ? "yellow" : "cyan";
+        baseMenuCtx.fillStyle = seller == 704 ? "yellow" : "cyan";
         write(baseMenuCtx, translate("[Random Trail]"), 512 + 128, 44 + 64 + 7 * 16);
     } if (false) {
-        baseMenuCtx.fillStyle = seller === 705 ? "yellow" : "cyan";
+        baseMenuCtx.fillStyle = seller == 705 ? "yellow" : "cyan";
         write(baseMenuCtx, translate("[Rainbow Trail]"), 512 + 128, 44 + 64 + 9 * 16);
     }
 }
 
 function renderUpgradeButtons () {
     // upgrades
-    baseMenuCtx.fillStyle = (seller === 200) ? "lime" : "white";
+    baseMenuCtx.fillStyle = (seller == 200) ? "lime" : "white";
     write(baseMenuCtx, `[+] $${numToLS(techPrice(t2))}`, 64 + 54, 416 - 64 + 28);
-    baseMenuCtx.fillStyle = (seller === 201) ? "lime" : "white";
+    baseMenuCtx.fillStyle = (seller == 201) ? "lime" : "white";
     write(baseMenuCtx, `[+] $${numToLS(techPrice(va2))}`, 192 + 54, 416 - 64 + 28);
-    baseMenuCtx.fillStyle = (seller === 202) ? "lime" : "white";
+    baseMenuCtx.fillStyle = (seller == 202) ? "lime" : "white";
     write(baseMenuCtx, `[+] $${numToLS(techPrice(c2))}`, 64 + 54, 416 + 28);
-    baseMenuCtx.fillStyle = (seller === 203) ? "lime" : "white";
+    baseMenuCtx.fillStyle = (seller == 203) ? "lime" : "white";
     write(baseMenuCtx, `[+] $${numToLS(techPrice(mh2))}`, 192 + 54, 416 + 28);
-    baseMenuCtx.fillStyle = (seller === 204) ? "lime" : "white";
+    baseMenuCtx.fillStyle = (seller == 204) ? "lime" : "white";
     write(baseMenuCtx, `[+] $${numToLS(techPrice(e2) * 8)}`, 320 + 54, 416 - 64 + 28);
-    baseMenuCtx.fillStyle = (seller === 205) ? "lime" : "white";
+    baseMenuCtx.fillStyle = (seller == 205) ? "lime" : "white";
     write(baseMenuCtx, `[+] $${numToLS(techPrice(ag2))}`, 320 + 54, 416 + 28);
 
     // downgrades
-    baseMenuCtx.fillStyle = (seller === 206) ? "red" : "white";
+    baseMenuCtx.fillStyle = (seller == 206) ? "red" : "white";
     if (t2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(t2))}`, 64 + 54, 416 - 64 + 42);
-    baseMenuCtx.fillStyle = (seller === 207) ? "red" : "white";
+    baseMenuCtx.fillStyle = (seller == 207) ? "red" : "white";
     if (va2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(va2))}`, 192 + 54, 416 - 64 + 42);
-    baseMenuCtx.fillStyle = (seller === 208) ? "red" : "white";
+    baseMenuCtx.fillStyle = (seller == 208) ? "red" : "white";
     if (c2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(c2))}`, 64 + 54, 416 + 42);
-    baseMenuCtx.fillStyle = (seller === 209) ? "red" : "white";
+    baseMenuCtx.fillStyle = (seller == 209) ? "red" : "white";
     if (mh2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(mh2))}`, 192 + 54, 416 + 42);
-    baseMenuCtx.fillStyle = (seller === 210) ? "red" : "white";
+    baseMenuCtx.fillStyle = (seller == 210) ? "red" : "white";
     if (e2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(e2) * 8)}`, 320 + 54, 416 - 64 + 42);
-    baseMenuCtx.fillStyle = (seller === 211) ? "red" : "white";
+    baseMenuCtx.fillStyle = (seller == 211) ? "red" : "white";
     if (ag2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(ag2))}`, 320 + 54, 416 + 42);
 }
 
@@ -180,7 +180,7 @@ global.statsOnHover = function () {
 
     else if (y > 44 + 64 - 24 && y < 44 + 64 + 8 * 21 && x > 512 && x < 768) {
         seller = 700 + Math.floor((y - 44 - 64 + 24) / 32);
-        if ((seller === 701 && !achs[12]) || (seller === 702 && !achs[24]) || (seller === 703 && !achs[36]) || (seller === 704 && !achs[47]) || (seller === 705 && true)) seller = 0;
+        if ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && true)) seller = 0;
     } else seller = 0;
 };
 

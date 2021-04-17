@@ -75,7 +75,7 @@ module.exports = function initNetcode () {
         }
         : {};
 
-    const server = (protocol === https)
+    const server = (protocol == https)
         ? protocol.createServer(options)
         : protocol.createServer();
 
@@ -221,7 +221,7 @@ module.exports = function initNetcode () {
                 return;
             }
             user = user.toLowerCase();
-            if (typeof pass !== "string" || pass.length > 128 || pass.length < 6 || pass === user) {
+            if (typeof pass !== "string" || pass.length > 128 || pass.length < 6 || pass == user) {
                 socket.emit("invalidReg", { reason: 3 });
                 return;
             }
@@ -253,7 +253,7 @@ module.exports = function initNetcode () {
         });
 
         socket.on("login", async (data) => {
-            if (typeof data === "undefined" || data.cookie === undefined) return;
+            if (typeof data === "undefined" || data.cookie == undefined) return;
 
             if (instance) return;
             instance = true;
@@ -282,7 +282,7 @@ module.exports = function initNetcode () {
             let wait_time = 0;
             for (const p in sockets) {
                 const curr_socket = sockets[p];
-                if (curr_socket.player !== undefined && curr_socket.player._id === name && curr_socket !== socket) {
+                if (curr_socket.player !== undefined && curr_socket.player._id == name && curr_socket !== socket) {
                     curr_socket.player.kickMsg = "A user has logged into this account from another location.";
                     curr_socket.player.socket.disconnect();
                     wait_time = 6000;
@@ -353,7 +353,7 @@ module.exports = function initNetcode () {
 
         socket.on("key", (data) => { // on client keypress or key release
             if (typeof data === "undefined" || typeof data.inputId === "undefined" || typeof data.state === "undefined") return;
-            if (player === 0) return;
+            if (player == 0) return;
 
             player.afkTimer = afkTimerConst;
 
@@ -394,7 +394,7 @@ module.exports = function initNetcode () {
             // const hasZalgo = re.test(encodeURIComponent(data.msg));
             // data.msg = data.msg.replace(/%CC(%[A-Z0-9]{2})+%20/g, " ").replace(/%CC(%[A-Z0-9]{2})+(\w)/g, "$2"); / /replace anything else
 
-            if (player === 0 || data.msg.length === 0) return;
+            if (player == 0 || data.msg.length == 0) return;
 
             if (guestsCantChat && player.guest) {
                 socket.emit("chat", { msg: "You must create an account in the base before you can chat!", color: "yellow" });
@@ -450,7 +450,7 @@ module.exports = function initNetcode () {
                 const finalMsg = `${spaces + player.nameWithColor()}: ${newmsg}`;
 
                 // Send it to the client up to what chat room theyre in
-                if (player.globalChat === 2 && player.guild === "") socket.emit("chat", { msg: ("~`#ff0000~`You are not in a guild!") });
+                if (player.globalChat == 2 && player.guild === "") socket.emit("chat", { msg: ("~`#ff0000~`You are not in a guild!") });
                 else playerChat(finalMsg, player.globalChat, player.color, player.guild);
 
                 if (Config.getValue("enable_discord_moderation", false)) {
@@ -466,21 +466,21 @@ module.exports = function initNetcode () {
             }
         });
         socket.on("toggleGlobal", (data) => { // player wants to switch what chat room they're in
-            if (player === 0 || typeof data.gc !== "number" || data.gc !== Math.floor(data.gc) || data.gc < 0 || data.gc >= 3) return;
+            if (player == 0 || typeof data.gc !== "number" || data.gc !== Math.floor(data.gc) || data.gc < 0 || data.gc >= 3) return;
             player.globalChat = data.gc;
         });
         socket.on("jettison", (data) => { // Drop all ores
             player.iron = player.silver = player.platinum = player.copper = 0;
         });
         socket.on("sell", (data) => { // selling ore
-            if (typeof data === "undefined" || player === 0 || !player.docked || typeof data.item !== "string") return;
+            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== "string") return;
             player.sellOre(data.item);
         });
         socket.on("buyShip", (data) => { // client wants to buy a new ship
-            if (typeof data === "undefined" || player === 0 || !player.docked || typeof data.ship !== "number") return;
+            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.ship !== "number") return;
 
             data.ship = Math.floor(data.ship); // the ship index must be integer. It must be no higher than your rank, and cannot be your current ship or out of bounds.
-            if (data.ship > player.rank || data.ship < 0 || data.ship > ships.length || data.ship === player.ship) return;
+            if (data.ship > player.rank || data.ship < 0 || data.ship > ships.length || data.ship == player.ship) return;
 
             let price = ships[player.ship].price * -0.75; // refund them .75x their own ship's price.
             price += ships[data.ship].price;
@@ -499,13 +499,13 @@ module.exports = function initNetcode () {
             player.equipped = 0; // set them as being equipped on their first weapon
             socket.emit("equip", { scroll: player.equipped });
 
-            for (let i = 0; i < 10; i++) if (player.weapons[i] === -2 && i < ships[player.ship].weapons) player.weapons[i] = -1; // unlock new possible weapon slots
+            for (let i = 0; i < 10; i++) if (player.weapons[i] == -2 && i < ships[player.ship].weapons) player.weapons[i] = -1; // unlock new possible weapon slots
             player.calculateGenerators();
             sendWeapons(player);
             player.save();
         });
         socket.on("buyW", (data) => { // client wants to buy a weapon
-            if (typeof data === "undefined" || player === 0 || !player.docked || typeof data.slot !== "number" || typeof data.weapon !== "number") return;
+            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.slot !== "number" || typeof data.weapon !== "number") return;
 
             data.slot = Math.floor(data.slot);
             data.weapon = Math.floor(data.weapon);
@@ -525,7 +525,7 @@ module.exports = function initNetcode () {
             player.save();
         });
         socket.on("buyLife", (data) => { // client wants to buy a life
-            if (player === 0 || !player.docked || player.lives >= 20) return;
+            if (player == 0 || !player.docked || player.lives >= 20) return;
             const price = expToLife(player.experience, player.guest); // compute how much the life costs them
             if (player.money < price) return; // cant afford
 
@@ -536,7 +536,7 @@ module.exports = function initNetcode () {
         });
         socket.on("upgrade", (data) => { // client wants to upgrade a tech
             // TODO im totally redoing this
-            if (typeof data === "undefined" || player === 0 || !player.docked || typeof data.item !== "number" || data.item > 5 || data.item < 0) return;
+            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== "number" || data.item > 5 || data.item < 0) return;
             const item = Math.floor(data.item);
 
             switch (item) {
@@ -596,7 +596,7 @@ module.exports = function initNetcode () {
             player.save();
         });
         socket.on("downgrade", (data) => { // client wants to downgrade a tech
-            if (typeof data === "undefined" || player === 0 || !player.docked || typeof data.item !== "number" || data.item > 5 || data.item < 0) return;
+            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== "number" || data.item > 5 || data.item < 0) return;
             const item = Math.floor(data.item);
 
             switch (item) {
@@ -662,7 +662,7 @@ module.exports = function initNetcode () {
             player.save();
         });
         socket.on("sellW", (data) => { // wants to sell a weapon.
-            if (typeof data === "undefined" || player === 0 || !player.docked || typeof data.slot !== "number" || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
+            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.slot !== "number" || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
 
             data.slot = Math.floor(data.slot);
             if (!player.docked || player.weapons[data.slot] < 0) return; // can't sell what you don't have. or when you're not in base.
@@ -674,15 +674,15 @@ module.exports = function initNetcode () {
             player.save();
         });
         socket.on("quest", (data) => { // wants to accept a quest
-            if (typeof data === "undefined" || player === 0 || !player.docked || player.quest !== 0 || typeof data.quest !== "number" || data.quest < 0 || data.quest > 9) return;
+            if (typeof data === "undefined" || player == 0 || !player.docked || player.quest !== 0 || typeof data.quest !== "number" || data.quest < 0 || data.quest > 9) return;
 
             const qid = Math.floor(data.quest); // Find the correct quest.
             const quest = teamQuests[player.color][qid];
 
             // You need to have unlocked this quest type.
-            if (quest === 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;
+            if (quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;
 
-            if (((quest.dsx % 3 === 1 && quest.dsy === 8) || (quest.sx % 3 === 1 && quest.sy === 8)) && !player.randmAchs[2]) { // risky business
+            if (((quest.dsx % 3 == 1 && quest.dsy == 8) || (quest.sx % 3 == 1 && quest.sy == 8)) && !player.randmAchs[2]) { // risky business
                 player.randmAchs[2] = true;
                 player.sendAchievementsMisc(true);
             }
@@ -692,7 +692,7 @@ module.exports = function initNetcode () {
             socket.emit("quest", { quest: quest });
         });
         socket.on("equip", (data) => { // Player wants to select a new weapon to hold
-            if (player === 0 || typeof data === "undefined" || typeof player === "undefined" || typeof data.scroll !== "number" || data.scroll >= ships[player.ship].weapons) return;
+            if (player == 0 || typeof data === "undefined" || typeof player === "undefined" || typeof data.scroll !== "number" || data.scroll >= ships[player.ship].weapons) return;
 
             player.equipped = Math.floor(data.scroll); // Set their equipped weapon
             if (player.equipped < 0) player.equipped = 0; // Ensure it's in range
@@ -702,13 +702,13 @@ module.exports = function initNetcode () {
             socket.emit("equip", { scroll: player.equipped }); // Alert the client
         });
         socket.on("trail", (data) => { // Player requests an update to their trail
-            if (typeof data === "undefined" || player === 0 || !player.docked || typeof data.trail !== "number") return;
+            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.trail !== "number") return;
 
-            if (data.trail === 0) player.trail = 0;
-            if (data.trail === 1 && player.killsAchs[12]) player.trail = 1;
-            if (data.trail === 2 && player.moneyAchs[11]) player.trail = 2;
-            if (data.trail === 3 && player.driftAchs[11]) player.trail = 3;
-            if (data.trail === 4 && player.randmAchs[10]) player.trail = 4;
+            if (data.trail == 0) player.trail = 0;
+            if (data.trail == 1 && player.killsAchs[12]) player.trail = 1;
+            if (data.trail == 2 && player.moneyAchs[11]) player.trail = 2;
+            if (data.trail == 3 && player.driftAchs[11]) player.trail = 3;
+            if (data.trail == 4 && player.randmAchs[10]) player.trail = 4;
             if (player.name.includes(" ")) player.trail += 16;
         });
     });

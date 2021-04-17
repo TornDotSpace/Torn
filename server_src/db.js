@@ -52,7 +52,7 @@ global.handlePlayerDeath = async function (player) {
 
     const record = await PLAYER_DATABASE.findOne({ _id: player._id });
 
-    if (record === null) return;
+    if (record == null) return;
 
     // Certain variables should NOT be reverted
     const persist = ["lastLogin", "randmAchs", "killAchs", "moneyAchs", "driftAchs", "planetsClaimed", "lives", "experience", "rank"];

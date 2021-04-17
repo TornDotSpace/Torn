@@ -33,7 +33,7 @@ module.exports = class Blast {
     tick () {
         this.time++;
         if (this.time > 11) delete blasts[this.sy][this.sx][this.id];
-        if (this.time === 1) {
+        if (this.time == 1) {
             for (const i in players[this.sy][this.sx]) {
                 const player = players[this.sy][this.sx][i];
                 if ((this.bx - player.x) * Math.cos(this.angle) + (this.by - player.y) * Math.sin(this.angle) > 0) continue;
@@ -54,7 +54,7 @@ module.exports = class Blast {
             }
 
             const base = bases[this.sy][this.sx];
-            if (base.color === this.owner.color || base.baseType === DEADBASE) return;
+            if (base.color == this.owner.color || base.baseType == DEADBASE) return;
             if ((this.bx - base.x) * Math.cos(this.angle) + (this.by - base.y) * Math.sin(this.angle) > 0) return;
             const pDist = Math.hypot(base.x - this.bx, base.y - this.by);
             const fx = base.x - Math.cos(this.angle) * pDist;
@@ -64,8 +64,8 @@ module.exports = class Blast {
     }
 
     hit (b) {
-        if (this.wepnID === 25 && this.owner.color !== b.color) b.EMP(126); // emp blast
-        else if ((this.wepnID === 34 || this.wepnID === 47) && this.owner.color !== b.color) b.dmg(this.dmg, this); // muon and lepton
-        else if (this.wepnID === 41) b.brainwashedBy = this.owner.id; // brainwashing laser
+        if (this.wepnID == 25 && this.owner.color !== b.color) b.EMP(126); // emp blast
+        else if ((this.wepnID == 34 || this.wepnID == 47) && this.owner.color !== b.color) b.dmg(this.dmg, this); // muon and lepton
+        else if (this.wepnID == 41) b.brainwashedBy = this.owner.id; // brainwashing laser
     }
 };

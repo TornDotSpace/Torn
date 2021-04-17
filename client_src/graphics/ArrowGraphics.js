@@ -26,10 +26,10 @@ global.rEdgePointer = function () {
         else angle = 0;
     }
     let text = "";
-    if (angle === 0) text = sectorWidth - px;
-    else if (angle === 3) text = py;
-    else if (angle === 2) text = px;
-    else if (angle === 1) text = sectorWidth - py;
+    if (angle == 0) text = sectorWidth - px;
+    else if (angle == 3) text = py;
+    else if (angle == 2) text = px;
+    else if (angle == 1) text = sectorWidth - py;
     rPointerArrow(Img.yellowArrow, angle * Math.PI / 2, text, "yellow");
 };
 global.rBasePointer = function (nearB) {

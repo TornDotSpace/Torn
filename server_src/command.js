@@ -58,7 +58,7 @@ cmds["/help"] = new Command("/help - Displays commands & usages", EVERYONE, (ply
 });
 
 cmds["/me"] = new Command("/me <msg>", EVERYONE, (player, msg) => {
-    if (msg.split(" ").length === 1) return;
+    if (msg.split(" ").length == 1) return;
     console.log(`[ME]: ${msg}`);
     playerChat(`~~\`${player.color}~\`${player.name}~\`yellow~\` ${msg.substring(4)}`, player.globalChat, player.color, player.guild);
 });
@@ -99,10 +99,10 @@ cmds["/changeteam"] = new Command("/changeteam", REGISTERED, (player, msg) => {
     if (split.length > 2) {
         player.socket.emit("chat", { msg: "Bad syntax! The message should look like '/changeteam'" }); return;
     }
-    if (split.length === 1) {
+    if (split.length == 1) {
         player.socket.emit("chat", { msg: "Are you sure? This costs 10% of your experience and money. You must have 10,000 exp. Type \"/changeteam <color>\" to continue. Make sure you aren't near any players or bases on your current team." });
     }
-    if (split.length === 2) {
+    if (split.length == 2) {
         if (player.experience <= 10000) {
             player.socket.emit("chat", { msg: "You don't have enough experience!" });
             return;
@@ -130,7 +130,7 @@ cmds["/changeteam"] = new Command("/changeteam", REGISTERED, (player, msg) => {
 cmds["/nameturret"] = new Command("/nameturret <name>", REGISTERED, (player, msg) => {
     let num = 0;
     const base = bases[player.sy][player.sx];
-    if (base !== 0 && base.owner === player.name) {
+    if (base !== 0 && base.owner == player.name) {
         base.name = msg.substring(12); num++;
     }
     player.socket.emit("chat", { msg: `${num} turret(s) renamed.` });
@@ -181,7 +181,7 @@ cmds["/pm"] = new Command("/pm <player> <msg>", REGISTERED, (player, msg) => {
 });
 
 cmds["/r"] = new Command("/r <msg>", REGISTERED, (player, msg) => {
-    if (msg.split(" ").length === 1) return;
+    if (msg.split(" ").length == 1) return;
     player.r(msg);
 });
 
@@ -196,7 +196,7 @@ cmds["/mute"] = new Command("/mute <player> - You will no longer hear the player
     } // split looks like {"/mute", "name"}
     const name = split[1];
     const player = getPlayerFromName(name);
-    if (player === -1) {
+    if (player == -1) {
 	    ply.socket.emit("chat", { msg: `Player '${name}' not found.` });
 	    return;
     }
@@ -210,7 +210,7 @@ cmds["/unmute"] = new Command("/unmute <player> - You will begin hearing the pla
     } // split looks like {"/unmute", "name"}
     const name = msg.split(" ")[1];
     const player = getPlayerFromName(name);
-    if (player === -1) {
+    if (player == -1) {
 	    ply.socket.emit("chat", { msg: `Player '${name}' not found.` });
 	    return;
     }
@@ -317,7 +317,7 @@ cmds["/tp"] = new Command("/tp <player> - Teleport to the player.", ADMINPLUS, (
     }
     const name = msg.split(" ")[1];
     const player = getPlayerFromName(name);
-    if (player === -1) {
+    if (player == -1) {
         ply.socket.emit("chat", { msg: `Player '${name}' not found.` });
         return;
     }
@@ -342,7 +342,7 @@ cmds["/settag"] = new Command("/settag <player> <tag> - Sets a player's tag. tag
     const name = msg.split(" ")[1];
     const newTag = msg.split(" ")[2];
     const player = getPlayerFromName(name);
-    if (player === -1) {
+    if (player == -1) {
         ply.socket.emit("chat", { msg: `Player '${name}' not found.` });
         return;
     }
@@ -358,7 +358,7 @@ cmds["/deltag"] = new Command("/deltag <player> <tag> - Removes a player's tag."
     }
     const name = msg.split(" ")[1];
     const player = getPlayerFromName(name);
-    if (player === -1) {
+    if (player == -1) {
         ply.socket.emit("chat", { msg: `Player '${name}' not found.` });
         return;
     }
@@ -373,7 +373,7 @@ cmds["/smite"] = new Command("/smite <player> - Smites the specified player", AD
     const name = msg.split(" ")[1];
 
     const player = getPlayerFromName(name);
-    if (player === -1) {
+    if (player == -1) {
 	    ply.socket.emit("chat", { msg: `Player '${name}' not found.` });
 	    return;
     }
@@ -386,7 +386,7 @@ cmds["/kick"] = new Command("/kick <player> - Kicks the specified player", ADMIN
     const name = msg.split(" ")[1];
 
     const player = getPlayerFromName(name);
-    if (player === -1) {
+    if (player == -1) {
 	    ply.socket.emit("chat", { msg: `Player '${name}' not found.` });
 	    return;
     }
@@ -420,7 +420,7 @@ for (const x in PERM_TABLE) {
     for (const c in cmds) {
     	const cmd = cmds[c];
     	for (const p in cmd.permissions) {
-            if (cmd.permissions[p] === PERM_TABLE[x] && cmd.visible) {
+            if (cmd.permissions[p] == PERM_TABLE[x] && cmd.visible) {
                 HELP_TABLE[PERM_TABLE[x]].push(cmd);
             }
         }
