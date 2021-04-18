@@ -14,15 +14,19 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+require(`./netutils.js`);
+require(`./command.js`);
+
 const fs = require(`fs`);
 
-const Filter = require(`bad-words`); // bad-words node package
+const Filter = require(`bad-words`);
 const filter = new Filter();
 
 filter.removeWords(`god`, `hell`, `crap`, `flipping the bird`, `Lipshitz`, `Lipshits`, `polack`, `screwing`, `slut`, `sluts`, `hui`, `poop`, `screw`, `coño`, `puta`, `hijoputa`, `cabrón`, `cabron`, `mierda`);
+
 const PlayerMP = require(`./player_mp.js`);
-require(`./netutils.js`);
-require(`./command.js`);
+
 const exec = require(`child_process`).execSync;
 const msgpack = require(`socket.io-msgpack-parser`);
 
@@ -34,13 +38,13 @@ global.ipMuteTable = {};
 
 global.protocolVersion = undefined;
 
-function runCommand (player, msg) { // player just sent msg in chat and msg starts with a /
-    const toLower = msg.toLowerCase();
-    const command = cmds[toLower.split(` `)[0]];
-    if (command === undefined) {
-        player.socket.emit(`chat`, { msg: "~`red~`Unknown Command. Use /help for a list of commands! ~`red~`" });
-    } else {
-    // Check for permissions
+const runCommand = (player, msg) => {
+    const args = msg.slice(config.prefix.length).trim().split(` `);
+    const command = args.shift().toLowerCase();
+
+    if (!command) player.socket.emit(`chat`, { msg: `~\`red~\`Unknown Command. Use /help for a list of commands! ~\`red~\`` });
+    else {
+        // Check for permissions
         let permitted = false;
         for (const p in player.permissionLevels) {
             if (command.permissions.includes(player.permissionLevels[p])) {
@@ -49,15 +53,15 @@ function runCommand (player, msg) { // player just sent msg in chat and msg star
             }
         }
         if (!permitted) {
-            player.socket.emit(`chat`, { msg: "~`red~`You don't have permission to access this command. ~`red~`" });
+            player.socket.emit(`chat`, { msg: `~\`red~\`You don't have permission to access this command. ~\`red~\`` });
             return;
         }
 
         command.invoke(player, msg);
     }
-}
+};
 
-module.exports = function initNetcode () {
+module.exports = initNetcode = () => {
     const port = process.argv[2];
     console.log(``);
 
@@ -93,15 +97,15 @@ module.exports = function initNetcode () {
 
         if (!global.protocolVersion) {
             global.protocolVersion = undefined;
-        }
-        console.log(`Protocol Version: ${global.protocolVersion}`);
+            console.error(`Failed to retrieve protocol version, all clients will be allowed!`);
+        } else console.log(`Protocol Version: ${global.protocolVersion}`);
     } catch (e) {
         console.error(`Failed to retrieve protocol version, all clients will be allowed!`);
     }
 
-    const socketio = require(`socket.io`);
+    const socketIO = require(`socket.io`);
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js
-    global.io = socketio(server, {
+    global.io = socketIO(server, {
         serveClient: false,
         parser: msgpack,
         cors: {
@@ -112,8 +116,7 @@ module.exports = function initNetcode () {
     io.sockets.on(`connection`, (socket) => {
         if (!serverInitialized) {
             socket.emit(`kick`, { msg: `Server is still starting up!` });
-            socket.disconnect();
-            return;
+            return socket.disconnect();
         }
 
         socket.start = Date.now();
@@ -137,11 +140,8 @@ module.exports = function initNetcode () {
                 } catch (err) {
                     // Log data to help us perform bug triage
                     const crashReport = `==== TORN.SPACE ERROR REPORT ====\nError Time: ${new Date()}\n\Event: ${the_event}\n\Stack Trace: ${err.stack}`;
-                    if (Config.getValue(`debug`, true)) {
-                        console.error(crashReport);
-                    } else {
-                        send_rpc(`/crash/`, crashReport);
-                    }
+                    if (Config.getValue(`debug`, true)) console.error(crashReport);
+                    else send_rpc(`/crash/`, crashReport);
 
                     // Eject the player from the game: we don't know if they're in a valid state
                     socket.emit(`kick`, { msg: `Internal server error.` });
@@ -198,6 +198,7 @@ module.exports = function initNetcode () {
 
             chatAll(`Welcome ${player.nameWithColor()} to the universe!`);
         });
+
         socket.on(`register`, async (data) => {
             console.log(`Registration attempted...`);
             if (typeof data === `undefined`) return;
@@ -326,6 +327,7 @@ module.exports = function initNetcode () {
                 socket.emit(`you`, { trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper });
             }, wait_time);
         });
+
         socket.on(`disconnect`, (data) => { // Emitted by socket.IO when connection is terminated or ping timeout
             if (!player) return; // Don't allow unauthenticated clients to crash the server
 
@@ -385,6 +387,7 @@ module.exports = function initNetcode () {
                 if (!data.state) player.checkDriftAchs(); // if they let go of the drift key
             }
         });
+
         socket.on(`chat`, (data) => { // when someone sends a chat message
             if (typeof data === `undefined` || typeof data.msg !== `string` || data.msg.length > 128) return;
 
@@ -450,7 +453,7 @@ module.exports = function initNetcode () {
                 const finalMsg = `${spaces + player.nameWithColor()}: ${newmsg}`;
 
                 // Send it to the client up to what chat room theyre in
-                if (player.globalChat == 2 && player.guild === ``) socket.emit(`chat`, { msg: ("~`#ff0000~`You are not in a guild!") });
+                if (player.globalChat == 2 && player.guild === ``) socket.emit(`chat`, { msg: (`~\`#ff0000~\`You are not in a guild!`) });
                 else playerChat(finalMsg, player.globalChat, player.color, player.guild);
 
                 if (Config.getValue(`enable_discord_moderation`, false)) {
