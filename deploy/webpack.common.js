@@ -14,6 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 const path = require("path");
 const webpack = require("webpack");
 
@@ -24,9 +25,9 @@ const gitRevisionPlugin = new Git({
 });
 
 module.exports = {
-    entry: ["./client_src/index.js"],
+    entry: [path.resolve(__dirname, "../client_src/index.js")],
     output: {
-        path: path.resolve("./", "client"),
+        path: path.resolve(__dirname, "../client"),
         filename: "client.js"
     },
     module: {
@@ -35,7 +36,11 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: [
                     {
-                        loader: "ts-loader"
+                        loader: "ts-loader",
+                        options: {
+                            transpileOnly: true,
+                            experimentalWatchApi: true
+                        }
                     }
                 ],
                 exclude: /node_modules/
@@ -55,18 +60,22 @@ module.exports = {
             }
         ]
     },
+
     resolve: {
         extensions: ["*", ".js", ".tsx", ".ts", ".jsx"]
     },
+
     devServer: {
         contentBase: "./client",
         hot: true
     },
+
     optimization: {
-        splitChunks: {
-            // chunks: "initial",
-        }
+        removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false
     },
+
     plugins: [
 	    new webpack.DefinePlugin({
             VERSION: JSON.stringify(gitRevisionPlugin.version()),
