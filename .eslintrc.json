@@ -59,13 +59,16 @@
             "classPropertiesAllowed": false
         }],
 
-        // These can be removed when someone has time to fix them... but for now they're just not worth it
+        // These can be removed when someone has time to fix them...but for now they're just not worth it.
         "no-sequences": 0,
         "no-mixed-spaces-and-tabs": 0,
         "no-tabs": 0,
         "no-global-assign": 0,
         "no-func-assign": 0,
         "no-self-assign": 0,
-        "prefer-regex-literals": 0
+        "prefer-regex-literals": 0,
+
+        "react/prop-types": 0,
+        "react/no-string-refs": 0
     }
 }

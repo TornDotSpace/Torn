@@ -31,27 +31,34 @@ export default class ReactRoot extends Component {
         ReactRoot.toggleDisplay = name => {
             let current = this.state;
             let val = current.display;
-            if (val === name) { current.display = `none`; } else { current.display = name; }
+
+            if (val === name) current.display = `none`;
+            else current.display = name;
+
             this.setState(current);
         };
         ReactRoot.turnOnDisplay = name => {
             let current = this.state;
-            { current.display = name; }
+            current.display = name;
+
             this.setState(current);
         };
         ReactRoot.turnOffDisplay = name => {
             let current = this.state;
-            { current.display = `none`; }
+            current.display = `none`;
+
             this.setState(current);
         };
         ReactRoot.turnOnRegister = name => {
             let current = this.state;
-            { current.register = `Register`; }
+            current.register = `Register`;
+
             this.setState(current);
         };
         ReactRoot.turnOffRegister = name => {
             let current = this.state;
-            { current.register = `none`; }
+            current.register = `none`;
+
             this.setState(current);
         };
     }
@@ -198,11 +205,11 @@ class LoginOverlay extends Component {
 	}
 
 	render () {
-	    { /*
+	    /*
 		const video = (this.state.seed * 2 % 1 < 0.25) ?
 			(<iframe width="368" height="207" src="https://www.youtube.com/embed/iLlFIS1PLOo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>)
 			: (<iframe width="368" height="207" src="https://www.youtube.com/embed/44MIPle7pwQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>);
-		*/ }
+		*/
 
 	    const buttonOrder = (this.state.seed < 0.66)
 	        ? ((this.state.seed < 0.33)
@@ -228,7 +235,9 @@ class LoginOverlay extends Component {
 	        </div>
 	    );
 
-	    return !this.props.display ? null : (
+	    return !this.props.display
+	        ? null
+	        : (
 	        <div>
 	            <div className="overlay-menu">
 	                <div className="container">
