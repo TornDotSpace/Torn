@@ -34,35 +34,41 @@ declare var wepns: any;
 // END TYPESCRIPT TRANSITION HACKS
 /* eslint-enable */
 
-const chatRooms = [translate("Global Chat"), translate("Team Chat"), translate("Guild Chat")];
+const chatRooms = [
+  translate(`Global Chat`),
+  translate(`Team Chat`),
+  translate(`Guild Chat`)
+];
+
 const messages = [{}, {}, {}];
 const serverMessages = {};
 
 // Chat circumfix codes. Code assumes they are length 2.
-const colorCircumfix = "~`";
-const weaponCircumfix = "`~";
-const translateCircumfix = "`t";
+const colorCircumfix: String = `~\``;
+const weaponCircumfix: String = `\`~`;
+const translateCircumfix: String = `\`t`;
 
-const chatcanvas = document.createElement("canvas");
-chatcanvas.width = 650;
-chatcanvas.height = 350;
-const chatctx = chatcanvas.getContext("2d", {alpha: true});
+const chatCanvas: HTMLCanvasElement = document.createElement(`canvas`);
+chatCanvas.width = 650;
+chatCanvas.height = 350;
+
+const chatCTX: CanvasRenderingContext2D = chatCanvas.getContext(`2d`, { alpha: true });
 
 const chatLength = 40;
 const serverChatLength = 5;
+
 let chatScroll = 0;
 let whichChatMenu = 0;
+
 let preChatArr = {};
 let chati = 0;
 
-socket.on("chat", function(data) {
-  // Optimization: Don't do expensive string manipulation if nobody is in the mute list
-  if (clientmutes.size == 0 || !data.msg.includes(":")) {
-    onReceiveChat(data);
-    return;
-  }
+socket.on(`chat`, (data) => {
+  // Optimization: Don't do expensive string manipulation if nobody is in the mute list.
+  if (clientmutes.size === 0 || !data.msg.includes(`:`)) return onReceiveChat(data);
 
   const header = data.msg.split(":")[0];
+
   let chatName = header.split("`")[2]; // normal chat
   if (header.includes("\[PM\] ")) chatName = header.split("\[PM\]")[1]; // pms
   chatName = chatName.replace(/[^0-9a-zA-Z]/g, "");
@@ -86,64 +92,64 @@ socket.on("unmute", function(data) {
 });
 
 export function rChat() {
-  chatcanvas.width = chatcanvas.width;
-  chatctx.font = "14px ShareTech";
-  chatctx.save();
-  chatctx.globalAlpha = .5;
-  chatctx.fillStyle = "black";
-  chatctx.strokeStyle = "#222222";
-  roundRect(chatctx, -34, chatcanvas.height - 168, 562, 224, 32, true, true);
-  chatctx.fillStyle = "white";
-  roundRect(chatctx, 0, chatcanvas.height - 64 - 154 * (chatScroll / chatLength), 6, 24, 2, true, false);
+  chatCanvas.width = chatCanvas.width;
+  chatCTX.font = "14px ShareTech";
+  chatCTX.save();
+  chatCTX.globalAlpha = .5;
+  chatCTX.fillStyle = "black";
+  chatCTX.strokeStyle = "#222222";
+  roundRect(chatCTX, -34, chatCanvas.height - 168, 562, 224, 32, true, true);
+  chatCTX.fillStyle = "white";
+  roundRect(chatCTX, 0, chatCanvas.height - 64 - 154 * (chatScroll / chatLength), 6, 24, 2, true, false);
 
-  chatctx.globalAlpha = 1;
-  chatctx.textAlign = "left";
+  chatCTX.globalAlpha = 1;
+  chatCTX.textAlign = "left";
 
   for (let i = 0; i < 3; i++) {
-    chatctx.fillStyle = ((seller != 800 + i) ? "violet" : "yellow");
-    chatctx.fillText((i==whichChatMenu?">":" ")+chatRooms[i], 532, chatcanvas.height - 48+16*i);
+    chatCTX.fillStyle = ((seller != 800 + i) ? "violet" : "yellow");
+    chatCTX.fillText((i==whichChatMenu?">":" ")+chatRooms[i], 532, chatCanvas.height - 48+16*i);
   }
-  chatctx.restore();
+  chatCTX.restore();
 
-  chatctx.save();
+  chatCTX.save();
 
   // Draw all the messages in the current chatroom
   for (let ri = chati - chatScroll; ri >= Math.max(0, chati - chatScroll - 7); ri--) {
-    chatctx.fillStyle = "yellow";
+    chatCTX.fillStyle = "yellow";
     const fromTop = (ri + chatScroll - Object.keys(preChatArr).length);
-    chatctx.globalAlpha = square((fromTop + 20) / 20);
+    chatCTX.globalAlpha = square((fromTop + 20) / 20);
     let curx = 0;
     const splitStr = preChatArr[ri].split(colorCircumfix);
     for (let j = 0; j < splitStr.length; j++) {
       if (j % 2 == 0) {
-        chatctx.fillText(splitStr[j], 16 + curx, chatcanvas.height - 24 + 16 * fromTop);
-        curx += chatctx.measureText(splitStr[j]).width;
+        chatCTX.fillText(splitStr[j], 16 + curx, chatCanvas.height - 24 + 16 * fromTop);
+        curx += chatCTX.measureText(splitStr[j]).width;
       } else {
-        chatctx.fillStyle = brighten(splitStr[j]);
+        chatCTX.fillStyle = brighten(splitStr[j]);
       }
     }
   }
 
   // Repeat for the server messages
   for (let i = 0; i < serverChatLength; i++) {
-    chatctx.globalAlpha = 1-i/serverChatLength;
-    chatctx.fillStyle = "yellow";
+    chatCTX.globalAlpha = 1 - i / serverChatLength;
+    chatCTX.fillStyle = "yellow";
     let curx = 0;
     const splitStr = serverMessages[i].split(colorCircumfix);
     for (let j = 0; j < splitStr.length; j++) {
       if (j % 2 == 0) {
-        chatctx.fillText(splitStr[j], 12 + curx, chatcanvas.height - 184 - 16 * i);
-        curx += chatctx.measureText(splitStr[j]).width;
+        chatCTX.fillText(splitStr[j], 12 + curx, chatCanvas.height - 184 - 16 * i);
+        curx += chatCTX.measureText(splitStr[j]).width;
       } else {
-        chatctx.fillStyle = brighten(splitStr[j]);
+        chatCTX.fillStyle = brighten(splitStr[j]);
       }
     }
   }
 
-  chatctx.restore();
+  chatCTX.restore();
 };
 export function pasteChat() {
-  ctx.drawImage(chatcanvas, 0, h-chatcanvas.height);
+  ctx.drawImage(chatCanvas, 0, h-chatCanvas.height);
 };
 
 function onReceiveChat(data) {
@@ -154,7 +160,7 @@ function onReceiveChat(data) {
     if (find1 == -1 || find2 == -1) return;
 
     const num = parseFloat(data.msg.substring(find1 + 2, find2));
-    data.msg = data.msg.replace(weaponCircumfix + num + weaponCircumfix, wepns[num].name);
+    data.msg = data.msg.replace(weaponCircumfix + num.toString() + weaponCircumfix, wepns[num].name);
   }
 
   while (data.msg.includes(translateCircumfix)) {

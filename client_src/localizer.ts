@@ -14,32 +14,29 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-const eng = "english.json";
-const esp = "translations/spanish.json";
-const tki = "translations/tokipona.json";
-const chn = "translations/chinese.json";
+
+const eng = `english.json`;
+const esp = `translations/spanish.json`;
+const tki = `translations/tokipona.json`;
+const chn = `translations/chinese.json`;
 
 let languagejson = null;
-let mEng = require("../client/translate.json");
+let mEng = require(`../client/translate.json`);
 
-export let jsn = require("../client/weapons.json");
+export let jsn = require(`../client/weapons.json`);
 
 let languageNumber = 0;
 
-let splash = "";
+let splash = ``;
 
 export const getSplash = () => splash;
 
-export function setLang (name) {
-    document.cookie = (`lang=${name}`);
-    loadLang(name);
-}
 
-function load (lang) {
+const load = (lang) => {
     const request = new XMLHttpRequest();
-    request.open("GET", lang, false);
+    request.open(`GET`, lang, false);
 
-    let data = "";
+    let data = ``;
     request.onload = function (e) {
         if (request.readyState === 4) {
             data = request.responseText;
@@ -50,34 +47,42 @@ function load (lang) {
     return JSON.parse(data);
 }
 
-function loadLang (name) {
+const loadLang = (name) => {
     let assigned = null;
 
-    if (location.href.includes("eng") || name === "eng") { assigned = languagejson = eng; languageNumber = 0; }
-    if (location.href.includes("esp") || name === "esp") { assigned = languagejson = esp; languageNumber = 1; }
-    if (location.href.includes("tki") || name === "tki") { assigned = languagejson = tki; languageNumber = 2; }
-    if (location.href.includes("chn") || name === "chn") { assigned = languagejson = chn; languageNumber = 3; }
+    // re-think value assigned to var "assigned"
+    if (location.href.includes(`eng`) || name === `eng`) {
+        assigned = languagejson = eng;
+        languageNumber = 0;
+    } else if (location.href.includes(`esp`) || name === `esp`) {
+        assigned = languagejson = esp;
+        languageNumber = 1;
+    } else if (location.href.includes(`tki`) || name === `tki`) {
+        assigned = languagejson = tki;
+        languageNumber = 2;
+    } else if (location.href.includes(`chn`) || name === `chn`) {
+        assigned = languagejson = chn;
+        languageNumber = 3;
+    }
 
     if (!assigned) {
-        let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        let lang = document.cookie.replace(/(?:(?:^|.*;\s*)lang\s*\=\s*([^;]*).*$)|^.*$/, `$1`);
 
-        if (lang === "esp") {
+        if (lang === `esp`) {
             languagejson = esp;
             languageNumber = 1;
-        } else if (lang === "eng") {
+        } else if (lang === `eng`) {
             languagejson = eng;
-        } else if (lang === "tki") {
+        } else if (lang === `tki`) {
             languagejson = tki;
             languageNumber = 2;
-        } else if (lang === "chn") {
+        } else if (lang === `chn`) {
             languagejson = chn;
             languageNumber = 3;
         }
     }
 
-    if (languagejson == null) {
-        languagejson = eng;
-    }
+    if (!languagejson) languagejson = eng;
 
     languagejson = load(languagejson);
 
@@ -97,15 +102,16 @@ function loadLang (name) {
     }
 
     splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
-    if (!splash.endsWith("!") && !splash.endsWith("?")) splash += "...";
+    if (!splash.endsWith(`!`) && !splash.endsWith(`?`)) splash += `...`;
 }
+
 loadLang(null);
 
-export function translate (english, arr = undefined) {
-    if (typeof mEng[english] === "undefined") { return "TRANSLATION ERROR"; }
+export const translate = (english, arr = undefined) => { // arr = undefined???
+    if (typeof mEng[english] === `undefined`) return `TRANSLATION ERROR`;
+
     let translated = (languageNumber == 0) ? english : mEng[english][languageNumber - 1];
-    if (arr !== undefined) {
-        while (arr.length > 0) { translated = translated.replace("#", arr.shift()); }
-    }
+    if (arr !== undefined) while (arr.length > 0) translated = translated.replace(`#`, arr.shift());
+
     return translated;
 }
