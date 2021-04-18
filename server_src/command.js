@@ -64,7 +64,7 @@ cmds[`/me`] = new Command(`/me <msg>`, EVERYONE, (player, msg) => {
 });
 
 cmds[`/myguild`] = new Command(`/myguild - Tells you what guild you're in`, EVERYONE, (player, msg) => {
-    if (player.guild === ``) player.socket.emit(`chat`, { msg: "~`orange~`You aren't in a guild!" });
+    if (player.guild === ``) player.socket.emit(`chat`, { msg: `~\`orange~\`You aren't in a guild!` });
     else player.socket.emit(`chat`, { msg: `~\`orange~\`Your guild is: ${player.guild}` });
 });
 
@@ -93,7 +93,7 @@ cmds[`/confirm`] = new Command(`/confirm <newPassword>`, REGISTERED, async (play
 
 cmds[`/changeteam`] = new Command(`/changeteam`, REGISTERED, (player, msg) => {
     if (!player.docked) {
-        player.socket.emit(`chat`, { msg: "~`red~`This command is only available when docked at a base." }); return;
+        player.socket.emit(`chat`, { msg: `~\`red~\`This command is only available when docked at a base.` }); return;
     }
     const split = msg.split(` `);
     if (split.length > 2) {
@@ -350,7 +350,7 @@ cmds[`/settag`] = new Command(`/settag <player> <tag> - Sets a player's tag. tag
 
     player.name = `[${newTag}] ${name}`;
     player.save();
-    ply.socket.emit(`chat`, { msg: "~`violet~`Tag set." });
+    ply.socket.emit(`chat`, { msg: `~\`violet~\`Tag set.` });
 });
 
 cmds[`/deltag`] = new Command(`/deltag <player> <tag> - Removes a player's tag.`, ADMINPLUS, (ply, msg) => {
@@ -366,7 +366,7 @@ cmds[`/deltag`] = new Command(`/deltag <player> <tag> - Removes a player's tag.`
 
     player.name = name;
     player.save();
-    ply.socket.emit(`chat`, { msg: "~`violet~`Tag removed." });
+    ply.socket.emit(`chat`, { msg: `~\`violet~\`Tag removed.` });
 });
 
 cmds[`/smite`] = new Command(`/smite <player> - Smites the specified player`, ADMINPLUS, (ply, msg) => {

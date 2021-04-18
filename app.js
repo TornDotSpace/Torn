@@ -19,54 +19,54 @@ require(`./server_src/resources/torn_globals.js`);
 
 global.initReboot = function () {
     console.log(`\nInitializing server reboot...\n`);
-    chatAll("~`#f00~`Server restarting in 120 seconds. Save your progress!");
+    chatAll(`~\`#f00~\`Server restarting in 120 seconds. Save your progress!`);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 90 seconds. Save your progress!");
+        chatAll(`~\`#f00~\`Server restarting in 90 seconds. Save your progress!`);
     }, 30 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 60 seconds. Save your progress!");
+        chatAll(`~\`#f00~\`Server restarting in 60 seconds. Save your progress!`);
     }, 60 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 30 seconds. Save your progress!");
+        chatAll(`~\`#f00~\`Server restarting in 30 seconds. Save your progress!`);
     }, 90 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 10 seconds. Save your progress!");
+        chatAll(`~\`#f00~\`Server restarting in 10 seconds. Save your progress!`);
     }, 110 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 5...");
+        chatAll(`~\`#f00~\`Server restarting in 5...`);
     }, 115 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 4...");
+        chatAll(`~\`#f00~\`Server restarting in 4...`);
     }, 116 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 3...");
+        chatAll(`~\`#f00~\`Server restarting in 3...`);
     }, 117 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 2...");
+        chatAll(`~\`#f00~\`Server restarting in 2...`);
     }, 118 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 1...");
+        chatAll(`~\`#f00~\`Server restarting in 1...`);
     }, 119 * 1000);
     setTimeout(shutdown, 120 * 1000);
 };
 
 global.initFastReboot = function () {
     console.log(`\nInitializing fast server reboot...\n`);
-    chatAll("~`#f00~`Server restarting in 10 seconds. Save your progress!");
+    chatAll(`~\`#f00~\`Server restarting in 10 seconds. Save your progress!`);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 5...");
+        chatAll(`~\`#f00~\`Server restarting in 5...`);
     }, 5 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 4...");
+        chatAll(`~\`#f00~\`Server restarting in 4...`);
     }, 6 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 3...");
+        chatAll(`~\`#f00~\`Server restarting in 3...`);
     }, 7 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 2...");
+        chatAll(`~\`#f00~\`Server restarting in 2...`);
     }, 8 * 1000);
     setTimeout(() => {
-        chatAll("~`#f00~`Server restarting in 1...");
+        chatAll(`~\`#f00~\`Server restarting in 1...`);
     }, 9 * 1000);
     setTimeout(shutdown, 10 * 1000);
 };

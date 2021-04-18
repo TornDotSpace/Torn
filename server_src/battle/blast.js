@@ -28,7 +28,7 @@ class Blast {
         this.owner = owner;
 
         this.angle = owner.angle;
-        
+
         this.bx = owner.x;
         this.by = owner.y;
 
@@ -87,6 +87,6 @@ class Blast {
         else if ((this.weaponID === 34 || this.weaponID === 47) && this.owner.color !== b.color) b.dmg(this.dmg, this); // muon and lepton
         else if (this.weaponID === 41) b.brainwashedBy = this.owner.id; // brainwashing laser
     }
-};
+}
 
 module.exports = Blast;
