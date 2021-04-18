@@ -29,7 +29,5 @@ RUN pip3 install aiohttp aiosmtplib aiohttp_cors asyncio discord_webhook motor p
 COPY . /opt/Torn
 
 # Start the development server.
-RUN cd /opt/Torn
-
 EXPOSE 7300 7301 8080
-CMD sh /opt/Torn/start_dev_server.sh
+CMD sh /opt/Torn/devServer-docker.sh
