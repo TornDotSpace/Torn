@@ -157,7 +157,7 @@ global.didW = false; global.didSteer = false; global.currTut = 0;
 global.sectorPoints = 0;
 
 require(`./audio.js`);
-require(`./image.js`);
+const loadAllImages = require(`./image.js`);
 require(`./localizer.ts`);
 require(`./helper.js`);
 require(`./network.js`);
@@ -234,6 +234,7 @@ global.greenShips = [];
 global.planetImgs = [];
 global.Img = {};
 global.Img_prgs = [0 /* Count of loaded images */, 0];
+
 loadAllImages();
 loadAllAudio();
 
