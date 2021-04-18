@@ -20,12 +20,12 @@ import { chatMenuButtonClick, rChat } from "./chat.ts";
 document.onkeydown = function (event) {
     // Grab enter on homepage
     if (!login && !lore && event.keyCode == 13) {
-        document.getElementById("loginButton").click();
+        document.getElementById(`loginButton`).click();
         return;
     }
     if (!login || tab == -1) return;
     if (event.keyCode === 16) {
-        if (keys[0] != true) socket.emit("key", { inputId: "shift", state: true });
+        if (keys[0] != true) socket.emit(`key`, { inputId: `shift`, state: true });
         keys[0] = true;
         return;
     }
@@ -40,7 +40,7 @@ document.onkeydown = function (event) {
         autopilot ^= true;
         if (bigNotes[0] == -1)/* to prevent spam */
         {
-            addBigNote([256, `Autopilot ${autopilot ? "E" : "Dise"}ngaged!`, "Press P to toggle.", ""]);
+            addBigNote([256, `Autopilot ${autopilot ? `E` : `Dise`}ngaged!`, `Press P to toggle.`, ``]);
         }
         return;
     }
@@ -53,18 +53,18 @@ document.onkeydown = function (event) {
         confirmer = -1;
         tab = 0;
     } else if (event.keyCode == 89 && docked && tab == 8) { // y
-        socket.emit("sellW", { slot: confirmer });
+        socket.emit(`sellW`, { slot: confirmer });
         confirmer = -1;
         tab = 0;
     } else if (event.keyCode == 66 && docked && tab == 7 && seller != 0 && actuallyBuying) { // b
-        socket.emit("buyW", { slot: scroll, weapon: seller - 20 });
+        socket.emit(`buyW`, { slot: scroll, weapon: seller - 20 });
         tab = 0;
     } else if (event.keyCode > 48 && event.keyCode < 58 && equipped[event.keyCode - 49] != -2) {
-        socket.emit("equip", { scroll: event.keyCode - 49 });
+        socket.emit(`equip`, { scroll: event.keyCode - 49 });
     } else if (event.keyCode == 48 && equipped[event.keyCode - 49] != -2) {
-        socket.emit("equip", { scroll: 9 });
+        socket.emit(`equip`, { scroll: 9 });
     } else if (event.keyCode === 83 || event.keyCode === 40) { // s
-        if (keys[1] != true) socket.emit("key", { inputId: "s", state: true });
+        if (keys[1] != true) socket.emit(`key`, { inputId: `s`, state: true });
         keys[1] = true;
     } else if (event.keyCode === 192) { // `
         dev = !dev;
@@ -72,36 +72,36 @@ document.onkeydown = function (event) {
         useOldMap = !useOldMap;
         r3DMap();
     } else if (event.keyCode === 69) { // e
-        if (keys[2] != true) socket.emit("key", { inputId: "e", state: true });
+        if (keys[2] != true) socket.emit(`key`, { inputId: `e`, state: true });
         keys[2] = true;
     } else if (event.keyCode === 87 || event.keyCode === 38) { // w
-        if (keys[3] != true) socket.emit("key", { inputId: "w", state: true });
+        if (keys[3] != true) socket.emit(`key`, { inputId: `w`, state: true });
         keys[3] = true;
         didW = true;
     } else if (event.keyCode === 65 || event.keyCode === 37) { // a
-        if (keys[4] != true) socket.emit("key", { inputId: "a", state: true });
+        if (keys[4] != true) socket.emit(`key`, { inputId: `a`, state: true });
         keys[4] = true;
         didSteer = true;
     } else if (event.keyCode === 68 || event.keyCode === 39) { // d
-        if (keys[5] != true) socket.emit("key", { inputId: "d", state: true });
+        if (keys[5] != true) socket.emit(`key`, { inputId: `d`, state: true });
         keys[5] = true;
         didSteer = true;
     } else if (event.keyCode === 32) { // space
-        if (keys[6] != true) socket.emit("key", { inputId: " ", state: true });
+        if (keys[6] != true) socket.emit(`key`, { inputId: ` `, state: true });
         keys[6] = true;
         if (equipped[scroll] < 0) badWeapon = 20;
     } else if (event.keyCode === 81) { // q
-        if (keys[7] != true) socket.emit("key", { inputId: "q", state: true });
+        if (keys[7] != true) socket.emit(`key`, { inputId: `q`, state: true });
         keys[7] = true;
     } else if (event.keyCode === 88 || event.keyCode === 27) { // x
         if (dead) return;
-        if (keys[8] != true) socket.emit("key", { inputId: "x", state: true });
+        if (keys[8] != true) socket.emit(`key`, { inputId: `x`, state: true });
         keys[8] = true;
-        ReactRoot.turnOffRegister("");
-        socket.emit("equip", { scroll: scroll });
+        ReactRoot.turnOffRegister(``);
+        socket.emit(`equip`, { scroll: scroll });
     } else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) { // c/v
         if (dead) return;
-        if (keys[9] != true) socket.emit("key", { inputId: "c", state: true });
+        if (keys[9] != true) socket.emit(`key`, { inputId: `c`, state: true });
         keys[9] = true;
     }
 };
@@ -112,35 +112,35 @@ document.onkeyup = function (event) {
     }
     if (event.keyCode === 83 || event.keyCode === 40) { // s
         keys[1] = false;
-        socket.emit("key", { inputId: "s", state: false });
+        socket.emit(`key`, { inputId: `s`, state: false });
     } else if (event.keyCode === 69) { // e
         keys[2] = false;
     } else if (event.keyCode === 87 || event.keyCode === 38) { // w
         keys[3] = false;
-        socket.emit("key", { inputId: "w", state: false });
+        socket.emit(`key`, { inputId: `w`, state: false });
     } else if (event.keyCode === 65 || event.keyCode === 37) { // a
         keys[4] = false;
-        socket.emit("key", { inputId: "a", state: false });
+        socket.emit(`key`, { inputId: `a`, state: false });
     } else if (event.keyCode === 68 || event.keyCode === 39) { // d
         keys[5] = false;
-        socket.emit("key", { inputId: "d", state: false });
+        socket.emit(`key`, { inputId: `d`, state: false });
     } else if (event.keyCode === 32) { // space
         keys[6] = false;
-        socket.emit("key", { inputId: " ", state: false });
+        socket.emit(`key`, { inputId: ` `, state: false });
     } else if (event.keyCode === 81) { // q
         keys[7] = false;
     } else if (event.keyCode === 88 || event.keyCode === 27) { // x
         keys[8] = false;
     } else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) { // c/v
-        if (keys[9] == true) socket.emit("key", { inputId: "c", state: false });
+        if (keys[9] == true) socket.emit(`key`, { inputId: `c`, state: false });
         keys[9] = false;
     } else if (event.keyCode === 16) {
         keys[0] = false;
-        socket.emit("key", { inputId: "shift", state: false });
+        socket.emit(`key`, { inputId: `shift`, state: false });
     }
 };
 
-document.addEventListener("mousemove", (evt) => {
+document.addEventListener(`mousemove`, (evt) => {
     const omx = mx;
     const omy = my;
     const mousePos = getMousePos(canvas, evt);
@@ -195,15 +195,15 @@ document.addEventListener("mousemove", (evt) => {
         moreOnHover();
     } else seller = 0;
 
-    if (seller != 0 && seller != preSeller) playAudio("button2", 0.2);
+    if (seller != 0 && seller != preSeller) playAudio(`button2`, 0.2);
     if (preSeller != seller && (Math.abs(preSeller - 801) <= 1 || Math.abs(seller - 801) <= 1)) rChat();
 }, false);
 
-document.addEventListener("mousedown", (evt) => {
+document.addEventListener(`mousedown`, (evt) => {
     soundAllowed = true;
     mb = 1;
     if (lore && !login) {
-        socket.emit("guest", VERSION);
+        socket.emit(`guest`, VERSION);
         return;
     }
     if (mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
@@ -218,7 +218,7 @@ document.addEventListener("mousedown", (evt) => {
     if (i == 0 && !mouseDown) {
         mouseDown = true;
         if ((mx < w - 32 - 20 - 128 - 16 || my < h - 92) && (mx > 512 + 32 || my < h - 216) && !(mx < 256 && my < 450)) { // not in vol section or chat section or map
-            socket.emit("key", { inputId: " ", state: true });
+            socket.emit(`key`, { inputId: ` `, state: true });
         }
         if (equipped[scroll] < 0) badWeapon = 20;
     }
@@ -232,23 +232,23 @@ document.addEventListener("mousedown", (evt) => {
     if (docked) {
         baseMenuOnClick(i);
     }
-    if (i == 900) socket.emit("jettison", {});
+    if (i == 900) socket.emit(`jettison`, {});
     if (i >= 800 && i < 803) {
         chatMenuButtonClick(i);
     }
-    if (i != 0 && i != 600) ReactRoot.turnOffRegister("");
+    if (i != 0 && i != 600) ReactRoot.turnOffRegister(``);
 }, false);
 
-document.addEventListener("mouseup", (evt) => {
+document.addEventListener(`mouseup`, (evt) => {
     mb = 0;
     if (mouseDown) {
-        socket.emit("key", { inputId: " ", state: false });
+        socket.emit(`key`, { inputId: ` `, state: false });
         mouseDown = false;
     }
 }, false);
 
-canvas.addEventListener("wheel", () => {
-    if (typeof event == "undefined") return;
+canvas.addEventListener(`wheel`, () => {
+    if (typeof event == `undefined`) return;
     const d = -Math.sign(event.deltaY);
 
     // 3d Map Zooming
@@ -270,5 +270,5 @@ canvas.addEventListener("wheel", () => {
     if ((equipped[scroll] > 0 && (docked || scroll - d < 0 || scroll - d >= equipped.length || equipped[scroll - d] < -1)) || equipped[scroll - d] == -2) {
         return;
     }
-    socket.emit("equip", { scroll: (scroll - d) });
+    socket.emit(`equip`, { scroll: (scroll - d) });
 });

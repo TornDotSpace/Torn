@@ -16,8 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { jsn, translate } from "./localizer.ts";
-const io = require("socket.io-client");
-const msgpack = require("socket.io-msgpack-parser");
+const io = require(`socket.io-client`);
+const msgpack = require(`socket.io-msgpack-parser`);
 
 global.API_URL = `${TORN_API_URL}/api`;
 global.GAMESERVER_URL = TORN_GAMESERVER_URL;
@@ -25,9 +25,9 @@ console.log(`:TornNetworkRepository: Setting API_URL to ${API_URL}`);
 console.log(`:TornNetworkRepository: Setting GAMESERVER_URL to ${GAMESERVER_URL}`);
 
 global.send_api = async (endpoint, data) => await fetch(API_URL + endpoint, {
-    method: "post",
+    method: `post`,
     body: data,
-    headers: { "Content-Type": "x-www-form-urlencoded" }
+    headers: { "Content-Type": `x-www-form-urlencoded` }
 });
 
 global.socket = io(GAMESERVER_URL,
@@ -42,7 +42,7 @@ global.connect = function () {
 };
 
 // socket error handling
-socket.on("connect_error", (error) => {
+socket.on(`connect_error`, (error) => {
     loginInProgress = false;
     if (!login) {
         alert(`Failed to connect to the Torn servers. This probably either means they are down or your firewall is blocking the request. ${error}`);
@@ -55,7 +55,7 @@ socket.on("connect_error", (error) => {
 });
 
 // packet handling
-socket.on("posUp", (data) => {
+socket.on(`posUp`, (data) => {
     px = data.x;
     py = data.y;
     phealth = data.health;
@@ -67,7 +67,7 @@ socket.on("posUp", (data) => {
     shield = data.shield;
     disguise = data.disguise;
     myTrail = data.trail;
-    if (docked) playAudio("sector", 1);
+    if (docked) playAudio(`sector`, 1);
     empTimer--;
     gyroTimer--;
     killStreakTimer--;
@@ -85,13 +85,13 @@ socket.on("posUp", (data) => {
     if (sx != data.sx || sy != data.sy) {
         sx = data.sx;
         sy = data.sy;
-        playAudio("sector", 1);
+        playAudio(`sector`, 1);
         r3DMap();
     }
     clearBullets();
 });
 
-socket.on("update", (data) => {
+socket.on(`update`, (data) => {
     ++uframes;
     ++tick;
     isLocked = data.isLocked;
@@ -148,7 +148,7 @@ socket.on("update", (data) => {
     killStreakTimer--;
 });
 
-socket.on("player_create", (data) => {
+socket.on(`player_create`, (data) => {
     playersInfo[data.id] = data;
 });
 
@@ -177,83 +177,83 @@ function player_update (data) {
     }
 }
 
-socket.on("player_delete", (data) => {
+socket.on(`player_delete`, (data) => {
     delete playersInfo[data];
 });
 
-socket.on("vort_create", (data) => {
+socket.on(`vort_create`, (data) => {
     vortsInfo[data.id] = data.pack;
 });
 
-socket.on("mine_delete", (data) => {
+socket.on(`mine_delete`, (data) => {
     delete minesInfo[data];
 });
 
-socket.on("pack_create", (data) => {
+socket.on(`pack_create`, (data) => {
     packsInfo[data.id] = data.pack;
 });
 
-socket.on("vort_delete", (data) => {
+socket.on(`vort_delete`, (data) => {
     delete vortsInfo[data];
 });
 
-socket.on("mine_create", (data) => {
+socket.on(`mine_create`, (data) => {
     minesInfo[data.id] = data.pack;
 });
 
-socket.on("pack_delete", (data) => {
+socket.on(`pack_delete`, (data) => {
     delete packsInfo[data];
 });
 
-socket.on("beam_create", (data) => {
+socket.on(`beam_create`, (data) => {
     beamsInfo[data.id] = data.pack;
 });
 
-socket.on("beam_delete", (data) => {
+socket.on(`beam_delete`, (data) => {
     delete beamsInfo[data];
 });
 
-socket.on("blast_create", (data) => {
+socket.on(`blast_create`, (data) => {
     blastsInfo[data.id] = data.pack;
 });
 
-socket.on("blast_delete", (data) => {
+socket.on(`blast_delete`, (data) => {
     delete blastsInfo[data];
 });
 
-socket.on("base_create", (data) => {
+socket.on(`base_create`, (data) => {
     basesInfo = data;
 });
 
-socket.on("base_delete", (data) => {
+socket.on(`base_delete`, (data) => {
     basesInfo = undefined;
 });
 
-socket.on("asteroid_create", (data) => {
+socket.on(`asteroid_create`, (data) => {
     astsInfo[data.id] = data;
 });
 
-socket.on("pong", (latency) => {
+socket.on(`pong`, (latency) => {
     nLag = latency;
 });
 
-socket.on("asteroid_delete", (data) => {
+socket.on(`asteroid_delete`, (data) => {
     delete astsInfo[data];
 });
 
-socket.on("orb_create", (data) => {
+socket.on(`orb_create`, (data) => {
     orbsInfo[data.id] = data.pack;
 });
 
-socket.on("orb_delete", (data) => {
+socket.on(`orb_delete`, (data) => {
     delete orbsInfo[data];
 });
 
-socket.on("missile_create", (data) => {
+socket.on(`missile_create`, (data) => {
     missilesInfo[data.id] = data.pack;
 });
 
-socket.on("missile_delete", (data) => {
+socket.on(`missile_delete`, (data) => {
     delete missilesInfo[data];
 });
 
@@ -358,57 +358,57 @@ function missile_update (data) {
     }
 }
 
-socket.on("newBullet", (data) => {
+socket.on(`newBullet`, (data) => {
     bullets[data.id] = data;
     bullets[data.id].tick = 0;
 });
-socket.on("delBullet", (data) => {
+socket.on(`delBullet`, (data) => {
     delete bullets[data.id];
 });
 
-socket.on("invalidCredentials", (data) => {
+socket.on(`invalidCredentials`, (data) => {
     credentialState = 1;
 });
 
-socket.on("outdated", () => {
+socket.on(`outdated`, () => {
     credentialState = 20;
 });
 
-socket.on("badcookie", (data) => {
+socket.on(`badcookie`, (data) => {
     credentialState = 30;
 });
-socket.on("loginSuccess", (data) => {
+socket.on(`loginSuccess`, (data) => {
     // Cleanup bullets from homepage
     for (const i in bullets) delete bullets[i];
-    playAudio("music1", 0.5);
+    playAudio(`music1`, 0.5);
     credentialState = 0;
-    ReactRoot.turnOffDisplay("LoginOverlay");
-    ReactRoot.init({ value: "" });
+    ReactRoot.turnOffDisplay(`LoginOverlay`);
+    ReactRoot.init({ value: `` });
     autopilot = false;
     login = true;
     myId = data.id;
 });
-socket.on("invalidReg", (data) => {
+socket.on(`invalidReg`, (data) => {
     credentialState = data.reason;
 });
-socket.on("registered", (data) => {
+socket.on(`registered`, (data) => {
     credentialState = 0;
-    ReactRoot.turnOffRegister("LoginOverlay");
+    ReactRoot.turnOffRegister(`LoginOverlay`);
     guest = false;
     autopilot = false;
     tab = 0;
 });
-socket.on("lored", (data) => {
+socket.on(`lored`, (data) => {
     // Cleanup bullets from homepage
     for (const i in bullets) delete bullets[i];
     credentialState = 0;
     pc = data.pc;
-    ReactRoot.turnOffDisplay("LoginOverlay");
+    ReactRoot.turnOffDisplay(`LoginOverlay`);
     lore = true;
 });
-socket.on("guested", (data) => {
+socket.on(`guested`, (data) => {
     credentialState = 0;
-    ReactRoot.turnOffDisplay("LoginOverlay");
+    ReactRoot.turnOffDisplay(`LoginOverlay`);
     login = true;
     guest = true;
     autopilot = false;
@@ -416,7 +416,7 @@ socket.on("guested", (data) => {
     tab = 0;
 });
 
-socket.on("you", (data) => {
+socket.on(`you`, (data) => {
     killStreak = data.killStreak;
     killStreakTimer = data.killStreakTimer;
     myName = data.name;
@@ -432,18 +432,18 @@ socket.on("you", (data) => {
     experience = data.experience;
     rank = data.rank;
     myTrail = data.trail;
-    if (typeof data.t2 !== "undefined") t2 = Math.round(1000 * data.t2) / 1000;
-    if (typeof data.va2 !== "undefined") va2 = Math.round(1000 * data.va2) / 1000;
-    if (typeof data.ag2 !== "undefined") ag2 = Math.round(1000 * data.ag2) / 1000;
-    if (typeof data.c2 !== "undefined") c2 = Math.round(1000 * data.c2) / 1000;
-    if (typeof data.mh2 !== "undefined") mh2 = Math.round(1000 * data.mh2) / 1000;
-    if (typeof data.e2 !== "undefined") e2 = Math.round(1000 * data.e2) / 1000;
+    if (typeof data.t2 !== `undefined`) t2 = Math.round(1000 * data.t2) / 1000;
+    if (typeof data.va2 !== `undefined`) va2 = Math.round(1000 * data.va2) / 1000;
+    if (typeof data.ag2 !== `undefined`) ag2 = Math.round(1000 * data.ag2) / 1000;
+    if (typeof data.c2 !== `undefined`) c2 = Math.round(1000 * data.c2) / 1000;
+    if (typeof data.mh2 !== `undefined`) mh2 = Math.round(1000 * data.mh2) / 1000;
+    if (typeof data.e2 !== `undefined`) e2 = Math.round(1000 * data.e2) / 1000;
     if (data.points >= 0 && data.points < 1000) // prevents undefined on base
     {
         points = data.points;
     }
 });
-socket.on("weapons", (data) => {
+socket.on(`weapons`, (data) => {
     let diff = false;
     for (const i in equipped) {
         if (equipped[i] != data.weapons[i]) {
@@ -454,141 +454,141 @@ socket.on("weapons", (data) => {
     worth = data.worth;
     ammos = data.ammos;
     if (docked && diff) {
-        playAudio("money", 1);
+        playAudio(`money`, 1);
     }
 });
-socket.on("sound", (data) => {
-    if (data.file.includes("boom")) {
-        if (data.file === "bigboom") flash = 1;
-        booms[Math.random()] = { x: data.x, y: data.y, time: 0, shockwave: data.file === "bigboom" };
+socket.on(`sound`, (data) => {
+    if (data.file.includes(`boom`)) {
+        if (data.file === `bigboom`) flash = 1;
+        booms[Math.random()] = { x: data.x, y: data.y, time: 0, shockwave: data.file === `bigboom` };
         for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: data.x, y: data.y, angle: Math.random() * 6.28, time: -1, dx: data.dx / 1.5, dy: data.dy / 1.5 };
     }
     const dx = (px - data.x) / 1000;
     const dy = (py - data.y) / 1000;
     const dist = Math.hypot(Math.abs(dx) + 10, Math.abs(dy) + 10);
     let vol = 0.6 / dist;
-    if (data.file === "hyperspace") {
+    if (data.file === `hyperspace`) {
         hyperdriveTimer = 200;
         vol = 2;
     }
     playAudio(data.file, vol);
 });
-socket.on("equip", (data) => {
+socket.on(`equip`, (data) => {
     scroll = data.scroll;
     weaponTimer = 100;
 });
-socket.on("note", (data) => {
+socket.on(`note`, (data) => {
     notes[Math.random()] = { msg: data.msg, x: data.x - 16 + (data.local ? -px : Math.random() * 32), y: data.y - 16 + (data.local ? -py : Math.random() * 32), time: 0, strong: false, local: data.local };
 });
-socket.on("strong", (data) => {
+socket.on(`strong`, (data) => {
     notes[Math.random()] = { msg: data.msg, x: data.x + (data.local ? -px : 0), y: data.y - 128 + (data.local ? -py : 0), time: 0, strong: true, local: data.local };
 });
-socket.on("spoils", (data) => {
+socket.on(`spoils`, (data) => {
     data.amt = Math.round(data.amt);
     if (data.amt == 0) return;
-    let msg = ""; let x = 0; let y = 0;
-    if (data.type === "experience") {
-        msg = translate("+") + data.amt + translate(" EXP!");
+    let msg = ``; let x = 0; let y = 0;
+    if (data.type === `experience`) {
+        msg = translate(`+`) + data.amt + translate(` EXP!`);
         x = w / 2 + 256;// next to exp bar
         y = h - 32;
-    } else if (data.type === "money") {
+    } else if (data.type === `money`) {
         msg = `$${data.amt}`;
         x = w - 512;
         y = 64;
-    } else if (data.type === "ore") {
-        msg = translate("+") + data.amt + translate(" Ore!");
+    } else if (data.type === `ore`) {
+        msg = translate(`+`) + data.amt + translate(` Ore!`);
         x = w - 512;
         y = 96;
-    } else if (data.type === "life") {
-        msg = translate("+") + data.amt + (data.amt > 1 ? translate(" lives!") : translate(" life!"));
+    } else if (data.type === `life`) {
+        msg = translate(`+`) + data.amt + (data.amt > 1 ? translate(` lives!`) : translate(` life!`));
         x = w - 512;
         y = 128;
     }
     notes[Math.random()] = { spoils: true, msg: msg, x: x, y: y, time: 0, strong: true, local: data.local };
 });
-socket.on("online", (data) => {
+socket.on(`online`, (data) => {
     sLag = data.lag;
 });
-socket.on("emp", (data) => {
+socket.on(`emp`, (data) => {
     empTimer = data.t;
 });
-socket.on("gyro", (data) => {
+socket.on(`gyro`, (data) => {
     gyroTimer = data.t;
 });
-socket.on("dmg", (data) => {
+socket.on(`dmg`, (data) => {
     dmgTimer = 15;
 });
-socket.on("refresh", (data) => {
+socket.on(`refresh`, (data) => {
     forceRefresh();
 });
-socket.on("quests", (data) => {
+socket.on(`quests`, (data) => {
     quests = data.quests;
 });
-socket.on("rank", (data) => {
-    addBigNote([256, "Rank Up!", "", ""]);
+socket.on(`rank`, (data) => {
+    addBigNote([256, `Rank Up!`, ``, ``]);
 });
-socket.on("quest", (data) => {
+socket.on(`quest`, (data) => {
     quest = data.quest;
-    console.log("Received quest status update");
-    if (data.complete) addBigNote([256, "Quest Complete!", "", ""]);
+    console.log(`Received quest status update`);
+    if (data.complete) addBigNote([256, `Quest Complete!`, ``, ``]);
 });
-socket.on("achievementsKill", (data) => {
+socket.on(`achievementsKill`, (data) => {
     for (let a in data.achs) {
         a = Number(a);
         if (achs[a] != data.achs[a]) {
             achs[a] = data.achs[a];
-            if (data.note && !guest) addBigNote([256, "Achievement Get!", jsn.achNames[a].split(":")[0], jsn.achNames[a].split(":")[1]]);
+            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a].split(`:`)[0], jsn.achNames[a].split(`:`)[1]]);
         }
     }
 });
-socket.on("achievementsCash", (data) => {
+socket.on(`achievementsCash`, (data) => {
     for (let a in data.achs) {
         a = Number(a);
         if (achs[a + 13] != data.achs[a]) {
             achs[a + 13] = data.achs[a];
-            if (data.note && !guest) addBigNote([256, "Achievement Get!", jsn.achNames[a + 13].split(":")[0], jsn.achNames[a + 13].split(":")[1]]);
+            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a + 13].split(`:`)[0], jsn.achNames[a + 13].split(`:`)[1]]);
         }
     }
 });
-socket.on("achievementsDrift", (data) => {
+socket.on(`achievementsDrift`, (data) => {
     for (let a in data.achs) {
         a = Number(a);
         if (achs[a + 25] != data.achs[a]) {
             achs[a + 25] = data.achs[a];
-            if (data.note && !guest) addBigNote([256, "Achievement Get!", jsn.achNames[a + 25].split(":")[0], jsn.achNames[a + 25].split(":")[1]]);
+            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a + 25].split(`:`)[0], jsn.achNames[a + 25].split(`:`)[1]]);
         }
     }
 });
-socket.on("achievementsMisc", (data) => {
+socket.on(`achievementsMisc`, (data) => {
     for (let a in data.achs) {
         a = Number(a);
         if (achs[a + 37] != data.achs[a]) {
             achs[a + 37] = data.achs[a];
-            if (data.note && !guest) addBigNote([256, "Achievement Get!", jsn.achNames[a + 37].split(":")[0], jsn.achNames[a + 37].split(":")[1]]);
+            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a + 37].split(`:`)[0], jsn.achNames[a + 37].split(`:`)[1]]);
         }
     }
 });
-socket.on("status", (data) => {
+socket.on(`status`, (data) => {
     shipView = ship;
     if (!docked && data.docked) savedNote = 40;
     if (data.docked && !docked && guest && rank > 0) {
-        ReactRoot.turnOnRegister(""); tab = -1; keys[8] = false;
+        ReactRoot.turnOnRegister(``); tab = -1; keys[8] = false;
     }
     docked = data.docked;
     dead = data.state;
     lives = data.lives;
 });
-socket.on("planets", (data) => {
+socket.on(`planets`, (data) => {
     planets = data.pack;
-    if (quest != 0 && quest.type === "Secret2" && sx == quest.sx && sy == quest.sy) {
+    if (quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
         secret2PlanetName = planets.name;
     }
 });
-socket.on("planetMap", (data) => {
+socket.on(`planetMap`, (data) => {
     planetMap2D[data.sx][data.sy] = data;
     console.log(planetMap2D);
 });
-socket.on("baseMap", (data) => {
+socket.on(`baseMap`, (data) => {
     mapSz = data.mapSz;
     console.log(`Got basemap of size ${mapSz}`);
     const baseMap = data.baseMap;
@@ -611,7 +611,7 @@ socket.on("baseMap", (data) => {
         }
     }
 
-    console.log("Loading minimap");
+    console.log(`Loading minimap`);
     sectorPoints = {};
     for (let i = 0; i < mapSz + 1; i++) {
         sectorPoints[i] = {};
@@ -627,7 +627,7 @@ socket.on("baseMap", (data) => {
     }
 });
 
-socket.on("heatmap", (data) => {
+socket.on(`heatmap`, (data) => {
     hmap = data.hmap;
     lb = data.lb;
     raidRed = data.raidRed;
@@ -652,20 +652,20 @@ function constructMyGuild (data) {
     }
 }
 
-socket.on("worm", (data) => {
+socket.on(`worm`, (data) => {
     bx = data.bx;
     by = data.by;
     bxo = data.bxo;
     byo = data.byo;
 });
-socket.on("raid", (data) => {
+socket.on(`raid`, (data) => {
     raidTimer = data.raidTimer;
 });
-socket.on("kick", (data) => {
+socket.on(`kick`, (data) => {
     alert(data.msg);
     socket.disconnect();
 });
 
-socket.on("AFK", () => {
+socket.on(`AFK`, () => {
     afk = true;
 });

@@ -16,12 +16,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Load config
-const configEnvironment = (process.argv.length <= 3) ? "dev" : process.argv[3];
-require("../config.js")(configEnvironment);
-const fs = require("fs");
+const configEnvironment = (process.argv.length <= 3) ? `dev` : process.argv[3];
+require(`../config.js`)(configEnvironment);
+const fs = require(`fs`);
 
 global.serverInitialized = false;
-global.tickRate = 1000 / Config.getValue("server_tick_rate", 60);
+global.tickRate = 1000 / Config.getValue(`server_tick_rate`, 60);
 // some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
 global.mineLifetime = 3 * tickRate * 60; // mines despawn after this many minutes (3)
@@ -49,7 +49,7 @@ global.neuralFiles = 1500; // how many files should be in competition
 global.botFrequency = trainingMode ? 0.0014 : 0.003;// higher: more bots spawn.
 global.playerHeal = 0.2; // player healing speed
 global.baseHeal = 1; // base healing speed
-global.guestsCantChat = !Config.getValue("want_guest_chat", true);
+global.guestsCantChat = !Config.getValue(`want_guest_chat`, true);
 global.ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000, 200000000, 400000000, 1000000000]; // exp to rank conversion.
 global.afkTimerConst = 15 * tickRate * 60; // 15 minutes till we kick players for being afk
 
@@ -80,8 +80,8 @@ global.vorts = new Array(mapSz); // Worm/black holes
 global.asts = new Array(mapSz); // Asteroids
 global.planets = new Array(mapSz);
 
-const jsn = JSON.parse(fs.readFileSync("client/weapons.json", "utf8"));
-global.eng = JSON.parse(fs.readFileSync("client/english.json", "utf8"));
+const jsn = JSON.parse(fs.readFileSync(`client/weapons.json`, `utf8`));
+global.eng = JSON.parse(fs.readFileSync(`client/english.json`, `utf8`));
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 global.planetNames = jsn.planets;

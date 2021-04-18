@@ -15,8 +15,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const Player = require("./player.js");
-const Package = require("./universe/package.js");
+const Player = require(`./player.js`);
+const Package = require(`./universe/package.js`);
 
 class PlayerMP extends Player {
     constructor (socket) {
@@ -24,19 +24,19 @@ class PlayerMP extends Player {
 
         socket.player = this;
         this.socket = socket;
-        this.guild = "";
+        this.guild = ``;
 
         this.ip = 0;
         this.chatTimer = 100;
         this.muteCap = 750;
         this.globalChat = 0;
-        this.lastmsg = "";
+        this.lastmsg = ``;
 
-        this.reply = "nobody"; // last person to pm / who pmed me
+        this.reply = `nobody`; // last person to pm / who pmed me
         this.lastLogin = new Date();
 
         this.permissionLevels = [-1];
-        this.kickMsg = "";
+        this.kickMsg = ``;
         this.afkTimer = afkTimerConst; // used to check AFK status
     }
 
@@ -47,30 +47,30 @@ class PlayerMP extends Player {
 
     kick (msg) {
         this.kickMsg = msg;
-        this.emit("kick", { msg: msg });
+        this.emit(`kick`, { msg: msg });
         this.socket.disconnect();
         delete players[this.sy][this.sx][this.id];
     }
 
     swap (msg) { // msg looks like "/swap 2 5". Swaps two weapons.
         if (!this.docked) {
-            this.emit("chat", { msg: "~`cyan~`You must be docked to use that command!" });
+            this.emit(`chat`, { msg: "~`cyan~`You must be docked to use that command!" });
             return;
         }
-        const spl = msg.split(" ");
+        const spl = msg.split(` `);
         if (spl.length != 3) { // not enough arguments
-            this.emit("chat", { msg: "~`red~`Invalid Syntax!" });
+            this.emit(`chat`, { msg: "~`red~`Invalid Syntax!" });
             return;
         }
         let slot1 = parseFloat(spl[1]); let slot2 = parseFloat(spl[2]);
         if (slot1 == 0) slot1 = 10;
         if (slot2 == 0) slot2 = 10;
         if (slot1 > 10 || slot2 > 10 || slot1 < 1 || slot2 < 1 || !slot1 || !slot2 || !Number.isInteger(slot1) || !Number.isInteger(slot2)) {
-            this.emit("chat", { msg: "~`red~`Invalid Syntax!" });
+            this.emit(`chat`, { msg: "~`red~`Invalid Syntax!" });
             return;
         }
         if (this.weapons[slot1] == -2 || this.weapons[slot2] == -2) {
-            this.emit("chat", { msg: "~`orange~`You haven't unlocked that slot yet!" });
+            this.emit(`chat`, { msg: "~`orange~`You haven't unlocked that slot yet!" });
             return;
         }
 
@@ -87,25 +87,25 @@ class PlayerMP extends Player {
         else if (this.equipped == slot2) this.equipped = slot1;
 
         sendWeapons(this);
-        this.emit("equip", { scroll: this.equipped });
-        this.emit("chat", { msg: "~`lime~`Weapons swapped!" });
+        this.emit(`equip`, { scroll: this.equipped });
+        this.emit(`chat`, { msg: "~`lime~`Weapons swapped!" });
     }
 
     r (msg) { // pm reply
-        if (this.reply.includes(" ")) this.reply = this.reply.split(" ")[1];
+        if (this.reply.includes(` `)) this.reply = this.reply.split(` `)[1];
         this.pm(`/pm ${this.reply} ${msg.substring(3)}`);
     }
 
     pm (msg) { // msg looks like "/pm luunch hey there pal". If a moderator, you use "2swap" not "[O] 2swap".
-        if (msg.split(" ").length < 3) { // gotta have pm, name, then message
-            this.emit("chat", { msg: "Invalid Syntax!" });
+        if (msg.split(` `).length < 3) { // gotta have pm, name, then message
+            this.emit(`chat`, { msg: `Invalid Syntax!` });
             return;
         }
 
-        const name = msg.split(" ")[1];
+        const name = msg.split(` `)[1];
         const raw = msg.substring(name.length + 5);
 
-        this.emit("chat", { msg: `~\`cyan~\`Sending private message to ${name}...` });
+        this.emit(`chat`, { msg: `~\`cyan~\`Sending private message to ${name}...` });
 
         for (const sock in sockets) {
             const player = sockets[sock].player;
@@ -114,63 +114,63 @@ class PlayerMP extends Player {
                 continue;
             }
 
-            if ((player.name.includes(" ") ? player.name.split(" ")[1] : player.name) === name) {
+            if ((player.name.includes(` `) ? player.name.split(` `)[1] : player.name) === name) {
                 console.log(`[PM] ${this.name}->`, player.name, `: ${raw}`);
-                player.emit("chat", { msg: `~\`orange~\`[PM] [${this.name}]: ${raw}` });
-                this.emit("chat", { msg: "~`lime~`Message sent!" });
+                player.emit(`chat`, { msg: `~\`orange~\`[PM] [${this.name}]: ${raw}` });
+                this.emit(`chat`, { msg: "~`lime~`Message sent!" });
                 this.reply = player.name;
                 player.reply = this.name;
                 return;
             }
         }
 
-        this.emit("chat", { msg: "~`red~`Player not found!" });
+        this.emit(`chat`, { msg: "~`red~`Player not found!" });
     }
 
     changePass (pass) { // /password
         if (!this.docked) {
-            this.emit("chat", { msg: "~`cyan~`This command is only available when docked at a base." });
+            this.emit(`chat`, { msg: "~`cyan~`This command is only available when docked at a base." });
             return;
         }
         if (pass.length > 128 || pass.length < 6) {
-            this.emit("chat", { msg: "~`red~`Password must be 6-128 characters." });
+            this.emit(`chat`, { msg: "~`red~`Password must be 6-128 characters." });
             return;
         }
 
         if (pass == this.name) {
-            this.emit("chat", { msg: "~`red~`Password cannot be the same as your username!" });
+            this.emit(`chat`, { msg: "~`red~`Password cannot be the same as your username!" });
             return;
         }
 
         this.tentativePassword = pass;
-        this.emit("chat", { msg: "~`white~`Type \"/confirm your_new_password\" to complete the change." });
+        this.emit(`chat`, { msg: "~`white~`Type \"/confirm your_new_password\" to complete the change." });
     }
 
     async confirmPass (pass) { // /confirm
         if (!this.docked) {
-            this.emit("chat", { msg: "~`cyan~`This command is only available when docked at a base." });
+            this.emit(`chat`, { msg: "~`cyan~`This command is only available when docked at a base." });
             return;
         }
         if (pass !== this.tentativePassword) {
-            this.emit("chat", { msg: "~`red~`Passwords do not match! Start over from /password." });
+            this.emit(`chat`, { msg: "~`red~`Passwords do not match! Start over from /password." });
             this.tentativePassword = undefined;
             return;
         }
-        const response = await send_rpc("/reset/", `${this._id}%${pass}`);
+        const response = await send_rpc(`/reset/`, `${this._id}%${pass}`);
 
         if (!response.ok) {
-            this.emit("chat", { msg: "ERROR" });
+            this.emit(`chat`, { msg: `ERROR` });
             return;
         }
 
         this.tentativePassword = undefined;
-        this.emit("chat", { msg: "~`lime~`Password changed successfully." });
+        this.emit(`chat`, { msg: "~`lime~`Password changed successfully." });
     }
 
     testAfk () {
         if (this.afkTimer-- < 0) {
-            this.emit("AFK");
-            this.kick("AFK!");
+            this.emit(`AFK`);
+            this.kick(`AFK!`);
             this.testAfk = () => false;
             return true;
         }
@@ -189,17 +189,17 @@ class PlayerMP extends Player {
         this.leaveBaseShield = 25;
         this.refillAllAmmo();
 
-        sendAllSector("sound", { file: "bigboom", x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
 
         // clear quest
         this.quest = 0;
-        this.emit("quest", { quest: 0, complete: false });// reset quest and update client
+        this.emit(`quest`, { quest: 0, complete: false });// reset quest and update client
 
-        if (typeof b.owner !== "undefined" && b.owner.type === "Player") {
+        if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
             const customMessageArr = eng.weapons[b.wepnID].killmessages;
-            const useCustomKillMessage = Math.random() < 0.5 && typeof customMessageArr !== "undefined" && customMessageArr.length > 0;
+            const useCustomKillMessage = Math.random() < 0.5 && typeof customMessageArr !== `undefined` && customMessageArr.length > 0;
 
-            if (useCustomKillMessage) chatAll(customMessageArr[Math.floor(Math.random() * customMessageArr.length)].replace("P1", b.owner.nameWithColor()).replace("P2", this.nameWithColor()));
+            if (useCustomKillMessage) chatAll(customMessageArr[Math.floor(Math.random() * customMessageArr.length)].replace(`P1`, b.owner.nameWithColor()).replace(`P2`, this.nameWithColor()));
             else chatAll(`${this.nameWithColor()} was destroyed by ${b.owner.nameWithColor()}'s \`~${b.wepnID}\`~!`);
 
             if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
@@ -208,11 +208,11 @@ class PlayerMP extends Player {
             }
         }
         // send msg
-        else if (b.type === "Vortex") chatAll(`${this.nameWithColor()} crashed into a black hole!`);
-        else if (b.type === "Planet" || b.type === "Asteroid") chatAll(`${this.nameWithColor()} crashed into an asteroid!`);
-        else if (b.owner !== undefined && b.owner.type === "Base") chatAll(`${this.nameWithColor()} was destroyed by base ${b.owner.nameWithColor()}!`);
+        else if (b.type === `Vortex`) chatAll(`${this.nameWithColor()} crashed into a black hole!`);
+        else if (b.type === `Planet` || b.type === `Asteroid`) chatAll(`${this.nameWithColor()} crashed into an asteroid!`);
+        else if (b.owner !== undefined && b.owner.type === `Base`) chatAll(`${this.nameWithColor()} was destroyed by base ${b.owner.nameWithColor()}!`);
 
-        if (b.type !== "Vortex") {
+        if (b.type !== `Vortex`) {
             // drop a package
             const r = Math.random();
             if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier)
@@ -224,18 +224,18 @@ class PlayerMP extends Player {
         const diff = playerKillExpFraction * this.experience;
         const moneyEarned = Math.max(0, playerKillMoneyFraction * this.money);
         // give the killer stuff
-        if (b.owner != 0 && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
+        if (b.owner != 0 && (typeof b.owner !== `undefined`) && (b.owner.type === `Player` || b.owner.type === `Base`)) {
             b.owner.onKill(this);
 
             // Award (or punish for teamkills)
             // const diff = playerKillExpFraction * this.experience;
             const other_ip = b.owner.ip;
             if (!this.guest && !(other_ip !== undefined && other_ip == this.ip)) { // Only award them if their IP differs and they didn't kill a guest
-    	if (this.color !== b.owner.color) b.owner.spoils("experience", 10 + Math.min(this.experience * 2, diff)); // Self-feeding protection
-    	else b.owner.spoils("experience", -5 * Math.min(diff, b.owner.experience * playerKillExpFraction)); // Punishment equals -5 times what the reward would have been, unless it's large in proportant to the punished person's exp
-                b.owner.spoils("money", moneyEarned + (b.owner.type === "Player" ? b.owner.killStreak * playerKillMoney : playerKillMoney));
+    	if (this.color !== b.owner.color) b.owner.spoils(`experience`, 10 + Math.min(this.experience * 2, diff)); // Self-feeding protection
+    	else b.owner.spoils(`experience`, -5 * Math.min(diff, b.owner.experience * playerKillExpFraction)); // Punishment equals -5 times what the reward would have been, unless it's large in proportant to the punished person's exp
+                b.owner.spoils(`money`, moneyEarned + (b.owner.type === `Player` ? b.owner.killStreak * playerKillMoney : playerKillMoney));
             }
-            if (this.color === b.owner.color && b.owner.type === "Player") b.owner.save(); // prevents people from logging out to get rid of their punishment
+            if (this.color === b.owner.color && b.owner.type === `Player`) b.owner.save(); // prevents people from logging out to get rid of their punishment
 
             if (this.points > 0) { // raid points
                 b.owner.points++;
@@ -263,7 +263,7 @@ class PlayerMP extends Player {
         this.lives--;
         this.save();
         if (this.lives <= 0) {
-            this.kick("Goodbye captain: no more lives remaining!");
+            this.kick(`Goodbye captain: no more lives remaining!`);
             return;
         }
 
@@ -283,25 +283,25 @@ class PlayerMP extends Player {
 
     sellOre (oretype) {
     // pay them appropriately
-        if (oretype == "iron" || oretype == "all") {
-            this.spoils("money", this.iron);
+        if (oretype == `iron` || oretype == `all`) {
+            this.spoils(`money`, this.iron);
             this.iron = 0;
-        } if (oretype == "silver" || oretype == "all") {
-            this.spoils("money", this.silver);
+        } if (oretype == `silver` || oretype == `all`) {
+            this.spoils(`money`, this.silver);
             this.silver = 0;
-        } if (oretype == "platinum" || oretype == "all") {
-            this.spoils("money", this.platinum);
+        } if (oretype == `platinum` || oretype == `all`) {
+            this.spoils(`money`, this.platinum);
             this.platinum = 0;
-        } if (oretype == "copper" || oretype == "all") {
-            this.spoils("money", this.copper);
+        } if (oretype == `copper` || oretype == `all`) {
+            this.spoils(`money`, this.copper);
             this.copper = 0;
         }
         this.save();
     }
 
     dock () {
-        if (typeof this.aluminium === "undefined") this.aluminium = 0;
-        if (typeof this.copper === "undefined") this.copper = 0;
+        if (typeof this.aluminium === `undefined`) this.aluminium = 0;
+        if (typeof this.copper === `undefined`) this.copper = 0;
         this.copper += this.aluminium;
         this.aluminium = 0;
 
@@ -334,14 +334,14 @@ class PlayerMP extends Player {
     }
 
     spoils (type, amt) { // gives you something. Called wenever you earn money / exp / w/e
-        if (typeof amt === "undefined") return;
-        if (type === "experience") {
+        if (typeof amt === `undefined`) return;
+        if (type === `experience`) {
             this.experience += amt;
             this.updateRank();
-        } else if (type === "money") this.money += amt * ((amt > 0 && this.trail % 16 == 2) ? 1.05 : 1);
-        else if (type === "life" && this.lives < 20) this.lives += amt;
+        } else if (type === `money`) this.money += amt * ((amt > 0 && this.trail % 16 == 2) ? 1.05 : 1);
+        else if (type === `life` && this.lives < 20) this.lives += amt;
         this.experience = Math.max(this.experience, 0);
-        this.emit("spoils", { type: type, amt: amt });
+        this.emit(`spoils`, { type: type, amt: amt });
     }
 
     onMined (a) {
@@ -358,24 +358,24 @@ class PlayerMP extends Player {
     }
 
     sendAchievementsKill (note) {
-        this.emit("achievementsKill", { note: note, achs: this.killsAchs });
+        this.emit(`achievementsKill`, { note: note, achs: this.killsAchs });
     }
 
     sendAchievementsCash (note) {
-        this.emit("achievementsCash", { note: note, achs: this.moneyAchs });
+        this.emit(`achievementsCash`, { note: note, achs: this.moneyAchs });
     }
 
     sendAchievementsDrift (note) {
-        this.emit("achievementsDrift", { note: note, achs: this.driftAchs });
+        this.emit(`achievementsDrift`, { note: note, achs: this.driftAchs });
     }
 
     sendAchievementsMisc (note) {
-        this.randmAchs[9] = !this.planetsClaimed.includes("0") && !this.planetsClaimed.includes("1"); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
-        this.emit("achievementsMisc", { note: note, achs: this.randmAchs });
+        this.randmAchs[9] = !this.planetsClaimed.includes(`0`) && !this.planetsClaimed.includes(`1`); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
+        this.emit(`achievementsMisc`, { note: note, achs: this.randmAchs });
     }
 
     sendStatus () {
-        this.emit("status", { docked: this.docked, state: this.dead, lives: this.lives });
+        this.emit(`status`, { docked: this.docked, state: this.dead, lives: this.lives });
     }
 
     checkMoneyAchievements () {
@@ -430,11 +430,11 @@ class PlayerMP extends Player {
     }
 
     noteLocal (msg, x, y) {
-        this.emit("note", { msg: msg, x: x, y: y, local: true });
+        this.emit(`note`, { msg: msg, x: x, y: y, local: true });
     }
 
     strongLocal (msg, x, y) {
-        this.emit("strong", { msg: msg, x: x, y: y, local: true });
+        this.emit(`strong`, { msg: msg, x: x, y: y, local: true });
     }
 
     baseKilled () {
@@ -446,14 +446,14 @@ class PlayerMP extends Player {
         this.sendAchievementsKill(true);
 
         // base quest checking
-        if (this.quest != 0 && this.quest.type == "Base") {
+        if (this.quest != 0 && this.quest.type == `Base`) {
             if (this.sx == this.quest.sx && this.sy == this.quest.sy) {
                 // reward player
-                this.spoils("money", this.quest.exp);
-                this.spoils("experience", Math.floor(this.quest.exp / 4000));
+                this.spoils(`money`, this.quest.exp);
+                this.spoils(`experience`, Math.floor(this.quest.exp / 4000));
 
                 this.quest = 0; // tell client it's done
-                this.emit("quest", { quest: this.quest, complete: true });
+                this.emit(`quest`, { quest: this.quest, complete: true });
                 if ((this.questsDone & 4) == 0) this.questsDone += 4;
 
                 if (!this.moneyAchs[9]) { // Questor
@@ -472,25 +472,25 @@ class PlayerMP extends Player {
     checkQuestStatus (touchingPlanet) {
         if (this.quest == 0) return;// no point if the person hasn't got a quest rn.
 
-        if (this.quest.type === "Mining" && this.sx == this.quest.sx && this.sy == this.quest.sy) {
+        if (this.quest.type === `Mining` && this.sx == this.quest.sx && this.sy == this.quest.sy) {
             // check the player has sufficient metal according to quest
-            if (this.quest.metal == "copper" && this.copper < this.quest.amt) return;
-            if (this.quest.metal == "iron" && this.iron < this.quest.amt) return;
-            if (this.quest.metal == "silver" && this.silver < this.quest.amt) return;
-            if (this.quest.metal == "platinum" && this.platinum < this.quest.amt) return;
+            if (this.quest.metal == `copper` && this.copper < this.quest.amt) return;
+            if (this.quest.metal == `iron` && this.iron < this.quest.amt) return;
+            if (this.quest.metal == `silver` && this.silver < this.quest.amt) return;
+            if (this.quest.metal == `platinum` && this.platinum < this.quest.amt) return;
 
             // take the amount from them
-            if (this.quest.metal == "copper") this.copper -= this.quest.amt;
-            if (this.quest.metal == "iron") this.iron -= this.quest.amt;
-            if (this.quest.metal == "silver") this.silver -= this.quest.amt;
-            if (this.quest.metal == "platinum") this.platinum -= this.quest.amt;
+            if (this.quest.metal == `copper`) this.copper -= this.quest.amt;
+            if (this.quest.metal == `iron`) this.iron -= this.quest.amt;
+            if (this.quest.metal == `silver`) this.silver -= this.quest.amt;
+            if (this.quest.metal == `platinum`) this.platinum -= this.quest.amt;
 
             // reward them
-            this.spoils("money", this.quest.exp);
-            this.spoils("experience", Math.floor(this.quest.exp / 1500));
+            this.spoils(`money`, this.quest.exp);
+            this.spoils(`experience`, Math.floor(this.quest.exp / 1500));
 
             this.quest = 0;
-            this.emit("quest", { quest: this.quest, complete: true }); // tell client quest is over
+            this.emit(`quest`, { quest: this.quest, complete: true }); // tell client quest is over
 
             if (!this.moneyAchs[9]) { // Questor
                 this.moneyAchs[9] = true;
@@ -498,21 +498,21 @@ class PlayerMP extends Player {
             }
 
             if ((this.questsDone & 1) == 0) this.questsDone += 1;
-        } else if (this.quest.type === "Delivery" && touchingPlanet) {
+        } else if (this.quest.type === `Delivery` && touchingPlanet) {
             // pickup
             if (this.sx == this.quest.sx && this.sy == this.quest.sy && !this.hasPackage) {
                 this.hasPackage = true;
-                this.strongLocal("Package obtained!", this.x, this.y - 192);
+                this.strongLocal(`Package obtained!`, this.x, this.y - 192);
             }
 
             // dropoff
             if (this.hasPackage && this.sx == this.quest.dsx && this.sy == this.quest.dsy) {
-                this.spoils("money", this.quest.exp);// reward
-                this.spoils("experience", Math.floor(this.quest.exp / 1500));
+                this.spoils(`money`, this.quest.exp);// reward
+                this.spoils(`experience`, Math.floor(this.quest.exp / 1500));
 
                 this.hasPackage = false;
                 this.quest = 0;
-                this.emit("quest", { quest: this.quest, complete: true }); // tell client it's over
+                this.emit(`quest`, { quest: this.quest, complete: true }); // tell client it's over
                 if ((this.questsDone & 2) == 0) this.questsDone += 2;
 
                 if (!this.moneyAchs[9]) { // Questor
@@ -532,7 +532,7 @@ class PlayerMP extends Player {
         let packHere = 0;
         const planet = planets[this.sy][this.sx];
         packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color };
-        this.emit("planets", { pack: packHere });
+        this.emit(`planets`, { pack: packHere });
     }
 
     onKill (p) {

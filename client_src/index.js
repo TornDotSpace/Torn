@@ -20,54 +20,54 @@ import ReactRootJS from "./react.js";
 
 import { jsn, translate } from "./localizer.ts";
 
-"use strict";
+`use strict`;
 
 function printStartup () {
-    console.log("******************************************************************************************************");
-    console.log(" ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄      ▄     ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄ ");
-    console.log("▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░▌    ▐░▌   ▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌");
-    console.log(" ▀▀▀█░█▀▀▀ ▐░█▀▀▀▀▀█░▌▐░█▀▀▀▀▀█░▌▐░▌░▌   ▐░▌   ▐░█▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀█░▌▐░█▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀ ");
-    console.log("    ▐░▌    ▐░▌     ▐░▌▐░▌     ▐░▌▐░▌▐░▌  ▐░▌   ▐░▌        ▐░▌     ▐░▌▐░▌     ▐░▌▐░▌        ▐░▌        ");
-    console.log("    ▐░▌    ▐░▌     ▐░▌▐░█▄▄▄▄▄█░▌▐░▌ ▐░▌ ▐░▌   ▐░█▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄█░▌▐░█▄▄▄▄▄█░▌▐░▌        ▐░█▄▄▄▄▄▄▄ ");
-    console.log("    ▐░▌    ▐░▌     ▐░▌▐░░░░░░░░░▌▐░▌  ▐░▌▐░▌   ▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░▌        ▐░░░░░░░░░▌");
-    console.log("    ▐░▌    ▐░▌     ▐░▌▐░█▀▀█░█▀▀ ▐░▌   ▐░▐░▌    ▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀█░▌▐░▌        ▐░█▀▀▀▀▀▀▀ ");
-    console.log("    ▐░▌    ▐░▌     ▐░▌▐░▌   ▐░▌  ▐░▌    ▐░░▌           ▐░▌▐░▌        ▐░▌     ▐░▌▐░▌        ▐░▌        ");
-    console.log("    ▐░▌    ▐░█▄▄▄▄▄█░▌▐░▌    ▐░▌ ▐░▌     ▐░▌ ▄  ▄▄▄▄▄▄▄█░▌▐░▌        ▐░▌     ▐░▌▐░█▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄ ");
-    console.log("    ▐░▌    ▐░░░░░░░░░▌▐░▌     ▐░▌▐░▌     ▐░▌▐░▌▐░░░░░░░░░▌▐░▌        ▐░▌     ▐░▌▐░░░░░░░░░▌▐░░░░░░░░░▌");
-    console.log("     ▀      ▀▀▀▀▀▀▀▀▀  ▀       ▀  ▀       ▀  ▀  ▀▀▀▀▀▀▀▀▀  ▀          ▀       ▀  ▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀ ");
-    console.log("                                                                                                      ");
-    console.log("******************************************************************************************************");
+    console.log(`******************************************************************************************************`);
+    console.log(` ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄      ▄     ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄ `);
+    console.log(`▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░▌    ▐░▌   ▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌`);
+    console.log(` ▀▀▀█░█▀▀▀ ▐░█▀▀▀▀▀█░▌▐░█▀▀▀▀▀█░▌▐░▌░▌   ▐░▌   ▐░█▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀█░▌▐░█▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀ `);
+    console.log(`    ▐░▌    ▐░▌     ▐░▌▐░▌     ▐░▌▐░▌▐░▌  ▐░▌   ▐░▌        ▐░▌     ▐░▌▐░▌     ▐░▌▐░▌        ▐░▌        `);
+    console.log(`    ▐░▌    ▐░▌     ▐░▌▐░█▄▄▄▄▄█░▌▐░▌ ▐░▌ ▐░▌   ▐░█▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄█░▌▐░█▄▄▄▄▄█░▌▐░▌        ▐░█▄▄▄▄▄▄▄ `);
+    console.log(`    ▐░▌    ▐░▌     ▐░▌▐░░░░░░░░░▌▐░▌  ▐░▌▐░▌   ▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░▌        ▐░░░░░░░░░▌`);
+    console.log(`    ▐░▌    ▐░▌     ▐░▌▐░█▀▀█░█▀▀ ▐░▌   ▐░▐░▌    ▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀█░▌▐░▌        ▐░█▀▀▀▀▀▀▀ `);
+    console.log(`    ▐░▌    ▐░▌     ▐░▌▐░▌   ▐░▌  ▐░▌    ▐░░▌           ▐░▌▐░▌        ▐░▌     ▐░▌▐░▌        ▐░▌        `);
+    console.log(`    ▐░▌    ▐░█▄▄▄▄▄█░▌▐░▌    ▐░▌ ▐░▌     ▐░▌ ▄  ▄▄▄▄▄▄▄█░▌▐░▌        ▐░▌     ▐░▌▐░█▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄ `);
+    console.log(`    ▐░▌    ▐░░░░░░░░░▌▐░▌     ▐░▌▐░▌     ▐░▌▐░▌▐░░░░░░░░░▌▐░▌        ▐░▌     ▐░▌▐░░░░░░░░░▌▐░░░░░░░░░▌`);
+    console.log(`     ▀      ▀▀▀▀▀▀▀▀▀  ▀       ▀  ▀       ▀  ▀  ▀▀▀▀▀▀▀▀▀  ▀          ▀       ▀  ▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀ `);
+    console.log(`                                                                                                      `);
+    console.log(`******************************************************************************************************`);
 
-    console.log("This software is free software, licensed under the terms of the AGPL v3. For more information, please see LICENSE.txt");
-    console.log("Source available at: https://github.com/TornDotSpace/Torn");
+    console.log(`This software is free software, licensed under the terms of the AGPL v3. For more information, please see LICENSE.txt`);
+    console.log(`Source available at: https://github.com/TornDotSpace/Torn`);
 
     console.log(`torn-client-git-${BRANCH}-${COMMITHASH}`);
     console.log(`Implementing protocol version ${VERSION}`);
 
     // Print client modification warning
-    console.error("***********************************************************************");
-    console.error("WARNING: PASTING CODE INTO HERE CAN ALLOW FOR YOUR ACCOUNT TO BE STOLEN");
-    console.error("ALWAYS AUDIT CODE YOU ARE INJECTING INTO THE DEVELOPER CONSOLE");
-    console.error("ADDITIONALLY, PLEASE RESPECT OUR TOS https://torn.space/legal/tos.pdf AND NOTE OUR PRIVACY POLICY https://torn.space/legal/privacy_policy.pdf");
-    console.error("***********************************************************************");
+    console.error(`***********************************************************************`);
+    console.error(`WARNING: PASTING CODE INTO HERE CAN ALLOW FOR YOUR ACCOUNT TO BE STOLEN`);
+    console.error(`ALWAYS AUDIT CODE YOU ARE INJECTING INTO THE DEVELOPER CONSOLE`);
+    console.error(`ADDITIONALLY, PLEASE RESPECT OUR TOS https://torn.space/legal/tos.pdf AND NOTE OUR PRIVACY POLICY https://torn.space/legal/privacy_policy.pdf`);
+    console.error(`***********************************************************************`);
 }
 
 printStartup();
 
 global.loginInProgress = false;
 
-window.document.title = "torn.space";
+window.document.title = `torn.space`;
 
 global.isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);// broken
 
-global.canvas = document.getElementById("ctx");
+global.canvas = document.getElementById(`ctx`);
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-global.ctx = canvas.getContext("2d", { alpha: false });
+global.ctx = canvas.getContext(`2d`, { alpha: false });
 global.ReactRoot = ReactRootJS;
-const { Howl, Howler } = require("howler"); // audio
+const { Howl, Howler } = require(`howler`); // audio
 
-global.teamColors = ["red", "blue", "green"];
+global.teamColors = [`red`, `blue`, `green`];
 global.sectorWidth = 14336;
 global.mx = 0; global.my = 0; global.mb = 0;
 global.tick = 0;
@@ -107,10 +107,10 @@ global.t2 = 1; global.mh2 = 1; global.c2 = 1; global.va2 = 1; global.e2 = 1; glo
 global.dead = false; global.lives = 50; global.sLag = 0; global.nLag = 0; global.clientLag = -40; global.fps = 0; global.ops = 0; global.frames = 0; global.uframes = 0; global.ups = 0; global.dev = false;
 global.credentialState = 0;
 global.savedNote = 0;
-global.myName = "GUEST"; global.currAlert = ""; global.bigAlert = ""; global.disguise = 0;
+global.myName = `GUEST`; global.currAlert = ``; global.bigAlert = ``; global.disguise = 0;
 global.soundAllowed = false;
-global.currLoading = "";
-global.secret2PlanetName = "";
+global.currLoading = ``;
+global.secret2PlanetName = ``;
 global.meanNLag = 0; global.nLagCt = 0;
 
 global.booms = {};
@@ -156,17 +156,17 @@ global.didW = false; global.didSteer = false; global.currTut = 0;
 
 global.sectorPoints = 0;
 
-require("./audio.js");
-require("./image.js");
-require("./localizer.ts");
-require("./helper.js");
-require("./network.js");
-require("./graphics/render.js");
-require("./graphics/ArrowGraphics.js");
-require("./graphics/minimap.js");
-require("./BaseMenu/BaseMenu.js");
-require("./input.js");
-require("./chat.ts");
+require(`./audio.js`);
+require(`./image.js`);
+require(`./localizer.ts`);
+require(`./helper.js`);
+require(`./network.js`);
+require(`./graphics/render.js`);
+require(`./graphics/ArrowGraphics.js`);
+require(`./graphics/minimap.js`);
+require(`./BaseMenu/BaseMenu.js`);
+require(`./input.js`);
+require(`./chat.ts`);
 
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
@@ -183,7 +183,7 @@ ReactDOM.render(
     document.getElementById("a"),
     /* eslint-enable */
 );
-ReactRoot.turnOnDisplay("LoginOverlay");
+ReactRoot.turnOnDisplay(`LoginOverlay`);
 
 // Used in the ship store to make the bar graphs
 global.maxShipThrust = -1000;
@@ -220,8 +220,8 @@ for (let j = 0; j < wepnCount - 1; j++) { // this nifty loop sorts weapons by sh
     }
 }
 
-wepns[-2] = { name: "" };
-wepns[-1] = { name: translate("Empty") };
+wepns[-2] = { name: `` };
+wepns[-1] = { name: translate(`Empty`) };
 wepnCount += 2;
 
 global.scroll = 0; global.weaponTimer = 0; global.charge = 0;
@@ -268,19 +268,19 @@ function loop () {
     render();
     if (!login) {
         if (!EVERYTHING_LOADED) {
-            ReactRoot.turnOffDisplay("LoginOverlay");
+            ReactRoot.turnOffDisplay(`LoginOverlay`);
             rLoadingBar();
             setTimeout(render, 5);
             window.requestAnimationFrame(loop);
             return;
-        } else ReactRoot.turnOnDisplay("LoginOverlay");
+        } else ReactRoot.turnOnDisplay(`LoginOverlay`);
 
         if (++homepageTimer == 1) {
-            loadAudio("music1", "/aud/music1.mp3");
+            loadAudio(`music1`, `/aud/music1.mp3`);
         }
 
         canvas.width = canvas.width;
-        ctx.fillStyle = "black";
+        ctx.fillStyle = `black`;
         ctx.fillRect(0, 0, w, h);
 
         // desmos this stuff or you wont have a clue whats going on vvv
@@ -310,8 +310,8 @@ function loop () {
         const rnd = Math.random();
         let angleNow = -Math.atan2(5 * Math.sin(5 * t), 4 * Math.cos(4 * t));
         if (rnd < 0.05) {
-            playAudio("minigun", 0.1);
-            bullets[rnd] = { x: px, y: py, vx: 12800 / 6000 * 20 * Math.cos(4 * t) + 40 * Math.cos(angleNow), vy: -16000 / 6000 * 20 * Math.sin(5 * t) + 40 * Math.sin(angleNow), id: rnd, angle: angleNow, wepnID: 0, color: "red" };
+            playAudio(`minigun`, 0.1);
+            bullets[rnd] = { x: px, y: py, vx: 12800 / 6000 * 20 * Math.cos(4 * t) + 40 * Math.cos(angleNow), vy: -16000 / 6000 * 20 * Math.sin(5 * t) + 40 * Math.sin(angleNow), id: rnd, angle: angleNow, wepnID: 0, color: `red` };
         }
 
         let img = redShips[14];
@@ -341,7 +341,7 @@ function loop () {
                     delete bullets[i];
                     booms[Math.random()] = { x: b.x, y: b.y, time: 0, shockwave: false };
                     // for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: b.x, y: b.y, angle: Math.random() * 6.28, time: -1, dx: b.vx / 1.5, dy: b.vy / 1.5 };
-                    playAudio("boom", 0.35);
+                    playAudio(`boom`, 0.35);
                 }
             }
 
@@ -369,14 +369,14 @@ function loop () {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         if (homepageTimer < 10) {
             ctx.globalAlpha = 1 - homepageTimer / 10;
-            ctx.fillStyle = "black";
+            ctx.fillStyle = `black`;
             ctx.fillRect(0, 0, w, h);
             ctx.globalAlpha = 1;
         }
         ctx.drawImage(Img.grad, 0, 0, w, h);
         rCreds();
         if (lore) {
-            ReactRoot.turnOffDisplay("LoginOverlay");
+            ReactRoot.turnOffDisplay(`LoginOverlay`);
             rLore();
             loreTimer++;
             window.requestAnimationFrame(loop);

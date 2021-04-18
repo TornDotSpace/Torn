@@ -14,17 +14,17 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-const fs = require("fs");
+const fs = require(`fs`);
 
-const Filter = require("bad-words"); // bad-words node package
+const Filter = require(`bad-words`); // bad-words node package
 const filter = new Filter();
 
-filter.removeWords("god", "hell", "crap", "flipping the bird", "Lipshitz", "Lipshits", "polack", "screwing", "slut", "sluts", "hui", "poop", "screw", "coño", "puta", "hijoputa", "cabrón", "cabron", "mierda");
-const PlayerMP = require("./player_mp.js");
-require("./netutils.js");
-require("./command.js");
-const exec = require("child_process").execSync;
-const msgpack = require("socket.io-msgpack-parser");
+filter.removeWords(`god`, `hell`, `crap`, `flipping the bird`, `Lipshitz`, `Lipshits`, `polack`, `screwing`, `slut`, `sluts`, `hui`, `poop`, `screw`, `coño`, `puta`, `hijoputa`, `cabrón`, `cabron`, `mierda`);
+const PlayerMP = require(`./player_mp.js`);
+require(`./netutils.js`);
+require(`./command.js`);
+const exec = require(`child_process`).execSync;
+const msgpack = require(`socket.io-msgpack-parser`);
 
 let guestNumber = 0; // Enumerate guests since server boot
 
@@ -36,9 +36,9 @@ global.protocolVersion = undefined;
 
 function runCommand (player, msg) { // player just sent msg in chat and msg starts with a /
     const toLower = msg.toLowerCase();
-    const command = cmds[toLower.split(" ")[0]];
+    const command = cmds[toLower.split(` `)[0]];
     if (command === undefined) {
-        player.socket.emit("chat", { msg: "~`red~`Unknown Command. Use /help for a list of commands! ~`red~`" });
+        player.socket.emit(`chat`, { msg: "~`red~`Unknown Command. Use /help for a list of commands! ~`red~`" });
     } else {
     // Check for permissions
         let permitted = false;
@@ -49,7 +49,7 @@ function runCommand (player, msg) { // player just sent msg in chat and msg star
             }
         }
         if (!permitted) {
-            player.socket.emit("chat", { msg: "~`red~`You don't have permission to access this command. ~`red~`" });
+            player.socket.emit(`chat`, { msg: "~`red~`You don't have permission to access this command. ~`red~`" });
             return;
         }
 
@@ -59,14 +59,14 @@ function runCommand (player, msg) { // player just sent msg in chat and msg star
 
 module.exports = function initNetcode () {
     const port = process.argv[2];
-    console.log("");
+    console.log(``);
 
-    const http = require("http");
-    const https = require("https");
+    const http = require(`http`);
+    const https = require(`https`);
 
-    const protocol = Config.getValue("want-tls", false) ? https : http;
-    const key = Config.getValue("tls-key-path", null);
-    const cert = Config.getValue("tls-cert-path", null);
+    const protocol = Config.getValue(`want-tls`, false) ? https : http;
+    const key = Config.getValue(`tls-key-path`, null);
+    const cert = Config.getValue(`tls-cert-path`, null);
 
     const options = (protocol === https)
         ? {
@@ -79,9 +79,9 @@ module.exports = function initNetcode () {
         ? protocol.createServer(options)
         : protocol.createServer();
 
-    if (Config.getValue("want-unix-sockets", false)) {
+    if (Config.getValue(`want-unix-sockets`, false)) {
     // Open a unix socket on current dir
-        server.listen("torn.socket");
+        server.listen(`torn.socket`);
     } else {
         console.log(`=== STARTING SERVER ON PORT ${port} ===`);
         server.listen(parseInt(port));
@@ -89,29 +89,29 @@ module.exports = function initNetcode () {
 
     // Try to grab the protocol version from the current git tag
     try {
-        global.protocolVersion = exec("git tag -l --points-at HEAD").toString().trim();
+        global.protocolVersion = exec(`git tag -l --points-at HEAD`).toString().trim();
 
         if (!global.protocolVersion) {
             global.protocolVersion = undefined;
         }
         console.log(`Protocol Version: ${global.protocolVersion}`);
     } catch (e) {
-        console.error("Failed to retrieve protocol version, all clients will be allowed!");
+        console.error(`Failed to retrieve protocol version, all clients will be allowed!`);
     }
 
-    const socketio = require("socket.io");
+    const socketio = require(`socket.io`);
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js
     global.io = socketio(server, {
         serveClient: false,
         parser: msgpack,
         cors: {
-            origin: "*"
+            origin: `*`
         }
     });
 
-    io.sockets.on("connection", (socket) => {
+    io.sockets.on(`connection`, (socket) => {
         if (!serverInitialized) {
-            socket.emit("kick", { msg: "Server is still starting up!" });
+            socket.emit(`kick`, { msg: `Server is still starting up!` });
             socket.disconnect();
             return;
         }
@@ -120,13 +120,13 @@ module.exports = function initNetcode () {
         let instance = false;
         sockets[socket.id] = socket;
 
-        const ip = Config.getValue("want-xreal-ip", true)
-            ? socket.handshake.headers["x-real-ip"]
+        const ip = Config.getValue(`want-xreal-ip`, true)
+            ? socket.handshake.headers[`x-real-ip`]
             : socket.handshake.address;
 
         let player = 0;
 
-        let socket_color = "green"; // the color of this socket, only used for when spawning a guest for the first time.
+        let socket_color = `green`; // the color of this socket, only used for when spawning a guest for the first time.
 
         socket.io_on = socket.on;
 
@@ -137,33 +137,33 @@ module.exports = function initNetcode () {
                 } catch (err) {
                     // Log data to help us perform bug triage
                     const crashReport = `==== TORN.SPACE ERROR REPORT ====\nError Time: ${new Date()}\n\Event: ${the_event}\n\Stack Trace: ${err.stack}`;
-                    if (Config.getValue("debug", true)) {
+                    if (Config.getValue(`debug`, true)) {
                         console.error(crashReport);
                     } else {
-                        send_rpc("/crash/", crashReport);
+                        send_rpc(`/crash/`, crashReport);
                     }
 
                     // Eject the player from the game: we don't know if they're in a valid state
-                    socket.emit("kick", { msg: "Internal server error." });
+                    socket.emit(`kick`, { msg: `Internal server error.` });
                     socket.disconnect();
                 }
             });
         };
 
-        socket.on("lore", (data) => { // player is requesting lore screen.
-            if (typeof data === "undefined" || typeof data.team !== "string") return;
-            if (data.team !== "red" && data.team !== "blue" && data.team !== "green") return;
+        socket.on(`lore`, (data) => { // player is requesting lore screen.
+            if (typeof data === `undefined` || typeof data.team !== `string`) return;
+            if (data.team !== `red` && data.team !== `blue` && data.team !== `green`) return;
             socket_color = data.team;
-            socket.emit("lored", { pc: socket_color });
+            socket.emit(`lored`, { pc: socket_color });
         });
 
-        socket.on("guest", (data) => {
+        socket.on(`guest`, (data) => {
             if (instance) return;
 
             if (global.protocolVersion !== undefined) {
                 // Verify client is running the same protocol implementation
-                if (typeof data !== "string" || data.trim() !== global.protocolVersion) {
-                    socket.emit("outdated", 0);
+                if (typeof data !== `string` || data.trim() !== global.protocolVersion) {
+                    socket.emit(`outdated`, 0);
                     return;
                 }
             }
@@ -182,7 +182,7 @@ module.exports = function initNetcode () {
             for (let i = 0; i < ships[player.ship].weapons; i++) player.weapons[i] = -1;
             for (let i = ships[player.ship].weapons; i < 10; i++) player.weapons[i] = -2;
             player.weapons[0] = 0;
-            socket.emit("guested", { id: player.id });
+            socket.emit(`guested`, { id: player.id });
             player.sendStatus();
 
             player.getAllPlanets();
@@ -193,58 +193,58 @@ module.exports = function initNetcode () {
             player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
             player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
             sendWeapons(player);
-            socket.emit("raid", { raidTimer: raidTimer });
-            socket.emit("baseMap", { baseMap: baseMap, mapSz: mapSz });
+            socket.emit(`raid`, { raidTimer: raidTimer });
+            socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz });
 
             chatAll(`Welcome ${player.nameWithColor()} to the universe!`);
         });
-        socket.on("register", async (data) => {
-            console.log("Registration attempted...");
-            if (typeof data === "undefined") return;
+        socket.on(`register`, async (data) => {
+            console.log(`Registration attempted...`);
+            if (typeof data === `undefined`) return;
             // Block registrations being triggered from non-guests or unconnected accounts
             // Fixes some registration spam and crash exploits
 
             if (!player) return;
             if (!player.guest) return;
             if (player.rank < 1) {
-                socket.emit("invalidReg", { reason: 8 });
+                socket.emit(`invalidReg`, { reason: 8 });
                 return;
             }
 
             const playerDocked = dockers[socket.id];
-            if (typeof playerDocked === "undefined") return;
+            if (typeof playerDocked === `undefined`) return;
 
             let user = data.user; const pass = data.pass;
 
-            if (typeof user !== "string" || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)) {
-                socket.emit("invalidReg", { reason: 2 });
+            if (typeof user !== `string` || user.length > 16 || user.length < 4 || /[^a-zA-Z0-9]/.test(user)) {
+                socket.emit(`invalidReg`, { reason: 2 });
                 return;
             }
             user = user.toLowerCase();
-            if (typeof pass !== "string" || pass.length > 128 || pass.length < 6 || pass == user) {
-                socket.emit("invalidReg", { reason: 3 });
+            if (typeof pass !== `string` || pass.length > 128 || pass.length < 6 || pass == user) {
+                socket.emit(`invalidReg`, { reason: 3 });
                 return;
             }
 
             // Test for profanity
             if (filter.isProfane(user)) {
-                socket.emit("invalidReg", { reason: 5 });
+                socket.emit(`invalidReg`, { reason: 5 });
                 return;
             }
 
             player.guest = false;
-            const response = await send_rpc("/register/", `${user}%${pass}`);
+            const response = await send_rpc(`/register/`, `${user}%${pass}`);
 
             if (!response.ok) {
                 player.guest = true;
-                socket.emit("invalidReg", { reason: 4 });
+                socket.emit(`invalidReg`, { reason: 4 });
                 return;
             }
             player._id = user;
             player.name = user;
 
             player.permissionLevels = [0];
-            socket.emit("registered", { user: data.user, pass: data.pass });
+            socket.emit(`registered`, { user: data.user, pass: data.pass });
             const text = `${player.nameWithColor()} registered!`;
             console.log(text);
             chatAll(text);
@@ -252,25 +252,25 @@ module.exports = function initNetcode () {
             player.save();
         });
 
-        socket.on("login", async (data) => {
-            if (typeof data === "undefined" || data.cookie == undefined) return;
+        socket.on(`login`, async (data) => {
+            if (typeof data === `undefined` || data.cookie == undefined) return;
 
             if (instance) return;
             instance = true;
 
             if (global.protocolVersion !== undefined) {
                 // Verify client is running the same protocol implementation
-                if (typeof data.version !== "string" || global.protocolVersion !== data.version.trim()) {
+                if (typeof data.version !== `string` || global.protocolVersion !== data.version.trim()) {
                     instance = false;
-                    socket.emit("outdated");
+                    socket.emit(`outdated`);
                     return;
                 }
             }
 
-            const response = await send_rpc("/login/", data.cookie);
+            const response = await send_rpc(`/login/`, data.cookie);
 
             if (!response.ok) {
-                socket.emit("badcookie");
+                socket.emit(`badcookie`);
                 instance = false;
                 return;
             }
@@ -283,7 +283,7 @@ module.exports = function initNetcode () {
             for (const p in sockets) {
                 const curr_socket = sockets[p];
                 if (curr_socket.player !== undefined && curr_socket.player._id == name && curr_socket != socket) {
-                    curr_socket.player.kickMsg = "A user has logged into this account from another location.";
+                    curr_socket.player.kickMsg = `A user has logged into this account from another location.`;
                     curr_socket.player.socket.disconnect();
                     wait_time = 6000;
                 }
@@ -292,7 +292,7 @@ module.exports = function initNetcode () {
             setTimeout(async () => {
                 await loadPlayerData(player);
                 player.ip = ip;
-                socket.emit("loginSuccess", { id: player.id });
+                socket.emit(`loginSuccess`, { id: player.id });
 
                 if (player.sx >= mapSz) player.sx--;
                 if (player.sy >= mapSz) player.sy--;
@@ -300,7 +300,7 @@ module.exports = function initNetcode () {
                 players[player.sy][player.sx][socket.id] = player;
 
                 player.calculateGenerators();
-                socket.emit("raid", { raidTimer: raidTimer });
+                socket.emit(`raid`, { raidTimer: raidTimer });
                 player.checkTrailAchs();
                 player.randmAchs[0] = true;
                 player.sendAchievementsKill(false);
@@ -322,17 +322,17 @@ module.exports = function initNetcode () {
                 player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
                 player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
                 sendWeapons(player);
-                socket.emit("baseMap", { baseMap: baseMap, mapSz: mapSz });
-                socket.emit("you", { trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper });
+                socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz });
+                socket.emit(`you`, { trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper });
             }, wait_time);
         });
-        socket.on("disconnect", (data) => { // Emitted by socket.IO when connection is terminated or ping timeout
+        socket.on(`disconnect`, (data) => { // Emitted by socket.IO when connection is terminated or ping timeout
             if (!player) return; // Don't allow unauthenticated clients to crash the server
 
             // If the player is indeed found
             let reason = player.kickMsg;
 
-            if (reason === undefined || !reason.localeCompare("")) {
+            if (reason === undefined || !reason.localeCompare(``)) {
                 reason = data;
             }
             const text = `${player.nameWithColor()} left the game (reason: ${reason})`; // write a message about the player leaving
@@ -351,14 +351,14 @@ module.exports = function initNetcode () {
             }, 6000);
         });
 
-        socket.on("key", (data) => { // on client keypress or key release
-            if (typeof data === "undefined" || typeof data.inputId === "undefined" || typeof data.state === "undefined") return;
+        socket.on(`key`, (data) => { // on client keypress or key release
+            if (typeof data === `undefined` || typeof data.inputId === `undefined` || typeof data.state === `undefined`) return;
             if (player == 0) return;
 
             player.afkTimer = afkTimerConst;
 
             // if they want to be revived after dying
-            if (player.dead && data.inputId === "e") {
+            if (player.dead && data.inputId === `e`) {
                 player.dead = false;
 
                 // Spawn was computed in die()
@@ -370,23 +370,23 @@ module.exports = function initNetcode () {
 
             if (player.empTimer > 0) return; // if they're EMPed, don't bother accepting key inputs.
 
-            if (data.inputId === "e" && !player.docked) player.juke(false); // Q/E are juke keys
-            if (data.inputId === "q" && !player.docked) player.juke(true);
+            if (data.inputId === `e` && !player.docked) player.juke(false); // Q/E are juke keys
+            if (data.inputId === `q` && !player.docked) player.juke(true);
 
-            if (data.inputId === "w") player.w = data.state; // standard movement keys
-            if (data.inputId === "s") player.s = data.state;
-            if (data.inputId === "a") player.a = data.state;
-            if (data.inputId === "d") player.d = data.state;
-            if (data.inputId === "c") player.c = data.state; // elite special slot
-            if (data.inputId === " ") player.space = data.state; // fire
-            if (data.inputId === "x") player.dock(); // x or esc to enter base
-            if (data.inputId === "shift") { // drift
+            if (data.inputId === `w`) player.w = data.state; // standard movement keys
+            if (data.inputId === `s`) player.s = data.state;
+            if (data.inputId === `a`) player.a = data.state;
+            if (data.inputId === `d`) player.d = data.state;
+            if (data.inputId === `c`) player.c = data.state; // elite special slot
+            if (data.inputId === ` `) player.space = data.state; // fire
+            if (data.inputId === `x`) player.dock(); // x or esc to enter base
+            if (data.inputId === `shift`) { // drift
                 player.e = data.state;
                 if (!data.state) player.checkDriftAchs(); // if they let go of the drift key
             }
         });
-        socket.on("chat", (data) => { // when someone sends a chat message
-            if (typeof data === "undefined" || typeof data.msg !== "string" || data.msg.length > 128) return;
+        socket.on(`chat`, (data) => { // when someone sends a chat message
+            if (typeof data === `undefined` || typeof data.msg !== `string` || data.msg.length > 128) return;
 
             data.msg = data.msg.trim(); // "   h i   " => "h i"
 
@@ -397,15 +397,15 @@ module.exports = function initNetcode () {
             if (player == 0 || data.msg.length == 0) return;
 
             if (guestsCantChat && player.guest) {
-                socket.emit("chat", { msg: "You must create an account in the base before you can chat!", color: "yellow" });
+                socket.emit(`chat`, { msg: `You must create an account in the base before you can chat!`, color: `yellow` });
                 return;
             }
 
-            if (!player.name.includes("[")) data.msg = data.msg.replace(/`/ig, ""); // Non-tags can't use colored text
+            if (!player.name.includes(`[`)) data.msg = data.msg.replace(/`/ig, ``); // Non-tags can't use colored text
 
             const time = Date.now();
 
-            if (data.msg.startsWith("/") && !data.msg.startsWith("/me ") && !data.msg.startsWith("/r ") && !data.msg.startsWith("/pm ")) {
+            if (data.msg.startsWith(`/`) && !data.msg.startsWith(`/me `) && !data.msg.startsWith(`/r `) && !data.msg.startsWith(`/pm `)) {
                 runCommand(player, data.msg); return;
             } // non spammable commands
 
@@ -413,7 +413,7 @@ module.exports = function initNetcode () {
                 let secondsLeft = 0;
                 if (muteTable[player.name] > secondsLeft) secondsLeft = Math.floor((muteTable[player.name] - time) / 1000); // We aren't using math.max here because it misbehaves with NaN arguments, which these dictionary accesses can be.
                 if (ipMuteTable[player.ip] > secondsLeft) secondsLeft = Math.floor((ipMuteTable[player.ip] - time) / 1000);
-                socket.emit("chat", { msg: (`~\`#ff0000~\`You are muted for ${Math.floor(secondsLeft / 60)} minutes and ${secondsLeft % 60} seconds!`) });
+                socket.emit(`chat`, { msg: (`~\`#ff0000~\`You are muted for ${Math.floor(secondsLeft / 60)} minutes and ${secondsLeft % 60} seconds!`) });
                 return;
             }
             delete muteTable[player.name];
@@ -426,7 +426,7 @@ module.exports = function initNetcode () {
                 newmsg = data.msg;
             }
 
-            if (newmsg.startsWith("/")) runCommand(player, newmsg); // spammable commands
+            if (newmsg.startsWith(`/`)) runCommand(player, newmsg); // spammable commands
             else console.log(`[CHAT] ${player.name}: ${data.msg}`); // print their (cleaned) message
 
             const repeat = newmsg === player.lastmsg;
@@ -437,23 +437,23 @@ module.exports = function initNetcode () {
             if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
                 muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
                 chatAll(`~\`violet~\`${player.name}~\`yellow~\` has been muted for ${Math.floor(player.muteCap / 25)} seconds!`);
-                if (Config.getValue("enable_discord_moderation", false)) {
+                if (Config.getValue(`enable_discord_moderation`, false)) {
                     global.autoMuteNote(`${player.name} has been auto-muted for ${Math.floor(player.muteCap / 25)} seconds!`);
                 }
                 player.muteCap *= repeat ? 4 : 2; // their next mute will be twice as long
                 return;
             }
 
-            if (!newmsg.startsWith("/")) { // otherwise send the text
-                let spaces = "";
-                for (let i = player.name.length; i < 16; i++) spaces += " "; // align the message
+            if (!newmsg.startsWith(`/`)) { // otherwise send the text
+                let spaces = ``;
+                for (let i = player.name.length; i < 16; i++) spaces += ` `; // align the message
                 const finalMsg = `${spaces + player.nameWithColor()}: ${newmsg}`;
 
                 // Send it to the client up to what chat room theyre in
-                if (player.globalChat == 2 && player.guild === "") socket.emit("chat", { msg: ("~`#ff0000~`You are not in a guild!") });
+                if (player.globalChat == 2 && player.guild === ``) socket.emit(`chat`, { msg: ("~`#ff0000~`You are not in a guild!") });
                 else playerChat(finalMsg, player.globalChat, player.color, player.guild);
 
-                if (Config.getValue("enable_discord_moderation", false)) {
+                if (Config.getValue(`enable_discord_moderation`, false)) {
                     fewSpaces = ((newmsg.match(/ /g) || []).length) < Math.floor(newmsg.length / 15);
                     frequentMsgs = player.chatTimer > 400;
                     allUpperCase = newmsg === newmsg.toUpperCase() && newmsg.length > 6;
@@ -465,19 +465,19 @@ module.exports = function initNetcode () {
                 }
             }
         });
-        socket.on("toggleGlobal", (data) => { // player wants to switch what chat room they're in
-            if (player == 0 || typeof data.gc !== "number" || data.gc != Math.floor(data.gc) || data.gc < 0 || data.gc >= 3) return;
+        socket.on(`toggleGlobal`, (data) => { // player wants to switch what chat room they're in
+            if (player == 0 || typeof data.gc !== `number` || data.gc != Math.floor(data.gc) || data.gc < 0 || data.gc >= 3) return;
             player.globalChat = data.gc;
         });
-        socket.on("jettison", (data) => { // Drop all ores
+        socket.on(`jettison`, (data) => { // Drop all ores
             player.iron = player.silver = player.platinum = player.copper = 0;
         });
-        socket.on("sell", (data) => { // selling ore
-            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== "string") return;
+        socket.on(`sell`, (data) => { // selling ore
+            if (typeof data === `undefined` || player == 0 || !player.docked || typeof data.item !== `string`) return;
             player.sellOre(data.item);
         });
-        socket.on("buyShip", (data) => { // client wants to buy a new ship
-            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.ship !== "number") return;
+        socket.on(`buyShip`, (data) => { // client wants to buy a new ship
+            if (typeof data === `undefined` || player == 0 || !player.docked || typeof data.ship !== `number`) return;
 
             data.ship = Math.floor(data.ship); // the ship index must be integer. It must be no higher than your rank, and cannot be your current ship or out of bounds.
             if (data.ship > player.rank || data.ship < 0 || data.ship > ships.length || data.ship == player.ship) return;
@@ -486,7 +486,7 @@ module.exports = function initNetcode () {
             price += ships[data.ship].price;
             if (player.money < price) return; // if it cannot be afforded
 
-            player.sellOre("all"); // sell all ore, because their new ship may not have the cargo room to hold it all
+            player.sellOre(`all`); // sell all ore, because their new ship may not have the cargo room to hold it all
 
             player.money -= price; // charge them money
             player.ship = data.ship; // Give them the new ship
@@ -497,22 +497,22 @@ module.exports = function initNetcode () {
             player.capacity = Math.round(ships[data.ship].capacity * player.capacity2);
 
             player.equipped = 0; // set them as being equipped on their first weapon
-            socket.emit("equip", { scroll: player.equipped });
+            socket.emit(`equip`, { scroll: player.equipped });
 
             for (let i = 0; i < 10; i++) if (player.weapons[i] == -2 && i < ships[player.ship].weapons) player.weapons[i] = -1; // unlock new possible weapon slots
             player.calculateGenerators();
             sendWeapons(player);
             player.save();
         });
-        socket.on("buyW", (data) => { // client wants to buy a weapon
-            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.slot !== "number" || typeof data.weapon !== "number") return;
+        socket.on(`buyW`, (data) => { // client wants to buy a weapon
+            if (typeof data === `undefined` || player == 0 || !player.docked || typeof data.slot !== `number` || typeof data.weapon !== `number`) return;
 
             data.slot = Math.floor(data.slot);
             data.weapon = Math.floor(data.weapon);
             if (data.slot < 0 || data.slot > 9 || data.weapon < 0 || data.weapon >= wepns.length) return; // if they sent out of bound variables
 
             // This is a bug
-            if (typeof wepns[data.weapon] === "undefined") return;
+            if (typeof wepns[data.weapon] === `undefined`) return;
 
             // they cant buy when not docked. That slot must be unlocked. They need to have enough money. They need to have sufficiently high of a ship.
             if (!player.docked || player.weapons[data.slot] != -1 || player.money < wepns[data.weapon].price || wepns[data.weapon].level > player.ship) return;
@@ -524,7 +524,7 @@ module.exports = function initNetcode () {
             player.calculateGenerators();
             player.save();
         });
-        socket.on("buyLife", (data) => { // client wants to buy a life
+        socket.on(`buyLife`, (data) => { // client wants to buy a life
             if (player == 0 || !player.docked || player.lives >= 20) return;
             const price = expToLife(player.experience, player.guest); // compute how much the life costs them
             if (player.money < price) return; // cant afford
@@ -534,9 +534,9 @@ module.exports = function initNetcode () {
             player.sendStatus(); // tell the client about it
             player.save();
         });
-        socket.on("upgrade", (data) => { // client wants to upgrade a tech
+        socket.on(`upgrade`, (data) => { // client wants to upgrade a tech
             // TODO im totally redoing this
-            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== "number" || data.item > 5 || data.item < 0) return;
+            if (typeof data === `undefined` || player == 0 || !player.docked || typeof data.item !== `number` || data.item > 5 || data.item < 0) return;
             const item = Math.floor(data.item);
 
             switch (item) {
@@ -595,14 +595,14 @@ module.exports = function initNetcode () {
             }
             player.save();
         });
-        socket.on("downgrade", (data) => { // client wants to downgrade a tech
-            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.item !== "number" || data.item > 5 || data.item < 0) return;
+        socket.on(`downgrade`, (data) => { // client wants to downgrade a tech
+            if (typeof data === `undefined` || player == 0 || !player.docked || typeof data.item !== `number` || data.item > 5 || data.item < 0) return;
             const item = Math.floor(data.item);
 
             switch (item) {
                 case 1: { // radar
                 	if (player.radar2 <= 1) break;
-            		const price = techPriceForDowngrade(player.radar2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.radar2, player.name.startsWith(`[V] `));
                     if (player.money >= price) {
                         player.money -= price;
                         player.radar2 = lastTechLevel(player.radar2);
@@ -611,7 +611,7 @@ module.exports = function initNetcode () {
                 }
                 case 2: { // cargo
                 	if (player.capacity2 <= 1) break;
-            		const price = techPriceForDowngrade(player.capacity2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.capacity2, player.name.startsWith(`[V] `));
                     if (player.money >= price) {
                         player.money -= price;
                         player.capacity2 = lastTechLevel(player.capacity2);
@@ -621,7 +621,7 @@ module.exports = function initNetcode () {
                 }
                 case 3: { // hull
                 	if (player.maxHealth2 <= 1) break;
-            		const price = techPriceForDowngrade(player.maxHealth2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.maxHealth2, player.name.startsWith(`[V] `));
                     if (player.money >= price) {
                         player.money -= price;
                         player.maxHealth2 = lastTechLevel(player.maxHealth2);
@@ -631,7 +631,7 @@ module.exports = function initNetcode () {
                 }
                 case 4: { // energy
                 	if (player.energy2 <= 1) break;
-            		const price = techPriceForDowngrade(player.energy2, player.name.startsWith("[V] ")) * 8;
+            		const price = techPriceForDowngrade(player.energy2, player.name.startsWith(`[V] `)) * 8;
                     if (player.money >= price) {
                         player.money -= price;
                         player.energy2 = lastTechLevel(player.energy2);
@@ -640,7 +640,7 @@ module.exports = function initNetcode () {
                 }
                 case 5: { // agility
                 	if (player.agility2 <= 1) break;
-            		const price = techPriceForDowngrade(player.agility2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.agility2, player.name.startsWith(`[V] `));
                     if (player.money >= price) {
                         player.money -= price;
                         player.agility2 = lastTechLevel(player.agility2);
@@ -650,7 +650,7 @@ module.exports = function initNetcode () {
                 }
                 default: { // 0: thrust
                 	if (player.thrust2 <= 1) break;
-            		const price = techPriceForDowngrade(player.thrust2, player.name.startsWith("[V] "));
+            		const price = techPriceForDowngrade(player.thrust2, player.name.startsWith(`[V] `));
                     if (player.money >= price) {
                         player.money -= price;
                         player.thrust2 = lastTechLevel(player.thrust2);
@@ -661,8 +661,8 @@ module.exports = function initNetcode () {
             }
             player.save();
         });
-        socket.on("sellW", (data) => { // wants to sell a weapon.
-            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.slot !== "number" || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
+        socket.on(`sellW`, (data) => { // wants to sell a weapon.
+            if (typeof data === `undefined` || player == 0 || !player.docked || typeof data.slot !== `number` || data.slot < 0 || data.slot > 9 || player.weapons[data.slot] < 0 || player.weapons[data.slot] > wepns.length - 1) return;
 
             data.slot = Math.floor(data.slot);
             if (!player.docked || player.weapons[data.slot] < 0) return; // can't sell what you don't have. or when you're not in base.
@@ -673,14 +673,14 @@ module.exports = function initNetcode () {
             sendWeapons(player); // alert client of transaction
             player.save();
         });
-        socket.on("quest", (data) => { // wants to accept a quest
-            if (typeof data === "undefined" || player == 0 || !player.docked || player.quest != 0 || typeof data.quest !== "number" || data.quest < 0 || data.quest > 9) return;
+        socket.on(`quest`, (data) => { // wants to accept a quest
+            if (typeof data === `undefined` || player == 0 || !player.docked || player.quest != 0 || typeof data.quest !== `number` || data.quest < 0 || data.quest > 9) return;
 
             const qid = Math.floor(data.quest); // Find the correct quest.
             const quest = teamQuests[player.color][qid];
 
             // You need to have unlocked this quest type.
-            if (quest == 0 || (quest.type === "Base" && player.rank < 7) || (quest.type === "Secret" && player.rank <= 14)) return;
+            if (quest == 0 || (quest.type === `Base` && player.rank < 7) || (quest.type === `Secret` && player.rank <= 14)) return;
 
             if (((quest.dsx % 3 == 1 && quest.dsy == 8) || (quest.sx % 3 == 1 && quest.sy == 8)) && !player.randmAchs[2]) { // risky business
                 player.randmAchs[2] = true;
@@ -689,27 +689,27 @@ module.exports = function initNetcode () {
 
             teamQuests[player.color][qid] = 0;
             player.quest = quest; // give them the quest and tell the client.
-            socket.emit("quest", { quest: quest });
+            socket.emit(`quest`, { quest: quest });
         });
-        socket.on("equip", (data) => { // Player wants to select a new weapon to hold
-            if (player == 0 || typeof data === "undefined" || typeof player === "undefined" || typeof data.scroll !== "number" || data.scroll >= ships[player.ship].weapons) return;
+        socket.on(`equip`, (data) => { // Player wants to select a new weapon to hold
+            if (player == 0 || typeof data === `undefined` || typeof player === `undefined` || typeof data.scroll !== `number` || data.scroll >= ships[player.ship].weapons) return;
 
             player.equipped = Math.floor(data.scroll); // Set their equipped weapon
             if (player.equipped < 0) player.equipped = 0; // Ensure it's in range
             else if (player.equipped > 9) player.equipped = 9;
             player.charge = Math.min(player.charge, 0); // to prevent scroll charge exploit
 
-            socket.emit("equip", { scroll: player.equipped }); // Alert the client
+            socket.emit(`equip`, { scroll: player.equipped }); // Alert the client
         });
-        socket.on("trail", (data) => { // Player requests an update to their trail
-            if (typeof data === "undefined" || player == 0 || !player.docked || typeof data.trail !== "number") return;
+        socket.on(`trail`, (data) => { // Player requests an update to their trail
+            if (typeof data === `undefined` || player == 0 || !player.docked || typeof data.trail !== `number`) return;
 
             if (data.trail == 0) player.trail = 0;
             if (data.trail == 1 && player.killsAchs[12]) player.trail = 1;
             if (data.trail == 2 && player.moneyAchs[11]) player.trail = 2;
             if (data.trail == 3 && player.driftAchs[11]) player.trail = 3;
             if (data.trail == 4 && player.randmAchs[10]) player.trail = 4;
-            if (player.name.includes(" ")) player.trail += 16;
+            if (player.name.includes(` `)) player.trail += 16;
         });
     });
 };

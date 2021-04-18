@@ -20,14 +20,14 @@ import { translate } from "./localizer.ts";
 global.getSectorName = (inx, iny) => `${String.fromCharCode(97 + inx).toUpperCase()}${iny + 1}`;
 
 global.getQuestDescription = function (q) {
-    if (q.type === "Mining") return translate("Bring # units of # to sector #.", [numToLS(q.amt), q.metal, getSectorName(q.sx, q.sy)]);
-    if (q.type === "Base") return translate("Eliminate enemy base in sector #.", [getSectorName(q.sx, q.sy)]);
-    if (q.type === "Delivery") return translate("Obtain package from planet # and deliver it to planet #.", [getSectorName(q.sx, q.sy), getSectorName(q.dsx, q.dsy)]);
-    if (q.type === "Secret") return translate("Proceed to sector # for further instructions.", [getSectorName(q.sx, q.sy)]);// translate("Secret Mission.");
-    if (q.type === "Secret2") return translate("Eliminate all enemy players and turrets in # and visit planet #.", [getSectorName(q.sx, q.sy), secret2PlanetName]);
-    if (q.type === "Secret3") return translate("Deliver package to a permanent black hole sector.");
+    if (q.type === `Mining`) return translate(`Bring # units of # to sector #.`, [numToLS(q.amt), q.metal, getSectorName(q.sx, q.sy)]);
+    if (q.type === `Base`) return translate(`Eliminate enemy base in sector #.`, [getSectorName(q.sx, q.sy)]);
+    if (q.type === `Delivery`) return translate(`Obtain package from planet # and deliver it to planet #.`, [getSectorName(q.sx, q.sy), getSectorName(q.dsx, q.dsy)]);
+    if (q.type === `Secret`) return translate(`Proceed to sector # for further instructions.`, [getSectorName(q.sx, q.sy)]);// translate("Secret Mission.");
+    if (q.type === `Secret2`) return translate(`Eliminate all enemy players and turrets in # and visit planet #.`, [getSectorName(q.sx, q.sy), secret2PlanetName]);
+    if (q.type === `Secret3`) return translate(`Deliver package to a permanent black hole sector.`);
     console.log(q);
-    return "QUEST_DESCRIPTION_ERROR";
+    return `QUEST_DESCRIPTION_ERROR`;
 };
 
 global.write = function (context, str, x, y) {
@@ -57,8 +57,8 @@ global.sinLow = function (x) {
 global.cosLow = (x) => sinLow(x + Math.PI / 2);
 
 global.colorSelect = function (col, red, blue, green) {
-    if (col === "red") return red;
-    if (col === "blue") return blue;
+    if (col === `red`) return red;
+    if (col === `blue`) return blue;
     return green;
 };
 global.square = (x) => x * x;
@@ -78,8 +78,8 @@ global.lerp = (a, b, w) => a * (1 - w) + b * w;
 global.expToLife = () => Math.floor(guest ? 0 : 800000 * Math.atan(experience / 600000.0)) + 500;
 global.abbrevInt = function (x) {
     if (x < 10000) return `${Math.round(x)}`;
-    if (x < 10000000) return Math.round(x / 1000) + translate("K");
-    if (x < 10000000000) return Math.round(x / 1000000) + translate("M");
+    if (x < 10000000) return Math.round(x / 1000) + translate(`K`);
+    if (x < 10000000000) return Math.round(x / 1000000) + translate(`M`);
 };
 global.lagMath = function (arr) {
     if (lagArr == 0) {
@@ -104,16 +104,16 @@ global.weaponWithOrder = function (x) {
 };
 global.getTimeAngle = () => tick / 10;
 global.brighten = function (x) {
-    if (x === "red") return "pink";
-    if (x === "green") return "lime";
-    if (x === "blue") return "cyan";
+    if (x === `red`) return `pink`;
+    if (x === `green`) return `lime`;
+    if (x === `blue`) return `cyan`;
     return x;
 };
 
 global.numToLS = function (x) {
-    if (!Number.isFinite(x)) return "NaN";
+    if (!Number.isFinite(x)) return `NaN`;
     if (x < 0) return `-${numToLS(-x)}`;
-    if (x == 0) return "0";
+    if (x == 0) return `0`;
     const intx = Math.floor(x);
     const decimal = x - intx;
     let str = (`${parseFloat(decimal.toFixed(4))}`).substring(1);
@@ -133,7 +133,7 @@ global.numToLS = function (x) {
 global.techPrice = (x) => // money required to upgrade Tech
     techEnergy(nextTechLevel(x)) - techEnergy(x);
 global.techPriceForDowngrade = function (x) { // money required to upgrade Tech
-    if (myName.startsWith("[V] ")) return techEnergy(lastTechLevel(x)) - techEnergy(x);
+    if (myName.startsWith(`[V] `)) return techEnergy(lastTechLevel(x)) - techEnergy(x);
     return Math.max(techEnergy(lastTechLevel(x)) - techEnergy(x), -300000000);
 };
 global.techEnergy = (x) => // Net price of some tech level
@@ -143,7 +143,7 @@ global.lastTechLevel = (x) => Math.floor(x * 8.0 - 0.001) / 8.0;
 global.getPosition = (string, subString, index) => string.split(subString, index).join(subString).length;
 global.ammoCodeToString = function (code) { // used in weapon shop rendering
     if (code >= 0) return `${code}`;
-    if (code == -1) return translate("Inf.");
-    if (code == -2) return translate("Only One");
-    else return "";
+    if (code == -1) return translate(`Inf.`);
+    if (code == -2) return translate(`Only One`);
+    else return ``;
 };

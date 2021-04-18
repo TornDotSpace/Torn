@@ -17,9 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { translate } from "../localizer.ts";
 
-const minimapcanvas = document.createElement("canvas");
+const minimapcanvas = document.createElement(`canvas`);
 minimapcanvas.width = minimapcanvas.height = 208;
-const minictx = minimapcanvas.getContext("2d", { alpha: true });
+const minictx = minimapcanvas.getContext(`2d`, { alpha: true });
 
 global.useOldMap = true;
 
@@ -163,13 +163,13 @@ global.r3DMap = function () {
 
     minimapcanvas.width = minimapcanvas.width;
     minictx.globalAlpha = 0.4;
-    minictx.strokeStyle = "white";
-    minictx.fillStyle = "black";
+    minictx.strokeStyle = `white`;
+    minictx.fillStyle = `black`;
     minictx.lineWidth = 2;
     minictx.fillRect(0, 0, 208, 208); // Draw map
     minictx.strokeRect(0, 0, 208, 208); // Draw map
 
-    if (hmap == 0 || typeof hmap[sx] === "undefined") return;
+    if (hmap == 0 || typeof hmap[sx] === `undefined`) return;
 
     // if ((hmt > 3 && pc === 'blue') || (hmt < -3 && pc === 'red')) currAlert = translate("Enemy Swarm In Sector"); // GREENTODO enemy swarm
 
@@ -180,9 +180,9 @@ global.r3DMap = function () {
 
     let c3dx; let c3dy;
 
-    minictx.strokeStyle = "gray";
+    minictx.strokeStyle = `gray`;
     minictx.lineWidth = 1;
-    minictx.textAlign = "center";
+    minictx.textAlign = `center`;
 
     let avgX = 0;
     let avgY = 0;
@@ -198,7 +198,7 @@ global.r3DMap = function () {
         qdsy = quest.dsy;
         qsx = quest.sx;
         qsy = quest.sy;
-        console.log("aaaaa");
+        console.log(`aaaaa`);
     } else if (seller >= 300 && seller <= 309) {
         const hoverquest = quests[seller - 300];
         console.log(hoverquest);
@@ -254,7 +254,7 @@ global.r3DMap = function () {
             const fontsz = Math.hypot(xx3 - xx2, yy3 - yy2) / 3;
             if (ga > 0.3 && fontsz > 5 && baseMap2D[i][j] === 0 && !(useOldMap && i * j != 0)) {
                 minictx.font = `${fontsz}px ShareTech`;
-                minictx.fillStyle = "white";
+                minictx.fillStyle = `white`;
                 write(minictx, getSectorName(i, j), (xx2 + xx3) / 2 + 104, (yy2 + yy3 + fontsz * 0.65) / 2 + 104);
             }
 
@@ -269,10 +269,10 @@ global.r3DMap = function () {
             if ((i == sx && j == sy) || (i === qsx && j === qsy) || (i === qdsx && j === qdsy)) {
                 // Highlight the player's sector
                 minictx.lineWidth = 3;
-                minictx.strokeStyle = minictx.fillStyle = (i == sx && j == sy) ? brighten(pc) : "yellow";
+                minictx.strokeStyle = minictx.fillStyle = (i == sx && j == sy) ? brighten(pc) : `yellow`;
                 minictx.stroke();
                 minictx.lineWidth = 0.35;
-                minictx.strokeStyle = "gray";
+                minictx.strokeStyle = `gray`;
 
                 if (i == sx && j == sy) {
                     myxx1 = xx1;
@@ -302,7 +302,7 @@ global.r3DMap = function () {
                 const yyp1 = lerp(yy1, yy4, (planX + planY) / 2) - cy;
                 const xxp2 = lerp(xx3, xx2, (-planX + 1 + planY) / 2) - cx;
                 const yyp2 = lerp(yy3, yy2, (-planX + 1 + planY) / 2) - cy;
-                minictx.fillStyle = "white";
+                minictx.fillStyle = `white`;
                 minictx.fillRect(104 + cx + xxp1 + xxp2 - 2, 104 + cy + yyp1 + yyp2 - 2, 4, 4);
             }
 
@@ -320,8 +320,8 @@ global.r3DMap = function () {
 
             if (va2 > 1.9) {
                 if (Math.floor(bx * mapSz) == i && Math.floor(by * mapSz) == j) { // render wormhole
-                    minictx.strokeStyle = "white";
-                    minictx.fillStyle = "black";
+                    minictx.strokeStyle = `white`;
+                    minictx.fillStyle = `black`;
                     minictx.beginPath();
                     const bxin = bx * mapSz - Math.floor(bx * mapSz); const byin = by * mapSz - Math.floor(by * mapSz);
                     const xxp1 = lerp(xx1, xx4, (bxin + byin) / 2) - cx;
@@ -336,7 +336,7 @@ global.r3DMap = function () {
                     minictx.closePath();
                 }
                 if (Math.floor(bxo * mapSz) == i && Math.floor(byo * mapSz) == j) { // render wormhole output
-                    minictx.fillStyle = "white";
+                    minictx.fillStyle = `white`;
                     minictx.beginPath();
                     const bxin = bxo * mapSz - Math.floor(bxo * mapSz); const byin = byo * mapSz - Math.floor(byo * mapSz);
                     const xxp1 = lerp(xx1, xx4, (bxin + byin) / 2) - cx;
@@ -377,8 +377,8 @@ global.r3DMap = function () {
             minictx.fillRect(xx - sz / 2, yy - sz / 2, sz, sz);
         }
         minictx.globalAlpha = Math.min(1, 48 * square(square(square(-dots[0].z / 400 + 0.5))));
-        minictx.fillStyle = "black";
-        minictx.strokeStyle = "white";
+        minictx.fillStyle = `black`;
+        minictx.strokeStyle = `white`;
         minictx.beginPath();
         minictx.arc(104 + dots[0].x / mapZoom, 104 + dots[0].y / mapZoom, 10, 0, Math.PI * 2, false);
         minictx.fill();
@@ -419,8 +419,8 @@ global.paste3DMap = function (xp, yp) {
     ctx.fillStyle = brighten(pc);
     ctx.globalAlpha = psga;
     ctx.fillRect(xp + 104 + pscx + xxp1 + xxp2 - 3, yp + 104 + pscy + yyp1 + yyp2 - 3, 6, 6);
-    ctx.fillStyle = "yellow";
+    ctx.fillStyle = `yellow`;
     ctx.globalAlpha = 1;
-    ctx.font = "12px ShareTech";
-    write(ctx, translate(`Press M to use the ${useOldMap ? "3D" : "flat"} map`), 8, 232); // outside of the minimap canvas, gotta use ctx
+    ctx.font = `12px ShareTech`;
+    write(ctx, translate(`Press M to use the ${useOldMap ? `3D` : `flat`} map`), 8, 232); // outside of the minimap canvas, gotta use ctx
 };

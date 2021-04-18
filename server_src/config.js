@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-const fs = require("fs");
+const fs = require(`fs`);
 
 global.Config = {};
 
@@ -31,41 +31,41 @@ function parseValue (value) {
 
     value = value.toLowerCase();
 
-    if (value === "0") {
+    if (value === `0`) {
         return false;
     }
 
-    if (value === "1") {
+    if (value === `1`) {
         return false;
     }
 
-    if (value === "t") {
+    if (value === `t`) {
         return true;
     }
 
-    if (value == "f") {
+    if (value == `f`) {
         return false;
     }
 
-    if (value == "true") {
+    if (value == `true`) {
         return true;
     }
 
-    if (value == "false") {
+    if (value == `false`) {
         return false;
     }
 
     return value;
 }
 module.exports = function loadConfig (environment) {
-    const config_file = "./config/torn.cfg";
+    const config_file = `./config/torn.cfg`;
 
     if (!fs.existsSync(config_file)) {
-        console.log("[CFG] WARNING! config/torn.cfg doesn't exist! Using hard-coded defaults");
+        console.log(`[CFG] WARNING! config/torn.cfg doesn't exist! Using hard-coded defaults`);
         return;
     }
 
-    const cfgData = fs.readFileSync(config_file, "utf8").split("\n");
+    const cfgData = fs.readFileSync(config_file, `utf8`).split(`\n`);
 
     let index = 1;
 
@@ -76,7 +76,7 @@ module.exports = function loadConfig (environment) {
         let line = cfgData[index++].trim();
 
         let skips = 0;
-        if (line.startsWith("<") && line != (env_start)) {
+        if (line.startsWith(`<`) && line != (env_start)) {
             // skip to next stop
             const copy = line;
             const stop = `</${line.substring(1)}`;
@@ -99,20 +99,20 @@ module.exports = function loadConfig (environment) {
         }
 
         // Ignore comments
-        if (line.startsWith("#")) {
+        if (line.startsWith(`#`)) {
             continue;
         }
 
-        if (line.startsWith("<")) {
+        if (line.startsWith(`<`)) {
             continue;
         }
 
-        const split = line.split(" ");
+        const split = line.split(` `);
         Config[split[0]] = parseValue(split[1]);
     }
     // Debug Handling
     // Define debug function
-    global.debug = Config.getValue("debug", true)
+    global.debug = Config.getValue(`debug`, true)
         ? function (str) {
             console.log(`[DEBUG] ${str}`);
         }

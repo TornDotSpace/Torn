@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module.exports = class Blast {
     constructor (ownr, i, weaponID) {
-        this.type = "Blast",
+        this.type = `Blast`,
         this.id = i, // unique identifier
         this.dmg = wepns[weaponID].damage,
         this.sx = ownr.sx,

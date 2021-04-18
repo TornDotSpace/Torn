@@ -18,78 +18,78 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { jsn, translate } from "../localizer.ts";
 import { pasteChat } from "../chat.ts";
 
-global.baseMenuCanvas = document.createElement("canvas");
+global.baseMenuCanvas = document.createElement(`canvas`);
 baseMenuCanvas.width = 768;
 baseMenuCanvas.height = 512;
-global.baseMenuCtx = baseMenuCanvas.getContext("2d", { alpha: true });
+global.baseMenuCtx = baseMenuCanvas.getContext(`2d`, { alpha: true });
 
-require("./shoptab.js");
-require("./statstab.js");
-require("./moretab.js");
-require("./queststab.js");
+require(`./shoptab.js`);
+require(`./statstab.js`);
+require(`./moretab.js`);
+require(`./queststab.js`);
 
 global.baseMenuX = w / 2 - 128 * 3; global.baseMenuY = h / 4 - 128; // Where do we render the base menu subcanvas?
 
 // Render the Achievements tab
 global.rAchievements = function () {
     baseMenuCtx.save();
-    baseMenuCtx.fillStyle = "yellow";
-    baseMenuCtx.font = "14px ShareTech";
-    baseMenuCtx.textAlign = "center";
+    baseMenuCtx.fillStyle = `yellow`;
+    baseMenuCtx.font = `14px ShareTech`;
+    baseMenuCtx.textAlign = `center`;
     for (let i = 0; i < achs.length; i++) {
-        if (i < 13) baseMenuCtx.fillStyle = achs[i] ? "red" : "pink";
-        else if (i < 25) baseMenuCtx.fillStyle = achs[i] ? "gold" : "lime";
-        else if (i < 37) baseMenuCtx.fillStyle = achs[i] ? "lightgray" : "white";
-        else baseMenuCtx.fillStyle = achs[i] ? "cyan" : "yellow";
+        if (i < 13) baseMenuCtx.fillStyle = achs[i] ? `red` : `pink`;
+        else if (i < 25) baseMenuCtx.fillStyle = achs[i] ? `gold` : `lime`;
+        else if (i < 37) baseMenuCtx.fillStyle = achs[i] ? `lightgray` : `white`;
+        else baseMenuCtx.fillStyle = achs[i] ? `cyan` : `yellow`;
         if (achs[i]) {
-            baseMenuCtx.font = "11px ShareTech";
-            write(baseMenuCtx, jsn.achNames[i].split(":")[1], 768 * (1 + (i % 5) * 2) / 10, 20 + 40 * Math.floor(i / 5) + 60);
+            baseMenuCtx.font = `11px ShareTech`;
+            write(baseMenuCtx, jsn.achNames[i].split(`:`)[1], 768 * (1 + (i % 5) * 2) / 10, 20 + 40 * Math.floor(i / 5) + 60);
         }
-        baseMenuCtx.font = "15px ShareTech";
-        write(baseMenuCtx, achs[i] ? jsn.achNames[i].split(":")[0] : translate("???"), 768 * (1 + (i % 5) * 2) / 10, 8 + 40 * Math.floor(i / 5) + 60);
+        baseMenuCtx.font = `15px ShareTech`;
+        write(baseMenuCtx, achs[i] ? jsn.achNames[i].split(`:`)[0] : translate(`???`), 768 * (1 + (i % 5) * 2) / 10, 8 + 40 * Math.floor(i / 5) + 60);
     }
     baseMenuCtx.restore();
 };
 
 global.rBaseGui = function () {
     baseMenuCtx.lineWidth = 2;
-    baseMenuCtx.textAlign = "right";
-    baseMenuCtx.fillStyle = "yellow";
+    baseMenuCtx.textAlign = `right`;
+    baseMenuCtx.fillStyle = `yellow`;
     rTexts(-1);
 
-    baseMenuCtx.font = "14px ShareTech";
+    baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.lineWidth = 2;
 
     const tabs = {};
-    tabs[0] = translate("Shop");
-    tabs[1] = translate("Quests");
-    tabs[2] = translate("Stats");
-    tabs[3] = translate("Achievements");
-    tabs[4] = translate("More");
+    tabs[0] = translate(`Shop`);
+    tabs[1] = translate(`Quests`);
+    tabs[2] = translate(`Stats`);
+    tabs[3] = translate(`Achievements`);
+    tabs[4] = translate(`More`);
 
     baseMenuCtx.globalAlpha = 0.5;
-    infoBox(baseMenuCtx, 0, 44, 768, 512 - 44, "black", "white");
+    infoBox(baseMenuCtx, 0, 44, 768, 512 - 44, `black`, `white`);
 
-    baseMenuCtx.textAlign = "center";
+    baseMenuCtx.textAlign = `center`;
     for (let i = 0; i < 5; i++) // Fill Tabs In
     {
-        infoBox(baseMenuCtx, i * 768 / 5 + 8, 4, 768 / 5 - 8, 32, (tab == i) ? "darkgray" : "black", "white");
+        infoBox(baseMenuCtx, i * 768 / 5 + 8, 4, 768 / 5 - 8, 32, (tab == i) ? `darkgray` : `black`, `white`);
     }
 
     baseMenuCtx.globalAlpha = 1;
 
-    baseMenuCtx.fillStyle = "white";
+    baseMenuCtx.fillStyle = `white`;
     for (let i = 0; i < 5; i++) // Write tab names
     {
         write(baseMenuCtx, tabs[i], (i * 768 / 5 + 768 / 10), 23);
     }
 
-    baseMenuCtx.fillStyle = "yellow";
-    baseMenuCtx.textAlign = "right";
-    baseMenuCtx.font = "18px ShareTech";
-    write(baseMenuCtx, translate("PRESS X TO EXIT BASE"), 768 - 16, 512 + 24);
-    baseMenuCtx.font = "14px ShareTech";
-    baseMenuCtx.textAlign = "left";
+    baseMenuCtx.fillStyle = `yellow`;
+    baseMenuCtx.textAlign = `right`;
+    baseMenuCtx.font = `18px ShareTech`;
+    write(baseMenuCtx, translate(`PRESS X TO EXIT BASE`), 768 - 16, 512 + 24);
+    baseMenuCtx.font = `14px ShareTech`;
+    baseMenuCtx.textAlign = `left`;
     // baseMenuCtx.drawImage(Img.baseOutline, -4, -4);
     paste3DMap(8, 8);
     rCargo();
@@ -103,7 +103,7 @@ global.rInBase = function () {
     rStars();
     pasteChat();
     rBaseGui();
-    if (tab != -1) ReactRoot.turnOffRegister("LoginOverlay");
+    if (tab != -1) ReactRoot.turnOffRegister(`LoginOverlay`);
     switch (tab) {
         case 0:
             rShop();

@@ -18,37 +18,37 @@ import { translate } from "../localizer.ts";
 
 // Render the quests tab
 global.rQuests = function () {
-    baseMenuCtx.font = "14px ShareTech";
-    baseMenuCtx.textAlign = "left";
+    baseMenuCtx.font = `14px ShareTech`;
+    baseMenuCtx.textAlign = `left`;
     const mult = (myTrail % 16 == 2) ? 1.05 : 1;
     if (quest != 0) {
-        baseMenuCtx.fillStyle = "cyan";
-        baseMenuCtx.textAlign = "center";
-        baseMenuCtx.font = "30px ShareTech";
-        write(baseMenuCtx, translate("Quest Accepted!"), 128 * 3, 128);
-        baseMenuCtx.font = "14px ShareTech";
+        baseMenuCtx.fillStyle = `cyan`;
+        baseMenuCtx.textAlign = `center`;
+        baseMenuCtx.font = `30px ShareTech`;
+        write(baseMenuCtx, translate(`Quest Accepted!`), 128 * 3, 128);
+        baseMenuCtx.font = `14px ShareTech`;
         const desc = getQuestDescription(quest);
         write(baseMenuCtx, desc, 128 * 3, 192);
-        baseMenuCtx.textAlign = "left";
+        baseMenuCtx.textAlign = `left`;
     } else {
         for (const i in quests) {
             const xv = i < 5 ? 0 : 128 * 3;
             const questi = quests[i];
-            let desc = "";
-            baseMenuCtx.fillStyle = i == seller - 300 ? "lime" : "yellow";
-            if (questi.type == "Mining") desc = translate("Bring # units of # to sector #.", [numToLS(questi.amt), questi.metal, getSectorName(questi.sx, questi.sy)]);
-            if (questi.type == "Base") {
-                if (rank > 6) desc = translate("Eliminate enemy base in sector #.", [getSectorName(questi.sx, questi.sy)]);
-                else desc = translate("Quest Locked!");
+            let desc = ``;
+            baseMenuCtx.fillStyle = i == seller - 300 ? `lime` : `yellow`;
+            if (questi.type == `Mining`) desc = translate(`Bring # units of # to sector #.`, [numToLS(questi.amt), questi.metal, getSectorName(questi.sx, questi.sy)]);
+            if (questi.type == `Base`) {
+                if (rank > 6) desc = translate(`Eliminate enemy base in sector #.`, [getSectorName(questi.sx, questi.sy)]);
+                else desc = translate(`Quest Locked!`);
             }
-            if (questi.type == "Secret") {
-                if (rank > 14) desc = translate("Proceed to sector # for further instructions.", [getSectorName(questi.sx, questi.sy)]);// translate("Secret Mission.");
-                else desc = translate("Quest Locked!");
+            if (questi.type == `Secret`) {
+                if (rank > 14) desc = translate(`Proceed to sector # for further instructions.`, [getSectorName(questi.sx, questi.sy)]);// translate("Secret Mission.");
+                else desc = translate(`Quest Locked!`);
             }
-            if (questi.type == "Delivery") desc = translate("Obtain package from planet # and deliver it to planet #.", [getSectorName(questi.sx, questi.sy), getSectorName(questi.dsx, questi.dsy)]);
+            if (questi.type == `Delivery`) desc = translate(`Obtain package from planet # and deliver it to planet #.`, [getSectorName(questi.sx, questi.sy), getSectorName(questi.dsx, questi.dsy)]);
             write(baseMenuCtx, translate(questi.type), xv + 16, 72 + i % 5 * 80);
-            write(baseMenuCtx, translate("Reward: $# and # exp.", [numToLS(mult * questi.exp), numToLS(Math.floor(questi.exp / ((questi.type === "Mining" || questi.type === "Delivery") ? 1500 : 4000)))]), xv + 16 + 16, 72 + i % 5 * 80 + 16);
-            wrapText(baseMenuCtx, translate("Description: ") + desc, xv + 16 + 16, 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
+            write(baseMenuCtx, translate(`Reward: $# and # exp.`, [numToLS(mult * questi.exp), numToLS(Math.floor(questi.exp / ((questi.type === `Mining` || questi.type === `Delivery`) ? 1500 : 4000)))]), xv + 16 + 16, 72 + i % 5 * 80 + 16);
+            wrapText(baseMenuCtx, translate(`Description: `) + desc, xv + 16 + 16, 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
         }
     }
 };
@@ -71,5 +71,5 @@ global.questsOnHover = function (preSeller) {
 };
 
 global.questsOnClick = function (buttonID) {
-    if (buttonID >= 300 && buttonID < 310 && quest == 0) socket.emit("quest", { quest: buttonID - 300 });
+    if (buttonID >= 300 && buttonID < 310 && quest == 0) socket.emit(`quest`, { quest: buttonID - 300 });
 };

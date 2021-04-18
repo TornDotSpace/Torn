@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 module.exports = class Orb {
     constructor (ownr, i, wepnID) { // currently the only orbs are energy disk and photon orb
-        this.type = "Orb",
+        this.type = `Orb`,
         this.id = i, // unique identifier
         this.color = ownr.color, // owned by which team
         this.dmg = wepns[wepnID].damage,
@@ -109,11 +109,11 @@ module.exports = class Orb {
 
             const baseHere = bases[this.sy][this.sx];
             let target = players[this.sy][this.sx][this.locked];
-            if (typeof target === "undefined" && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
+            if (typeof target === `undefined` && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
             if (target == 0) target = asts[this.sy][this.sx][this.locked];
-            if (typeof target === "undefined") this.locked = 0;
+            if (typeof target === `undefined`) this.locked = 0;
             else { // if we are locked onto something
-                if (target.type === "Player") target.isLocked = true; // tell the player they're locked on so they will get an alert message
+                if (target.type === `Player`) target.isLocked = true; // tell the player they're locked on so they will get an alert message
                 const dist = Math.hypot(target.x - this.x, target.y - this.y);
                 if (dist < 64 && (target.baseType != DEADBASE) !== false) { // if it's a base we can't attack when it's dead. !== false works in case of non-bases
                     target.dmg(this.dmg, this);
@@ -133,7 +133,7 @@ module.exports = class Orb {
     }
 
     die () {
-        sendAllSector("sound", { file: "boom", x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
         delete orbs[this.sy][this.sx][this.id];
     }
 };

@@ -15,20 +15,20 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const path = require("path");
-const webpack = require("webpack");
+const path = require(`path`);
+const webpack = require(`webpack`);
 
-const Git = require("git-revision-webpack-plugin");
+const Git = require(`git-revision-webpack-plugin`);
 
 const gitRevisionPlugin = new Git({
     lightweightTags: true
 });
 
 module.exports = {
-    entry: [path.resolve(__dirname, "../client_src/index.js")],
+    entry: [path.resolve(__dirname, `../client_src/index.js`)],
     output: {
-        path: path.resolve(__dirname, "../client"),
-        filename: "client.js"
+        path: path.resolve(__dirname, `../client`),
+        filename: `client.js`
     },
     module: {
         rules: [
@@ -36,7 +36,7 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: [
                     {
-                        loader: "ts-loader",
+                        loader: `ts-loader`,
                         options: {
                             transpileOnly: true,
                             experimentalWatchApi: true
@@ -49,10 +49,10 @@ module.exports = {
                 test: /\.jsx?$/,
                 use: [
                     {
-                        loader: "babel-loader",
+                        loader: `babel-loader`,
                         options: {
-                            presets: ["@babel/react", "@babel/preset-env"],
-                            plugins: ["@babel/proposal-class-properties"]
+                            presets: [`@babel/react`, `@babel/preset-env`],
+                            plugins: [`@babel/proposal-class-properties`]
                         }
                     }
                 ],
@@ -62,11 +62,11 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ["*", ".js", ".tsx", ".ts", ".jsx"]
+        extensions: [`*`, `.js`, `.tsx`, `.ts`, `.jsx`]
     },
 
     devServer: {
-        contentBase: "./client",
+        contentBase: `./client`,
         hot: true
     },
 

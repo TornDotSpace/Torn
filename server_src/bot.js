@@ -15,9 +15,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const Player = require("./player.js");
-const Package = require("./universe/package.js");
-const fs = require("fs");
+const Player = require(`./player.js`);
+const Package = require(`./universe/package.js`);
+const fs = require(`fs`);
 
 class Bot extends Player {
     constructor (id) {
@@ -42,7 +42,7 @@ class Bot extends Player {
                 }
             }
         }
-        if (typeof owner === "undefined" || owner === 0) {
+        if (typeof owner === `undefined` || owner === 0) {
             this.isBrainwashedBy = 0;
             return;
         }
@@ -83,7 +83,7 @@ class Bot extends Player {
     }
 
     fight (target, close) {
-        const isBase = target.type === "Base";
+        const isBase = target.type === `Base`;
         const range = square(wepns[this.equipped].range * 10);
         this.space = this.e = close < range * 1.2 || isBase;
         const intercept = calculateInterceptionAngle(target.x, target.y, isBase ? 0 : target.vx, isBase ? 0 : target.vy, this.x, this.y, wepns[this.equipped].speed);
@@ -142,7 +142,7 @@ class Bot extends Player {
             return;
         }
         const diff = 0.02 * this.experience;
-        if (b.type !== "Vortex") {
+        if (b.type !== `Vortex`) {
             // drop a package
             const r = Math.random();
             if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier), only makes sense if this is not a bot
@@ -152,11 +152,11 @@ class Bot extends Player {
         }
 
         // give the killer stuff
-        if ((b.owner != 0) && (typeof b.owner !== "undefined") && (b.owner.type === "Player" || b.owner.type === "Base")) {
+        if ((b.owner != 0) && (typeof b.owner !== `undefined`) && (b.owner.type === `Player` || b.owner.type === `Base`)) {
             b.owner.onKill(this);
-            b.owner.spoils("experience", (10 + diff * (this.color === b.owner.color ? -1 : 1)));
+            b.owner.spoils(`experience`, (10 + diff * (this.color === b.owner.color ? -1 : 1)));
             // Prevent farming and disincentivize targetting guests
-            b.owner.spoils("money", b.owner.type === "Player" ? (b.owner.killStreak * playerKillMoney) : playerKillMoney);
+            b.owner.spoils(`money`, b.owner.type === `Player` ? (b.owner.killStreak * playerKillMoney) : playerKillMoney);
 
             if (this.points > 0) { // raid points
                 b.owner.points++;
@@ -249,10 +249,10 @@ class NeuralNetBot extends Bot {
         this.d = out[5];
     }
 }
-const botNames = fs.readFileSync("./server_src/resources/botNames.txt").toString().split("\n");
+const botNames = fs.readFileSync(`./server_src/resources/botNames.txt`).toString().split(`\n`);
 
 global.spawnBot = function (sx, sy, col, force) {
-    if (!Config.getValue("want-bots", true)) return;
+    if (!Config.getValue(`want-bots`, true)) return;
 
     if (playerCount + botCount + guestCount > playerLimit && !force) return;
 
@@ -273,7 +273,7 @@ global.spawnBot = function (sx, sy, col, force) {
     bot.ship = Math.min(bot.rank, 21);
     bot.x = bot.y = sectorWidth / 2;
     bot.color = col;
-    bot.name = Config.getValue("want_bot_names", false) ? `BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : "DRONE";
+    bot.name = Config.getValue(`want_bot_names`, false) ? `BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `DRONE`;
     bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * 0.25) + 0.7);
     bot.energy2 = Math.floor((bot.thrust2 - 1) * 5 / 2) / 5 + 1;
     bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;

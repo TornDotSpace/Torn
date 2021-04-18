@@ -15,11 +15,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const Beam = require("./beam.js");
+const Beam = require(`./beam.js`);
 
 module.exports = class Mine {
     constructor (ownr, i, weaponID) {
-        this.type = "Mine",
+        this.type = `Mine`,
         this.id = i, // unique identifier
         this.time = 0, // time since spawned
         this.color = ownr.color, // what team owns me
@@ -128,7 +128,7 @@ module.exports = class Mine {
     }
     */
         if (playerFound) {
-            sendAllSector("sound", { file: "bigboom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+            sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
             this.time += 25 * 3;
         }
     }
@@ -155,7 +155,7 @@ module.exports = class Mine {
                 beams[this.sy][this.sx][r] = beam;
             }
         }
-        sendAllSector("sound", { file: "beam", x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     collideWithMines () { // When the mine is created, make sure it isn't placed on top of any other mines.
@@ -194,7 +194,7 @@ module.exports = class Mine {
                 if (!p.guest && squaredDist(p, this) < square(this.range * 40)) p.dmg(this.dmg, this); // if i'm in range of a player on explosion, damage them
             }
         }
-        sendAllSector("sound", { file: "boom", x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete mines[this.sy][this.sx][this.id];
     }
 };

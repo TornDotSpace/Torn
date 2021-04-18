@@ -43,10 +43,10 @@ global.playAudio = function (name, vol) {
 
     audio.volume(gVol * vol, id);
 
-    if (name == "bigboom") audio.volume(gVol * vol * 2, id);
-    if (name == "noammo") audio.volume(gVol * vol * 5, id);
+    if (name == `bigboom`) audio.volume(gVol * vol * 2, id);
+    if (name == `noammo`) audio.volume(gVol * vol * 5, id);
 
-    if (name === "music1") {
+    if (name === `music1`) {
         audio.volume(gVol * vol / 2, id);
         musicAudio = id;
     }
@@ -73,15 +73,15 @@ global.loadAudio = function (name, _src) {
     Aud_prgs[1]++;
 };
 global.loadAllAudio = function () {
-    loadAudio("minigun", "/aud/minigun.mp3");
-    loadAudio("boom", "/aud/boom.mp3");
-    loadAudio("hyperspace", "/aud/hyperspace.mp3");
-    loadAudio("bigboom", "/aud/bigboom.wav");
-    loadAudio("shot", "/aud/shot.mp3");
-    loadAudio("beam", "/aud/beam.wav");
-    loadAudio("missile", "/aud/whoosh.mp3");
-    loadAudio("sector", "/aud/sector.wav");
-    loadAudio("money", "/aud/money.wav");
-    loadAudio("button2", "/aud/button2.wav");
-    loadAudio("noammo", "/aud/noammo.wav");
+    loadAudio(`minigun`, `/aud/minigun.mp3`);
+    loadAudio(`boom`, `/aud/boom.mp3`);
+    loadAudio(`hyperspace`, `/aud/hyperspace.mp3`);
+    loadAudio(`bigboom`, `/aud/bigboom.wav`);
+    loadAudio(`shot`, `/aud/shot.mp3`);
+    loadAudio(`beam`, `/aud/beam.wav`);
+    loadAudio(`missile`, `/aud/whoosh.mp3`);
+    loadAudio(`sector`, `/aud/sector.wav`);
+    loadAudio(`money`, `/aud/money.wav`);
+    loadAudio(`button2`, `/aud/button2.wav`);
+    loadAudio(`noammo`, `/aud/noammo.wav`);
 };
