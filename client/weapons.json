@@ -166,7 +166,7 @@
 			"ammo":8,
 			"level":7,
 			"type":"Missile",
-			"bot":false,
+			"bot":true,
 			"enabled":true
 		},
 		"13":{
@@ -271,7 +271,7 @@
 			"level":9,
 			"type":"Misc",
 			"bot":false,
-			"enabled":true
+			"enabled":false
 		},
 		"21":{
 			"name":"Turbo",
@@ -309,7 +309,7 @@
 			"ammo":1,
 			"level":7,
 			"type":"Misc",
-			"bot":false,
+			"bot":true,
 			"enabled":true
 		},
 		"24":{
@@ -335,7 +335,7 @@
 			"ammo":2,
 			"level":9,
 			"type":"Blast",
-			"bot":false,
+			"bot":true,
 			"enabled":true
 		},
 		"26":{
