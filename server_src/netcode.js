@@ -39,7 +39,7 @@ global.ipMuteTable = {};
 global.protocolVersion = undefined;
 
 const runCommand = (player, msg) => {
-    const args = msg.slice(config.prefix.length).trim().split(` `);
+    const args = msg.slice(1).trim().split(` `);
     const command = args.shift().toLowerCase();
 
     if (!command) player.socket.emit(`chat`, { msg: `~\`red~\`Unknown Command. Use /help for a list of commands! ~\`red~\`` });
