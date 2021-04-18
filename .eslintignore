@@ -1,11 +1,5 @@
 # Client assets.
 client/
 
-# Misc tools.
-tools/
-
-# React src.
-client_src/react.js
-
 # Typescript files.
 *.ts
