@@ -1,10 +1,14 @@
 {
     "compilerOptions": {
-      "outDir": "./client/",
-      "noImplicitAny": false,
-      "module": "es6",
-      "target": "es5",
-      "jsx": "react",
-      "allowJs": true
+        "target": "ES6",
+        "module": "commonjs",
+
+        "outDir": "./client",
+
+        "jsx": "react",
+        "resolveJsonModule": true,
+
+        "noImplicitAny": false,
+        "allowJs": true
     }
-  }
+}

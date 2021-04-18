@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Socket } from "socket.io";
-import { translate } from "./localizer.ts";
+import { translate } from "./localizer";
 
 
 /* eslint-disable */
