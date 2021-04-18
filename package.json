@@ -36,6 +36,7 @@
     "@babel/preset-env": "^7.13.15",
     "@babel/preset-react": "^7.13.13",
     "@babel/runtime": "^7.13.10",
+    "@types/socket.io": "^2.1.13",
     "babel-loader": "^8.2.2",
     "eslint": "^7.24.0",
     "eslint-config-standard": "^16.0.2",
@@ -55,7 +56,6 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "@types/socket.io": "^2.1.13",
     "bad-words": "^3.0.4",
     "cors": "^2.8.5",
     "discord.js": "^12.5.3",
