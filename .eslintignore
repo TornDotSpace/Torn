@@ -1,4 +1,11 @@
+# Client assets.
 client/
+
+# Misc tools.
 tools/
+
+# React src.
 client_src/react.js
-client_src/chat.ts
+
+# Typescript files.
+*.ts
