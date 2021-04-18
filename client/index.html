@@ -10,28 +10,32 @@
 		<meta http-equiv="expires" content="Tue, 01 Jan 1980 11:00:00 GMT">
 		<meta http-equiv="pragma" content="no-cache">
 		<meta charset="UTF-8" />
+
 		<!-- Prevent zoom -->
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-81486045-1"></script>
+
 		<!-- Adsense -->
 		<script data-ad-client="ca-pub-7362501745456542" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 		<script>
-		  document.addEventListener('contextmenu', event => event.preventDefault());
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
-
-		  gtag('config', 'UA-81486045-1');
+			document.addEventListener('contextmenu', event => event.preventDefault());
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+		  	gtag('js', new Date());
+		  	gtag('config', 'UA-81486045-1');
 		</script>
-		<title>Torn</title>
 
-		<link rel="stylesheet" href="index.css" />
+		<title>Torn</title>
+		<link rel="stylesheet" href="index.css">
 	</head>
 	<body>
 		<canvas id="ctx"></canvas>
 		<div id="a"></div>
+
 		<script src="client.js?v=17"></script>
 	</body>
 </html>
