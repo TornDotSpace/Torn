@@ -40,7 +40,9 @@ global.protocolVersion = undefined;
 
 const runCommand = (player, msg) => {
     const args = msg.slice(1).trim().split(` `);
-    const command = args.shift().toLowerCase();
+    const cmd = args.shift().toLowerCase();
+
+    const command = cmds[cmd];
 
     if (!command) player.socket.emit(`chat`, { msg: `~\`red~\`Unknown Command. Use /help for a list of commands! ~\`red~\`` });
     else {
