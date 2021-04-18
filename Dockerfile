@@ -31,5 +31,5 @@ COPY . /opt/Torn
 # Start the development server.
 RUN cd /opt/Torn
 
-EXPOSE 7300 7301
+EXPOSE 7300 7301 8080
 CMD sh /opt/Torn/start_dev_server.sh
