@@ -31,4 +31,3 @@ read -n1 -r -p "Press any key to continue..." key
 
 taskkill /F /IM node.exe
 taskkill /F /IM python.exe
-
