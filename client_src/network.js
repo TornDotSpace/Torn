@@ -98,6 +98,7 @@ socket.on(`update`, (data) => {
     charge = data.charge;
 
     const delta = data.state;
+    if (!delta) return;
 
     for (let index = 0; index < delta.players.length; ++index) {
         player_update(delta.players[index]);
