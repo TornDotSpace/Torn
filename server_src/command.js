@@ -47,7 +47,7 @@ global.cmds = {};
 
 // GUEST COMMANDS
 // All players including guests have access to these
-cmds[`/help`] = new Command(`/help - Displays commands & usages`, EVERYONE, (plyr, msg) => {
+cmds[`help`] = new Command(`/help - Displays commands & usages`, EVERYONE, (plyr, msg) => {
     for (const p in plyr.permissionLevels) {
         const lvl = plyr.permissionLevels[p];
 	    for (let x = 0; x < HELP_TABLE[lvl].length; ++x) {
@@ -57,24 +57,24 @@ cmds[`/help`] = new Command(`/help - Displays commands & usages`, EVERYONE, (ply
     }
 });
 
-cmds[`/me`] = new Command(`/me <msg>`, EVERYONE, (player, msg) => {
+cmds[`me`] = new Command(`/me <msg>`, EVERYONE, (player, msg) => {
     if (msg.split(` `).length == 1) return;
     console.log(`[ME]: ${msg}`);
     playerChat(`~~\`${player.color}~\`${player.name}~\`yellow~\` ${msg.substring(4)}`, player.globalChat, player.color, player.guild);
 });
 
-cmds[`/myguild`] = new Command(`/myguild - Tells you what guild you're in`, EVERYONE, (player, msg) => {
+cmds[`myguild`] = new Command(`/myguild - Tells you what guild you're in`, EVERYONE, (player, msg) => {
     if (player.guild === ``) player.socket.emit(`chat`, { msg: `~\`orange~\`You aren't in a guild!` });
     else player.socket.emit(`chat`, { msg: `~\`orange~\`Your guild is: ${player.guild}` });
 });
 
-cmds[`/guildlist`] = new Command(`/guildlist - Tells you a list of all guilds`, EVERYONE, (player, msg) => {
+cmds[`guildlist`] = new Command(`/guildlist - Tells you a list of all guilds`, EVERYONE, (player, msg) => {
     for (const g in guildList) {
         player.socket.emit(`chat`, { msg: `~\`orange~\`${g}` });
     }
 });
 
-cmds[`/playerstats`] = new Command(`/playerstats - See how many players are online`, EVERYONE, (player, msg) => {
+cmds[`playerstats`] = new Command(`/playerstats - See how many players are online`, EVERYONE, (player, msg) => {
     let sumAsts = 0;
     for (const i in astCount) for (const j in astCount[i])sumAsts += astCount[i][j];
     player.socket.emit(`chat`, { msg: `~\`orange~\`${guestCount} guests, ${playerCount} players, ${botCount} bots, and ${sumAsts} asteroids.` });
@@ -83,15 +83,15 @@ cmds[`/playerstats`] = new Command(`/playerstats - See how many players are onli
 // PLAYER COMMANDS
 // These commands are restricted to players that have registered their accounts
 // This restriction is done for either technical reasons or anti-spam protection
-cmds[`/password`] = new Command(`/password <newPassword>`, REGISTERED, (player, msg) => {
+cmds[`password`] = new Command(`/password <newPassword>`, REGISTERED, (player, msg) => {
     player.changePass(msg.substring(10));
 });
 
-cmds[`/confirm`] = new Command(`/confirm <newPassword>`, REGISTERED, async (player, msg) => {
+cmds[`confirm`] = new Command(`/confirm <newPassword>`, REGISTERED, async (player, msg) => {
     await player.confirmPass(msg.substring(9));
 }, false);
 
-cmds[`/changeteam`] = new Command(`/changeteam`, REGISTERED, (player, msg) => {
+cmds[`changeteam`] = new Command(`/changeteam`, REGISTERED, (player, msg) => {
     if (!player.docked) {
         player.socket.emit(`chat`, { msg: `~\`red~\`This command is only available when docked at a base.` }); return;
     }
@@ -127,7 +127,7 @@ cmds[`/changeteam`] = new Command(`/changeteam`, REGISTERED, (player, msg) => {
     }
 });
 
-cmds[`/nameturret`] = new Command(`/nameturret <name>`, REGISTERED, (player, msg) => {
+cmds[`nameturret`] = new Command(`/nameturret <name>`, REGISTERED, (player, msg) => {
     let num = 0;
     const base = bases[player.sy][player.sx];
     if (base != 0 && base.owner == player.name) {
@@ -136,7 +136,7 @@ cmds[`/nameturret`] = new Command(`/nameturret <name>`, REGISTERED, (player, msg
     player.socket.emit(`chat`, { msg: `${num} turret(s) renamed.` });
 });
 
-cmds[`/joinguild`] = new Command(`/joinguild <guildName> <optionalinvite> - Join a guild`, REGISTERED, (player, msg) => {
+cmds[`joinguild`] = new Command(`/joinguild <guildName> <optionalinvite> - Join a guild`, REGISTERED, (player, msg) => {
     const split = msg.split(` `);
     if (player.guild !== ``) {
         player.socket.emit(`chat`, { msg: `You are already in ${player.guild}! Use /leaveguild to leave it.` });
@@ -167,7 +167,7 @@ cmds[`/joinguild`] = new Command(`/joinguild <guildName> <optionalinvite> - Join
     player.socket.emit(`chat`, { msg: `Joined guild ${guildName}!` });
 });
 
-cmds[`/leaveguild`] = new Command(`/leaveguild - Leave your current guild`, REGISTERED, (player, msg) => {
+cmds[`leaveguild`] = new Command(`/leaveguild - Leave your current guild`, REGISTERED, (player, msg) => {
     if (player.guild === ``) {
         player.socket.emit(`chat`, { msg: `You are not in a guild!` });
         return;
@@ -176,20 +176,20 @@ cmds[`/leaveguild`] = new Command(`/leaveguild - Leave your current guild`, REGI
     player.guild = ``;
 });
 
-cmds[`/pm`] = new Command(`/pm <player> <msg>`, REGISTERED, (player, msg) => {
+cmds[`pm`] = new Command(`/pm <player> <msg>`, REGISTERED, (player, msg) => {
     player.pm(msg);
 });
 
-cmds[`/r`] = new Command(`/r <msg>`, REGISTERED, (player, msg) => {
+cmds[`r`] = new Command(`/r <msg>`, REGISTERED, (player, msg) => {
     if (msg.split(` `).length == 1) return;
     player.r(msg);
 });
 
-cmds[`/swap`] = new Command(`/swap`, REGISTERED, (player, msg) => {
+cmds[`swap`] = new Command(`/swap`, REGISTERED, (player, msg) => {
     player.swap(msg);
 });
 
-cmds[`/mute`] = new Command(`/mute <player> - You will no longer hear the player's chat messages.`, EVERYONE, (ply, msg) => {
+cmds[`mute`] = new Command(`/mute <player> - You will no longer hear the player's chat messages.`, EVERYONE, (ply, msg) => {
     const split = msg.split(` `);
     if (split.length != 2) {
         ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/mute playernamewithouttag'` }); return;
@@ -204,7 +204,7 @@ cmds[`/mute`] = new Command(`/mute <player> - You will no longer hear the player
     ply.socket.emit(`chat`, { msg: `Muted ${name}.` });
 });
 
-cmds[`/unmute`] = new Command(`/unmute <player> - You will begin hearing the player's chat messages again.`, EVERYONE, (ply, msg) => {
+cmds[`unmute`] = new Command(`/unmute <player> - You will begin hearing the player's chat messages again.`, EVERYONE, (ply, msg) => {
     if (msg.split(` `).length != 2) {
         ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/mute playernamewithouttag'` }); return;
     } // split looks like {"/unmute", "name"}
@@ -220,7 +220,7 @@ cmds[`/unmute`] = new Command(`/unmute <player> - You will begin hearing the pla
 
 const valid_email_regex = new RegExp(`^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$`);
 
-cmds[`/email`] = new Command(`/email <you@domain.tld> - Sets your email for password resets`, REGISTERED, (player, msg) => {
+cmds[`email`] = new Command(`/email <you@domain.tld> - Sets your email for password resets`, REGISTERED, (player, msg) => {
     const email = msg.substring(7);
     if (!valid_email_regex.test(email)) {
         player.socket.emit(`chat`, { msg: `Invalid Email!` });
@@ -231,7 +231,7 @@ cmds[`/email`] = new Command(`/email <you@domain.tld> - Sets your email for pass
     player.socket.emit(`chat`, { msg: `Registered Email Successfully!` });
 });
 
-cmds[`/createguild`] = new Command(`/createguild <guildname> - Creates a new guild`, VIPPLUS, (player, msg) => {
+cmds[`createguild`] = new Command(`/createguild <guildname> - Creates a new guild`, VIPPLUS, (player, msg) => {
     const split = msg.split(` `);
     if (split.length != 2) {
         player.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/createguild mynewguildname'` });
@@ -251,7 +251,7 @@ cmds[`/createguild`] = new Command(`/createguild <guildname> - Creates a new gui
     player.socket.emit(`chat`, { msg: `Private guild ${guildName} created! Use /guildprivacy to toggle its privacy.` });
 });
 
-cmds[`/guildprivacy`] = new Command(`/guildprivacy - Toggle guild's privacy.`, VIPPLUS, (player, msg) => {
+cmds[`guildprivacy`] = new Command(`/guildprivacy - Toggle guild's privacy.`, VIPPLUS, (player, msg) => {
     const split = msg.split(` `);
     if (split.length != 1) {
         player.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/guildprivacy'` });
@@ -266,7 +266,7 @@ cmds[`/guildprivacy`] = new Command(`/guildprivacy - Toggle guild's privacy.`, V
     player.socket.emit(`chat`, { msg: `Guild ${playersguild} is now ${guildList[playersguild].public}. Run this command again to change back.` });
 });
 
-cmds[`/guildinvite`] = new Command(`/guildinvite - Get guild invite code.`, VIPPLUS, (player, msg) => {
+cmds[`guildinvite`] = new Command(`/guildinvite - Get guild invite code.`, VIPPLUS, (player, msg) => {
     const split = msg.split(` `);
     if (split.length != 1) {
         player.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/guildinvite'` });
@@ -291,28 +291,28 @@ findGuildFromOwner = function (owner) {
 
 // MODERATION COMMANDS
 // These commands are accessible to moderators in the game
-cmds[`/broadcast`] = new Command(`/broadcast <msg> - Send a message to the whole server`, MODPLUS, (player, msg) => {
+cmds[`broadcast`] = new Command(`/broadcast <msg> - Send a message to the whole server`, MODPLUS, (player, msg) => {
     console.log(`ADMIN: BROADCAST INITIATED BY ${player}: ${msg}`);
     chatAll(`~\`#f66~\`       BROADCAST: ~\`lime~\`${msg.substring(11)}`);
 });
 
-cmds[`/modmute`] = new Command(`/modmute <player> <minutesToMute> - Mutes the specified player server-wide.`, MODPLUS, (ply, msg) => {
+cmds[`modmute`] = new Command(`/modmute <player> <minutesToMute> - Mutes the specified player server-wide.`, MODPLUS, (ply, msg) => {
     // Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
     const returnmsg = modmute(msg);
 });
 
-cmds[`/ipmute`] = new Command(`/ipmute <player> <minutesToMute> - Mutes the specified IP server-wide.`, MODPLUS, (ply, msg) => {
+cmds[`ipmute`] = new Command(`/ipmute <player> <minutesToMute> - Mutes the specified IP server-wide.`, MODPLUS, (ply, msg) => {
     // Extracted so that it can be used both by commands in game and the discord bot. In netutils.js.
     const returnmsg = ipmute(msg);
 });
 
 // ADMINSTRATOR COMMANDS
 // These commands are accessible to adminstrators in the game
-cmds[`/reboot`] = new Command(`/reboot - Schedules a restart of the shard with 120 second countdown`, ADMINPLUS, initReboot);
+cmds[`reboot`] = new Command(`/reboot - Schedules a restart of the shard with 120 second countdown`, ADMINPLUS, initReboot);
 
-cmds[`/fastreboot`] = new Command(`/fastreboot - Schedules a restart of the shard, with 10 second countdown instead of 120`, ADMINPLUS, initFastReboot);
+cmds[`fastreboot`] = new Command(`/fastreboot - Schedules a restart of the shard, with 10 second countdown instead of 120`, ADMINPLUS, initFastReboot);
 
-cmds[`/tp`] = new Command(`/tp <player> - Teleport to the player.`, ADMINPLUS, (ply, msg) => {
+cmds[`tp`] = new Command(`/tp <player> - Teleport to the player.`, ADMINPLUS, (ply, msg) => {
     if (msg.split(` `).length != 2) {
         ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/tp playernamewithouttag'` }); return;
     }
@@ -336,7 +336,7 @@ cmds[`/tp`] = new Command(`/tp <player> - Teleport to the player.`, ADMINPLUS, (
     ply.socket.emit(`chat`, { msg: `Player found, attempting to teleport. May fail if they are docked or dead.` });
 });
 
-cmds[`/settag`] = new Command(`/settag <player> <tag> - Sets a player's tag. tag should not contain brackets.`, ADMINPLUS, (ply, msg) => {
+cmds[`settag`] = new Command(`/settag <player> <tag> - Sets a player's tag. tag should not contain brackets.`, ADMINPLUS, (ply, msg) => {
     if (msg.split(` `).length != 3) {
         ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/settag playernamewithouttag tag'` }); return;
     }
@@ -353,7 +353,7 @@ cmds[`/settag`] = new Command(`/settag <player> <tag> - Sets a player's tag. tag
     ply.socket.emit(`chat`, { msg: `~\`violet~\`Tag set.` });
 });
 
-cmds[`/deltag`] = new Command(`/deltag <player> <tag> - Removes a player's tag.`, ADMINPLUS, (ply, msg) => {
+cmds[`deltag`] = new Command(`/deltag <player> <tag> - Removes a player's tag.`, ADMINPLUS, (ply, msg) => {
     if (msg.split(` `).length != 2) {
         ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/settag playernamewithouttag'` }); return;
     }
@@ -369,7 +369,7 @@ cmds[`/deltag`] = new Command(`/deltag <player> <tag> - Removes a player's tag.`
     ply.socket.emit(`chat`, { msg: `~\`violet~\`Tag removed.` });
 });
 
-cmds[`/smite`] = new Command(`/smite <player> - Smites the specified player`, ADMINPLUS, (ply, msg) => {
+cmds[`smite`] = new Command(`/smite <player> - Smites the specified player`, ADMINPLUS, (ply, msg) => {
     if (msg.split(` `).length != 2) return;
     const name = msg.split(` `)[1];
 
@@ -382,7 +382,7 @@ cmds[`/smite`] = new Command(`/smite <player> - Smites the specified player`, AD
     chatAll(`~\`violet~\`${player.name}~\`yellow~\` has been Smitten!`);
 });
 
-cmds[`/kick`] = new Command(`/kick <player> - Kicks the specified player`, ADMINPLUS, (ply, msg) => {
+cmds[`kick`] = new Command(`/kick <player> - Kicks the specified player`, ADMINPLUS, (ply, msg) => {
     if (msg.split(` `).length != 2) return;
     const name = msg.split(` `)[1];
 
@@ -395,10 +395,10 @@ cmds[`/kick`] = new Command(`/kick <player> - Kicks the specified player`, ADMIN
     chatAll(`~\`violet~\`${name}~\`yellow~\` has been kicked!`);
 });
 
-cmds[`/saveturrets`] = new Command(`/saveTurrets - Runs a manual save on the server turrets`, ADMINPLUS, saveTurrets);
+cmds[`saveturrets`] = new Command(`/saveTurrets - Runs a manual save on the server turrets`, ADMINPLUS, saveTurrets);
 
 if (Config.getValue(`debug`, false)) {
-    cmds[`/eval`] = new Command(`/eval .... - Evaluates arbitrary JS on the server`, ADMINPLUS, (player, msg) => {
+    cmds[`eval`] = new Command(`/eval .... - Evaluates arbitrary JS on the server`, ADMINPLUS, (player, msg) => {
         try {
             // eslint-disable-next-line no-eval
             player.socket.emit(`chat`, { msg: eval(msg.substring(5)) });
@@ -407,7 +407,7 @@ if (Config.getValue(`debug`, false)) {
         }
     });
 
-    cmds[`/max`] = new Command(`/max - Maxes out a player's stats for testing purposes`, ADMINPLUS, (player, msg) => {
+    cmds[`max`] = new Command(`/max - Maxes out a player's stats for testing purposes`, ADMINPLUS, (player, msg) => {
         player.rank = 20;
         player.money = Number.MAX_SAFE_INTEGER;
         player.experience = Number.MAX_SAFE_INTEGER;
