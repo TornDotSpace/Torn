@@ -15,9 +15,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+const Webpack = require(`webpack`);
+
 const { merge } = require(`webpack-merge`);
 const common = require(`./webpack.common.js`);
-const webpack = require(`webpack`);
+
 module.exports = merge(common, {
     mode: `development`,
     devtool: `inline-source-map`, // -- disabled due to bug
@@ -25,7 +27,7 @@ module.exports = merge(common, {
         minimize: false
     },
     plugins: [
-        new webpack.DefinePlugin({
+        new Webpack.DefinePlugin({
             TORN_GAMESERVER_URL: `"localhost:7300"`,
             TORN_API_URL: `"http://localhost:8080"`
         })

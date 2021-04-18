@@ -15,14 +15,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const path = require(`path`);
-const webpack = require(`webpack`);
-
 const Git = require(`git-revision-webpack-plugin`);
+const Webpack = require(`webpack`);
 
-const gitRevisionPlugin = new Git({
-    lightweightTags: true
-});
+const gitRevisionPlugin = new Git({ lightweightTags: true });
+const path = require(`path`);
 
 module.exports = {
     entry: [path.resolve(__dirname, `../client_src/index.js`)],
@@ -77,7 +74,7 @@ module.exports = {
     },
 
     plugins: [
-	    new webpack.DefinePlugin({
+	    new Webpack.DefinePlugin({
             VERSION: JSON.stringify(gitRevisionPlugin.version()),
             COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
             BRANCH: JSON.stringify(gitRevisionPlugin.branch())
