@@ -1,4 +1,5 @@
-<h1 align="center">Torn.Space</h1>
+<img src="https://torn.space/img/harrlogo.png">
+
 <h3 align="center">A somewhat popular online space MMO.</h3>
 <br>
 <p align="center">
