@@ -20,7 +20,6 @@ import pymongo
 from pymongo import MongoClient
 from math import floor
 import datetime
-from decimal import Decimal
 
 MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn"
 PATH = "../client/leaderboard/index.html"
@@ -148,12 +147,10 @@ def updateLB(conn_str, path):
                 Leaderboard</font></center></div></h1><font color="#0099ff"><center><nobr><table>{teamFile}<tr><td>---</td></tr>{playerFile}\
                 </table></nobr><br/>Last updated: {time.strftime("%m/%d/%y %H:%M")} {time.astimezone().tzinfo.tzname(None)}"</center></font></body></html>'
     # Write out
-    lb = open(path, "w")
-    lb.write(newFile)
-    lb.close()
+    with open(path, "w") as lb:
+        lb.write(newFile)
 
     print("Updated leaderboard successfully!")
-    exit(0)
 
 
 __init__()
