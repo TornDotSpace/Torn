@@ -6,7 +6,7 @@ echo Building client
 npm install && npm run dev&
 echo Starting Account Server
 python3 ./account/account_server.py&
-npm install
+npm ci
 npm run dev
 cp client/index.html.template client/index.html
 echo
