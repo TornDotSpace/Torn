@@ -19,8 +19,7 @@
     "**/*.{js,jsx,ts,tsx}": "eslint --fix"
   },
   "pre-commit": [
-    "lint-staged",
-    "dev"
+    "lint-staged"
   ],
   "keywords": [
     "react",
