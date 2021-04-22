@@ -1,14 +1,14 @@
-#!/bin/bash
+#!/usr/env/bin sh
 echo Starting mongod with journaling disabled on port 27017&
 mkdir db
 mongod --port 27017 --dbpath ./db --nojournal --bind_ip localhost&
 echo Building client
 npm install && npm run dev&
 echo Starting Account Server
-# For Windows, add python3 before the ./account/account/account_server.py . For Linux, remove it.
 python3 ./account/account_server.py&
 npm install
 npm run dev
+cp client/index.html.template client/index.html
 echo
 echo
 echo

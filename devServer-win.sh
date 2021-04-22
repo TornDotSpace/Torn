@@ -25,6 +25,8 @@ node web.js 7301 &
 
 echo Done. Go to http://localhost:7301 to access the dev server!
 
+copy client/index.html.template client/index.html
+
 
 echo Press any key to kill all instances...
 read -n1 -r -p "Press any key to continue..." key

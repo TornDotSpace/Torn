@@ -22,6 +22,8 @@ node /opt/Torn/app.js 7300 dev &
 echo Starting webfront on port 7301...
 node /opt/Torn/web.js 7301 &
 
+cp /opt/Torn/client/index.html.template /opt/Torn/client/index.html
+
 echo Done. Go to http://localhost:7301 to access the dev server!
 
 echo Press any key to kill all instances...

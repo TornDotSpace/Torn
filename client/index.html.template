@@ -36,6 +36,6 @@
 		<canvas id="ctx"></canvas>
 		<div id="a"></div>
 
-		<script src="client.js?v=17"></script>
+		<script src="client.js?v={GIT_HASH}"></script>
 	</body>
 </html>
