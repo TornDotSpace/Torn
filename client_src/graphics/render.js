@@ -33,13 +33,14 @@ global.render = function () {
         return;
     }
     if (docked) {
+        frames++;
         autopilot = false;
         updateNotes();
         rInBase();
     }
     if (docked || (playersInfo == 0 && !(disguise > 0))) return;
     if (ops > 0 || clientLag >= 35) {
-        rTexts(clientLag);
+        rLagStats(clientLag, 0);
         clientLag = 34;
         setTimeout(render, 5);
         return;
@@ -114,12 +115,12 @@ global.render = function () {
 
     let time8 = -performance.now();
     time7 -= time8;
-    paste3DMap(8, 8);// Performance unknown
+    if (!guest) paste3DMap(8, 8);// Probably fast cause of subcanvasing
 
     let time9 = -performance.now();
     time8 -= time9;
     rRadar();// Tolerable lag
-    rCargo();
+    if (!guest) rCargo();
 
     let timeA = -performance.now();
     time9 -= timeA;
@@ -142,7 +143,7 @@ global.render = function () {
     timeA += performance.now();
     const arr = [time0, time1, time2, time3, time4, time5, time6, time7, time8, time9, timeA];
     lagMath(arr);
-    rTexts(clientLag);
+    rLagStats(clientLag, arr);
     ops--;
 };
 
@@ -581,54 +582,51 @@ global.drawStar = function (ox, oy, spikes, outerRadius, innerRadius) {
     ctx.closePath();
     ctx.fill();
 };
-global.rTexts = function (lag, arr) {
+global.rLagStats = function (lag, arr) {
     ctx.font = `14px ShareTech`;
     ctx.textAlign = `right`;
     ctx.fillStyle = `yellow`;
-    const lagNames = [`Background`, `Stars`, `Planets/Bases`, `Asteroids/packages`, `Players/trails`, `Weapons`, `Gui`, `Chat`, `Map`, `Radar`, `Gui2`];
-    const info = {};
+
+    let lagWarn = {};
     const lbShift = guest ? 8 : 266;
+
+    lagWarn[0] = lagWarn[1] = ``;
+    if (lag > 50) {
+        lagWarn[0] = translate(`You appear to be lagging due to an old system or browser.`);
+        lagWarn[1] = translate(`We recommend playing on a newer system if available.`);
+    } else if (nLag > 100) {
+        lagWarn[0] = translate(`You appear to be lagging due to a slow connection.`);
+        lagWarn[1] = ``;
+    } else if (sLag > 50) {
+        lagWarn[0] = translate(`Our servers are lagging due to heavy traffic at the moment.`);
+        lagWarn[1] = translate(`We apologize for the inconvenience.`);
+    }
+
+    for (let i = 0; i < 2; i++) {
+        write(ctx, lagWarn[i], w - lbShift, 16 + i * 16);
+    }
+
+    if (!dev || arr === 0) {
+        ctx.textAlign = `left`;
+        return;
+    }
+
+    const lagNames = [`Background`, `Stars`, `Planets/Bases`, `Asteroids/packages`, `Players/trails`, `Weapons`, `Gui`, `Chat`, `Map`, `Radar`, `Gui2`];
+    let info = {};
     meanNLag *= nLagCt;
     meanNLag += nLag;
     nLagCt++;
     meanNLag /= (nLagCt + 0.0);
-
-    info[0] = translate(`Experience: #`, [numToLS(Math.round(experience))]);
-    info[1] = translate(`Money: #`, [numToLS(Math.floor(money))]);
-    info[2] = translate(`Kills: #`, [numToLS(kills)]);
-    info[3] = translate(`Rank: #`, [rank]);
-    info[4] = translate(`Sector: #`, [getSectorName(sx, sy)]);
-
-    info[5] = ``;
-    info[6] = ``;
-    info[7] = ``;
-
-    if (dev) {
     // We won't translate these things, really no point.
-        info[8] = `Client Lag: ${Number((lag / 40.0).toPrecision(3))} ticks`;
-        info[9] = `Server Lag: ${Number((sLag / 40.0).toPrecision(3))} ticks`;
-        info[10] = `2-Way Latency: ${nLag} ms ` + `(Mean: ${Number(meanNLag).toPrecision(3)} ms` + `)`;
-        info[11] = `FPS: ${fps}`;
-        info[12] = `UPS: ${ups}`;
-        if (lag > 50) {
-            info[5] = translate(`You appear to be lagging due to an old system or browser.`);
-            info[6] = translate(`We recommend playing on a newer system if available.`);
-            info[7] = ``;
-        } else if (nLag > 100) {
-            info[5] = translate(`You appear to be lagging due to a slow connection.`);
-            info[6] = ``;
-            info[7] = ``;
-        } else if (sLag > 50) {
-            info[5] = translate(`Our servers are lagging due to heavy traffic at the moment.`);
-            info[6] = translate(`We apologize for the inconvenience.`);
-            info[7] = ``;
-        }
-    }
+    info[2] = `Client Lag: ${Number((lag / 40.0).toPrecision(3))} ticks`;
+    info[3] = `Server Lag: ${Number((sLag / 40.0).toPrecision(3))} ticks`;
+    info[4] = `2-Way Latency: ${nLag} ms ` + `(Mean: ${Number(meanNLag).toPrecision(3)} ms` + `)`;
+    info[5] = `FPS: ${fps}`;
+    info[6] = `UPS: ${ups}`;
 
-    const il = 13;
-
-    for (let i = 0; i < ((dev && lag != -1) ? il + lagArr.length : 8); i++) {
-        write(ctx, i < il ? info[i] : (lagNames[i - il] + translate(`Gui2`) + parseFloat(Math.round(lagArr[i - il] * 100) / 100).toFixed(2)), w - lbShift, 16 + i * 16);
+    const il = 7; // 1 + max index of info
+    for (let i = 2; i < il + lagNames.length; i++) {
+        write(ctx, i < il ? info[i] : (`${lagNames[i - il]}: ${parseFloat(Math.round(arr[i - il] * 100) / 100).toFixed(2)}`), w - lbShift, 16 + i * 16);
     }
     ctx.textAlign = `left`;
 };
@@ -1533,8 +1531,7 @@ global.rSelfCloaked = function () {
         currAlert = translate(`Low Health!`);
     }
 
-    if (phealth / pmaxHealth >= 1)// draw hp bar
-    {
+    if (phealth / pmaxHealth >= 1) { // draw hp bar
         return;
     }
     ctx.lineWidth = 4;

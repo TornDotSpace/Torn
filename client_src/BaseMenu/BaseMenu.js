@@ -55,7 +55,6 @@ global.rBaseGui = function () {
     baseMenuCtx.lineWidth = 2;
     baseMenuCtx.textAlign = `right`;
     baseMenuCtx.fillStyle = `yellow`;
-    rTexts(-1);
 
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.lineWidth = 2;
@@ -71,16 +70,14 @@ global.rBaseGui = function () {
     infoBox(baseMenuCtx, 0, 44, 768, 512 - 44, `black`, `white`);
 
     baseMenuCtx.textAlign = `center`;
-    for (let i = 0; i < 5; i++) // Fill Tabs In
-    {
+    for (let i = 0; i < 5; i++) { // Fill Tabs In
         infoBox(baseMenuCtx, i * 768 / 5 + 8, 4, 768 / 5 - 8, 32, (tab == i) ? `darkgray` : `black`, `white`);
     }
 
     baseMenuCtx.globalAlpha = 1;
 
     baseMenuCtx.fillStyle = `white`;
-    for (let i = 0; i < 5; i++) // Write tab names
-    {
+    for (let i = 0; i < 5; i++) { // Write tab names
         write(baseMenuCtx, tabs[i], (i * 768 / 5 + 768 / 10), 23);
     }
 
