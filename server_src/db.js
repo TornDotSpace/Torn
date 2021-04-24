@@ -50,7 +50,7 @@ global.connectToDB = function () {
 global.handlePlayerDeath = async function (player) {
     if (player.guest) return;
 
-    const record = await PLAYER_DATABASE.findOne({ _id: player._id });
+    const record = await PLAYER_DATABASE.findOne({ _id: player.name });
 
     if (record == null) return;
 
@@ -68,7 +68,7 @@ global.handlePlayerDeath = async function (player) {
 };
 
 global.loadPlayerData = async function (player) {
-    const record = await PLAYER_DATABASE.findOne({ _id: player._id });
+    const record = await PLAYER_DATABASE.findOne({ _id: player.name });
 
     for (const key in record) {
         if (key === `password` || key === `email`) continue; // don't load passwords into memory
@@ -130,14 +130,14 @@ global.loadTurretData = async function () {
 };
 
 global.savePlayerEmail = function (player, email) {
-    PLAYER_DATABASE.updateOne({ _id: player._id }, { $set: { email: email } }, { upsert: true });
+    PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: { email: email } }, { upsert: true });
 };
 global.savePlayerData = function (player) {
     const record = {
         color: player.color,
         ship: player.ship,
         weapons: player.weapons,
-        name: player.name,
+        tag: player.tag,
         trail: player.trail,
         money: player.money,
         kills: player.kills,
@@ -170,5 +170,5 @@ global.savePlayerData = function (player) {
         sx: player.sx,
         sy: player.sy
     };
-    PLAYER_DATABASE.updateOne({ _id: player._id }, { $set: record }, { upsert: true });
+    PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: record }, { upsert: true });
 };

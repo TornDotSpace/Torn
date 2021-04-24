@@ -25,7 +25,7 @@ global.sendWeapons = function (player) { // tells a client what weapons that pla
 
 global.modmute = function (msg) {
     if (msg.split(` `).length != 3) {
-        return `Bad syntax! The message should look like '/modmute playernamewithouttag minutes'`;
+        return `Bad syntax! The message should look like '/modmute playername minutes'`;
     } // split looks like {"/mute", "name", "minutesToMute"}
     const name = msg.split(` `)[1];
     const player = getPlayerFromName(name);
@@ -44,7 +44,7 @@ global.modmute = function (msg) {
 
 global.ipmute = function (msg) {
     if (msg.split(` `).length != 3) {
-        return `Bad syntax! The message should look like '/ipmute playernamewithouttag minutes'`;
+        return `Bad syntax! The message should look like '/ipmute playername minutes'`;
     } // split looks like {"/mute", "name", "minutesToMute"}
     const name = msg.split(` `)[1];
     const player = getPlayerFromName(name);

@@ -65,10 +65,10 @@ let chati = 0;
 
 socket.on(`chat`, (data) => {
   // Optimization: Don't do expensive string manipulation if nobody is in the mute list.
-  if (clientmutes.size === 0 || !data.msg.includes(`:`)) return onReceiveChat(data);
+  let me = data.msg.startsWith(`~`);
+  if (clientmutes.size === 0 || (!data.msg.includes(`:`) && !me)) return onReceiveChat(data);
 
-  const header = data.msg.split(":")[0];
-
+  let header = data.msg.split(me?" ":":")[0];
   let chatName = header.split("`")[2]; // normal chat
   if (header.includes("\[PM\] ")) chatName = header.split("\[PM\]")[1]; // pms
   chatName = chatName.replace(/[^0-9a-zA-Z]/g, "");
@@ -77,7 +77,7 @@ socket.on(`chat`, (data) => {
     chatName = chatName.trim();
     // If they're muted, don't chat!
     for (const mut in clientmutes) {
-      if (mut.localeCompare(chatName, undefined, {sensitivity: "accent"}) == 0) return;
+      if (mut === chatName) return;
     }
   }
 
