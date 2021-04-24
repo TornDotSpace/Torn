@@ -198,10 +198,8 @@ global.r3DMap = function () {
         qdsy = quest.dsy;
         qsx = quest.sx;
         qsy = quest.sy;
-        console.log(`aaaaa`);
     } else if (seller >= 300 && seller <= 309) {
         const hoverquest = quests[seller - 300];
-        console.log(hoverquest);
         qdsx = hoverquest.dsx;
         qdsy = hoverquest.dsy;
         qsx = hoverquest.sx;

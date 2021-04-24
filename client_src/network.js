@@ -75,7 +75,6 @@ socket.on(`posUp`, (data) => {
     packsInfo = data.packs;
     playersInfo = data.players;
     basesInfo = data.bases;
-    console.log(basesInfo);
     astsInfo = data.asteroids;
     beamsInfo = data.beams;
     blastsInfo = data.blasts;
