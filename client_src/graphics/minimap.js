@@ -159,15 +159,14 @@ global.center3D = function (xxp, yyp, zzp) {
     }
 };
 global.r3DMap = function () {
-    if (sectorPoints == 0) return;
+    if (sectorPoints == 0 || guest) return;
 
     minimapcanvas.width = minimapcanvas.width;
-    minictx.globalAlpha = 0.4;
-    minictx.strokeStyle = `white`;
-    minictx.fillStyle = `black`;
     minictx.lineWidth = 2;
-    minictx.fillRect(0, 0, 208, 208); // Draw map
-    minictx.strokeRect(0, 0, 208, 208); // Draw map
+
+    minictx.globalAlpha = guiOpacity;
+    minictx.fillStyle = guiColor;
+    roundRect(minictx, 0, 0, minimapcanvas.width, minimapcanvas.height, 16, true, false);
 
     if (hmap == 0 || typeof hmap[sx] === `undefined`) return;
 
@@ -387,7 +386,7 @@ global.r3DMap = function () {
     minictx.globalAlpha = 1;
 };
 global.paste3DMap = function (xp, yp) {
-    if (sectorPoints == 0) return;
+    if (sectorPoints == 0 || guest) return;
     /* let d = new Date();
   let t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
   t/=1000;

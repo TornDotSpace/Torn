@@ -95,19 +95,20 @@ export function rChat() {
   chatCanvas.width = chatCanvas.width;
   chatCTX.font = "14px ShareTech";
   chatCTX.save();
-  chatCTX.globalAlpha = .5;
-  chatCTX.fillStyle = "black";
-  chatCTX.strokeStyle = "#222222";
-  roundRect(chatCTX, -34, chatCanvas.height - 168, 562, 224, 32, true, true);
+  chatCTX.globalAlpha = guiOpacity;
+  chatCTX.fillStyle = guiColor;
+  roundRect(chatCTX, -34, chatCanvas.height - 168, 562, 224, 32, true, false);
   chatCTX.fillStyle = "white";
   roundRect(chatCTX, 0, chatCanvas.height - 64 - 154 * (chatScroll / chatLength), 6, 24, 2, true, false);
 
   chatCTX.globalAlpha = 1;
   chatCTX.textAlign = "left";
 
-  for (let i = 0; i < 3; i++) {
-    chatCTX.fillStyle = ((seller != 800 + i) ? "violet" : "yellow");
-    chatCTX.fillText((i==whichChatMenu?">":" ")+chatRooms[i], 532, chatCanvas.height - 48+16*i);
+  if(!guest){
+    for (let i = 0; i < 3; i++) {
+      chatCTX.fillStyle = ((seller != 800 + i) ? "violet" : "yellow");
+      chatCTX.fillText((i==whichChatMenu?">":" ")+chatRooms[i], 532, chatCanvas.height - 48+16*i);
+    }
   }
   chatCTX.restore();
 

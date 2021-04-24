@@ -115,16 +115,16 @@ global.render = function () {
 
     let time8 = -performance.now();
     time7 -= time8;
-    if (!guest) paste3DMap(8, 8);// Probably fast cause of subcanvasing
+    paste3DMap(8, 8);// Probably fast cause of subcanvasing
 
     let time9 = -performance.now();
     time8 -= time9;
     rRadar();// Tolerable lag
-    if (!guest) rCargo();
+    rCargo();
 
     let timeA = -performance.now();
     time9 -= timeA;
-    if (lb != 0) rLB();
+    pasteLeaderboard();
     rExpBar();// Maybe a little slow
     // Everything past here is fast
     rVolumeBar();
@@ -647,48 +647,8 @@ global.renderBG = function (more) {
 
     ctx.globalAlpha = 1;
 };
-global.rLB = function () {
-    if (guest) return;
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-    infoBox(ctx, w - 260, -2, 262, (lb.length + 4) * 16 + 2, `black`, `white`);
-    ctx.fillStyle = pc;
-    roundRect(ctx, w - 221, Math.min(youi, 16) * 16 + 52, myName.length * 8 + 7, 16, 7, true, false);
-    ctx.restore();
-
-    ctx.fillStyle = `yellow`;
-    ctx.font = `24px ShareTech`;
-    ctx.textAlign = `center`;
-    write(ctx, translate(`Leaderboard`), w - 128, 28);
-    ctx.font = `14px ShareTech`;
-    ctx.fillStyle = `yellow`;
-    write(ctx, translate(`Name`), w - 208, 48);
-    ctx.textAlign = `right`;
-    write(ctx, translate(`Exp`), w - 48 - 16, 48);
-    write(ctx, translate(`Rank`), w - 16, 48);
-    for (let i = 0; i < lb.length; i++) {
-        const place = 1 + ((i != 20) ? i : parseInt(lb[i].id));
-        ctx.textAlign = `left`;
-        ctx.fillStyle = brighten(lb[i].color);
-        if (lb[i].name.includes(` `)) {
-            ctx.font = `10px ShareTech`;
-            write(ctx, lb[i].name.charAt(1), w - 224, (i + 4) * 16);
-            ctx.font = `14px ShareTech`;
-            const d = new Date();
-            const t = d.getTime() / (35 * 16);
-            if (lb[i].name.includes(`V`) || lb[i].name.includes(`B`)) {
-                ctx.fillStyle = `rgba(${Math.floor(16 * Math.sqrt(Math.sin(t) * 128 + 128))}, ${Math.floor(16 * Math.sqrt(Math.sin(t + Math.PI * 2 / 3) * 128 + 128))}, ${Math.floor(16 * Math.sqrt(Math.sin(t + Math.PI * 4 / 3) * 128 + 128))}, 1)`;
-            }
-            write(ctx, lb[i].name.substring(4), w - 216, (i + 4) * 16);
-        } else write(ctx, lb[i].name, w - 216, (i + 4) * 16);
-        ctx.fillStyle = `yellow`;
-        write(ctx, place + translate(`.`), w - 248, (i + 4) * 16);
-        ctx.textAlign = `right`;
-        write(ctx, abbrevInt(lb[i].exp), w - 48 - 16, (i + 4) * 16);
-        write(ctx, lb[i].rank, w - 16, (i + 4) * 16);
-    }
-};
 global.rCargo = function () {
+    if (guest) return;
     if (quest.type === `Mining`) {
         ctx.fillStyle = `#d44`;
         let metalWeHave = iron;
@@ -701,16 +661,15 @@ global.rCargo = function () {
         }
         write(ctx, `${metalWeHave}/${quest.amt} ${quest.metal}`, 248, 16);
     }
+
+    ctx.globalAlpha = guiOpacity;
     if (seller == 900) {
+        ctx.globalAlpha = guiOpacity * 2;
+        if (ctx.globalAlpha > 1)
+            ctx.globalAlpha = 1;
         ctx.fillStyle = `white`;
         write(ctx, `JETTISON CARGO`, 248, 32);
     }
-
-    ctx.globalAlpha = 0.4;
-
-    ctx.strokeStyle = `white`;
-    ctx.lineWidth = seller == 900 ? 2 : 1;
-    ctx.strokeRect(224, 8, 16, 208);
 
     let myCapacity = ships[ship].capacity * c2;
     if (ship == 17) myCapacity = iron + platinum + silver + copper; // because it has infinite cargo
@@ -736,7 +695,7 @@ global.rCargo = function () {
     ctx.fillStyle = `#d44`;
     ctx.fillRect(224, runningY, 16, ironBarHeight);
 
-    ctx.fillStyle = `black`;
+    ctx.fillStyle = guiColor;
     ctx.fillRect(224, 8, 16, runningY - 8);
 
     ctx.globalAlpha = 1;

@@ -67,6 +67,8 @@ global.ctx = canvas.getContext(`2d`, { alpha: false });
 global.ReactRoot = ReactRootJS;
 const { Howl, Howler } = require(`howler`); // audio
 
+global.guiColor = `#333333`;
+global.guiOpacity = 0.5;
 global.teamColors = [`red`, `blue`, `green`];
 global.sectorWidth = 14336;
 global.mx = 0; global.my = 0; global.mb = 0;
@@ -164,6 +166,7 @@ require(`./network.js`);
 require(`./graphics/render.js`);
 require(`./graphics/ArrowGraphics.js`);
 require(`./graphics/minimap.js`);
+require(`./graphics/leaderboard.js`);
 require(`./BaseMenu/BaseMenu.js`);
 require(`./input.js`);
 require(`./chat.ts`);

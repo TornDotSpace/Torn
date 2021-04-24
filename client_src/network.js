@@ -639,6 +639,7 @@ socket.on(`heatmap`, (data) => {
     if (data.youi > 15) {
         lb[16] = { id: data.youi, name: myName, exp: experience, color: pc, rank: rank };
     }
+    renderLeaderboard();
     r3DMap();
 });
 function constructMyGuild (data) {
