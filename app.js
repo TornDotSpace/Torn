@@ -400,7 +400,7 @@ function spawnBases () {
         for (let i = 0; i < thisMap.length; i += 2) {
             // make a base at these coords
             const randBase = Math.random();
-            const thisBase = new Base(randBase, global.LIVEBASE, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2);
+            const thisBase = new Base(randBase, LIVEBASE, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2);
             bases[thisMap[i + 1]][thisMap[i]] = thisBase;
         }
     }
@@ -446,16 +446,6 @@ function update () {
     guildPlayers = {};
     for (const g in guildList) {
         guildPlayers[g] = {};
-    }
-
-    for (let i = 0; i < mapSz; i++) {
-        for (let j = 0; j < mapSz; j++) {
-            if (bases[i][j] == 0 && Math.random() < 0.000005) {
-                const r = Math.random();
-                const b = new Base(r, false, j, i, j < 3 ? `red` : (j < 6 ? `blue` : `green`), sectorWidth * Math.random(), sectorWidth * Math.random(), true);
-                bases[i][j] = b;
-            }
-        }
     }
 
     for (const i in dockers) {
