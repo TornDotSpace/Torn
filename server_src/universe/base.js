@@ -14,6 +14,7 @@ global.SENTRY = 3;
 
 module.exports = class Base {
     constructor (i, type, sx, syy, col, x, y) {
+        console.log(`Base constructed with type ${type}`);
         this.type = `Base`,
         this.kills = 0,
         this.experience = 0,

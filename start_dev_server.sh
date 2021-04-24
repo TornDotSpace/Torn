@@ -1,4 +1,4 @@
-#!/usr/env/bin sh
+!/usr/env/bin sh
 echo Starting mongod with journaling disabled on port 27017&
 mkdir db
 mongod --port 27017 --dbpath ./db --nojournal --bind_ip localhost&

@@ -400,7 +400,7 @@ function spawnBases () {
         for (let i = 0; i < thisMap.length; i += 2) {
             // make a base at these coords
             const randBase = Math.random();
-            const thisBase = new Base(randBase, true, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2, false);
+            const thisBase = new Base(randBase, global.LIVEBASE, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2);
             bases[thisMap[i + 1]][thisMap[i]] = thisBase;
         }
     }

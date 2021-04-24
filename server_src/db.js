@@ -120,7 +120,7 @@ global.loadTurretData = async function () {
     const items = await TURRET_DATABASE.find();
 
     items.forEach((i) => {
-        const b = new Base(0, 0, 0, 0, 0, 0);
+        const b = new Base(0, 0, 0, 0, 0, 0, 0);
         for (const x in i) {
             b[x] = i[x];
         }
