@@ -1,0 +1,14 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: webpack-cli
+    versions:
+    - 4.6.0
+  - dependency-name: react
+    versions:
+    - 17.0.2
