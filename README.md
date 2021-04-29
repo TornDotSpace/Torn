@@ -12,7 +12,7 @@
 * Node.JS v14+
 * NPM v7
 * MongoDB
-* Python 3.x (with additional packages: aiohttp, aiosmtplib, aiohttp_cors, asyncio, discord_webhook, motor, pymongo, and bcrypt)
+* Python 3.x (`pip install -r requirements.txt`)
 
 ## Local Development Setup
 * Navigate to the directory you wish to put the repository in.
