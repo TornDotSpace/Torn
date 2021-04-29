@@ -1,8 +1,8 @@
-aiohttp
-aiosmtplib
-aiohttp_cors
-asyncio
-discord_webhook
-motor
-pymongo
+aiohttp==3.7.4.post0
+aiosmtplib==1.1.5
+aiohttp_cors==0.7.0
+bcrypt==3.2.0
+discord_webhook==0.13.0
+motor==2.4.0
+pymongo==3.11.3
 
