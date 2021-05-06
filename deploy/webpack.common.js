@@ -15,10 +15,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const Git = require(`git-revision-webpack-plugin`);
+const { GitRevisionPlugin } = require(`git-revision-webpack-plugin`);
 const Webpack = require(`webpack`);
 
-const gitRevisionPlugin = new Git({ lightweightTags: true });
+const gitRevisionPlugin = new GitRevisionPlugin({ lightweightTags: true });
 const path = require(`path`);
 
 module.exports = {

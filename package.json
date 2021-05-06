@@ -46,7 +46,7 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-react": "^7.23.2",
-    "git-revision-webpack-plugin": "^4.0.1",
+    "git-revision-webpack-plugin": "^5.0.0",
     "lint-staged": "^10.5.4",
     "node-forge": "^0.10.0",
     "pre-commit": "^1.2.2",
