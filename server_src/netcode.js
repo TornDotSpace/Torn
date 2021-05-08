@@ -345,11 +345,16 @@ module.exports = function initNetcode() {
       setTimeout(function() {
         // Cleanup
         // Kill socket
-        socket.disconnect();
-        delete dockers[player.id];
-        delete deads[player.id];
-        delete sockets[socket.id];
-        delete players[player.sy][player.sx][player.id];
+        try {
+            socket.disconnect();
+            delete dockers[player.id];
+            delete deads[player.id];
+            delete sockets[socket.id];
+            delete players[player.sy][player.sx][player.id];
+        } catch(e)
+        {
+            console.error(log);
+        }
       }, 6000);
     });
 
