@@ -1,5 +1,5 @@
 aiohttp==3.7.4.post0
-aiosmtplib==1.1.5
+aiosmtplib==1.1.6
 aiohttp_cors==0.7.0
 bcrypt==3.2.0
 discord_webhook==0.13.0
