@@ -32,8 +32,8 @@ global.send_api = async (endpoint, data) => await fetch(API_URL + endpoint, {
 
 global.socket = io(GAMESERVER_URL,
     {
-        autoConnect: false,
-        parser: msgpack
+        autoConnect: false
+        // parser: msgpack
     });
 
 global.connect = function () {

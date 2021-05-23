@@ -109,7 +109,7 @@ module.exports = initNetcode = () => {
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js
     global.io = socketIO(server, {
         serveClient: false,
-        parser: msgpack,
+        // parser: msgpack,
         cors: {
             origin: `*`
         }
