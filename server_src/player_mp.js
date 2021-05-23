@@ -156,7 +156,7 @@ class PlayerMP extends Player {
             this.tentativePassword = undefined;
             return;
         }
-        const response = await send_rpc(`/reset/`, `${this.name}%${pass}`);
+        const response = await send_rpc(`/reset/`, `${this._id}%${pass}`);
 
         if (!response.ok) {
             this.emit(`chat`, { msg: `ERROR` });

@@ -225,7 +225,7 @@ const getPlayer = (i) => // given a socket id, find the corresponding player obj
 global.getPlayerFromName = function (name) { // given a socket id, find the corresponding player object.
     for (const p in sockets) {
         const player = sockets[p].player;
-        if (typeof player !== `undefined` && player.name === name) return player;
+        if (typeof player !== `undefined` && player.nameWithoutTag() === name) return player;
     }
     return -1;
 };

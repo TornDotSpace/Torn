@@ -26,10 +26,10 @@ const Asteroid = require(`./universe/asteroid.js`);
 
 class Player {
     constructor (id) {
-        this.name = ``,
+        this._id = ``,
         this.type = `Player`,
 
-        this.tag = ``,
+        this.name = `ERR0`,
         this.id = id, // unique identifier
         this.trail = 0,
         this.color = id > 0.5 ? `red` : `blue`,
@@ -1091,6 +1091,10 @@ class Player {
     }
 
     spoils (type, amt) { /* gives you something. Called wenever you earn money / exp / w/e */ }
+    nameWithoutTag () {
+        if (this.name.includes(` `)) return this.name.split(` `)[1];
+        return this.name;
+    }
 
     nameWithColor () { // returns something like "~`green~`[O] 2swap~`yellow~`"
         return `~\`${this.color}~\`${this.name}~\`yellow~\``;
