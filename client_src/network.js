@@ -234,8 +234,8 @@ socket.on(`asteroid_create`, (data) => {
     astsInfo[data.id] = data;
 });
 
-socket.on(`pong`, (latency) => {
-    nLag = latency;
+socket.on(`torn-ping`, (tstamp) => {
+    nLag = 2 * (Date.now() - tstamp); // round-trip time
 });
 
 socket.on(`asteroid_delete`, (data) => {

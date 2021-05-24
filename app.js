@@ -1060,6 +1060,8 @@ function idleSocketCheck () {
         }
     }
 
+    // Let clients refresh their lag
+    sendAll(Date.now());
     setTimeout(idleSocketCheck, timeout);
 }
 
