@@ -233,7 +233,9 @@ preProcessChat();
 
 
 export function chatMenuButtonClick(buttonID) {
-  socket.emit("toggleGlobal", {gc: buttonID-800});
+  const newChat = buttonID - 800;
+  socket.emit("toggleGlobal", {gc: newChat});
   preProcessChat();
   rChat();
+  whichChatMenu = newChat;
 };
