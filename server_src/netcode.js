@@ -353,7 +353,7 @@ module.exports = function initNetcode() {
             delete players[player.sy][player.sx][player.id];
         } catch(e)
         {
-            console.error(e);
+            console.error(log);
         }
       }, 6000);
     });
