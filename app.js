@@ -1061,7 +1061,7 @@ function idleSocketCheck () {
     }
 
     // Let clients refresh their lag
-    sendAll(Date.now());
+    sendAll(`torn-ping`, Date.now());
     setTimeout(idleSocketCheck, timeout);
 }
 
