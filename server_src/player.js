@@ -838,11 +838,6 @@ class Player {
   checkQuestStatus(touchingPlanet) {}
 
   shootBullet(currWep) {
-
-    // grav bomb force disable
-    // TODO: implement better system for this. Right now the "enabled" attribute is client-side
-    if (currWep == 28) return;
-
     if (this.bulletQueue > 0) { // Submachinegun
       if (this.ammos[this.equipped] <= 0) return;
       this.bulletQueue--;
