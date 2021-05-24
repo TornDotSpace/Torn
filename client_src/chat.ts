@@ -54,10 +54,10 @@ chatCanvas.height = 350;
 
 const chatCTX: CanvasRenderingContext2D = chatCanvas.getContext(`2d`, { alpha: true });
 
-const chatLength = 40;
+export const chatLength = 40;
 const serverChatLength = 5;
 
-let chatScroll = 0;
+export let chatScroll = 0;
 let whichChatMenu = 0;
 
 let preChatArr = {};

@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { chatMenuButtonClick, rChat } from "./chat.ts";
+import { chatMenuButtonClick, rChat, chatScroll, chatLength } from "./chat.ts";
 // input
 document.onkeydown = function (event) {
     // Grab enter on homepage
@@ -261,6 +261,8 @@ canvas.addEventListener(`wheel`, () => {
 
     // Scrolling up the chat menu
     if (mx < 512 + 32 && my > h - 216) {
+        // FIXME: See below
+        // eslint-disable-next-line no-import-assign
         chatScroll = Math.max(0, Math.min(chatLength - 10, chatScroll + d));
         rChat();
         return;
