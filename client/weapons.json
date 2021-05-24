@@ -375,7 +375,7 @@
 			"level":10,
 			"type":"Misc",
 			"bot":false,
-			"enabled":false
+			"enabled":true
 		},
 		"29":{
 			"name":"Warp Drive",
