@@ -71,7 +71,11 @@ global.rBaseGui = function () {
     roundRect(baseMenuCtx, 0, 44, 768, 512 - 44, 32, true, false);
 
     baseMenuCtx.textAlign = `center`;
+    const x = mx - baseMenuX;
+    const y = my - baseMenuY;
     for (let i = 0; i < 5; i++) { // Fill Tabs In
+    	if (tab == i || (x > 0 && x < 128 * 6 && y > 0 && y < 40 && Math.floor(x / (768 / 5)) == i)) baseMenuCtx.globalAlpha = `#666666`;
+    	else baseMenuCtx.globalAlpha = guiOpacity;
         roundRect(baseMenuCtx, i * 768 / 5 + 8, 4, 768 / 5 - 8, 32, 16, true, false);
     }
 
