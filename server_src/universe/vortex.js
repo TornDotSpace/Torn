@@ -79,9 +79,8 @@ module.exports = class Vortex {
             p.y -= guestMult * 0.40 * this.size / dist * Math.sin(a);
 
             if (dist < 15 && !this.isWorm) { // collision with black hole
-                p.die(this); // i think it's important that this happens before we give them the achievements
                 if (this.owner != 0) { // if I'm a gravity bomb
-	  this.size += p.ship; // Eating the ship will make the gravity bomb BH grow. The bigger the ship, the more it will grow.
+                    this.size += p.ship; // Eating the ship will make the gravity bomb BH grow. The bigger the ship, the more it will grow.
                 }
                 if (p.e) {
                     p.driftAchs[8] = true; // drift into a black hole
@@ -90,6 +89,7 @@ module.exports = class Vortex {
 
                 p.randmAchs[4] = true; // fall into a black hole
                 p.sendAchievementsMisc(true);
+                p.die(this);
             } else if (dist < 15 && this.isWorm) { // collision with wormhole
                 p.randmAchs[3] = true; // fall into a wormhole
                 p.sendAchievementsMisc(true);

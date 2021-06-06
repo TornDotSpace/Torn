@@ -174,7 +174,7 @@ global.rWeaponStore = function () {
     baseMenuCtx.textAlign = `right`;
     baseMenuCtx.fillStyle = `yellow`;
 
-    write(baseMenuCtx, translate(`Money: `) + numToLS(Math.floor(money)), 128 * 6 - 16, 64);
+    write(baseMenuCtx, translate(`Money: #`, [numToLS(Math.floor(money))]), 128 * 6 - 16, 64);
     baseMenuCtx.textAlign = `center`;
     baseMenuCtx.font = `24px ShareTech`;
     write(baseMenuCtx, translate(`Weapons`), 128 * 3, 68);

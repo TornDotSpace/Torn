@@ -47,7 +47,7 @@ global.connectToDB = function () {
     });
 };
 
-global.handlePlayerDeath = async function (player) {
+global.handlePlayerDeath = async function (player, inertia_drift, blackhole_death) {
     if (player.guest) return;
 
     const record = await PLAYER_DATABASE.findOne({ _id: player._id });
@@ -64,7 +64,10 @@ global.handlePlayerDeath = async function (player) {
 
     player.experience *= 1 - playerKillExpFraction;
     player.money *= 1 - playerKillMoneyFraction;
-    player.randmAchs[1] = true; // Death Achievement;
+    console.log(`${inertia_drift} ${blackhole_death}`);
+    player.randmAchs[1] = true; // Death Achievement
+    player.driftAchs[8] = inertia_drift; // inertia drift Achievement
+    player.randmAchs[4] = blackhole_death; // BH death Achievement
 };
 
 global.loadPlayerData = async function (player) {

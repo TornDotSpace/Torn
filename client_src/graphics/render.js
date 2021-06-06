@@ -866,10 +866,12 @@ global.rDead = function () {
     ctx.fillStyle = `yellow`;
     ctx.textAlign = `center`;
     ctx.font = `50px ShareTech`;
-    write(ctx, translate(`You Died!`), rx + 128 * 3, ry + 128);
+    const rx = w / 2;
+    const ry = h / 4;
+    write(ctx, translate(`You Died!`), rx, ry);
     ctx.font = `34px ShareTech`;
-    write(ctx, translate(`Lives Remaining: `) + lives, rx + 128 * 3, ry + 384);
-    if (lives > 0) write(ctx, translate(`Press E to respawn.`), rx + 128 * 3, ry + 512);
+    write(ctx, translate(`Lives Remaining: `) + lives, rx, ry + 256);
+    if (lives > 0) write(ctx, translate(`Press E to respawn.`), rx, ry + 384);
     ctx.textAlign = `left`;
     ctx.font = `14px ShareTech`;
 };
@@ -1319,7 +1321,9 @@ global.rAsteroids = function () {
             }
         }
     }
-    rAstPointer(nearA);
+    if (nearA !== 0) {
+        rAstPointer(nearA);
+    }
 };
 global.rPlanets = function () {
     if (planets == 0) return;
