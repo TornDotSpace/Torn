@@ -18,8 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { translate } from "../localizer.ts";
 
 global.rBuyShipWindow = function () {
-    baseMenuCtx.fillStyle = baseMenuCtx.strokeStyle = `white`;
-    roundRect(baseMenuCtx, 16, 256 - 16, 256, 256, 8, false, true);
+    baseMenuCtx.fillStyle = baseMenuCtx.strokeStyle = `black`;
+    baseMenuCtx.globalAlpha = 0.25;
+    roundRect(baseMenuCtx, 16, 256 - 16, 256, 256, 16, true, false);
+    baseMenuCtx.globalAlpha = 1;
 
     const d = new Date();
     const t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
