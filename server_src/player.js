@@ -918,7 +918,7 @@ class Player {
         if (!restricted) {
             if (this.weapons[this.equipped] == 7 || this.weapons[this.equipped] == 8 || this.weapons[this.equipped] == 9 || this.weapons[this.equipped] == 45) {
                 const b = bases[this.sy][this.sx];
-                if (b != 0 && ((b.color == this.color) == (this.weapons[this.equipped] == 45)) && !(this.weapons[this.equipped] == 45 && b.health > baseHealth * 0.9995) && b.baseType != DEADBASE && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
+                if (b != 0 && ((b.color == this.color) == (this.weapons[this.equipped] == 45)) && !(this.weapons[this.equipped] == 45 && b.health > b.maxHealth * 0.9995) && b.baseType != DEADBASE && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
             }
         }
 

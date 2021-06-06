@@ -687,7 +687,20 @@ module.exports = initNetcode = () => {
             // You need to have unlocked this quest type.
             if (quest == 0 || (quest.type === `Base` && player.rank < 7) || (quest.type === `Secret` && player.rank <= 14)) return;
 
-            if (((quest.dsx % 3 == 1 && quest.dsy == 8) || (quest.sx % 3 == 1 && quest.sy == 8)) && !player.randmAchs[2]) { // risky business
+            let hasBH = false;
+            if (typeof quest.dsyv === `number`) {
+                for (let bh in vorts[quest.dsyv][quest.dsxv]) {
+                    console.log(bh.isWorm);
+                    hasBH = hasBH || !bh.isWorm;
+                }
+            }
+            if (typeof quest.syv === `number`) {
+                for (let bh in vorts[quest.syv][quest.sxv]) {
+                    console.log(bh.isWorm);
+                    hasBH = hasBH || !bh.isWorm;
+                }
+            }
+            if (hasBH && !player.randmAchs[2]) { // risky business
                 player.randmAchs[2] = true;
                 player.sendAchievementsMisc(true);
             }
