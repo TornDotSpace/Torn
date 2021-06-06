@@ -21,9 +21,15 @@ global.getSectorName = (inx, iny) => `${String.fromCharCode(97 + inx).toUpperCas
 
 global.getQuestDescription = function (q) {
     if (q.type === `Mining`) return translate(`Bring # units of # to sector #.`, [numToLS(q.amt), q.metal, getSectorName(q.sx, q.sy)]);
-    if (q.type === `Base`) return translate(`Eliminate enemy base in sector #.`, [getSectorName(q.sx, q.sy)]);
+    if (q.type === `Base`) {
+        if (rank > 6) return translate(`Eliminate enemy base in sector #.`, [getSectorName(q.sx, q.sy)]);
+        else return translate(`Quest Locked!`);
+    }
     if (q.type === `Delivery`) return translate(`Obtain package from planet # and deliver it to planet #.`, [getSectorName(q.sx, q.sy), getSectorName(q.dsx, q.dsy)]);
-    if (q.type === `Secret`) return translate(`Proceed to sector # for further instructions.`, [getSectorName(q.sx, q.sy)]);// translate("Secret Mission.");
+    if (q.type === `Secret`) {
+        if (rank > 14) return translate(`Proceed to sector # for further instructions.`, [getSectorName(q.sx, q.sy)]);
+        else return translate(`Quest Locked!`);
+    }
     if (q.type === `Secret2`) return translate(`Eliminate all enemy players and turrets in # and visit planet #.`, [getSectorName(q.sx, q.sy), secret2PlanetName]);
     if (q.type === `Secret3`) return translate(`Deliver package to a permanent black hole sector.`);
     console.log(q);

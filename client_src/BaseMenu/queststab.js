@@ -36,16 +36,7 @@ global.rQuests = function () {
             const questi = quests[i];
             let desc = ``;
             baseMenuCtx.fillStyle = i == seller - 300 ? `lime` : `yellow`;
-            if (questi.type == `Mining`) desc = translate(`Bring # units of # to sector #.`, [numToLS(questi.amt), questi.metal, getSectorName(questi.sx, questi.sy)]);
-            if (questi.type == `Base`) {
-                if (rank > 6) desc = translate(`Eliminate enemy base in sector #.`, [getSectorName(questi.sx, questi.sy)]);
-                else desc = translate(`Quest Locked!`);
-            }
-            if (questi.type == `Secret`) {
-                if (rank > 14) desc = translate(`Proceed to sector # for further instructions.`, [getSectorName(questi.sx, questi.sy)]);// translate("Secret Mission.");
-                else desc = translate(`Quest Locked!`);
-            }
-            if (questi.type == `Delivery`) desc = translate(`Obtain package from planet # and deliver it to planet #.`, [getSectorName(questi.sx, questi.sy), getSectorName(questi.dsx, questi.dsy)]);
+            desc = getQuestDescription(questi);
             write(baseMenuCtx, translate(questi.type), xv + 16, 72 + i % 5 * 80);
             write(baseMenuCtx, translate(`Reward: $# and # exp.`, [numToLS(mult * questi.exp), numToLS(Math.floor(questi.exp / ((questi.type === `Mining` || questi.type === `Delivery`) ? 1500 : 4000)))]), xv + 16 + 16, 72 + i % 5 * 80 + 16);
             wrapText(baseMenuCtx, translate(`Description: `) + desc, xv + 16 + 16, 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
