@@ -50,7 +50,7 @@ global.connectToDB = function () {
 global.handlePlayerDeath = async function (player, inertia_drift, blackhole_death) {
     if (player.guest) return;
 
-    const record = await PLAYER_DATABASE.findOne({ _id: player._id });
+    const record = await PLAYER_DATABASE.findOne({ _id: player.name });
 
     if (record == null) return;
 
@@ -71,7 +71,7 @@ global.handlePlayerDeath = async function (player, inertia_drift, blackhole_deat
 };
 
 global.loadPlayerData = async function (player) {
-    const record = await PLAYER_DATABASE.findOne({ _id: player._id });
+    const record = await PLAYER_DATABASE.findOne({ _id: player.name });
 
     for (const key in record) {
         if (key === `password` || key === `email`) continue; // don't load passwords into memory
@@ -86,12 +86,12 @@ global.loadPlayerData = async function (player) {
     if (!(player.guild in guildPlayers)) player.guild = ``; // This accounts for players with old/undefined guilds
 
     player.permissionLevels = [0];
-    if (player.name.includes(`O`)) player.permissionLevels.push(30); // they're capital, it's fine
-    if (player.name.includes(`A`)) player.permissionLevels.push(20);
-    if (player.name.includes(`M`)) player.permissionLevels.push(10);
-    if (player.name.includes(`B`)) player.permissionLevels.push(7);
-    if (player.name.includes(`V`)) player.permissionLevels.push(5);
-    if (player.name.includes(`Y`)) player.permissionLevels.push(3);
+    if (player.tag === `O`) player.permissionLevels.push(30);
+    if (player.tag === `A`) player.permissionLevels.push(20);
+    if (player.tag === `M`) player.permissionLevels.push(10);
+    if (player.tag === `B`) player.permissionLevels.push(7);
+    if (player.tag === `V`) player.permissionLevels.push(5);
+    if (player.tag === `Y`) player.permissionLevels.push(3);
 
     return player;
 };
@@ -133,14 +133,14 @@ global.loadTurretData = async function () {
 };
 
 global.savePlayerEmail = function (player, email) {
-    PLAYER_DATABASE.updateOne({ _id: player._id }, { $set: { email: email } }, { upsert: true });
+    PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: { email: email } }, { upsert: true });
 };
 global.savePlayerData = function (player) {
     const record = {
         color: player.color,
         ship: player.ship,
         weapons: player.weapons,
-        name: player.name,
+        tag: player.tag,
         trail: player.trail,
         money: player.money,
         kills: player.kills,
@@ -173,5 +173,5 @@ global.savePlayerData = function (player) {
         sx: player.sx,
         sy: player.sy
     };
-    PLAYER_DATABASE.updateOne({ _id: player._id }, { $set: record }, { upsert: true });
+    PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: record }, { upsert: true });
 };

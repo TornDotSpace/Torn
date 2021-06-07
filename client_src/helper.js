@@ -36,6 +36,14 @@ global.getQuestDescription = function (q) {
     return `QUEST_DESCRIPTION_ERROR`;
 };
 
+global.getRainbowColor = function (seed) {
+    const t = new Date().getTime() / (35 * 16);
+    const r = Math.floor(16 * Math.sqrt(Math.sin(t) * 128 + 128));
+    const g = Math.floor(16 * Math.sqrt(Math.sin(t + Math.PI * 2 / 3) * 128 + 128));
+    const b = Math.floor(16 * Math.sqrt(Math.sin(t + Math.PI * 4 / 3) * 128 + 128));
+    return `rgba(${r}, ${g}, ${b}, 1)`;
+};
+
 global.write = function (context, str, x, y) {
     context.fillText(str, x, y);
 };
@@ -62,7 +70,7 @@ global.sinLow = function (x) {
 };
 global.cosLow = (x) => sinLow(x + Math.PI / 2);
 
-global.colorSelect = function (col, red, blue, green) {
+global.colorSelect = function (col, red, blue, green) { // should be RGB, not RBG. Same error on the server side. TODO
     if (col === `red`) return red;
     if (col === `blue`) return blue;
     return green;

@@ -61,6 +61,7 @@ const loadAllImages = () => {
     // Misc.
     loadImage(`grad`, `/img/grad.png`);
     loadImage(`fire`, `/img/fire.png`);
+    loadImage(`vipstar`, `/img/vipstar.png`);
     loadImage(`shockwave`, `/img/shockwave.png`);
     loadImage(`booms`, `/img/booms.png`);
 

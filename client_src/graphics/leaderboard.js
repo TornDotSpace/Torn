@@ -48,17 +48,10 @@ global.renderLeaderboard = function () {
         const place = 1 + ((i != 20) ? i : parseInt(lb[i].id));
         lbctx.textAlign = `left`;
         lbctx.fillStyle = brighten(lb[i].color);
-        if (lb[i].name.includes(` `)) {
-            lbctx.font = `10px ShareTech`;
-            write(lbctx, lb[i].name.charAt(1), 36, (i + 4) * 16);
-            lbctx.font = `14px ShareTech`;
-            const d = new Date();
-            const t = d.getTime() / (35 * 16);
-            if (lb[i].name.includes(`V`) || lb[i].name.includes(`B`)) {
-                lbctx.fillStyle = `rgba(${Math.floor(16 * Math.sqrt(Math.sin(t) * 128 + 128))}, ${Math.floor(16 * Math.sqrt(Math.sin(t + Math.PI * 2 / 3) * 128 + 128))}, ${Math.floor(16 * Math.sqrt(Math.sin(t + Math.PI * 4 / 3) * 128 + 128))}, 1)`;
-            }
-            write(lbctx, lb[i].name.substring(4), 44, (i + 4) * 16);
-        } else write(lbctx, lb[i].name, 44, (i + 4) * 16);
+        if (lb[i].tag === `V` || lb[i].tag === `B`) {
+            lbctx.drawImage(Img.vipstar, 26, i * 16 + 50);
+        }
+        write(lbctx, lb[i].name, 44, (i + 4) * 16);
         lbctx.fillStyle = `yellow`;
         write(lbctx, place + translate(`.`), 12, (i + 4) * 16);
         lbctx.textAlign = `right`;

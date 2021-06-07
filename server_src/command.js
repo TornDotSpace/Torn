@@ -192,7 +192,7 @@ cmds.swap = new Command(`/swap`, REGISTERED, (player, msg) => {
 cmds.mute = new Command(`/mute <player> - You will no longer hear the player's chat messages.`, EVERYONE, (ply, msg) => {
     const split = msg.split(` `);
     if (split.length != 2) {
-        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/mute playernamewithouttag'` }); return;
+        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/mute playername'` }); return;
     } // split looks like {"/mute", "name"}
     const name = split[1];
     const player = getPlayerFromName(name);
@@ -206,7 +206,7 @@ cmds.mute = new Command(`/mute <player> - You will no longer hear the player's c
 
 cmds.unmute = new Command(`/unmute <player> - You will begin hearing the player's chat messages again.`, EVERYONE, (ply, msg) => {
     if (msg.split(` `).length != 2) {
-        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/mute playernamewithouttag'` }); return;
+        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/mute playername'` }); return;
     } // split looks like {"/unmute", "name"}
     const name = msg.split(` `)[1];
     const player = getPlayerFromName(name);
@@ -314,7 +314,7 @@ cmds.fastreboot = new Command(`/fastreboot - Schedules a restart of the shard, w
 
 cmds.tp = new Command(`/tp <player> - Teleport to the player.`, ADMINPLUS, (ply, msg) => {
     if (msg.split(` `).length != 2) {
-        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/tp playernamewithouttag'` }); return;
+        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/tp playername'` }); return;
     }
     const name = msg.split(` `)[1];
     const player = getPlayerFromName(name);
@@ -338,24 +338,23 @@ cmds.tp = new Command(`/tp <player> - Teleport to the player.`, ADMINPLUS, (ply,
 
 cmds.settag = new Command(`/settag <player> <tag> - Sets a player's tag. tag should not contain brackets.`, ADMINPLUS, (ply, msg) => {
     if (msg.split(` `).length != 3) {
-        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/settag playernamewithouttag tag'` }); return;
+        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/settag playername tag'` }); return;
     }
     const name = msg.split(` `)[1];
-    const newTag = msg.split(` `)[2];
     const player = getPlayerFromName(name);
     if (player == -1) {
         ply.socket.emit(`chat`, { msg: `Player '${name}' not found.` });
         return;
     }
 
-    player.name = `[${newTag}] ${name}`;
+    player.tag = msg.split(` `)[2];
     player.save();
     ply.socket.emit(`chat`, { msg: `~\`violet~\`Tag set.` });
 });
 
 cmds.deltag = new Command(`/deltag <player> <tag> - Removes a player's tag.`, ADMINPLUS, (ply, msg) => {
     if (msg.split(` `).length != 2) {
-        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/settag playernamewithouttag'` }); return;
+        ply.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/settag playername'` }); return;
     }
     const name = msg.split(` `)[1];
     const player = getPlayerFromName(name);
@@ -364,7 +363,7 @@ cmds.deltag = new Command(`/deltag <player> <tag> - Removes a player's tag.`, AD
         return;
     }
 
-    player.name = name;
+    player.tag = ``;
     player.save();
     ply.socket.emit(`chat`, { msg: `~\`violet~\`Tag removed.` });
 });

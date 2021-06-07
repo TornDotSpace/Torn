@@ -32,7 +32,7 @@ class PlayerMP extends Player {
         this.globalChat = 0;
         this.lastmsg = ``;
 
-        this.reply = `nobody`; // last person to pm / who pmed me
+        this.reply = `no one`; // last person to pm / who pmed me
         this.lastLogin = new Date();
 
         this.permissionLevels = [-1];
@@ -156,7 +156,7 @@ class PlayerMP extends Player {
             this.tentativePassword = undefined;
             return;
         }
-        const response = await send_rpc(`/reset/`, `${this._id}%${pass}`);
+        const response = await send_rpc(`/reset/`, `${this.name}%${pass}`);
 
         if (!response.ok) {
             this.emit(`chat`, { msg: `ERROR` });

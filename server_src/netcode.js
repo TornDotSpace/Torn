@@ -243,7 +243,6 @@ module.exports = initNetcode = () => {
                 socket.emit(`invalidReg`, { reason: 4 });
                 return;
             }
-            player._id = user;
             player.name = user;
 
             player.permissionLevels = [0];
@@ -280,12 +279,11 @@ module.exports = initNetcode = () => {
 
             const name = await response.text();
             player = new PlayerMP(socket);
-            player._id = name;
 
             let wait_time = 0;
             for (const p in sockets) {
                 const curr_socket = sockets[p];
-                if (curr_socket.player !== undefined && curr_socket.player._id == name && curr_socket != socket) {
+                if (curr_socket.player !== undefined && curr_socket.player.name == name && curr_socket != socket) {
                     curr_socket.player.kickMsg = `A user has logged into this account from another location.`;
                     curr_socket.player.socket.disconnect();
                     wait_time = 6000;
@@ -293,6 +291,7 @@ module.exports = initNetcode = () => {
             }
 
             setTimeout(async () => {
+                player.name = name;
                 await loadPlayerData(player);
                 player.ip = ip;
                 socket.emit(`loginSuccess`, { id: player.id });
@@ -406,7 +405,7 @@ module.exports = initNetcode = () => {
                 return;
             }
 
-            if (!player.name.includes(`[`)) data.msg = data.msg.replace(/`/ig, ``); // Non-tags can't use colored text
+            if (player.tag === ``) data.msg = data.msg.replace(/`/ig, ``); // Non-tags can't use colored text
 
             const time = Date.now();
 
@@ -690,13 +689,11 @@ module.exports = initNetcode = () => {
             let hasBH = false;
             if (typeof quest.dsyv === `number`) {
                 for (let bh in vorts[quest.dsyv][quest.dsxv]) {
-                    console.log(bh.isWorm);
                     hasBH = hasBH || !bh.isWorm;
                 }
             }
             if (typeof quest.syv === `number`) {
                 for (let bh in vorts[quest.syv][quest.sxv]) {
-                    console.log(bh.isWorm);
                     hasBH = hasBH || !bh.isWorm;
                 }
             }

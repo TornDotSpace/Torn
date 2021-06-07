@@ -225,7 +225,7 @@ const getPlayer = (i) => // given a socket id, find the corresponding player obj
 global.getPlayerFromName = function (name) { // given a socket id, find the corresponding player object.
     for (const p in sockets) {
         const player = sockets[p].player;
-        if (typeof player !== `undefined` && player.nameWithoutTag() === name) return player;
+        if (typeof player !== `undefined` && player.name === name) return player;
     }
     return -1;
 };
@@ -1023,7 +1023,7 @@ function updateHeatmap () {
     }
 
     const lbSend = [];
-    for (let i = 0; i < Math.min(20, j); i++) lbSend[i] = { name: lb[i].name, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank };
+    for (let i = 0; i < Math.min(20, j); i++) lbSend[i] = { name: lb[i].name, tag: lb[i].tag, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank };
 
     // Normalize colors as though they are vectors to length 255
     for (let i = 0; i < mapSz; i++) {
