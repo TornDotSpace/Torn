@@ -111,11 +111,11 @@ global.saveTurret = function (turret) {
         baseType: turret.baseType,
         name: turret.name
     };
-    TURRET_DATABASE.replaceOne({ id: turret.id }, record, { upsert: true });
+    TURRET_DATABASE.replaceOne({ _id: turret.id }, record, { upsert: true });
 };
 
 global.deleteTurret = function (turret) {
-    TURRET_DATABASE.deleteOne({ _id: turret._id });
+    TURRET_DATABASE.deleteOne({ _id: turret.id });
 };
 
 global.loadTurretData = async function () {
