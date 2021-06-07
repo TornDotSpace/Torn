@@ -43,10 +43,10 @@ global.rAchievements = function () {
         else baseMenuCtx.fillStyle = achs[i] ? `cyan` : `yellow`;
         if (achs[i]) {
             baseMenuCtx.font = `11px ShareTech`;
-            write(baseMenuCtx, jsn.achNames[i].split(`:`)[1], 768 * (1 + (i % 5) * 2) / 10, 20 + 40 * Math.floor(i / 5) + 60);
+            write(baseMenuCtx, jsn.achNames[i].split(`:`)[1], baseMenuCanvas.width * (1 + (i % 5) * 2) / 10, 20 + 40 * Math.floor(i / 5) + 60);
         }
         baseMenuCtx.font = `15px ShareTech`;
-        write(baseMenuCtx, achs[i] ? jsn.achNames[i].split(`:`)[0] : translate(`???`), 768 * (1 + (i % 5) * 2) / 10, 8 + 40 * Math.floor(i / 5) + 60);
+        write(baseMenuCtx, achs[i] ? jsn.achNames[i].split(`:`)[0] : translate(`???`), baseMenuCanvas.width * (1 + (i % 5) * 2) / 10, 8 + 40 * Math.floor(i / 5) + 60);
     }
     baseMenuCtx.restore();
 };
@@ -68,28 +68,28 @@ global.rBaseGui = function () {
 
     baseMenuCtx.globalAlpha = guiOpacity;
     baseMenuCtx.fillStyle = guiColor;
-    roundRect(baseMenuCtx, 0, 44, 768, 512 - 44, 32, true, false);
+    roundRect(baseMenuCtx, 0, 44, baseMenuCanvas.width, baseMenuCanvas.height - 44, 32, true, false);
 
     baseMenuCtx.textAlign = `center`;
     const x = mx - baseMenuX;
     const y = my - baseMenuY;
-    for (let i = 0; i < 5; i++) { // Fill Tabs In
-    	if (tab == i || (x > 0 && x < 128 * 6 && y > 0 && y < 40 && Math.floor(x / (768 / 5)) == i)) baseMenuCtx.globalAlpha = `#666666`;
-    	else baseMenuCtx.globalAlpha = guiOpacity;
-        roundRect(baseMenuCtx, i * 768 / 5 + 8, 4, 768 / 5 - 8, 32, 16, true, false);
+    for (let i in tabs) { // Fill Tabs In
+    	const highlightTab = tab == i || (x > 0 && x < baseMenuCanvas.width && y > 0 && y < 40 && Math.floor(x / (baseMenuCanvas.width / 5)) == i);
+    	baseMenuCtx.fillStyle = highlightTab ? `#666666` : guiColor;
+        roundRect(baseMenuCtx, i * baseMenuCanvas.width / 5 + 8, 4, baseMenuCanvas.width / 5 - 8, 32, 16, true, false);
     }
 
     baseMenuCtx.globalAlpha = 1;
 
     baseMenuCtx.fillStyle = `white`;
     for (let i = 0; i < 5; i++) { // Write tab names
-        write(baseMenuCtx, tabs[i], (i * 768 / 5 + 768 / 10), 23);
+        write(baseMenuCtx, tabs[i], (i * baseMenuCanvas.width / 5 + baseMenuCanvas.width / 10), 23);
     }
 
     baseMenuCtx.fillStyle = `yellow`;
     baseMenuCtx.textAlign = `right`;
     baseMenuCtx.font = `18px ShareTech`;
-    write(baseMenuCtx, translate(`PRESS X TO EXIT BASE`), 768 - 16, 512 + 24);
+    write(baseMenuCtx, translate(`PRESS X TO EXIT BASE`), baseMenuCanvas.width - 16, baseMenuCanvas.height + 24);
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `left`;
     // baseMenuCtx.drawImage(Img.baseOutline, -4, -4);
@@ -167,5 +167,5 @@ global.baseMenuOnClick = function (buttonID) {
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
-    if (x > 0 && x < 128 * 6 && y > 0 && y < 40) tab = Math.floor(x / (768 / 5));
+    if (x > 0 && x < 128 * 6 && y > 0 && y < 40) tab = Math.floor(x / (baseMenuCanvas.width / 5));
 };
