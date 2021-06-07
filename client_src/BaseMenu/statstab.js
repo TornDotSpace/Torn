@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { translate } from "../localizer.ts";
 
 global.rStats = function () {
+    rMoneyInBaseTopRight();
+
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `left`;
     const d = new Date();
@@ -37,27 +39,6 @@ global.rStats = function () {
 
     baseMenuCtx.drawImage(img, -img.width / 2, -img.height / 2);
     baseMenuCtx.restore();
-
-    // techs
-    baseMenuCtx.fillStyle = `yellow`;
-    baseMenuCtx.textAlign = `left`;
-    baseMenuCtx.font = `24px ShareTech`;
-    write(baseMenuCtx, translate(`Upgrades`), 64, 256 + 64 + 16);
-    baseMenuCtx.fillStyle = `white`;
-    baseMenuCtx.font = `12px ShareTech`;
-    baseMenuCtx.drawImage(Img.button, 64, 416 - 64);
-    baseMenuCtx.drawImage(Img.button, 192, 416 - 64);
-    baseMenuCtx.drawImage(Img.button, 64, 416);
-    baseMenuCtx.drawImage(Img.button, 192, 416);
-    baseMenuCtx.drawImage(Img.button, 320, 416 - 64);
-    baseMenuCtx.drawImage(Img.button, 320, 416);
-    baseMenuCtx.textAlign = `center`;
-    write(baseMenuCtx, translate(`Thrust lvl `) + ((t2 - 1) * 8), 64 + 54, 416 - 64 + 14);
-    write(baseMenuCtx, translate(`Radar lvl `) + ((va2 - 1) * 8), 192 + 54, 416 - 64 + 14);
-    write(baseMenuCtx, translate(`Cargo lvl `) + ((c2 - 1) * 8), 64 + 54, 416 + 14);
-    write(baseMenuCtx, translate(`Hull lvl `) + ((mh2 - 1) * 8), 192 + 54, 416 + 14);
-    write(baseMenuCtx, translate(`Energy lvl `) + ((e2 - 1) * 8), 320 + 54, 416 - 64 + 14);
-    write(baseMenuCtx, translate(`Agility lvl `) + ((ag2 - 1) * 8), 320 + 54, 416 + 14);
 
     renderUpgradeButtons();
 
@@ -134,6 +115,31 @@ function renderTrailSelector () {
 }
 
 function renderUpgradeButtons () {
+    baseMenuCtx.fillStyle = `yellow`;
+    baseMenuCtx.textAlign = `left`;
+    baseMenuCtx.font = `24px ShareTech`;
+    write(baseMenuCtx, translate(`Upgrades`), 64, 256 + 64 + 16);
+
+    baseMenuCtx.fillStyle = `black`;
+    baseMenuCtx.globalAlpha = 0.25;
+    for (let y = 352; y <= 416; y += 64) {
+        for (let x = 64; x <= 320; x += 128) {
+            roundRect(baseMenuCtx, x - 4, y - 4, 128 - 8, 64 - 8, 16, true, false);
+        }
+    }
+    baseMenuCtx.globalAlpha = 1;
+
+    // upgrade titles
+    baseMenuCtx.fillStyle = `white`;
+    baseMenuCtx.font = `12px ShareTech`;
+    baseMenuCtx.textAlign = `center`;
+    write(baseMenuCtx, translate(`Thrust lvl `) + ((t2 - 1) * 8), 64 + 54, 416 - 64 + 14);
+    write(baseMenuCtx, translate(`Radar lvl `) + ((va2 - 1) * 8), 192 + 54, 416 - 64 + 14);
+    write(baseMenuCtx, translate(`Cargo lvl `) + ((c2 - 1) * 8), 64 + 54, 416 + 14);
+    write(baseMenuCtx, translate(`Hull lvl `) + ((mh2 - 1) * 8), 192 + 54, 416 + 14);
+    write(baseMenuCtx, translate(`Energy lvl `) + ((e2 - 1) * 8), 320 + 54, 416 - 64 + 14);
+    write(baseMenuCtx, translate(`Agility lvl `) + ((ag2 - 1) * 8), 320 + 54, 416 + 14);
+
     // upgrades
     baseMenuCtx.fillStyle = (seller == 200) ? `lime` : `white`;
     write(baseMenuCtx, `[+] $${numToLS(techPrice(t2))}`, 64 + 54, 416 - 64 + 28);

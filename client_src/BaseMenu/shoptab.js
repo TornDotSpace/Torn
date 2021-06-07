@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { translate } from "../localizer.ts";
 
+const lifeShopYVal = 405;
+
 global.rBuyShipWindow = function () {
     baseMenuCtx.fillStyle = baseMenuCtx.strokeStyle = `black`;
     baseMenuCtx.globalAlpha = 0.25;
@@ -119,9 +121,9 @@ global.rOreShop = function () {
 global.rBuyLifeShop = function () {
     baseMenuCtx.fillStyle = `yellow`;
     baseMenuCtx.textAlign = `right`;
-    write(baseMenuCtx, `${translate(`Lives Remaining: `) + lives} ($${expToLife()}) `, 768 - 16 - baseMenuCtx.measureText(translate(`[BUY]`)).width, 512 - 16);
+    write(baseMenuCtx, `${translate(`Lives Remaining: `) + lives} ($${expToLife()}) `, 768 - 16 - baseMenuCtx.measureText(translate(`[BUY]`)).width, lifeShopYVal);
     baseMenuCtx.fillStyle = (lives >= 20 || money < expToLife()) ? `red` : ((seller == 611) ? `lime` : `yellow`);
-    write(baseMenuCtx, translate(`[BUY]`), 768 - 16, 512 - 16);
+    write(baseMenuCtx, translate(`[BUY]`), 768 - 16, lifeShopYVal);
     baseMenuCtx.textAlign = `left`;
 };
 global.rWeaponsInShop = function () {
@@ -160,6 +162,8 @@ global.rConfirm = function () {
 
 // Render the shop tab
 global.rShop = function () {
+    rMoneyInBaseTopRight();
+
     rOreShop();
 
     rBuyLifeShop();
@@ -169,12 +173,17 @@ global.rShop = function () {
     rBuyShipWindow();
 };
 
-global.rWeaponStore = function () {
+global.rMoneyInBaseTopRight = function () {
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `right`;
     baseMenuCtx.fillStyle = `yellow`;
 
     write(baseMenuCtx, translate(`Money: #`, [numToLS(Math.floor(money))]), 128 * 6 - 16, 64);
+};
+
+global.rWeaponStore = function () {
+    rMoneyInBaseTopRight();
+    baseMenuCtx.fillStyle = `yellow`;
     baseMenuCtx.textAlign = `center`;
     baseMenuCtx.font = `24px ShareTech`;
     write(baseMenuCtx, translate(`Weapons`), 128 * 3, 68);
@@ -237,7 +246,7 @@ global.shopOnHover = function () {
         if (Math.floor((y - 84) / 16) % 2 == 1) seller = 0;
     } else if (y > 246 && y < 240 + 160 && x > 256 + 32 && x < 256 + 78) seller = Math.floor((y - 246) / 16 + 10);
     else if (y > 256 - 30 && y < 256 - 16 && x > 512 - 64 && x < 512 - 64 + ctx.measureText(translate(`[View All]`)).width) seller = 601;
-    else if (x > 768 - 16 - ctx.measureText(translate(`[BUY]`)).width && x < 768 - 16 && y > 512 - 32 && y < 512 - 16) seller = 611;
+    else if (x > 768 - 16 - ctx.measureText(translate(`[BUY]`)).width && x < 768 - 16 && y > lifeShopYVal - 16 && y < lifeShopYVal + 8) seller = 611;
     else if (y > 256 - 16 && y < 512 - 16 && x > 16 && x < 256 + 16) {
         if (y > 256 + 128 + 32) seller = 100;
         else seller = 0;
@@ -273,7 +282,6 @@ global.shopOnClick = function (buttonID) {
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
-    //
     if (y > 246 && y < 240 + 160 && x > 256 + 32 && x < 256 + 78) {
         if (equipped[buttonID - 10] == -1) {
             tab = 7;

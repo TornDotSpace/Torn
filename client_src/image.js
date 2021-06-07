@@ -131,7 +131,6 @@ const loadAllImages = () => {
 
     // Base GUI.
     loadImage(`q`, `/img/baseGui/q.png`);
-    loadImage(`button`, `/img/baseGui/button.png`);
     loadImage(`arrow`, `/img/baseGui/arrow.png`);
 
     // Pack drops.

@@ -89,7 +89,7 @@ global.rBaseGui = function () {
     baseMenuCtx.fillStyle = `yellow`;
     baseMenuCtx.textAlign = `right`;
     baseMenuCtx.font = `18px ShareTech`;
-    write(baseMenuCtx, translate(`PRESS X TO EXIT BASE`), baseMenuCanvas.width - 16, baseMenuCanvas.height + 24);
+    write(baseMenuCtx, translate(`PRESS X TO EXIT BASE`), baseMenuCanvas.width - 16, baseMenuCanvas.height - 16);
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `left`;
     // baseMenuCtx.drawImage(Img.baseOutline, -4, -4);
