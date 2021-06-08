@@ -3,12 +3,13 @@
         "target": "ES6",
         "module": "commonjs",
 
-        "outDir": "./client",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        
+        "outDir": "./build",
+        "resolveJsonModule": true
+    },
 
-        "jsx": "react",
-        "resolveJsonModule": true,
-
-        "noImplicitAny": false,
-        "allowJs": true
-    }
+    "include": ["./src/**/*"],
+    "exclude": ["node_modules"]
 }
