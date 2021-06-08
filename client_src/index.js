@@ -77,6 +77,7 @@ global.scrx = 0; global.scry = 0;
 global.mapSz = -1;
 global.quests = 0; global.quest = 0;
 global.login = false; global.lore = false;
+global.tag = ``;
 global.px = 0; global.py = 0; global.pc = 0; global.pangle = 0; global.isLocked = false; global.pvx = 0; global.pvy = 0;
 global.phealth = 0;
 global.mapZoom = 1;

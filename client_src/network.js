@@ -433,6 +433,7 @@ socket.on(`you`, (data) => {
     experience = data.experience;
     rank = data.rank;
     myTrail = data.trail;
+    tag = data.tag;
     if (typeof data.t2 !== `undefined`) t2 = Math.round(1000 * data.t2) / 1000;
     if (typeof data.va2 !== `undefined`) va2 = Math.round(1000 * data.va2) / 1000;
     if (typeof data.ag2 !== `undefined`) ag2 = Math.round(1000 * data.ag2) / 1000;

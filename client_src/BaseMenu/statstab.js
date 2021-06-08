@@ -21,24 +21,11 @@ import { translate } from "../localizer.ts";
 global.rStats = function () {
     rMoneyInBaseTopRight();
 
-    baseMenuCtx.font = `14px ShareTech`;
-    baseMenuCtx.textAlign = `left`;
-    const d = new Date();
-    const t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
-
     renderStatistics();
 
     renderTrailSelector();
 
-    const rendX = 192;
-    const rendY = 192;
-    baseMenuCtx.save();
-    baseMenuCtx.translate(rendX, rendY);
-    baseMenuCtx.rotate(-3 * t);
-    const img = colorSelect(pc, redShips, blueShips, greenShips)[ship];
-
-    baseMenuCtx.drawImage(img, -img.width / 2, -img.height / 2);
-    baseMenuCtx.restore();
+    renderStatsShip();
 
     renderUpgradeButtons();
 
@@ -54,7 +41,24 @@ global.rStats = function () {
   } */
 };
 
+function renderStatsShip () {
+    const d = new Date();
+    const t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
+    const rendX = 192;
+    const rendY = 192;
+    baseMenuCtx.save();
+    baseMenuCtx.translate(rendX, rendY);
+    baseMenuCtx.rotate(-3 * t);
+    const img = colorSelect(pc, redShips, blueShips, greenShips)[ship];
+
+    baseMenuCtx.drawImage(img, -img.width / 2, -img.height / 2);
+    baseMenuCtx.restore();
+}
+
 function renderStatistics () {
+    baseMenuCtx.font = `14px ShareTech`;
+    baseMenuCtx.textAlign = `left`;
+
     const ore = iron + silver + platinum + copper;
     let upgradeCosts = 0;
     upgradeCosts += techEnergy(t2) + techEnergy(va2) + techEnergy(ag2) + techEnergy(c2) + techEnergy(mh2) + techEnergy(e2) * 8;
@@ -67,6 +71,8 @@ function renderStatistics () {
     baseMenuCtx.textAlign = `center`;
     write(baseMenuCtx, myName, 192, 96);
     baseMenuCtx.font = `14px ShareTech`;
+    if (tag === `V`) write(baseMenuCtx, `VIP`, 192, 112);
+    if (tag === `B`) write(baseMenuCtx, `MVP`, 192, 112);
     const activeGens = 0;
 
     const eMult = e2;
@@ -93,25 +99,24 @@ function renderStatistics () {
 }
 
 function renderTrailSelector () {
-    baseMenuCtx.fillStyle = seller == 700 ? `yellow` : `red`;
+    baseMenuCtx.fillStyle = seller == 700 ? `yellow` : `white`;
     write(baseMenuCtx, translate(`[Default Trail]`), 512 + 128, 44 + 64 - 1 * 16);
-    if (achs[12]) {
+    if (tag === `B` || achs[12]) {
         baseMenuCtx.fillStyle = seller == 701 ? `yellow` : `red`;
         write(baseMenuCtx, translate(`[Blood Trail]`), 512 + 128, 44 + 64 + 1 * 16);
-    } if (achs[24]) {
+    } if (tag === `B` || achs[24]) {
         baseMenuCtx.fillStyle = seller == 702 ? `yellow` : `gold`;
         write(baseMenuCtx, translate(`[Money Trail]`), 512 + 128, 44 + 64 + 3 * 16);
-    } if (achs[36]) {
+    } if (tag === `B` || achs[36]) {
         baseMenuCtx.fillStyle = seller == 703 ? `yellow` : `lightgray`;
         write(baseMenuCtx, translate(`[Panda Trail]`), 512 + 128, 44 + 64 + 5 * 16);
-    } if (achs[47]) {
+    } if (tag === `B` || achs[47]) {
         baseMenuCtx.fillStyle = seller == 704 ? `yellow` : `cyan`;
         write(baseMenuCtx, translate(`[Random Trail]`), 512 + 128, 44 + 64 + 7 * 16);
+    } if (tag === `B` || tag === `O` || tag === `A`) {
+        baseMenuCtx.fillStyle = seller == 705 ? `yellow` : getRainbowColor();
+        write(baseMenuCtx, translate(`[Rainbow Trail]`), 512 + 128, 44 + 64 + 9 * 16);
     }
-    /* if (false) {
-        baseMenuCtx.fillStyle = seller == 705 ? "yellow" : "cyan";
-        write(baseMenuCtx, translate("[Rainbow Trail]"), 512 + 128, 44 + 64 + 9 * 16);
-    } */
 }
 
 function renderUpgradeButtons () {
@@ -189,7 +194,7 @@ global.statsOnHover = function () {
 
     else if (y > 44 + 64 - 24 && y < 44 + 64 + 8 * 21 && x > 512 && x < 768) {
         seller = 700 + Math.floor((y - 44 - 64 + 24) / 32);
-        if ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && true)) seller = 0;
+        if (tag !== `B` && ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && !(tag === `O` || tag === `A`)))) seller = 0;
     } else seller = 0;
 };
 
@@ -199,5 +204,5 @@ global.statsOnClick = function (buttonID) {
     if (buttonID > 205 && buttonID < 212) socket.emit(`downgrade`, { item: buttonID - 206 });
 
     // Trails
-    if (buttonID >= 700 && buttonID < 705) socket.emit(`trail`, { trail: buttonID - 700 });
+    if (buttonID >= 700 && buttonID < 706) socket.emit(`trail`, { trail: buttonID - 700 });
 };

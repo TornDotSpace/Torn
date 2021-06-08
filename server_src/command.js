@@ -119,8 +119,9 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (player, msg) => {
         old_sx = player.sx;
         player.sx = (player.sx + 3 * (teamDict[split[1]] - teamDict[player.color])) % mapSz;
         player.color = split[1];
-        player.money *= 0.9;
-        player.experience *= 0.9;
+        const lossConstant = player.tag === `B` ? 0.95 : 0.9; // MVPs lose less when switching teams
+        player.money *= lossConstant;
+        player.experience *= lossConstant;
         delete players[player.sy][old_sx][player.id];
         players[player.sy][player.sx][player.id] = player;
         player.save();

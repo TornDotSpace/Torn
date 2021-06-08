@@ -720,10 +720,11 @@ module.exports = initNetcode = () => {
             if (typeof data === `undefined` || player == 0 || !player.docked || typeof data.trail !== `number`) return;
 
             if (data.trail == 0) player.trail = 0;
-            if (data.trail == 1 && player.killsAchs[12]) player.trail = 1;
-            if (data.trail == 2 && player.moneyAchs[11]) player.trail = 2;
-            if (data.trail == 3 && player.driftAchs[11]) player.trail = 3;
-            if (data.trail == 4 && player.randmAchs[10]) player.trail = 4;
+            if (data.trail == 1 && (player.killsAchs[12] || player.tag === `B`)) player.trail = 1;
+            if (data.trail == 2 && (player.moneyAchs[11] || player.tag === `B`)) player.trail = 2;
+            if (data.trail == 3 && (player.driftAchs[11] || player.tag === `B`)) player.trail = 3;
+            if (data.trail == 4 && (player.randmAchs[10] || player.tag === `B`)) player.trail = 4;
+            if (data.trail == 5 && (player.tag === `B` || player.tag === `O` || player.tag === `A`)) player.trail = 5;
             if (player.name.includes(` `)) player.trail += 16;
         });
     });
