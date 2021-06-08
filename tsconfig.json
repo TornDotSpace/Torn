@@ -7,9 +7,9 @@
         "esModuleInterop": true,
         
         "outDir": "./build",
-        "resolveJsonModule": true
-    },
+        "resolveJsonModule": true,
 
-    "include": ["./src/**/*"],
-    "exclude": ["node_modules"]
+        "allowJs": true,
+        "jsx": "react"
+    }
 }
