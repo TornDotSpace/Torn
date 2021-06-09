@@ -32,38 +32,7 @@ module.exports = class Vortex {
 
     move () {
         if (this.isWorm) {
-            const t = tick / 40000;
-
-            // the doubles in here are just random numbers for chaotic motion. Don't mind them.
-
-            // input node
-            const bx = Math.sin(7.197 * t) / 2 + 0.5;
-            const by = -Math.sin(5.019 * t) / 2 + 0.5;
-
-            const oldSx = this.sx;
-            const oldSy = this.sy;
-
-            this.sx = Math.floor(bx * mapSz);
-            this.sy = Math.floor(by * mapSz);
-
-            if (oldSx != this.sx || oldSy != this.sy) {
-                vorts[this.sy][this.sx][this.id] = vorts[oldSy][oldSx][this.id];
-                delete vorts[oldSy][oldSx][this.id];
-            }
-
-            this.x = ((bx * mapSz) % 1) * sectorWidth;
-            this.y = ((by * mapSz) % 1) * sectorWidth;
-
-            // output node
-            const bxo = -Math.sin(9.180 * t) / 2 + 0.5;
-            const byo = Math.sin(10.3847 * t) / 2 + 0.5;
-            this.sxo = Math.floor(bxo * mapSz);
-            this.syo = Math.floor(byo * mapSz);
-            this.xo = ((bxo * mapSz) % 1) * sectorWidth;
-            this.yo = ((byo * mapSz) % 1) * sectorWidth;
-
-            // every 2 seconds, tell the players where I am (for radar only, I think)
-            if (tick % 50 == 0) sendAll(`worm`, { bx: bx, by: by, bxo: bxo, byo: byo });
+            this.moveWormhole();
         }
 
         for (const i in players[this.sy][this.sx]) {
@@ -118,7 +87,7 @@ module.exports = class Vortex {
                     if (!this.isWorm) { // collision with black hole
                         a.die(this);
                         if (this.owner != 0) { // if I'm a gravity bomb
-	      this.size += 10; // Eating asteroids will make the gravity bomb BH grow.
+                            this.size += 10; // Eating asteroids will make the gravity bomb BH grow.
                         }
                     } else { // collision with wormhole
                         delete asts[a.sy][a.sx][a.id];
@@ -131,6 +100,45 @@ module.exports = class Vortex {
                 }
             }
         }
+    }
+
+    moveWormhole () {
+        const t = tick / 40000;
+
+        // the doubles in here are just random numbers for chaotic motion. Don't mind them.
+
+        // input node
+        this.vx += Math.sin(7.197 * t) * 0.75;
+        this.vy -= Math.sin(5.019 * t) * 0.75;
+        this.vx *= 0.99;
+        this.vy *= 0.99;
+        const bx = (this.x + this.sx * sectorWidth + this.vx + mapSz * sectorWidth) % (mapSz * sectorWidth);
+        const by = (this.y + this.sy * sectorWidth + this.vy + mapSz * sectorWidth) % (mapSz * sectorWidth);
+
+        const oldSx = this.sx;
+        const oldSy = this.sy;
+
+        this.sx = Math.floor(bx / sectorWidth);
+        this.sy = Math.floor(by / sectorWidth);
+
+        if (oldSx != this.sx || oldSy != this.sy) {
+            vorts[this.sy][this.sx][this.id] = vorts[oldSy][oldSx][this.id];
+            delete vorts[oldSy][oldSx][this.id];
+        }
+
+        this.x = bx % sectorWidth;
+        this.y = by % sectorWidth;
+
+        // output node
+        const bxo = -Math.sin(9.180 * t) / 2 + 0.5;
+        const byo = Math.sin(10.3847 * t) / 2 + 0.5;
+        this.sxo = Math.floor(bxo * mapSz);
+        this.syo = Math.floor(byo * mapSz);
+        this.xo = ((bxo * mapSz) % 1) * sectorWidth;
+        this.yo = ((byo * mapSz) % 1) * sectorWidth;
+
+        // every 2 seconds, tell the players where I am (for radar only, I think)
+        if (tick % 25 == 0) sendAll(`worm`, { bx: bx / (mapSz * sectorWidth), by: by / (mapSz * sectorWidth), bxo: bxo, byo: byo });
     }
 
     die () {

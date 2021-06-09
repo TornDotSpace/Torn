@@ -350,6 +350,24 @@ cmds.basetp = new Command(`/basetp - Teleport to another base.`, MVPPLUS, (comma
     commandExecuter.socket.emit(`chat`, { msg: `Teleporting to a random base on your team...` });
 });
 
+cmds.summonwormhole = new Command(`/summonwormhole - summons the wormhole roughly in your direction, at a price of 1% of your money.`, MVPPLUS, (commandExecuter, msg) => {
+    if (msg.split(` `).length != 1) {
+        commandExecuter.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/summonWormhole'` }); return;
+    }
+    if (commandExecuter.docked) {
+        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`This command is not available when docked at a base.` });
+        return;
+    }
+
+    wormhole.vx += ((commandExecuter.sx * sectorWidth + commandExecuter.x) - (wormhole.sx * sectorWidth + wormhole.x)) / 90;
+    wormhole.vy += ((commandExecuter.sy * sectorWidth + commandExecuter.y) - (wormhole.sy * sectorWidth + wormhole.y)) / 90;
+
+    commandExecuter.money *= 0.99;
+    commandExecuter.save();
+
+    commandExecuter.socket.emit(`chat`, { msg: `Summoning Wormhole...` });
+});
+
 findGuildFromOwner = function (owner) {
     for (const i in guildList) {
         const guildData = guildList[i];

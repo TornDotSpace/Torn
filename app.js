@@ -345,7 +345,7 @@ function init () { // start the server!
     // wormhole
     let id = Math.random();
     let v = new Vortex(id, Math.random() * sectorWidth, Math.random() * sectorWidth, Math.floor(Math.random() * mapSz), Math.floor(Math.random() * mapSz), 0.5, 0, true);
-    vorts[v.sy][v.sx][id] = v;
+    global.wormhole = vorts[v.sy][v.sx][id] = v;
 
     // 3 Black Holes
     for (let vortno = 0; vortno < 9; vortno++) {
