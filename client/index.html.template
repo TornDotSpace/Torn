@@ -1,41 +1,46 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta name="description" content="Compete and upgrade your warship in the ongoing space war!">
-		<meta name="keywords" content="Torn, space, mmo, io, flash, fighting, flying, alex hontz, johnnyapol, torn.space, 2swap">
-		<meta name="og:image" content="/img/red/r1.png">
-		<meta http-equiv="cache-control" content="max-age=0">
-		<meta http-equiv="cache-control" content="no-cache">
-		<meta http-equiv="expires" content="-1">
-		<meta http-equiv="expires" content="Tue, 01 Jan 1980 11:00:00 GMT">
-		<meta http-equiv="pragma" content="no-cache">
-		<meta charset="UTF-8" />
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-		<!-- Prevent zoom -->
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-81486045-1"></script>
+    <title>Torn</title>
+    <meta name="description" content="Complete and upgrade your warship in the ongoing space war!">
+    <meta name="keywords" content="Torn, space, mmo, io, flash, fighting, flying, alex hontz, johnnyapol, torn.space, 2swap">
 
-		<!-- Adsense -->
-		<script data-ad-client="ca-pub-7362501745456542" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-		<script>
-			document.addEventListener('contextmenu', event => event.preventDefault());
-			window.dataLayer = window.dataLayer || [];
-			function gtag() {
-				dataLayer.push(arguments);
-			}
-		  	gtag('js', new Date());
-		  	gtag('config', 'UA-81486045-1');
-		</script>
+    <!-- OpenGraph Metadata -->
+    <meta property="og:title" content="Torn">
+    <meta property="og:description" content="Complete and upgrade your warship in the ongoing space war!">
+    <meta property="og:image" content="/img/red/r1.png">
 
-		<title>Torn</title>
-		<link rel="stylesheet" href="index.css">
-	</head>
-	<body>
-		<canvas id="ctx"></canvas>
-		<div id="a"></div>
+    <!-- Icon --> 
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
-		<script src="client.js?v={GIT_HASH}"></script>
-	</body>
+    <link rel="stylesheet" href="/assets/css/index.css">
+
+    <!-- Google Analytics -->
+    <script src="https://www.googletagmanager.com/gtag/js?id=UA-81486045-1"></script>
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag () {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-81486045-1');
+    </script>
+
+    <!-- AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" data-ad-client="ca-pub-7362501745456542"></script>
+</head>
+<body>
+    <canvas id="ctx"></canvas>
+    <div id="a"></div>
+
+    <script src="client.js?v={GIT_HASH}"></script>
+</body>
 </html>

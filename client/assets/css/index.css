@@ -1,0 +1,349 @@
+@font-face {
+	font-family: 'ShareTech';
+	src: url('/assets/fonts/ShareTech.ttf');
+	font-stretch: condensed;
+}
+
+body, #a {
+	font-family: 'ShareTech';
+	margin: 0;
+	padding: 0;
+	overflow:hidden;
+	top: 0;
+	left: 0;
+	top: 0;
+	bottom: 0;
+}
+
+.overlay-menu , .register-menu{
+    margin: auto;
+	position:absolute;
+	padding:0px;
+	right: 0;
+	left: 0;
+	height:200px;
+	animation: a-overlay .3s;
+	background-color: rgba(0,0,0,0);
+	color: white;
+}
+
+.overlay-menu{
+	width:100%;
+	top: 50%;
+	-ms-transform: translateY(-100%);
+	transform: translateY(-100%);
+}
+
+.register-menu{
+	width:780px;
+	margin-top: -100px;
+	top:50%;
+}
+
+
+
+
+
+.container{
+	margin: 0 auto;
+	width:65%;
+	float:none;
+}
+
+.guests, .login{
+	width:25%;
+	margin-top: 10px;
+	opacity:0.5;
+    transition: opacity .5s;
+    -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+       -moz-animation: fadein 1s; /* Firefox < 16 */
+        -ms-animation: fadein 1s; /* Internet Explorer */
+         -o-animation: fadein 1s; /* Opera < 12.1 */
+            animation: fadein 1s;
+}
+
+.guests{
+	float:left;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    animation: slide-in 1s forwards;
+    -webkit-animation: slide-in 1s forwards;
+}
+
+.login{
+	float:right;
+    transform: translateX(50%);
+    -webkit-transform: translateX(50%);
+    animation: slide-in 1s forwards;
+    -webkit-animation: slide-in 1s forwards;
+}
+
+@keyframes slide-in {
+    100% { transform: translateY(0%); }
+}
+
+@-webkit-keyframes slide-in {
+    100% { -webkit-transform: translateY(0%); }
+}
+
+.video{
+	padding-top:30px;
+	float:left;
+	width:50%;
+	margin-top: 10px;
+	opacity:0.5;
+    transition: .5s;
+    -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
+       -moz-animation: fadein 2s; /* Firefox < 16 */
+        -ms-animation: fadein 2s; /* Internet Explorer */
+         -o-animation: fadein 2s; /* Opera < 12.1 */
+            animation: fadein 2s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 0.5; }
+}
+
+
+
+
+
+.guests:hover, .login:hover, .video:hover{
+    transition: .3s;
+	opacity:1;
+}
+
+.overlay-input{
+	font-family: 'ShareTech';
+	width:176px;
+	font-size: 16px;
+	padding: 5px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	float:none;
+}
+
+.register{
+	font-family: 'ShareTech';
+	width:190px;
+	font-size: 16px;
+	padding: 5px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	background-color: black;
+	color: white;
+	cursor: pointer;
+	border:2px solid green;
+}
+
+#registerR, #registerG, #registerB, .overlay-button{
+	font-family: 'ShareTech';
+	width:190px;
+	font-size: 16px;
+	padding: 5px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	float:none;
+	background-color: rgb(80, 80, 80);
+	color: white;
+	cursor: pointer;
+	border:2px solid #404040;
+}
+
+#registerR{
+	border:2px solid red;
+}
+
+#registerG{
+	border:2px solid green;
+}
+
+#registerB{
+	border:2px solid blue;
+}
+
+.overlay-input {
+	border:2px solid #404040;
+	color: black;
+}
+
+.center{
+	display:inline;
+}
+
+.discord{
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	margin:8px;
+}
+
+a{
+	color:#808080;
+	text-decoration: none;
+}
+
+a:hover{
+	color:#a0a0a0;
+}
+
+
+
+
+
+
+
+
+
+.overlay-input:hover {
+	background-color:#FFB;
+}
+
+.overlay-input:focus {
+	background-color:black;
+	color:white;
+}
+
+#registerA:hover, #registerH:hover,.overlay-button:hover{
+	background-color: rgb(120, 120, 120);
+}
+
+.chat {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	padding: 10px;
+	padding: 10px;
+}
+
+.chat-input {
+	background-color: rgba(0, 0, 0, 0);
+	font-family: 'ShareTech';
+	border:0;
+	width: 384px;
+	color: white;
+}
+
+.chat-input:focus {
+	border:1px solid pink;
+	background-color: rgba(0, 0, 0, 255);
+}
+
+.chat-msg {
+	transition: opacity 2s;
+	font-size: 13px;
+	font-family: 'ShareTech';
+}
+
+.chat-msg-fadeout {
+	opacity: 0;
+}
+
+@keyframes a-overlay {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes a-overlay-menu1 {
+	0% {
+		transform: rotateY(90deg);
+		color: rgba(0, 0, 0, 0)
+	}
+	32% {
+		transform: rotateY(90deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	33% {
+		transform: rotateY(66deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	65% {
+		transform: rotateY(66deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	66% {
+		transform: rotateY(33deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	99% {
+		transform: rotateY(33deg);
+		color: rgba(0, 0, 0, 0);
+	}
+	100% {
+		transform: rotateY(0deg);
+	}
+}
+
+@keyframes a-overlay-menu2 {
+	from {
+		transform: translateY(10px);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+
+.mute-button, .music-button {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	margin: 10px;
+	cursor: pointer;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+.music-button {
+	bottom: 40px;
+}
+
+/*
+$("input[type='text']").bind('focus', function() {
+   $(this).css('box-shadow', 'white');
+
+});
+*/
+
+input:-webkit-autofill { /* Get rid of Google's ugly autofill colors */
+    -box-shadow: 0 0 0 30px white inset;
+}
+
+input:-webkit-autofill:hover { /* Get rid of Google's ugly autofill colors */
+    box-shadow: 0 0 0 30px #FFB inset;
+}
+
+input:-webkit-autofill:focus { /* Get rid of Google's ugly autofill colors */
+    box-shadow: 0 0 0 30px black inset;
+	-webkit-text-fill-color:white;
+}
