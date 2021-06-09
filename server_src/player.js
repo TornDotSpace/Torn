@@ -656,13 +656,16 @@ class Player {
             }
         } else if (this.y > sectorWidth) {
             this.y = 1;
-            if (this.sy == mapSz - 1 || this.guest || (trainingMode && this.isNNBot)) {
+            if ((this.sy == mapSz - 1 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.y = (sectorWidth - 5);
                 this.driftAngle = this.angle = -this.angle;
                 this.vy *= -1;
             } else {
-                this.sy++;
+                if (this.sy == mapSz - 1) {
+                    this.health -= this.maxHealth * 0.75;
+                }
+                this.sy = (this.sy + 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         } else if (this.x < 0) {
@@ -678,13 +681,16 @@ class Player {
             }
         } else if (this.y < 0) {
             this.y = (sectorWidth - 1);
-            if (this.sy == 0 || this.guest || (trainingMode && this.isNNBot)) {
+            if ((this.sy == 0 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.y = 5;
                 this.driftAngle = this.angle = -this.angle;
                 this.vy *= -1;
             } else {
-                this.sy--;
+                if (this.sy == 0) {
+                    this.health -= this.maxHealth * 0.75;
+                }
+                this.sy = (this.sy - 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         }
