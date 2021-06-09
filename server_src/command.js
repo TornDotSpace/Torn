@@ -328,6 +328,28 @@ cmds.give = new Command(`/give - Give a player money.`, MVPPLUS, (commandExecute
     recipient.socket.emit(`chat`, { msg: `~\`yellow~\`You were given $${moneyAmount} from ${commandExecuter.nameWithColor()}!` });
 });
 
+cmds.basetp = new Command(`/basetp - Teleport to another base.`, MVPPLUS, (commandExecuter, msg) => {
+    if (msg.split(` `).length != 1) {
+        commandExecuter.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/basetp'` }); return;
+    }
+    if (!commandExecuter.docked) {
+        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`This command is only available when docked at a base.` });
+        return;
+    }
+
+    const old_sy = commandExecuter.sy;
+    const old_sx = commandExecuter.sx;
+
+    const r2 = Math.random();
+    commandExecuter.sx = baseMap[commandExecuter.color][Math.floor(r2 * basesPerTeam) * 2];
+    commandExecuter.sy = baseMap[commandExecuter.color][Math.floor(r2 * basesPerTeam) * 2 + 1];
+    delete players[old_sy][old_sx][commandExecuter.id];
+    players[commandExecuter.sy][commandExecuter.sx][commandExecuter.id] = commandExecuter;
+    commandExecuter.onChangeSectors();
+
+    commandExecuter.socket.emit(`chat`, { msg: `Teleporting to a random base on your team...` });
+});
+
 findGuildFromOwner = function (owner) {
     for (const i in guildList) {
         const guildData = guildList[i];
