@@ -293,7 +293,7 @@ cmds.give = new Command(`/give - Give a player money.`, MVPPLUS, (player, msg) =
     const recipientName = split[1];
     const recipient = getPlayerFromName(recipientName);
     if (recipient == -1) {
-        player.socket.emit(`chat`, { msg: `~\`red~\`Player ${recipient.nameWithColor()} not found.` });
+        player.socket.emit(`chat`, { msg: `~\`red~\`Player '${recipientName}' not found.` });
         return;
     }
     if (!recipient.docked) {
