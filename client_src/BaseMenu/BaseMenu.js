@@ -59,12 +59,7 @@ global.rBaseGui = function () {
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.lineWidth = 2;
 
-    const tabs = {};
-    tabs[0] = translate(`Shop`);
-    tabs[1] = translate(`Quests`);
-    tabs[2] = translate(`Stats`);
-    tabs[3] = translate(`Achievements`);
-    tabs[4] = translate(`More`);
+    const tabs = [`Shop`, `Quests`, `Stats`, `Achievements`, `More`];
 
     baseMenuCtx.globalAlpha = guiOpacity;
     baseMenuCtx.fillStyle = guiColor;
@@ -73,7 +68,7 @@ global.rBaseGui = function () {
     baseMenuCtx.textAlign = `center`;
     const x = mx - baseMenuX;
     const y = my - baseMenuY;
-    for (let i in tabs) { // Fill Tabs In
+    for (let i = 0; i < 5; i++) { // Fill Tabs In
     	const highlightTab = tab == i || (x > 0 && x < baseMenuCanvas.width && y > 0 && y < 40 && Math.floor(x / (baseMenuCanvas.width / 5)) == i);
     	baseMenuCtx.fillStyle = highlightTab ? `#666666` : guiColor;
         roundRect(baseMenuCtx, i * baseMenuCanvas.width / 5 + 8, 4, baseMenuCanvas.width / 5 - 8, 32, 16, true, false);
@@ -83,7 +78,7 @@ global.rBaseGui = function () {
 
     baseMenuCtx.fillStyle = `white`;
     for (let i = 0; i < 5; i++) { // Write tab names
-        write(baseMenuCtx, tabs[i], (i * baseMenuCanvas.width / 5 + baseMenuCanvas.width / 10), 23);
+        write(baseMenuCtx, translate(tabs[i]), (i * baseMenuCanvas.width / 5 + baseMenuCanvas.width / 10), 23);
     }
 
     baseMenuCtx.fillStyle = `yellow`;

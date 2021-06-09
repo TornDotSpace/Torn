@@ -21,13 +21,13 @@ import { translate } from "../localizer.ts";
 global.rMore = function () {
     baseMenuCtx.textAlign = `center`;
     baseMenuCtx.font = `26px ShareTech`;
-    const data = [translate(`Wiki`), translate(`Store`), translate(`Leaderboard`), translate(`Github`), translate(`Discord`), translate(`Credits`)];
+    const data = [`Wiki`, `Store`, `Leaderboard`, `Github`, `Discord`, `Credits`];
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 2; j++) {
             baseMenuCtx.fillStyle = (seller == 500 + i + j * 3) ? `lime` : `yellow`;
             const rendX = 128 + i * 256;
             const rendY = 40 + j * (512 - 40) * 2 / 3 + (512 - 40) / 6;
-            write(baseMenuCtx, data[i + j * 3], rendX, rendY);
+            write(baseMenuCtx, translate(data[i + j * 3]), rendX, rendY);
         }
     }
     baseMenuCtx.textAlign = `left`;
@@ -49,11 +49,8 @@ global.moreOnHover = function () {
 
 global.moreOnClick = function (buttonID) {
     // more page
-    if (buttonID == 500) window.open(`https://tornspace.wikia.com/wiki/Torn.space_Wiki`, `_blank`);
-    if (buttonID == 501) window.open(`/store`, `_blank`);
-    if (buttonID == 502) window.open(`/leaderboard`, `_blank`);
-    // row 2
-    if (buttonID == 503) window.open(`https://github.com/TornDotSpace/Torn`, `_blank`);
-    if (buttonID == 504) window.open(`https://discord.gg/tGrYXwP`, `_blank`);
-    if (buttonID == 505) window.open(`/credits`, `_blank`);
+    const linkArr = [`https://tornspace.wikia.com/wiki/Torn.space_Wiki`, `/store`, `/leaderboard`, `https://github.com/TornDotSpace/Torn`, `https://discord.gg/tGrYXwP`, `/credits`];
+    for (let i = 0; i < 6; i++) {
+        if (buttonID == 500 + i) window.open(linkArr[i], `_blank`);
+    }
 };

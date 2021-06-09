@@ -99,23 +99,14 @@ function renderStatistics () {
 }
 
 function renderTrailSelector () {
-    baseMenuCtx.fillStyle = seller == 700 ? `yellow` : `white`;
-    write(baseMenuCtx, translate(`[Default Trail]`), 512 + 128, 44 + 64 - 1 * 16);
-    if (tag === `B` || achs[12]) {
-        baseMenuCtx.fillStyle = seller == 701 ? `yellow` : `red`;
-        write(baseMenuCtx, translate(`[Blood Trail]`), 512 + 128, 44 + 64 + 1 * 16);
-    } if (tag === `B` || achs[24]) {
-        baseMenuCtx.fillStyle = seller == 702 ? `yellow` : `gold`;
-        write(baseMenuCtx, translate(`[Money Trail]`), 512 + 128, 44 + 64 + 3 * 16);
-    } if (tag === `B` || achs[36]) {
-        baseMenuCtx.fillStyle = seller == 703 ? `yellow` : `lightgray`;
-        write(baseMenuCtx, translate(`[Panda Trail]`), 512 + 128, 44 + 64 + 5 * 16);
-    } if (tag === `B` || achs[47]) {
-        baseMenuCtx.fillStyle = seller == 704 ? `yellow` : `cyan`;
-        write(baseMenuCtx, translate(`[Random Trail]`), 512 + 128, 44 + 64 + 7 * 16);
-    } if (tag === `B` || tag === `O` || tag === `A`) {
-        baseMenuCtx.fillStyle = seller == 705 ? `yellow` : getRainbowColor();
-        write(baseMenuCtx, translate(`[Rainbow Trail]`), 512 + 128, 44 + 64 + 9 * 16);
+    const colorArr = [`white`, `red`, `gold`, `lightgray`, `cyan`, getRainbowColor()];
+    const trailNameArr = [`[Default Trail]`, `[Blood Trail]`, `[Money Trail]`, `[Panda Trail]`, `[Random Trail]`, `[Rainbow Trail]`];
+    const conditionArr = [true, achs[12], achs[24], achs[36], achs[47], tag === `O` || tag === `A`];
+    for (let i = 0; i < 6; i++) {
+        if (tag === `B` || conditionArr[i]) {
+            baseMenuCtx.fillStyle = seller == 700 + i ? `yellow` : colorArr[i];
+            write(baseMenuCtx, translate(trailNameArr[i]), 640, 92 + 32 * i);
+        }
     }
 }
 
@@ -138,64 +129,39 @@ function renderUpgradeButtons () {
     baseMenuCtx.fillStyle = `white`;
     baseMenuCtx.font = `12px ShareTech`;
     baseMenuCtx.textAlign = `center`;
-    write(baseMenuCtx, translate(`Thrust lvl `) + ((t2 - 1) * 8), 64 + 54, 416 - 64 + 14);
-    write(baseMenuCtx, translate(`Radar lvl `) + ((va2 - 1) * 8), 192 + 54, 416 - 64 + 14);
-    write(baseMenuCtx, translate(`Cargo lvl `) + ((c2 - 1) * 8), 64 + 54, 416 + 14);
-    write(baseMenuCtx, translate(`Hull lvl `) + ((mh2 - 1) * 8), 192 + 54, 416 + 14);
-    write(baseMenuCtx, translate(`Energy lvl `) + ((e2 - 1) * 8), 320 + 54, 416 - 64 + 14);
-    write(baseMenuCtx, translate(`Agility lvl `) + ((ag2 - 1) * 8), 320 + 54, 416 + 14);
 
-    // upgrades
-    baseMenuCtx.fillStyle = (seller == 200) ? `lime` : `white`;
-    write(baseMenuCtx, `[+] $${numToLS(techPrice(t2))}`, 64 + 54, 416 - 64 + 28);
-    baseMenuCtx.fillStyle = (seller == 201) ? `lime` : `white`;
-    write(baseMenuCtx, `[+] $${numToLS(techPrice(va2))}`, 192 + 54, 416 - 64 + 28);
-    baseMenuCtx.fillStyle = (seller == 202) ? `lime` : `white`;
-    write(baseMenuCtx, `[+] $${numToLS(techPrice(c2))}`, 64 + 54, 416 + 28);
-    baseMenuCtx.fillStyle = (seller == 203) ? `lime` : `white`;
-    write(baseMenuCtx, `[+] $${numToLS(techPrice(mh2))}`, 192 + 54, 416 + 28);
-    baseMenuCtx.fillStyle = (seller == 204) ? `lime` : `white`;
-    write(baseMenuCtx, `[+] $${numToLS(techPrice(e2) * 8)}`, 320 + 54, 416 - 64 + 28);
-    baseMenuCtx.fillStyle = (seller == 205) ? `lime` : `white`;
-    write(baseMenuCtx, `[+] $${numToLS(techPrice(ag2))}`, 320 + 54, 416 + 28);
+    const currTechArr = [t2, va2, c2, mh2, e2, ag2];
+    const titlesArr = [`Thrust lvl `, `Radar lvl `, `Cargo lvl `, `Hull lvl `, `Energy lvl `, `Agility lvl `];
 
-    // downgrades
-    baseMenuCtx.fillStyle = (seller == 206) ? `red` : `white`;
-    if (t2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(t2))}`, 64 + 54, 416 - 64 + 42);
-    baseMenuCtx.fillStyle = (seller == 207) ? `red` : `white`;
-    if (va2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(va2))}`, 192 + 54, 416 - 64 + 42);
-    baseMenuCtx.fillStyle = (seller == 208) ? `red` : `white`;
-    if (c2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(c2))}`, 64 + 54, 416 + 42);
-    baseMenuCtx.fillStyle = (seller == 209) ? `red` : `white`;
-    if (mh2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(mh2))}`, 192 + 54, 416 + 42);
-    baseMenuCtx.fillStyle = (seller == 210) ? `red` : `white`;
-    if (e2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(e2) * 8)}`, 320 + 54, 416 - 64 + 42);
-    baseMenuCtx.fillStyle = (seller == 211) ? `red` : `white`;
-    if (ag2 > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(ag2))}`, 320 + 54, 416 + 42);
+    for (let i = 0; i < 6; i++) {
+        // titles
+        baseMenuCtx.fillStyle = `white`;
+        write(baseMenuCtx, translate(titlesArr[i]) + ((currTechArr[i] - 1) * 8), 118 + 128 * (i % 3), 366 + 64 * (i % 2));
+
+        // upgrades
+        baseMenuCtx.fillStyle = (seller == 200 + i) ? `lime` : `white`;
+        write(baseMenuCtx, `[+] $${numToLS(techPrice(currTechArr[i]) * (i == 4 ? 8 : 1))}`, 118 + 128 * (i % 3), 380 + 64 * (i % 2));
+
+        // downgrades
+        baseMenuCtx.fillStyle = (seller == 206 + i) ? `red` : `white`;
+        if (currTechArr[i] > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(currTechArr[i]) * (i == 4 ? 8 : 1))}`, 118 + 128 * (i % 3), 394 + 64 * (i % 2));
+    }
 }
 
 global.statsOnHover = function () {
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
-    if (y > 416 - 64 + 16 && y < 416 - 64 + 30 && x > 64 && x < 64 + 112) seller = 200;
-    else if (y > 416 - 64 + 16 && y < 416 - 64 + 30 && x > 192 && x < 192 + 112) seller = 201;
-    else if (y > 416 + 16 && y < 416 + 30 && x > 64 && x < 64 + 112) seller = 202;
-    else if (y > 416 + 16 && y < 416 + 30 && x > 192 && x < 192 + 112) seller = 203;
-    else if (y > 416 - 64 + 16 && y < 416 - 64 + 30 && x > 320 && x < 320 + 112) seller = 204;
-    else if (y > 416 + 16 && y < 416 + 30 && x > 320 && x < 320 + 112) seller = 205;
+    for (let i = 0; i < 6; i++) {
+        if (y > 368 + 64 * (i % 2) && y < 382 + 64 * (i % 2) && x > 64 + 128 * (i % 3) && x < 176 + 128 * (i % 3)) { seller = 200 + i; break; }
+        if (y > 384 + 64 * (i % 2) && y < 398 + 64 * (i % 2) && x > 64 + 128 * (i % 3) && x < 176 + 128 * (i % 3)) { seller = 206 + i; break; }
+        seller = 0;
+    }
 
-    else if (y > 416 - 64 + 32 && y < 416 - 64 + 46 && x > 64 && x < 64 + 112) seller = 206;
-    else if (y > 416 - 64 + 32 && y < 416 - 64 + 46 && x > 192 && x < 192 + 112) seller = 207;
-    else if (y > 416 + 32 && y < 416 + 46 && x > 64 && x < 64 + 112) seller = 208;
-    else if (y > 416 + 32 && y < 416 + 46 && x > 192 && x < 192 + 112) seller = 209;
-    else if (y > 416 - 64 + 32 && y < 416 - 64 + 46 && x > 320 && x < 320 + 112) seller = 210;
-    else if (y > 416 + 32 && y < 416 + 46 && x > 320 && x < 320 + 112) seller = 211;
-
-    else if (y > 44 + 64 - 24 && y < 44 + 64 + 8 * 21 && x > 512 && x < 768) {
+    if (y > 44 + 64 - 24 && y < 44 + 64 + 8 * 21 && x > 512 && x < 768) {
         seller = 700 + Math.floor((y - 44 - 64 + 24) / 32);
         if (tag !== `B` && ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && !(tag === `O` || tag === `A`)))) seller = 0;
-    } else seller = 0;
+    } else if (seller < 200 || seller > 211) seller = 0;
 };
 
 global.statsOnClick = function (buttonID) {
