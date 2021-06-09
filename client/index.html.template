@@ -16,7 +16,7 @@
     <meta property="og:image" content="/img/red/r1.png">
 
     <!-- Icon --> 
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 
     <link rel="stylesheet" href="/assets/css/index.css">
 
