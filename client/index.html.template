@@ -15,7 +15,10 @@
     <meta property="og:description" content="Complete and upgrade your warship in the ongoing space war!">
     <meta property="og:image" content="/img/red/r1.png">
 
-    <link rel="stylesheet" href="./assets/css/index.css">
+    <!-- Icon --> 
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/assets/css/index.css">
 
     <!-- Google Analytics -->
     <script src="https://www.googletagmanager.com/gtag/js?id=UA-81486045-1"></script>
