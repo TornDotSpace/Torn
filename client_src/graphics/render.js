@@ -819,6 +819,20 @@ global.rRadar = function () {
             ctx.closePath();
         }
     }
+    if (tag === `B`) {
+        ctx.fillStyle = brighten(planets.color);
+        const dx = planets.x - px;
+        const dy = planets.y - py;
+        if (square(dx) + square(dy) < r2z2) {
+            const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+            const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+            ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
+            ctx.beginPath();
+            ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
     ctx.lineWidth = 2;
     for (let a in astsInfo) {
         a = astsInfo[a];

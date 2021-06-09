@@ -588,7 +588,6 @@ socket.on(`planets`, (data) => {
 });
 socket.on(`planetMap`, (data) => {
     planetMap2D[data.sx][data.sy] = data;
-    console.log(planetMap2D);
 });
 socket.on(`baseMap`, (data) => {
     mapSz = data.mapSz;
