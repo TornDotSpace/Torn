@@ -16,7 +16,7 @@
 <body>
     <main class="container text-light">
         <h1 class="text-center my-5">Forgot Password</h1>
-        <form onsubmit="return resetPass()" class="w-50 m-auto p-3 rounded">
+        <form onsubmit="return forgotPass()" class="w-50 m-auto p-3 rounded">
             <div class="mb-3" class="form-group">
                 <label for="reset-email" class="mb-2">Email</label>
                 <input type="reset-email" class="form-control" id="reset-email" required>
@@ -32,7 +32,7 @@
     </main>
 
     <script>
-        const resetPass = () => {
+        const forgotPass = () => {
             const email = document.querySelector(`#reset-email`)?.value;
             const username = document.querySelector(`#reset-username`)?.value;
 
