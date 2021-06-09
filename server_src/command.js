@@ -35,8 +35,8 @@ const ADMIN = 20;
 const OWNER = 30;
 const EVERYONE = [GUEST, PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
 const REGISTERED = [PLAYER, YOUTUBER, VIP, MVP, MODERATOR, ADMIN, OWNER];
-const VIPPLUS = [VIP, MVP, MODERATOR, ADMIN, OWNER];
-const MVPPLUS = [MVP, MODERATOR, ADMIN, OWNER];
+const VIPPLUS = [VIP, MVP, ADMIN, OWNER];
+const MVPPLUS = [MVP, ADMIN, OWNER];
 const MODPLUS = [MODERATOR, ADMIN, OWNER];
 const ADMINPLUS = [ADMIN, OWNER];
 
@@ -198,8 +198,8 @@ cmds.mute = new Command(`/mute <player> - You will no longer hear the player's c
     const name = split[1];
     const player = getPlayerFromName(name);
     if (player == -1) {
-	    ply.socket.emit(`chat`, { msg: `Player '${name}' not found.` });
-	    return;
+        ply.socket.emit(`chat`, { msg: `Player '${name}' not found.` });
+        return;
     }
     ply.socket.emit(`mute`, { player: name });
     ply.socket.emit(`chat`, { msg: `Muted ${name}.` });
@@ -212,8 +212,8 @@ cmds.unmute = new Command(`/unmute <player> - You will begin hearing the player'
     const name = msg.split(` `)[1];
     const player = getPlayerFromName(name);
     if (player == -1) {
-	    ply.socket.emit(`chat`, { msg: `Player '${name}' not found.` });
-	    return;
+        ply.socket.emit(`chat`, { msg: `Player '${name}' not found.` });
+        return;
     }
     ply.socket.emit(`unmute`, { player: name });
     ply.socket.emit(`chat`, { msg: `Unmuted ${name}.` });
@@ -280,6 +280,52 @@ cmds.guildinvite = new Command(`/guildinvite - Get guild invite code.`, VIPPLUS,
     }
     guildList[playersguild].invite = `${Math.floor(Math.random() * 100000)}`;
     player.socket.emit(`chat`, { msg: `You can invite one user with invitation ${guildList[playersguild].invite}. Run this command again to invite another player.` });
+});
+
+cmds.give = new Command(`/give - Give a player money.`, MVPPLUS, (player, msg) => {
+    const split = msg.split(` `);
+    if (split.length != 3) {
+        player.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/give playername amountofmoney'` });
+        return;
+    }
+
+    // parse player name
+    const recipientName = split[1];
+    const recipient = getPlayerFromName(recipientName);
+    if (recipient == -1) {
+        player.socket.emit(`chat`, { msg: `~\`red~\`Player ${recipient.nameWithColor()} not found.` });
+        return;
+    }
+    if (!recipient.docked) {
+        player.socket.emit(`chat`, { msg: `~\`red~\`Player ${recipient.nameWithColor()} not docked.` });
+        return;
+    }
+    if (!player.docked) {
+        player.socket.emit(`chat`, { msg: `~\`red~\`This command is only available when docked at a base.` });
+        return;
+    }
+
+    // parse money amount
+    const moneyAmount = parseInt(split[2]);
+    if (isNaN(moneyAmount)) {
+        player.socket.emit(`chat`, { msg: `~\`red~\`Invalid money amount.` });
+        return;
+    }
+    if (moneyAmount <= 0) {
+        player.socket.emit(`chat`, { msg: `~\`red~\`Invalid money amount.` });
+        return;
+    }
+    if (moneyAmount > player.money) {
+        player.socket.emit(`chat`, { msg: `~\`red~\`You don't have that much money!` });
+        return;
+    }
+
+    player.money -= moneyAmount;
+    recipient.money += moneyAmount;
+    player.save();
+    recipient.save();
+    player.socket.emit(`chat`, { msg: `~\`yellow~\`You gave $${moneyAmount} to ${recipient.nameWithColor()}!` });
+    recipient.socket.emit(`chat`, { msg: `~\`yellow~\`You were given $${moneyAmount} from ${player.nameWithColor()}!` });
 });
 
 findGuildFromOwner = function (owner) {
