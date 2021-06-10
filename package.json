@@ -63,7 +63,6 @@
     "cors": "^2.8.5",
     "discord.js": "^12.5.3",
     "express": "^4.17.1",
-    "helmet": "^4.6.0",
     "howler": "^2.2.1",
     "mongodb": "^3.6.9",
     "node-fetch": "^2.6.1",

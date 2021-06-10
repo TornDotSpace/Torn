@@ -19,7 +19,6 @@ const HTTP = require(`http`);
 const express = require(`express`);
 
 const cors = require(`cors`);
-const helmet = require(`helmet`);
 
 const path = require(`path`);
 
@@ -30,8 +29,6 @@ app.use(express.json({ limit: `5mb` }));
 app.use(express.urlencoded({ limit: `5mb`, extended: true }));
 
 app.use(cors());
-app.use(helmet({ contentSecurityPolicy: false }));
-
 app.use(`/`, express.static(path.resolve(__dirname, `client`)));
 
 // 8443 for production, 7301 for dev.
