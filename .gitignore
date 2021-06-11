@@ -126,6 +126,7 @@ logs/
 error_logs/
 
 # Compiled client scripts.
+*.client.js
 client.js
 
 # License
