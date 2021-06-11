@@ -15,9 +15,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Socket } from "socket.io";
-import { translate } from "./localizer";
-
+import { Socket } from 'socket.io-client';
+import { translate } from './localizer';
 
 /* eslint-disable */
 // BEGIN TYPESCRIPT TRANSITION HACKS
