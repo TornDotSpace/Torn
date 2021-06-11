@@ -30,10 +30,10 @@ global.renderLeaderboard = function () {
     lbctx.fillStyle = guiColor;
     lbctx.globalAlpha = guiOpacity;
     roundRect(lbctx, 0, -8, leaderboardcanvas.width + 8, (lb.length + 4) * 16 + 2 + 8, 16, true, false);
-    lbctx.globalAlpha = 1;
 
     lbctx.fillStyle = pc;
     roundRect(lbctx, 39, Math.min(youi, 16) * 16 + 52, myName.length * 8 + 7, 16, 7, true, false);
+    lbctx.globalAlpha = 1;
 
     lbctx.fillStyle = `yellow`;
     lbctx.font = `24px ShareTech`;

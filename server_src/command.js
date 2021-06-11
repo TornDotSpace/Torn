@@ -336,6 +336,10 @@ cmds.basetp = new Command(`/basetp - Teleport to another base.`, MVPPLUS, (comma
         commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`This command is only available when docked at a base.` });
         return;
     }
+    if (commandExecuter.silver + commandExecuter.iron + commandExecuter.copper + commandExecuter.platinum > 0) {
+        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`You must sell all your ore to use this command!` });
+        return;
+    }
 
     const old_sy = commandExecuter.sy;
     const old_sx = commandExecuter.sx;

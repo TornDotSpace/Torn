@@ -41,7 +41,7 @@ module.exports = class Base {
 
     tick () {
     // spawn a bot if we need more bots
-        if (!this.baseType == SENTRY) {
+        if (this.baseType !== SENTRY) {
             const botSpawn = Math.random();
             const healthPercent = Math.max(this.health / this.maxHealth, 0.1);
             if (botSpawn * healthPercent < botFrequency) {
