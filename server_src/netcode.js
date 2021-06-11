@@ -725,7 +725,7 @@ module.exports = initNetcode = () => {
             if (data.trail == 3 && (player.driftAchs[11] || player.tag === `B`)) player.trail = 3;
             if (data.trail == 4 && (player.randmAchs[10] || player.tag === `B`)) player.trail = 4;
             if (data.trail == 5 && (player.tag === `B` || player.tag === `O` || player.tag === `A`)) player.trail = 5;
-            if (player.name.includes(` `)) player.trail += 16;
+            if (player.tag === `V` || player.tag === `B` || player.tag === `O` || player.tag === `A`) player.trail += 16;
         });
     });
 };
