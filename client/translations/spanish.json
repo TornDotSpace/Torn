@@ -1,11 +1,11 @@
 {
 	"achNames":[
-		"Primera sangre:Mata 1 nave",
+		"Primera sangre:Destruye 1 nave",
 		"De seguidilla:Mata a 10 jugadores",
 		"Sed de Sangre:Mata a 100 jugadores",
 		"General:Mata a 1,000 jugadores",
 		"Señor de la Guerra:Mata a 4,000 jugadores",
-		"Reaper:Mata a 10,000 jugadores",
+		"Segador:Mata a 10,000 jugadores",
 		"Envidioso:Mata una nave con rastro personalizado",
 		"Invasor:Destruye una torreta",
 		"Conquistador:Destruye 100 torretas",
@@ -13,7 +13,7 @@
 		"Ir Postal:Mata a un repartidor",
 		"Emo:Suicídate con GravBomb",
 		"Rastro de Sangre:Resistencia x1.05 a armas",
-		"Minero:Mina un asteroide",
+		"Minero:Destruye un asteroide",
 		"Colector:Mina uno de cada mineral",
 		"Cantero:Obtén 3,000 Minerales",
 		"Veta Madre:Obtén 15,000 Minerales",
@@ -220,35 +220,35 @@
 			"desc":"Dispara ésto contra una nave no tripulada de tu equipo y te seguirá hasta que sea destruida."
 		},
 		{
-			"name":"Photon Orb",
-			"desc":"Tracks players with Photon Cloak, but does not do as much damage as most other weapons."
+			"name":"Orbe de Fotones",
+			"desc":"se dirigirá al jugador que este usando ocultación fotónica, Pero no hará tanto daño como las demás armas."
 		},
 		{
-			"name":"Pulse Mine",
-			"desc":"Repeatedly fires a damaging shockwave while other players are in range.",
+			"name":"Mina de pulso",
+			"desc":"Repetitivamente daña en ola a las naves enemigas cercanas.",
 			"killmessages":[
-				"P1 pulse-mined P2!"
+				"P1 Pulso-Mino P2!"
 			]
 		},
 		{
-			"name":"Campfire",
-			"desc":"Quickly heals nearby friendly players, as long as there are at least 2 of them."
+			"name":"Hoguera",
+			"desc":"Cura rápidamente naves aliadas cercanas, Siempre y cuando haya al menos 2 naves cerca."
 		},
 		{
-			"name":"Healing Beam",
-			"desc":"Heals nearby players and bases."
+			"name":"Rayo de curacion",
+			"desc":"Cura naves aliadas cercanas y bases aliadas."
 		},
 		{
-			"name":"Sentry",
-			"desc":"A small turret which fires a machine gun. As well as with normal turrets, there can only be 1 Sentry, or turret, at the time in the sector."
+			"name":"Centinela",
+			"desc":"Una pequeña torreta que dispara ametralladora. Como las torretas normales, solo puede haber 1 centinela, O torreta, por sector."
 		},
 		{
-			"name":"Lepton Pulse",
-			"desc":"A small, repeated fire Muon Ray. Compared with its big counterpart, it deals far less damage, but shots far faster."
+			"name":"Pulso de leptón",
+			"desc":"Un pequeño, Disparo repetitivo de rayo muon. Comparado con su contraparte, Hará mucho menos daño , pero se dispara rápido."
 		},
 		{
-			"name":"Magnetic Mine",
-			"desc":"Just a normal kind of mine... magnetically attracted to enemy ships if too close."
+			"name":"Mina magnetica",
+			"desc":"Un tipo normal de mina... Magnéticamente atraída a las naves enemigas."
 		}
 	],
 	"splashes":[
@@ -547,13 +547,13 @@
 			"nameA":"Anomalocaris",
 			"nameH":"Einstein",
 			"nameC":"Heisenberg",
-			"desc":"A massive, heavy dreadnought with no C-Slot, but repelled to an extent from BH."
+			"desc":"Un masivo, Gran acorazado, Sin Casilla-C, Pero repelido de los agujeros negros."
 		},
 		{
-			"nameA":"Olympic",
-			"nameH":"Necromancer",
-			"nameC":"Lamprey",
-			"desc":"A medical, fast response ship. Always needs a partner to use the leech heal, except from asteroids."
+			"nameA":"Olímpico",
+			"nameH":"Nigromante",
+			"nameC":"Lamprea",
+			"desc":"Nave medica, De respuesta rápida, Siempre ocupara un compañero para usar su rayo de curación, excepto de los asteroides."
 		}
 	]
 }
