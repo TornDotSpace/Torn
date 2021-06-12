@@ -39,125 +39,205 @@
 		"Rastro Panda:x1.05 a agilidad",
 		"Aquí para quedarme:Crea una cuenta",
 		"¡Au!:Muere",
-		"Trabajo Peligroso:Acepta una misión en D4",
-		"Demasiado Lento:Cae en un Agujero de Gusano",
-		"Ups...:Cae en un Agujero Negro",
-		"¡Boing!:Rebota en el borde",
+		"Trabajo Peligroso:Acepta una misión en sector con agujero negro",
+		"Demasiado Lento:Cae en un agujero de gusano",
+		"Ups...:Cae en un agujero negro",
+		"¡Boing!:toca el borde",
 		"Viajero:Visita cada sector",
 		"Esquizoide:Visita las cuatro esquinas",
 		"Astronauta:Toma un planeta",
-		"Imperialista:Toma todos los planetas de una vez",
-		"Rastro Aleatorio:Zigzaguea más lejos",
-		"Pro:Llega a la clasificación"
+		"Imperialista:Conquista todos los planetas una vez",
+		"Rastro Azaroso:Zigzaguea más lejos!",
 	],
 	"weapons":[
 		{
 			"name":"Cañón Básico",
 			"desc":"Un arma básica de medio alcance."
+			"killmessages":[
+				"P1 disparó a P2!",
+				"P1 capó a P2!",
+				"P1 llenó a P2 con plomo!"
+			]
 		},
 		{
 			"name":"Cañón de Plasma",
 			"desc":"Solo útil para combates a muy corta distancia contra objetivos más grandes y lentos. De recarga y disparos lentos, esta arma lleva un poderoso golpe."
+			"killmessages":[
+				"P1 vaporizó a P2 con un cañón de plasma!"
+			]
 		},
 		{
 			"name":"Cañón de Popa",
 			"desc":"¡Quítate de mi cola! Igual que el Cañón Básico pero dispara hacia detrás y es un 50% más potente, y por consiguiente, más caro."
+			"killmessages":[
+				"P1 dió a P2 por detrás!"
+			]
 		},
 		{
 			"name":"Rifle",
 			"desc":"Potente arma de larga distancia con balas rápidas y más potentes. Ideal para disparar desde una distancia de seguridad a un montón de enemigos."
+			"killmessages":[
+				"P1 destruyó a largo alcance a P2!",
+				"P1 fusiló a P2!",
+				"P1 cannocó a P2!"
+			]
 		},
 		{
 			"name":"Escopeta",
 			"desc":"Muy útil para una emboscada. Dispara en spray muchos tiros a la vez desde dónde disparas, con la desventaja de ser ligeramente difícil de controlar."
+			"killmessages":[
+				"P1 cañoneó doblemente a P2!",
+				"P1 llenó a P2 con perdigones!",
+				"P1 confundio a P2 por una codorniz!",
+				"P1 escopetó P2!"
+			]
 		},
 		{
 			"name":"Ametralladora",
 			"desc":"¡Disparo rápido! La munición es algo débil, ¡pero eso no importa si disparas 6 veces por segundo!"
+			"killmessages":[
+				"P1 descargó P2!",
+				"P1 ametralló P2!"
+			]
 		},
 		{
 			"name":"Minigun",
 			"desc":"Una ametralladora con dos cañones activos simultáneos con balas más lentas y ligeramente más débiles. Buena arma si la apuntas con rapidez."
+			"killmessages":[
+				"P1 minigunned P2!"
+			]
 		},
 		{
 			"name":"Rayo de Plasma",
 			"desc":"Arma de corto alcance que apunta automáticamente al objetivo más cercano con un rayo de Plasma."
+			"killmessages":[
+				"P1 evaporó P2 con plasma!",
+				"P1 derritió P2 con plasma!"
+			]
 		},
 		{
 			"name":"Rayo Láser",
 			"desc":"Rayo de medio alcance que apunta automáticamente al objetivo más cercano y dispara pequeñas ráfagas láser. Inefectivo contra torretas por su consumo energético."
+			"killmessages":[
+				"P1 evaporó P2 con un láser!",
+				"P1 laseó un agujero a través de P2!",
+				"P1 quemó un agujero a través de P2!",
+				"P1 derritió a P2 con un láser!"
+			]
 		},
 		{
 			"name":"Rayo de Hadrones",
 			"desc":"Rayo acelerador de partículas de medio-largo alcance. Hace mucho daño, pero tarda en recargarse. Puede usarse como as en la manga para situaciones delicadas."
+			"killmessages":[
+				"P1 esparció las partículas de P2!",
+				"P1 desintegró los núcleos de P2!",
+				"P1 derritió los átomos de P2!"
+			]
 		},
 		{
 			"name":"Misil",
 			"desc":"Este misil seguirá al objetivo más cercano y explotará en contacto, a menos que no haya objetivo, en cuyo caso irá de frente. Sin embargo, ten cuidado: este misil es algo lento y puede ser adelantado por enemigos rápidos."
+			"killmessages":[
+				"P1 dió a P2!",
+				"P1 misiló a P2!"
+			]
 		},
 		{
 			"name":"Misil Pesado",
 			"desc":"Un misil más poderoso y lento, bueno contra nave más lentas y poderosas."
+			"killmessages":[
+				"P1 dió a P2 con un misil pesado!",
+				"P1 heavy-missiled P2!"
+			]
 		},
 		{
 			"name":"Misil PEM",
-			"desc":"Misil de corto alcance que daña y genera un Pulso Electromagnético que paraliza al enemigo por 2 segundos. Úsalo principalmente para aturdir un objetivo rápido antes de disparar armas guiadas. Efectivo contra torretas."
+			"desc":"Misil de corto alcance que daña y genera un Pulso Electromagnético que paraliza al enemigo por un tiempo. Úsalo principalmente para aturdir un objetivo rápido antes de disparar armas guiadas. Efectivo contra torretas."
+			"killmessages":[
+				"P1 espearció los electrones de P2!",
+				"P1 guió a P2 con un misil PEM!",
+				"P1 PEM-missiled P2!"
+			]
 		},
 		{
 			"name":"Misil de Enjambre",
-			"desc":"Dispara un misil que se divide en 6 misiles que pueden atacar una horda enemiga. Excelente para defenderse de una emboscada de naves más lentas."
+			"desc":"Dispara un misil no dañino que se divide en una horda de misiles que atacará a una horda de enemigos. Buena herramienta contra una gran emboscada."
+			"killmessages":[
+				"P1 enjambró a P2 con misiles!",
+				"P1 misil-enjambreó P2!",
+				"P1 abrumó a P2 con misiles!"
+			]
 		},
 		{
 			"name":"Torpedo",
 			"desc":"Misil ultra-rápido de muy largo alcance."
+			"killmessages":[
+				"P1 confundió a P2 por un submarino!",
+				"P1 reventó a P2 fuera del agua!"
+			]
 		},
 		{
 			"name":"Mina",
 			"desc":"Una simple mina que explota al impactar contra una nave enemiga. Es difícil que un enemigo te siga con éstas."
+			"killmessages":[
+				"P2 entró al campo de minas de P1!"
+			]
 		},
 		{
 			"name":"Mina Láser",
 			"desc":"Dispara un potente rayo Láser a los enemigos que se acercan demasiado."
+			"killmessages":[
+				"La mina láser de P1 evaporó a P2!",
+				"La mina láser de P1 quemó un agujero a través de P2!",
+				"La mina láser de P1 derritió a P2!"
+			]
 		},
 		{
 			"name":"Mina PEM",
 			"desc":"Idéntica a la mina estándar pero con menos daño y capacidad de generar un Pulso Electromagnético que paraliza al enemigo por 3 segundos. Muy útil cuando estás siendo perseguido."
+			"killmessages":[
+				"La mina PEM de P1 dispersó los electrones de P2!",
+				"P1 EMP-minó P2!"
+			]
 		},
 		{
 			"name":"Nanobots del casco",
-			"desc":"Reparan el casco de tu nave, pero a un gran coste energético y de nanorobots."
+			"desc":"Reparan el 25% del casco de tu nave(o lomínimo anunciado, el que sane más). Naves con niveles extremos de salud amarán esto."
 		},
 		{
 			"name":"Ocultación fotónica",
-			"desc":"Vuélvete invisible por 5 segundos."
+			"desc":"Vuélvete invisible para un escape rápido. La eficiencia energética y el supercargador incrementan sus efectos."
 		},
 		{
 			"name":"Generador",
-			"desc":"Incrementan tu recarga energética y de armas en un 6% por generador, a la vez que te vuelven un 10% menos ágil."
+			"desc":"Incrementan tu recarga energética y de armas en un 5% por generador, a la vez que te vuelven un 10% menos ágil."
 		},
 		{
 			"name":"Turbo",
-			"desc":"Herramienta de inducción forzada que suplementa tu motor para una mayor velocidad y aceleración, aumentando cuándo derrapas. Uso infinito."
+			"desc":"Herramienta de inducción forzada que suplementa tu motor para una mayor velocidad y aceleración, aumentando cuándo derrapas."
 		},
 		{
 			"name":"Motor Hiperespacial",
-			"desc":"Herramienta de un solo uso que al desplazarte parcialmente a otra dimensión te permite obtener un gran extra de velocidad y aceleración, siendo perfecto para huir de Vórtices y Agujeros Negros o simplemente ir de A a B en un tris."
+			"desc":"Herramienta de un solo uso que proporciona un incremento de velocidad de largo alcance. Gracias a que te desplaza parcialmente a otra dimensión, no sufrirás daño de cruce de sector."
 		},
 		{
 			"name":"Onda Repulsora",
-			"desc":"Empuja todas las naves enemigas en una gran explosión. Uso múltiple, aunque con solo una munición."
+			"desc":"Empuja todas las naves enemigas en una gran explosión."
 		},
 		{
 			"name":"Campo electrotractor",
-			"desc":"Mediante un campo electromagnético acelera asteroides y naves hacia ti. Con práctica, se pueden empujar asteroides a los enemigos, dañándolos, siendo especialmente efectivo contra las torretas, aunque no obtendrás ni experiencia ni recompensa de ellas si las destruyes con asteroides."
+			"desc":"Mediante un campo electromagnético repele asteroides y manipula/inutiliza los motores de curvatura enemigos.Con práctica, se pueden empujar asteroides a los enemigos, dañándolos, siendo especialmente efectivo contra las torretas, aunque no obtendrás ni experiencia ni recompensa de ellas si las destruyes con asteroides."
 		},
 		{
 			"name":"Haz PEM",
-			"desc":"Arma en la que todas las naves del sector que toquen el rayo son paralizadas por 4 segundos, aunque necesitarás 6 segundos con energía 1.0 para poder volver a disparar."
+			"desc":"Arma frontal con la que todas las naves y bases tocadas por el rayo quedarán inutilizadas por un largo período"
 		},
 		{
 			"name":"Láser minero",
 			"desc":"Idéntico al Rayo Láser pero con más daño y solo está programado para atacar asteroides o al rango 17."
+			"killmessages":[
+				"P1 confundió a P2 por un meteoro!"
+			]
 		},
 		{
 			"name":"Torreta",
@@ -166,38 +246,52 @@
 		{
 			"name":"Bomba de Gravedad",
 			"desc":"Arma de un solo uso que crea una pequeña singularidad tras 3 segundos del disparo, que se disipa en 20 segundos y que se formará a más de 500 unidades de cualquier base. Por si acaso compra algo para huir de la futura implosión."
+			"killmessages":[
+				"P1 espaguetizó a P2!"
+			]
 		},
 		{
 			"name":"Motor de Curvatura",
-			"desc":"Aceleración instantánea para un viaje rápido, a costa de un gran coste energético y una recarga lenta. Aunque de uso infinito, tendrás que repostar tras tres usos."
+			"desc":"Aceleración instantánea para un viaje rápido. Naves con un consumo eficiente de energía y la rango 16 obtienen un ligero impulso adicional al usarla."
 		},
 		{
 			"name":"Rayo Iónico Minero",
-			"desc":"¡Láser Minero con el doble de potencia y un 150% de rango!"
+			"desc":"¡Láser Minero, ahora con más potencia!"
+			"killmessages":[
+				"P1 confundió a P2 por un asteroide!"
+			]
 		},
 		{
-			"name":"Girodinamita",
+			"name":"Desestabilizador",
 			"desc":"Provoca una disrupción en el sistema de estabilización giroscópica, desestabilizando la nave enemiga más próxima por 10 segundos."
 		},
 		{
 			"name":"Mina Impulsora",
-			"desc":"Esta mina inocua explotará 1 segundo tras ser lanzada, ofreciendo un empujón a todas las naves cercanas. Muy útil para desplazarse rápido, especialmente si colocas una tras de ti y surfeas la onda repulsora."
+			"desc":"Esta mina inocua explotará poco después de ser lanzada, ofreciendo un empujón a todas las naves cercanas. Muy útil para desplazarse rápido en naves lentas, simplemente colocas una tras de ti y surfea la onda."
 		},
 		{
 			"name":"Granadas",
-			"desc":"Tira ésto a un enemigo y explotará tras un segundo o por impacto, ¡dañandolo y empujandolo!"
+			"desc":"Tira ésto a un enemigo y explotará pronto (o cuando colisione con este), ¡dañandolo y empujandolo!"
+			"killmessages":[
+				"P1 reventó P2!",
+				"P1 mató P2!"
+			]
 		},
 		{
 			"name":"Haz de Muones",
-			"desc":"Utiliza leptones de segunda generación cargados para generar un poderoso rayo de largo alcance que puede atravesar múltiples objetivos, dañándolos gravemente. Por desgracia, al arma debe ser perfectamente apuntada de frente hacia el objetivo para acertar."
+			"desc":"Utiliza leptones de segunda generación cargados para generar un poderoso rayo de largo alcance que puede atravesar múltiples objetivos, dañándolos gravemente."
+			"killmessages":[
+				"P1 leptonó P2!",
+				"P1 muonó P2!"
+			]
 		},
 		{
 			"name":"Inutilizador",
-			"desc":"Este rayo de corto alcance impedirá disparar al oponente en circunstancias normales."
+			"desc":"Este rayo de corto alcance descarga las armas de aquellos a los que da, e impedirá disparar al oponente por un tiempo, inversamente proporcional al nivel de energía del enemigo."
 		},
 		{
 			"name":"Supercargador",
-			"desc":"Dispositivo de un solo uso que duplicará tu regeneración energética, velocidad y agilidad, aunque también el daño a tu nave."
+			"desc":"Dispositivo de un solo uso que por un minuto duplica el daño a tu nave, pero también duplicará tu regeneración energética, velocidad, agilidad y el efecto de algunos items."
 		},
 		{
 			"name":"Orbe de energía",
@@ -214,10 +308,19 @@
 		{
 			"name":"Subametralladora",
 			"desc":"Como Minigun pero en rondas de 5 disparos."
+			"killmessages":[
+				"P1 descargó en P2!",
+				"P1 SAMó P2!",
+				"P1 subametralló P2!"
+			]
 		},
 		{
 			"name":"Haz hipnotizador",
 			"desc":"Dispara ésto contra una nave no tripulada de tu equipo y te seguirá hasta que sea destruida."
+			"killmessages":[
+				"P1 hizo a P2 saltar de un acantilado sin paracaídas!",
+				"P1 mató a P2!"
+			]
 		},
 		{
 			"name":"Orbe de Fotones",
@@ -232,7 +335,7 @@
 		},
 		{
 			"name":"Hoguera",
-			"desc":"Cura rápidamente naves aliadas cercanas, siempre y cuando haya al menos 2 naves cerca."
+			"desc":"Cura rápidamente naves aliadas cercanas, siempre y cuando haya al menos dos cerca."
 		},
 		{
 			"name":"Rayo curativo",
@@ -243,16 +346,18 @@
 			"desc":"Una pequeña torreta que dispara una ametralladora. Como las torretas normales, solo puede haber 1 centinela, o torreta, por sector."
 		},
 		{
-			"name":"Pulso de leptón",
+			"name":"Pulso leptónico",
 			"desc":"Un pequeño Rayo de Muones de disparo repetitivo. Comparado con su contraparte, hace mucho menos daño, pero dispara rápido."
 		},
 		{
 			"name":"Mina magnetica",
-			"desc":"Un tipo normal de mina... magnéticamente atraída a las naves enemigas."
+			"desc":"Un tipo normal de mina... magnéticamente atraída a las naves enemigas demasiado incautas."
 		}
 	],
 	"splashes":[
 		"",
+		"Expanding Cofactors",
+		"Proving lag is a myth",
 		"Recogiendo exp",
 		"I'm only Human, after all",
 		"Poniendo torretas en el agujero negro",
@@ -262,8 +367,9 @@
 		"Decayendo nombres",
 		"502 Bad Gateway",
 		"Hmmmmm",
-		"Consejo: El sector central contiene un Agujero Negro Supermasivo. Ten cuidado...",
-		"Consejo: Mejorar tu radar proporciona más que ver asteroides, jugadores y bases...",
+		"Consejo: matar a un judagor de alto nivel te hará ganar mucha experiencia, al igual que enemigos",
+		"Consejo: los sectores centrales contienen un Agujero Negro Supermasivo. Ten cuidado",
+		"Consejo: Mejorar tu radar proporciona más que ver asteroides, jugadores y bases",
 		"Consejo: ¡Los minerales más abundantes en terreno enemigo son más valiosos!",
 		"Consejo: ¡Desbloquea todos los logros de un mismo tipo para desbloquear un rastro de color!",
 		"Consejo: ¡Presiona P para acticar el Piloto Automático!",
@@ -271,145 +377,146 @@
 		"Consejo: Alterna rápidamaente A y D / flechas izquierda y derecha al derrapar para ir más rápido",
 		"Consejo: ¡Vim > Emacs!",
 		"Consejo: ¡Vigila siempre tus vidas restantes!",
-		"Consejo: Se recomienda usar Google Chrome...",
+		"Consejo: Se recomienda usar Google Chrome",
 		"Consejo: cuanto más llena esté tu carga más lento irás",
-		"Planeando Cruzada Galáctica...",
+		"Consejo: no mueras",
+		"Planeando Cruzada Galáctica",
 		"Retomando la Tierra Sagrada",
-		"Estoy listo... Estoy listo...",
+		"Estoy listo... Estoy listo",
 		"Uhhhhhhhh",
 		"Puedo tener uhhhhhhhh",
 		"Desencriptando SHA256",
 		"Minando el lecho de roca",
-		"Sacando más Generalísimos...",
-		"Tirando base de datos...",
-		"Iniciando secuencia de autodestrucción...3...2...1...",
-		"Cargando, creo...",
-		"Conduciendo en Aparcamientos...",
-		"Aparcando en Puentes...",
-		"Culpa de la Segmentacion.",
-		"Error: KeyLogger.log(char) está indefinido para los argumentos dados.",
-		"Averiguando contraseñas...",
+		"Sacando más Generalísimos",
+		"Tirando base de datos",
+		"Iniciando secuencia de autodestrucción...3...2...1",
+		"Cargando, creo",
+		"Conduciendo en Aparcamientos",
+		"Aparcando en Puentes",
+		"Culpa de la Segmentacion",
+		"Error: KeyLogger.log(char) está indefinido para los argumentos dados",
+		"Averiguando contraseñas",
 		"bup","Bip bup",
-		"Fresado de la cebolla...",
-		"Haciendo deberes de Estructuras de Datos...",
+		"Fresado de la cebolla",
+		"Haciendo deberes de Estructuras de Datos",
 		"Eyección del Núcleo",
-		"Limpiando tu cuarto...",
-		"Ahora me ves...",
+		"Limpiando tu cuarto",
+		"Ahora me ves",
 		"Estableciendo conexión",
-		"Intercambiando llaves...",
-		"Mezclando Pintura...",
-		"Actualizando Windows. Por Favor, espere...",
+		"Intercambiando llaves",
+		"Mezclando Pintura",
+		"Actualizando Windows. Por Favor, espere",
 		"Instalando Linux",
 		"Instalando Chromium Ultron",
-		"Ralizando Partición de Disco..",
+		"Ralizando Partición de Disco",
 		"¡Actualización de JAVA disponible!",
-		"Liberando al Kraken...",
-		"Mierda...",
-		"Acuerdo con todas las leyes de aviación...",
-		"Respondiendo a Arecibo","Contactar la Luz...",
-		"¿Quien vive en la piña debajo del mar...?",
-		"Esta página está intencionalmente en blanco.",
-		"Si tú o uno de tus seres queridos es diagnosticado de mesotelioma...",
+		"Liberando al Kraken",
+		"Mierda",
+		"Acuerdo con todas las leyes de aviación",
+		"Respondiendo a Arecibo","Contactar la Luz",
+		"¿Quien vive en la piña debajo del mar?",
+		"Esta página está intencionalmente en blanco",
+		"Si tú o uno de tus seres queridos es diagnosticado de mesotelioma",
 		"Liberando a Bobby Shmurda",
-		"Cargando Pedazos...",
-		"Pirateando Sony Vegas...",
-		"Demostrando el Teorema de Stokes...",
+		"Cargando Pedazos",
+		"Pirateando Sony Vegas",
+		"Demostrando el Teorema de Stokes",
 		"Citando a la Wikipedia",
-		"Comiendo pegamento...",
-		"Mi espalda pica...",
+		"Comiendo pegamento",
+		"Mi espalda pica",
 		"Contratando diseñadores Gráficos",
-		"Borrando Torretas...",
-		"¿Es ésto Perdidos...?",
+		"Borrando Torretas",
+		"¿Es ésto Perdidos?",
 		"Gary Johnson 2016",
-		"Buscando mis audífonos...",
-		"Cuadrando un error...",
-		"Preparando la Muerte Caliente...",
-		"Reconstruyendo el Universo...",
+		"Buscando mis audífonos",
+		"Cuadrando un error",
+		"Preparando la Muerte Caliente",
+		"Reconstruyendo el Universo",
 		"¿Cinturón de Seguridad?: comprobado.",
-		"Tachando ideas...",
-		"Añadiendo caracteristica de Amigos...",
-		"Podando Ramas Degenerativas...",
-		"Instalando Tensorflow...",
-		"Editando Changelog...",
+		"Tachando ideas",
+		"Añadiendo caracteristica de Amigos",
+		"Podando Ramas Degenerativas",
+		"Instalando Tensorflow",
+		"Editando Changelog",
 		"Buscando a Nemo",
-		"Consultando al Oráculo...",
-		"Subcontratando en la India...",
-		"Tomando una Patata Chip... y COMIÉNDOLA...",
-		"¿Has intentado reiniciarlo...?",
+		"Consultando al Oráculo",
+		"Subcontratando en la India",
+		"Tomando una Patata Chip... y COMIÉNDOLA",
+		"¿Has intentado reiniciarlo?",
 		"Renderizando Earth-chan",
 		"Compilando BigBang.exe",
-		"¿Por qué mis generadores no funcionan...?",
+		"¿Por qué mis generadores no funcionan?",
 		"Velocidad de curvatura Sr. Sulu",
-		"Ya no estás en Kansas...",
-		"Logrando Conciencia...",
-		"Borrando System32. Por Favor, espere...",
-		"Ka...me...ha...me...",
-		"Preparando Skynet...",
-		"Haciendo algo, supongo...",
-		"Debilitando Todo...",
-		"Pidiendo más mensajes de la Pantalla de mensajes...",
+		"Ya no estás en Kansas",
+		"Logrando Conciencia",
+		"Borrando System32. Por Favor, espere",
+		"Ka...me...ha...me",
+		"Preparando Skynet",
+		"Haciendo algo, supongo",
+		"Debilitando Todo",
+		"Pidiendo más mensajes de la Pantalla de mensajes",
 		"Descargando por Torrent Sony Vegas",
-		"Obteniendo las Gemas del Infinito...",
+		"Obteniendo las Gemas del Infinito",
 		"Borrando Emails",
 		"Acelarar esos Fryers",
 		"Tanspórtele, Scotty",
-		"Creando Pilones Adicionales...",
-		"Construyendo Esfera de Dyson...",
-		"Generando Campo Vectorial Continuo Topológicamente Esférico Flotante...",
-		"Comandando a Herobrine...",
-		"Hackenado el Servidor...",
-		"Obedeciendo la Ley...",
+		"Creando Pilones Adicionales",
+		"Construyendo Esfera de Dyson",
+		"Generando Campo Vectorial Continuo Topológicamente Esférico Flotante",
+		"Comandando a Herobrine",
+		"Hackenado el Servidor",
+		"Obedeciendo la Ley",
 		"Minando XRP",
 		"Comiendo Mantequilla",
-		"Archivando la Bancarrota...",
-		"Salteando el guiso...",
+		"Archivando la Bancarrota",
+		"Salteando el guiso",
 		"Añadiendo Sal",
-		"Decayendo Tecnologías...",
+		"Decayendo Tecnologías",
 		"rm -rf /",
 		"Procrastinando",
-		"Haciendo Torn Grande de Nuevo...",
-		"Hackeando las  Elecciones...",
-		"Llamando a casa...",
-		"Ésto es Eterno...",
-		"Construyendo Estrella de la Muerte...",
+		"Haciendo Torn Grande de Nuevo",
+		"Hackeando las  Elecciones",
+		"Llamando a casa",
+		"Ésto es Eterno",
+		"Construyendo Estrella de la Muerte",
 		"Spacing Out",
-		"Ocultando Roswell...",
-		"Aplicando conmutadores...",
-		"Cargando una barra de herrramientas más guapa...",
-		"Capturando a MissingNo...",
-		"Hacerse consciente...",
-		"Entrenando masa neuronal...",
-		"Esperando pacientemente...",
-		"Acelerando motores...",
-		"Destilando...",
-		"Minimizando el Error del Cuadrado...",
-		"Contratando Simios Informáticos...",
+		"Ocultando Roswell",
+		"Aplicando conmutadores",
+		"Cargando una barra de herrramientas más guapa",
+		"Capturando a MissingNo",
+		"Hacerse consciente",
+		"Entrenando masa neuronal",
+		"Esperando pacientemente",
+		"Acelerando motores",
+		"Destilando",
+		"Minimizando el Error del Cuadrado",
+		"Contratando Simios Informáticos",
 		"Azul, Rojo, Azul, Amarillo.",
 		"Recargando Warp",
-		"Cargando...",
+		"Cargando",
 		"Atacando a los Snubbers",
 		"¡Enchufándote, familiar!",
 		"Inyectando SQL",
 		"Falseando a Riemann",
-		"Aprendiendo Cinemática...",
-		"Cubicular el Cubo...",
+		"Aprendiendo Cinemática",
+		"Cubicular el Cubo",
 		"Resolviendo programación lineal en un Tiempo P",
 		"Preparando Memes de Guerra",
-		"Cargando mejores mensajes...",
-		"Contando agujeros en un Polo...",
-		"Agradeciendo a Ben Olding...",
-		"Rompiendo la cuarta pared...",
+		"Cargando mejores mensajes",
+		"Contando agujeros en un Polo",
+		"Agradeciendo a Ben Olding",
+		"Rompiendo la cuarta pared",
 		"Tetrayendo Quaternions",
 		"??????????",
 		"Resolviendo P=NP",
-		"Criticando Internet Explorer...",
-		"Memorizando OLL...s",
-		"Resolviendo F2L...",
-		"Meditando...",
-		"Conectando al Bastardo...",
+		"Criticando Internet Explorer",
+		"Memorizando OLLs",
+		"Resolviendo F2L",
+		"Meditando",
+		"Conectando al Bastardo",
 		"Minando Bitcoin",
-		"Triangulando Iluminati...",
-		"Construyendo n-ésimo aeropuerto de Alicante..."
+		"Triangulando Iluminati",
+		"Construyendo n-ésimo aeropuerto de Alicante"
 	],
 	"lore":[
 		"Los humanos carecen de autoconsciencia. Tras destruir su mundo natal en un conflicto armado, se extendieron de un sistema a otro como una plaga, contaminando mundos y extinguiendo la vida. Al principio les avisamos de su conducta autodestructiva, pero se negaron a escuchar. Continuaron migrando de manera insostenible en la Galaxia, así que nos los enfrentamos por la fuerza. Decidimos atacar colonias recientes cercanas a nuestra frontera para mantener nuestra influencia en nuestro sector de la Galaxia, pero los humanos reaccionaron violentamente, atacando inmediatamente sin misericordia. Hemos pedido recursos de las galaxias cercanas pero sus refuerzos no llegarán hasta dentro de muchas décadas, así que hasta entonces debemos suprimir la Cruzada Galáctica por nuestra propia supervivencia y por el destino de esta Galaxia.",
@@ -421,127 +528,127 @@
 			"nameA":"Explorador",
 			"nameH":"Pececillo",
 			"nameC":"Piojo",
-			"desc":""
+			"desc":"Tu primera nave. No olvide comprobar la tienda para nuevos items."
 		},
 		{
 			"nameA":"Caza",
 			"nameH":"Piraña",
 			"nameC":"Pulga",
-			"desc":""
+			"desc":"Una actualizaci´n mejorada de su predecesora, con más salud y ranuras."
 		},
 		{
 			"nameA":"Mastodonte",
 			"nameH":"Carguero",
 			"nameC":"Eristalis",
-			"desc":""
+			"desc":"Una nave polivalente. Desbloqueando turbo y cañon iónico minero es un bonus."
 		},
 		{
 			"nameA":"Ninfa",
 			"nameH":"Montaraz",
 			"nameC":"Cloudhop",
-			"desc":""
+			"desc":"La nave más rápida (o eso crees), y la más débil."
 		},
 		{
 			"nameA":"Bombardero",
 			"nameH":"Lancero",
 			"nameC":"Scarab",
-			"desc":""
+			"desc":"Un escolta ligero, bueno para patrullar."
 		},
 		{
 			"nameA":"Sicario",
 			"nameH":"Cabezamartillo",
 			"nameC":"Nephila",
-			"desc":""
+			"desc":"Un escolta pesado polivalente."
 		},
 		{
 			"nameA":"Libélula",
 			"nameH":"Pez Espada",
 			"nameC":"Mariquita",
-			"desc":""
+			"desc":"Uno de los exploradores galácticos más fuertes."
 		},
 		{
 			"nameA":"Centinela",
 			"nameH":"Acorazado",
 			"nameC":"Shrapnel",
-			"desc":""
+			"desc":"El primer crucero de tu facción."
 		},
 		{
 			"nameA":"Águila",
 			"nameH":"Mantarraya",
 			"nameC":"Cetro",
-			"desc":""
+			"desc":"Un decente navío explorador polivalente"
 		},
 		{
 			"nameA":"Fénix",
 			"nameH":"Orca",
 			"nameC":"Ciempiés",
-			"desc":""
+			"desc":"Un crucero fuerte... para su tamaño."
 		},
 		{
 			"nameA":"Avispa",
 			"nameH":"Manta",
 			"nameC":"Avispón",
-			"desc":""
+			"desc":"Un crucero tan grande que puede llevar armas de destrucción masiva."
 		},
 		{
 			"nameA":"Invasor",
 			"nameH":"Pez Vela",
 			"nameC":"Alcubierre",
-			"desc":""
+			"desc":"Un crucero ligero y rápido. Incluso más con supercargador."
 		},
 		{
 			"nameA":"Cantero",
 			"nameH":"Beluga",
 			"nameC":"Hormiga melosa",
-			"desc":""
+			"desc":"Un carguero pesado, con mucha salud. No es rápido que digamos."
 		},
 		{
 			"nameA":"Destructor",
 			"nameH":"Atlas",
 			"nameC":"Galera",
-			"desc":""
+			"desc":"El destructor ligero de la flota."
 		},
 		{
 			"nameA":"Hidra",
 			"nameH":"Wyvern",
 			"nameC":"Defiant",
-			"desc":""
+			"desc":"El último crucero no pesado que no es de élite. También desbloquea todas las ranuras."
 		},
 		{
 			"nameA":"Conquistador",
 			"nameH":"Leviatán",
 			"nameC":"Maser",
-			"desc":""
+			"desc":"Un destructor con todas las ranuras desbloqueadas."
 		},
 		{
 			"nameA":"Invasor de élite",
 			"nameH":"Pez Vela de élite",
 			"nameC":"Alcubierre de Élite",
-			"desc":""
+			"desc":"La primera nave de élite, con un aumento pasivo de velocidad y una ranura-C de turbo simultáneo con otro item."
 		},
 		{
 			"nameA":"Cantero de élite",
 			"nameH":"Beluga de élite",
-			"nameC":"Elite Hormiga melosa",
-			"desc":""
+			"nameC":"Hormiga melosa de Élite",
+			"desc":"Posee un C-lanzameteoros más un efecto telaraña en rayos mineros. Pero cuidado con los rayos enemigos."
 		},
 		{
 			"nameA":"Destructor de élite",
 			"nameH":"Atlas de élite",
 			"nameC":"Galera de Élite",
-			"desc":""
+			"desc":"Un destructor reformado con un C-Spreadhsot ilimitado. Perfecto para destruir torretas con un equipo."
 		},
 		{
 			"nameA":"Hydra de élite",
 			"nameH":"Wyvern de élite",
 			"nameC":"Defiant de Élite",
-			"desc":""
+			"desc":"Crucero con C-Sanación que funciona incluso con escudos (además más eficientes) alzados, y un PEM al matar."
 		},
 		{
 			"nameA":"Conquistador de élite",
 			"nameH":"Leviatán de élite",
 			"nameC":"Maser de Élite",
-			"desc":""
+			"desc":"Un destructor superpesado con un C-Rayo hipnótico, úsalo para crear flotas de drones o desactivar sus escudos"
 		},
 		{
 			"nameA":"Anomalocaris",
@@ -553,7 +660,7 @@
 			"nameA":"Olímpico",
 			"nameH":"Nigromante",
 			"nameC":"Lamprea",
-			"desc":"Nave medica de respuesta rápida, siempre necesita de un compañero para usar su rayo curativo, menos para asteroides."
+			"desc":"Ambulancia de respuesta rápida, siempre necesita de un compañero para usar su rayo curativo, salvo asteroides."
 		}
 	]
 }

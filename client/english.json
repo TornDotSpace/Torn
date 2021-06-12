@@ -218,7 +218,7 @@
 		},
 		{
 			"name":"Hyperdrive",
-			"desc":"Single-use long range speed boost."
+			"desc":"Single-use long range speed boost. Thanks to partially travelling to another dimension, you'll not suffer sector cross damage."
 		},
 		{
 			"name":"Pulse Wave",
@@ -318,7 +318,7 @@
 			"name":"Hypno Ray",
 			"desc":"Fire this beam at a drone and it will follow you until it dies. Single-use.",
 			"killmessages":[
-				"P1 pistoled P2!",
+				"P1 made P2 jump over a cliff without parachute!",
 				"P1 killed P2!"
 			]
 		},
@@ -545,7 +545,7 @@
 			"nameA":"Nymph",
 			"nameH":"Strider",
 			"nameC":"Cloudhop",
-			"desc":"The fastest, but weakest, ship."
+			"desc":"The fastest (or so you think), but weakest, ship."
 		},
 		{
 			"nameA":"Bomber",
@@ -557,7 +557,7 @@
 			"nameA":"Scythe",
 			"nameH":"Hammerhead",
 			"nameC":"Nephila",
-			"desc":"A heavy polivalent escort."
+			"desc":"A heavy polyvalent escort."
 		},
 		{
 			"nameA":"Dragonfly",
