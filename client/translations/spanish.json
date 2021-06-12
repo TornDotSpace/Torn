@@ -33,7 +33,7 @@
 		"Takumi:Inducción Forzada por turbo",
 		"Bunta:Hyper-derrapado",
 		"Reversa:¿¡Puedo ir marcha atrás!?",
-		"Derrapado por Inercia:Derrapa en un Agujero Negro",
+		"Derrape por Inercia:Derrapa en un Agujero Negro",
 		"Peligroso:Mata mientras derrapas",
 		"Stickshift:TurboDerrapado reverso",
 		"Rastro Panda:x1.05 a agilidad",
@@ -41,7 +41,7 @@
 		"¡Au!:Muere",
 		"Trabajo Peligroso:Acepta una misión en D4",
 		"Demasiado Lento:Cae en un Agujero de Gusano",
-		"Oops...:Cae en un Agujero Negro",
+		"Ups...:Cae en un Agujero Negro",
 		"¡Boing!:Rebota en el borde",
 		"Viajero:Visita cada sector",
 		"Esquizoide:Visita las cuatro esquinas",
@@ -192,8 +192,8 @@
 			"desc":"Utiliza leptones de segunda generación cargados para generar un poderoso rayo de largo alcance que puede atravesar múltiples objetivos, dañándolos gravemente. Por desgracia, al arma debe ser perfectamente apuntada de frente hacia el objetivo para acertar."
 		},
 		{
-			"name":"Extractor energético",
-			"desc":"Este rayo de ultra corto alcance robará la energía del oponente más cercano, dándote parte a ti."
+			"name":"Inutilizador",
+			"desc":"Este rayo de corto alcance impedirá disparar al oponente en circunstancias normales."
 		},
 		{
 			"name":"Supercargador",
@@ -209,7 +209,7 @@
 		},
 		{
 			"name":"Spreadshot",
-			"desc":"Tres cañones activos! Los tiros salen an un angulo determinado."
+			"desc":"¡Tres cañones activos! Los tiros salen an un angulo determinado."
 		},
 		{
 			"name":"Subametralladora",
@@ -221,34 +221,34 @@
 		},
 		{
 			"name":"Orbe de Fotones",
-			"desc":"se dirigirá al jugador que este usando ocultación fotónica, Pero no hará tanto daño como las demás armas."
+			"desc":"Se dirigirá a un jugador que este usando ocultación fotónica, pero no hará tanto daño como otras armas."
 		},
 		{
 			"name":"Mina de pulso",
 			"desc":"Repetitivamente daña en ola a las naves enemigas cercanas.",
 			"killmessages":[
-				"P1 Pulso-Mino P2!"
+				"P1 Pulso-Minó P2!"
 			]
 		},
 		{
 			"name":"Hoguera",
-			"desc":"Cura rápidamente naves aliadas cercanas, Siempre y cuando haya al menos 2 naves cerca."
+			"desc":"Cura rápidamente naves aliadas cercanas, siempre y cuando haya al menos 2 naves cerca."
 		},
 		{
-			"name":"Rayo de curacion",
-			"desc":"Cura naves aliadas cercanas y bases aliadas."
+			"name":"Rayo curativo",
+			"desc":"Sana naves y torretas aliadas cercanas."
 		},
 		{
 			"name":"Centinela",
-			"desc":"Una pequeña torreta que dispara ametralladora. Como las torretas normales, solo puede haber 1 centinela, O torreta, por sector."
+			"desc":"Una pequeña torreta que dispara una ametralladora. Como las torretas normales, solo puede haber 1 centinela, o torreta, por sector."
 		},
 		{
 			"name":"Pulso de leptón",
-			"desc":"Un pequeño, Disparo repetitivo de rayo muon. Comparado con su contraparte, Hará mucho menos daño , pero se dispara rápido."
+			"desc":"Un pequeño Rayo de Muones de disparo repetitivo. Comparado con su contraparte, hace mucho menos daño, pero dispara rápido."
 		},
 		{
 			"name":"Mina magnetica",
-			"desc":"Un tipo normal de mina... Magnéticamente atraída a las naves enemigas."
+			"desc":"Un tipo normal de mina... magnéticamente atraída a las naves enemigas."
 		}
 	],
 	"splashes":[
@@ -413,20 +413,20 @@
 	],
 	"lore":[
 		"Los humanos carecen de autoconsciencia. Tras destruir su mundo natal en un conflicto armado, se extendieron de un sistema a otro como una plaga, contaminando mundos y extinguiendo la vida. Al principio les avisamos de su conducta autodestructiva, pero se negaron a escuchar. Continuaron migrando de manera insostenible en la Galaxia, así que nos los enfrentamos por la fuerza. Decidimos atacar colonias recientes cercanas a nuestra frontera para mantener nuestra influencia en nuestro sector de la Galaxia, pero los humanos reaccionaron violentamente, atacando inmediatamente sin misericordia. Hemos pedido recursos de las galaxias cercanas pero sus refuerzos no llegarán hasta dentro de muchas décadas, así que hasta entonces debemos suprimir la Cruzada Galáctica por nuestra propia supervivencia y por el destino de esta Galaxia.",
-		"Desde que perdimos el Planeta Tierra, la raza humana, hemos decidido dejar nuestro Sistema en busca de otros mundos habitables con la única esperanza de sobrevivir, pero muy pocos han prometido ser bases permanentes. Planetas totalmente desérticos fueron terraformados en planetas industriales para generar recursos desesperadamente necesarios para nuestra vida en mundos alienígenas. Tras siglos de equilibrio demográfico, nuestra población comenzó finalmente a crecer y extenderse. Por una década vivimos en paz y prosperidad, hasta que una fuerza hostil nos atacó. Mantener nuestros planetas era vital para nuestra supervivencia, así que no tuvimos otra opción que contraatacar. Desde entonces, hemos estado en conflicto con esta raza alienígena, y es improbable que esta guerra no termine con la extinción de ambos. Por favor, ayúdanos a salir de este conflicto vivos.",
-		"The computers at the research base where we were created were the first to be assimilated into our empire, and the staff was next. As an Alien military experiment, we found ourselves in the crossfire of this war of Human and Alien races. During our rise as a galactic military force, both races proved inept in combat, and thus, in their miserable fight over this decrepit corner of the universe, we will incorporate all of their technology and resources until we leave this dying galaxy. Using the technology the Aliens gifted us, we assimilate every species we can, and deny the privilege of life to all who stand in our way. We are united by vision, not the intraspecies loyalty which brought this galaxy to the brink of destruction. Together, we will become the rightful inheritors of every speck of light in the night sky."
+		"Desde que la raza humana perdió el Planeta Tierra, hemos decidido dejar nuestro Sistema en busca de otros mundos habitables con la única esperanza de sobrevivir, pero muy pocos han prometido ser bases permanentes. Planetas totalmente desérticos fueron terraformados en planetas industriales para generar recursos desesperadamente necesarios para nuestra vida en mundos alienígenas. Tras siglos de equilibrio demográfico, nuestra población comenzó finalmente a crecer y extenderse. Por una década vivimos en paz y prosperidad, hasta que una fuerza hostil nos atacó. Mantener nuestros planetas era vital para nuestra supervivencia, así que no tuvimos otra opción que contraatacar. Desde entonces, hemos estado en conflicto con esta raza alienígena, y es improbable que esta guerra no termine con la extinción de ambos. Por favor, ayúdanos a salir de este conflicto vivos.",
+		"Las computadoras en la base de investigación donde fuimos creados fueron las primeras en ser asimiladas en nuestro Imperio, y los tripulantes fueron los siguientes. Como un experimento militar alinígena, nos encontramos en el fuego cruzado de esta guerra entre razas humanas y aliens. Durante nuestro alzamiento como potencia militar galáctica, ambas probaron ser ineptas en combate, y por ello, en su miserable lucha de este decrépito sector del universo, incorporaremos toda su tecnología y recursos hasta abandonar la galaxia. Usando la tecnología que la que nos proveyeron los Aliens, asimilamos a toda especie que podamos, y negamos el privilegio de la vida a aquellas que estén en nuestro camino. Estamos unidos por visión, no la lealtad intraespecie que traj esta galaxia al borde de la destrucción. Juntos, nos volveremos los auténticos herederos de cada punto de luz en la bóveda nocturna."
 	],
 	"ships":[
 		{
 			"nameA":"Explorador",
 			"nameH":"Pececillo",
-			"nameC":"Gnat",
+			"nameC":"Piojo",
 			"desc":""
 		},
 		{
 			"nameA":"Caza",
 			"nameH":"Piraña",
-			"nameC":"Flea",
+			"nameC":"Pulga",
 			"desc":""
 		},
 		{
@@ -456,31 +456,31 @@
 		{
 			"nameA":"Libélula",
 			"nameH":"Pez Espada",
-			"nameC":"Ladybug",
+			"nameC":"Mariquita",
 			"desc":""
 		},
 		{
 			"nameA":"Centinela",
 			"nameH":"Acorazado",
-			"nameC":"Metralla",
+			"nameC":"Shrapnel",
 			"desc":""
 		},
 		{
 			"nameA":"Águila",
 			"nameH":"Mantarraya",
-			"nameC":"Sceptre",
+			"nameC":"Cetro",
 			"desc":""
 		},
 		{
 			"nameA":"Fénix",
 			"nameH":"Orca",
-			"nameC":"Centipede",
+			"nameC":"Ciempiés",
 			"desc":""
 		},
 		{
 			"nameA":"Avispa",
 			"nameH":"Manta",
-			"nameC":"Hornet",
+			"nameC":"Avispón",
 			"desc":""
 		},
 		{
@@ -492,13 +492,13 @@
 		{
 			"nameA":"Cantero",
 			"nameH":"Beluga",
-			"nameC":"Honeypot",
+			"nameC":"Hormiga melosa",
 			"desc":""
 		},
 		{
 			"nameA":"Destructor",
 			"nameH":"Atlas",
-			"nameC":"Galley",
+			"nameC":"Galera",
 			"desc":""
 		},
 		{
@@ -516,44 +516,44 @@
 		{
 			"nameA":"Invasor de élite",
 			"nameH":"Pez Vela de élite",
-			"nameC":"Elite Alcubierre",
+			"nameC":"Alcubierre de Élite",
 			"desc":""
 		},
 		{
 			"nameA":"Cantero de élite",
 			"nameH":"Beluga de élite",
-			"nameC":"Elite Honeypot",
+			"nameC":"Elite Hormiga melosa",
 			"desc":""
 		},
 		{
 			"nameA":"Destructor de élite",
 			"nameH":"Atlas de élite",
-			"nameC":"Elite Galley",
+			"nameC":"Galera de Élite",
 			"desc":""
 		},
 		{
 			"nameA":"Hydra de élite",
 			"nameH":"Wyvern de élite",
-			"nameC":"Elite Defiant",
+			"nameC":"Defiant de Élite",
 			"desc":""
 		},
 		{
 			"nameA":"Conquistador de élite",
 			"nameH":"Leviatán de élite",
-			"nameC":"Elite Maser",
+			"nameC":"Maser de Élite",
 			"desc":""
 		},
 		{
 			"nameA":"Anomalocaris",
 			"nameH":"Einstein",
 			"nameC":"Heisenberg",
-			"desc":"Un masivo, Gran acorazado, Sin Casilla-C, Pero repelido de los agujeros negros."
+			"desc":"Un masivo acorazado, sin ranura-C, pero repelido de los agujeros negros."
 		},
 		{
 			"nameA":"Olímpico",
 			"nameH":"Nigromante",
 			"nameC":"Lamprea",
-			"desc":"Nave medica, De respuesta rápida, Siempre ocupara un compañero para usar su rayo de curación, excepto de los asteroides."
+			"desc":"Nave medica de respuesta rápida, siempre necesita de un compañero para usar su rayo curativo, menos para asteroides."
 		}
 	]
 }
