@@ -150,8 +150,8 @@ export function pasteChat() {
 
 function onReceiveChat(data) {
   while (data.msg.includes(weaponCircumfix)) {
-    const find1 = getPosition(data.msg, translateCircumfix, 1);
-    const find2 = getPosition(data.msg, translateCircumfix, 2);
+    const find1 = getPosition(data.msg, weaponCircumfix, 1);
+    const find2 = getPosition(data.msg, weaponCircumfix, 2);
 
     if (find1 == -1 || find2 == -1) return;
 
