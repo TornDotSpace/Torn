@@ -230,7 +230,7 @@ module.exports = class Base {
 
         // Or a player...
         if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
-            this.sendDeathMsg(`${b.owner.nameWithColor()}'s \`~${b.wepnID}\`~`);
+            this.sendDeathMsg(`${b.owner.nameWithColor()}'s ${chatWeapon(b.wepnID)}`);
             b.owner.baseKilled();
             let multiplier = this.isMini ? 1 : 2 * Math.abs(this.sy - mapSz / 2 - 0.5);
             let numInRange = 0;
@@ -302,6 +302,6 @@ module.exports = class Base {
     }
 
     nameWithColor () { // returns something like "~`green~`B6~`yellow~`"
-        return `~\`${this.color}~\`${this.getSectorName()}~\`yellow~\``;
+        return `${chatColor(this.color)}${this.getSectorName()}${chatColor(`yellow`)}`;
     }
 };

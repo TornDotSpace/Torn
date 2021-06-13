@@ -54,23 +54,23 @@ class PlayerMP extends Player {
 
     swap (msg) { // msg looks like "/swap 2 5". Swaps two weapons.
         if (!this.docked) {
-            this.emit(`chat`, { msg: `~\`cyan~\`You must be docked to use that command!` });
+            this.emit(`chat`, { msg: `${chatColor(`red`)}You must be docked to use that command!` });
             return;
         }
         const spl = msg.split(` `);
         if (spl.length != 3) { // not enough arguments
-            this.emit(`chat`, { msg: `~\`red~\`Invalid Syntax!` });
+            this.emit(`chat`, { msg: `${chatColor(`red`)}Invalid Syntax!` });
             return;
         }
         let slot1 = parseFloat(spl[1]); let slot2 = parseFloat(spl[2]);
         if (slot1 == 0) slot1 = 10;
         if (slot2 == 0) slot2 = 10;
         if (slot1 > 10 || slot2 > 10 || slot1 < 1 || slot2 < 1 || !slot1 || !slot2 || !Number.isInteger(slot1) || !Number.isInteger(slot2)) {
-            this.emit(`chat`, { msg: `~\`red~\`Invalid Syntax!` });
+            this.emit(`chat`, { msg: `${chatColor(`red`)}Invalid Syntax!` });
             return;
         }
         if (this.weapons[slot1 - 1] == -2 || this.weapons[slot2 - 1] == -2) {
-            this.emit(`chat`, { msg: `~\`orange~\`You haven't unlocked that slot yet!` });
+            this.emit(`chat`, { msg: `${chatColor(`red`)}You haven't unlocked that slot yet!` });
             return;
         }
 
@@ -88,7 +88,7 @@ class PlayerMP extends Player {
 
         sendWeapons(this);
         this.emit(`equip`, { scroll: this.equipped });
-        this.emit(`chat`, { msg: `~\`lime~\`Weapons swapped!` });
+        this.emit(`chat`, { msg: `${chatColor(`lime`)}Weapons swapped!` });
     }
 
     r (msg) { // pm reply
@@ -105,7 +105,7 @@ class PlayerMP extends Player {
         const name = msg.split(` `)[1];
         const raw = msg.substring(name.length + 5);
 
-        this.emit(`chat`, { msg: `~\`cyan~\`Sending private message to ${name}...` });
+        this.emit(`chat`, { msg: `${chatColor(`lime`)}Sending private message to ${name}...` });
 
         for (const sock in sockets) {
             const player = sockets[sock].player;
@@ -116,43 +116,43 @@ class PlayerMP extends Player {
 
             if ((player.name.includes(` `) ? player.name.split(` `)[1] : player.name) === name) {
                 console.log(`[PM] ${this.name}->`, player.name, `: ${raw}`);
-                player.emit(`chat`, { msg: `~\`orange~\`[PM] [${this.name}]: ${raw}` });
-                this.emit(`chat`, { msg: `~\`lime~\`Message sent!` });
+                player.emit(`chat`, { msg: `${chatColor(`violet`)}[PM] [${this.name}]: ${raw}` });
+                this.emit(`chat`, { msg: `${chatColor(`lime`)}Message sent!` });
                 this.reply = player.name;
                 player.reply = this.name;
                 return;
             }
         }
 
-        this.emit(`chat`, { msg: `~\`red~\`Player not found!` });
+        this.emit(`chat`, { msg: `${chatColor(`red`)}Player not found!` });
     }
 
     changePass (pass) { // /password
         if (!this.docked) {
-            this.emit(`chat`, { msg: `~\`cyan~\`This command is only available when docked at a base.` });
+            this.emit(`chat`, { msg: `${chatColor(`red`)}This command is only available when docked at a base.` });
             return;
         }
         if (pass.length > 128 || pass.length < 6) {
-            this.emit(`chat`, { msg: `~\`red~\`Password must be 6-128 characters.` });
+            this.emit(`chat`, { msg: `${chatColor(`red`)}Password must be 6-128 characters.` });
             return;
         }
 
         if (pass == this.name) {
-            this.emit(`chat`, { msg: `~\`red~\`Password cannot be the same as your username!` });
+            this.emit(`chat`, { msg: `${chatColor(`red`)}Password cannot be the same as your username!` });
             return;
         }
 
         this.tentativePassword = pass;
-        this.emit(`chat`, { msg: `~\`white~\`Type "/confirm your_new_password" to complete the change.` });
+        this.emit(`chat`, { msg: `${chatColor(`lime`)}Type "/confirm your_new_password" to complete the change.` });
     }
 
     async confirmPass (pass) { // /confirm
         if (!this.docked) {
-            this.emit(`chat`, { msg: `~\`cyan~\`This command is only available when docked at a base.` });
+            this.emit(`chat`, { msg: `${chatColor(`red`)}This command is only available when docked at a base.` });
             return;
         }
         if (pass !== this.tentativePassword) {
-            this.emit(`chat`, { msg: `~\`red~\`Passwords do not match! Start over from /password.` });
+            this.emit(`chat`, { msg: `${chatColor(`red`)}Passwords do not match! Start over from /password.` });
             this.tentativePassword = undefined;
             return;
         }
@@ -164,7 +164,7 @@ class PlayerMP extends Player {
         }
 
         this.tentativePassword = undefined;
-        this.emit(`chat`, { msg: `~\`lime~\`Password changed successfully.` });
+        this.emit(`chat`, { msg: `${chatColor(`lime`)}Password changed successfully.` });
     }
 
     testAfk () {
@@ -200,7 +200,7 @@ class PlayerMP extends Player {
             const useCustomKillMessage = Math.random() < 0.5 && typeof customMessageArr !== `undefined` && customMessageArr.length > 0;
 
             if (useCustomKillMessage) chatAll(customMessageArr[Math.floor(Math.random() * customMessageArr.length)].replace(`P1`, b.owner.nameWithColor()).replace(`P2`, this.nameWithColor()));
-            else chatAll(`${this.nameWithColor()} was destroyed by ${b.owner.nameWithColor()}'s \`~${b.wepnID}\`~!`);
+            else chatAll(`${this.nameWithColor()} was destroyed by ${b.owner.nameWithColor()}'s ${chatWeapon(b.wepnID)}!`);
 
             if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
                 b.owner.driftAchs[9] = true;

@@ -42,11 +42,6 @@ const chatRooms = [
 const messages = [{}, {}, {}];
 const serverMessages = {};
 
-// Chat circumfix codes. Code assumes they are length 2.
-const colorCircumfix: String = `~\``;
-const weaponCircumfix: String = `\`~`;
-const translateCircumfix: String = `\`t`;
-
 const chatCanvas: HTMLCanvasElement = document.createElement(`canvas`);
 chatCanvas.width = 650;
 chatCanvas.height = 350;
