@@ -79,7 +79,7 @@
 			"killmessages":[
 				"P1 destruyó a largo alcance a P2!",
 				"P1 fusiló a P2!",
-				"P1 cannocó a P2!"
+				"P1 cañoneó a P2!"
 			]
 		},
 		{
@@ -356,8 +356,8 @@
 	],
 	"splashes":[
 		"",
-		"Expanding Cofactors",
-		"Proving lag is a myth",
+		"Expandiendo Cofactores",
+		"Demostrando que el LAG es un mito",
 		"Recogiendo exp",
 		"I'm only Human, after all",
 		"Poniendo torretas en el agujero negro",
@@ -372,7 +372,7 @@
 		"Consejo: Mejorar tu radar proporciona más que ver asteroides, jugadores y bases",
 		"Consejo: ¡Los minerales más abundantes en terreno enemigo son más valiosos!",
 		"Consejo: ¡Desbloquea todos los logros de un mismo tipo para desbloquear un rastro de color!",
-		"Consejo: ¡Presiona P para acticar el Piloto Automático!",
+		"Consejo: ¡Presiona P para activar el Piloto Automático!",
 		"Consejo: ¡El Rayo de Hadrones carga eléctricamente los asteroides!",
 		"Consejo: Alterna rápidamaente A y D / flechas izquierda y derecha al derrapar para ir más rápido",
 		"Consejo: ¡Vim > Emacs!",
@@ -534,7 +534,7 @@
 			"nameA":"Caza",
 			"nameH":"Piraña",
 			"nameC":"Pulga",
-			"desc":"Una actualizaci´n mejorada de su predecesora, con más salud y ranuras."
+			"desc":"Una actualización mejorada de su predecesora, con más salud y ranuras."
 		},
 		{
 			"nameA":"Mastodonte",
