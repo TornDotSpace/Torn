@@ -1012,11 +1012,15 @@ class Player {
 
     EMP (t) {
         if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship.
+ 	if (this.ship >= 16 && this.ship<=20) t *= 1.5; // Emp works better on elites
+        if (this.ship == 21 && this.health*1.05 < this.maxHealth) this.health*=1.05; // It will also heal the ship a very small bit.
         if (this.isBot) {
           this.empTimer = t;
         } else {
+          this.charge += -t*this.energy2;
           this.emit(`emp`, { t: t });
         }
+
     }
 
     save () {}
