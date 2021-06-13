@@ -257,11 +257,15 @@ global.weaponStoreOnHover = function () {
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
-    if (y > 40 + 52 && y < 76 + 16 * (Math.floor(wepnCount / 3) + 1) && x > 16 && x < 16 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16)) + 20;
-    else if (y > 40 + 52 && y < 76 + 16 * (Math.floor(wepnCount / 3) + 1) && x > 16 + 240 && x < 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 + Math.floor(wepnCount / 3))) + 20;
-    else if (y > 40 + 52 && y < 76 + 16 * (Math.floor(wepnCount / 3) + 1) && x > 16 + 240 * 2 && x < 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 + Math.floor(wepnCount / 3) * 2)) + 20;
+    const rows = Math.floor(wepnCount / 3);
+    for (let i = 0; i < 3; i++) {
+        if (y > 76 && y < 76 + 16 * (rows + 1) && x > 16 + 240 * i && x < 64 + 240 * i) {
+            seller = weaponWithOrder(Math.floor((y - 92) / 16 + rows * i)) + 20;
+            return;
+        }
+    }
 
-    else seller = 0;
+    seller = 0;
 };
 
 global.shopOnClick = function (buttonID) {
