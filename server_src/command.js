@@ -366,7 +366,7 @@ cmds.summonwormhole = new Command(`/summonwormhole - summons the wormhole roughl
     wormhole.vx += ((commandExecuter.sx * sectorWidth + commandExecuter.x) - (wormhole.sx * sectorWidth + wormhole.x)) / 90;
     wormhole.vy += ((commandExecuter.sy * sectorWidth + commandExecuter.y) - (wormhole.sy * sectorWidth + wormhole.y)) / 90;
 
-    const userMoney = commandExecuter.money;
+    let userMoney = commandExecuter.money;
     commandExecuter.money = Math.max(userMoney *= 0.99, userMoney - 1000000);
     commandExecuter.save();
 
