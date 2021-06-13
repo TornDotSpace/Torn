@@ -309,7 +309,7 @@
 			"ammo":1,
 			"level":7,
 			"type":"Misc",
-			"bot":true,
+			"bot":false,
 			"enabled":true
 		},
 		"24":{
@@ -413,7 +413,7 @@
 			"ammo":-1,
 			"level":6,
 			"type":"Beam",
-			"bot":true,
+			"bot":false,
 			"enabled":false
 		},
 		"32":{
