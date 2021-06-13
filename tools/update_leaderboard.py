@@ -77,8 +77,9 @@ def updateLB(conn_str, path):
     # Grab needed data
     i = 0
     for player in players.find().sort("experience", pymongo.DESCENDING):
-        name = player["name"]
-        if "O" in name:
+        name = player["_id"]
+        tag = player["tag"]
+        if "O" in tag:
             continue
         i = i + 1
         if i > 2000:
