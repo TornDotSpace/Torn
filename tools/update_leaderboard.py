@@ -133,8 +133,18 @@ def updateLB(conn_str, path):
 
         playerFile = f"{playerFile}{out}"  # append to file
 
-    teamFile = '<tr style="color:#0099ff;"><td>-Average Place-</td><td>-Total Players-</td><td>-Average Experience-\
-    </td><td>-Average Rank-</td><td>-Average Kills-</td><td>-Average Money-</td><td>-Average Tech-</td></tr>'
+    teamFile = """
+        <tr style="color:#0099ff;">
+            <td>Average Place</td>
+            <td>Total Players</td>
+            <td>Average Experience</td>
+            <td>Average Rank</td>
+            <td>Average Kills</td>
+            <td>Average Money</td>
+            <td>Average Tech</td>
+        </tr>
+        """
+
     for key in teamdata:
         teamFile = f'{teamFile}<tr style="color:{teamdata[key]["dispcol"]}"><td>{key}: {int(teamdata[key]["spot"]/teamdata[key]["players"])}\
             </td><td>{teamdata[key]["players"]}</td><td>{int(teamdata[key]["experience"]/teamdata[key]["players"])}\
