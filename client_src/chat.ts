@@ -170,13 +170,13 @@ function onReceiveChat(data) {
   }
 
   if (typeof data.gc === "undefined") {
-    for (let i = chatLength; i > 0; i--) {
+    for (let i = serverChatLength; i > 0; i--) {
       serverMessages[i] = serverMessages[i - 1];
     }
     serverMessages[0] = data.msg;
   }
   else {
-    for (let i = serverChatLength; i > 0; i--) {
+    for (let i = chatLength; i > 0; i--) {
       messages[data.gc][i] = messages[data.gc][i - 1];
     }
     messages[data.gc][0] = data.msg;
