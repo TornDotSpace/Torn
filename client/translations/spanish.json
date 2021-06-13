@@ -60,7 +60,7 @@
 			]
 		},
 		{
-			"name":"Cañón de Plasma",
+			"name":"Cañón Plásmico",
 			"desc":"Solo útil para combates a muy corta distancia contra objetivos más grandes y lentos. De recarga y disparos lentos, esta arma lleva un poderoso golpe.",
 			"killmessages":[
 				"P1 vaporizó a P2 con un cañón de plasma!"
@@ -126,7 +126,7 @@
 			]
 		},
 		{
-			"name":"Rayo de Hadrones",
+			"name":"Rayo Hadrónico",
 			"desc":"Rayo acelerador de partículas de medio-largo alcance. Hace mucho daño, pero tarda en recargarse. Puede usarse como as en la manga para situaciones delicadas.",
 			"killmessages":[
 				"P1 esparció las partículas de P2!",
@@ -160,7 +160,7 @@
 			]
 		},
 		{
-			"name":"Misil de Enjambre",
+			"name":"Misil Enjambre",
 			"desc":"Dispara un misil no dañino que se divide en una horda de misiles que atacará a una horda de enemigos. Buena herramienta contra una gran emboscada.",
 			"killmessages":[
 				"P1 enjambró a P2 con misiles!",
@@ -255,7 +255,7 @@
 			"desc":"Aceleración instantánea para un viaje rápido. Naves con un consumo eficiente de energía y la rango 16 obtienen un ligero impulso adicional al usarla."
 		},
 		{
-			"name":"Rayo Iónico Minero",
+			"name":"Cañón Iónico",
 			"desc":"¡Láser Minero, ahora con más potencia!",
 			"killmessages":[
 				"P1 confundió a P2 por un asteroide!"
@@ -315,7 +315,7 @@
 			]
 		},
 		{
-			"name":"Haz hipnotizador",
+			"name":"Haz hipnótico",
 			"desc":"Dispara ésto contra una nave no tripulada de tu equipo y te seguirá hasta que sea destruida.",
 			"killmessages":[
 				"P1 hizo a P2 saltar de un acantilado sin paracaídas!",
@@ -350,7 +350,7 @@
 			"desc":"Un pequeño Rayo de Muones de disparo repetitivo. Comparado con su contraparte, hace mucho menos daño, pero dispara rápido."
 		},
 		{
-			"name":"Mina magnetica",
+			"name":"Mina magnética",
 			"desc":"Un tipo normal de mina... magnéticamente atraída a las naves enemigas demasiado incautas."
 		}
 	],

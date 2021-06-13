@@ -216,16 +216,17 @@ global.rWeaponStore = function () {
 };
 global.rWeaponStats = function (i) {
     baseMenuCtx.font = `14px ShareTech`;
-    write(baseMenuCtx, wepns[i].name, 32, 364 + 16 * 1);
-    wrapText(baseMenuCtx, wepns[i].desc, 32, 364 + 16 * 2, 128 * 6 - 64, 16);
 
-    write(baseMenuCtx, `Type   : ${wepns[i].type}`, 32, 364 + 16 * 5);
-    write(baseMenuCtx, translate(`Range  : `) + (wepns[i].range == -1 ? translate(`N/A`) : (`${wepns[i].range} Meters`)), 32, 364 + 16 * 6);
-    write(baseMenuCtx, translate(`Damage : `) + (wepns[i].damage == -1 ? translate(`N/A`) : wepns[i].damage), 32, 364 + 16 * 7);
-    write(baseMenuCtx, translate(`Speed  : `) + (wepns[i].speed == -1 ? translate(`N/A`) : wepns[i].speed), 32, 364 + 16 * 8);
-    write(baseMenuCtx, translate(`Charge : `) + (wepns[i].charge == -1 ? translate(`N/A`) : (wepns[i].charge / 25) + translate(` Seconds`)), 256 + 32, 364 + 16 * 6);
-    write(baseMenuCtx, translate(`Ammo   : `) + ammoCodeToString(wepns[i].ammo), 256 + 32, 364 + 16 * 7);
-    write(baseMenuCtx, translate(`Ship   : `) + wepns[i].level, 256 + 32, 364 + 16 * 8);
+    write(baseMenuCtx, wepns[i].name, 32, 364 + 16 * 1);
+    wrapText(baseMenuCtx, wepns[i].desc, 256 - 32, 364 + 16 * 1, 128 * 6 - 64, 16);
+
+    write(baseMenuCtx, `Type   : ${wepns[i].type}`, 32, 364 + 16 * 2);
+    write(baseMenuCtx, translate(`Range  : `) + (wepns[i].range == -1 ? translate(`N/A`) : (`${wepns[i].range} Meters`)), 32, 364 + 16 * 3);
+    write(baseMenuCtx, translate(`Damage : `) + (wepns[i].damage == -1 ? translate(`N/A`) : wepns[i].damage), 32, 364 + 16 * 4);
+    write(baseMenuCtx, translate(`Speed  : `) + (wepns[i].speed == -1 ? translate(`N/A`) : wepns[i].speed), 32, 364 + 16 * 5);
+    write(baseMenuCtx, translate(`Charge : `) + (wepns[i].charge == -1 ? translate(`N/A`) : (wepns[i].charge / 25) + translate(` Seconds`)), 32, 364 + 16 * 6);
+    write(baseMenuCtx, translate(`Ammo   : `) + ammoCodeToString(wepns[i].ammo), 32, 364 + 16 * 7);
+    write(baseMenuCtx, translate(`Ship   : `) + wepns[i].level, 32, 364 + 16 * 8);
 
     if (actuallyBuying) {
         baseMenuCtx.fillStyle = wepns[i].price > money ? `orange` : `lime`;
