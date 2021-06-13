@@ -556,13 +556,13 @@
 			"ammo":-1,
 			"level":6,
 			"type":"Orb",
-			"bot":true,
-			"enabled":true
+			"bot":false,
+			"enabled":false
 		},
 		"43":{
 			"name":"Pulse Mine",
-			"range":50,
-			"damage":10,
+			"range":25,
+			"damage":8,
 			"speed":0,
 			"charge":30,
 			"price":8000,
