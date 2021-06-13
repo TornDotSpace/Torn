@@ -1090,16 +1090,17 @@ class Player {
 
     calculateGenerators () { // count how many gens I have
         this.generators = 0;
-        if (this.ship == 22) {
-            for (let slot = 0; slot < 10; slot++) {
-                if (this.weapons[slot] == 20) this.generators++;
+        if (this.ship >= wepns[20].level) { // gotta have sufficiently high ship
+            let maxSlots = 0;
+            if (this.ship == 22) {
+	        maxSlots = 10;
+            } else {
+	        maxSlots = ships[this.ship].weapons;
             }
-        } else {
-            for (let slot = 0; slot < ships[this.ship].weapons; slot++) {
+            for (let slot = 0; slot < maxSlots; slot++) {
                 if (this.weapons[slot] == 20) this.generators++;
             }
         }
-        if (this.ship <= wepns[20].level) this.generators = 0; // gotta have sufficiently high ship
     }
 
     spoils (type, amt) { /* gives you something. Called wenever you earn money / exp / w/e */ }
