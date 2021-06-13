@@ -52,7 +52,7 @@ cmds.help = new Command(`/help - Displays commands & usages`, EVERYONE, (command
         const lvl = commandExecuter.permissionLevels[p];
 	    for (let x = 0; x < HELP_TABLE[lvl].length; ++x) {
 	        const cmd = HELP_TABLE[lvl][x];
-            playerChat(cmd.usage, commandExecuter.globalChat, commandExecuter.color, commandExecuter.guild);
+            commandExecutor.socket.emit(`chat`, { msg: chatColor(`orange`) + cmd.usage });
 	    }
     }
 });
