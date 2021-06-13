@@ -1012,8 +1012,11 @@ class Player {
 
     EMP (t) {
         if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship.
-        this.empTimer = t;
-        if (!this.isBot) this.emit(`emp`, { t: t });
+        if (this.isBot) {
+          this.empTimer = t;
+        } else {
+          this.emit(`emp`, { t: t });
+        }
     }
 
     save () {}
