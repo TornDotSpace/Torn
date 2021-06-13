@@ -21,7 +21,7 @@ const tki = `translations/tokipona.json`;
 const chn = `translations/chinese.json`;
 
 let languagejson = null;
-let mEng = require(`../client/translate.json`);
+let mEng = require(`../client/translations/translate.json`);
 
 export let jsn = require(`../client/weapons.json`);
 
@@ -47,7 +47,7 @@ const load = (lang) => {
     return JSON.parse(data);
 }
 
-const loadLang = (name) => {
+global.loadLang = (name) => {
     let assigned = null;
 
     // re-think value assigned to var "assigned"
@@ -90,10 +90,13 @@ const loadLang = (name) => {
     jsn.splashes = languagejson.splashes;
 
     jsn.lore = languagejson.lore;
+    console.log(`Translating weapons...`);
     for (let i = 0; i < Object.keys(jsn.weapons).length; i++) {
+        if(!(i in jsn.weapons)) continue;
         jsn.weapons[i].name = languagejson.weapons[i].name;
         jsn.weapons[i].desc = languagejson.weapons[i].desc;
     }
+    console.log(`Translating ships...`);
     for (let i = 0; i < Object.keys(jsn.ships).length; i++) {
         jsn.ships[i].nameA = languagejson.ships[i].nameA;
         jsn.ships[i].nameH = languagejson.ships[i].nameH;
@@ -108,7 +111,7 @@ const loadLang = (name) => {
 loadLang(null);
 
 export const translate = (english, arr = undefined) => { // arr = undefined???
-    if (typeof mEng[english] === `undefined`) return `TRANSLATION ERROR`;
+    if (typeof mEng[english] === `undefined`) return english;
 
     let translated = (languageNumber == 0) ? english : mEng[english][languageNumber - 1];
     if (arr !== undefined) while (arr.length > 0) translated = translated.replace(`#`, arr.shift());

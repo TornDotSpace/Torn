@@ -192,8 +192,8 @@ global.rWeaponStore = function () {
     // R to return to shop
     for (const i in wepns) {
         const weapon = wepns[i];
-        const wx = 4 + 240 * Math.floor(weapon.order / Math.ceil(wepnCount / 3));
-        const wy = 40 + 32 + (weapon.order % Math.ceil(wepnCount / 3) + 2) * 16;
+        const wx = 4 + 240 * Math.floor(weapon.order / Math.floor(wepnCount / 3));
+        const wy = 40 + 32 + (weapon.order % Math.floor(wepnCount / 3) + 2) * 16;
         let buyable = weapon.price > money ? `orange` : `yellow`;
         if (ship < weapon.level) buyable = `red`;
 
@@ -257,9 +257,9 @@ global.weaponStoreOnHover = function () {
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
-    if (y > 40 + 52 && y < 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && x > 16 && x < 16 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16)) + 20;
-    else if (y > 40 + 52 && y < 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && x > 16 + 240 && x < 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 + Math.ceil(wepnCount / 3))) + 20;
-    else if (y > 40 + 52 && y < 76 + 16 * (Math.ceil(wepnCount / 3) + 1) && x > 16 + 240 * 2 && x < 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 + Math.ceil(wepnCount / 3) * 2)) + 20;
+    if (y > 40 + 52 && y < 76 + 16 * (Math.floor(wepnCount / 3) + 1) && x > 16 && x < 16 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16)) + 20;
+    else if (y > 40 + 52 && y < 76 + 16 * (Math.floor(wepnCount / 3) + 1) && x > 16 + 240 && x < 16 + 240 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 + Math.floor(wepnCount / 3))) + 20;
+    else if (y > 40 + 52 && y < 76 + 16 * (Math.floor(wepnCount / 3) + 1) && x > 16 + 240 * 2 && x < 16 + 240 * 2 + 8 * 6) seller = weaponWithOrder(Math.floor((y - 40 - 52) / 16 + Math.floor(wepnCount / 3) * 2)) + 20;
 
     else seller = 0;
 };

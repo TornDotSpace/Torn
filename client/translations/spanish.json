@@ -47,12 +47,12 @@
 		"Esquizoide:Visita las cuatro esquinas",
 		"Astronauta:Toma un planeta",
 		"Imperialista:Conquista todos los planetas una vez",
-		"Rastro Azaroso:Zigzaguea más lejos!",
+		"Rastro Azaroso:Zigzaguea más lejos!"
 	],
 	"weapons":[
 		{
 			"name":"Cañón Básico",
-			"desc":"Un arma básica de medio alcance."
+			"desc":"Un arma básica de medio alcance.",
 			"killmessages":[
 				"P1 disparó a P2!",
 				"P1 capó a P2!",
@@ -61,21 +61,21 @@
 		},
 		{
 			"name":"Cañón de Plasma",
-			"desc":"Solo útil para combates a muy corta distancia contra objetivos más grandes y lentos. De recarga y disparos lentos, esta arma lleva un poderoso golpe."
+			"desc":"Solo útil para combates a muy corta distancia contra objetivos más grandes y lentos. De recarga y disparos lentos, esta arma lleva un poderoso golpe.",
 			"killmessages":[
 				"P1 vaporizó a P2 con un cañón de plasma!"
 			]
 		},
 		{
 			"name":"Cañón de Popa",
-			"desc":"¡Quítate de mi cola! Igual que el Cañón Básico pero dispara hacia detrás y es un 50% más potente, y por consiguiente, más caro."
+			"desc":"¡Quítate de mi cola! Igual que el Cañón Básico pero dispara hacia detrás y es un 50% más potente, y por consiguiente, más caro.",
 			"killmessages":[
 				"P1 dió a P2 por detrás!"
 			]
 		},
 		{
 			"name":"Rifle",
-			"desc":"Potente arma de larga distancia con balas rápidas y más potentes. Ideal para disparar desde una distancia de seguridad a un montón de enemigos."
+			"desc":"Potente arma de larga distancia con balas rápidas y más potentes. Ideal para disparar desde una distancia de seguridad a un montón de enemigos.",
 			"killmessages":[
 				"P1 destruyó a largo alcance a P2!",
 				"P1 fusiló a P2!",
@@ -84,7 +84,7 @@
 		},
 		{
 			"name":"Escopeta",
-			"desc":"Muy útil para una emboscada. Dispara en spray muchos tiros a la vez desde dónde disparas, con la desventaja de ser ligeramente difícil de controlar."
+			"desc":"Muy útil para una emboscada. Dispara en spray muchos tiros a la vez desde dónde disparas, con la desventaja de ser ligeramente difícil de controlar.",
 			"killmessages":[
 				"P1 cañoneó doblemente a P2!",
 				"P1 llenó a P2 con perdigones!",
@@ -94,7 +94,7 @@
 		},
 		{
 			"name":"Ametralladora",
-			"desc":"¡Disparo rápido! La munición es algo débil, ¡pero eso no importa si disparas 6 veces por segundo!"
+			"desc":"¡Disparo rápido! La munición es algo débil, ¡pero eso no importa si disparas 6 veces por segundo!",
 			"killmessages":[
 				"P1 descargó P2!",
 				"P1 ametralló P2!"
@@ -102,14 +102,14 @@
 		},
 		{
 			"name":"Minigun",
-			"desc":"Una ametralladora con dos cañones activos simultáneos con balas más lentas y ligeramente más débiles. Buena arma si la apuntas con rapidez."
+			"desc":"Una ametralladora con dos cañones activos simultáneos con balas más lentas y ligeramente más débiles. Buena arma si la apuntas con rapidez.",
 			"killmessages":[
 				"P1 minigunned P2!"
 			]
 		},
 		{
 			"name":"Rayo de Plasma",
-			"desc":"Arma de corto alcance que apunta automáticamente al objetivo más cercano con un rayo de Plasma."
+			"desc":"Arma de corto alcance que apunta automáticamente al objetivo más cercano con un rayo de Plasma.",
 			"killmessages":[
 				"P1 evaporó P2 con plasma!",
 				"P1 derritió P2 con plasma!"
@@ -117,7 +117,7 @@
 		},
 		{
 			"name":"Rayo Láser",
-			"desc":"Rayo de medio alcance que apunta automáticamente al objetivo más cercano y dispara pequeñas ráfagas láser. Inefectivo contra torretas por su consumo energético."
+			"desc":"Rayo de medio alcance que apunta automáticamente al objetivo más cercano y dispara pequeñas ráfagas láser. Inefectivo contra torretas por su consumo energético.",
 			"killmessages":[
 				"P1 evaporó P2 con un láser!",
 				"P1 laseó un agujero a través de P2!",
@@ -127,7 +127,7 @@
 		},
 		{
 			"name":"Rayo de Hadrones",
-			"desc":"Rayo acelerador de partículas de medio-largo alcance. Hace mucho daño, pero tarda en recargarse. Puede usarse como as en la manga para situaciones delicadas."
+			"desc":"Rayo acelerador de partículas de medio-largo alcance. Hace mucho daño, pero tarda en recargarse. Puede usarse como as en la manga para situaciones delicadas.",
 			"killmessages":[
 				"P1 esparció las partículas de P2!",
 				"P1 desintegró los núcleos de P2!",
@@ -136,7 +136,7 @@
 		},
 		{
 			"name":"Misil",
-			"desc":"Este misil seguirá al objetivo más cercano y explotará en contacto, a menos que no haya objetivo, en cuyo caso irá de frente. Sin embargo, ten cuidado: este misil es algo lento y puede ser adelantado por enemigos rápidos."
+			"desc":"Este misil seguirá al objetivo más cercano y explotará en contacto, a menos que no haya objetivo, en cuyo caso irá de frente. Sin embargo, ten cuidado: este misil es algo lento y puede ser adelantado por enemigos rápidos.",
 			"killmessages":[
 				"P1 dió a P2!",
 				"P1 misiló a P2!"
@@ -144,7 +144,7 @@
 		},
 		{
 			"name":"Misil Pesado",
-			"desc":"Un misil más poderoso y lento, bueno contra nave más lentas y poderosas."
+			"desc":"Un misil más poderoso y lento, bueno contra nave más lentas y poderosas.",
 			"killmessages":[
 				"P1 dió a P2 con un misil pesado!",
 				"P1 heavy-missiled P2!"
@@ -152,7 +152,7 @@
 		},
 		{
 			"name":"Misil PEM",
-			"desc":"Misil de corto alcance que daña y genera un Pulso Electromagnético que paraliza al enemigo por un tiempo. Úsalo principalmente para aturdir un objetivo rápido antes de disparar armas guiadas. Efectivo contra torretas."
+			"desc":"Misil de corto alcance que daña y genera un Pulso Electromagnético que paraliza al enemigo por un tiempo. Úsalo principalmente para aturdir un objetivo rápido antes de disparar armas guiadas. Efectivo contra torretas.",
 			"killmessages":[
 				"P1 espearció los electrones de P2!",
 				"P1 guió a P2 con un misil PEM!",
@@ -161,7 +161,7 @@
 		},
 		{
 			"name":"Misil de Enjambre",
-			"desc":"Dispara un misil no dañino que se divide en una horda de misiles que atacará a una horda de enemigos. Buena herramienta contra una gran emboscada."
+			"desc":"Dispara un misil no dañino que se divide en una horda de misiles que atacará a una horda de enemigos. Buena herramienta contra una gran emboscada.",
 			"killmessages":[
 				"P1 enjambró a P2 con misiles!",
 				"P1 misil-enjambreó P2!",
@@ -170,7 +170,7 @@
 		},
 		{
 			"name":"Torpedo",
-			"desc":"Misil ultra-rápido de muy largo alcance."
+			"desc":"Misil ultra-rápido de muy largo alcance.",
 			"killmessages":[
 				"P1 confundió a P2 por un submarino!",
 				"P1 reventó a P2 fuera del agua!"
@@ -178,14 +178,14 @@
 		},
 		{
 			"name":"Mina",
-			"desc":"Una simple mina que explota al impactar contra una nave enemiga. Es difícil que un enemigo te siga con éstas."
+			"desc":"Una simple mina que explota al impactar contra una nave enemiga. Es difícil que un enemigo te siga con éstas.",
 			"killmessages":[
 				"P2 entró al campo de minas de P1!"
 			]
 		},
 		{
 			"name":"Mina Láser",
-			"desc":"Dispara un potente rayo Láser a los enemigos que se acercan demasiado."
+			"desc":"Dispara un potente rayo Láser a los enemigos que se acercan demasiado.",
 			"killmessages":[
 				"La mina láser de P1 evaporó a P2!",
 				"La mina láser de P1 quemó un agujero a través de P2!",
@@ -194,7 +194,7 @@
 		},
 		{
 			"name":"Mina PEM",
-			"desc":"Idéntica a la mina estándar pero con menos daño y capacidad de generar un Pulso Electromagnético que paraliza al enemigo por 3 segundos. Muy útil cuando estás siendo perseguido."
+			"desc":"Idéntica a la mina estándar pero con menos daño y capacidad de generar un Pulso Electromagnético que paraliza al enemigo por 3 segundos. Muy útil cuando estás siendo perseguido.",
 			"killmessages":[
 				"La mina PEM de P1 dispersó los electrones de P2!",
 				"P1 EMP-minó P2!"
@@ -234,7 +234,7 @@
 		},
 		{
 			"name":"Láser minero",
-			"desc":"Idéntico al Rayo Láser pero con más daño y solo está programado para atacar asteroides o al rango 17."
+			"desc":"Idéntico al Rayo Láser pero con más daño y solo está programado para atacar asteroides o al rango 17.",
 			"killmessages":[
 				"P1 confundió a P2 por un meteoro!"
 			]
@@ -245,7 +245,7 @@
 		},
 		{
 			"name":"Bomba de Gravedad",
-			"desc":"Arma de un solo uso que crea una pequeña singularidad tras 3 segundos del disparo, que se disipa en 20 segundos y que se formará a más de 500 unidades de cualquier base. Por si acaso compra algo para huir de la futura implosión."
+			"desc":"Arma de un solo uso que crea una pequeña singularidad tras 3 segundos del disparo, que se disipa en 20 segundos y que se formará a más de 500 unidades de cualquier base. Por si acaso compra algo para huir de la futura implosión.",
 			"killmessages":[
 				"P1 espaguetizó a P2!"
 			]
@@ -256,7 +256,7 @@
 		},
 		{
 			"name":"Rayo Iónico Minero",
-			"desc":"¡Láser Minero, ahora con más potencia!"
+			"desc":"¡Láser Minero, ahora con más potencia!",
 			"killmessages":[
 				"P1 confundió a P2 por un asteroide!"
 			]
@@ -271,7 +271,7 @@
 		},
 		{
 			"name":"Granadas",
-			"desc":"Tira ésto a un enemigo y explotará pronto (o cuando colisione con este), ¡dañandolo y empujandolo!"
+			"desc":"Tira ésto a un enemigo y explotará pronto (o cuando colisione con este), ¡dañandolo y empujandolo!",
 			"killmessages":[
 				"P1 reventó P2!",
 				"P1 mató P2!"
@@ -279,7 +279,7 @@
 		},
 		{
 			"name":"Haz de Muones",
-			"desc":"Utiliza leptones de segunda generación cargados para generar un poderoso rayo de largo alcance que puede atravesar múltiples objetivos, dañándolos gravemente."
+			"desc":"Utiliza leptones de segunda generación cargados para generar un poderoso rayo de largo alcance que puede atravesar múltiples objetivos, dañándolos gravemente.",
 			"killmessages":[
 				"P1 leptonó P2!",
 				"P1 muonó P2!"
@@ -307,7 +307,7 @@
 		},
 		{
 			"name":"Subametralladora",
-			"desc":"Como Minigun pero en rondas de 5 disparos."
+			"desc":"Como Minigun pero en rondas de 5 disparos.",
 			"killmessages":[
 				"P1 descargó en P2!",
 				"P1 SAMó P2!",
@@ -316,7 +316,7 @@
 		},
 		{
 			"name":"Haz hipnotizador",
-			"desc":"Dispara ésto contra una nave no tripulada de tu equipo y te seguirá hasta que sea destruida."
+			"desc":"Dispara ésto contra una nave no tripulada de tu equipo y te seguirá hasta que sea destruida.",
 			"killmessages":[
 				"P1 hizo a P2 saltar de un acantilado sin paracaídas!",
 				"P1 mató a P2!"
