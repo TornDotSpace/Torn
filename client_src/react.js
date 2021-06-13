@@ -325,19 +325,19 @@ class LoginOverlay extends Component {
 	}
 
 	langEng = () => {
-	    setLang(`eng`);
+	    loadLang(`eng`);
 	}
 
 	langEsp = () => {
-	    setLang(`esp`);
+	    loadLang(`esp`);
 	}
 
 	langTki = () => {
-	    setLang(`tki`);
+	    loadLang(`tki`);
 	}
 
 	langChn = () => {
-	    setLang(`chn`);
+	    loadLang(`chn`);
 	}
 }
 
