@@ -97,6 +97,10 @@ global.stopTyping = () => {
 global.centered = false;
 global.afk = false;
 
+global.colorCircumfix = `\`c`;
+global.weaponCircumfix = `\`w`;
+global.translateCircumfix = `\`t`;
+
 global.baseMap2D = {};
 global.planetMap2D = {};
 global.myGuild = {};

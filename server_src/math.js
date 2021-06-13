@@ -28,6 +28,10 @@ global.square = (x) => Math.pow(x, 2);
 
 global.secs = (x) => 25 * x;
 
+global.chatWeapon = (w) => weaponCircumfix + w + weaponCircumfix;
+global.chatColor = (c) => colorCircumfix + c + colorCircumfix;
+global.chatTranslate = (t) => translateCircumfix + t + translateCircumfix;
+
 global.colorSelect = function (col, red, blue, green) {
     if (col === `red`) return red;
     if (col === `blue`) return blue;
