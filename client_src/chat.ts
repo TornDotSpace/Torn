@@ -200,7 +200,7 @@ function preProcessChat() { // This is slow and buggy. We should rewrite it.
       const testLine = line + words[n] + " ";
       const metrics = ctx.measureText(testLine.replace(regex, ""));
       const testWidth = metrics.width;
-      if (testWidth > 512 && n > 0) {
+      if (testWidth > 430 && n > 0) {
         preChatArr[chati++] = line;
         line = "                  " + words[n] + " ";
       } else {
