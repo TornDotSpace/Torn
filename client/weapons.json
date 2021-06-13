@@ -271,7 +271,7 @@
 			"level":9,
 			"type":"Misc",
 			"bot":false,
-			"enabled":false
+			"enabled":true
 		},
 		"21":{
 			"name":"Turbo",
