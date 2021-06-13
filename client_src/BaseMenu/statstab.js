@@ -41,7 +41,7 @@ global.rStats = function () {
   } */
 };
 
-function renderStatsShip () {
+const renderStatsShip = () => {
     const d = new Date();
     const t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
     const rendX = 192;
@@ -53,9 +53,9 @@ function renderStatsShip () {
 
     baseMenuCtx.drawImage(img, -img.width / 2, -img.height / 2);
     baseMenuCtx.restore();
-}
+};
 
-function renderStatistics () {
+const renderStatistics = () => {
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `left`;
 
@@ -73,10 +73,10 @@ function renderStatistics () {
     baseMenuCtx.font = `14px ShareTech`;
     if (tag === `V`) write(baseMenuCtx, `VIP`, 192, 112);
     if (tag === `B`) write(baseMenuCtx, `MVP`, 192, 112);
-    const activeGens = 0;
 
     const eMult = e2;
     /* if (ship >= wepns[20].level) {
+    let activeGens = 0;
     for (let i = 0; i < ships[ship].weapons; i++) {
       if (equipped[i] == 20) activeGens++;
     }
@@ -96,9 +96,9 @@ function renderStatistics () {
     stats[3] += numToLS(Number((eMult).toPrecision(3)));
 
     for (let i = 0; i < stats.length; i++) write(baseMenuCtx, stats[i], 512 - 64, 44 + 32 + i * 16);
-}
+};
 
-function renderTrailSelector () {
+const renderTrailSelector = () => {
     const colorArr = [`white`, `red`, `gold`, `lightgray`, `cyan`, getRainbowColor()];
     const trailNameArr = [`[Default Trail]`, `[Blood Trail]`, `[Money Trail]`, `[Panda Trail]`, `[Random Trail]`, `[Rainbow Trail]`];
     const conditionArr = [true, achs[12], achs[24], achs[36], achs[47], tag === `O` || tag === `A`];
@@ -108,9 +108,9 @@ function renderTrailSelector () {
             write(baseMenuCtx, translate(trailNameArr[i]), 640, 92 + 32 * i);
         }
     }
-}
+};
 
-function renderUpgradeButtons () {
+const renderUpgradeButtons = () => {
     baseMenuCtx.fillStyle = `yellow`;
     baseMenuCtx.textAlign = `left`;
     baseMenuCtx.font = `24px ShareTech`;
@@ -133,7 +133,7 @@ function renderUpgradeButtons () {
     const currTechArr = [t2, va2, c2, mh2, e2, ag2];
     const titlesArr = [`Thrust lvl `, `Radar lvl `, `Cargo lvl `, `Hull lvl `, `Energy lvl `, `Agility lvl `];
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < titlesArr.length; i++) {
         // titles
         baseMenuCtx.fillStyle = `white`;
         write(baseMenuCtx, translate(titlesArr[i]) + ((currTechArr[i] - 1) * 8), 118 + 128 * (i % 3), 366 + 64 * (i % 2));
@@ -146,9 +146,9 @@ function renderUpgradeButtons () {
         baseMenuCtx.fillStyle = (seller == 206 + i) ? `red` : `white`;
         if (currTechArr[i] > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(currTechArr[i]) * (i == 4 ? 8 : 1))}`, 118 + 128 * (i % 3), 394 + 64 * (i % 2));
     }
-}
+};
 
-global.statsOnHover = function () {
+global.statsOnHover = () => {
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
@@ -164,7 +164,7 @@ global.statsOnHover = function () {
     } else if (seller < 200 || seller > 211) seller = 0;
 };
 
-global.statsOnClick = function (buttonID) {
+global.statsOnClick = (buttonID) => {
     // Upgrades and Downgrades
     if (buttonID > 199 && buttonID < 206) socket.emit(`upgrade`, { item: buttonID - 200 });
     if (buttonID > 205 && buttonID < 212) socket.emit(`downgrade`, { item: buttonID - 206 });
