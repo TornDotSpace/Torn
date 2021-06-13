@@ -68,9 +68,9 @@
 		"5":{
 			"name":"Machine Gun",
 			"range":300,
-			"damage":18,
+			"damage":20,
 			"speed":75,
-			"charge":6,
+			"charge":4,
 			"price":6000,
 			"ammo":500,
 			"level":4,
@@ -81,7 +81,7 @@
 		"6":{
 			"name":"Minigun",
 			"range":250,
-			"damage":12,
+			"damage":20,
 			"speed":60,
 			"charge":6,
 			"price":30000,
