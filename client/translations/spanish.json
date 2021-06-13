@@ -55,7 +55,7 @@
 			"desc":"Un arma básica de medio alcance."
 			"killmessages":[
 				"P1 disparó a P2!",
-				"P1 capó a P2!",
+				"P1 destruyo a P2!",
 				"P1 llenó a P2 con plomo!"
 			]
 		},
@@ -79,7 +79,7 @@
 			"killmessages":[
 				"P1 destruyó a largo alcance a P2!",
 				"P1 fusiló a P2!",
-				"P1 cannocó a P2!"
+				"P1 Cañoneo a P2!"
 			]
 		},
 		{
@@ -89,7 +89,7 @@
 				"P1 cañoneó doblemente a P2!",
 				"P1 llenó a P2 con perdigones!",
 				"P1 confundio a P2 por una codorniz!",
-				"P1 escopetó P2!"
+				"P1 escopeteo P2!"
 			]
 		},
 		{
@@ -356,10 +356,10 @@
 	],
 	"splashes":[
 		"",
-		"Expanding Cofactors",
-		"Proving lag is a myth",
+		"cofactores en expansión",
+		"Demostrando que el lag es un mito",
 		"Recogiendo exp",
-		"I'm only Human, after all",
+		"Soy un humano, después de todo",
 		"Poniendo torretas en el agujero negro",
 		"$ sudo apt install torn","Prueba alexhontz.com/fun!",
 		"Instalando MEMZ.exe","Verificando SSL",
@@ -372,7 +372,7 @@
 		"Consejo: Mejorar tu radar proporciona más que ver asteroides, jugadores y bases",
 		"Consejo: ¡Los minerales más abundantes en terreno enemigo son más valiosos!",
 		"Consejo: ¡Desbloquea todos los logros de un mismo tipo para desbloquear un rastro de color!",
-		"Consejo: ¡Presiona P para acticar el Piloto Automático!",
+		"Consejo: ¡Presiona P para activar el Piloto Automático!",
 		"Consejo: ¡El Rayo de Hadrones carga eléctricamente los asteroides!",
 		"Consejo: Alterna rápidamaente A y D / flechas izquierda y derecha al derrapar para ir más rápido",
 		"Consejo: ¡Vim > Emacs!",
@@ -528,13 +528,13 @@
 			"nameA":"Explorador",
 			"nameH":"Pececillo",
 			"nameC":"Piojo",
-			"desc":"Tu primera nave. No olvide comprobar la tienda para nuevos items."
+			"desc":"Tu primera nave. No olvides comprobar la tienda para nuevos items."
 		},
 		{
 			"nameA":"Caza",
 			"nameH":"Piraña",
 			"nameC":"Pulga",
-			"desc":"Una actualizaci´n mejorada de su predecesora, con más salud y ranuras."
+			"desc":"Una actualizacion mejorada de su predecesora, con más salud y ranuras."
 		},
 		{
 			"nameA":"Mastodonte",
