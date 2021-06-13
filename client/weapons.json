@@ -636,6 +636,19 @@
 			"type":"Mine",
 			"bot":true,
 			"enabled":true
+		},
+		"49":{
+			"name":"Nuclear Missile",
+			"range":500,
+			"damage":500,
+			"speed":15,
+			"charge":500,
+			"price":100000,
+			"ammo":1,
+			"level":20,
+			"type":"Missile",
+			"bot":false,
+			"enabled":true
 		}
 	},
 	"planets":[
