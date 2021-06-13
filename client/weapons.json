@@ -160,13 +160,13 @@
 			"name":"EMP Missile",
 			"range":600,
 			"damage":25,
-			"speed":100,
-			"charge":100,
+			"speed":90,
+			"charge":110,
 			"price":40000,
-			"ammo":8,
+			"ammo":10,
 			"level":7,
 			"type":"Missile",
-			"bot":true,
+			"bot":false,
 			"enabled":true
 		},
 		"13":{
