@@ -59,7 +59,7 @@ module.exports = class Vortex {
                 p.randmAchs[4] = true; // fall into a black hole
                 p.sendAchievementsMisc(true);
                 p.die(this);
-            } else if (dist < 15 && this.isWorm) { // collision with wormhole
+            } else if (dist < 15 && this.isWorm && !p.guest) { // collision with wormhole
                 p.randmAchs[3] = true; // fall into a wormhole
                 p.sendAchievementsMisc(true);
 
