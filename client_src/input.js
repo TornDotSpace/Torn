@@ -164,6 +164,7 @@ document.addEventListener(`mousemove`, (evt) => {
         // Global Chat Button
         seller = 800 + Math.floor((my - h + 61) / 18);
         if (seller > 802 || seller < 800) seller = 0;
+        else if (preSeller != seller) rChat();
     } else if (docked && tab == 0) shopOnHover(); // Shop
     else if (docked && tab == 1) questsOnHover(preSeller); // Quests
     else if (docked && tab == 2) statsOnHover(); // Stats
@@ -172,7 +173,6 @@ document.addEventListener(`mousemove`, (evt) => {
     else seller = 0;
 
     if (seller != 0 && seller != preSeller) playAudio(`button2`, 0.2);
-    if (preSeller != seller && (Math.abs(preSeller - 801) <= 1 || Math.abs(seller - 801) <= 1)) rChat();
 }, false);
 
 document.addEventListener(`mousedown`, (evt) => {
