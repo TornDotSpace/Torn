@@ -30,6 +30,7 @@ module.exports = class Base {
         this.y = y,
         this.sx = sx,
         this.sy = syy,
+        this.deathTimer = 0,
 
         this.shots = 0,
         this.reload = 0, // timer for shooting
@@ -49,7 +50,8 @@ module.exports = class Base {
             }
         }
 
-        if (this.baseType == DEADBASE && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) this.baseType = LIVEBASE; // revive. TODO: add a timer
+        this.deathTimer--;
+        if (this.baseType == DEADBASE && this.deathTimer <= 0) this.baseType = LIVEBASE; // revive.
 
         this.move(); // aim and fire
 
@@ -216,6 +218,8 @@ module.exports = class Base {
         } else {
             const numBotsToSpawn = 2 + 4 * Math.random() * Math.random();
             for (let i = 0; i < numBotsToSpawn; i++) spawnBot(this.sx, this.sy, this.color, true);
+            this.baseType = DEADBASE;
+            this.deathTimer = raidTimer < 15000 ? 75 * 60 : (25 * 125);
         }
 
         if (b === 0) {

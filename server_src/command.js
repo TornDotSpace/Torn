@@ -324,8 +324,8 @@ cmds.give = new Command(`/give - Give a player money.`, MVPPLUS, (commandExecute
     recipient.money += moneyAmount;
     commandExecuter.save();
     recipient.save();
-    commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`yellow`)}You gave $${moneyAmount} to ${recipient.nameWithColor()}!` });
-    recipient.socket.emit(`chat`, { msg: `${chatColor(`yellow`)}You were given $${moneyAmount} from ${commandExecuter.nameWithColor()}!` });
+    commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`lime`)}You gave $${moneyAmount} to ${recipient.nameWithColor()}!` });
+    recipient.socket.emit(`chat`, { msg: `${chatColor(`lime`)}You were given $${moneyAmount} from ${commandExecuter.nameWithColor()}!` });
 });
 
 cmds.basetp = new Command(`/basetp - Teleport to another base.`, MVPPLUS, (commandExecuter, msg) => {
@@ -366,7 +366,8 @@ cmds.summonwormhole = new Command(`/summonwormhole - summons the wormhole roughl
     wormhole.vx += ((commandExecuter.sx * sectorWidth + commandExecuter.x) - (wormhole.sx * sectorWidth + wormhole.x)) / 90;
     wormhole.vy += ((commandExecuter.sy * sectorWidth + commandExecuter.y) - (wormhole.sy * sectorWidth + wormhole.y)) / 90;
 
-    commandExecuter.money *= 0.99;
+    const userMoney = commandExecuter.money;
+    commandExecuter.money = Math.max(userMoney *= 0.99, userMoney - 1000000);
     commandExecuter.save();
 
     commandExecuter.socket.emit(`chat`, { msg: `Summoning Wormhole...` });

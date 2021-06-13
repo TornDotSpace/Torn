@@ -257,7 +257,7 @@
 			"ammo":3,
 			"level":4,
 			"type":"Misc",
-			"bot":true,
+			"bot":false,
 			"enabled":true
 		},
 		"20":{
