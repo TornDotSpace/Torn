@@ -64,7 +64,6 @@ global.handlePlayerDeath = async function (player, inertia_drift, blackhole_deat
 
     player.experience *= 1 - playerKillExpFraction;
     player.money *= 1 - playerKillMoneyFraction;
-    console.log(`${inertia_drift} ${blackhole_death}`);
     player.randmAchs[1] = true; // Death Achievement
     player.driftAchs[8] = inertia_drift; // inertia drift Achievement
     player.randmAchs[4] = blackhole_death; // BH death Achievement
