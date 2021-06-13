@@ -174,7 +174,7 @@ class Player {
     }
 
     fire () {
-        if (this.empTimer > 0) return; // Can't shoot while EMP'd
+        if (this.empTimer > 0) return; // Cannot shoot while EMP'd.
         if (this.c && this.charge > 0) this.shootEliteWeapon();
         if (this.bulletQueue > 0) this.shootBullet(40); // SMG
         const wepId = this.weapons[this.equipped];
@@ -535,6 +535,8 @@ class Player {
     }
 
     move () {
+        if (this.empTimer > 0) return; // Cannot move while EMP'd.
+
         if (this.hyperdriveTimer > 0) {
             this.hyperdriveTimer--;
             this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
@@ -1004,15 +1006,15 @@ class Player {
         if (this.health < 0) this.die(origin);
 
         if (d > 0) note(`-${Math.floor(d)}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-        if (d == 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
+        if (d === 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
         if (d < 0) note(`+${Math.floor(Math.abs(d))}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
         this.emit(`dmg`, {});
         return this.health < 0;
     }
 
     EMP (t) {
-        if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship.
- 	if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // Emp works better on elites
+        if (this.empTimer > 0) return; // EMPs don't stack. Once EMP'd, a ship cannot be EMP'd again until the previous EMP has ended.
+ 	    if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // Emp works better on elite ships.
         if (this.ship == 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // It will also heal the ship a very small bit.
         if (this.isBot) {
             this.empTimer = t;
