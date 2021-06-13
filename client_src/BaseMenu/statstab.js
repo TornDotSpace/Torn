@@ -130,13 +130,13 @@ const renderUpgradeButtons = () => {
     baseMenuCtx.font = `12px ShareTech`;
     baseMenuCtx.textAlign = `center`;
 
-    const currTechArr = [t2, va2, c2, mh2, e2, ag2];
-    const titlesArr = [`Thrust lvl `, `Hull lvl `, `Energy lvl `, `Cargo lvl `, `Radar lvl `, `Agility lvl `];
+    const currTechArr = [t2, mh2, e2, c2, va2, ag2];
+    const titlesArr = [`Thrust`, `Hull`, `Energy`, `Cargo`, `Radar`, `Agility`];
 
     for (let i = 0; i < titlesArr.length; i++) {
         // titles
         baseMenuCtx.fillStyle = `white`;
-        write(baseMenuCtx, translate(titlesArr[i]) + ((currTechArr[i] - 1) * 8), 118 + 128 * (i % 3), 366 + 64 * (i % 2));
+        write(baseMenuCtx, translate(`${titlesArr[i]} lvl `) + ((currTechArr[i] - 1) * 8), 118 + 128 * (i % 3), 366 + 64 * (i % 2));
 
         // upgrades
         baseMenuCtx.fillStyle = (seller == 200 + i) ? `lime` : `white`;
