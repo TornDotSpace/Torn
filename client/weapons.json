@@ -163,10 +163,10 @@
 			"speed":90,
 			"charge":110,
 			"price":40000,
-			"ammo":7,
+			"ammo":10,
 			"level":7,
 			"type":"Missile",
-			"bot":true,
+			"bot":false,
 			"enabled":true
 		},
 		"13":{
