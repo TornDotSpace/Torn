@@ -915,7 +915,7 @@
 			"health":777,
 			"agility":0.2,
 			"width":190,
-			"price":10000000,
+			"price":8000000,
 			"weapons":10,
 			"capacity":20000
 		},
@@ -924,7 +924,7 @@
 			"health":930,
 			"agility":0.17,
 			"width":200,
-			"price":12000000,
+			"price":10000000,
 			"weapons":10,
 			"capacity":18000
 		},
