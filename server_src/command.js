@@ -116,14 +116,11 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) 
             return;
         }
         teamDict = { red: 0, blue: 1, green: 2 };
-        old_sx = commandExecuter.sx;
-        commandExecuter.sx = (commandExecuter.sx + 3 * (teamDict[split[1]] - teamDict[commandExecuter.color])) % mapSz;
         commandExecuter.color = split[1];
         const lossConstant = commandExecuter.tag === `B` ? 0.95 : 0.9; // MVPs lose less when switching teams
         commandExecuter.money *= lossConstant;
         commandExecuter.experience *= lossConstant;
-        delete players[commandExecuter.sy][old_sx][commandExecuter.id];
-        players[commandExecuter.sy][commandExecuter.sx][commandExecuter.id] = commandExecuter;
+        commandExecuter.changeSectors(commandExecuter.sy, (commandExecuter.sx + 3 * (teamDict[split[1]] - teamDict[commandExecuter.color])) % mapSz);
         commandExecuter.save();
     }
 });
@@ -341,15 +338,10 @@ cmds.basetp = new Command(`/basetp - Teleport to another base.`, MVPPLUS, (comma
         return;
     }
 
-    const old_sy = commandExecuter.sy;
-    const old_sx = commandExecuter.sx;
-
     const r2 = Math.random();
-    commandExecuter.sx = baseMap[commandExecuter.color][Math.floor(r2 * basesPerTeam) * 2];
-    commandExecuter.sy = baseMap[commandExecuter.color][Math.floor(r2 * basesPerTeam) * 2 + 1];
-    delete players[old_sy][old_sx][commandExecuter.id];
-    players[commandExecuter.sy][commandExecuter.sx][commandExecuter.id] = commandExecuter;
-    commandExecuter.onChangeSectors();
+    const sx = baseMap[commandExecuter.color][Math.floor(r2 * basesPerTeam) * 2];
+    const sy = baseMap[commandExecuter.color][Math.floor(r2 * basesPerTeam) * 2 + 1];
+    commandExecuter.changeSectors(sy, sx);
 
     commandExecuter.socket.emit(`chat`, { msg: `Teleporting to a random base on your team...` });
 });
@@ -419,11 +411,7 @@ cmds.tp = new Command(`/tp <player> - Teleport to the player.`, ADMINPLUS, (comm
 
     commandExecuter.x = teleportee.x;
     commandExecuter.y = teleportee.y;
-    commandExecuter.sx = teleportee.sx;
-    commandExecuter.sy = teleportee.sy;
-    delete players[old_sy][old_sx][commandExecuter.id];
-    players[commandExecuter.sy][commandExecuter.sx][commandExecuter.id] = commandExecuter;
-    commandExecuter.onChangeSectors();
+    commandExecuter.changeSectors(teleportee.sy, teleportee.sx);
 
     commandExecuter.socket.emit(`chat`, { msg: `Player found, attempting to teleport. May fail if they are docked or dead.` });
 });

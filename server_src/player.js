@@ -662,10 +662,10 @@ class Player {
     }
 
     testSectorChange () {
-        const old_sx = this.sx;
-        const old_sy = this.sy;
-
         let giveBounce = false; // did they bounce on a galaxy edge?
+        let new_sx = this.sx;
+        let new_sy = this.sy;
+
         if (this.x > sectorWidth) { // check each edge of the 4 they could bounce on
             this.x = 1;
             if (this.guest || (trainingMode && this.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
@@ -674,7 +674,7 @@ class Player {
                 this.driftAngle = this.angle = 3.1415 - this.angle;
                 this.vx *= -1;
             } else {
-                this.sx = (this.sx + 1 + mapSz) % mapSz;
+                new_sx = (this.sx + 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         } else if (this.y > sectorWidth) {
@@ -688,7 +688,7 @@ class Player {
                 if (this.sy == mapSz - 1) {
                     this.health -= this.maxHealth * 0.75;
                 }
-                this.sy = (this.sy + 1 + mapSz) % mapSz;
+                new_sy = (this.sy + 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         } else if (this.x < 0) {
@@ -699,7 +699,7 @@ class Player {
                 this.driftAngle = this.angle = 3.1415 - this.angle;
                 this.vx *= -1;
             } else {
-                this.sx = (this.sx - 1 + mapSz) % mapSz;
+                new_sx = (this.sx - 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         } else if (this.y < 0) {
@@ -713,7 +713,7 @@ class Player {
                 if (this.sy == 0) {
                     this.health -= this.maxHealth * 0.75;
                 }
-                this.sy = (this.sy - 1 + mapSz) % mapSz;
+                new_sy = (this.sy - 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         }
@@ -730,11 +730,8 @@ class Player {
             this.borderJumpTimer = 50;
         }
 
-        if (old_sx !== this.sx || old_sy !== this.sy) {
-            delete players[old_sy][old_sx][this.id];
-
-            players[this.sy][this.sx][this.id] = this;
-            this.onChangeSectors();
+        if (new_sx !== this.sx || new_sy !== this.sy) {
+            this.changeSectors(new_sy, new_sx);
         }
     }
 
@@ -748,8 +745,18 @@ class Player {
         chatAll(`${this.nameWithColor()} has been ${minutes > 0 ? `muted for ${minutes} minutes!` : `unmuted!`}`);
     }
 
-    onChangeSectors () {
-    // track my touched corners
+    changeSectors (new_sy, new_sx) {
+        this.docked = this.dead = false;
+        delete this.docked[this.id];
+        delete this.dead[this.id];
+
+        // Update internal sector data
+        delete players[this.sy][this.sx][this.id];
+        this.sy = new_sy;
+        this.sx = new_sx;
+        players[this.sy][this.sx][this.id] = this;
+
+        // track my touched corners
         if (this.sx == 0) {
             if (this.sy == 0 && (this.cornersTouched & 1) != 1) this.cornersTouched++;
             else if (this.sy == mapSz - 1 && (this.cornersTouched & 2) != 2) this.cornersTouched += 2;
@@ -1002,7 +1009,6 @@ class Player {
         sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
-    // Bot specific
     async die (b) {
     }
 
