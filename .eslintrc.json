@@ -46,9 +46,6 @@
         // Use templating strings with backticks whenever possible.
         "prefer-template": 1,
 
-        // Prefer const myFunction = () => {}; rather than function myFunction () {}.
-        "func-style": 1,
-
         // ESLint globals have not been configured for these.
         "no-undef": 0,
         "no-var": 0,
@@ -76,6 +73,7 @@
         "no-useless-escape": 0,
         "no-func-assign": 0,
         "no-global-assign": 0,
-        "no-self-assign": 0
+        "no-self-assign": 0,
+        "func-style": 0
     }
 }
