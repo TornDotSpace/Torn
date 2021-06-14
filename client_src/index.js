@@ -24,7 +24,7 @@ import { jsn, translate } from "./localizer.ts";
 
 `use strict`;
 
-function printStartup () {
+const printStartup = () => {
     console.log(`******************************************************************************************************`);
     console.log(` ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄      ▄     ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄ `);
     console.log(`▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░▌    ▐░▌   ▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌`);
@@ -52,7 +52,7 @@ function printStartup () {
     console.error(`ALWAYS AUDIT CODE YOU ARE INJECTING INTO THE DEVELOPER CONSOLE`);
     console.error(`ADDITIONALLY, PLEASE RESPECT OUR TOS https://torn.space/legal/tos.pdf AND NOTE OUR PRIVACY POLICY https://torn.space/legal/privacy_policy.pdf`);
     console.error(`***********************************************************************`);
-}
+};
 
 printStartup();
 
@@ -250,9 +250,9 @@ loadAllAudio();
 global.achs = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
 global.bigNotes = [-1, -1, -1, -1];
 
-function forceRefresh () {
-    window.location.reload(true);
-}
+const forceRefresh = () => {
+    window.location.reload();
+};
 
 setInterval(() => {
     fps = frames;
@@ -272,9 +272,7 @@ setInterval(() => {
     baseMenuX = w / 2 - 128 * 3, baseMenuY = h / 4 - 128;
 }, 40);
 
-window.requestAnimationFrame(loop);
-
-function loop () {
+const loop = () => {
     render();
     if (!login) {
         if (!EVERYTHING_LOADED) {
@@ -395,4 +393,6 @@ function loop () {
     } else ReactRoot.activate();
 
     window.requestAnimationFrame(loop);
-}
+};
+
+window.requestAnimationFrame(loop);
