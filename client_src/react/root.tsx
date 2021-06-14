@@ -23,7 +23,7 @@ import MusicButton from './components/musicButton';
 import LoginOverlay from './components/loginOverlay';
 import Register from './components/register';
 
-class ReactRoot extends React.Component<{ data: { toggleSFX: boolean, toggleMusic: boolean } }, { display: string, register: string }> {
+class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMusic: boolean } }, { display: string, register: string }> {
     constructor (props) {
         super(props);
 
@@ -55,7 +55,7 @@ class ReactRoot extends React.Component<{ data: { toggleSFX: boolean, toggleMusi
         this.setState({ register: `none` });
     }
 
-    render = () => (Element) => (
+    render = () => (
         <span>
             <Chat />
 

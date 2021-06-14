@@ -16,7 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import * as React from 'react';
-import socket from '../../utils/socket';
+import { Socket } from 'socket.io-client';
+
+declare const socket: Socket;
 
 class Register extends React.Component<{ register: boolean }, { user: string, pass: string, display: boolean }> {
     constructor (props) {
@@ -61,7 +63,7 @@ class Register extends React.Component<{ register: boolean }, { user: string, pa
         });
     }
 
-    render = () => (Element) => (
+    render = () => (
         this.props.register
             ? (
                 <div className="register-menu">

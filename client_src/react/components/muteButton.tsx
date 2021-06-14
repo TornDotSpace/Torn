@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import * as React from 'react';
-class MuteButton extends React.Component<{ toggleAudio: boolean }, { muted: boolean }> {
+class MuteButton extends React.Component<{ toggleAudio: any }, { muted: boolean }> {
     constructor (props) {
         super(props);
 
@@ -26,13 +26,12 @@ class MuteButton extends React.Component<{ toggleAudio: boolean }, { muted: bool
     }
 
     click = () => {
-        toggleAudio();
-        this.setState({ muted: core.muted.sfx });
+        this.setState({ muted: this.props.toggleAudio() });
     }
 
-    render = () => (Element) => (
+    render = () => (
         <div className="mute-button" onClick={this.click.bind(this)}>
-            {<span><img src={`img/sound/sound${!this.state.muted ? `on` : `off`}`} alt="Mute button"/></span>}
+            {<span><img src={`img/sound/sound${!this.state.muted ? `On` : `Off`}`} alt="Mute button"/></span>}
         </div>
     )
 }
