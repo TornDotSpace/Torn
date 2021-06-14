@@ -108,8 +108,9 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         }
 
         const playCookieData = await playCookie.text();
-        console.log(`:TornNetRepository: Got PlayCookie: ${playCookieData}`);
+        connect();
 
+        console.log(`:TornNetRepository: Got PlayCookie: ${playCookieData}`);
         socket?.emit(`login`, { cookie: playCookie, version: VERSION });
     }
 
