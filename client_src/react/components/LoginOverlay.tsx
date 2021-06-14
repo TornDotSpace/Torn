@@ -111,7 +111,7 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         connect();
 
         console.log(`:TornNetRepository: Got PlayCookie: ${playCookieData}`);
-        socket?.emit(`login`, { cookie: playCookie, version: VERSION });
+        socket?.emit(`login`, { cookie: playCookieData, version: VERSION });
     }
 
     render = () => {
