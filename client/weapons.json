@@ -37,7 +37,7 @@
 			"level":1,
 			"type":"Gun",
 			"bot":false,
-			"enabled":false
+			"enabled":true
 		},
 		"3":{
 			"name":"Rifle",
@@ -406,7 +406,7 @@
 		"31":{
 			"name":"Destabilizer",
 			"range":1000000,
-			"damage":-1,
+			"damage":10,
 			"speed":-1,
 			"charge":30,
 			"price":4000,

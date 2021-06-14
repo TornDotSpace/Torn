@@ -21,6 +21,7 @@ module.exports = class Base {
         this.money = 0,
         this.id = i, // unique identifier
         this.color = col,
+        this.assimilatedCol = col;
         this.owner = 0,
         this.name = ``,
         this.baseType = type, // Constants above
@@ -38,6 +39,7 @@ module.exports = class Base {
         this.maxHealth = (type == SENTRY ? 0.2 : 1) * baseHealth,
         this.empTimer = -1,
         this.speed = 0; // vs unused but there for bullets,
+        this.assimilatedTimer = 0;
     }
 
     tick () {
@@ -46,7 +48,7 @@ module.exports = class Base {
             const botSpawn = Math.random();
             const healthPercent = Math.max(this.health / this.maxHealth, 0.1);
             if (botSpawn * healthPercent < botFrequency) {
-                spawnBot(this.sx, this.sy, this.color, healthPercent < 0.9);
+                spawnBot(this.sx, this.sy, this.assimilatedCol, healthPercent < 0.9);
             }
         }
 
@@ -57,7 +59,9 @@ module.exports = class Base {
 
         this.empTimer--;
         this.reload--;
+        this.assimilatedTimer--;
 
+        if (this.assimilatedTimer <= 0) this.assimilatedCol = this.color;
         if (this.health < this.maxHealth) this.health += baseRegenSpeed;
         if (tick % 50 == 0 && (this.baseType == SENTRY || this.baseType == TURRET)) this.tryGiveToOwner();
     }
@@ -95,7 +99,7 @@ module.exports = class Base {
         let cDist2 = 1000000000; // min dist to player
         for (const i in players[this.sy][this.sx]) {
             const player = players[this.sy][this.sx][i];
-            if (player.color == this.color || player.disguise > 0) continue; // don't shoot at friendlies
+            if (player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
             const dist2 = squaredDist(player, this);
             if (dist2 < cDist2) {
                 c = player; cDist2 = dist2;
@@ -124,7 +128,7 @@ module.exports = class Base {
         let cDist2 = 1000000000; // min dist to player
         for (const i in players[this.sy][this.sx]) {
             const player = players[this.sy][this.sx][i];
-            if (player.color == this.color || player.disguise > 0) continue; // don't shoot at friendlies
+            if (player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
             const dist2 = squaredDist(player, this);
             if (dist2 < cDist2) {
                 c = player; cDist2 = dist2;
@@ -137,7 +141,7 @@ module.exports = class Base {
         this.angle = (this.angle + newAngle * 2) / 3;
 
         if (this.reload < 0) {
-            if (cDist2 < 5 + square(wepns[5].range * 10)) this.shootMachineGun();// range:??? + the small extra range machine gun bullets are still capable of hitting a target. Basically this allows the turret not to be attacked with the same weapon by players without the turret reacting.
+            if (cDist2 < 5 * 10 + square(wepns[5].range * 10)) this.shootMachineGun();// range:??? + the small extra range machine gun bullets are still capable of hitting a target. Basically this allows the turret not to be attacked with the same weapon by players without the turret reacting.
         }
     }
 
@@ -188,7 +192,7 @@ module.exports = class Base {
         let nearP = 0;
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
-            if (p.color == this.color || p.sx != this.sx || p.sy != this.sy) continue;
+            if (p.color == this.assimilatedCol || p.sx != this.sx || p.sy != this.sy) continue;
             if (nearP == 0) {
                 nearP = p;
                 continue;
@@ -307,5 +311,13 @@ module.exports = class Base {
 
     nameWithColor () { // returns something like "~`green~`B6~`yellow~`"
         return `${chatColor(this.color)}${this.getSectorName()}${chatColor(`yellow`)}`;
+    }
+
+    assimilate (time, assimilator) { // A weapon of cyborg origin
+        this.dmg(this.health * 0.25, assimilator);
+        this.EMP(time / 3); // The crew is fighting hard to fend off the invaders! Some systems stop working and the base will take some damage
+        note(`WE ARE THE CYBORG. RESISTANCE IS FUTILE`, this.x, this.y - 64, this.sx, this.sy);
+        this.assimilatedCol = assimilator.color; // But resistance is futile
+        this.assimilatedTimer = time; // At least until the remaining crew manage to vent the invaders.
     }
 };

@@ -433,6 +433,7 @@ class Player {
         else if (this.ship == 22 && tick % 10 == 0) {
             const ox = this.x; const oy = this.y; // Current emitter coordinates
             let nearBEnemy = 0; // enemy turret target, which we will compute
+            let nearBFriendly = 0; // friendly turret target, which we will compute
             let nearPFriendly = 0; // friendly ship target, which we will compute
             let nearPEnemy = 0; // enemy ship target, which we will compute
             let nearA = 0; // asteroid target, which we will compute
@@ -442,6 +443,9 @@ class Player {
             const b = bases[this.sy][this.sx];
             if ((b != 0) && b.baseType != DEADBASE && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2)) {
                 nearBEnemy = b;
+            }
+            if ((b != 0) && b.baseType != DEADBASE && b.color == this.color && (hypot2(b.x, ox, b.y, oy) < range2)) {
+                nearBFriendly = b;
             }
 
             // search players
@@ -471,16 +475,14 @@ class Player {
             }
 
             if (nearA != 0) {
-                const rM = Math.random();
-                const beamMe = new Beam(this, rM, 45, this, this); // Healing beam for myself when mining asteroids
-                beams[this.sy][this.sx][rM] = beamMe;
+                this.dmg(-30); // Heals myself.
                 const rA = Math.random();
                 const beamA = new Beam(this, rA, 30, nearA, this); // Ore Cannon
                 beams[this.sy][this.sx][rA] = beamA;
             }
 
             if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
-            this.spoils(`money`, 250); // reward the player for healing a teammate
+            this.spoils(`money`, 365); // reward the player for healing a teammate
             this.spoils(`experience`, 10); // The medic gets more experience from healing
             const rfP = Math.random();
 
@@ -498,6 +500,11 @@ class Player {
                 }
                 const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
                 beams[this.sy][this.sx][reP] = beameP;
+
+                if (this.color == `blue` && tick % 250 == 0) {
+                    const beameP2 = new Beam(this, reP, 31, nearPEnemy, this); // Destabilizer
+                    beams[this.sy][this.sx][reP] = beameP2;
+                }
             }
             if (nearBEnemy != 0) {
                 const reB = Math.random();
@@ -507,7 +514,21 @@ class Player {
                 }
                 const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
                 beams[this.sy][this.sx][reB] = beameB;
+
+                if (this.color == `green` && tick % 750 == 0) { // Assimilation beam
+		    nearBEnemy.assimilate(660, this);
+                    const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
+                    beams[this.sy][this.sx][reB] = beameB2;
+                    this.dmg(-73);
+                    sendAllSector(`sound`, { file: `assimilation`, x: ox, y: oy }, this.sx, this.sy);
+                }
             }
+            if (nearBFriendly != 0 && nearBFriendly.assimilatedCol != this.color) { // Anti-assimilation beam
+                const beamfB = new Beam(this, rfP, 45, nearBFriendly, this); // Healing beam
+                beams[this.sy][this.sx][rfP] = beamfB;
+	        nearBFriendly.assimilatedCol = this.color;
+                nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
+	    }
 
             sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
         } // A healing leech beam, only for helping teammates, or when near an asteroid.
@@ -641,10 +662,10 @@ class Player {
     }
 
     testSectorChange () {
-        const old_sx = this.sx;
-        const old_sy = this.sy;
-
         let giveBounce = false; // did they bounce on a galaxy edge?
+        let new_sx = this.sx;
+        let new_sy = this.sy;
+
         if (this.x > sectorWidth) { // check each edge of the 4 they could bounce on
             this.x = 1;
             if (this.guest || (trainingMode && this.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
@@ -653,7 +674,7 @@ class Player {
                 this.driftAngle = this.angle = 3.1415 - this.angle;
                 this.vx *= -1;
             } else {
-                this.sx = (this.sx + 1 + mapSz) % mapSz;
+                new_sx = (this.sx + 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         } else if (this.y > sectorWidth) {
@@ -667,7 +688,7 @@ class Player {
                 if (this.sy == mapSz - 1) {
                     this.health -= this.maxHealth * 0.75;
                 }
-                this.sy = (this.sy + 1 + mapSz) % mapSz;
+                new_sy = (this.sy + 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         } else if (this.x < 0) {
@@ -678,7 +699,7 @@ class Player {
                 this.driftAngle = this.angle = 3.1415 - this.angle;
                 this.vx *= -1;
             } else {
-                this.sx = (this.sx - 1 + mapSz) % mapSz;
+                new_sx = (this.sx - 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         } else if (this.y < 0) {
@@ -692,7 +713,7 @@ class Player {
                 if (this.sy == 0) {
                     this.health -= this.maxHealth * 0.75;
                 }
-                this.sy = (this.sy - 1 + mapSz) % mapSz;
+                new_sy = (this.sy - 1 + mapSz) % mapSz;
                 this.borderJumpTimer += 100;
             }
         }
@@ -709,11 +730,8 @@ class Player {
             this.borderJumpTimer = 50;
         }
 
-        if (old_sx !== this.sx || old_sy !== this.sy) {
-            delete players[old_sy][old_sx][this.id];
-
-            players[this.sy][this.sx][this.id] = this;
-            this.onChangeSectors();
+        if (new_sx !== this.sx || new_sy !== this.sy) {
+            this.changeSectors(new_sy, new_sx);
         }
     }
 
@@ -727,8 +745,18 @@ class Player {
         chatAll(`${this.nameWithColor()} has been ${minutes > 0 ? `muted for ${minutes} minutes!` : `unmuted!`}`);
     }
 
-    onChangeSectors () {
-    // track my touched corners
+    changeSectors (new_sy, new_sx) {
+        this.docked = this.dead = false;
+        delete this.docked[this.id];
+        delete this.dead[this.id];
+
+        // Update internal sector data
+        delete players[this.sy][this.sx][this.id];
+        this.sy = new_sy;
+        this.sx = new_sx;
+        players[this.sy][this.sx][this.id] = this;
+
+        // track my touched corners
         if (this.sx == 0) {
             if (this.sy == 0 && (this.cornersTouched & 1) != 1) this.cornersTouched++;
             else if (this.sy == mapSz - 1 && (this.cornersTouched & 2) != 2) this.cornersTouched += 2;
@@ -981,7 +1009,6 @@ class Player {
         sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
-    // Bot specific
     async die (b) {
     }
 
