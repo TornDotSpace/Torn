@@ -432,7 +432,7 @@ function endRaid () {
         p.points = 0;
     }
     sendRaidData();
-    if (winners !== `yellow`) chatAll(`${chatColor(winners)}${winners}${chatColor(yellow)} team won the raid, and made $${winnerPoints * moneyPerRaidPoint}!`);
+    if (winners !== `yellow`) chatAll(`${chatColor(winners)}${winners}${chatColor(`yellow`)} team won the raid, and made $${winnerPoints * moneyPerRaidPoint}!`);
 }
 
 function update () {
