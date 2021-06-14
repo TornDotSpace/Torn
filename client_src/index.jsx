@@ -189,7 +189,7 @@ ReactDOM.render(
     <ReactRoot data={ toggleMusic, toggleAudio } state={ ReactState.display, ReactState.register } />,
 
     // Render to secondary container to prevent canvas from being affected.
-    document.querySelector(`#a`)
+    document.querySelector(`.react-container`)
 );
 
 // Used in the ship store to make the bar graphs

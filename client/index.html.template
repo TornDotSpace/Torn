@@ -40,7 +40,7 @@
 </head>
 <body>
     <canvas id="ctx"></canvas>
-    <div id="a"></div>
+    <div class="react-container"></div>
 
     <script src="client.js?v={GIT_HASH}"></script>
 </body>
