@@ -59,7 +59,7 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMu
 
     componentDidMount = () => {
         // Pass internal states to the exportable object.
-        RootState = {
+        RootState = { 
             toggleDisplay: () => this.toggleDisplay(),
 
             turnOnDisplay: () => this.turnOnDisplay(),
@@ -71,7 +71,7 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMu
     }
 
     render = () => (
-        <span>
+        <div>
             <Chat />
 
             <MuteButton toggleAudio={this.props.data.toggleAudio} />
@@ -79,7 +79,7 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMu
 
             <LoginOverlay display={this.state.display === `LoginOverlay`} />
             <Register register={this.state.register === `Register`} />
-        </span>
+        </div>
     )
 }
 
