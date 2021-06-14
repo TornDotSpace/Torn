@@ -84,7 +84,9 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         socket?.emit(`lore`, { team: `green` });
     }
 
-    login = async () => {
+    login = async (e: React.FormEvent) => {
+        e.preventDefault();
+
         const user = this.state.user;
         const pass = this.state.pass;
 
@@ -161,10 +163,12 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                                 <div className="m-auto">
                                     <h3>Returning Players</h3>
 
-                                    <input className="overlay-input" type="text" id="usernameid" onChange={this.changeUsername} placeholder="Username" />
-                                    <input className="overlay-input" type="password" id="passid" onChange={this.changePassword} placeholder="Password" />
+                                    <form action="/" onSubmit={((e => this.login(e)))}>
+                                        <input className="overlay-input" type="text" id="usernameid" autoComplete="username" onChange={this.changeUsername} placeholder="Username" />
+                                        <input className="overlay-input" type="password" id="passid" autoComplete="current-password" onChange={this.changePassword} placeholder="Password" />
 
-                                    <button className="overlay-button" id="loginButton" onClick={this.login}>Login</button>
+                                        <input className="overlay-button" type="submit" value="Login" id="loginButton" />
+                                    </form>
                                 </div>
                             </div>
                         </div>
