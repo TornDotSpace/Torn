@@ -21,7 +21,9 @@ import { Socket } from 'socket.io-client';
 declare const socket: Socket;
 declare const stopTyping: any;
 
-class ChatIntput extends React.Component<{}, { value: string, activated: boolean }> {
+let ChatState: { init: any, activate: any, focusChat: any, unfocusChat: any };
+
+class ChatInput extends React.Component<{}, { value: string, activated: boolean }> {
     constructor (props) {
         super(props);
 
@@ -33,6 +35,10 @@ class ChatIntput extends React.Component<{}, { value: string, activated: boolean
 
     init = (data: { value: string, activated: boolean }) => {
         this.setState(data);
+    }
+
+    activate = () => {
+        this.setState({ value: this.state.value, activated: true })
     }
 
     focusChat = () => {
@@ -64,6 +70,16 @@ class ChatIntput extends React.Component<{}, { value: string, activated: boolean
         });
     }
 
+    componentDidMount = () => {
+        // Pass internal states to the exportable object.
+        ChatState = {
+            init: (data: { value: string, activated: boolean }) => this.init(data),
+            activate: () => this.activate(),
+            focusChat: () => this.focusChat(),
+            unfocusChat: () => this.unfocusChat()
+        };
+    }
+
     render = () => {
         return this.state.activated
             ? (
@@ -81,4 +97,7 @@ class ChatIntput extends React.Component<{}, { value: string, activated: boolean
     }
 }
 
-export default ChatIntput;
+export {
+    ChatInput,
+    ChatState
+};

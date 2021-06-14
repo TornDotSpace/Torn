@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { ReactRoot, ReactState } from './react/root';
-import * as ReactStateHandler from './react/stateHandler';
+import { ReactRoot, RootState } from './react/root';
+import { ChatState } from './react/components/ChatInput';
 
 import { jsn, translate } from './localizer';
 
@@ -180,7 +180,7 @@ global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 
 ReactDOM.render(
-    <ReactRoot data={ toggleMusic, toggleAudio } state={ ReactState.display, ReactState.register } />,
+    <ReactRoot data={ toggleMusic, toggleAudio } />,
 
     // Render to secondary container to prevent canvas from being affected.
     document.querySelector(`.react-container`)
@@ -268,12 +268,12 @@ const loop = () => {
     render();
     if (!login) {
         if (!EVERYTHING_LOADED) {
-            ReactStateHandler.turnOffDisplay();
+            RootState.turnOffDisplay();
             rLoadingBar();
             setTimeout(render, 5);
             window.requestAnimationFrame(loop);
             return;
-        } else ReactStateHandler.turnOnDisplay();
+        } else RootState.turnOnDisplay();
 
         if (++homepageTimer == 1) {
             loadAudio(`music1`, `/aud/music1.mp3`);
@@ -376,13 +376,13 @@ const loop = () => {
         ctx.drawImage(Img.grad, 0, 0, w, h);
         rCreds();
         if (lore) {
-            ReactStateHandler.turnOffDisplay();
+            RootState.turnOffDisplay();
             rLore();
             loreTimer++;
             window.requestAnimationFrame(loop);
             return;
         }
-    } else ReactStateHandler.activate();
+    } else ChatState.activate();
 
     window.requestAnimationFrame(loop);
 };

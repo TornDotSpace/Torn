@@ -23,7 +23,7 @@ import MusicButton from './components/MusicButton';
 import LoginOverlay from './components/LoginOverlay';
 import Register from './components/Register';
 
-let ReactState: { toggleDisplay: any, turnOnDisplay: any, turnOffDisplay: any, turnOnRegister: any, turnOffRegister: any };
+let RootState: { toggleDisplay: any, turnOnDisplay: any, turnOffDisplay: any, turnOnRegister: any, turnOffRegister: any };
 
 class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMusic: boolean } }, { display: string, register: string }> {
     constructor (props) {
@@ -58,8 +58,8 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMu
     }
 
     componentDidMount = () => {
-        // Pass internal functions to the exportable object.
-        ReactState = {
+        // Pass internal states to the exportable object.
+        RootState = {
             toggleDisplay: () => this.toggleDisplay(),
 
             turnOnDisplay: () => this.turnOnDisplay(),
@@ -85,5 +85,5 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMu
 
 export {
     ReactRoot,
-    ReactState
+    RootState
 };
