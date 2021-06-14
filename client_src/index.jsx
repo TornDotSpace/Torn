@@ -39,7 +39,7 @@ const printStartup = () => {
     console.log(`******************************************************************************************************`);
 
     console.log(`This software is free software, licensed under the terms of the AGPL v3. For more information, please see LICENSE.txt`);
-    console.log(`Source available at: https://github.com/TornDotSpace/Torn`);
+    console.log(`Source available at https://github.com/TornDotSpace/Torn`);
 
     console.log(`torn-client-git-${BRANCH}-${COMMITHASH}`);
     console.log(`Implementing protocol version ${VERSION}`);
