@@ -202,7 +202,7 @@
 		},
 		{
 			"name":"Nanobots del casco",
-			"desc":"Reparan el 25% del casco de tu nave(o lomínimo anunciado, el que sane más). Naves con niveles extremos de salud amarán esto."
+			"desc":"Reparan el 25% del casco de tu nave(o lo mínimo anunciado, lo que sane más). Naves con niveles extremos de salud amarán esto."
 		},
 		{
 			"name":"Ocultación fotónica",
@@ -226,7 +226,7 @@
 		},
 		{
 			"name":"Campo electrotractor",
-			"desc":"Mediante un campo electromagnético repele asteroides y manipula/inutiliza los motores de curvatura enemigos.Con práctica, se pueden empujar asteroides a los enemigos, dañándolos, siendo especialmente efectivo contra las torretas, aunque no obtendrás ni experiencia ni recompensa de ellas si las destruyes con asteroides."
+			"desc":"Mediante un campo electromagnético repele asteroides y manipula/inutiliza los motores de curvatura enemigos. Con práctica, se pueden empujar asteroides a los objetivos para dañarlos, siendo especialmente efectivo contra torretas, aunque no obtendrás ni experiencia ni recompensa de ellas si los destruyes con asteroides."
 		},
 		{
 			"name":"Haz PEM",
@@ -271,7 +271,7 @@
 		},
 		{
 			"name":"Granadas",
-			"desc":"Tira ésto a un enemigo y explotará pronto (o cuando colisione con este), ¡dañandolo y empujandolo!",
+			"desc":"Tira ésto a un enemigo y explotará pronto (o cuando colisione con este), ¡dañándolo y empujándolo!",
 			"killmessages":[
 				"P1 reventó P2!",
 				"P1 mató P2!"
@@ -287,15 +287,15 @@
 		},
 		{
 			"name":"Inutilizador",
-			"desc":"Este rayo de corto alcance descarga las armas de aquellos a los que da, e impedirá disparar al oponente por un tiempo, inversamente proporcional al nivel de energía del enemigo."
+			"desc":"Este rayo de corto alcance descarga las armas de aquellos a los que da, e impedirá disparar al oponente por un tiempo inversamente proporcional al nivel de energía del contrincante."
 		},
 		{
 			"name":"Supercargador",
 			"desc":"Dispositivo de un solo uso que por un minuto duplica el daño a tu nave, pero también duplicará tu regeneración energética, velocidad, agilidad y el efecto de algunos items."
 		},
 		{
-			"name":"Orbe de energía",
-			"desc":"Un lanzador de Orbes que perseguirán a tu oponente más cercano"
+			"name":"Energiorbe",
+			"desc":"Un lanzador de Orbes que perseguirán a tu oponente más cercano."
 		},
 		{
 			"name":"Misil Proximal",
