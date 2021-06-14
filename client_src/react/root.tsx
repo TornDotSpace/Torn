@@ -17,11 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 
-import Chat from './components/chat';
-import MuteButton from './components/muteButton';
-import MusicButton from './components/musicButton';
-import LoginOverlay from './components/loginOverlay';
-import Register from './components/register';
+import Chat from './components/_chat';
+import MuteButton from './components/_muteButton';
+import MusicButton from './components/_musicButton';
+import LoginOverlay from './components/_loginOverlay';
+import Register from './components/_register';
 
 class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMusic: boolean } }, { display: string, register: string }> {
     constructor (props) {
