@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { jsn, translate } from '../localizer.ts';
 import { pasteChat } from '../chat';
 
-import { RootState } from '../react/root';
+import { RootState } from '../react/_root';
 
 global.baseMenuCanvas = document.createElement(`canvas`);
 baseMenuCanvas.width = 768;

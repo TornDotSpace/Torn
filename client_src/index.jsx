@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { ReactRoot, RootState } from './react/root';
+import { ReactRoot, RootState } from './react/_root';
 import { ChatState } from './react/components/ChatInput';
 
 import { jsn, translate } from './localizer';
