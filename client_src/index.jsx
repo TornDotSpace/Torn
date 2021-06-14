@@ -18,8 +18,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import ReactRoot from "./react/root";
-import { Howl, Howler } from 'howler';
-
 import { jsn, translate } from "./localizer.ts";
 
 `use strict`;
