@@ -17,9 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 
-import core from '../../core';
-import { toggleMusic } from '../../utils/audio';
-
 class MusicButton extends React.Component<{ toggleMusic: boolean }, { muted: boolean }> {
     constructor (props) {
         super(props);

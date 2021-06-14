@@ -34,6 +34,11 @@ class ReactRoot extends React.Component<{ data: { toggleSFX: boolean, toggleMusi
         };
     }
 
+    toggleDisplay = () => {
+        if (this.state.display === `display`) this.turnOffDisplay();
+        else this.turnOnDisplay();
+    }
+
     turnOnDisplay = () => {
         this.setState({ display: `LoginOverlay` });
     }
@@ -54,7 +59,7 @@ class ReactRoot extends React.Component<{ data: { toggleSFX: boolean, toggleMusi
         <span>
             <Chat />
 
-            <MuteButton toggleSFX={this.props.data.toggleSFX} />
+            <MuteButton toggleAudio={this.props.data.toggleAudio} />
             <MusicButton toggleMusic={this.props.data.toggleMusic} />
 
             <LoginOverlay display={this.state.display === `LoginOverlay`} />
