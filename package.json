@@ -1,6 +1,6 @@
 {
   "name": "torn-space",
-  "version": "0.0.1",
+  "version": "3.0.0",
   "description": "A midly popular space simulator MMO",
   "main": "app.js",
   "scripts": {
