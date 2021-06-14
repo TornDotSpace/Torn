@@ -268,7 +268,6 @@ const loop = () => {
     render();
     if (!login) {
         if (!EVERYTHING_LOADED) {
-            RootState.turnOffDisplay();
             rLoadingBar();
             setTimeout(render, 5);
             window.requestAnimationFrame(loop);
