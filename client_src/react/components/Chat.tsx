@@ -61,26 +61,28 @@ class Chat extends React.Component<{}, { messages: any[] }> {
         this.setState({ messages: this.state.messages.filter(message => message.id !== id) });
     }
 
-    render = () => (Element) => (
-        <div className="chat">
-            {
-                this.state.messages.map((message, i) =>
-                    <div className={`chat-msg ${message.fadeOut ? `chat-msg-fadeout` : ``}`}
-                        key={i}
-                        style={{
-                            color:
-                                message.color === `red`
-                                    ? `pink`
-                                    : message.color === `blue`
-                                        ? `cyan`
-                                        : `white`
-                        }}
-                    >{message.msg}</div>)
-            }
+    render = () => {
+        return (
+            <div className="chat">
+                {
+                    this.state.messages.map((message, i) =>
+                        <div className={`chat-msg ${message.fadeOut ? `chat-msg-fadeout` : ``}`}
+                            key={i}
+                            style={{
+                                color:
+                                    message.color === `red`
+                                        ? `pink`
+                                        : message.color === `blue`
+                                            ? `cyan`
+                                            : `white`
+                            }}
+                        >{message.msg}</div>)
+                }
 
-            <ChatInput />
-        </div>
-    )
+                <ChatInput />
+            </div>
+        );
+    }
 }
 
 export default Chat;
