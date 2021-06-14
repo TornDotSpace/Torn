@@ -19,9 +19,10 @@ import * as React from 'react';
 import { Socket } from 'socket.io-client';
 
 declare const VERSION: string;
-
 declare const socket: Socket;
+
 declare const sendAPI: any;
+declare const loadLang: any;
 
 declare let credentialState: number;
 declare let loginInProgress: boolean;
@@ -37,21 +38,21 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         };
     }
 
-    // langEng = () => {
-    //     setLang(`eng`);
-    // }
+    langEng = () => {
+        loadLang(`eng`);
+    }
 
-    // langEsp = () => {
-    //     setLang(`esp`);
-    // }
+    langEsp = () => {
+        loadLang(`esp`);
+    }
 
-    // langTki = () => {
-    //     setLang(`tki`);
-    // }
+    langTki = () => {
+        loadLang(`tki`);
+    }
 
-    // langChn = () => {
-    //     setLang(`chn`);
-    // }
+    langChn = () => {
+        loadLang(`chn`);
+    }
 
     changeUsername = (event) => {
         this.setState({
@@ -170,10 +171,10 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                         <a href="legal/privacy_policy.pdf"> Privacy Policy | </a>
                         <a href="legal/tos.pdf"> Terms of Service </a><br/>
 
-                        {/* <a onClick={this.langEng}>Eng | </a>
+                        <a onClick={this.langEng}>Eng | </a>
                         <a onClick={this.langEsp}>Esp | </a>
                         <a onClick={this.langTki}>Tki | </a>
-                        <a onClick={this.langChn}>Chn</a> */}
+                        <a onClick={this.langChn}>Chn</a>
                     </div>
                 </div>);
     }
