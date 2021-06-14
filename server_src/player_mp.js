@@ -49,7 +49,6 @@ class PlayerMP extends Player {
         this.kickMsg = msg;
         this.emit(`kick`, { msg: msg });
         this.socket.disconnect();
-        delete players[this.sy][this.sx][this.id];
     }
 
     swap (msg) { // msg looks like "/swap 2 5". Swaps two weapons.

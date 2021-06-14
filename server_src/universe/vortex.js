@@ -63,15 +63,10 @@ module.exports = class Vortex {
                 p.randmAchs[3] = true; // fall into a wormhole
                 p.sendAchievementsMisc(true);
 
-                delete players[p.sy][p.sx][p.id];
-                p.sx = this.sxo;
-                p.sy = this.syo;
                 p.y = this.yo;
                 p.x = this.xo; // teleport them to the output node
 
-                p.onChangeSectors();
-
-                players[p.sy][p.sx][p.id] = p;
+                p.changeSectors(this.syo, this.sxo);
             }
         }
         if (Math.random() < 0.2) { // limited for lag
