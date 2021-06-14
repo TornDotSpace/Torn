@@ -10,7 +10,7 @@
         "eslint:recommended",
         "plugin:react/recommended"
     ],
-    "parser": "@babel/eslint-parser",
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 11,
         "ecmaFeatures": {
@@ -19,6 +19,7 @@
         "sourceType": "module"
     },
     "plugins": [
+        "@typescript-eslint",
         "react",
         "prefer-arrow"
     ],
