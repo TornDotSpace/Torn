@@ -45,9 +45,9 @@ global.rBuyShipWindow = function () {
     baseMenuCtx.font = `14px ShareTech`;
     write(baseMenuCtx, `${translate(`Rank`)} ${shipView}`, 128 + 16, 256 + 56);
     write(baseMenuCtx, colorSelect(pc, ships[shipView].nameA, ships[shipView].nameH, ships[shipView].nameC), 128 + 16, 256 + 40);
-    if (shipView > rank) baseMenuCtx.fillStyle = `red`;
     baseMenuCtx.fillStyle = `yellow`;
-    if (ships[shipView].price > money + worth || shipView > rank) baseMenuCtx.fillStyle = `red`;
+    if (shipView > rank) baseMenuCtx.fillStyle = `red`;
+    else if (ships[shipView].price > money + worth) baseMenuCtx.fillStyle = `orange`;
     else if (seller == 100) baseMenuCtx.fillStyle = `lime`;
     if (shipView != ship) write(baseMenuCtx, `$${ships[shipView].price - worth} ${translate(`[BUY]`)}`, rendX, rendY + 96);
 
@@ -65,10 +65,17 @@ global.rBuyShipWindow = function () {
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80, 12);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80, 12);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80, 12); if (shipView != 17) { baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80, 12); } // 17 has infinite cargo
-        baseMenuCtx.fillStyle = `white`;
+
+        baseMenuCtx.fillStyle = compareColor(shipView, ship, `thrust`);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80 * ships[shipView].thrust / maxShipThrust, 12);
+        baseMenuCtx.fillStyle = compareColor(shipView, ship, `agility`);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80 * ships[shipView].agility / maxShipAgility, 12);
-        baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80 * ships[shipView].health / maxShipHealth, 12); if (shipView != 17) { baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[shipView].capacity / maxShipCapacity, 12); } // 17 has infinite cargo
+        baseMenuCtx.fillStyle = compareColor(shipView, ship, `health`);
+        baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80 * ships[shipView].health / maxShipHealth, 12);
+        if (shipView != 17) {
+            baseMenuCtx.fillStyle = compareColor(shipView, ship, `capacity`);
+            baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[shipView].capacity / maxShipCapacity, 12);
+        } // 17 has infinite cargo
     }
 
     baseMenuCtx.fillStyle = `white`;
@@ -83,6 +90,34 @@ global.rBuyShipWindow = function () {
         baseMenuCtx.restore();
     }
 };
+
+function compareColor (shipView, ship, stat) { // If there's a way to make it better, please correct this
+    if (shipView == ship) return `white`;
+    let better = `#089B00`;
+    let equal = `#C8C761`;
+    let worse = `#9B0000`;
+    let veredict;
+    switch (stat) {
+        case `thrust`:
+            if (ships[shipView].thrust == ships[ship].thrust) veredict = equal;
+            else veredict = (ships[shipView].thrust < ships[ship].thrust) ? worse : better;
+            break;
+        case `agility`:
+            if (ships[shipView].agility == ships[ship].agility) veredict = equal;
+            else veredict = (ships[shipView].agility < ships[ship].agility) ? worse : better;
+            break;
+        case `health`:
+            if (ships[shipView].health == ships[ship].health) veredict = equal;
+            else veredict = (ships[shipView].health < ships[ship].health) ? worse : better;
+            break;
+        case `capacity`:
+            if (ships[shipView].capacity == ships[ship].capacity) veredict = equal;
+            else veredict = (ships[shipView].capacity < ships[ship].capacity) ? worse : better;
+            break;
+    }
+    return veredict;
+}
+
 global.rOreShop = function () {
     const mult1 = (myTrail % 16 == 2) ? 1.05 : 1;
 
@@ -92,13 +127,13 @@ global.rOreShop = function () {
     baseMenuCtx.textAlign = `left`;
 
     baseMenuCtx.fillStyle = (seller == 5 && allIronPrice > 0) ? `lime` : `#d44`;
-    write(baseMenuCtx, `${iron > 0 ? translate(`[SELL] Iron:     `) : translate(`       Iron:     `)}$${numToLS(allIronPrice)}`, 256 - 32, 3 * 32);
+    write(baseMenuCtx, `${iron > 0 ? translate(`[SELL] Iron:     `) : translate(`       Iron:     `)}$${numToLS(allIronPrice)}`, 256 - 32 * 2, 3 * 32);
     baseMenuCtx.fillStyle = (seller == 6 && allSilverPrice > 0) ? `lime` : `#eef`;
-    write(baseMenuCtx, `${silver > 0 ? translate(`[SELL] Silver:   `) : translate(`       Silver:   `)}$${numToLS(allSilverPrice)}`, 256 - 32, 4 * 32);
+    write(baseMenuCtx, `${silver > 0 ? translate(`[SELL] Silver:   `) : translate(`       Silver:   `)}$${numToLS(allSilverPrice)}`, 256 - 32 * 2, 4 * 32);
     baseMenuCtx.fillStyle = (seller == 7 && allPlatinumPrice > 0) ? `lime` : `#90f`;
-    write(baseMenuCtx, `${platinum > 0 ? translate(`[SELL] Platinum: `) : translate(`       Platinum: `)}$${numToLS(allPlatinumPrice)}`, 256 - 32, 5 * 32);
+    write(baseMenuCtx, `${platinum > 0 ? translate(`[SELL] Platinum: `) : translate(`       Platinum: `)}$${numToLS(allPlatinumPrice)}`, 256 - 32 * 2, 5 * 32);
     baseMenuCtx.fillStyle = (seller == 8 && allCopperPrice > 0) ? `lime` : `#960`;
-    write(baseMenuCtx, `${copper > 0 ? translate(`[SELL] Copper:   `) : translate(`       Copper:   `)}$${numToLS(allCopperPrice)}`, 256 - 32, 6 * 32);
+    write(baseMenuCtx, `${copper > 0 ? translate(`[SELL] Copper:   `) : translate(`       Copper:   `)}$${numToLS(allCopperPrice)}`, 256 - 32 * 2, 6 * 32);
 
     baseMenuCtx.fillStyle = seller == 610 ? `lime` : `yellow`;
 
@@ -204,35 +239,40 @@ global.rWeaponStore = function () {
         if (type === `Orb`) starCol = `tan`;
         if (type === `Beam`) starCol = `lime`;
         if (type === `Blast`) starCol = `green`;
-        if (type === `Mine`) starCol = `blue`;
-        if (type === `Misc`) starCol = `purple`;
+        if (type === `Mine`) starCol = `cyan`;
+        if (type === `Misc`) starCol = `violet`;
         baseMenuCtx.fillStyle = starCol;
 
         write(baseMenuCtx, `*`, wx, wy);
         baseMenuCtx.fillStyle = seller - 20 == i ? `lime` : buyable;
         write(baseMenuCtx, translate(`[INFO] `) + (`$${weapon.price}         `).substring(0, 9) + weapon.name, wx + 11, wy);
-        if (seller - 20 == i) { rWeaponStats(i); }
+        if (seller - 20 == i) { rWeaponStats(i, buyable, starCol); }
     }
 };
-global.rWeaponStats = function (i) {
+global.rWeaponStats = function (i, buyable, starCol) {
     baseMenuCtx.font = `14px ShareTech`;
 
+    baseMenuCtx.fillStyle = buyable;
     write(baseMenuCtx, wepns[i].name, 32, 364 + 16 * 1);
-    wrapText(baseMenuCtx, wepns[i].desc, 256 - 32, 364 + 16 * 1, 128 * 6 - 64, 16);
+    write(baseMenuCtx, translate(`Ship   : `) + wepns[i].level, 32, 364 + 16 * 8);
 
+    baseMenuCtx.fillStyle = starCol;
     write(baseMenuCtx, `Type   : ${wepns[i].type}`, 32, 364 + 16 * 2);
+
+    baseMenuCtx.fillStyle = `lime`;
+    wrapText(baseMenuCtx, wepns[i].desc, 256 - 32, 364 + 16 * 1, 100 * 6 - 64, 16);
+
     write(baseMenuCtx, translate(`Range  : `) + (wepns[i].range == -1 ? translate(`N/A`) : (`${wepns[i].range} Meters`)), 32, 364 + 16 * 3);
     write(baseMenuCtx, translate(`Damage : `) + (wepns[i].damage == -1 ? translate(`N/A`) : wepns[i].damage), 32, 364 + 16 * 4);
     write(baseMenuCtx, translate(`Speed  : `) + (wepns[i].speed == -1 ? translate(`N/A`) : wepns[i].speed), 32, 364 + 16 * 5);
     write(baseMenuCtx, translate(`Charge : `) + (wepns[i].charge == -1 ? translate(`N/A`) : (wepns[i].charge / 25) + translate(` Seconds`)), 32, 364 + 16 * 6);
     write(baseMenuCtx, translate(`Ammo   : `) + ammoCodeToString(wepns[i].ammo), 32, 364 + 16 * 7);
-    write(baseMenuCtx, translate(`Ship   : `) + wepns[i].level, 32, 364 + 16 * 8);
 
     if (actuallyBuying) {
         baseMenuCtx.fillStyle = wepns[i].price > money ? `orange` : `lime`;
         const buyText = wepns[i].price > money ? translate(`Not Enough Money`) : translate(`Press B to Buy`);
         baseMenuCtx.font = `24px ShareTech`;
-        write(baseMenuCtx, buyText, 512 + 16, 256 + 100 + 16 * 7);
+        write(baseMenuCtx, buyText, 256 - 16 * 2, 364 + 16 * 7);
     }
     baseMenuCtx.font = `14px ShareTech`;
 };
