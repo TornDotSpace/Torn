@@ -25,7 +25,7 @@ import Register from './components/Register';
 
 let RootState: { toggleDisplay: any, turnOnDisplay: any, turnOffDisplay: any, turnOnRegister: any, turnOffRegister: any };
 
-class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMusic: boolean } }, { display: string, register: string }> {
+class ReactRoot extends React.Component<{ data: { toggleAudio: any, toggleMusic: any } }, { display: string, register: string }> {
     constructor (props) {
         super(props);
 

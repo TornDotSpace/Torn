@@ -180,7 +180,7 @@ global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 
 ReactDOM.render(
-    <ReactRoot data={ toggleMusic, toggleAudio } />,
+    <ReactRoot data={{ toggleMusic, toggleAudio }} />,
 
     // Render to secondary container to prevent canvas from being affected.
     document.querySelector(`#a`)
