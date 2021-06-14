@@ -22,7 +22,7 @@ declare const VERSION: string;
 declare const socket: Socket;
 
 declare const loadLang: any;
-declare const sendAPI: any;
+declare const send_api: any;
 declare const connect: any;
 
 declare let credentialState: number;
@@ -91,7 +91,7 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         if (user === `` || pass === ``) return;
         if (loginInProgress) return;
 
-        const playCookie = await sendAPI(`/login`, `${user}%${pass}`);
+        const playCookie = await send_api(`/login`, `${user}%${pass}`);
         loginInProgress = true;
 
         if (playCookie.status === 403) {
