@@ -34,7 +34,6 @@ let splash = ``;
 
 export const getSplash = () => splash;
 
-
 const load = (lang) => {
     const request = new XMLHttpRequest();
     request.open(`GET`, lang, false);
@@ -48,7 +47,7 @@ const load = (lang) => {
 
     request.send(null);
     return JSON.parse(data);
-}
+};
 
 global.loadLang = (name) => {
     let assigned = null;
@@ -95,7 +94,7 @@ global.loadLang = (name) => {
     jsn.lore = languagejson.lore;
     console.log(`Translating weapons...`);
     for (let i = 0; i < Object.keys(jsn.weapons).length; i++) {
-        if(!(i in jsn.weapons)) continue;
+        if (!(i in jsn.weapons)) continue;
         jsn.weapons[i].name = languagejson.weapons[i].name;
         jsn.weapons[i].desc = languagejson.weapons[i].desc;
     }
@@ -109,7 +108,7 @@ global.loadLang = (name) => {
 
     splash = jsn.splashes[Math.floor(Math.random() * jsn.splashes.length)];
     if (!splash.endsWith(`!`) && !splash.endsWith(`?`)) splash += `...`;
-}
+};
 
 loadLang(null);
 
@@ -120,4 +119,4 @@ export const translate = (english, arr = undefined) => { // arr = undefined???
     if (arr !== undefined) while (arr.length > 0) translated = translated.replace(`#`, arr.shift());
 
     return translated;
-}
+};
