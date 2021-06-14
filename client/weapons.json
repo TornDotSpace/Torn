@@ -37,7 +37,7 @@
 			"level":1,
 			"type":"Gun",
 			"bot":false,
-			"enabled":false
+			"enabled":true
 		},
 		"3":{
 			"name":"Rifle",
