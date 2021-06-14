@@ -18,6 +18,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import ReactRoot from './react/root';
+import * as ReactStateHandler from './react/stateHandler';
+
 import { jsn, translate } from './localizer';
 
 `use strict`;
@@ -64,7 +66,6 @@ global.canvas = document.getElementById(`ctx`);
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 global.ctx = canvas.getContext(`2d`, { alpha: false });
-global.ReactRoot = ReactRoot;
 
 global.guiColor = `#333333`;
 global.guiOpacity = 0.5;
@@ -178,17 +179,18 @@ require(`./chat.ts`);
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 
-ReactDOM.render(
-    <ReactRoot data={{
-        toggleMusic: toggleMusic,
-        toggleAudio: toggleAudio
-    }} />,
+// Global React state handler.
+global.ReactState = {
+    display: `none`,
+    register: `none`
+};
 
-    // Not rendering to body so canvas will not be affected
+ReactDOM.render(
+    <ReactRoot data={ toggleMusic, toggleAudio } state={ ReactState.display, ReactState.register } />,
+
+    // Render to secondary container to prevent canvas from being affected.
     document.querySelector(`#a`)
 );
-
-ReactRoot.turnOnDisplay();
 
 // Used in the ship store to make the bar graphs
 global.maxShipThrust = -1000;
@@ -272,12 +274,12 @@ const loop = () => {
     render();
     if (!login) {
         if (!EVERYTHING_LOADED) {
-            ReactRoot.turnOffDisplay();
+            ReactStateHandler.turnOffDisplay();
             rLoadingBar();
             setTimeout(render, 5);
             window.requestAnimationFrame(loop);
             return;
-        } else ReactRoot.turnOnDisplay();
+        } else ReactStateHandler.turnOnDisplay();
 
         if (++homepageTimer == 1) {
             loadAudio(`music1`, `/aud/music1.mp3`);
@@ -380,13 +382,13 @@ const loop = () => {
         ctx.drawImage(Img.grad, 0, 0, w, h);
         rCreds();
         if (lore) {
-            ReactRoot.turnOffDisplay();
+            ReactStateHandler.turnOffDisplay();
             rLore();
             loreTimer++;
             window.requestAnimationFrame(loop);
             return;
         }
-    } else ReactRoot.activate();
+    } else ReactStateHandler.activate();
 
     window.requestAnimationFrame(loop);
 };
