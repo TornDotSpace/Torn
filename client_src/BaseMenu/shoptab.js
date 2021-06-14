@@ -66,15 +66,16 @@ global.rBuyShipWindow = function () {
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80, 12);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80, 12); if (shipView != 17) { baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80, 12); } // 17 has infinite cargo
 
-        baseMenuCtx.fillStyle = compareColor (shipView, ship, `thrust`);
+        baseMenuCtx.fillStyle = compareColor(shipView, ship, `thrust`);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80 * ships[shipView].thrust / maxShipThrust, 12);
-        baseMenuCtx.fillStyle = compareColor (shipView, ship, `agility`);
+        baseMenuCtx.fillStyle = compareColor(shipView, ship, `agility`);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80 * ships[shipView].agility / maxShipAgility, 12);
-        baseMenuCtx.fillStyle = compareColor (shipView, ship, `health`);
+        baseMenuCtx.fillStyle = compareColor(shipView, ship, `health`);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80 * ships[shipView].health / maxShipHealth, 12);
         if (shipView != 17) {
-            baseMenuCtx.fillStyle = compareColor (shipView, ship, `capacity`);
-            baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[shipView].capacity / maxShipCapacity, 12); } // 17 has infinite cargo
+            baseMenuCtx.fillStyle = compareColor(shipView, ship, `capacity`);
+            baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[shipView].capacity / maxShipCapacity, 12);
+        } // 17 has infinite cargo
     }
 
     baseMenuCtx.fillStyle = `white`;
@@ -90,29 +91,31 @@ global.rBuyShipWindow = function () {
     }
 };
 
-function compareColor (shipView, ship, stat) {  // If there's a way to make it better, please correct this
+function compareColor (shipView, ship, stat) { // If there's a way to make it better, please correct this
     if (shipView == ship) return `white`;
     let better = `#089B00`;
     let equal = `#C8C761`;
     let worse = `#9B0000`;
+    let veredict;
     switch (stat) {
         case `thrust`:
-            if (ships[shipView].thrust == ships[ship].thrust) return equal;
-            else return (ships[shipView].thrust < ships[ship].thrust) ? worse : better;
-        break;
+            if (ships[shipView].thrust == ships[ship].thrust) veredict = equal;
+            else veredict = (ships[shipView].thrust < ships[ship].thrust) ? worse : better;
+            break;
         case `agility`:
-            if (ships[shipView].agility == ships[ship].agility) return equal;
-            else return (ships[shipView].agility < ships[ship].agility) ? worse : better;
-        break;
+            if (ships[shipView].agility == ships[ship].agility) veredict = equal;
+            else veredict = (ships[shipView].agility < ships[ship].agility) ? worse : better;
+            break;
         case `health`:
-            if (ships[shipView].health == ships[ship].health) return equal;
-            else return (ships[shipView].health < ships[ship].health) ? worse : better;
-        break;
+            if (ships[shipView].health == ships[ship].health) veredict = equal;
+            else veredict = (ships[shipView].health < ships[ship].health) ? worse : better;
+            break;
         case `capacity`:
-            if (ships[shipView].capacity == ships[ship].capacity) return equal;
-            else return (ships[shipView].capacity < ships[ship].capacity) ? worse : better;
-        break;
+            if (ships[shipView].capacity == ships[ship].capacity) veredict = equal;
+            else veredict = (ships[shipView].capacity < ships[ship].capacity) ? worse : better;
+            break;
     }
+    return veredict;
 }
 
 global.rOreShop = function () {
@@ -124,13 +127,13 @@ global.rOreShop = function () {
     baseMenuCtx.textAlign = `left`;
 
     baseMenuCtx.fillStyle = (seller == 5 && allIronPrice > 0) ? `lime` : `#d44`;
-    write(baseMenuCtx, `${iron > 0 ? translate(`[SELL] Iron:     `) : translate(`       Iron:     `)}$${numToLS(allIronPrice)}`, 256 - 32*2, 3 * 32);
+    write(baseMenuCtx, `${iron > 0 ? translate(`[SELL] Iron:     `) : translate(`       Iron:     `)}$${numToLS(allIronPrice)}`, 256 - 32 * 2, 3 * 32);
     baseMenuCtx.fillStyle = (seller == 6 && allSilverPrice > 0) ? `lime` : `#eef`;
-    write(baseMenuCtx, `${silver > 0 ? translate(`[SELL] Silver:   `) : translate(`       Silver:   `)}$${numToLS(allSilverPrice)}`, 256 - 32*2, 4 * 32);
+    write(baseMenuCtx, `${silver > 0 ? translate(`[SELL] Silver:   `) : translate(`       Silver:   `)}$${numToLS(allSilverPrice)}`, 256 - 32 * 2, 4 * 32);
     baseMenuCtx.fillStyle = (seller == 7 && allPlatinumPrice > 0) ? `lime` : `#90f`;
-    write(baseMenuCtx, `${platinum > 0 ? translate(`[SELL] Platinum: `) : translate(`       Platinum: `)}$${numToLS(allPlatinumPrice)}`, 256 - 32*2, 5 * 32);
+    write(baseMenuCtx, `${platinum > 0 ? translate(`[SELL] Platinum: `) : translate(`       Platinum: `)}$${numToLS(allPlatinumPrice)}`, 256 - 32 * 2, 5 * 32);
     baseMenuCtx.fillStyle = (seller == 8 && allCopperPrice > 0) ? `lime` : `#960`;
-    write(baseMenuCtx, `${copper > 0 ? translate(`[SELL] Copper:   `) : translate(`       Copper:   `)}$${numToLS(allCopperPrice)}`, 256 - 32*2, 6 * 32);
+    write(baseMenuCtx, `${copper > 0 ? translate(`[SELL] Copper:   `) : translate(`       Copper:   `)}$${numToLS(allCopperPrice)}`, 256 - 32 * 2, 6 * 32);
 
     baseMenuCtx.fillStyle = seller == 610 ? `lime` : `yellow`;
 
@@ -265,7 +268,6 @@ global.rWeaponStats = function (i, buyable, starCol) {
     write(baseMenuCtx, translate(`Charge : `) + (wepns[i].charge == -1 ? translate(`N/A`) : (wepns[i].charge / 25) + translate(` Seconds`)), 32, 364 + 16 * 6);
     write(baseMenuCtx, translate(`Ammo   : `) + ammoCodeToString(wepns[i].ammo), 32, 364 + 16 * 7);
 
-
     if (actuallyBuying) {
         baseMenuCtx.fillStyle = wepns[i].price > money ? `orange` : `lime`;
         const buyText = wepns[i].price > money ? translate(`Not Enough Money`) : translate(`Press B to Buy`);
@@ -344,5 +346,3 @@ global.shopOnClick = function (buttonID) {
         else if (x < 16 + 128 && shipView > 0) shipView--;
     }
 };
-
-
