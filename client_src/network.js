@@ -15,7 +15,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { jsn, translate } from "./localizer.ts";
+import { RootState } from './react/root';
+import { ChatState } from './react/components/ChatInput';
+
+import { jsn, translate } from './localizer';
+
 const io = require(`socket.io-client`);
 const msgpack = require(`socket.io-msgpack-parser`);
 
@@ -30,15 +34,13 @@ global.send_api = async (endpoint, data) => await fetch(API_URL + endpoint, {
     headers: { "Content-Type": `x-www-form-urlencoded` }
 });
 
-global.socket = io(GAMESERVER_URL,
-    {
-        autoConnect: false
-        // parser: msgpack
-    });
+global.socket = io(GAMESERVER_URL, {
+    autoConnect: false
+    // parser: msgpack
+});
 
 global.connect = function () {
-    if (socket.connected) { return; }
-    socket.open();
+    if (!socket.connected) socket.open();
 };
 
 // socket error handling
@@ -383,8 +385,8 @@ socket.on(`loginSuccess`, (data) => {
     for (const i in bullets) delete bullets[i];
     playAudio(`music1`, 0.5);
     credentialState = 0;
-    ReactRoot.turnOffDisplay(`LoginOverlay`);
-    ReactRoot.init({ value: `` });
+    RootState.turnOffDisplay();
+    ChatState.init({ value: ``, activated: false });
     autopilot = false;
     login = true;
     myId = data.id;
@@ -394,7 +396,7 @@ socket.on(`invalidReg`, (data) => {
 });
 socket.on(`registered`, (data) => {
     credentialState = 0;
-    ReactRoot.turnOffRegister(`LoginOverlay`);
+    RootState.turnOffRegister();
     guest = false;
     autopilot = false;
     tab = 0;
@@ -404,12 +406,12 @@ socket.on(`lored`, (data) => {
     for (const i in bullets) delete bullets[i];
     credentialState = 0;
     pc = data.pc;
-    ReactRoot.turnOffDisplay(`LoginOverlay`);
+    RootState.turnOffDisplay();
     lore = true;
 });
 socket.on(`guested`, (data) => {
     credentialState = 0;
-    ReactRoot.turnOffDisplay(`LoginOverlay`);
+    RootState.turnOffDisplay();
     login = true;
     guest = true;
     autopilot = false;
@@ -574,7 +576,7 @@ socket.on(`status`, (data) => {
     shipView = ship;
     if (!docked && data.docked) savedNote = 40;
     if (data.docked && !docked && guest && rank > 0) {
-        ReactRoot.turnOnRegister(``); tab = -1; keys[8] = false;
+        RootState.turnOnRegister(); tab = -1; keys[8] = false;
     }
     docked = data.docked;
     dead = data.state;

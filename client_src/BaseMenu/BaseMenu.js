@@ -15,8 +15,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { jsn, translate } from "../localizer.ts";
-import { pasteChat } from "../chat.ts";
+import { jsn, translate } from '../localizer.ts';
+import { pasteChat } from '../chat';
+
+import { RootState } from '../react/root';
 
 global.baseMenuCanvas = document.createElement(`canvas`);
 baseMenuCanvas.width = 768;
@@ -92,6 +94,10 @@ global.rBaseGui = function () {
     rCargo();
 };
 
+const mergeBaseCanvas = () => {
+    ctx.drawImage(baseMenuCanvas, baseMenuX, baseMenuY);
+};
+
 global.rInBase = function () {
     tick++;
     canvas.width = canvas.width;
@@ -100,7 +106,7 @@ global.rInBase = function () {
     rStars();
     pasteChat();
     rBaseGui();
-    if (tab != -1) ReactRoot.turnOffRegister(`LoginOverlay`);
+    if (tab != -1) RootState.turnOffRegister();
     switch (tab) {
         case 0:
             rShop();
@@ -140,10 +146,6 @@ global.rInBase = function () {
 
     mergeBaseCanvas();
 };
-
-function mergeBaseCanvas () {
-    ctx.drawImage(baseMenuCanvas, baseMenuX, baseMenuY);
-}
 
 global.baseMenuOnClick = function (buttonID) {
     if (tab == 0) {

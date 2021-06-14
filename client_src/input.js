@@ -15,7 +15,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { chatMenuButtonClick, rChat, chatScroll, chatLength } from "./chat.ts";
+import { RootState } from './react/root';
+import { ChatState } from './react/components/ChatInput';
+
+import {
+    chatMenuButtonClick,
+    rChat,
+    chatScroll,
+    chatLength
+} from './chat.ts';
+
 // input
 document.onkeydown = function (event) {
     // Grab enter on homepage
@@ -31,7 +40,7 @@ document.onkeydown = function (event) {
     }
     if (typing) {
         if (event.keyCode == 13) {
-            ReactRoot.unfocusChat();
+            ChatState.unfocusChat();
             typing = false;
         }
         return;
@@ -45,7 +54,7 @@ document.onkeydown = function (event) {
         return;
     }
     if (event.keyCode == 13) {
-        ReactRoot.focusChat();
+        ChatState.focusChat();
         typing = true;
     } else if (autopilot) {
         // eslint-disable no-empty
@@ -97,7 +106,7 @@ document.onkeydown = function (event) {
         if (dead) return;
         if (keys[8] != true) socket.emit(`key`, { inputId: `x`, state: true });
         keys[8] = true;
-        ReactRoot.turnOffRegister(``);
+        RootState.turnOffRegister();
         socket.emit(`equip`, { scroll: scroll });
     } else if (ship > 15 && (event.keyCode === 86 || event.keyCode === 67)) { // c/v
         if (dead) return;
@@ -188,7 +197,7 @@ document.addEventListener(`mousedown`, (evt) => {
     my = mousePos.y;
     if (mx < 400 && mx > 9 && my > h - 32 && my < h - 8) {
         typing = true;
-        ReactRoot.focusChat();
+        ChatState.focusChat();
     } else typing = false;
     const i = seller;
     if (i == 0 && !mouseDown) {
@@ -212,7 +221,7 @@ document.addEventListener(`mousedown`, (evt) => {
     if (i >= 800 && i < 803) {
         chatMenuButtonClick(i);
     }
-    if (i != 0 && i != 600) ReactRoot.turnOffRegister(``);
+    if (i != 0 && i != 600) RootState.turnOffRegister();
 }, false);
 
 document.addEventListener(`mouseup`, (evt) => {
