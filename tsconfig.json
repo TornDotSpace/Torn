@@ -4,12 +4,12 @@
         "module": "commonjs",
 
         "moduleResolution": "node",
-        "esModuleInterop": true,
-        
         "outDir": "./build",
-        "resolveJsonModule": true,
+        "jsx": "react",
 
-        "allowJs": true,
-        "jsx": "react"
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "allowJs": true
     }
 }
