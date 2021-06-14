@@ -59,7 +59,7 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: any, toggleMusic:
 
     componentDidMount = () => {
         // Pass internal states to the exportable object.
-        RootState = { 
+        RootState = {
             toggleDisplay: () => this.toggleDisplay(),
 
             turnOnDisplay: () => this.turnOnDisplay(),

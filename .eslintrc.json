@@ -1,27 +1,25 @@
 {
     "env": {
         "browser": true,
-        "commonjs": true,
-        "es6": true,
+        "es2021": true,
         "node": true
     },
     "extends": [
-        "standard",
+        "plugin:react/recommended",
         "eslint:recommended",
-        "plugin:react/recommended"
+        "standard"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaVersion": 11,
         "ecmaFeatures": {
             "jsx": true
         },
+        "ecmaVersion": 12,
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint",
         "react",
-        "prefer-arrow"
+        "@typescript-eslint"
     ],
     "rules": {
         // Eval should not be allowed ever, regardless of use case.
@@ -45,15 +43,6 @@
 
         // Prefer const myFunction = () => {}; rather than function myFunction () {}.
         "func-style": 1,
-
-        // Prefer fat arrow functions.
-        "prefer-arrow-callback": 1,
-        "arrow-body-style": ["warn", "as-needed"],
-        "prefer-arrow/prefer-arrow-functions": ["warn", {
-            "disallowPrototype": true,
-            "singleReturnOnly": true,
-            "classPropertiesAllowed": false
-        }],
 
         // ESLint globals have not been configured for these.
         "no-undef": 0,

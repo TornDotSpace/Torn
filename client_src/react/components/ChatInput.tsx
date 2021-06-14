@@ -38,7 +38,7 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
     }
 
     activate = () => {
-        this.setState({ value: this.state.value, activated: true })
+        this.setState({ value: this.state.value, activated: true });
     }
 
     focusChat = () => {
@@ -54,7 +54,7 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
             const val = this.state.value;
             this.unfocusChat();
 
-            socket?.emit(`chat`, { msg: val });            
+            socket?.emit(`chat`, { msg: val });
             this.setState({ value: ``, activated: this.state.activated });
 
             // The keypress events in React and index.js fire at the same time,
@@ -80,21 +80,19 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
         };
     }
 
-    render = () => {
-        return this.state.activated
-            ? (
-                <input
-                    className="chat-input"
-                    ref={`chat`}
-                    maxLength={128}
-                    onKeyDown={this.keypress.bind(this)}
-                    onChange={this.change.bind(this)}
-                    value={this.state.value}
-                    placeholder="Press enter to chat!"
-                    type="text" />
-            )
-            : null;
-    }
+    render = () => this.state.activated
+        ? (
+            <input
+                className="chat-input"
+                ref={`chat`}
+                maxLength={128}
+                onKeyDown={this.keypress.bind(this)}
+                onChange={this.change.bind(this)}
+                value={this.state.value}
+                placeholder="Press enter to chat!"
+                type="text" />
+        )
+        : null
 }
 
 export {
