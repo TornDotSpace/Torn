@@ -71,7 +71,7 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMu
     }
 
     render = () => (
-        <div>
+        <span>
             <Chat />
 
             <MuteButton toggleAudio={this.props.data.toggleAudio} />
@@ -79,7 +79,7 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMu
 
             <LoginOverlay display={this.state.display === `LoginOverlay`} />
             <Register register={this.state.register === `Register`} />
-        </div>
+        </span>
     )
 }
 

@@ -118,21 +118,21 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         const buttonOrder = (this.state.seed < 0.66)
             ? ((this.state.seed < 0.33)
                 ? (
-                    <div>
+                    <div className="text-center">
                         <button id="registerR" onClick={this.registerR}>Join Alien Team!</button>
                         <button id="registerB" onClick={this.registerB}>Join Human Team!</button>
                         <button id="registerG" onClick={this.registerG}>Join Cyborg Team!</button>
                     </div>
                 )
                 : (
-                    <div>
+                    <div className="text-center">
                         <button id="registerG" onClick={this.registerG}>Join Cyborg Team!</button>
                         <button id="registerR" onClick={this.registerR}>Join Alien Team!</button>
                         <button id="registerB" onClick={this.registerB}>Join Human Team!</button>
                     </div>
                 ))
             : (
-                <div>
+                <div className="text-center">
                     <button id="registerB" onClick={this.registerB}>Join Human Team!</button>
                     <button id="registerG" onClick={this.registerG}>Join Cyborg Team!</button>
                     <button id="registerR" onClick={this.registerR}>Join Alien Team!</button>
@@ -145,26 +145,24 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                 <div>
                     <div className="overlay-menu">
                         <div className="container">
-                            <div className="guests m-auto">
-                                <h3>New Players</h3>
+                            <div className="guests">
+                                <h3 className="text-center">New Players</h3>
                                 {buttonOrder}
                             </div>
                             <div className="video">
-                                <div className="m-auto">
+                                <div className="text-center">
                                     <img src="img/harrlogo.png" alt="Logo" width="340"/>
                                 </div>
                             </div>
                             <div className="login">
-                                <div className="m-auto">
-                                    <h3>Returning Players</h3>
+                                <h3 className="text-center">Returning Players</h3>
 
-                                    <form action="/" onSubmit={((e => this.login(e)))}>
-                                        <input className="overlay-input" type="text" id="usernameid" autoComplete="username" onChange={this.changeUsername} placeholder="Username" />
-                                        <input className="overlay-input" type="password" id="passid" autoComplete="current-password" onChange={this.changePassword} placeholder="Password" />
+                                <form action="/" onSubmit={((e => this.login(e)))} className="text-center">
+                                    <input className="overlay-input" type="text" id="usernameid" autoComplete="username" onChange={this.changeUsername} placeholder="Username" />
+                                    <input className="overlay-input" type="password" id="passid" autoComplete="current-password" onChange={this.changePassword} placeholder="Password" />
 
-                                        <input className="overlay-button" type="submit" value="Login" id="loginButton" />
-                                    </form>
-                                </div>
+                                    <input className="overlay-button" type="submit" value="Login" id="loginButton" />
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -173,9 +171,9 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                         <a href="legal/privacy_policy.pdf"> Privacy Policy | </a>
                         <a href="legal/tos.pdf"> Terms of Service </a><br/>
 
-                        <a onClick={this.langEng}>Eng | </a>
-                        <a onClick={this.langEsp}>Esp | </a>
-                        <a onClick={this.langTki}>Tki | </a>
+                        <a onClick={this.langEng}>Eng|</a>
+                        <a onClick={this.langEsp}>Esp|</a>
+                        <a onClick={this.langTki}>Tki|</a>
                         <a onClick={this.langChn}>Chn</a>
                     </div>
                 </div>);
