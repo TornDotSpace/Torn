@@ -14,15 +14,17 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-import React from "react";
-import ReactDOM from "react-dom";
-import ReactRootJS from "./react.js";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-import { jsn, translate } from "./localizer.ts";
+import { ReactRoot, RootState } from './react/root';
+import { ChatState } from './react/components/ChatInput';
+
+import { jsn, translate } from './localizer';
 
 `use strict`;
 
-function printStartup () {
+const printStartup = () => {
     console.log(`******************************************************************************************************`);
     console.log(` ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄      ▄     ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄ `);
     console.log(`▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░▌    ▐░▌   ▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌▐░░░░░░░░░▌`);
@@ -39,7 +41,7 @@ function printStartup () {
     console.log(`******************************************************************************************************`);
 
     console.log(`This software is free software, licensed under the terms of the AGPL v3. For more information, please see LICENSE.txt`);
-    console.log(`Source available at: https://github.com/TornDotSpace/Torn`);
+    console.log(`Source available at https://github.com/TornDotSpace/Torn`);
 
     console.log(`torn-client-git-${BRANCH}-${COMMITHASH}`);
     console.log(`Implementing protocol version ${VERSION}`);
@@ -50,7 +52,7 @@ function printStartup () {
     console.error(`ALWAYS AUDIT CODE YOU ARE INJECTING INTO THE DEVELOPER CONSOLE`);
     console.error(`ADDITIONALLY, PLEASE RESPECT OUR TOS https://torn.space/legal/tos.pdf AND NOTE OUR PRIVACY POLICY https://torn.space/legal/privacy_policy.pdf`);
     console.error(`***********************************************************************`);
-}
+};
 
 printStartup();
 
@@ -64,8 +66,6 @@ global.canvas = document.getElementById(`ctx`);
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 global.ctx = canvas.getContext(`2d`, { alpha: false });
-global.ReactRoot = ReactRootJS;
-const { Howl, Howler } = require(`howler`); // audio
 
 global.guiColor = `#333333`;
 global.guiOpacity = 0.5;
@@ -179,19 +179,12 @@ require(`./chat.ts`);
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 
-ReactRoot.socket = socket; // Just to make socket accessible in react.js
-
 ReactDOM.render(
-    /* eslint-disable */
-    <ReactRoot data={{
-      toggleMusic: toggleMusic,
-      toggleAudio: toggleAudio,
-    }} />,
-    // Not rendering to body so canvas will not be affected
-    document.getElementById("a"),
-    /* eslint-enable */
+    <ReactRoot data={{ toggleMusic, toggleAudio }} />,
+
+    // Render to secondary container to prevent canvas from being affected.
+    document.querySelector(`#a`)
 );
-ReactRoot.turnOnDisplay(`LoginOverlay`);
 
 // Used in the ship store to make the bar graphs
 global.maxShipThrust = -1000;
@@ -249,9 +242,9 @@ loadAllAudio();
 global.achs = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
 global.bigNotes = [-1, -1, -1, -1];
 
-function forceRefresh () {
-    window.location.reload(true);
-}
+const forceRefresh = () => {
+    window.location.reload();
+};
 
 setInterval(() => {
     fps = frames;
@@ -271,18 +264,15 @@ setInterval(() => {
     baseMenuX = w / 2 - 128 * 3, baseMenuY = h / 4 - 128;
 }, 40);
 
-window.requestAnimationFrame(loop);
-
-function loop () {
+const loop = () => {
     render();
     if (!login) {
         if (!EVERYTHING_LOADED) {
-            ReactRoot.turnOffDisplay(`LoginOverlay`);
             rLoadingBar();
             setTimeout(render, 5);
             window.requestAnimationFrame(loop);
             return;
-        } else ReactRoot.turnOnDisplay(`LoginOverlay`);
+        } else RootState.turnOnDisplay();
 
         if (++homepageTimer == 1) {
             loadAudio(`music1`, `/aud/music1.mp3`);
@@ -385,13 +375,15 @@ function loop () {
         ctx.drawImage(Img.grad, 0, 0, w, h);
         rCreds();
         if (lore) {
-            ReactRoot.turnOffDisplay(`LoginOverlay`);
+            RootState.turnOffDisplay();
             rLore();
             loreTimer++;
             window.requestAnimationFrame(loop);
             return;
         }
-    } else ReactRoot.activate();
+    } else ChatState.activate();
 
     window.requestAnimationFrame(loop);
-}
+};
+
+window.requestAnimationFrame(loop);

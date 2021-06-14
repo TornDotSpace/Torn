@@ -347,3 +347,7 @@ input:-webkit-autofill:focus { /* Get rid of Google's ugly autofill colors */
     box-shadow: 0 0 0 30px black inset;
 	-webkit-text-fill-color:white;
 }
+
+.text-center {
+    text-align: center;
+}
