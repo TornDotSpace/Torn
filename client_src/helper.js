@@ -55,13 +55,15 @@ global.getMousePos = function (canvas, evt) {
         y: evt.clientY - rect.top
     };
 };
+
 global.cube = (x) => x * x * x;
 
 global.sins = [];
-for (let i = 0; i < 1571; i++)// 500pi
-{
+for (let i = 0; i < 1571; i++) {
+    // 500pi
     global.sins[i] = Math.sin(i / 1000.0);
 }
+
 global.sinLow = function (x) {
     x += Math.PI * 200;
     x %= Math.PI * 2;

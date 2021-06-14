@@ -67,11 +67,10 @@ module.exports = class Bullet {
 
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
-            if (p.color != this.color && squaredDist(p, this) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
-                if (this.wepnID == 28) // if a grav bomb hits a player, just die
-                {
-                    return;
-                }
+            if (p.color !== this.color && squaredDist(p, this) < square(bulletWidth + ships[p.ship].width)) { // on collision with enemy
+                // if a grav bomb hits a player, just die
+                if (this.wepnID === 28) return;
+
                 p.dmg(this.dmg, this); // damage the enemy
                 this.die();// despawn this bullet
                 break;

@@ -442,8 +442,8 @@ socket.on(`you`, (data) => {
     if (typeof data.c2 !== `undefined`) c2 = Math.round(1000 * data.c2) / 1000;
     if (typeof data.mh2 !== `undefined`) mh2 = Math.round(1000 * data.mh2) / 1000;
     if (typeof data.e2 !== `undefined`) e2 = Math.round(1000 * data.e2) / 1000;
-    if (data.points >= 0 && data.points < 1000) // prevents undefined on base
-    {
+    if (data.points >= 0 && data.points < 1000) {
+        // prevents undefined on base
         points = data.points;
     }
 });

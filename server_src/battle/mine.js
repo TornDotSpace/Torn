@@ -187,8 +187,8 @@ module.exports = class Mine {
                 }
             }
         }
-        if (this.wepnID == 33) // if i'm a grenade
-        {
+        if (this.wepnID == 33) {
+            // if i'm a grenade
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
                 if (!p.guest && squaredDist(p, this) < square(this.range * 40)) p.dmg(this.dmg, this); // if i'm in range of a player on explosion, damage them

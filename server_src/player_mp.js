@@ -211,9 +211,7 @@ class PlayerMP extends Player {
                 b.owner.driftAchs[9] = true;
                 b.owner.sendAchievementsDrift(true);
             }
-        }
-        // send msg
-        else if (b.type === `Vortex`) chatAll(`${this.nameWithColor()} crashed into a black hole!`);
+        } else if (b.type === `Vortex`) chatAll(`${this.nameWithColor()} crashed into a black hole!`); // send messages
         else if (b.type === `Planet` || b.type === `Asteroid`) chatAll(`${this.nameWithColor()} crashed into an asteroid!`);
         else if (b.owner !== undefined && b.owner.type === `Base`) chatAll(`${this.nameWithColor()} was destroyed by base ${b.owner.nameWithColor()}!`);
 

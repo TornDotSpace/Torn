@@ -224,20 +224,16 @@ class Player {
 
             // Timery Weapons
 
-            else if (wepId == 36 || wepId == 18 || wepId == 19 || wepId == 29) {
+            else if (wepId === 36 || wepId === 18 || wepId === 19 || wepId === 29) {
                 if (wep.name === `Supercharger`) {
                     if (this.superchargerTimer <= 0) this.superchargerTimer = 1500 * (this.ship == 21 ? 2 : 1); // 1 min, more if rank 21
-                    else this.superchargerTimer += 1500 * (this.ship == 21 ? 2 : 1); // Stackable
+                    else this.superchargerTimer += 1500 * (this.ship === 21 ? 2 : 1); // Stackable
                 } else if (wep.name === `Hull Nanobots`) this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth * 0.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
                 else if (wep.name === `Photon Cloak`) this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
                 else if (wep.name === `Warp Drive`) {
-                    this.speed = (wepns[29].speed * (this.ship == 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
+                    this.speed = (wepns[29].speed * (this.ship === 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
                 }
-            }
-
-            // Movey Weapons
-
-            else if (wep.name === `Pulse Wave`) {
+            } else if (wep.name === `Pulse Wave`) { // Velocity-Altering WWeapons
                 sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
                 for (const i in players[this.sy][this.sx]) {
                     const p = players[this.sy][this.sx][i];
@@ -333,11 +329,7 @@ class Player {
                         m.vy += Math.sin(ang) * vel;
                     }
                 }
-            }
-
-            // Misc
-
-            else if (wep.name === `Turret`) {
+            } else if (wep.name === `Turret`) { // Misc Weapons
                 if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
                     this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`Your turret must be closer to the center of the sector!`) });
                     this.space = false;
@@ -421,16 +413,13 @@ class Player {
         } else if (this.ship == 18) {
             if (this.disguise > 0 || this.shield) return;
             this.shootBullet(39);
-        } // Built in spreadshot
-        else if (this.ship == 19) {
+        } else if (this.ship == 19) { // Built in spreadshot
             // if (this.disguise > 0) return;
             if (this.health < this.maxHealth) this.health++;
-        } // Heals you
-        else if (this.ship == 20) {
-            this.shootBlast(41);
+        } else if (this.ship == 20) {
+            this.shootBlast(41); // r19 healing
             this.save();
-        } // Built in Hypno
-        else if (this.ship == 22 && tick % 10 == 0) {
+        } else if (this.ship == 22 && tick % 10 == 0) { // r20 Hypno
             const ox = this.x; const oy = this.y; // Current emitter coordinates
             let nearBEnemy = 0; // enemy turret target, which we will compute
             let nearBFriendly = 0; // friendly turret target, which we will compute
@@ -441,12 +430,8 @@ class Player {
 
             // base
             const b = bases[this.sy][this.sx];
-            if ((b != 0) && b.baseType != DEADBASE && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2)) {
-                nearBEnemy = b;
-            }
-            if ((b != 0) && b.baseType != DEADBASE && b.color == this.color && (hypot2(b.x, ox, b.y, oy) < range2)) {
-                nearBFriendly = b;
-            }
+            if ((b != 0) && b.baseType != DEADBASE && b.color !== this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBEnemy = b;
+            if ((b != 0) && b.baseType != DEADBASE && b.color === this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBFriendly = b;
 
             // search players
             for (const i in players[this.sy][this.sx]) {
