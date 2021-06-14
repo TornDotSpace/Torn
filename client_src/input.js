@@ -57,7 +57,8 @@ document.onkeydown = function (event) {
         ChatState.focusChat();
         typing = true;
     } else if (autopilot) {
-        continue;
+        // dummy comment to make eslint happy.
+
     } else if (event.keyCode == 78 && docked && tab == 8) { // n
         confirmer = -1;
         tab = 0;
