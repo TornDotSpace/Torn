@@ -181,6 +181,12 @@ class PlayerMP extends Player {
     }
 
     async die (b) { // b: bullet object or other object which killed us
+        // Prevent multiple deaths in a single event
+        // The second case shouldn't be necessary but this bug is hard to reproduce so it is there as a sanity check
+        if (this.dead || players[this.sy][this.sx][this.id] === undefined) {
+            return;
+        }
+        this.dead = true;
         delete players[this.sy][this.sx][this.id];
 
         this.empTimer = -1;
@@ -250,7 +256,6 @@ class PlayerMP extends Player {
         this.hasPackage = false; // Maintained for onKill above
 
         this.health = this.maxHealth;
-        this.dead = true;
 
         await handlePlayerDeath(this, this.driftAchs[8], this.randmAchs[4]);
 
