@@ -77,6 +77,7 @@ class Chat extends React.Component<{}, { messages: any[] }> {
                         }}
                     >{message.msg}</div>)
             }
+
             <ChatInput />
         </div>
     )
