@@ -240,7 +240,7 @@ global.rWeaponStore = function () {
         if (type === `Beam`) starCol = `lime`;
         if (type === `Blast`) starCol = `green`;
         if (type === `Mine`) starCol = `cyan`;
-        if (type === `Misc`) starCol = `purple`;
+        if (type === `Misc`) starCol = `violet`;
         baseMenuCtx.fillStyle = starCol;
 
         write(baseMenuCtx, `*`, wx, wy);
