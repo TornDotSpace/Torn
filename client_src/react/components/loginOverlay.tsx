@@ -21,8 +21,9 @@ import { Socket } from 'socket.io-client';
 declare const VERSION: string;
 declare const socket: Socket;
 
-declare const sendAPI: any;
 declare const loadLang: any;
+declare const sendAPI: any;
+declare const connect: any;
 
 declare let credentialState: number;
 declare let loginInProgress: boolean;
@@ -69,17 +70,17 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
     }
 
     registerR = () => {
-        socket.connect();
+        connect();
         socket.emit(`lore`, { team: `red` });
     }
 
     registerB = () => {
-        socket.connect();
+        connect();
         socket.emit(`lore`, { team: `blue` });
     }
 
     registerG = () => {
-        socket.connect();
+        connect();
         socket.emit(`lore`, { team: `green` });
     }
 
@@ -88,8 +89,10 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         const pass = this.state.pass;
 
         if (user === `` || pass === ``) return;
+        if (loginInProgress) return;
 
         const playCookie = await sendAPI(`/login`, `${user}%${pass}`);
+        loginInProgress = true;
 
         if (playCookie.status === 403) {
             credentialState = 1;
