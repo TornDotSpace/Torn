@@ -20,23 +20,23 @@ import { Socket } from 'socket.io-client';
 
 declare const socket: Socket;
 
-class Register extends React.Component<{ register: boolean }, { user: string, pass: string, display: boolean }> {
+class Register extends React.Component<{ register: boolean }, { user: string, pass: string, on: boolean }> {
     constructor (props) {
         super(props);
 
         this.state = {
             user: ``,
             pass: ``,
-            display: false
+            on: false
         };
     }
 
     turnOn = () => {
-        this.setState({ display: true });
+        this.setState({ on: true });
     }
 
     turnOff = () => {
-        this.setState({ display: false });
+        this.setState({ on: false });
     }
 
     changeUsername = (event) => {
@@ -57,7 +57,7 @@ class Register extends React.Component<{ register: boolean }, { user: string, pa
         const user = this.state.user;
         const pass = this.state.pass;
 
-        socket.emit(`register`, {
+        socket?.emit(`register`, {
             user,
             pass
         });
@@ -67,28 +67,29 @@ class Register extends React.Component<{ register: boolean }, { user: string, pa
         this.props.register
             ? (
                 <div className="register-menu">
-                    {/* <center> */}
-                    <h3>Create an account!</h3>
-                    <br />
+                    <div className="text-center m-auto">
+                        <h3>New Players</h3>
 
-                    <input className="overlay-input" type="text" onChange={this.changeUsername} placeholder="Username" maxLength={16} style={{ margin: 8 }} />
-                    <input className="overlay-input" type="password" onChange={this.changePassword} placeholder="Password" maxLength={32} style={{ margin: 8 }} />
+                        <br />
 
-                    <br />
-                    <button className="register" onClick={this.register}>Register!</button>
+                        <input className="overlay-input" type="text" onChange={this.changeUsername} placeholder="Username" maxLength={16} style={{ margin: 8 }} />
+                        <input className="overlay-input" type="password" onChange={this.changePassword} placeholder="Password" maxLength={32} style={{ margin: 8 }} />
 
-                    <br />
-                    <br />
+                        <br />
+                        <button className="register" onClick={this.register}>Register!</button>
 
-                        By registering, you agree to follow our terms of service and abide by our privacy policy.
+                        <br />
+                        <br />
 
-                    <a href="legal/privacy_policy.pdf" > Privacy Policy | </a>
-                    <a href="legal/tos.pdf">Terms of Service</a>
-                    <br/>
+                        <p>By registering, you agree to follow our terms of service and abide by our privacy policy.</p>
 
-                    <br />
-                        Remember, never give your password to anyone!!
-                    {/* </center> */}
+                        <a href="/legal/privacy_policy.pdf" >Privacy Policy | </a>
+                        <a href="/legal/tos.pdf">Terms of Service</a>
+                        <br />
+
+                        <br />
+                        <p>Remember, never give your password to anyone!</p>
+                    </div>
                 </div>
             )
             : null
