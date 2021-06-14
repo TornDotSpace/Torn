@@ -15,9 +15,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Render the more
-import { translate } from "../localizer.ts";
+import { translate } from '../localizer';
 
+// Render "More" page.
 global.rMore = function () {
     baseMenuCtx.textAlign = `center`;
     baseMenuCtx.font = `26px ShareTech`;

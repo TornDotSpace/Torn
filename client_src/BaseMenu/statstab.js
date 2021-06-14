@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Render the stats tab
-import { translate } from "../localizer.ts";
+import { translate } from '../localizer';
 
 global.rStats = function () {
     rMoneyInBaseTopRight();
