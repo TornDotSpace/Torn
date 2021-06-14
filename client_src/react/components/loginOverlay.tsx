@@ -71,17 +71,17 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
 
     registerR = () => {
         connect();
-        socket.emit(`lore`, { team: `red` });
+        socket?.emit(`lore`, { team: `red` });
     }
 
     registerB = () => {
         connect();
-        socket.emit(`lore`, { team: `blue` });
+        socket?.emit(`lore`, { team: `blue` });
     }
 
     registerG = () => {
         connect();
-        socket.emit(`lore`, { team: `green` });
+        socket?.emit(`lore`, { team: `green` });
     }
 
     login = async () => {
