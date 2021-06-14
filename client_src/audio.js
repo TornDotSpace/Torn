@@ -79,6 +79,7 @@ global.loadAllAudio = function () {
     loadAudio(`bigboom`, `/aud/bigboom.wav`);
     loadAudio(`shot`, `/aud/shot.mp3`);
     loadAudio(`beam`, `/aud/beam.wav`);
+    loadAudio(`assimilation`, `/aud/spacenoise2.wav`);
     loadAudio(`missile`, `/aud/whoosh.mp3`);
     loadAudio(`sector`, `/aud/sector.wav`);
     loadAudio(`money`, `/aud/money.wav`);

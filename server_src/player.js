@@ -433,6 +433,7 @@ class Player {
         else if (this.ship == 22 && tick % 10 == 0) {
             const ox = this.x; const oy = this.y; // Current emitter coordinates
             let nearBEnemy = 0; // enemy turret target, which we will compute
+            let nearBFriendly = 0; // friendly turret target, which we will compute
             let nearPFriendly = 0; // friendly ship target, which we will compute
             let nearPEnemy = 0; // enemy ship target, which we will compute
             let nearA = 0; // asteroid target, which we will compute
@@ -442,6 +443,9 @@ class Player {
             const b = bases[this.sy][this.sx];
             if ((b != 0) && b.baseType != DEADBASE && b.color != this.color && (hypot2(b.x, ox, b.y, oy) < range2)) {
                 nearBEnemy = b;
+            }
+            if ((b != 0) && b.baseType != DEADBASE && b.color == this.color && (hypot2(b.x, ox, b.y, oy) < range2)) {
+                nearBFriendly = b;
             }
 
             // search players
@@ -471,16 +475,14 @@ class Player {
             }
 
             if (nearA != 0) {
-                const rM = Math.random();
-                const beamMe = new Beam(this, rM, 45, this, this); // Healing beam for myself when mining asteroids
-                beams[this.sy][this.sx][rM] = beamMe;
+                this.dmg(-30); // Heals myself.
                 const rA = Math.random();
                 const beamA = new Beam(this, rA, 30, nearA, this); // Ore Cannon
                 beams[this.sy][this.sx][rA] = beamA;
             }
 
             if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
-            this.spoils(`money`, 250); // reward the player for healing a teammate
+            this.spoils(`money`, 365); // reward the player for healing a teammate
             this.spoils(`experience`, 10); // The medic gets more experience from healing
             const rfP = Math.random();
 
@@ -498,6 +500,11 @@ class Player {
                 }
                 const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
                 beams[this.sy][this.sx][reP] = beameP;
+
+                if (this.color == `blue` && tick % 250 == 0) {
+                    const beameP2 = new Beam(this, reP, 31, nearPEnemy, this); // Destabilizer
+                    beams[this.sy][this.sx][reP] = beameP2;
+                }
             }
             if (nearBEnemy != 0) {
                 const reB = Math.random();
@@ -507,7 +514,21 @@ class Player {
                 }
                 const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
                 beams[this.sy][this.sx][reB] = beameB;
+
+                if (this.color == `green` && tick % 750 == 0) { // Assimilation beam
+		    nearBEnemy.assimilate(660, this);
+                    const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
+                    beams[this.sy][this.sx][reB] = beameB2;
+                    this.dmg(-73);
+                    sendAllSector(`sound`, { file: `assimilation`, x: ox, y: oy }, this.sx, this.sy);
+                }
             }
+            if (nearBFriendly != 0 && nearBFriendly.assimilatedCol != this.color) { // Anti-assimilation beam
+                const beamfB = new Beam(this, rfP, 45, nearBFriendly, this); // Healing beam
+                beams[this.sy][this.sx][rfP] = beamfB;
+	        nearBFriendly.assimilatedCol = this.color;
+                nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
+	    }
 
             sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
         } // A healing leech beam, only for helping teammates, or when near an asteroid.
