@@ -933,15 +933,16 @@ function update () {
     // re-spawn asteroids if we've fallen below the sector avg (8)
     let sumAsts = 0;
     for (const i in astCount) for (const j in astCount[i])sumAsts += astCount[i][j];
-    if (sumAsts < 8 * mapSz * mapSz)spawnAsteroid();
+    if (sumAsts < 8 * mapSz * mapSz) spawnAsteroid();
 
-    if (tick % 12 == 0) // LAG CONTROL
-    {
+    if (tick % 12 == 0) {
+        // LAG CONTROL
         for (const i in deads) {
             const player = deads[i];
             player.socket.emit(`online`, { lag: lag });
         }
     }
+
     if (tick % 12 == 0) { // LAG CONTROL
         for (const i in dockers) {
             const player = dockers[i];
@@ -949,6 +950,7 @@ function update () {
             player.socket.emit(`quests`, { quests: teamQuests[player.color] });
         }
     }
+
     if (raidTimer-- % 4000 == 0) sendRaidData();
     if (raidTimer <= 0) endRaid();
 
@@ -1011,8 +1013,8 @@ function updateHeatmap () {
         j++;
     }
 
-    for (let i = 0; i < lb.length - 1; i++) // sort it
-    {
+    for (let i = 0; i < lb.length - 1; i++) {
+        // sort it
         for (let k = 0; k < lb.length - i - 1; k++) {
             if (lb[k + 1].experience > lb[k].experience) {
                 const temp = lb[k + 1];

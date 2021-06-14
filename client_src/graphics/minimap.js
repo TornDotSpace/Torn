@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { translate } from "../localizer.ts";
+import { translate } from '../localizer';
 
 const minimapcanvas = document.createElement(`canvas`);
 minimapcanvas.width = minimapcanvas.height = 208;
@@ -221,8 +221,8 @@ global.r3DMap = function () {
             const cz = (dot1.z + dot4.z) / 2;
 
             let ga = 0.75;
-            if (!useOldMap) // Sectors dynamically transparent
-            {
+            if (!useOldMap) {
+                // Sectors dynamically transparent
                 ga = Math.min(1, 48 * square(square(square(-cz / 400 + 0.5))));
             }
             // if(ga<.1) continue; dunno why this doesnt work
