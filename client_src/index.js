@@ -16,7 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 import React from "react";
 import ReactDOM from "react-dom";
-import ReactRootJS from "./react.js";
+
+import ReactRoot from "./react/root";
+import { Howl, Howler } from 'howler';
 
 import { jsn, translate } from "./localizer.ts";
 
@@ -64,8 +66,7 @@ global.canvas = document.getElementById(`ctx`);
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 global.ctx = canvas.getContext(`2d`, { alpha: false });
-global.ReactRoot = ReactRootJS;
-const { Howl, Howler } = require(`howler`); // audio
+global.ReactRoot = ReactRoot;
 
 global.guiColor = `#333333`;
 global.guiOpacity = 0.5;
