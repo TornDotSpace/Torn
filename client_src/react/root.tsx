@@ -23,7 +23,9 @@ import MusicButton from './components/MusicButton';
 import LoginOverlay from './components/LoginOverlay';
 import Register from './components/Register';
 
-class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMusic: boolean }, state: { display: string, register: string} }> {
+let ReactState: { toggleDisplay: any, turnOnDisplay: any, turnOffDisplay: any, turnOnRegister: any, turnOffRegister: any };
+
+class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMusic: boolean } }, { display: string, register: string }> {
     constructor (props) {
         super(props);
 
@@ -34,6 +36,40 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMu
         };
     }
 
+    toggleDisplay = () => {
+        if (this.state.display === `display`) this.turnOffDisplay();
+        else this.turnOnDisplay();
+    }
+
+    turnOnDisplay = () => {
+        this.setState({ display: `LoginOverlay` });
+    }
+
+    turnOffDisplay = () => {
+        this.setState({ display: `none` });
+    }
+
+    turnOnRegister = () => {
+        this.setState({ register: `Register` });
+    }
+
+    turnOffRegister = () => {
+        this.setState({ register: `none` });
+    }
+
+    componentDidMount = () => {
+        // Pass internal functions to the exportable object.
+        ReactState = {
+            toggleDisplay: () => this.toggleDisplay(),
+
+            turnOnDisplay: () => this.turnOnDisplay(),
+            turnOffDisplay: () => this.turnOffDisplay(),
+
+            turnOnRegister: () => this.turnOnRegister(),
+            turnOffRegister: () => this.turnOffRegister()
+        };
+    }
+
     render = () => (
         <span>
             <Chat />
@@ -41,10 +77,13 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: boolean, toggleMu
             <MuteButton toggleAudio={this.props.data.toggleAudio} />
             <MusicButton toggleMusic={this.props.data.toggleMusic} />
 
-            <LoginOverlay display={this.props.state.display === `LoginOverlay`} />
-            <Register register={this.props.state.register === `Register`} />
+            <LoginOverlay display={this.state.display === `LoginOverlay`} />
+            <Register register={this.state.register === `Register`} />
         </span>
     )
 }
 
-export default ReactRoot;
+export {
+    ReactRoot,
+    ReactState
+};

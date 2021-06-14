@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import ReactRoot from './react/root';
+import { ReactRoot, ReactState } from './react/root';
 import * as ReactStateHandler from './react/stateHandler';
 
 import { jsn, translate } from './localizer';
@@ -178,12 +178,6 @@ require(`./chat.ts`);
 
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
-
-// Global React state handler.
-global.ReactState = {
-    display: `none`,
-    register: `none`
-};
 
 ReactDOM.render(
     <ReactRoot data={ toggleMusic, toggleAudio } state={ ReactState.display, ReactState.register } />,
