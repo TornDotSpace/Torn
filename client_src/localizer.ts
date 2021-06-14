@@ -15,6 +15,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+declare const global: any;
+declare const loadLang: any;
+
 const eng = `english.json`;
 const esp = `translations/spanish.json`;
 const tki = `translations/tokipona.json`;

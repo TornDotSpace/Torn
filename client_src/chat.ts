@@ -20,16 +20,22 @@ import { translate } from './localizer';
 
 /* eslint-disable */
 // BEGIN TYPESCRIPT TRANSITION HACKS
-declare var socket: Socket;
-declare var clientmutes: any;
-declare var roundRect: Function;
-declare var seller: Number;
-declare var ctx: any;
-declare var square: any;
-declare var brighten: any;
-declare var h: any;
-declare var getPosition: any;
-declare var wepns: any;
+declare const socket: Socket;
+declare let clientmutes: any;
+declare let roundRect: Function;
+declare let seller: Number;
+declare let ctx: CanvasRenderingContext2D;
+declare let square: any;
+declare let brighten: any;
+declare let h: any;
+declare let getPosition: any;
+declare let wepns: any;
+declare let guiOpacity: any;
+declare let guiColor: any;
+declare let guest: any;
+declare let colorCircumfix: any;
+declare let weaponCircumfix: any;
+declare let translateCircumfix: any;
 // END TYPESCRIPT TRANSITION HACKS
 /* eslint-enable */
 
