@@ -30,6 +30,7 @@ module.exports = class Base {
         this.y = y,
         this.sx = sx,
         this.sy = syy,
+        this.deathTimer = 0,
 
         this.shots = 0,
         this.reload = 0, // timer for shooting
@@ -49,7 +50,8 @@ module.exports = class Base {
             }
         }
 
-        if (this.baseType == DEADBASE && (tick % (25 * 60 * 10) == 0 || (raidTimer < 15000 && tick % (25 * 150) == 0))) this.baseType = LIVEBASE; // revive. TODO: add a timer
+        this.deathTimer--;
+        if (this.baseType == DEADBASE && this.deathTimer <= 0) this.baseType = LIVEBASE; // revive.
 
         this.move(); // aim and fire
 
@@ -216,6 +218,8 @@ module.exports = class Base {
         } else {
             const numBotsToSpawn = 2 + 4 * Math.random() * Math.random();
             for (let i = 0; i < numBotsToSpawn; i++) spawnBot(this.sx, this.sy, this.color, true);
+            this.baseType = DEADBASE;
+            this.deathTimer = raidTimer < 15000 ? 75 * 60 : (25 * 125);
         }
 
         if (b === 0) {
@@ -230,7 +234,7 @@ module.exports = class Base {
 
         // Or a player...
         if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
-            this.sendDeathMsg(`${b.owner.nameWithColor()}'s \`~${b.wepnID}\`~`);
+            this.sendDeathMsg(`${b.owner.nameWithColor()}'s ${chatWeapon(b.wepnID)}`);
             b.owner.baseKilled();
             let multiplier = this.isMini ? 1 : 2 * Math.abs(this.sy - mapSz / 2 - 0.5);
             let numInRange = 0;
@@ -302,6 +306,6 @@ module.exports = class Base {
     }
 
     nameWithColor () { // returns something like "~`green~`B6~`yellow~`"
-        return `~\`${this.color}~\`${this.getSectorName()}~\`yellow~\``;
+        return `${chatColor(this.color)}${this.getSectorName()}${chatColor(`yellow`)}`;
     }
 };

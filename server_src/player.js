@@ -174,7 +174,7 @@ class Player {
     }
 
     fire () {
-        if (this.empTimer > 0) return; // Can't shoot while EMP'd
+        if (this.empTimer > 0) return; // Cannot shoot while EMP'd.
         if (this.c && this.charge > 0) this.shootEliteWeapon();
         if (this.bulletQueue > 0) this.shootBullet(40); // SMG
         const wepId = this.weapons[this.equipped];
@@ -194,7 +194,7 @@ class Player {
             if (this.ammos[this.equipped] == 0) return;
 
             if (wep.level > this.ship) {
-                this.emit(`chat`, { msg: `\`tThis weapon is incompatible with your current ship!\`t`, color: `red` });
+                this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`This weapon is incompatible with your current ship!`) });
                 return;
             }
 
@@ -339,12 +339,12 @@ class Player {
 
             else if (wep.name === `Turret`) {
                 if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
-                    this.emit(`chat`, { msg: `\`tYour turret must be closer to the center of the sector!\`t`, color: `cyan` });
+                    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`Your turret must be closer to the center of the sector!`) });
                     this.space = false;
                     return;
                 }
                 if (bases[this.sy][this.sx] != 0) {
-                    this.emit(`chat`, { msg: `\`tThere can only be one turret or sentry in any sector!\`t`, color: `yellow` });
+                    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
                     this.space = false;
                     return;
                 }
@@ -352,10 +352,10 @@ class Player {
                 const b = new Base(r, TURRET, this.sx, this.sy, this.color, this.x, this.y);
                 b.owner = this.name;
                 bases[this.sy][this.sx] = b;
-                this.emit(`chat`, { msg: `\`tYou placed a turret! Name it with "/nameturret <name>".\`t`, color: `lime` });
+                this.emit(`chat`, { msg: chatColor(`lime`) + chatTranslate(`You placed a turret! Name it with "/nameturret <name>".`) });
             } else if (wep.name === `Sentry`) {
                 if (bases[this.sy][this.sx] != 0) {
-                    this.emit(`chat`, { msg: `\`tThere can only be one turret or sentry in any sector!\`t`, color: `orange` });
+                    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
                     this.space = false;
                     return;
                 }
@@ -363,7 +363,7 @@ class Player {
                 const b = new Base(r, SENTRY, this.sx, this.sy, this.color, this.x, this.y);
                 b.owner = this.name;
                 bases[this.sy][this.sx] = b;
-                this.emit(`chat`, { msg: `\`tYou placed a turret! Name it with "/nameturret <name>".\`t`, color: `lime` });
+                this.emit(`chat`, { msg: chatColor(`lime`) + chatTranslate(`You placed a turret! Name it with "/nameturret <name>".`) });
             } else if (wep.name === `Turbo`) {
                 const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
                 const mult = wepns[21].speed * (isDrifting ? 1.014 : 1); // Faster when drifting.
@@ -535,6 +535,8 @@ class Player {
     }
 
     move () {
+        if (this.empTimer > 0) return; // Cannot move while EMP'd.
+
         if (this.hyperdriveTimer > 0) {
             this.hyperdriveTimer--;
             this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
@@ -695,7 +697,7 @@ class Player {
             }
         }
         if (giveBounce && !this.randmAchs[5]) {
-            if (this.guest) this.emit(`chat`, { msg: `~\`orange~\`\`tYou must create an account to explore the universe!\`t` });
+            if (this.guest) this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`You must create an account to explore the universe!`) });
             else {
                 this.randmAchs[5] = true;
                 this.sendAchievementsMisc(true);
@@ -901,12 +903,12 @@ class Player {
     shootMine () {
         if (Object.keys(mines[this.sy][this.sx]).length >= 20 && (this.weapons[this.equipped] < 30 || this.weapons[this.equipped] == 48 || this.weapons[this.equipped] == 43)) {
             this.ammos[this.equipped]++;
-            this.emit(`chat`, { msg: `\`tThis sector has reached its limit of 20 mines.\`t` });
+            this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`This sector has reached its limit of 20 mines.`) });
             return;
         }
         if (square(this.sx - sectorWidth / 2) + square(this.sy - sectorWidth / 2) < square(600 * 10)) {
             this.ammos[this.equipped]++;
-            this.emit(`chat`, { msg: `\`tYou may not place a mine here.\`t` });
+            this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`You may not place a mine here.`) });
             return;
         }
         const r = Math.random();
@@ -1004,23 +1006,22 @@ class Player {
         if (this.health < 0) this.die(origin);
 
         if (d > 0) note(`-${Math.floor(d)}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-        if (d == 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
+        if (d === 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
         if (d < 0) note(`+${Math.floor(Math.abs(d))}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
         this.emit(`dmg`, {});
         return this.health < 0;
     }
 
     EMP (t) {
-        if (this.empTimer > 0) return; // emps don't stack. can't emp an already emp's ship.
- 	if (this.ship >= 16 && this.ship<=20) t *= 1.25; // Emp works better on elites
-        if (this.ship == 21 && this.health*1.05 < this.maxHealth) this.health*=1.05; // It will also heal the ship a very small bit.
+        if (this.empTimer > 0) return; // EMPs don't stack. Once EMP'd, a ship cannot be EMP'd again until the previous EMP has ended.
+ 	    if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // Emp works better on elite ships.
+        if (this.ship == 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // It will also heal the ship a very small bit.
         if (this.isBot) {
-          this.empTimer = t;
+            this.empTimer = t;
         } else {
-          this.charge = -t*this.energy2;
-          this.emit(`emp`, { t: t });
+            this.charge = -t * this.energy2;
+            this.emit(`emp`, { t: t });
         }
-
     }
 
     save () {}
@@ -1091,22 +1092,23 @@ class Player {
 
     calculateGenerators () { // count how many gens I have
         this.generators = 0;
-        if (this.ship == 22) {
-            for (let slot = 0; slot < 10; slot++) {
-                if (this.weapons[slot] == 20) this.generators++;
+        if (this.ship >= wepns[20].level) { // gotta have sufficiently high ship
+            let maxSlots = 0;
+            if (this.ship == 22) {
+	        maxSlots = 10;
+            } else {
+	        maxSlots = ships[this.ship].weapons;
             }
-        } else {
-            for (let slot = 0; slot < ships[this.ship].weapons; slot++) {
+            for (let slot = 0; slot < maxSlots; slot++) {
                 if (this.weapons[slot] == 20) this.generators++;
             }
         }
-        if (this.ship <= wepns[20].level) this.generators = 0; // gotta have sufficiently high ship
     }
 
     spoils (type, amt) { /* gives you something. Called wenever you earn money / exp / w/e */ }
 
     nameWithColor () { // returns something like "~`green~`[O] 2swap~`yellow~`"
-        return `~\`${this.color}~\`${this.name}~\`yellow~\``;
+        return `${chatColor(this.color)}${this.name}${chatColor(`yellow`)}`;
     }
 
     noteLocal (msg, x, y) {}

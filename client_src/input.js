@@ -38,8 +38,8 @@ document.onkeydown = function (event) {
     }
     if (login && !typing && event.keyCode === 80 && !docked) {
         autopilot ^= true;
-        if (bigNotes[0] == -1)/* to prevent spam */
-        {
+        if (bigNotes[0] == -1) {
+            // To prevent spam.
             addBigNote([256, `Autopilot ${autopilot ? `E` : `Dise`}ngaged!`, `Press P to toggle.`, ``]);
         }
         return;
@@ -157,46 +157,22 @@ document.addEventListener(`mousemove`, (evt) => {
         roll(myn / 4);
         spin(mxn / 4);
         r3DMap();
-    }
-
-    // Cargo
-    else if (mx > 224 && mx < 240 && my < 216 && my > 8) {
+    } else if (mx > 224 && mx < 240 && my < 216 && my > 8) {
+        // Cargo
         seller = 900;
-    }
-
-    // Global Chat Button
-    else if (mx < 640 && mx > 512 && my > h - 64) {
+    } else if (mx < 640 && mx > 512 && my > h - 64) {
+        // Global Chat Button
         seller = 800 + Math.floor((my - h + 61) / 18);
         if (seller > 802 || seller < 800) seller = 0;
-    }
-
-    // Shop
-    else if (docked && tab == 0) {
-        shopOnHover();
-    }
-
-    // Quests
-    else if (docked && tab == 1) {
-        questsOnHover(preSeller);
-    }
-
-    // Stats
-    else if (docked && tab == 2) {
-        statsOnHover();
-    }
-
-    // Buy weapon
-    else if (docked && tab == 7) {
-        weaponStoreOnHover();
-    }
-
-    // More
-    else if (docked && tab == 4) {
-        moreOnHover();
-    } else seller = 0;
+        else if (preSeller != seller) rChat();
+    } else if (docked && tab == 0) shopOnHover(); // Shop
+    else if (docked && tab == 1) questsOnHover(preSeller); // Quests
+    else if (docked && tab == 2) statsOnHover(); // Stats
+    else if (docked && tab == 7) weaponStoreOnHover(); // Buy Weapon
+    else if (docked && tab == 4) moreOnHover(); // More
+    else seller = 0;
 
     if (seller != 0 && seller != preSeller) playAudio(`button2`, 0.2);
-    if (preSeller != seller && (Math.abs(preSeller - 801) <= 1 || Math.abs(seller - 801) <= 1)) rChat();
 }, false);
 
 document.addEventListener(`mousedown`, (evt) => {

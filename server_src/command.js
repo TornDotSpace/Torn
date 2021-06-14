@@ -52,7 +52,7 @@ cmds.help = new Command(`/help - Displays commands & usages`, EVERYONE, (command
         const lvl = commandExecuter.permissionLevels[p];
 	    for (let x = 0; x < HELP_TABLE[lvl].length; ++x) {
 	        const cmd = HELP_TABLE[lvl][x];
-            playerChat(cmd.usage, commandExecuter.globalChat, commandExecuter.color, commandExecuter.guild);
+            commandExecuter.socket.emit(`chat`, { msg: chatColor(`orange`) + cmd.usage, gc: commandExecuter.globalChat });
 	    }
     }
 });
@@ -64,20 +64,20 @@ cmds.me = new Command(`/me <msg>`, EVERYONE, (commandExecuter, msg) => {
 });
 
 cmds.myguild = new Command(`/myguild - Tells you what guild you're in`, EVERYONE, (commandExecuter, msg) => {
-    if (commandExecuter.guild === ``) commandExecuter.socket.emit(`chat`, { msg: `~\`orange~\`You aren't in a guild!` });
-    else commandExecuter.socket.emit(`chat`, { msg: `~\`orange~\`Your guild is: ${commandExecuter.guild}` });
+    if (commandExecuter.guild === ``) commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`orange`)}You aren't in a guild!` });
+    else commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`orange`)}Your guild is: ${commandExecuter.guild}` });
 });
 
 cmds.guildlist = new Command(`/guildlist - Tells you a list of all guilds`, EVERYONE, (commandExecuter, msg) => {
     for (const g in guildList) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`orange~\`${g}` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`orange`)}${g}` });
     }
 });
 
 cmds.playerstats = new Command(`/playerstats - See how many players are online`, EVERYONE, (commandExecuter, msg) => {
     let sumAsts = 0;
     for (const i in astCount) for (const j in astCount[i])sumAsts += astCount[i][j];
-    commandExecuter.socket.emit(`chat`, { msg: `~\`orange~\`${guestCount} guests, ${playerCount} players, ${botCount} bots, and ${sumAsts} asteroids.` });
+    commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`orange`)}${guestCount} guests, ${playerCount} players, ${botCount} bots, and ${sumAsts} asteroids.` });
 });
 
 // PLAYER COMMANDS
@@ -93,7 +93,7 @@ cmds.confirm = new Command(`/confirm <newPassword>`, REGISTERED, async (commandE
 
 cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) => {
     if (!commandExecuter.docked) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`This command is only available when docked at a base.` }); return;
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}This command is only available when docked at a base.` }); return;
     }
     const split = msg.split(` `);
     if (split.length > 2) {
@@ -293,30 +293,30 @@ cmds.give = new Command(`/give - Give a player money.`, MVPPLUS, (commandExecute
     const recipientName = split[1];
     const recipient = getPlayerFromName(recipientName);
     if (recipient == -1) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`Player '${recipientName}' not found.` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}Player '${recipientName}' not found.` });
         return;
     }
     if (!recipient.docked) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`Player ${recipient.nameWithColor()} not docked.` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}Player ${recipient.nameWithColor()} not docked.` });
         return;
     }
     if (!commandExecuter.docked) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`This command is only available when docked at a base.` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}This command is only available when docked at a base.` });
         return;
     }
 
     // parse money amount
     const moneyAmount = parseInt(split[2]);
     if (isNaN(moneyAmount)) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`Invalid money amount.` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}Invalid money amount.` });
         return;
     }
     if (moneyAmount <= 0) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`Invalid money amount.` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}Invalid money amount.` });
         return;
     }
     if (moneyAmount > commandExecuter.money) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`You don't have that much money!` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}You don't have that much money!` });
         return;
     }
 
@@ -324,8 +324,8 @@ cmds.give = new Command(`/give - Give a player money.`, MVPPLUS, (commandExecute
     recipient.money += moneyAmount;
     commandExecuter.save();
     recipient.save();
-    commandExecuter.socket.emit(`chat`, { msg: `~\`yellow~\`You gave $${moneyAmount} to ${recipient.nameWithColor()}!` });
-    recipient.socket.emit(`chat`, { msg: `~\`yellow~\`You were given $${moneyAmount} from ${commandExecuter.nameWithColor()}!` });
+    commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`lime`)}You gave $${moneyAmount} to ${recipient.nameWithColor()}!` });
+    recipient.socket.emit(`chat`, { msg: `${chatColor(`lime`)}You were given $${moneyAmount} from ${commandExecuter.nameWithColor()}!` });
 });
 
 cmds.basetp = new Command(`/basetp - Teleport to another base.`, MVPPLUS, (commandExecuter, msg) => {
@@ -333,11 +333,11 @@ cmds.basetp = new Command(`/basetp - Teleport to another base.`, MVPPLUS, (comma
         commandExecuter.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/basetp'` }); return;
     }
     if (!commandExecuter.docked) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`This command is only available when docked at a base.` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}This command is only available when docked at a base.` });
         return;
     }
     if (commandExecuter.silver + commandExecuter.iron + commandExecuter.copper + commandExecuter.platinum > 0) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`You must sell all your ore to use this command!` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}You must sell all your ore to use this command!` });
         return;
     }
 
@@ -359,14 +359,15 @@ cmds.summonwormhole = new Command(`/summonwormhole - summons the wormhole roughl
         commandExecuter.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/summonWormhole'` }); return;
     }
     if (commandExecuter.docked) {
-        commandExecuter.socket.emit(`chat`, { msg: `~\`red~\`This command is not available when docked at a base.` });
+        commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`red`)}This command is not available when docked at a base.` });
         return;
     }
 
     wormhole.vx += ((commandExecuter.sx * sectorWidth + commandExecuter.x) - (wormhole.sx * sectorWidth + wormhole.x)) / 90;
     wormhole.vy += ((commandExecuter.sy * sectorWidth + commandExecuter.y) - (wormhole.sy * sectorWidth + wormhole.y)) / 90;
 
-    commandExecuter.money *= 0.99;
+    let userMoney = commandExecuter.money;
+    commandExecuter.money = Math.max(userMoney *= 0.99, userMoney - 1000000);
     commandExecuter.save();
 
     commandExecuter.socket.emit(`chat`, { msg: `Summoning Wormhole...` });
@@ -384,7 +385,7 @@ findGuildFromOwner = function (owner) {
 // These commands are accessible to moderators in the game
 cmds.broadcast = new Command(`/broadcast <msg> - Send a message to the whole server`, MODPLUS, (commandExecuter, msg) => {
     console.log(`ADMIN: BROADCAST INITIATED BY ${commandExecuter}: ${msg}`);
-    chatAll(`~\`#f66~\`       BROADCAST: ~\`lime~\`${msg.substring(11)}`);
+    chatAll(`${chatColor(`red`)}       BROADCAST: ${chatColor(`lime`)}${msg.substring(11)}`);
 });
 
 cmds.modmute = new Command(`/modmute <player> <minutesToMute> - Mutes the specified player server-wide.`, MODPLUS, (commandExecuter, msg) => {
@@ -440,7 +441,7 @@ cmds.settag = new Command(`/settag <player> <tag> - Sets a player's tag. tag sho
 
     recipient.tag = msg.split(` `)[2];
     recipient.save();
-    commandExecuter.socket.emit(`chat`, { msg: `~\`violet~\`Tag set.` });
+    commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`violet`)}Tag set.` });
 });
 
 cmds.deltag = new Command(`/deltag <player> <tag> - Removes a player's tag.`, ADMINPLUS, (commandExecuter, msg) => {
@@ -456,7 +457,7 @@ cmds.deltag = new Command(`/deltag <player> <tag> - Removes a player's tag.`, AD
 
     recipient.tag = ``;
     recipient.save();
-    commandExecuter.socket.emit(`chat`, { msg: `~\`violet~\`Tag removed.` });
+    commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`violet`)}Tag removed.` });
 });
 
 cmds.smite = new Command(`/smite <player> - Smites the specified player`, ADMINPLUS, (commandExecuter, msg) => {
@@ -469,7 +470,7 @@ cmds.smite = new Command(`/smite <player> - Smites the specified player`, ADMINP
 	    return;
     }
     recipient.die(0);
-    chatAll(`~\`violet~\`${player.name}~\`yellow~\` has been Smitten!`);
+    chatAll(`${chatColor(`violet`)}${player.name}${chatColor(`yellow`)} has been Smitten!`);
 });
 
 cmds.kick = new Command(`/kick <player> - Kicks the specified player`, ADMINPLUS, (commandExecuter, msg) => {
@@ -482,7 +483,7 @@ cmds.kick = new Command(`/kick <player> - Kicks the specified player`, ADMINPLUS
 	    return;
     }
     recipient.kick();
-    chatAll(`~\`violet~\`${name}~\`yellow~\` has been kicked!`);
+    chatAll(`${chatColor(`violet`)}${name}${chatColor(`yellow`)} has been kicked!`);
 });
 
 cmds.saveturrets = new Command(`/saveTurrets - Runs a manual save on the server turrets`, ADMINPLUS, saveTurrets);

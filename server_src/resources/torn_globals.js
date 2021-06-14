@@ -22,6 +22,10 @@ const fs = require(`fs`);
 
 global.serverInitialized = false;
 global.tickRate = 1000 / Config.getValue(`server_tick_rate`, 60);
+global.colorCircumfix = `\`c`;
+global.weaponCircumfix = `\`w`;
+global.translateCircumfix = `\`t`;
+
 // some global FINAL game mechanics
 global.bulletWidth = 16; // collision radius
 global.mineLifetime = 3 * tickRate * 60; // mines despawn after this many minutes (3)

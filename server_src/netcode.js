@@ -44,7 +44,7 @@ const runCommand = (player, msg) => {
 
     const command = cmds[cmd];
 
-    if (!command) player.socket.emit(`chat`, { msg: `~\`red~\`Unknown Command. Use /help for a list of commands! ~\`red~\`` });
+    if (!command) player.socket.emit(`chat`, { msg: `${chatColor(`red`)}Unknown Command. Use /help for a list of commands! ${chatColor(`red`)}` });
     else {
         // Check for permissions
         let permitted = false;
@@ -55,7 +55,7 @@ const runCommand = (player, msg) => {
             }
         }
         if (!permitted) {
-            player.socket.emit(`chat`, { msg: `~\`red~\`You don't have permission to access this command. ~\`red~\`` });
+            player.socket.emit(`chat`, { msg: `${chatColor(`red`)}You don't have permission to access this command. ${chatColor(`red`)}` });
             return;
         }
 
@@ -401,7 +401,7 @@ module.exports = initNetcode = () => {
             if (player == 0 || data.msg.length == 0) return;
 
             if (guestsCantChat && player.guest) {
-                socket.emit(`chat`, { msg: `You must create an account in the base before you can chat!`, color: `yellow` });
+                socket.emit(`chat`, { msg: `${chatColor(`red`)}You must create an account in the base before you can chat!` });
                 return;
             }
 
@@ -417,7 +417,7 @@ module.exports = initNetcode = () => {
                 let secondsLeft = 0;
                 if (muteTable[player.name] > secondsLeft) secondsLeft = Math.floor((muteTable[player.name] - time) / 1000); // We aren't using math.max here because it misbehaves with NaN arguments, which these dictionary accesses can be.
                 if (ipMuteTable[player.ip] > secondsLeft) secondsLeft = Math.floor((ipMuteTable[player.ip] - time) / 1000);
-                socket.emit(`chat`, { msg: (`~\`#ff0000~\`You are muted for ${Math.floor(secondsLeft / 60)} minutes and ${secondsLeft % 60} seconds!`) });
+                socket.emit(`chat`, { msg: (`${chatColor(`red`)}You are muted for ${Math.floor(secondsLeft / 60)} minutes and ${secondsLeft % 60} seconds!`) });
                 return;
             }
             delete muteTable[player.name];
@@ -440,7 +440,7 @@ module.exports = initNetcode = () => {
             // if (hasZalgo) player.chatTimer*=3;
             if (player.chatTimer > 600) { // exceeded spam limit: they are now muted
                 muteTable[player.name] = time + (Math.floor(player.muteCap / 25) * 1000);
-                chatAll(`~\`violet~\`${player.name}~\`yellow~\` has been muted for ${Math.floor(player.muteCap / 25)} seconds!`);
+                chatAll(`${player.nameWithColor()} has been muted for ${Math.floor(player.muteCap / 25)} seconds!`);
                 if (Config.getValue(`enable_discord_moderation`, false)) {
                     global.autoMuteNote(`${player.name} has been auto-muted for ${Math.floor(player.muteCap / 25)} seconds!`);
                 }
@@ -454,7 +454,7 @@ module.exports = initNetcode = () => {
                 const finalMsg = `${spaces + player.nameWithColor()}: ${newmsg}`;
 
                 // Send it to the client up to what chat room theyre in
-                if (player.globalChat == 2 && player.guild === ``) socket.emit(`chat`, { msg: (`~\`#ff0000~\`You are not in a guild!`) });
+                if (player.globalChat == 2 && player.guild === ``) socket.emit(`chat`, { msg: (`${chatColor(`red`)}You are not in a guild!`) });
                 else playerChat(finalMsg, player.globalChat, player.color, player.guild);
 
                 if (Config.getValue(`enable_discord_moderation`, false)) {

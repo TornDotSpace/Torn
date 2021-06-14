@@ -38,7 +38,7 @@ global.modmute = function (msg) {
     if (minutes < 0) return;
 
     muteTable[player.name] = (Date.now() + (minutes * 60 * 1000));
-    chatAll(`~\`violet~\`${player.name}~\`yellow~\` has been muted for ${minutes} minutes!`);
+    chatAll(`${player.nameWithColor()} has been muted for ${minutes} minutes!`);
     return `${player.name} has been muted for ${minutes} minutes!`;
 };
 
@@ -57,7 +57,7 @@ global.ipmute = function (msg) {
     if (minutes < 0) return;
 
     ipMuteTable[player.ip] = (Date.now() + (minutes * 60 * 1000));
-    chatAll(`~\`violet~\`${player.name}~\`yellow~\` has been IP-muted for ${minutes} minutes!`);
+    chatAll(`${player.nameWithColor()} has been IP-muted for ${minutes} minutes!`);
     return `${player.name} has been IP-muted for ${minutes} minutes!`;
 };
 

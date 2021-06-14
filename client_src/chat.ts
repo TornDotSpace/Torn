@@ -42,11 +42,6 @@ const chatRooms = [
 const messages = [{}, {}, {}];
 const serverMessages = {};
 
-// Chat circumfix codes. Code assumes they are length 2.
-const colorCircumfix: String = `~\``;
-const weaponCircumfix: String = `\`~`;
-const translateCircumfix: String = `\`t`;
-
 const chatCanvas: HTMLCanvasElement = document.createElement(`canvas`);
 chatCanvas.width = 650;
 chatCanvas.height = 350;
@@ -155,8 +150,8 @@ export function pasteChat() {
 
 function onReceiveChat(data) {
   while (data.msg.includes(weaponCircumfix)) {
-    const find1 = getPosition(data.msg, translateCircumfix, 1);
-    const find2 = getPosition(data.msg, translateCircumfix, 2);
+    const find1 = getPosition(data.msg, weaponCircumfix, 1);
+    const find2 = getPosition(data.msg, weaponCircumfix, 2);
 
     if (find1 == -1 || find2 == -1) return;
 
@@ -175,13 +170,13 @@ function onReceiveChat(data) {
   }
 
   if (typeof data.gc === "undefined") {
-    for (let i = chatLength; i > 0; i--) {
+    for (let i = serverChatLength; i > 0; i--) {
       serverMessages[i] = serverMessages[i - 1];
     }
     serverMessages[0] = data.msg;
   }
   else {
-    for (let i = serverChatLength; i > 0; i--) {
+    for (let i = chatLength; i > 0; i--) {
       messages[data.gc][i] = messages[data.gc][i - 1];
     }
     messages[data.gc][0] = data.msg;
@@ -205,7 +200,7 @@ function preProcessChat() { // This is slow and buggy. We should rewrite it.
       const testLine = line + words[n] + " ";
       const metrics = ctx.measureText(testLine.replace(regex, ""));
       const testWidth = metrics.width;
-      if (testWidth > 512 && n > 0) {
+      if (testWidth > 430 && n > 0) {
         preChatArr[chati++] = line;
         line = "                  " + words[n] + " ";
       } else {
@@ -236,6 +231,6 @@ export function chatMenuButtonClick(buttonID) {
   const newChat = buttonID - 800;
   socket.emit("toggleGlobal", {gc: newChat});
   preProcessChat();
-  rChat();
   whichChatMenu = newChat;
+  rChat();
 };
