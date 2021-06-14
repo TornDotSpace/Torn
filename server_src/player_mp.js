@@ -113,9 +113,9 @@ class PlayerMP extends Player {
                 continue;
             }
 
-            if ((player.name.includes(` `) ? player.name.split(` `)[1] : player.name) === name) {
-                console.log(`[PM] ${this.name}->`, player.name, `: ${raw}`);
-                player.emit(`chat`, { msg: `${chatColor(`violet`)}[PM] [${this.name}]: ${raw}` });
+            if (player.name === name) {
+                console.log(`[PM] ${this.name} ->`, player.name, `: ${raw}`);
+                player.emit(`chat`, { msg: `${chatColor(`violet`)}[PM] [${this.name}]: ${raw}`, gc: player.globalChat });
                 this.emit(`chat`, { msg: `${chatColor(`lime`)}Message sent!` });
                 this.reply = player.name;
                 player.reply = this.name;
