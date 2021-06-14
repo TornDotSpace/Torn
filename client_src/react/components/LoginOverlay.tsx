@@ -149,12 +149,6 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                                 {buttonOrder}
                             </div>
                             <div className="video">
-                                {/*
-                            <center><h3>Featured Video!</h3>
-                                {video}
-                                <br /><a href="youtubers/">Have a channel?</a></center>
-                            */}
-
                                 <div className="m-auto">
                                     <img src="img/harrlogo.png" alt="Logo" width="340"/>
                                 </div>
