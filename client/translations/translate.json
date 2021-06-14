@@ -112,12 +112,10 @@
 	"Bases Destroyed: #":	["Torretas Destruidas: #",	"# tomo moli",			"已消灭基地: #"],
 	"Ship Value: $#":		["Valor de Nave: $#",		"# mani pi tomo tawa",	"舰船价值: #"],
 	"Net Worth: $#":		["Valor Neto: $#",			"# mani ale",			"资产: #"],
-	"Experience: #":		["Experiencia: #",			"# sona",				"经验: #"],
 	"Achievements: #":		["Logros: #",				"# ken",				"排名: #"],
 
 	"Wiki":			["Wiki",		"tomo sona",	"维基"],
 	"Store":		["Tienda",		"pana mani",	"商店"],
-	"Leaderboard":	["Podio",		"jan wawa",		"高分榜"],
 	"Github":		["Github",		"pali musi",	"Github"],
 	"Discord":		["Discord",		"kulupu",		"Discord"],
 	"Credits":		["Créditos",	"jan pona",		"Credits"],
