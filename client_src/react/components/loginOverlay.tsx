@@ -16,10 +16,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import * as React from 'react';
+import { Socket } from 'socket.io-client';
 
-import socket from '../../utils/socket';
-import sendAPI from '../../utils/sendAPI';
-import core from '../../core';
+declare const VERSION: string;
+
+declare const socket: Socket;
+declare const sendAPI: any;
+
+declare let credentialState: number;
+declare let loginInProgress: boolean;
 
 class LoginOverlay extends React.Component<{ display: boolean }, { user: string, pass: string, seed: number }> {
     constructor (props) {
@@ -86,25 +91,23 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         const playCookie = await sendAPI(`/login`, `${user}%${pass}`);
 
         if (playCookie.status === 403) {
-            core.login = {
-                credentials: 1,
-                progress: false
-            };
+            credentialState = 1;
+            loginInProgress = false;
             return;
         } else if (playCookie.status !== 200) {
             alert(`Failed to connect to Torn Account Services.`);
 
-            core.login.progress = false;
+            loginInProgress = false;
             return;
         }
 
         const playCookieData = await playCookie.text();
-        console.log(`[NETWORK] Got PlayCookie: ${playCookieData}`);
+        console.log(`:TornNetRepository: Got PlayCookie: ${playCookieData}`);
 
-        socket.emit(`login`, { cookie: playCookie, version: core.version });
+        socket?.emit(`login`, { cookie: playCookie, version: VERSION });
     }
 
-    render = () => (Element) => {
+    render = () => {
         const buttonOrder = (this.state.seed < 0.66)
             ? ((this.state.seed < 0.33)
                 ? (
@@ -135,11 +138,9 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                 <div>
                     <div className="overlay-menu">
                         <div className="container">
-                            <div className="guests">
-                                {/* <center> */}
+                            <div className="guests m-auto">
                                 <h3>New Players</h3>
                                 {buttonOrder}
-                                {/* </center> */}
                             </div>
                             <div className="video">
                                 {/*
@@ -148,18 +149,19 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                                 <br /><a href="youtubers/">Have a channel?</a></center>
                             */}
 
-                                {/* <center> */}
-                                <img src="img/harrlogo.png" alt="Logo" width="340"/>
-                                {/* </center> */}
-
+                                <div className="m-auto">
+                                    <img src="img/harrlogo.png" alt="Logo" width="340"/>
+                                </div>
                             </div>
                             <div className="login">
-                                {/* <center> */}
-                                <h3>Returning Players</h3>
-                                <input className="overlay-input" type="text" id="usernameid" onChange={this.changeUsername} placeholder="Username" />
-                                <input className="overlay-input" type="password" id="passid" onChange={this.changePassword} placeholder="Password" />
-                                <button className="overlay-button" id="loginButton" onClick={this.login}>Login</button>
-                                {/* </center> */}
+                                <div className="m-auto">
+                                    <h3>Returning Players</h3>
+
+                                    <input className="overlay-input" type="text" id="usernameid" onChange={this.changeUsername} placeholder="Username" />
+                                    <input className="overlay-input" type="password" id="passid" onChange={this.changePassword} placeholder="Password" />
+
+                                    <button className="overlay-button" id="loginButton" onClick={this.login}>Login</button>
+                                </div>
                             </div>
                         </div>
                     </div>
