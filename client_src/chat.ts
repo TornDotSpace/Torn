@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { Socket } from 'socket.io-client';
 import { translate } from './localizer';
 
-/* eslint-disable */
-// BEGIN TYPESCRIPT TRANSITION HACKS
 declare const socket: Socket;
 declare let clientmutes: any;
 declare let roundRect: Function;
@@ -36,8 +34,6 @@ declare let guest: any;
 declare let colorCircumfix: any;
 declare let weaponCircumfix: any;
 declare let translateCircumfix: any;
-// END TYPESCRIPT TRANSITION HACKS
-/* eslint-enable */
 
 const chatRooms = [
     translate(`Global Chat`),

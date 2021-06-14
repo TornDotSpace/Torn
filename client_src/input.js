@@ -23,7 +23,7 @@ import {
     rChat,
     chatScroll,
     chatLength
-} from './chat.ts';
+} from './chat';
 
 // input
 document.onkeydown = function (event) {
@@ -57,7 +57,7 @@ document.onkeydown = function (event) {
         ChatState.focusChat();
         typing = true;
     } else if (autopilot) {
-        // eslint-disable no-empty
+        continue;
     } else if (event.keyCode == 78 && docked && tab == 8) { // n
         confirmer = -1;
         tab = 0;
