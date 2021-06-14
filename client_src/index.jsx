@@ -180,19 +180,17 @@ require(`./chat.ts`);
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 
-ReactRoot.socket = socket; // Just to make socket accessible in react.js
-
 ReactDOM.render(
-    /* eslint-disable */
     <ReactRoot data={{
-      toggleMusic: toggleMusic,
-      toggleAudio: toggleAudio,
+        toggleMusic: toggleMusic,
+        toggleAudio: toggleAudio
     }} />,
+
     // Not rendering to body so canvas will not be affected
-    document.getElementById("a"),
-    /* eslint-enable */
+    document.querySelector(`#a`)
 );
-ReactRoot.turnOnDisplay(`LoginOverlay`);
+
+ReactRoot.turnOnDisplay();
 
 // Used in the ship store to make the bar graphs
 global.maxShipThrust = -1000;
@@ -276,12 +274,12 @@ const loop = () => {
     render();
     if (!login) {
         if (!EVERYTHING_LOADED) {
-            ReactRoot.turnOffDisplay(`LoginOverlay`);
+            ReactRoot.turnOffDisplay();
             rLoadingBar();
             setTimeout(render, 5);
             window.requestAnimationFrame(loop);
             return;
-        } else ReactRoot.turnOnDisplay(`LoginOverlay`);
+        } else ReactRoot.turnOnDisplay();
 
         if (++homepageTimer == 1) {
             loadAudio(`music1`, `/aud/music1.mp3`);
@@ -384,7 +382,7 @@ const loop = () => {
         ctx.drawImage(Img.grad, 0, 0, w, h);
         rCreds();
         if (lore) {
-            ReactRoot.turnOffDisplay(`LoginOverlay`);
+            ReactRoot.turnOffDisplay();
             rLore();
             loreTimer++;
             window.requestAnimationFrame(loop);

@@ -22,7 +22,7 @@ const gitRevisionPlugin = new GitRevisionPlugin({ lightweightTags: true });
 const path = require(`path`);
 
 module.exports = {
-    entry: [path.resolve(__dirname, `../client_src/index.js`)],
+    entry: [path.resolve(__dirname, `../client_src/index.jsx`)],
     output: {
         path: path.resolve(__dirname, `../client`),
         filename: `client.js`
