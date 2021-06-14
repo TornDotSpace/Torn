@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 
-class MusicButton extends React.Component<{ toggleMusic: boolean }, { muted: boolean }> {
+class MusicButton extends React.Component<{ toggleMusic: any }, { muted: boolean }> {
     constructor (props) {
         super(props);
 
@@ -27,13 +27,12 @@ class MusicButton extends React.Component<{ toggleMusic: boolean }, { muted: boo
     }
 
     click = () => {
-        toggleMusic();
-        this.setState({ muted: core.muted.music });
+        this.setState({ muted: this.props.toggleMusic() });
     }
 
-    render = () => (Element) => (
+    render = () => (
         <div className="music-button" onClick={this.click.bind(this)}>
-            {<span><img src={`img/sound/music${!this.state.muted ? `on` : `off`}`} alt="Mute button"/></span>}
+            {<span><img src={`img/sound/music${!this.state.muted ? `On` : `Off`}`} alt="Music mute button"/></span>}
         </div>
     )
 }
