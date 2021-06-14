@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import * as React from 'react';
-import ChatInput from './_chatInput';
+import ChatInput from './ChatInput';
 
 class ChatMessage {
     msg: string;
