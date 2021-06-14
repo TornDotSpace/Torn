@@ -45,8 +45,8 @@ global.playAudio = function (name, vol) {
 
     audio.volume(gVol * vol, id);
 
-    if (name == `bigboom`) audio.volume(gVol * vol * 2, id);
-    if (name == `noammo`) audio.volume(gVol * vol * 5, id);
+    if (name === `bigboom`) audio.volume(gVol * vol * 2, id);
+    if (name === `noammo`) audio.volume(gVol * vol * 5, id);
 
     if (name === `music1`) {
         audio.volume(gVol * vol / 2, id);

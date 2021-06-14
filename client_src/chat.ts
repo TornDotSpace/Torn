@@ -104,7 +104,7 @@ export function rChat () {
     if (!guest) {
         for (let i = 0; i < 3; i++) {
             chatCTX.fillStyle = ((seller != 800 + i) ? `violet` : `yellow`);
-            chatCTX.fillText((i == whichChatMenu ? `>` : ` `) + chatRooms[i], 532, chatCanvas.height - 48 + 16 * i);
+            chatCTX.fillText((i === whichChatMenu ? `>` : ` `) + chatRooms[i], 532, chatCanvas.height - 48 + 16 * i);
         }
     }
     chatCTX.restore();
@@ -119,7 +119,7 @@ export function rChat () {
         let curx = 0;
         const splitStr = preChatArr[ri].split(colorCircumfix);
         for (let j = 0; j < splitStr.length; j++) {
-            if (j % 2 == 0) {
+            if (j % 2 === 0) {
                 chatCTX.fillText(splitStr[j], 16 + curx, chatCanvas.height - 24 + 16 * fromTop);
                 curx += chatCTX.measureText(splitStr[j]).width;
             } else {
@@ -135,7 +135,7 @@ export function rChat () {
         let curx = 0;
         const splitStr = serverMessages[i].split(colorCircumfix);
         for (let j = 0; j < splitStr.length; j++) {
-            if (j % 2 == 0) {
+            if (j % 2 === 0) {
                 chatCTX.fillText(splitStr[j], 12 + curx, chatCanvas.height - 184 - 16 * i);
                 curx += chatCTX.measureText(splitStr[j]).width;
             } else {
@@ -155,7 +155,7 @@ function onReceiveChat (data) {
         const find1 = getPosition(data.msg, weaponCircumfix, 1);
         const find2 = getPosition(data.msg, weaponCircumfix, 2);
 
-        if (find1 == -1 || find2 == -1) return;
+        if (find1 === -1 || find2 === -1) return;
 
         const num = parseFloat(data.msg.substring(find1 + 2, find2));
         data.msg = data.msg.replace(weaponCircumfix + num.toString() + weaponCircumfix, wepns[num].name);
@@ -165,7 +165,7 @@ function onReceiveChat (data) {
         const find1 = getPosition(data.msg, translateCircumfix, 1);
         const find2 = getPosition(data.msg, translateCircumfix, 2);
 
-        if (find1 == -1 || find2 == -1) return;
+        if (find1 === -1 || find2 === -1) return;
 
         const str = data.msg.substring(find1 + 2, find2);
         data.msg = data.msg.replace(translateCircumfix + str + translateCircumfix, translate(str));

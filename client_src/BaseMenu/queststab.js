@@ -20,7 +20,7 @@ import { translate } from "../localizer.ts";
 global.rQuests = function () {
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `left`;
-    const mult = (myTrail % 16 == 2) ? 1.05 : 1;
+    const mult = (myTrail % 16 === 2) ? 1.05 : 1;
     if (quest != 0) {
         baseMenuCtx.fillStyle = `cyan`;
         baseMenuCtx.textAlign = `center`;
@@ -35,12 +35,12 @@ global.rQuests = function () {
             const xv = i < 5 ? 0 : 128 * 3;
             const questi = quests[i];
             let desc = ``;
-            baseMenuCtx.fillStyle = i == seller - 300 ? `cyan` : `tan`;
+            baseMenuCtx.fillStyle = i === seller - 300 ? `cyan` : `tan`;
             desc = getQuestDescription(questi);
             write(baseMenuCtx, translate(questi.type), xv + 16, 72 + i % 5 * 80);
-            baseMenuCtx.fillStyle = i == seller - 300 ? `green` : `gold`;
+            baseMenuCtx.fillStyle = i === seller - 300 ? `green` : `gold`;
             write(baseMenuCtx, translate(`Reward: $# and # exp.`, [numToLS(mult * questi.exp), numToLS(Math.floor(questi.exp / ((questi.type === `Mining` || questi.type === `Delivery`) ? 1500 : 4000)))]), xv + 16 + 16, 72 + i % 5 * 80 + 16);
-            baseMenuCtx.fillStyle = i == seller - 300 ? `lime` : `yellow`;
+            baseMenuCtx.fillStyle = i === seller - 300 ? `lime` : `yellow`;
             wrapText(baseMenuCtx, translate(`Description: `) + desc, xv + 16 + 16, 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
         }
     }
@@ -50,13 +50,13 @@ global.questsOnHover = function (preSeller) {
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
-    if (x > 16 && x < 128 * 6 - 16 && y > 40 + 32 && y < 512 - 48 && quest == 0) {
+    if (x > 16 && x < 128 * 6 - 16 && y > 40 + 32 && y < 512 - 48 && quest === 0) {
         seller = Math.floor((y - 40 - 32) / 80) + 300;
         if (x > 128 * 3) seller += 5;
         if (preSeller != seller) {
             r3DMap();
         }
-    } else if (quest == 0 && (seller < 300 || seller >= 400)) {
+    } else if (quest === 0 && (seller < 300 || seller >= 400)) {
         r3DMap();
     } else {
         seller = 0;
@@ -64,5 +64,5 @@ global.questsOnHover = function (preSeller) {
 };
 
 global.questsOnClick = function (buttonID) {
-    if (buttonID >= 300 && buttonID < 310 && quest == 0) socket.emit(`quest`, { quest: buttonID - 300 });
+    if (buttonID >= 300 && buttonID < 310 && quest === 0) socket.emit(`quest`, { quest: buttonID - 300 });
 };

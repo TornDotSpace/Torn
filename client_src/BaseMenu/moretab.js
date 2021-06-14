@@ -24,7 +24,7 @@ global.rMore = function () {
     const data = [`Wiki`, `Store`, `Leaderboard`, `Github`, `Discord`, `Credits`];
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 2; j++) {
-            baseMenuCtx.fillStyle = (seller == 500 + i + j * 3) ? `lime` : `yellow`;
+            baseMenuCtx.fillStyle = (seller === 500 + i + j * 3) ? `lime` : `yellow`;
             const rendX = 128 + i * 256;
             const rendY = 40 + j * (512 - 40) * 2 / 3 + (512 - 40) / 6;
             write(baseMenuCtx, translate(data[i + j * 3]), rendX, rendY);
@@ -51,6 +51,6 @@ global.moreOnClick = function (buttonID) {
     // more page
     const linkArr = [`https://tornspace.wikia.com/wiki/Torn.space_Wiki`, `/store`, `/leaderboard`, `https://github.com/TornDotSpace/Torn`, `https://discord.gg/tGrYXwP`, `/credits`];
     for (let i = 0; i < 6; i++) {
-        if (buttonID == 500 + i) window.open(linkArr[i], `_blank`);
+        if (buttonID === 500 + i) window.open(linkArr[i], `_blank`);
     }
 };

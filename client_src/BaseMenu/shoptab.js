@@ -48,7 +48,7 @@ global.rBuyShipWindow = function () {
     baseMenuCtx.fillStyle = `yellow`;
     if (shipView > rank) baseMenuCtx.fillStyle = `red`;
     else if (ships[shipView].price > money + worth) baseMenuCtx.fillStyle = `orange`;
-    else if (seller == 100) baseMenuCtx.fillStyle = `lime`;
+    else if (seller === 100) baseMenuCtx.fillStyle = `lime`;
     if (shipView != ship) write(baseMenuCtx, `$${ships[shipView].price - worth} ${translate(`[BUY]`)}`, rendX, rendY + 96);
 
     baseMenuCtx.textAlign = `left`;
@@ -59,7 +59,7 @@ global.rBuyShipWindow = function () {
         write(baseMenuCtx, translate(`Thrust  : `), shipStatsRx, shipStatsRy + 0 * 16);
         write(baseMenuCtx, translate(`Agility : `), shipStatsRx, shipStatsRy + 1 * 16);
         write(baseMenuCtx, translate(`Health  : `), shipStatsRx, shipStatsRy + 2 * 16);
-        write(baseMenuCtx, translate(`Cargo   : `) + (shipView == 17 ? `Infinite` : ``), shipStatsRx, shipStatsRy + 3 * 16);
+        write(baseMenuCtx, translate(`Cargo   : `) + (shipView === 17 ? `Infinite` : ``), shipStatsRx, shipStatsRy + 3 * 16);
         write(baseMenuCtx, translate(`Weapons : `) + numToLS(ships[shipView].weapons), shipStatsRx, shipStatsRy + 4 * 16);
         baseMenuCtx.fillStyle = `#555`;
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80, 12);
@@ -92,26 +92,26 @@ global.rBuyShipWindow = function () {
 };
 
 function compareColor (shipView, ship, stat) { // If there's a way to make it better, please correct this
-    if (shipView == ship) return `white`;
+    if (shipView === ship) return `white`;
     let better = `#089B00`;
     let equal = `#C8C761`;
     let worse = `#9B0000`;
     let veredict;
     switch (stat) {
         case `thrust`:
-            if (ships[shipView].thrust == ships[ship].thrust) veredict = equal;
+            if (ships[shipView].thrust === ships[ship].thrust) veredict = equal;
             else veredict = (ships[shipView].thrust < ships[ship].thrust) ? worse : better;
             break;
         case `agility`:
-            if (ships[shipView].agility == ships[ship].agility) veredict = equal;
+            if (ships[shipView].agility === ships[ship].agility) veredict = equal;
             else veredict = (ships[shipView].agility < ships[ship].agility) ? worse : better;
             break;
         case `health`:
-            if (ships[shipView].health == ships[ship].health) veredict = equal;
+            if (ships[shipView].health === ships[ship].health) veredict = equal;
             else veredict = (ships[shipView].health < ships[ship].health) ? worse : better;
             break;
         case `capacity`:
-            if (ships[shipView].capacity == ships[ship].capacity) veredict = equal;
+            if (ships[shipView].capacity === ships[ship].capacity) veredict = equal;
             else veredict = (ships[shipView].capacity < ships[ship].capacity) ? worse : better;
             break;
     }
@@ -119,31 +119,31 @@ function compareColor (shipView, ship, stat) { // If there's a way to make it be
 }
 
 global.rOreShop = function () {
-    const mult1 = (myTrail % 16 == 2) ? 1.05 : 1;
+    const mult1 = (myTrail % 16 === 2) ? 1.05 : 1;
 
     const allIronPrice = iron * mult1; const allSilverPrice = silver * mult1; const allPlatinumPrice = platinum * mult1; const allCopperPrice = copper * mult1;
 
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `left`;
 
-    baseMenuCtx.fillStyle = (seller == 5 && allIronPrice > 0) ? `lime` : `#d44`;
+    baseMenuCtx.fillStyle = (seller === 5 && allIronPrice > 0) ? `lime` : `#d44`;
     write(baseMenuCtx, `${iron > 0 ? translate(`[SELL] Iron:     `) : translate(`       Iron:     `)}$${numToLS(allIronPrice)}`, 256 - 32 * 2, 3 * 32);
-    baseMenuCtx.fillStyle = (seller == 6 && allSilverPrice > 0) ? `lime` : `#eef`;
+    baseMenuCtx.fillStyle = (seller === 6 && allSilverPrice > 0) ? `lime` : `#eef`;
     write(baseMenuCtx, `${silver > 0 ? translate(`[SELL] Silver:   `) : translate(`       Silver:   `)}$${numToLS(allSilverPrice)}`, 256 - 32 * 2, 4 * 32);
-    baseMenuCtx.fillStyle = (seller == 7 && allPlatinumPrice > 0) ? `lime` : `#90f`;
+    baseMenuCtx.fillStyle = (seller === 7 && allPlatinumPrice > 0) ? `lime` : `#90f`;
     write(baseMenuCtx, `${platinum > 0 ? translate(`[SELL] Platinum: `) : translate(`       Platinum: `)}$${numToLS(allPlatinumPrice)}`, 256 - 32 * 2, 5 * 32);
-    baseMenuCtx.fillStyle = (seller == 8 && allCopperPrice > 0) ? `lime` : `#960`;
+    baseMenuCtx.fillStyle = (seller === 8 && allCopperPrice > 0) ? `lime` : `#960`;
     write(baseMenuCtx, `${copper > 0 ? translate(`[SELL] Copper:   `) : translate(`       Copper:   `)}$${numToLS(allCopperPrice)}`, 256 - 32 * 2, 6 * 32);
 
-    baseMenuCtx.fillStyle = seller == 610 ? `lime` : `yellow`;
+    baseMenuCtx.fillStyle = seller === 610 ? `lime` : `yellow`;
 
     write(baseMenuCtx, `${translate(`[Sell All]`)} => $${numToLS(allCopperPrice + allPlatinumPrice + allSilverPrice + allIronPrice)}`, 256 + 48, 76); // Sell all
 
     // Render asteroid animation
     let astImg = Img.silver;
-    if (seller == 5 && allIronPrice > 0) astImg = Img.iron;
-    if (seller == 7 && allPlatinumPrice > 0) astImg = Img.platinum;
-    if (seller == 8 && allCopperPrice > 0) astImg = Img.copper;
+    if (seller === 5 && allIronPrice > 0) astImg = Img.iron;
+    if (seller === 7 && allPlatinumPrice > 0) astImg = Img.platinum;
+    if (seller === 8 && allCopperPrice > 0) astImg = Img.copper;
     const d = new Date();
     const stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
     const spx = (stime % 8) * 128;
@@ -157,7 +157,7 @@ global.rBuyLifeShop = function () {
     baseMenuCtx.fillStyle = `yellow`;
     baseMenuCtx.textAlign = `right`;
     write(baseMenuCtx, `${translate(`Lives Remaining: `) + lives} ($${expToLife()}) `, 768 - 16 - baseMenuCtx.measureText(translate(`[BUY]`)).width, lifeShopYVal);
-    baseMenuCtx.fillStyle = (lives >= 20 || money < expToLife()) ? `red` : ((seller == 611) ? `lime` : `yellow`);
+    baseMenuCtx.fillStyle = (lives >= 20 || money < expToLife()) ? `red` : ((seller === 611) ? `lime` : `yellow`);
     write(baseMenuCtx, translate(`[BUY]`), 768 - 16, lifeShopYVal);
     baseMenuCtx.textAlign = `left`;
 };
@@ -169,15 +169,15 @@ global.rWeaponsInShop = function () {
     write(baseMenuCtx, translate(`Ores`), 256, 64 + 8);
     baseMenuCtx.textAlign = `left`;
     baseMenuCtx.font = `14px ShareTech`;
-    baseMenuCtx.fillStyle = seller == 601 ? `lime` : `yellow`;
+    baseMenuCtx.fillStyle = seller === 601 ? `lime` : `yellow`;
     write(baseMenuCtx, translate(`[View All]`), 512 - 64, 256 - 16);
     baseMenuCtx.fillStyle = `yellow`;
     for (let i = 0; i < 10; i++) {
-        baseMenuCtx.fillStyle = (seller - 10 == i) ? `lime` : `yellow`;
+        baseMenuCtx.fillStyle = (seller - 10 === i) ? `lime` : `yellow`;
         if (ships[shipView].weapons <= i) baseMenuCtx.fillStyle = `orange`;
         if (shipView < wepns[equipped[i]].level) baseMenuCtx.fillStyle = `red`;
         let tag = `       `;
-        if (equipped[i] == -1) tag = `${translate(`[BUY]`)}  `;
+        if (equipped[i] === -1) tag = `${translate(`[BUY]`)}  `;
         else if (equipped[i] > -1) tag = `${translate(`[SELL]`)} `;
         write(baseMenuCtx, `${tag + (` ${i + 1}`).slice(-2)}: ${wepns[equipped[i]].name}`, 256 + 32, 256 + i * 16);
     }
@@ -244,9 +244,9 @@ global.rWeaponStore = function () {
         baseMenuCtx.fillStyle = starCol;
 
         write(baseMenuCtx, `*`, wx, wy);
-        baseMenuCtx.fillStyle = seller - 20 == i ? `lime` : buyable;
+        baseMenuCtx.fillStyle = seller - 20 === i ? `lime` : buyable;
         write(baseMenuCtx, translate(`[INFO] `) + (`$${weapon.price}         `).substring(0, 9) + weapon.name, wx + 11, wy);
-        if (seller - 20 == i) { rWeaponStats(i, buyable, starCol); }
+        if (seller - 20 === i) { rWeaponStats(i, buyable, starCol); }
     }
 };
 global.rWeaponStats = function (i, buyable, starCol) {
@@ -262,10 +262,10 @@ global.rWeaponStats = function (i, buyable, starCol) {
     baseMenuCtx.fillStyle = `lime`;
     wrapText(baseMenuCtx, wepns[i].desc, 256 - 32, 364 + 16 * 1, 100 * 6 - 64, 16);
 
-    write(baseMenuCtx, translate(`Range  : `) + (wepns[i].range == -1 ? translate(`N/A`) : (`${wepns[i].range} Meters`)), 32, 364 + 16 * 3);
-    write(baseMenuCtx, translate(`Damage : `) + (wepns[i].damage == -1 ? translate(`N/A`) : wepns[i].damage), 32, 364 + 16 * 4);
-    write(baseMenuCtx, translate(`Speed  : `) + (wepns[i].speed == -1 ? translate(`N/A`) : wepns[i].speed), 32, 364 + 16 * 5);
-    write(baseMenuCtx, translate(`Charge : `) + (wepns[i].charge == -1 ? translate(`N/A`) : (wepns[i].charge / 25) + translate(` Seconds`)), 32, 364 + 16 * 6);
+    write(baseMenuCtx, translate(`Range  : `) + (wepns[i].range === -1 ? translate(`N/A`) : (`${wepns[i].range} Meters`)), 32, 364 + 16 * 3);
+    write(baseMenuCtx, translate(`Damage : `) + (wepns[i].damage === -1 ? translate(`N/A`) : wepns[i].damage), 32, 364 + 16 * 4);
+    write(baseMenuCtx, translate(`Speed  : `) + (wepns[i].speed === -1 ? translate(`N/A`) : wepns[i].speed), 32, 364 + 16 * 5);
+    write(baseMenuCtx, translate(`Charge : `) + (wepns[i].charge === -1 ? translate(`N/A`) : (wepns[i].charge / 25) + translate(` Seconds`)), 32, 364 + 16 * 6);
     write(baseMenuCtx, translate(`Ammo   : `) + ammoCodeToString(wepns[i].ammo), 32, 364 + 16 * 7);
 
     if (actuallyBuying) {
@@ -284,7 +284,7 @@ global.shopOnHover = function () {
     if (x > 256 + 48 && x < 256 + 48 + ctx.measureText(translate(`[Sell All]`)).width && y > 64 && y < 80) seller = 610;
     else if (x > 256 - 32 && x < 264 && y < 84 + 4 * 32 - 16 && y > 84) {
         seller = 5 + Math.floor((y - 84) / 32);
-        if (Math.floor((y - 84) / 16) % 2 == 1) seller = 0;
+        if (Math.floor((y - 84) / 16) % 2 === 1) seller = 0;
     } else if (y > 246 && y < 240 + 160 && x > 256 + 32 && x < 256 + 78) seller = Math.floor((y - 246) / 16 + 10);
     else if (y > 256 - 30 && y < 256 - 16 && x > 512 - 64 && x < 512 - 64 + ctx.measureText(translate(`[View All]`)).width) seller = 601;
     else if (x > 768 - 16 - ctx.measureText(translate(`[BUY]`)).width && x < 768 - 16 && y > lifeShopYVal - 16 && y < lifeShopYVal + 8) seller = 611;
@@ -311,24 +311,24 @@ global.weaponStoreOnHover = function () {
 
 global.shopOnClick = function (buttonID) {
     // Ore Shop
-    if (buttonID == 610) socket.emit(`sell`, { item: `all` });
+    if (buttonID === 610) socket.emit(`sell`, { item: `all` });
     if (buttonID <= 8 && buttonID >= 5) {
         let item = ``;
-        if (buttonID == 5) item = `iron`;
-        else if (buttonID == 6) item = `silver`;
-        else if (buttonID == 7) item = `platinum`;
-        else if (buttonID == 8) item = `copper`;
+        if (buttonID === 5) item = `iron`;
+        else if (buttonID === 6) item = `silver`;
+        else if (buttonID === 7) item = `platinum`;
+        else if (buttonID === 8) item = `copper`;
         socket.emit(`sell`, { item: item });
         return;
     }
 
-    if (buttonID == 611) socket.emit(`buyLife`, {});
+    if (buttonID === 611) socket.emit(`buyLife`, {});
 
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
     if (y > 246 && y < 240 + 160 && x > 256 + 32 && x < 256 + 78) {
-        if (equipped[buttonID - 10] == -1) {
+        if (equipped[buttonID - 10] === -1) {
             tab = 7;
             actuallyBuying = true;
             scroll = buttonID - 10;

@@ -165,7 +165,7 @@ function player_update (data) {
         playersInfo[id][d] = delta[d];
     }
 
-    if (id == myId) {
+    if (id === myId) {
         pvx = -px;
         pvy = -py;
         px = playersInfo[id].x;
@@ -489,7 +489,7 @@ socket.on(`strong`, (data) => {
 });
 socket.on(`spoils`, (data) => {
     data.amt = Math.round(data.amt);
-    if (data.amt == 0) return;
+    if (data.amt === 0) return;
     let msg = ``; let x = 0; let y = 0;
     if (data.type === `experience`) {
         msg = translate(`+`) + data.amt + translate(` EXP!`);
@@ -584,7 +584,7 @@ socket.on(`status`, (data) => {
 });
 socket.on(`planets`, (data) => {
     planets = data.pack;
-    if (quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
+    if (quest != 0 && quest.type === `Secret2` && sx === quest.sx && sy === quest.sy) {
         secret2PlanetName = planets.name;
     }
 });

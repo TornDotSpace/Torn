@@ -115,7 +115,7 @@ loadLang(null);
 export const translate = (english, arr = undefined) => { // arr = undefined???
     if (typeof mEng[english] === `undefined`) return english;
 
-    let translated = (languageNumber == 0) ? english : mEng[english][languageNumber - 1];
+    let translated = (languageNumber === 0) ? english : mEng[english][languageNumber - 1];
     if (arr !== undefined) while (arr.length > 0) translated = translated.replace(`#`, arr.shift());
 
     return translated;
