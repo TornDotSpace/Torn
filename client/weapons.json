@@ -330,7 +330,7 @@
       "range": 100000,
       "damage": -1,
       "speed": -1,
-      "charge": 180,
+      "charge": 75,
       "price": 50000,
       "ammo": 2,
       "level": 9,
