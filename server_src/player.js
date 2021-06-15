@@ -164,7 +164,7 @@ class Player {
         }
 
         this.move();
-        if (this.health < this.maxHealth && !this.shield) this.health += playerHeal;
+        if (this.health < this.maxHealth && !this.shield && this.empTimer < 1) this.health += playerHeal;
 
         this.fire();
 
