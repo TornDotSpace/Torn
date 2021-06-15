@@ -5,4 +5,3 @@ bcrypt==3.2.0
 discord_webhook==0.14.0
 motor==2.4.0
 pymongo==3.11.4
-

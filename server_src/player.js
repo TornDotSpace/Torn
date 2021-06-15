@@ -77,6 +77,7 @@ class Player {
         this.baseKills = 0,
 
         this.shield = false,
+        this.navigationalShield = 0;
         this.generators = 0,
         this.isLocked = false,
         this.lives = 20,
@@ -1006,6 +1007,11 @@ class Player {
             this.health -= 10000;
         }
 
+        if (origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) {
+            this.navigationalShieldCount();
+	    if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
+        }
+
         d /= (this.trail % 16 == 1 ? 1.05 : 1); // blood trail: less damage
         d *= ((this.shield && d > 0) ? 0.25 : 1); // Shield- 1/4th damage. Won't block healing items
         d *= ((this.shield && this.ship == 19) ? 0.5 : 1); // Rank 19 suffers less damage when shielded.
@@ -1112,6 +1118,18 @@ class Player {
             }
             for (let slot = 0; slot < maxSlots; slot++) {
                 if (this.weapons[slot] == 20) this.generators++;
+            }
+        }
+    }
+
+    navigationalShieldCount () { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
+        this.navigationalShield = 0;
+        if (this.ship >= wepns[49].level) { // gotta have sufficiently high ship
+            let maxSlots = 10;
+            for (let slot = 0; slot < maxSlots; slot++) {
+    	        if (this.weapons[slot] == 49) {
+		    this.navigationalShield++;
+                }
             }
         }
     }

@@ -352,6 +352,10 @@
 		{
 			"name":"Magnetic Mine",
 			"desc":"Just a normal kind of mine... magnetically attracted to enemy ships if too close."
+		},
+		{
+			"name":"Navigational Shield",
+			"desc":"A deflector dish, allows starships to travel safely without suffering damage from debris and small asteroids, as well as protecting from a few cosmic rays."
 		}
 	],
 	"splashes":[

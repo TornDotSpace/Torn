@@ -41,7 +41,8 @@ module.exports = class Mine {
         if (this.time == 0 && this.wepnID < 32 || this.wepnID > 47) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
 
         if (this.wepnID != 44) {
-            this.collideWithMissiles();
+            this.collideWithGuns();
+	    this.collideWithMissiles();
             this.collideWithBases();
         }
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
@@ -163,14 +164,15 @@ module.exports = class Mine {
         sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
-    collideWithMines () { // When the mine is created, make sure it isn't placed on top of any other mines.
-        for (const m in mines[this.sy][this.sx]) {
-            const mine = mines[this.sy][this.sx][m];
-            if (mine.id == this.id) continue; // ofc the mine is on top of itthis
-            if (squaredDist(mine, this) < square(wepns[this.wepnID].range)) { // if that mine is in this mine's "attack range"
-                mine.die(); // destroy both
-                this.die();
-                break;
+    collideWithGuns () { // Guns will make enemy mines explode and vice-versa, but it'll take a while to kill them.
+        for (const i in bullets[this.sy][this.sx]) {
+            const b = bullets[this.sy][this.sx][i];
+            if (b.color !== this.color && squaredDist(b, this) < square(this.range)) {
+		    b.die(); // destroy the bullet
+		    if (this.time >= mineLifetime) { // Old mines die faster
+		        this.die(); // the mine dies too
+		        break;
+		    } else this.time += Math.round(mineLifetime / 4.5);
             }
         }
     }
@@ -188,22 +190,21 @@ module.exports = class Mine {
         }
     }
 
-    // collideWithGuns () { // Missiles will make enemy mines explode and vice-versa
-    //     for (const i in bullets[this.sy][this.sx]) {
-    //         const b = bullets[this.sy][this.sx][i];
-    //         if (b.color == this.color && squaredDist(b, this) < square(this.range)) { // NOTE: change to !=
-    // 	    b.die(); // destroy the bullet
-    // 	    if (this.time >= mineLifetime) { // Old mines die faster
-    // 	        this.die(); // the mine dies too
-    // 	        break;
-    // 	    } else this.time += Math.round(mineLifetime / 5);
-    //         }
-    //     }
-    // }
+    collideWithMines () { // When the mine is created, make sure it isn't placed on top of any other mines.
+        for (const m in mines[this.sy][this.sx]) {
+            const mine = mines[this.sy][this.sx][m];
+            if (mine.id == this.id) continue; // ofc the mine is on top of itthis
+            if (squaredDist(mine, this) < square(wepns[this.wepnID].range)) { // if that mine is in this mine's "attack range"
+                mine.die(); // destroy both
+                this.die();
+                break;
+            }
+        }
+    }
 
     collideWithBases () {
         const b = bases[this.sy][this.sx];
-        if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
+        if (b != 0 && b.baseType != DEADBASE && b.color !== this.color && squaredDist(b, this) < square(16 + 32)) {
             b.dmg(this.dmg, this);
             this.die();
         }

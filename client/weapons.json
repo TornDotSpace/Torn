@@ -636,6 +636,19 @@
       "type": "Mine",
       "bot": true,
       "enabled": true
+    },
+    "49": {
+      "name": "Navigational Shield",
+      "range": 0,
+      "damage": 0,
+      "speed": 0,
+      "charge": -1,
+      "price": 60000,
+      "ammo": -1,
+      "level": 13,
+      "type": "Misc",
+      "bot": false,
+      "enabled": true
     }
   },
   "planets": [
