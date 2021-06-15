@@ -159,7 +159,7 @@
     "12": {
       "name": "EMP Missile",
       "range": 600,
-      "damage": 25,
+      "damage": 50,
       "speed": 90,
       "charge": 30,
       "price": 40000,
