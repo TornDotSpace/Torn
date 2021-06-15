@@ -161,7 +161,7 @@
       "range": 600,
       "damage": 25,
       "speed": 90,
-      "charge": 110,
+      "charge": 30,
       "price": 40000,
       "ammo": 10,
       "level": 7,
