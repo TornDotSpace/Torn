@@ -98,7 +98,7 @@ global.abbrevInt = function (x) {
     if (x < 10000000000) return Math.round(x / 1000000) + translate(`M`);
 };
 global.lagMath = function (arr) {
-    if (lagArr === 0) {
+    if (lagArr == 0) {
         lagArr = arr;
         return;
     }
@@ -109,14 +109,14 @@ global.lagMath = function (arr) {
 global.addBigNote = function (note) {
     // set i to the least empty index of bigNotes
     let i = 0;
-    for (i; i < 4; i++) if (bigNotes[i] === -1) break;
+    for (i; i < 4; i++) if (bigNotes[i] == -1) break;
 
     // and use that index for queue
     bigNotes[i] = note;
 };
 global.bgPos = (x, px, scrx, i, tileSize) => ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
 global.weaponWithOrder = function (x) {
-    for (const i in wepns) if (wepns[i].order === x) return parseInt(i);
+    for (const i in wepns) if (wepns[i].order == x) return parseInt(i);
 };
 global.getTimeAngle = () => tick / 10;
 global.brighten = function (x) {
@@ -129,7 +129,7 @@ global.brighten = function (x) {
 global.numToLS = function (x) {
     if (!Number.isFinite(x)) return `NaN`;
     if (x < 0) return `-${numToLS(-x)}`;
-    if (x === 0) return `0`;
+    if (x == 0) return `0`;
     const intx = Math.floor(x);
     const decimal = x - intx;
     let str = (`${parseFloat(decimal.toFixed(4))}`).substring(1);
@@ -159,7 +159,7 @@ global.lastTechLevel = (x) => Math.floor(x * 8.0 - 0.001) / 8.0;
 global.getPosition = (string, subString, index) => string.split(subString, index).join(subString).length;
 global.ammoCodeToString = function (code) { // used in weapon shop rendering
     if (code >= 0) return `${code}`;
-    if (code === -1) return translate(`Inf.`);
-    if (code === -2) return translate(`Only One`);
+    if (code == -1) return translate(`Inf.`);
+    if (code == -2) return translate(`Only One`);
     else return ``;
 };

@@ -78,7 +78,7 @@ const renderStatistics = () => {
     /* if (ship >= wepns[20].level) {
     let activeGens = 0;
     for (let i = 0; i < ships[ship].weapons; i++) {
-      if (equipped[i] === 20) activeGens++;
+      if (equipped[i] == 20) activeGens++;
     }
   }
   for (let i = 0; i < activeGens; i++) eMult *= 1.06; */
@@ -104,7 +104,7 @@ const renderTrailSelector = () => {
     const conditionArr = [true, achs[12], achs[24], achs[36], achs[47], tag === `O` || tag === `A`];
     for (let i = 0; i < 6; i++) {
         if (tag === `B` || conditionArr[i]) {
-            baseMenuCtx.fillStyle = seller === 700 + i ? `yellow` : colorArr[i];
+            baseMenuCtx.fillStyle = seller == 700 + i ? `yellow` : colorArr[i];
             write(baseMenuCtx, translate(trailNameArr[i]), 640, 92 + 32 * i);
         }
     }
@@ -139,12 +139,12 @@ const renderUpgradeButtons = () => {
         write(baseMenuCtx, translate(titlesArr[i]) + ((currTechArr[i] - 1) * 8), 118 + 128 * (i % 3), 366 + 64 * (i % 2));
 
         // upgrades
-        baseMenuCtx.fillStyle = (seller === 200 + i) ? `lime` : `white`;
-        write(baseMenuCtx, `[+] $${numToLS(techPrice(currTechArr[i]) * (i === 4 ? 8 : 1))}`, 118 + 128 * (i % 3), 380 + 64 * (i % 2));
+        baseMenuCtx.fillStyle = (seller == 200 + i) ? `lime` : `white`;
+        write(baseMenuCtx, `[+] $${numToLS(techPrice(currTechArr[i]) * (i == 4 ? 8 : 1))}`, 118 + 128 * (i % 3), 380 + 64 * (i % 2));
 
         // downgrades
-        baseMenuCtx.fillStyle = (seller === 206 + i) ? `red` : `white`;
-        if (currTechArr[i] > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(currTechArr[i]) * (i === 4 ? 8 : 1))}`, 118 + 128 * (i % 3), 394 + 64 * (i % 2));
+        baseMenuCtx.fillStyle = (seller == 206 + i) ? `red` : `white`;
+        if (currTechArr[i] > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(currTechArr[i]) * (i == 4 ? 8 : 1))}`, 118 + 128 * (i % 3), 394 + 64 * (i % 2));
     }
 };
 
@@ -160,7 +160,7 @@ global.statsOnHover = () => {
 
     if (y > 44 + 64 - 24 && y < 44 + 64 + 8 * 21 && x > 512 && x < 768) {
         seller = 700 + Math.floor((y - 44 - 64 + 24) / 32);
-        if (tag !== `B` && ((seller === 701 && !achs[12]) || (seller === 702 && !achs[24]) || (seller === 703 && !achs[36]) || (seller === 704 && !achs[47]) || (seller === 705 && !(tag === `O` || tag === `A`)))) seller = 0;
+        if (tag !== `B` && ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && !(tag === `O` || tag === `A`)))) seller = 0;
     } else if (seller < 200 || seller > 211) seller = 0;
 };
 

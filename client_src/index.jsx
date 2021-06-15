@@ -214,7 +214,7 @@ for (let j = 0; j < wepnCount - 1; j++) { // this nifty loop sorts weapons by sh
     const woj1 = weaponWithOrder(j + 1);
     const typeJ = weaponTypeOrder[wepns[woj].type];
     const typeJ1 = weaponTypeOrder[wepns[woj1].type];
-    if (typeJ > typeJ1 || (wepns[woj].level > wepns[woj1].level && typeJ === typeJ1)) {
+    if (typeJ > typeJ1 || (wepns[woj].level > wepns[woj1].level && typeJ == typeJ1)) {
         wepns[woj].order = j + 1;
         wepns[woj1].order = j;
         j = 0;
@@ -274,7 +274,7 @@ const loop = () => {
             return;
         } else RootState.turnOnDisplay();
 
-        if (++homepageTimer === 1) {
+        if (++homepageTimer == 1) {
             loadAudio(`music1`, `/aud/music1.mp3`);
         }
 
@@ -344,13 +344,13 @@ const loop = () => {
                 }
             }
 
-            img = (j % 2 === 0 ? blueShips : greenShips)[j * 2];
+            img = (j % 2 == 0 ? blueShips : greenShips)[j * 2];
             pw = img.width;
             rendX = pxn - px + w / 2 + scrx;
             rendY = pyn - py + h / 2 + scry;
             ctx.save();
             ctx.translate(rendX, rendY);
-            ctx.drawImage((j % 2 === 0 ? Img.astUnderlayBlue : Img.astUnderlayGreen), -pw, -pw, pw * 2, pw * 2);
+            ctx.drawImage((j % 2 == 0 ? Img.astUnderlayBlue : Img.astUnderlayGreen), -pw, -pw, pw * 2, pw * 2);
             angleNow = -Math.atan2(5 * Math.sin(5 * t), 4 * Math.cos(4 * t));
             ctx.rotate(angleNow + Math.PI / 2);
             fireWidth = 32 * 1.2 * Math.sqrt(pw / 64), fireHeight = spd * 1.4 * pw / 64 + Math.random() * pw / 25;

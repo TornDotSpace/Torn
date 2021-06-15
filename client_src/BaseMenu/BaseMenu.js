@@ -71,7 +71,7 @@ global.rBaseGui = function () {
     const x = mx - baseMenuX;
     const y = my - baseMenuY;
     for (let i = 0; i < 5; i++) { // Fill Tabs In
-    	const highlightTab = tab === i || (x > 0 && x < baseMenuCanvas.width && y > 0 && y < 40 && Math.floor(x / (baseMenuCanvas.width / 5)) === i);
+    	const highlightTab = tab == i || (x > 0 && x < baseMenuCanvas.width && y > 0 && y < 40 && Math.floor(x / (baseMenuCanvas.width / 5)) == i);
     	baseMenuCtx.fillStyle = highlightTab ? `#666666` : guiColor;
         roundRect(baseMenuCtx, i * baseMenuCanvas.width / 5 + 8, 4, baseMenuCanvas.width / 5 - 8, 32, 16, true, false);
     }
@@ -135,7 +135,7 @@ global.rInBase = function () {
     if (savedNote-- > 0 && !guest) {
         rSavedNote();
     }
-    if (tab === -1) rCreds();
+    if (tab == -1) rCreds();
     if (quest != 0) rCurrQuest();
     if (lb != 0) pasteLeaderboard();
     rRaid();
@@ -148,16 +148,16 @@ global.rInBase = function () {
 };
 
 global.baseMenuOnClick = function (buttonID) {
-    if (tab === 0) {
+    if (tab == 0) {
         shopOnClick(buttonID);
     }
-    if (tab === 1) {
+    if (tab == 1) {
         questsOnClick(buttonID);
     }
-    if (tab === 2) {
+    if (tab == 2) {
         statsOnClick(buttonID);
     }
-    if (tab === 4) {
+    if (tab == 4) {
         moreOnClick(buttonID);
     }
 
