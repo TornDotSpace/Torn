@@ -167,7 +167,7 @@ module.exports = class Mine {
     collideWithGuns () { // Guns will make enemy mines explode and vice-versa, but it'll take a while to kill them.
         for (const i in bullets[this.sy][this.sx]) {
             const b = bullets[this.sy][this.sx][i];
-            if (b.color == this.color && squaredDist(b, this) < square(this.range)) { // NOTE: change to !=
+            if (b.color !== this.color && squaredDist(b, this) < square(this.range)) {
 		    b.die(); // destroy the bullet
 		    if (this.time >= mineLifetime) { // Old mines die faster
 		        this.die(); // the mine dies too
@@ -180,12 +180,12 @@ module.exports = class Mine {
     collideWithMissiles () { // Missiles will make enemy mines explode and vice-versa
         for (const i in missiles[this.sy][this.sx]) {
             const missile = missiles[this.sy][this.sx][i];
-            if (missile.color == this.color && squaredDist(missile, this) < square(this.range)) { // NOTE: change to !=
-		    missile.die(); // destroy the missile
-		    if (this.time >= mineLifetime) { // Old mines die faster
-		        this.die(); // the mine dies too
-		        break;
-		    } else this.time += Math.round(mineLifetime / 3);
+            if (missile.color !== this.color && squaredDist(missile, this) < square(this.range)) {
+                missile.die(); // destroy the missile
+                if (this.time >= mineLifetime) { // Old mines die faster
+                    this.die(); // the mine dies too
+                    break;
+                } else this.time += Math.round(mineLifetime / 3);
             }
         }
     }
@@ -204,7 +204,7 @@ module.exports = class Mine {
 
     collideWithBases () {
         const b = bases[this.sy][this.sx];
-        if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
+        if (b != 0 && b.baseType != DEADBASE && b.color !== this.color && squaredDist(b, this) < square(16 + 32)) {
             b.dmg(this.dmg, this);
             this.die();
         }
