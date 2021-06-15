@@ -1025,15 +1025,14 @@ class Player {
     }
 
     EMP (t) {
-        if (this.empTimer > 0) return; // EMPs don't stack. Once EMP'd, a ship cannot be EMP'd again until the previous EMP has ended.
- 	    if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // Emp works better on elite ships.
-        if (this.ship == 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // It will also heal the ship a very small bit.
-        if (this.isBot) {
-            this.empTimer = t;
-        } else {
-            this.charge = -t * this.energy2;
-            this.emit(`emp`, { t: t });
-        }
+        // EMP works better on r16.
+ 	    if (this.ship === 16) t *= 1.25;
+
+        this.empTimer = t; // Set the EMP timer.
+        this.shield = false; // Disable the player's shield.
+
+        // If the ship is a player, tell them they have been EMP'd.
+        if (!this.isBot) this.emit(`emp`, { t });
     }
 
     save () {}
