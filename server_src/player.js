@@ -170,7 +170,7 @@ class Player {
 
         let chargeVal = (this.energy2 + 1) / 1.8; // charge speed scales with energy tech
         for (let i = 0; i < this.generators; i++) chargeVal *= 1.08;
-        for (let i = 0; i < this.navigationalShield; i++) chargeVal /= 1.10;
+        for (let i = 0; i < this.navigationalShield; i++) chargeVal /= 1.08;
         if (this.charge < 0 || this.space || this.c) this.charge += chargeVal;
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
     }
@@ -1008,7 +1008,7 @@ class Player {
             this.health -= 10000;
         }
 
-        if (origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) {
+        if (this.empTimer <= 0 && this.charge >= -25 && origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) { // navigational shield fails when using a C-Slot that requires energy charge, EMPd or jammed
             this.navigationalShieldCount();
 	    if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
         }
