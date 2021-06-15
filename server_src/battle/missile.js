@@ -127,7 +127,7 @@ module.exports = class Missile {
                 if (target.sx == this.sx && target.sy == this.sy && squaredDist(target, this) < 10000 * (this.wepnID == 38 ? 5 : 1) && (target.baseType != DEADBASE) != false /* we don't know it's a base. can't just say ==true. */) {
                     target.dmg(this.dmg, this);
                     this.die();
-                    if (this.wepnID == 12 && (target.type === `Player` || target.type === `Base`)) target.EMP(41); // emp missile
+                    if (this.wepnID == 12 && (target.type === `Player` || target.type === `Base`)) target.EMP(27); // emp missile
                     return;
                 }
 
