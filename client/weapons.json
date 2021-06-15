@@ -643,9 +643,9 @@
       "damage": 0,
       "speed": 0,
       "charge": -1,
-      "price": -10000,
+      "price": 60000,
       "ammo": -1,
-      "level": 0,
+      "level": 13,
       "type": "Misc",
       "bot": false,
       "enabled": true

@@ -210,7 +210,7 @@
 		},
 		{
 			"name":"Generator",
-			"desc":"For each generator you carry, your weapons and energy charge 5% faster, but you turn a tenth slower."
+			"desc":"For each generator you carry, your weapons and energy charge 8% faster, but you turn a tenth slower."
 		},
 		{
 			"name":"Turbo",
@@ -218,7 +218,7 @@
 		},
 		{
 			"name":"Hyperdrive",
-			"desc":"Single-use long range speed boost."
+			"desc":"Single-use long range speed boost. Thanks to partially travelling to another dimension, you'll not suffer sector cross damage."
 		},
 		{
 			"name":"Pulse Wave",
@@ -318,7 +318,7 @@
 			"name":"Hypno Ray",
 			"desc":"Fire this beam at a drone and it will follow you until it dies. Single-use.",
 			"killmessages":[
-				"P1 pistoled P2!",
+				"P1 made P2 jump over a cliff without parachute!",
 				"P1 killed P2!"
 			]
 		},
@@ -352,6 +352,10 @@
 		{
 			"name":"Magnetic Mine",
 			"desc":"Just a normal kind of mine... magnetically attracted to enemy ships if too close."
+		},
+		{
+			"name":"Navigational Shield",
+			"desc":"A deflector dish, allows starships to travel safely without suffering damage from debris and small asteroids, as well as protecting from a few cosmic rays."
 		}
 	],
 	"splashes":[

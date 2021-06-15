@@ -1006,9 +1006,10 @@ class Player {
             origin.owner.net.save(this.isNNBot ? this.net.id : Math.floor(Math.random()));
             this.health -= 10000;
         }
+
         if (origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) {
-            navigationalShield();
-	    if (this.navigationalShield > 0) d /= 10000;
+            this.navigationalShieldCount();
+	    if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
         }
 
         d /= (this.trail % 16 == 1 ? 1.05 : 1); // blood trail: less damage
@@ -1127,17 +1128,15 @@ class Player {
         }
     }
 
-    navigationalShield () { // Checks if the player has a navigational shield. This item does not stack
+    navigationalShieldCount () { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
         this.navigationalShield = 0;
         if (this.ship >= wepns[49].level) { // gotta have sufficiently high ship
             let maxSlots = 10;
-            let slot = 0;
-            while (slot < maxSlots) {
+            for (let slot = 0; slot < maxSlots; slot++) {
     	        if (this.weapons[slot] == 49) {
 		    this.navigationalShield++;
-     		    slot = 10;
                 }
-	    }
+            }
         }
     }
 
