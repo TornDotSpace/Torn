@@ -226,7 +226,7 @@
       "range": 96,
       "damage": 72,
       "speed": 0,
-      "charge": 200,
+      "charge": 50,
       "price": 10000,
       "ammo": 5,
       "level": 6,
