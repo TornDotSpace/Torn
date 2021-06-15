@@ -116,11 +116,12 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) 
             return;
         }
         teamDict = { red: 0, blue: 1, green: 2 };
+        const oldColor = commandExecuter.color;
         commandExecuter.color = split[1];
         const lossConstant = commandExecuter.tag === `B` ? 0.95 : 0.9; // MVPs lose less when switching teams
         commandExecuter.money *= lossConstant;
         commandExecuter.experience *= lossConstant;
-        commandExecuter.changeSectors(commandExecuter.sy, (commandExecuter.sx + 3 * (teamDict[split[1]] - teamDict[commandExecuter.color])) % mapSz);
+        commandExecuter.changeSectors(commandExecuter.sy, (commandExecuter.sx + 3 * (teamDict[split[1]] - teamDict[oldColor])) % mapSz);
         commandExecuter.save();
     }
 });
