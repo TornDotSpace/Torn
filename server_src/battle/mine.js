@@ -39,6 +39,8 @@ module.exports = class Mine {
 
     tick () {
         if (this.time == 0 && this.wepnID < 32 || this.wepnID > 47) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
+
+        // this.collideWithMissiles();
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
         if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
 
@@ -170,6 +172,16 @@ module.exports = class Mine {
         }
     }
 
+    /*
+    collideWithMissiles () { // Missiles will make enemy mines explode and vice-versa
+            for (const i in missiles[this.sy][this.sx]) {
+                const missile = missiles[this.sy][this.sx][i];
+                if (missile.color != this.color && squaredDist(missile, this) < square(this.range)) {
+		    m.die(); // destroy the missile
+		    this.time = this.time + 3000; // the missile will shorten the lifespan of the mine significantly. In an old enough minefield, it'll kill the mine.
+            }
+    }
+*/
     die () {
         this.die = function () { }; // Purpose unclear, please comment
         let power = 0; // how strongly this mine pushes people away on explosion

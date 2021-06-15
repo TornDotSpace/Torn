@@ -1031,8 +1031,12 @@ class Player {
         if (this.isBot) {
             this.empTimer = t;
         } else {
-            this.charge = -t * this.energy2;
-            this.emit(`emp`, { t: t });
+	    if (this.charge >= 0) {
+                this.emit(`emp`, { t: t });
+	        this.charge = -t * this.energy2;
+	    } else {
+                this.charge += -t * this.energy2;
+            }
         }
     }
 
