@@ -77,6 +77,7 @@ class Player {
         this.baseKills = 0,
 
         this.shield = false,
+        this.navigationalShield = 0;
         this.generators = 0,
         this.isLocked = false,
         this.lives = 20,
@@ -1005,6 +1006,10 @@ class Player {
             origin.owner.net.save(this.isNNBot ? this.net.id : Math.floor(Math.random()));
             this.health -= 10000;
         }
+        if (origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) {
+            navigationalShield();
+	    if (this.navigationalShield > 0) d /= 10000;
+        }
 
         d /= (this.trail % 16 == 1 ? 1.05 : 1); // blood trail: less damage
         d *= ((this.shield && d > 0) ? 0.25 : 1); // Shield- 1/4th damage. Won't block healing items
@@ -1119,6 +1124,20 @@ class Player {
             for (let slot = 0; slot < maxSlots; slot++) {
                 if (this.weapons[slot] == 20) this.generators++;
             }
+        }
+    }
+
+    navigationalShield () { // Checks if the player has a navigational shield. This item does not stack
+        this.navigationalShield = 0;
+        if (this.ship >= wepns[49].level) { // gotta have sufficiently high ship
+            let maxSlots = 10;
+            let slot = 0;
+            while (slot < maxSlots) {
+    	        if (this.weapons[slot] == 49) {
+		    this.navigationalShield++;
+     		    slot = 10;
+                }
+	    }
         }
     }
 
