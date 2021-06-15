@@ -408,13 +408,13 @@
       "range": 1000000,
       "damage": -1,
       "speed": -1,
-      "charge": 30,
+      "charge": 50,
       "price": 4000,
       "ammo": -1,
       "level": 6,
       "type": "Beam",
       "bot": false,
-      "enabled": false
+      "enabled": true
     },
     "32": {
       "name": "Impulse Mine",

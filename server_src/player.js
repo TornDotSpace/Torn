@@ -1035,6 +1035,7 @@ class Player {
                 this.emit(`emp`, { t: t });
 	        this.charge = -t * this.energy2;
 	    } else {
+	        this.emit(`emp`, { t: t - this.charge / 25 });
                 this.charge += -t * this.energy2;
             }
         }

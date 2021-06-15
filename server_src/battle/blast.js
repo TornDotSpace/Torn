@@ -54,7 +54,7 @@ class Blast {
                 // If player hitbox collides with beam hitbox, then have an effect on the player.
                 if (Math.hypot(fx - this.bx, fy - this.by) < ships[player.ship].width * 2 / 3) this.hit(player);
             }
-            /*
+
             for (const i in missiles[this.sy][this.sx]) {
                 const missile = missiles[this.sy][this.sx][i];
                 if ((this.bx - missile.x) * Math.cos(this.angle) + (this.by - missile.y) * Math.sin(this.angle) > 0) continue;
@@ -76,7 +76,7 @@ class Blast {
                 const fy = m.y - Math.sin(this.angle) * pDist;
                 if (Math.hypot(fx - this.bx, fy - this.by) < 64 * 2 / 3) m.die(); // hits the mine.
             }
-*/
+
             if (this.weaponID !== 25) {
                 for (const i in asts[this.sy][this.sx]) {
                     const ast = asts[this.sy][this.sx][i];
