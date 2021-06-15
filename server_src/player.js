@@ -632,7 +632,7 @@ class Player {
             if (m.color != this.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
                 if (m.wepnID != 16 && squaredDist(m, this) < square(16 + ships[this.ship].width)) {
                     this.dmg(m.dmg, m); // damage me
-                    if (m.wepnID == 17) this.EMP(160); // emp mine
+                    if (m.wepnID == 17) this.EMP(81); // EMP Mine
                     m.die();
                     break;
                 } else if (m.wepnID == 16 && squaredDist(m, this) < square(wepns[m.wepnID].range + ships[this.ship].width)) { // TODO range * 10?

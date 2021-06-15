@@ -103,7 +103,7 @@ module.exports = class Mine {
                 delete mines[old_sy][old_sx][this.id];
                 mines[this.sy][this.sx][this.id] = this;
             }
-        } else if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // out of sector. Better make them die than store all mines outside the sector borders, unable to do anything
+        } else if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // out of sector.
     }
 
     doPulse () {
