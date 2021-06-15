@@ -39,6 +39,11 @@ module.exports = class Mine {
 
     tick () {
         if (this.time == 0 && this.wepnID < 32 || this.wepnID > 47) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
+
+        if (this.wepnID != 44) {
+            this.collideWithMissiles();
+            this.collideWithBases();
+        }
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
         if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
 
@@ -116,17 +121,17 @@ module.exports = class Mine {
                 playerFound = true;
             }
         }
-        /*
-    for (const i in missiles[this.sy][this.sx]) {
-      const m = missiles[this.sy][this.sx][i];
-      const d2 = squaredDist(this, m);
-      if (d2 > square(10 * wep.range)) continue;
-      const ang = angleBetween(this, m);
-      const vel = -100000000 / Math.max(d2, 2000000);
-      m.emvx += Math.cos(ang) * vel;
-      m.emvy += Math.sin(ang) * vel;
-    }
-    */
+
+        for (const i in missiles[this.sy][this.sx]) {
+            const m = missiles[this.sy][this.sx][i];
+            const d2 = squaredDist(this, m);
+            if (d2 > square(10 * wep.range)) continue;
+            const ang = angleBetween(this, m);
+            const vel = -100000000 / Math.max(d2, 2000000);
+            m.emvx += Math.cos(ang) * vel;
+            m.emvy += Math.sin(ang) * vel;
+        }
+
         if (playerFound) {
             sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
             this.time += 25 * 3;
@@ -167,6 +172,40 @@ module.exports = class Mine {
                 this.die();
                 break;
             }
+        }
+    }
+
+    collideWithMissiles () { // Missiles will make enemy mines explode and vice-versa
+        for (const i in missiles[this.sy][this.sx]) {
+            const missile = missiles[this.sy][this.sx][i];
+            if (missile.color !== this.color && squaredDist(missile, this) < square(this.range)) {
+                missile.die(); // destroy the missile
+                if (this.time >= mineLifetime) { // Old mines die faster
+                    this.die(); // the mine dies too
+                    break;
+                } else this.time += Math.round(mineLifetime / 3);
+            }
+        }
+    }
+
+    // collideWithGuns () { // Missiles will make enemy mines explode and vice-versa
+    //     for (const i in bullets[this.sy][this.sx]) {
+    //         const b = bullets[this.sy][this.sx][i];
+    //         if (b.color == this.color && squaredDist(b, this) < square(this.range)) { // NOTE: change to !=
+    // 	    b.die(); // destroy the bullet
+    // 	    if (this.time >= mineLifetime) { // Old mines die faster
+    // 	        this.die(); // the mine dies too
+    // 	        break;
+    // 	    } else this.time += Math.round(mineLifetime / 5);
+    //         }
+    //     }
+    // }
+
+    collideWithBases () {
+        const b = bases[this.sy][this.sx];
+        if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
+            b.dmg(this.dmg, this);
+            this.die();
         }
     }
 
