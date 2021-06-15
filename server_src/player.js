@@ -732,8 +732,8 @@ class Player {
 
     changeSectors (new_sy, new_sx) {
         this.docked = this.dead = false;
-        delete this.docked[this.id];
-        delete this.dead[this.id];
+        delete dockers[this.id];
+        delete deads[this.id];
 
         // Update internal sector data
         delete players[this.sy][this.sx][this.id];
