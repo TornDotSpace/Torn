@@ -178,12 +178,12 @@ module.exports = class Mine {
     collideWithMissiles () { // Missiles will make enemy mines explode and vice-versa
         for (const i in missiles[this.sy][this.sx]) {
             const missile = missiles[this.sy][this.sx][i];
-            if (missile.color == this.color && squaredDist(missile, this) < square(this.range)) { // NOTE: change to !=
-		    missile.die(); // destroy the missile
-		    if (this.time >= mineLifetime) { // Old mines die faster
-		        this.die(); // the mine dies too
-		        break;
-		    } else this.time += Math.round(mineLifetime / 3);
+            if (missile.color !== this.color && squaredDist(missile, this) < square(this.range)) {
+                missile.die(); // destroy the missile
+                if (this.time >= mineLifetime) { // Old mines die faster
+                    this.die(); // the mine dies too
+                    break;
+                } else this.time += Math.round(mineLifetime / 3);
             }
         }
     }
