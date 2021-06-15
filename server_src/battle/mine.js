@@ -43,6 +43,7 @@ module.exports = class Mine {
         if (this.wepnID != 44) {
 	    this.collideWithMissiles();
 	    this.collideWithGuns();
+            this.collideWithBases();
         }
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
         if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
@@ -198,6 +199,14 @@ module.exports = class Mine {
 		        break;
 		    } else this.time += Math.round(mineLifetime / 5);
             }
+        }
+    }
+
+    collideWithBases () {
+        const b = bases[this.sy][this.sx];
+        if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
+            b.dmg(this.dmg, this);
+            this.die();
         }
     }
 
