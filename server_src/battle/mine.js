@@ -172,7 +172,7 @@ module.exports = class Mine {
 		    if (this.time >= mineLifetime) { // Old mines die faster
 		        this.die(); // the mine dies too
 		        break;
-		    } else this.time += Math.round(mineLifetime / 4.5);
+		    } else this.time += Math.round(b.dmg * 25);
             }
         }
     }

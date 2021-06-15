@@ -170,6 +170,7 @@ class Player {
 
         let chargeVal = (this.energy2 + 1) / 1.8; // charge speed scales with energy tech
         for (let i = 0; i < this.generators; i++) chargeVal *= 1.08;
+        for (let i = 0; i < this.navigationalShield; i++) chargeVal *= 0.88;
         if (this.charge < 0 || this.space || this.c) this.charge += chargeVal;
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
     }
@@ -1007,7 +1008,7 @@ class Player {
             this.health -= 10000;
         }
 
-        if (origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) {
+        if (this.empTimer <= 0 && this.charge >= -25 && origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) { // navigational shield fails when using a C-Slot that requires energy charge, EMPd or jammed
             this.navigationalShieldCount();
 	    if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
         }
@@ -1108,30 +1109,26 @@ class Player {
     }
 
     calculateGenerators () { // count how many gens I have
-        this.generators = 0;
+        let gens = 0;
         if (this.ship >= wepns[20].level) { // gotta have sufficiently high ship
             let maxSlots = 0;
-            if (this.ship == 22) {
-	        maxSlots = 10;
-            } else {
-	        maxSlots = ships[this.ship].weapons;
-            }
-            for (let slot = 0; slot < maxSlots; slot++) {
-                if (this.weapons[slot] == 20) this.generators++;
-            }
+            if (this.ship == 22) maxSlots = 10;
+            else maxSlots = ships[this.ship].weapons;
+
+            for (let slot = 0; slot < maxSlots; slot++) if (this.weapons[slot] == 20) gens++;
         }
+
+        this.generators = gens;
     }
 
     navigationalShieldCount () { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
-        this.navigationalShield = 0;
+        let navShield = 0;
         if (this.ship >= wepns[49].level) { // gotta have sufficiently high ship
             let maxSlots = 10;
-            for (let slot = 0; slot < maxSlots; slot++) {
-    	        if (this.weapons[slot] == 49) {
-		    this.navigationalShield++;
-                }
-            }
+            for (let slot = 0; slot < maxSlots; slot++) if (this.weapons[slot] == 49) navShield++;
         }
+
+        this.navigationalShield = navShield;
     }
 
     spoils (type, amt) { /* gives you something. Called wenever you earn money / exp / w/e */ }
