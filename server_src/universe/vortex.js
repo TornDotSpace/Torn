@@ -1,4 +1,4 @@
-module.exports = class Vortex {
+class Vortex {
     constructor (i, x, y, sxx, syy, size, ownr, isWorm) {
         this.isWorm = isWorm, // am i a wormhole or black hole
         this.sxo = Math.floor(Math.random() * mapSz), // output node location for wormhole
@@ -146,4 +146,6 @@ module.exports = class Vortex {
 
     spoils (type, amt) {
     }
-};
+}
+
+module.exports = Vortex;

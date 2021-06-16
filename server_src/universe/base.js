@@ -12,7 +12,7 @@ global.DEADBASE = 1;
 global.TURRET = 2;
 global.SENTRY = 3;
 
-module.exports = class Base {
+class Base {
     constructor (i, type, sx, syy, col, x, y) {
         console.log(`Base constructed with type ${type}`);
         this.type = `Base`,
@@ -324,4 +324,6 @@ module.exports = class Base {
         this.assimilatedCol = this.trueColor;
         this.color = this.trueColor;
     }
-};
+}
+
+module.exports = Base;

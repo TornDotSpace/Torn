@@ -1,4 +1,4 @@
-module.exports = class Package {
+class Package {
     constructor (ownr, i, type) {
         this.id = i, // unique identifier
         this.type = type, // ammo? coin? lives? actual courier package?
@@ -57,4 +57,6 @@ module.exports = class Package {
             else p.spoils(`money`, Math.floor(800000 * 2 * Math.atan(p.experience / 600000.0)) + 500); // reward the player the price of two lifes
         } else if (this.type == 3) p.refillAllAmmo(); // ammo package
     }
-};
+}
+
+module.exports = Package;

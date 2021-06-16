@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const Vortex = require(`../universe/vortex.js`);
 
-module.exports = class Bullet {
+class Bullet {
     constructor (ownr, i, wepnID, angl, info) {
         this.type = `Bullet`,
         this.id = i, // unique identifier
@@ -103,4 +103,6 @@ module.exports = class Bullet {
         vorts[this.sy][this.sx][r] = vort;
         this.die();
     }
-};
+}
+
+module.exports = Bullet;
