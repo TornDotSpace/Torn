@@ -146,12 +146,15 @@ class Player {
     }
 
     tick () {
-    // timer business
+        // timer business
         if (this.killStreakTimer-- < 0) this.killStreak = 0; // Sensitive to off-by-ones.
         if (this.borderJumpTimer > 0) this.borderJumpTimer--;
         if (this.superchargerTimer >= 0) this.superchargerTimer--;
         if (this.empTimer >= 0) this.empTimer--;
         if (this.disguise >= 0) this.disguise--;
+
+        // If the player is EMP'd, they cannot shield;
+        if (this.empTimer > 0) this.shield = false;
 
         const amDrifting = this.e || this.gyroTimer > 0;
         this.shield = ((this.s && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0) && this.empTimer < 1;
@@ -177,6 +180,7 @@ class Player {
 
     fire () {
         if (this.empTimer > 0) return; // Cannot shoot while EMP'd.
+
         if (this.c && this.charge > 0) this.shootEliteWeapon();
         if (this.bulletQueue > 0) this.shootBullet(40); // SMG
         const wepId = this.weapons[this.equipped];
@@ -543,8 +547,6 @@ class Player {
     }
 
     move () {
-        if (this.empTimer > 0) return; // Cannot move while EMP'd.
-
         if (this.hyperdriveTimer > 0) {
             this.hyperdriveTimer--;
             this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
@@ -563,14 +565,16 @@ class Player {
 
         this.vx = csd * this.speed; // convert polars to rectangulars
         this.vy = ssd * this.speed;
-        this.vx *= (amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92;
-        this.vy *= (amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92; // Air resistance
 
-        if (this.w) { // Accelerate!
+        this.vx *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.7;
+        this.vy *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.7; // Air resistance
+
+        if (this.empTimer < 0 && this.w) { // Accelerate!
             this.vx += csa * newThrust;
             this.vy += ssa * newThrust;
         }
-        if (this.s && amDrifting) { // Accelerate backwards, at half speed!
+
+        if (this.empTimer < 0 && this.s && amDrifting) { // Accelerate backwards, at half speed!
             this.vx -= csa * newThrust / 2;
             this.vy -= ssa * newThrust / 2;
         }
@@ -598,17 +602,22 @@ class Player {
 
         this.x += this.vx; // Update position from velocity
         this.y += this.vy;
-        if (this.jukeTimer > 1 || this.jukeTimer < -1) { // Q or E keys. Juke mechanics.
+
+        if (this.empTimer < 0 && this.jukeTimer > 1 || this.jukeTimer < -1) { // Q or E keys. Juke mechanics.
             this.x += this.jukeTimer * Math.sin(this.angle);
             this.y -= this.jukeTimer * Math.cos(this.angle);
             this.jukeTimer *= 0.8;
         }
 
         let angAccel = 0; // angular acceleration
-        if (this.a) angAccel -= (this.va + this.cva / (amDrifting ? 1.5 : 1)) / 3;
-        if (this.d) angAccel += (this.va - this.cva / (amDrifting ? 1.5 : 1)) / 3; // ternary reduces angular air resistance while drifting
+        if (this.empTimer < 0 && this.a) angAccel -= (this.va + this.cva / (amDrifting ? 1.5 : 1)) / 3;
+        if (this.empTimer < 0 && this.d) angAccel += (this.va - this.cva / (amDrifting ? 1.5 : 1)) / 3; // ternary reduces angular air resistance while drifting
+
         if (this.superchargerTimer > 0) angAccel *= 2;
-        this.cva += angAccel; // update angular velofity from thrust
+
+        this.cva += angAccel; // update angular velocity from thrust
+        if (this.empTimer > 0) this.cva *= 0.7;
+
         if (!this.d && !this.a && !amDrifting) this.cva /= 2; // When not drifting, apply air resistance to angular velocity.
 
         // If we have a drift trail, we turn faster. Generators reduce turning speed.
@@ -634,14 +643,16 @@ class Player {
             if (m.color != this.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
                 if (m.wepnID != 16 && squaredDist(m, this) < square(16 + ships[this.ship].width)) {
                     this.dmg(m.dmg, m); // damage me
-                    if (m.wepnID == 17) this.EMP(81); // EMP Mine
+                    if (m.wepnID === 17) this.EMP(81); // EMP Mine
                     m.die();
                     break;
                 } else if (m.wepnID == 16 && squaredDist(m, this) < square(wepns[m.wepnID].range + ships[this.ship].width)) { // TODO range * 10?
                     const r = Math.random(); // Laser Mine
                     const beam = new Beam(m.owner, r, m.wepnID, this, m); // m.owner is the owner, m is the origin location
+
                     beams[this.sy][this.sx][r] = beam;
                     sendAllSector(`sound`, { file: `beam`, x: m.x, y: m.y }, m.sx, m.sy);
+
                     m.die();
                 }
             }
