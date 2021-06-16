@@ -166,7 +166,7 @@ class Player {
             if (tick % 50 == 0 && planets[this.sy][this.sx].color === this.color && !this.guest) this.money++; // Earn $.5/sec for being in a sector w/ your color planet
         }
 
-        if (this.health < this.maxHealth && !this.shield && this.empTimer < 1) this.health += playerHeal;
+        if (this.health < this.maxHealth && !this.shield) this.health += playerHeal;
 
         this.move();
         this.fire();
