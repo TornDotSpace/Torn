@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-module.exports = class Orb {
+class Orb {
     constructor (ownr, i, wepnID) { // currently the only orbs are energy disk and photon orb
         this.type = `Orb`,
         this.id = i, // unique identifier
@@ -136,4 +136,6 @@ module.exports = class Orb {
         sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
         delete orbs[this.sy][this.sx][this.id];
     }
-};
+}
+
+module.exports = Orb;

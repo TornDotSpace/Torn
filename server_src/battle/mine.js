@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const Beam = require(`./beam.js`);
 
-module.exports = class Mine {
+class Mine {
     constructor (ownr, i, weaponID) {
         this.type = `Mine`,
         this.id = i, // unique identifier
@@ -238,4 +238,6 @@ module.exports = class Mine {
         sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete mines[this.sy][this.sx][this.id];
     }
-};
+}
+
+module.exports = Mine;
