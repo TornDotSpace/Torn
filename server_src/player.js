@@ -576,8 +576,9 @@ class Player {
         this.vx = csd * this.speed; // convert polars to rectangulars
         this.vy = ssd * this.speed;
 
-        this.vx *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.7;
-        this.vy *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.7; // Air resistance
+        // Air resistance.
+        this.vx *= ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999) && this.empTimer < 0) ? 0.94 : 0.92);
+        this.vy *= ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999) && this.empTimer < 0) ? 0.94 : 0.92);
 
         if (this.empTimer < 0 && this.w) { // Accelerate!
             this.vx += csa * newThrust;
