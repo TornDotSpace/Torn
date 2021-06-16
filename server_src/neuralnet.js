@@ -77,7 +77,7 @@ class NeuralNet {
             const source = path.resolve(__dirname, `../server/neuralnets/${Math.floor(Math.random() * neuralFiles)}`);
             if (fs.existsSync(source)) {
                 const fileData = fs.readFileSync(source, `utf8`).split(`\n`);
-                for (let i = 0; i < 300; i++) this.genes[i] == parseFloat(fileData[i]) / parentCount;
+                for (let i = 0; i < 300; i++) this.genes[i] += parseFloat(fileData[i]) / parentCount;
             }
         }
     }
