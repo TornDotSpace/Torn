@@ -40,6 +40,6 @@ class Beam {
 
         if (this.time++ > 10) delete beams[this.sy][this.sx][this.id];
     }
-};
+}
 
 module.exports = Beam;
