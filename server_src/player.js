@@ -34,7 +34,7 @@ class Player {
         this.trail = 0,
         this.color = id > 0.5 ? `red` : `blue`,
         this.ship = 0,
-        this.experience = 100000000000000000000000,
+        this.experience = 0,
         this.rank = 0,
 
         this.guest = false,
@@ -70,7 +70,7 @@ class Player {
         this.speed = 0,
         this.driftAngle = 0,
 
-        this.money = 8000000000000000000000000000000,
+        this.money = 0,
         this.kills = 0,
         this.killStreakTimer = -1,
         this.killStreak = 0,
