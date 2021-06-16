@@ -508,8 +508,8 @@ class Player {
                     const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
                     beams[this.sy][this.sx][reB] = beameB;
 
-                    if (this.color == `green` && tick % 750 == 0) { // Assimilation beam
-		        nearBEnemy.assimilate(660, this);
+                    if (this.color === `green` && tick % 750 == 0) { // Assimilation beam
+                        nearBEnemy.assimilate(660, this);
                         const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
                         beams[this.sy][this.sx][reB] = beameB2;
                         this.dmg(-73, this);

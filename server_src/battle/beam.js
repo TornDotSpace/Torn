@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class Beam {
+module.exports = class Beam {
     constructor (ownr, i, weaponID, enemy, orign) {
         this.type = `Beam`,
         this.id = i, // unique identifier
@@ -32,7 +32,7 @@ class Beam {
     tick () {
         if (this.time == 0 && this.wepnID != 44) { // don't do this for Campfire beams
             const divideBy = this.enemy.ship == 17 && (this.wepnID == 30 || this.wepnID == 26) ? 2 : 1; // i think this is about mining lasers shooting elite quarrier?
-	    this.enemy.dmg(this.dmg / divideBy, this);
+            this.enemy.dmg(this.dmg / divideBy, this);
             if (this.enemy.type === `Asteroid`) this.enemy.hit = false; // Note that the asteroid is hit for elite quarrier branching
             else if (this.wepnID == 35) {
                 this.enemy.charge = -70;
@@ -40,6 +40,4 @@ class Beam {
         }
         if (this.time++ > 10) delete beams[this.sy][this.sx][this.id];
     }
-}
-
-module.exports = Beam;
+};
