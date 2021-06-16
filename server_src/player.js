@@ -517,7 +517,7 @@ class Player {
                 if (this.color !== `green` && nearBEnemy.color !== nearBEnemy.trueColor) { // It's an assimilated base!
                     const beameAB = new Beam(this, reB, 45, nearBEnemy, this); // Healing beam
                     beams[this.sy][this.sx][reB] = beameAB;
-	            nearBFriendly.unassimilate(); // Quickly cures the assimilation
+	                nearBFriendly.unassimilate(); // Quickly cures the assimilation
                 } else {
                     const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
                     beams[this.sy][this.sx][reB] = beameB;
