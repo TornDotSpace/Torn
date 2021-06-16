@@ -213,11 +213,11 @@ global.rEMP = function () {
     ctx.textAlign = `center`;
     ctx.fillStyle = `orange`;
     if (empTimer > 0) {
-        write(ctx, translate(`EMP in Effect for `) + Math.round(empTimer / 25) + translate(` Seconds`) + translate(`!`), w / 2, 256);
+        write(ctx, translate(`EMP in Effect for `) + Math.round(empTimer / 25) + translate(` Seconds`) + translate(`!`), w / 2, 256 - 32);
         currAlert = translate(`Power Lost due to EMP!`);
     }
     if (gyroTimer > 0) {
-        write(ctx, translate(`Gyrodynamite in Effect for `) + Math.round(gyroTimer / 25) + translate(` Seconds`) + translate(`!`), w / 2, 256);
+        write(ctx, translate(`Gyrodynamite in Effect for `) + Math.round(gyroTimer / 25) + translate(` Seconds`) + translate(`!`), w / 2, 256 + 32);
         currAlert = translate(`Stabilization Lost due to Gyrodynamite!`);
     }
     ctx.font = `14px ShareTech`;
