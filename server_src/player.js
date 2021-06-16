@@ -171,14 +171,15 @@ class Player {
         this.move();
         this.fire();
 
-        // Charge speed scales only if EMP is not selected.
-        let chargeVal = 1 / 1.8;
+        // Energy level caps at 13, initially.
+        let chargeVal = (Math.min(this.energy2, 13) + 1) / 1.8;
+
         if (
             this.weapons[this.equipped] !== 25 && // EMP Blast
             this.weapons[this.equipped] !== 17 && // EMP Mine
             this.weapons[this.equipped] !== 12 // EMP Missile
         ) {
-            chargeVal = (this.energy2 + 1) / 1.8; // Charge speed scales with energy tech.
+            chargeVal = (this.energy2 + 1) / 1.8; // Charge speed scales to full if weapon is not EMP.
             if (this.generators > 0) chargeVal *= (this.generators * 0.08) + 1; // Charge speed buffed by 8% per generator.
             if (this.navigationalShield > 0) chargeVal *= (this.navigationalShield * 0.88); // Charge speed nerfed by 12% per navigational shield.
         }
