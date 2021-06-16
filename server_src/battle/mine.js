@@ -234,6 +234,13 @@ class Mine {
                 if (!p.guest && squaredDist(p, this) < square(this.range * 40)) p.dmg(this.dmg, this); // if i'm in range of a player on explosion, damage them
             }
         }
+        for (const i in players[this.sy][this.sx]) {
+            const p = players[this.sy][this.sx][i];
+            if (squaredDist(p, this) < square(128)) {
+                p.dmg(this.dmg / 10, this); // if i'm in range of a player on explosion, damage them
+                if (this.wepnID == 17) this.EMP(110); // EMP mine
+            }
+        }
         sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete mines[this.sy][this.sx][this.id];
     }
