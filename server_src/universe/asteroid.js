@@ -185,8 +185,6 @@ class Asteroid {
     }
 }
 
-module.exports = Asteroid;
-
 global.spawnAsteroid = function () {
     sx = Math.floor(Math.random() * mapSz);
     sy = Math.floor(Math.random() * mapSz);
@@ -200,3 +198,5 @@ global.spawnAsteroid = function () {
     const ast = new Asteroid(randId, health, sx, sy, x, y, 0, 0, metal);
     asts[sy][sx][randId] = ast;
 };
+
+module.exports = Asteroid;

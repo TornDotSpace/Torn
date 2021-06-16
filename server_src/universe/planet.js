@@ -1,4 +1,4 @@
-module.exports = class Planet {
+class Planet {
     constructor (i, name) {
         this.type = `Planet`,
         this.name = name,
@@ -21,4 +21,6 @@ module.exports = class Planet {
             }
         }
     }
-};
+}
+
+module.exports = Planet;

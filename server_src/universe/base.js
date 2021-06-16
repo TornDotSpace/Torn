@@ -12,7 +12,7 @@ global.DEADBASE = 1;
 global.TURRET = 2;
 global.SENTRY = 3;
 
-module.exports = class Base {
+class Base {
     constructor (i, type, sx, syy, col, x, y) {
         console.log(`Base constructed with type ${type}`);
         this.type = `Base`,
@@ -320,4 +320,6 @@ module.exports = class Base {
         this.assimilatedCol = assimilator.color; // But resistance is futile
         this.assimilatedTimer = time; // At least until the remaining crew manage to vent the invaders.
     }
-};
+}
+
+module.exports = Base;

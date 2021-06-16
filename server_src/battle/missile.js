@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module.exports = class Missile {
+class Missile {
     constructor (ownr, i, wepnID, angl) {
         this.type = `Missile`,
         this.id = i, // unique identifier
@@ -194,4 +194,6 @@ module.exports = class Missile {
         sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
         delete missiles[this.sy][this.sx][this.id];
     }
-};
+}
+
+module.exports = Missile;
