@@ -72,10 +72,13 @@ class NeuralNet {
         this.id = Math.floor(Math.random() * neuralFiles);
         this.randomWeights();
 
-        const source = path.resolve(__dirname, `../server/neuralnets/${Math.floor(Math.random() * 3 + 1)}`);
-        if (fs.existsSync(source)) {
-            const fileData = fs.readFileSync(source, `utf8`).split(`\n`);
-            for (let i = 0; i < 300; i++) this.genes[i] == parseFloat(fileData[i]) / parentCount;
+        const parentCount = Math.floor(Math.random() * 3 + 1);
+        for (let p = 0; p < parentCount; p++) {
+            const source = path.resolve(__dirname, `../server/neuralnets/${Math.floor(Math.random() * neuralFiles)}`);
+            if (fs.existsSync(source)) {
+                const fileData = fs.readFileSync(source, `utf8`).split(`\n`);
+                for (let i = 0; i < 300; i++) this.genes[i] == parseFloat(fileData[i]) / parentCount;
+            }
         }
     }
 }
