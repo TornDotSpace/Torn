@@ -170,7 +170,7 @@ class Player {
 
         let chargeVal = (this.energy2 + 1) / 1.8; // charge speed scales with energy tech
         for (let i = 0; i < this.generators; i++) chargeVal *= 1.08;
-        for (let i = 0; i < this.navigationalShield; i++) chargeVal *= 0.88;
+        for (let i = 0; i < this.navigationalShield; i++) chargeVal /= 1.11;
         if (this.charge < 0 || this.space || this.c) this.charge += chargeVal;
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
     }

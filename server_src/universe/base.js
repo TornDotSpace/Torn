@@ -314,7 +314,7 @@ module.exports = class Base {
     }
 
     assimilate (time, assimilator) { // A weapon of cyborg origin
-        this.dmg(this.health * 0.25, assimilator);
+        this.dmg(this.health * 0.15, assimilator);
         this.EMP(time / 3); // The crew is fighting hard to fend off the invaders! Some systems stop working and the base will take some damage
         note(`WE ARE THE CYBORG. RESISTANCE IS FUTILE`, this.x, this.y - 64, this.sx, this.sy);
         this.assimilatedCol = assimilator.color; // But resistance is futile
