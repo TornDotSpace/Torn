@@ -20,8 +20,9 @@ class Base {
         this.experience = 0,
         this.money = 0,
         this.id = i, // unique identifier
-        this.color = col,
-        this.assimilatedCol = col;
+        this.trueColor = col, // The team this base originally is
+        this.color = col, // The team this base is now
+        this.assimilatedCol = col, // The team that is attempting to overtake the base
         this.owner = 0,
         this.name = ``,
         this.baseType = type, // Constants above
@@ -61,7 +62,9 @@ class Base {
         this.reload--;
         this.assimilatedTimer--;
 
-        if (this.assimilatedTimer <= 0) this.assimilatedCol = this.color;
+        if (this.assimilatedTimer <= 0 && this.assimilatedCol !== this.trueColor) {
+            this.unassimilate();
+        }
         if (this.health < this.maxHealth) this.health += baseRegenSpeed;
         if (tick % 50 == 0 && (this.baseType == SENTRY || this.baseType == TURRET)) this.tryGiveToOwner();
     }
@@ -116,7 +119,7 @@ class Base {
             if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {
                 this.shootMuon(); return;
             }
-            if (cDist2 < square(wepns[8].range * 10)) this.shootLaser();// range:60
+            if (cDist2 < square(wepns[8].range * 10)) this.shootLaser(c);// range:60
             else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb();// range:125
             else if (cDist2 < square(175 * 10)) this.shootMissile();// range:175
             else if (cDist2 < 10 + square(wepns[3].range * 10)) this.shootRifle();// range:750 plus some extra distance rifle can travel. Basically this makes the turret slightly smarter.
@@ -141,7 +144,7 @@ class Base {
         this.angle = (this.angle + newAngle * 2) / 3;
 
         if (this.reload < 0) {
-            if (cDist2 < 5 * 10 + square(wepns[5].range * 10)) this.shootMachineGun();// range:??? + the small extra range machine gun bullets are still capable of hitting a target. Basically this allows the turret not to be attacked with the same weapon by players without the turret reacting.
+            if (cDist2 < 5 * 10 + square(wepns[5].range * 10)) this.shootMachineGun(); // range:??? + the small extra range machine gun bullets are still capable of hitting a target. Basically this allows the turret not to be attacked with the same weapon by players without the turret reacting.
         }
     }
 
@@ -188,21 +191,10 @@ class Base {
         sendAllSector(`sound`, { file: `missile`, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
-    shootLaser () { // TODO merge this into Beam object, along with player.shootBeam()
-        let nearP = 0;
-        for (const i in players[this.sy][this.sx]) {
-            const p = players[this.sy][this.sx][i];
-            if (p.color == this.assimilatedCol || p.sx != this.sx || p.sy != this.sy) continue;
-            if (nearP == 0) {
-                nearP = p;
-                continue;
-            }
-            const dx = p.x - this.x; const dy = p.y - this.y;
-            if (dx * dx + dy * dy < squaredDist(nearP, this)) nearP = p;
-        }
+    shootLaser (nearP) { // TODO merge this into Beam object, along with player.shootBeam()
         if (nearP == 0) return;
         const r = Math.random();
-        const beam = new Beam(this, r, 8, nearP, this);
+        const beam = new Beam(this, r, 8, nearP, this); // Laser
         beams[this.sy][this.sx][r] = beam;
         sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
         this.reload = wepns[8].charge / 2;
@@ -264,6 +256,7 @@ class Base {
                 }
             }
         }
+        this.unassimilate(); // the turret returns to normal
     }
 
     save () {
@@ -316,9 +309,20 @@ class Base {
     assimilate (time, assimilator) { // A weapon of cyborg origin
         this.dmg(this.health * 0.15, assimilator);
         this.EMP(time / 3); // The crew is fighting hard to fend off the invaders! Some systems stop working and the base will take some damage
-        note(`WE ARE THE CYBORG. RESISTANCE IS FUTILE`, this.x, this.y - 64, this.sx, this.sy);
         this.assimilatedCol = assimilator.color; // But resistance is futile
         this.assimilatedTimer = time; // At least until the remaining crew manage to vent the invaders.
+        if (this.assimilatedTimer >= 4600) { // If the base gets overwhelmed, it temporarily changes teams. 4600 is high enough this happening would be very rare
+            note(`WE ARE THE CYBORG. RESISTANCE IS FUTILE`, this.x, this.y - 64, this.sx, this.sy);
+            this.assimilatedCol = assimilator.color;
+            this.color = assimilator.color;
+        }
+    }
+
+    unassimilate () { // A cure for the cyborg assimilation
+        this.EMP((this.assimilatedTimer >= 4600 ? 140 : 60));
+    	this.assimilatedTimer = 0;
+        this.assimilatedCol = this.trueColor;
+        this.color = this.trueColor;
     }
 }
 

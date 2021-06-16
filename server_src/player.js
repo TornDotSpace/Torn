@@ -410,14 +410,13 @@ class Player {
 
     shootEliteWeapon () {
         if (this.rank < this.ship) return;
-        if (this.ship == 16) { // Elite Raider
-            // if (this.disguise > 0) return;
+        if (this.ship == 16) { // Elite Raider turbo
             // This effectively just shoots turbo.
-            const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.016 : 1.01);
+            const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.015 : 1.01);
             this.speed *= mult;
             this.vx *= mult;
             this.vy *= mult;
-        } else if (this.ship == 17 && this.iron >= 250 && this.silver >= 250 && this.copper >= 250 && this.platinum >= 250) { // Quarrier
+        } else if (this.ship == 17 && this.iron >= 250 && this.silver >= 250 && this.copper >= 250 && this.platinum >= 250) { // Quarrier Ore-launcher
             if (this.disguise > 0 || this.shield) return;
             this.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
             this.silver -= 250;
@@ -426,16 +425,16 @@ class Player {
             const randId = Math.random();
             const ast = new Asteroid(randId, health, this.sx, this.sy, this.x + Math.cos(this.angle) * 256, this.y + Math.sin(this.angle) * 256, Math.cos(this.angle) * 15, Math.sin(this.angle) * 15, Math.floor(Math.random() * 4));
             asts[this.sy][this.sx][randId] = ast;
-        } else if (this.ship == 18) {
+        } else if (this.ship == 18) { // r18 Built-in spreadshot
             if (this.disguise > 0 || this.shield) return;
             this.shootBullet(39);
-        } else if (this.ship == 19) { // Built in spreadshot
+        } else if (this.ship == 19) { // r19 healing
             // if (this.disguise > 0) return;
             if (this.health < this.maxHealth) this.health++;
-        } else if (this.ship == 20) {
-            this.shootBlast(41); // r19 healing
+        } else if (this.ship == 20) { // r20 Built-in hypno ray
+            this.shootBlast(41);
             this.save();
-        } else if (this.ship == 22 && tick % 10 == 0) { // r20 Hypno
+        } else if (this.ship == 22 && tick % 10 == 0) { // r22 healing/leech/assimilator beam
             const ox = this.x; const oy = this.y; // Current emitter coordinates
             let nearBEnemy = 0; // enemy turret target, which we will compute
             let nearBFriendly = 0; // friendly turret target, which we will compute
@@ -476,7 +475,7 @@ class Player {
             }
 
             if (nearA != 0) {
-                this.dmg(-30); // Heals myself.
+                this.dmg(-30, this); // Heals myself.
                 const rA = Math.random();
                 const beamA = new Beam(this, rA, 30, nearA, this); // Ore Cannon
                 beams[this.sy][this.sx][rA] = beamA;
@@ -499,6 +498,7 @@ class Player {
                     const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
                     beams[this.sy][this.sx][rfP] = beamfP;
                 }
+
                 const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
                 beams[this.sy][this.sx][reP] = beameP;
 
@@ -513,21 +513,28 @@ class Player {
                     const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
                     beams[this.sy][this.sx][rfP] = beamfP;
                 }
-                const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
-                beams[this.sy][this.sx][reB] = beameB;
 
-                if (this.color == `green` && tick % 750 == 0) { // Assimilation beam
-		    nearBEnemy.assimilate(660, this);
-                    const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
-                    beams[this.sy][this.sx][reB] = beameB2;
-                    this.dmg(-73);
-                    sendAllSector(`sound`, { file: `assimilation`, x: ox, y: oy }, this.sx, this.sy);
+                if (this.color !== `green` && nearBEnemy.color !== nearBEnemy.trueColor) { // It's an assimilated base!
+                    const beameAB = new Beam(this, reB, 45, nearBEnemy, this); // Healing beam
+                    beams[this.sy][this.sx][reB] = beameAB;
+	            nearBFriendly.unassimilate(); // Quickly cures the assimilation
+                } else {
+                    const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
+                    beams[this.sy][this.sx][reB] = beameB;
+
+                    if (this.color === `green` && tick % 750 == 0) { // Assimilation beam
+                        nearBEnemy.assimilate(660, this);
+                        const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
+                        beams[this.sy][this.sx][reB] = beameB2;
+                        this.dmg(-73, this);
+                        sendAllSector(`sound`, { file: `assimilation`, x: ox, y: oy }, this.sx, this.sy);
+                    }
                 }
             }
             if (nearBFriendly != 0 && nearBFriendly.assimilatedCol != this.color) { // Anti-assimilation beam
                 const beamfB = new Beam(this, rfP, 45, nearBFriendly, this); // Healing beam
                 beams[this.sy][this.sx][rfP] = beamfB;
-	        nearBFriendly.assimilatedCol = this.color;
+	        nearBFriendly.unassimilate(); // Quickly cures the assimilation
                 nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
 	    }
 
@@ -552,6 +559,11 @@ class Player {
     canShoot (wepId) {
         if (typeof wepns[wepId] === `undefined`) return false;
         if ((this.disguise > 0 && wepId != 18 && wepId != 19 && wepId != 21 && wepId != 22 && wepId != 29 && wepId != 36) || (this.shield && wepns[wepId].type !== `Misc`)) return false;
+        /*  Upcoming balance feature, do not touch
+        let sufficientCharge;
+        if (wepId == 25 || wepId == 17 || wepId == 22) sufficientCharge = this.charge > (energy2 * (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0));
+        else sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
+        */
         const sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
         return this.space && sufficientCharge;
     }
