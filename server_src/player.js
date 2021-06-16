@@ -166,14 +166,23 @@ class Player {
             if (tick % 50 == 0 && planets[this.sy][this.sx].color === this.color && !this.guest) this.money++; // Earn $.5/sec for being in a sector w/ your color planet
         }
 
-        this.move();
         if (this.health < this.maxHealth && !this.shield && this.empTimer < 1) this.health += playerHeal;
 
+        this.move();
         this.fire();
 
-        let chargeVal = (this.energy2 + 1) / 1.8; // charge speed scales with energy tech
-        for (let i = 0; i < this.generators; i++) chargeVal *= 1.08;
-        for (let i = 0; i < this.navigationalShield; i++) chargeVal *= 0.88;
+        // Charge speed scales only if EMP is not selected.
+        let chargeVal = 1 / 1.8;
+        if (
+            this.weapons[this.equipped] !== 25 && // EMP Blast
+            this.weapons[this.equipped] !== 17 && // EMP Mine
+            this.weapons[this.equipped] !== 12 // EMP Missile
+        ) {
+            chargeVal = (this.energy2 + 1) / 1.8; // Charge speed scales with energy tech.
+            if (this.generators > 0) chargeVal *= (this.generators * 0.08) + 1; // Charge speed buffed by 8% per generator.
+            if (this.navigationalShield > 0) chargeVal *= (this.navigationalShield * 0.88); // Charge speed nerfed by 12% per navigational shield.
+        }
+
         if (this.charge < 0 || this.space || this.c) this.charge += chargeVal;
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
     }
