@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module.exports = class Beam {
+class Beam {
     constructor (ownr, i, weaponID, enemy, orign) {
         this.type = `Beam`,
         this.id = i, // unique identifier
@@ -41,3 +41,5 @@ module.exports = class Beam {
         if (this.time++ > 10) delete beams[this.sy][this.sx][this.id];
     }
 };
+
+module.exports = Beam;
