@@ -41,6 +41,6 @@
     <canvas id="ctx"></canvas>
     <div id="a"></div>
 
-    <script src="client.js?v={GIT_HASH}"></script>
+    <script src="client.min.js?v={GIT_HASH}"></script>
 </body>
 </html>

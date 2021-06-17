@@ -25,7 +25,7 @@ module.exports = {
     entry: [path.resolve(__dirname, `../client_src/index.jsx`)],
     output: {
         path: path.resolve(__dirname, `../client`),
-        filename: `client.js`
+        filename: `client.min.js`
     },
     module: {
         rules: [
