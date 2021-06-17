@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import * as React from 'react';
 
 import sendAPI from '../../utils/sendAPI';
-import socket from '../../utils/socket';
+import socket from '../../modules/socket';
 
 declare const VERSION: string;
 declare const loadLang: any;

@@ -20,7 +20,8 @@ import { ChatState } from './react/components/ChatInput';
 
 import { jsn, translate } from './localizer';
 
-import socket from './utils/socket';
+import socket from './modules/socket';
+import { playAudio } from './modules/audio';
 
 console.log(`:TornNetworkRepository: Setting API_URL to ${TORN_API_URL}`);
 console.log(`:TornNetworkRepository: Setting GAMESERVER_URL to ${TORN_GAMESERVER_URL}`);

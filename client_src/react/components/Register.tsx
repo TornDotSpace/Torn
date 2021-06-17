@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 
-import socket from '../../utils/socket';
+import socket from '../../modules/socket';
 class Register extends React.Component<{ register: boolean }, { user: string, pass: string, on: boolean }> {
     constructor (props) {
         super(props);

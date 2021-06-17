@@ -18,7 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { RootState } from './react/ReactRoot';
 import { ChatState } from './react/components/ChatInput';
 
-import socket from './utils/socket';
+import socket from './modules/socket';
+import { playAudio } from './modules/audio';
 
 import {
     chatMenuButtonClick,

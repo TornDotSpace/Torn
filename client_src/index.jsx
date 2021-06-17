@@ -14,6 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -21,6 +22,9 @@ import { ReactRoot, RootState } from './react/ReactRoot';
 import { ChatState } from './react/components/ChatInput';
 
 import { jsn, translate } from './localizer';
+
+import loadAllAudio from './utils/loadAllAudio';
+import * as audioUtil from './modules/audio';
 
 `use strict`;
 
@@ -163,7 +167,6 @@ global.didW = false; global.didSteer = false; global.currTut = 0;
 
 global.sectorPoints = 0;
 
-require(`./audio.js`);
 const loadAllImages = require(`./image.js`);
 require(`./localizer.ts`);
 require(`./helper.js`);
@@ -180,7 +183,10 @@ global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 
 ReactDOM.render(
-    <ReactRoot data={{ toggleMusic, toggleAudio }} />,
+    <ReactRoot data={{
+        toggleMusic: audioUtil.toggleMusic,
+        toggleAudio: audioUtil.toggleAudio
+    }} />,
 
     // Render to secondary container to prevent canvas from being affected.
     document.querySelector(`#a`)
@@ -227,7 +233,6 @@ wepnCount += 2;
 
 global.scroll = 0; global.weaponTimer = 0; global.charge = 0;
 global.equipped = 0; global.ammos = {};
-global.musicAudio = 0;
 
 global.redShips = [];
 global.blueShips = [];
@@ -275,7 +280,7 @@ const loop = () => {
         } else RootState.turnOnDisplay();
 
         if (++homepageTimer == 1) {
-            loadAudio(`music1`, `/aud/music1.mp3`);
+            audioUtil.loadAudio(`music1`, `/aud/music1.mp3`);
         }
 
         canvas.width = canvas.width;
@@ -309,7 +314,7 @@ const loop = () => {
         const rnd = Math.random();
         let angleNow = -Math.atan2(5 * Math.sin(5 * t), 4 * Math.cos(4 * t));
         if (rnd < 0.05) {
-            playAudio(`minigun`, 0.1);
+            audioUtil.playAudio(`minigun`, 0.1);
             bullets[rnd] = { x: px, y: py, vx: 12800 / 6000 * 20 * Math.cos(4 * t) + 40 * Math.cos(angleNow), vy: -16000 / 6000 * 20 * Math.sin(5 * t) + 40 * Math.sin(angleNow), id: rnd, angle: angleNow, wepnID: 0, color: `red` };
         }
 
@@ -340,7 +345,7 @@ const loop = () => {
                     delete bullets[i];
                     booms[Math.random()] = { x: b.x, y: b.y, time: 0, shockwave: false };
                     // for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: b.x, y: b.y, angle: Math.random() * 6.28, time: -1, dx: b.vx / 1.5, dy: b.vy / 1.5 };
-                    playAudio(`boom`, 0.35);
+                    audioUtil.playAudio(`boom`, 0.35);
                 }
             }
 

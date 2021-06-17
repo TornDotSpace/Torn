@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 
-import socket from '../../utils/socket';
+import socket from '../../modules/socket';
 
 declare const stopTyping: any;
 
