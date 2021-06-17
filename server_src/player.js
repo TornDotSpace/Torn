@@ -1018,7 +1018,7 @@ class Player {
             this.health -= 10000;
         }
 
-        if (this.empTimer <= 0 && this.charge >= -25 && origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) { // navigational shield fails when using a C-Slot that requires energy charge, EMPd or jammed
+        if (this.empTimer <= 0 && origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) { // navigational shield fails when EMPd
             this.navigationalShieldCount();
 	    if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
         }
