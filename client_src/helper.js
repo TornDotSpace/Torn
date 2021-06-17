@@ -150,7 +150,7 @@ global.techPrice = (x) => // money required to upgrade Tech
     techEnergy(nextTechLevel(x)) - techEnergy(x);
 
 global.techPriceForDowngrade = (x) => { // money required to upgrade Tech
-    if (myName.startsWith(`[V] `)) return techEnergy(lastTechLevel(x)) - techEnergy(x);
+    if (myName.startsWith(`[V] `) || myName.startsWith(`[B] `)) return techEnergy(lastTechLevel(x)) - techEnergy(x);
     return Math.max(techEnergy(lastTechLevel(x)) - techEnergy(x), -300000000);
 };
 global.techEnergy = (x) => // Net price of some tech level
