@@ -74,14 +74,28 @@ const renderStatistics = () => {
     if (tag === `V`) write(baseMenuCtx, `VIP`, 192, 112);
     if (tag === `B`) write(baseMenuCtx, `MVP`, 192, 112);
 
-    const eMult = e2;
-    /* if (ship >= wepns[20].level) {
+    let eMult = e2;
     let activeGens = 0;
-    for (let i = 0; i < ships[ship].weapons; i++) {
-      if (equipped[i] == 20) activeGens++;
+    let activeNavShields = 0;
+
+    /*
+    if (ship >= wepns[20].level) { // Generators
+        let maxSlots = 0;
+        if (ship == 22) maxSlots = 10;
+        else maxSlots = ships[ship].weapons;
+        for (let i = 0; i < maxSlots; i++) {
+          if (equipped[i] == 20) activeGens++;
+        }
     }
-  }
-  for (let i = 0; i < activeGens; i++) eMult *= 1.06; */
+    for (let i = 0; i < activeGens; i++) eMult *= 1.08;
+    */
+
+    if (ship >= wepns[49].level) { // Navigational shields
+        for (let i = 0; i < 10; i++) {
+            if (equipped[i] == 20) activeNavShields++;
+        }
+    }
+    for (let i = 0; i < activeNavShields; i++) eMult /= 1.08;
 
     const stats = [
         translate(`Thrust  : `), translate(`Cargo   : `), translate(`Health  : `), translate(`Energy  : `),
