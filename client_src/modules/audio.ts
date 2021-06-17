@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Howl, Howler } from 'howler';
+import { Howl } from 'howler';
 
 declare const login: any;
 declare const gVol: any;
