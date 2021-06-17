@@ -62,11 +62,6 @@ module.exports = {
         extensions: [`*`, `.js`, `.tsx`, `.ts`, `.jsx`]
     },
 
-    devServer: {
-        contentBase: `./client`,
-        hot: true
-    },
-
     optimization: {
         removeAvailableModules: false,
         removeEmptyChunks: false,

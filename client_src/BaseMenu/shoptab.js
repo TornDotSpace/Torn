@@ -16,6 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { translate } from '../localizer';
+import socket from '../utils/socket';
 
 const lifeShopYVal = 405;
 

@@ -16,9 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import * as React from 'react';
-import { Socket } from 'socket.io-client';
 
-declare const socket: Socket;
+import socket from '../../utils/socket';
+
 declare const stopTyping: any;
 
 let ChatState: { init: any, activate: any, focusChat: any, unfocusChat: any };

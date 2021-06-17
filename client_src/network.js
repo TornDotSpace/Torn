@@ -20,30 +20,11 @@ import { ChatState } from './react/components/ChatInput';
 
 import { jsn, translate } from './localizer';
 
-const io = require(`socket.io-client`);
-const msgpack = require(`socket.io-msgpack-parser`);
+import socket from './utils/socket';
 
-global.API_URL = `${TORN_API_URL}/api`;
-global.GAMESERVER_URL = TORN_GAMESERVER_URL;
-console.log(`:TornNetworkRepository: Setting API_URL to ${API_URL}`);
-console.log(`:TornNetworkRepository: Setting GAMESERVER_URL to ${GAMESERVER_URL}`);
+console.log(`:TornNetworkRepository: Setting API_URL to ${TORN_API_URL}`);
+console.log(`:TornNetworkRepository: Setting GAMESERVER_URL to ${TORN_GAMESERVER_URL}`);
 
-global.send_api = async (endpoint, data) => await fetch(API_URL + endpoint, {
-    method: `post`,
-    body: data,
-    headers: { "Content-Type": `x-www-form-urlencoded` }
-});
-
-global.socket = io(GAMESERVER_URL, {
-    autoConnect: false
-    // parser: msgpack
-});
-
-global.connect = function () {
-    if (!socket.connected) socket.open();
-};
-
-// socket error handling
 socket.on(`connect_error`, (error) => {
     loginInProgress = false;
     if (!login) {

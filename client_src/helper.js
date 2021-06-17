@@ -148,7 +148,8 @@ global.numToLS = function (x) {
 
 global.techPrice = (x) => // money required to upgrade Tech
     techEnergy(nextTechLevel(x)) - techEnergy(x);
-global.techPriceForDowngrade = function (x) { // money required to upgrade Tech
+
+global.techPriceForDowngrade = (x) => { // money required to upgrade Tech
     if (myName.startsWith(`[V] `)) return techEnergy(lastTechLevel(x)) - techEnergy(x);
     return Math.max(techEnergy(lastTechLevel(x)) - techEnergy(x), -300000000);
 };

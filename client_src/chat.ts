@@ -15,10 +15,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Socket } from 'socket.io-client';
 import { translate } from './localizer';
+import socket from './utils/socket';
 
-declare const socket: Socket;
 declare let clientmutes: any;
 declare let roundRect: Function;
 declare let seller: Number;

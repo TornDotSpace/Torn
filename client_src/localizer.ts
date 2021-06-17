@@ -15,6 +15,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import mEng from '../client/translations/translate.json';
+import jsn from '../client/weapons.json';
+
 declare const global: any;
 declare const loadLang: any;
 
@@ -24,10 +27,6 @@ const tki = `translations/tokipona.json`;
 const chn = `translations/chinese.json`;
 
 let languagejson = null;
-let mEng = require(`../client/translations/translate.json`);
-
-export let jsn = require(`../client/weapons.json`);
-
 let languageNumber = 0;
 
 let splash = ``;
@@ -112,11 +111,22 @@ global.loadLang = (name) => {
 
 loadLang(null);
 
-export const translate = (english, arr = undefined) => { // arr = undefined???
-    if (typeof mEng[english] === `undefined`) return english;
+/**
+ * Translate a given string.
+ * @param text The text to translate.
+ * @param arr Arbitrary value.
+ * @returns A translated string of the given text.
+ */
+const translate = (text, arr = undefined) => { // arr = undefined???
+    if (typeof mEng[text] === `undefined`) return text;
 
-    let translated = (languageNumber == 0) ? english : mEng[english][languageNumber - 1];
+    let translated = (languageNumber == 0) ? text : mEng[text][languageNumber - 1];
     if (arr !== undefined) while (arr.length > 0) translated = translated.replace(`#`, arr.shift());
 
     return translated;
+};
+
+export {
+    translate,
+    jsn
 };

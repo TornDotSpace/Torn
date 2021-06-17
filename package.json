@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack --progress --hot --config ./deploy/webpack.dev.js",
+    "dev": "webpack --progress --config ./deploy/webpack.dev.js",
     "build": "webpack --progress --config ./deploy/webpack.prod.js",
     "test-build": "webpack --progress --config ./deploy/webpack.test.js",
     "build:ptb": "webpack --progress --config ./deploy/webpack.ptb.js",
