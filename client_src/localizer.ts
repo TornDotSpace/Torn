@@ -26,7 +26,7 @@ const chn = `translations/chinese.json`;
 let languagejson = null;
 let mEng = require(`../client/translations/translate.json`);
 
-export let jsn = require(`../client/weapons.json`);
+let jsn = require(`../client/weapons.json`);
 
 let languageNumber = 0;
 
@@ -119,4 +119,8 @@ export const translate = (english, arr = undefined) => { // arr = undefined???
     if (arr !== undefined) while (arr.length > 0) translated = translated.replace(`#`, arr.shift());
 
     return translated;
+};
+
+export {
+    jsn
 };
