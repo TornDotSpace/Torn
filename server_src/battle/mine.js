@@ -205,6 +205,7 @@ class Mine {
     collideWithBases () {
         const b = bases[this.sy][this.sx];
         if (b != 0 && b.baseType != DEADBASE && b.color !== this.color && squaredDist(b, this) < square(16 + 32)) {
+            if (this.wepnID == 17) b.EMP(110);
             b.dmg(this.dmg, this);
             this.die();
         }
