@@ -370,9 +370,7 @@ module.exports = initNetcode = () => {
                 player.sendStatus();
                 return;
             }
-            /*
-            if (player.empTimer > 0) return; // if they're EMPed, don't bother accepting key inputs.
-*/
+
             if (data.inputId === `e` && !player.docked) player.juke(false); // Q/E are juke keys
             if (data.inputId === `q` && !player.docked) player.juke(true);
 
