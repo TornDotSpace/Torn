@@ -154,7 +154,7 @@ class Player {
         if (this.disguise >= 0) this.disguise--;
 
         const amDrifting = this.e || this.gyroTimer > 0;
-        this.shield = (this.s && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
+        this.shield = (this.s && this.empTimer <= 5 && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
         if ((this.disguise > 0 && this.weapons[this.equipped] != 18 && this.weapons[this.equipped] != 19 && this.weapons[this.equipped] != 21 && this.weapons[this.equipped] != 22 && this.weapons[this.equipped] != 29 && this.weapons[this.equipped] != 36) || (this.shield && this.weapons[this.equipped] > 0 && wepns[this.weapons[this.equipped]].type !== `Misc` && wepns[this.weapons[this.equipped]].type !== `Mine` && this.space)) this.charge = Math.min(this.charge, 0);
         this.leaveBaseShield--;
 
@@ -1050,6 +1050,7 @@ class Player {
         if (this.isBot) {
             this.empTimer = t;
         } else {
+            if (this.shield) t *= 0.33; // Shield offers some protection for electronic components
 	    if (this.charge >= 0) {
                 this.emit(`emp`, { t: t });
 	        this.charge = -t * this.energy2;
