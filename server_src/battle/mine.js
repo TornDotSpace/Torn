@@ -237,8 +237,8 @@ class Mine {
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
             if (squaredDist(p, this) < square(80)) {
-                p.dmg(this.dmg / 10, this); // if i'm in range of a player on explosion, damage them
                 if (this.wepnID == 17) p.EMP(110); // EMP mine
+                p.dmg(this.dmg / 10, this); // if i'm in range of a player on explosion, damage them
             }
         }
         sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
