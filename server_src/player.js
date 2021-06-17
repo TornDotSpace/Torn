@@ -555,20 +555,18 @@ class Player {
     }
 
     move () {
-        if (this.empTimer > 0) return; // Cannot move while EMP'd.
-
-        if (this.hyperdriveTimer > 0) {
+        if (this.hyperdriveTimer > 0 && this.empTimer <= 0) {
             this.hyperdriveTimer--;
             this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
         }
 
-        if (this.isBot) this.botPlay(); // simulates a player and presses keys.
+        if (this.isBot && this.empTimer <= 0) this.botPlay(); // simulates a player and presses keys.
 
         const amDrifting = this.e || this.gyroTimer > 0;
         const ore = this.iron + this.silver + this.platinum + this.copper;
 
         // In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
-        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1);
+        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer <= 5 ? 1 : 0.33);
 
         // Reusable Trig
         const ssa = Math.sin(this.angle); const ssd = Math.sin(this.driftAngle); const csa = Math.cos(this.angle); const csd = Math.cos(this.driftAngle);
@@ -611,8 +609,8 @@ class Player {
         this.x += this.vx; // Update position from velocity
         this.y += this.vy;
         if (this.jukeTimer > 1 || this.jukeTimer < -1) { // Q or E keys. Juke mechanics.
-            this.x += this.jukeTimer * Math.sin(this.angle);
-            this.y -= this.jukeTimer * Math.cos(this.angle);
+            this.x += this.jukeTimer * Math.sin(this.angle) * (this.empTimer <= 5 ? 1 : 0.33);
+            this.y -= this.jukeTimer * Math.cos(this.angle) * (this.empTimer <= 5 ? 1 : 0.33);
             this.jukeTimer *= 0.8;
         }
 
@@ -1047,18 +1045,9 @@ class Player {
         if (this.empTimer > 0) return; // EMPs don't stack. Once EMP'd, a ship cannot be EMP'd again until the previous EMP has ended.
  	    if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // Emp works better on elite ships.
         if (this.ship == 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // It will also heal the ship a very small bit.
-        if (this.isBot) {
-            this.empTimer = t;
-        } else {
-            if (this.shield) t *= 0.33; // Shield offers some protection for electronic components
-	    if (this.charge >= 0) {
-                this.emit(`emp`, { t: t });
-	        this.charge = -t * this.energy2;
-	    } else {
-	        this.emit(`emp`, { t: t - this.charge / 25 });
-                this.charge += -t * this.energy2;
-            }
-        }
+        if (this.shield) t *= 0.33; // Shield offers some protection for electronic components
+        this.empTimer = t;
+        this.emit(`emp`, { t: t });
     }
 
     save () {}
