@@ -36,8 +36,10 @@ const Aud: Map<string, Howl> = new Map();
  * @returns Current SFX mute state.
  */
 const toggleSFX = () => {
-    for (const entry of Aud) if (entry[0] !== `music1`) entry[1].stop();
     muted = !muted;
+    if (!muted)
+        for (const entry of Aud)
+            if (entry[0] !== `music1`) entry[1].stop();
 
     return muted;
 };
@@ -48,11 +50,11 @@ const toggleSFX = () => {
  */
 const toggleMusic = () => {
     const music = Aud.get(`music1`);
+    musicMuted = !musicMuted;
 
     if (musicMuted && login) music.pause();
     else if (musicAudio !== 0) music.play();
 
-    musicMuted = !musicMuted;
     return musicMuted;
 };
 
