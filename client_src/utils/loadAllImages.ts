@@ -15,26 +15,23 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const loadImage = (name, src) => {
-    if (Img[name]) {
-        console.error(`Loading image twice: ${name}`); return;
-    }
-    Img[name] = new Image();
-    Img[name].addEventListener(`load`, () => {
-        Img_prgs[0]++;
-    });
-    Img[name].src = src;
-    Img_prgs[1]++;
-};
+import { loadImage, loadShipImage } from '../modules/image';
 
+declare let EVERYTHING_LOADED: boolean;
+declare let planetImgs: any[];
+
+declare let Img_prgs: number[];
+(<any>global).Img_prgs = [0, 0];
+
+/**
+ * Helper function to clean up image loader.
+ */
 const loadImageEnd = () => {
     const loaded = () => {
         if (Img_prgs[0] === Img_prgs[1]) {
             EVERYTHING_LOADED = true;
             return true;
-        } else {
-            return false;
-        }
+        } else return false;
     };
 
     if (!loaded()) {
@@ -44,19 +41,9 @@ const loadImageEnd = () => {
     }
 };
 
-const loadShipImg = (color, i) => {
-    if (color === `red`) {
-        redShips[i] = new Image();
-        redShips[i].src = `/img/red/r${i + 1}.png`;
-    } else if (color === `blue`) {
-        blueShips[i] = new Image();
-        blueShips[i].src = `/img/blue/b${i + 1}.png`;
-    } else {
-        greenShips[i] = new Image();
-        greenShips[i].src = `/img/green/g${i + 1}.png`;
-    }
-};
-
+/**
+ * Load all images.
+ */
 const loadAllImages = () => {
     // Misc.
     loadImage(`grad`, `/img/grad.png`);
@@ -149,11 +136,11 @@ const loadAllImages = () => {
     loadImage(`whiteArrow`, `/img/arrows/whiteArrow.png`);
     loadImage(`blackArrow`, `/img/arrows/blackArrow.png`);
 
-    // Ships
+    // Ships.
     for (let i = 0; i < 23; i++) {
-        loadShipImg(`blue`, i);
-        loadShipImg(`red`, i);
-        loadShipImg(`green`, i);
+        loadShipImage(`blue`, i);
+        loadShipImage(`red`, i);
+        loadShipImage(`green`, i);
     }
 
     loadImageEnd();
@@ -164,4 +151,4 @@ const loadAllImages = () => {
     }
 };
 
-module.exports = loadAllImages;
+export default loadAllImages;

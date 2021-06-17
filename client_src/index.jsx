@@ -24,6 +24,8 @@ import { ChatState } from './react/components/ChatInput';
 import { jsn, translate } from './localizer';
 
 import loadAllAudio from './utils/loadAllAudio';
+import loadAllImages from './utils/loadAllImages';
+
 import * as audioUtil from './modules/audio';
 
 `use strict`;
@@ -167,7 +169,6 @@ global.didW = false; global.didSteer = false; global.currTut = 0;
 
 global.sectorPoints = 0;
 
-const loadAllImages = require(`./image.js`);
 require(`./localizer.ts`);
 require(`./helper.js`);
 require(`./network.js`);
