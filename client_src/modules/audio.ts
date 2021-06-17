@@ -35,9 +35,9 @@ const Aud: Map<string, Howl> = new Map();
  * Toggle whether SFX can be heard or not.
  * @returns Current SFX mute state.
  */
-const toggleAudio = () => {
+const toggleSFX = () => {
+    for (const entry of Aud) if (entry[0] !== `music1`) entry[1].stop();
     muted = !muted;
-    Howler.mute(muted);
 
     return muted;
 };
@@ -47,13 +47,12 @@ const toggleAudio = () => {
  * @returns Current music mute state.
  */
 const toggleMusic = () => {
-    musicMuted = !musicMuted;
-
     const music = Aud.get(`music1`);
 
     if (musicMuted && login) music.pause();
     else if (musicAudio !== 0) music.play();
 
+    musicMuted = !musicMuted;
     return musicMuted;
 };
 
@@ -106,7 +105,7 @@ const loadAudio = (name: string, src: string) => {
 };
 
 export {
-    toggleAudio,
+    toggleSFX,
     toggleMusic,
 
     playAudio,

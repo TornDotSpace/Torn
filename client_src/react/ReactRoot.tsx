@@ -25,7 +25,7 @@ import Register from './components/Register';
 
 let RootState: { toggleDisplay: any, turnOnDisplay: any, turnOffDisplay: any, turnOnRegister: any, turnOffRegister: any };
 
-class ReactRoot extends React.Component<{ data: { toggleAudio: any, toggleMusic: any } }, { display: string, register: string }> {
+class ReactRoot extends React.Component<{ data: { toggleSFX: any, toggleMusic: any } }, { display: string, register: string }> {
     constructor (props) {
         super(props);
 
@@ -74,7 +74,7 @@ class ReactRoot extends React.Component<{ data: { toggleAudio: any, toggleMusic:
         <span>
             <Chat />
 
-            <MuteButton toggleAudio={this.props.data.toggleAudio} />
+            <MuteButton toggleSFX={this.props.data.toggleSFX} />
             <MusicButton toggleMusic={this.props.data.toggleMusic} />
 
             <LoginOverlay display={this.state.display === `LoginOverlay`} />

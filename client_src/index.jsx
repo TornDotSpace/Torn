@@ -185,7 +185,7 @@ global.ships = jsn.ships;
 ReactDOM.render(
     <ReactRoot data={{
         toggleMusic: audioUtil.toggleMusic,
-        toggleAudio: audioUtil.toggleAudio
+        toggleSFX: audioUtil.toggleSFX
     }} />,
 
     // Render to secondary container to prevent canvas from being affected.
