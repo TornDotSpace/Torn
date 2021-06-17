@@ -547,7 +547,7 @@ class Player {
         if ((this.disguise > 0 && wepId != 18 && wepId != 19 && wepId != 21 && wepId != 22 && wepId != 29 && wepId != 36) || (this.shield && wepns[wepId].type !== `Misc`)) return false;
         //  Upcoming balance feature, do not touch
         let sufficientCharge = false;
-        if (wepId == 25 || wepId == 17 || wepId == 22) sufficientCharge = this.charge > ((this.energy2 + 1) / 1.8 * (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0));
+        if (wepId == 25 || wepId == 17 || wepId == 12) sufficientCharge = this.charge > (((this.energy2 + 1) / 1.8) * (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0));
         else sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
 
         // const sufficientCharge = this.charge > (wepns[wepId].charge > 12 ? wepns[wepId].charge : 0);
