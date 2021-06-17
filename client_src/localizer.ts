@@ -33,7 +33,12 @@ let splash = ``;
 
 export const getSplash = () => splash;
 
-const load = (lang) => {
+/**
+ * Load a language file.
+ * @param lang The URI of the language file to load.
+ * @returns A JSON representation of the language file.
+ */
+const load = (lang: string) => {
     const request = new XMLHttpRequest();
     request.open(`GET`, lang, false);
 
