@@ -16,14 +16,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import * as React from 'react';
-import { Socket } from 'socket.io-client';
+
+import sendAPI from '../../utils/sendAPI';
+import socket from '../../utils/socket';
 
 declare const VERSION: string;
-declare const socket: Socket;
-
 declare const loadLang: any;
-declare const send_api: any;
-declare const connect: any;
 
 declare let credentialState: number;
 declare let loginInProgress: boolean;
@@ -70,17 +68,17 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
     }
 
     registerR = () => {
-        connect();
+        socket.open();
         socket?.emit(`lore`, { team: `red` });
     }
 
     registerB = () => {
-        connect();
+        socket.open();
         socket?.emit(`lore`, { team: `blue` });
     }
 
     registerG = () => {
-        connect();
+        socket.open();
         socket?.emit(`lore`, { team: `green` });
     }
 
@@ -94,7 +92,7 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         if (loginInProgress) return;
         loginInProgress = true;
 
-        const playCookie = await send_api(`/login/`, `${user}%${pass}`);
+        const playCookie = await sendAPI(`/login/`, `${user}%${pass}`);
 
         if (playCookie.status === 403) {
             credentialState = 1;
@@ -108,7 +106,7 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         }
 
         const playCookieData = await playCookie.text();
-        connect();
+        socket.open();
 
         console.log(`:TornNetRepository: Got PlayCookie: ${playCookieData}`);
         socket?.emit(`login`, { cookie: playCookieData, version: VERSION });
