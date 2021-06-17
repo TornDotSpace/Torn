@@ -169,6 +169,8 @@ class Player {
         this.fire();
 
         let chargeVal = (this.energy2 + 1) / 1.8; // charge speed scales with energy tech
+        this.navigationalShieldCount();
+        this.calculateGenerators();
         for (let i = 0; i < this.generators; i++) chargeVal *= 1.08;
         for (let i = 0; i < this.navigationalShield; i++) chargeVal /= 1.08; // For each navigational shield you carry, you lose the equivalent of two generators, the one that really is in your slots, and the potential one you could have placed instead of the item. 1.08/1.08 = 1
         if (this.charge < 0 || this.space || this.c) this.charge += chargeVal;
@@ -1019,7 +1021,6 @@ class Player {
         }
 
         if (this.empTimer <= 0 && origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) { // navigational shield fails when EMPd
-            this.navigationalShieldCount();
 	    if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
         }
 
