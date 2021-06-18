@@ -25,6 +25,7 @@ class Base {
         this.assimilatedCol = col, // The team that is attempting to overtake the base
         this.owner = 0,
         this.name = ``,
+        this.isMini = (type == SENTRY),
         this.baseType = type, // Constants above
         this.angle = 0, // angle of the turret
 
