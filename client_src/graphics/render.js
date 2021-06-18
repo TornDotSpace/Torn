@@ -144,6 +144,7 @@ global.render = function () {
     const arr = [time0, time1, time2, time3, time4, time5, time6, time7, time8, time9, timeA];
     lagMath(arr);
     rLagStats(clientLag, arr);
+    rBasicText();
     ops--;
 };
 
@@ -583,6 +584,22 @@ global.drawStar = function (ox, oy, spikes, outerRadius, innerRadius) {
     ctx.closePath();
     ctx.fill();
 };
+
+global.rBasicText = function () {
+    const info = {};
+    ctx.font = `10px ShareTech`;
+    ctx.textAlign = `right`;
+    ctx.fillStyle = `white`;
+    const lbShift = guest ? 8 : 266;
+    info[0] = translate(`Experience: #`, [numToLS(Math.round(experience))]);
+    info[1] = translate(`Money: #`, [numToLS(Math.floor(money))]);
+    info[2] = translate(`Kills: #`, [numToLS(kills)]);
+    info[3] = translate(`Rank: #`, [rank]);
+    info[4] = translate(`Sector: #`, [getSectorName(sx, sy)]);
+    for (let i = 0; i < 4; i++)
+        write(ctx, info[i], w - lbShift, 16 + i * 16);
+};
+
 global.rLagStats = function (lag, arr) {
     ctx.font = `14px ShareTech`;
     ctx.textAlign = `right`;
@@ -604,7 +621,7 @@ global.rLagStats = function (lag, arr) {
     }
 
     for (let i = 0; i < 2; i++) {
-        write(ctx, lagWarn[i], w - lbShift, 16 + i * 16);
+        write(ctx, lagWarn[i], w - lbShift, 16 * 5 + i * 16);
     }
 
     if (!dev || arr === 0) {
