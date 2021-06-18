@@ -591,13 +591,15 @@ global.rBasicText = function () {
     ctx.textAlign = `right`;
     ctx.fillStyle = `white`;
     const lbShift = guest ? 8 : 266;
-    info[0] = translate(`Experience: #`, [numToLS(Math.round(experience))]);
-    info[1] = translate(`Money: #`, [numToLS(Math.floor(money))]);
-    info[2] = translate(`Kills: #`, [numToLS(kills)]);
-    info[3] = translate(`Rank: #`, [rank]);
-    info[4] = translate(`Sector: #`, [getSectorName(sx, sy)]);
-    for (let i = 0; i < 4; i++)
-        write(ctx, info[i], w - lbShift, 16 + i * 16);
+    if (!guest) {
+        info[0] = translate(`Experience: #`, [numToLS(Math.round(experience))]);
+        info[1] = translate(`Money: #`, [numToLS(Math.floor(money))]);
+        info[2] = translate(`Kills: #`, [numToLS(kills)]);
+        info[3] = translate(`Rank: #`, [rank]);
+        info[4] = translate(`Sector: #`, [getSectorName(sx, sy)]);
+        for (let i = 0; i < 4; i++)
+            write(ctx, info[i], w - lbShift, 16 + i * 16);
+    }
 };
 
 global.rLagStats = function (lag, arr) {
@@ -621,7 +623,7 @@ global.rLagStats = function (lag, arr) {
     }
 
     for (let i = 0; i < 2; i++) {
-        write(ctx, lagWarn[i], w - lbShift, 16 * 5 + i * 16);
+        write(ctx, lagWarn[i], w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
     }
 
     if (!dev || arr === 0) {
