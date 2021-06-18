@@ -127,6 +127,7 @@ error_logs/
 
 # Compiled client scripts.
 client.min.js
+client.js
 
 # License
 client/*.LICENSE.txt
