@@ -245,6 +245,8 @@ class Base {
                 if (squaredDist(p, this) < square(baseClaimRange) && p.color === b.owner.color) {
                     p.spoils(`experience`, baseKillExp * multiplier); // reward them
                     p.spoils(`money`, baseKillMoney * multiplier);
+                    p.killStreak++; // Bases count for kill streaks
+                    p.killStreakTimer = 1000; // 40s
                 }
             }
 
