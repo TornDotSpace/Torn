@@ -36,7 +36,7 @@ function parseValue (value) {
     }
 
     if (value === `1`) {
-        return false;
+        return true;
     }
 
     if (value === `t`) {
