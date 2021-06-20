@@ -126,7 +126,7 @@ class Mine {
         for (const i in missiles[this.sy][this.sx]) {
             const m = missiles[this.sy][this.sx][i];
             const d2 = squaredDist(this, m);
-            if (d2 > square(10 * wep.range)) continue;
+            if (d2 > square(10 * this.range)) continue;
             const ang = angleBetween(this, m);
             const vel = -100000000 / Math.max(d2, 2000000);
             m.emvx += Math.cos(ang) * vel;
