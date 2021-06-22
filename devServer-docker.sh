@@ -3,7 +3,7 @@
 # Development build for a Unix machine (with Docker).
 
 echo Building client...
-npm i && npm run dev &
+npm ci && npm run dev:serve &
 
 echo Starting Account Server...
 python /opt/Torn/account/account_server.py &
@@ -18,9 +18,6 @@ echo
 
 echo Starting gameserver on port 7300...
 node /opt/Torn/app.js 7300 dev &
-
-echo Starting webfront on port 7301...
-node /opt/Torn/web.js 7301 &
 
 cp /opt/Torn/client/index.html.template /opt/Torn/client/index.html
 

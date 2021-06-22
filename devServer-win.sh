@@ -4,7 +4,7 @@
 # Note: You will have to manually kill the Node.js process between builds!
 
 echo Building client...
-npm i && npm run dev &
+npm ci && npm run dev:serve &
 
 echo Starting Account Server...
 py ./account/account_server.py &
@@ -19,9 +19,6 @@ echo
 
 echo Starting gameserver on port 7300...
 node app.js 7300 dev &
-
-echo Starting webfront on port 7301...
-node web.js 7301 &
 
 echo Done. Go to http://localhost:7301 to access the dev server!
 

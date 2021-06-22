@@ -19,10 +19,11 @@ const Webpack = require(`webpack`);
 
 const { merge } = require(`webpack-merge`);
 const common = require(`./webpack.common.js`);
+const path = require(`path`);
 
 module.exports = merge(common, {
     mode: `development`,
-    devtool: `inline-source-map`, // -- disabled due to bug
+    devtool: `inline-source-map`,
     optimization: {
         minimize: false
     },
@@ -31,5 +32,10 @@ module.exports = merge(common, {
             TORN_GAMESERVER_URL: `"localhost:7300"`,
             TORN_API_URL: `"http://localhost:8080"`
         })
-    ]
+    ],
+    devServer: {
+        contentBase: path.join(__dirname, `../client`),
+        compress: true,
+        port: 7301
+    }
 });
