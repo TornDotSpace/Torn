@@ -22,6 +22,7 @@ import { ReactRoot, RootState } from './react/ReactRoot';
 import { ChatState } from './react/components/ChatInput';
 
 import { jsn, translate } from './localizer';
+import { square, coherentNoise, weaponWithOrder } from './helper';
 
 import loadAllAudio from './utils/loadAllAudio';
 import loadAllImages from './utils/loadAllImages';
@@ -170,7 +171,6 @@ global.didW = false; global.didSteer = false; global.currTut = 0;
 global.sectorPoints = 0;
 
 require(`./localizer.ts`);
-require(`./helper.js`);
 require(`./network.js`);
 require(`./graphics/render.js`);
 require(`./graphics/ArrowGraphics.js`);
@@ -338,8 +338,8 @@ const loop = () => {
 
         // Extra ships
         for (let j = 0; j < 4; j++) {
-            const pxn = (32 + Math.sin(t * 4 + 0.2)) * 3200 + CoherentNoise(t * 4 + j * 3 * Math.E) * 192;
-            const pyn = (32 + Math.cos(t * 5 + 0.2)) * 3200 + CoherentNoise(t * 4 + j * 3 * Math.E + 61.23) * 192;
+            const pxn = (32 + Math.sin(t * 4 + 0.2)) * 3200 + coherentNoise(t * 4 + j * 3 * Math.E) * 192;
+            const pyn = (32 + Math.cos(t * 5 + 0.2)) * 3200 + coherentNoise(t * 4 + j * 3 * Math.E + 61.23) * 192;
             for (const i in bullets) {
                 const b = bullets[i];
                 if (square(b.x - pxn) + square(b.y - pyn) < 64 * 32) {

@@ -28,6 +28,8 @@ import {
     chatLength
 } from './chat';
 
+import { getMousePos, addBigNote } from './helper';
+
 // input
 document.onkeydown = function (event) {
     // Grab enter on homepage

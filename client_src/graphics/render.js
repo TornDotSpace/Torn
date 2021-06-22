@@ -15,8 +15,27 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { pasteChat } from "../chat.ts";
-import { getSplash, jsn, translate } from "../localizer.ts";
+import { pasteChat } from '../chat';
+import { getSplash, jsn, translate } from '../localizer';
+
+import {
+    getSectorName,
+    getQuestDescription,
+    write,
+    square,
+    cube,
+    sinLow,
+    cosLow,
+    colorSelect,
+    rankToExp,
+    lagMath,
+    addBigNote,
+    bgPos,
+    getTimeAngle,
+    brighten,
+    numToLS,
+    ammoCodeToString
+} from '../helper';
 
 global.LIVEBASE = 0;
 global.DEADBASE = 1;
@@ -469,7 +488,7 @@ global.rExpBar = function () {
     ctx.strokeRect(w / 2 - 128, h - 28, 256, 16);
 
     // foreground rectangle
-    let dec = 252 * (experience - r2x(rank - 1)) / (r2x(rank) - r2x(rank - 1));
+    let dec = 252 * (experience - rankToExp(rank - 1)) / (rankToExp(rank) - rankToExp(rank - 1));
     if (dec < 0) {
         dec = 0;
     }
@@ -478,9 +497,9 @@ global.rExpBar = function () {
 
     // Write right and left xp requirements
     ctx.textAlign = `right`;
-    write(ctx, `${Math.max(r2x(rank - 1), 0)}`, w / 2 - 140, h - 14);
+    write(ctx, `${Math.max(rankToExp(rank - 1), 0)}`, w / 2 - 140, h - 14);
     ctx.textAlign = `left`;
-    write(ctx, `${r2x(rank)}`, w / 2 + 140, h - 14);
+    write(ctx, `${rankToExp(rank)}`, w / 2 + 140, h - 14);
 
     // write current xp
     ctx.font = `11px ShareTech`;

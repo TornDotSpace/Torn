@@ -19,6 +19,13 @@ import { RootState } from './react/ReactRoot';
 import { ChatState } from './react/components/ChatInput';
 
 import { jsn, translate } from './localizer';
+import {
+    square,
+    sinLow,
+    cosLow,
+    lerp,
+    addBigNote
+} from './helper';
 
 import socket from './modules/socket';
 import { playAudio } from './modules/audio';

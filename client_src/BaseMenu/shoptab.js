@@ -16,6 +16,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { translate } from '../localizer';
+import {
+    write,
+    colorSelect,
+    expToLife,
+    weaponWithOrder,
+    numToLS,
+    ammoCodeToString
+} from '../helper';
+
 import socket from '../modules/socket';
 
 const lifeShopYVal = 405;

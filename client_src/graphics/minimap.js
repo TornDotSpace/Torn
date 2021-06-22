@@ -16,6 +16,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { translate } from '../localizer';
+import {
+    getSectorName,
+    write,
+    square,
+    sinLow,
+    cosLow,
+    colorSelect,
+    coherentNoise,
+    lerp,
+    brighten
+} from '../helper';
 
 const minimapcanvas = document.createElement(`canvas`);
 minimapcanvas.width = minimapcanvas.height = 208;
@@ -369,7 +380,7 @@ global.r3DMap = function () {
             const xx = 104 + dot.x / mapZoom;
             const yy = 104 + dot.y / mapZoom;
             const sz = i / 500 + 0.5;
-            minictx.fillStyle = `#${(((128 + Math.floor(Math.abs(CoherentNoise(i)) * 128)) << 16) + (Math.floor(64 + Math.abs(CoherentNoise(17 * i + 79)) * 128) << 8) + Math.floor(Math.abs(CoherentNoise(7 * i + 107)) * 128)).toString(16)}`;
+            minictx.fillStyle = `#${(((128 + Math.floor(Math.abs(coherentNoise(i)) * 128)) << 16) + (Math.floor(64 + Math.abs(coherentNoise(17 * i + 79)) * 128) << 8) + Math.floor(Math.abs(coherentNoise(7 * i + 107)) * 128)).toString(16)}`;
             minictx.globalAlpha = Math.min(1, 48 * square(square(square(-dot.z / 400 + 0.5))));
             minictx.fillRect(xx - sz / 2, yy - sz / 2, sz, sz);
         }
@@ -401,7 +412,7 @@ global.paste3DMap = function (xp, yp) {
     let x2 = xp+104 + ((dot.x-bhx)*dt*2+bhx) / mapZoom;
     let y2 = yp+104 + ((dot.y-bhy)*dt*2+bhy) / mapZoom;
     let sz = i/500+.5
-    ctx.strokeStyle = "#"+(((0 + Math.floor(Math.abs(CoherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(CoherentNoise(17*i+79)) * 128) << 8) + Math.floor(128+Math.abs(CoherentNoise(7*i+107)) * 128)).toString(16);
+    ctx.strokeStyle = "#"+(((0 + Math.floor(Math.abs(coherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(coherentNoise(17*i+79)) * 128) << 8) + Math.floor(128+Math.abs(coherentNoise(7*i+107)) * 128)).toString(16);
     ctx.beginPath();
     ctx.moveTo(x1,y1);
     ctx.lineTo(x2,y2);

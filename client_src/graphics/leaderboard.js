@@ -15,7 +15,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { translate } from "../localizer.ts";
+import { translate } from '../localizer';
+import { write, abbrevInt, brighten } from '../helper';
 
 const leaderboardcanvas = document.createElement(`canvas`);
 leaderboardcanvas.width = 260;

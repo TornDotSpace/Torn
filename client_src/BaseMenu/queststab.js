@@ -16,6 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { translate } from '../localizer';
+import { getQuestDescription, write, numToLS } from '../helper';
+
 import socket from '../modules/socket';
 
 // Render the quests tab.
