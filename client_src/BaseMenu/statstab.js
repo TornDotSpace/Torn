@@ -16,6 +16,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { translate } from '../localizer';
+import {
+    getRainbowColor,
+    write,
+    colorSelect,
+    numToLS,
+    techPrice,
+    techPriceForDowngrade,
+    techEnergy
+} from '../helper';
+
 import socket from '../modules/socket';
 
 // Render the stats tab.

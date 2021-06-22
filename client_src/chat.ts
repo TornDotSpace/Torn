@@ -16,16 +16,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { translate } from './localizer';
+import { square, brighten, getPosition } from './helper';
+
 import socket from './modules/socket';
 
 declare let clientmutes: any;
 declare let roundRect: Function;
 declare let seller: Number;
 declare let ctx: CanvasRenderingContext2D;
-declare let square: any;
-declare let brighten: any;
 declare let h: any;
-declare let getPosition: any;
 declare let wepns: any;
 declare let guiOpacity: any;
 declare let guiColor: any;
