@@ -665,7 +665,7 @@ global.rLagStats = function (lag, arr) {
 
     const il = 7; // 1 + max index of info
     for (let i = 2; i < il + lagNames.length; i++) {
-        write(ctx, i < il ? info[i] : (`${lagNames[i - il]}: ${parseFloat(Math.round(arr[i - il] * 100) / 100).toFixed(2)}`), w - lbShift, 16 + i * 16);
+        write(ctx, i < il ? info[i] : (`${lagNames[i - il]}: ${parseFloat(Math.round(arr[i - il] * 100) / 100).toFixed(2)}`), w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
     }
     ctx.textAlign = `left`;
 };
