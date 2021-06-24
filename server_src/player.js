@@ -171,7 +171,7 @@ class Player {
         let chargeVal = (this.energy2 + 1) / 1.8; // charge speed scales with energy tech
         this.navigationalShieldCount();
         this.calculateGenerators();
-        for (let i = 0; i < this.generators; i++) chargeVal *= 1.08;
+        for (let i = 0; i < this.generators; i++) chargeVal *= 1.08; // Each generator increases your energy by 8%
         for (let i = 0; i < this.navigationalShield; i++) chargeVal /= 1.08; // For each navigational shield you carry, you lose the equivalent of two generators, the one that really is in your slots, and the potential one you could have placed instead of the item. 1.08/1.08 = 1
         if (this.charge < 0 || this.space || this.c) this.charge += chargeVal;
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
