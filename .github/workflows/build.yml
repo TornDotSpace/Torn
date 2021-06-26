@@ -4,6 +4,7 @@ on: [push,pull_request]
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -14,16 +15,22 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install dependencies and build client
-      run: |
-        npm ci
-        npm run dev
-        npm run test-build
+    - name: Install Dependencies
+      run: npm ci
+      env:
+        CI: true
+    - name: Build Client (Prod)
+      run:
         npm run build
       env:
         CI: true
-    - name: Lint
-      run: npm run dev:lint
+    - name: Build Client (Dev)
+      run:
+        npm run dev
       env:
         CI: true
-
+    - name: Build Client (Test)
+      run:
+        npm run test-build
+      env:
+        CI: true

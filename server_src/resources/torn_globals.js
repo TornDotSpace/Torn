@@ -31,11 +31,11 @@ global.bulletWidth = 16; // collision radius
 global.mineLifetime = 3 * tickRate * 60; // mines despawn after this many minutes (3)
 global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
 global.baseHealth = 4000; // max base health
-global.baseKillExp = 20000; // Exp reward for killing a base
+global.baseKillExp = 5000; // Exp reward for killing a base
 global.baseKillMoney = 250000; // ditto but money
 global.baseRegenSpeed = 3; // How many times faster bases regenerate health than players
 global.baseClaimRange = 1000; // How far you must be from a base (times ten) to get rewards
-global.mapSz = 6; // How many sectors across the server is. If changed, see planetsClaimed
+global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
 global.moneyPerRaidPoint = 300000;
 global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
@@ -94,22 +94,22 @@ global.planetNames = jsn.planets;
 global.basesPerTeam = 4;
 global.baseMap =	{
     red: [	// x, y
-        0, 0,
-        1, 2,
-        0, 3,
-        1, 5
+        1, 0,
+        3, 0,
+        2, 2,
+        5, 1
     ],
     blue: [
-        2, 0,
-        3, 2,
-        2, 3,
-        3, 5
+        4, 2,
+        6, 2,
+        5, 4,
+        4, 6
     ],
     green: [
-        4, 0,
-        5, 2,
-        4, 3,
-        5, 5
+        1, 3,
+        0, 5,
+        2, 6,
+        3, 4
     ]
 };
 
