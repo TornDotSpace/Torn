@@ -35,7 +35,7 @@ global.baseKillExp = 20000; // Exp reward for killing a base
 global.baseKillMoney = 250000; // ditto but money
 global.baseRegenSpeed = 3; // How many times faster bases regenerate health than players
 global.baseClaimRange = 1000; // How far you must be from a base (times ten) to get rewards
-global.mapSz = 9; // How many sectors across the server is. If changed, see planetsClaimed
+global.mapSz = 6; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336; // must be divisible by 2048.
 global.moneyPerRaidPoint = 300000;
 global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
@@ -91,31 +91,25 @@ global.ships = jsn.ships;
 global.planetNames = jsn.planets;
 
 // bases
-global.basesPerTeam = 6;
+global.basesPerTeam = 4;
 global.baseMap =	{
     red: [	// x, y
-        1, 0,
-        2, 7,
-        2, 2,
+        0, 0,
+        1, 2,
         0, 3,
-        1, 5,
-        0, 8
+        1, 5
     ],
     blue: [
-        4, 0,
-        5, 7,
-        5, 2,
-        3, 3,
-        4, 5,
-        3, 8
+        2, 0,
+        3, 2,
+        2, 3,
+        3, 5
     ],
     green: [
-        7, 0,
-        8, 7,
-        8, 2,
-        6, 3,
-        7, 5,
-        6, 8
+        4, 0,
+        5, 2,
+        4, 3,
+        5, 5
     ]
 };
 

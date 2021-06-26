@@ -233,7 +233,7 @@ class Base {
         if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
             this.sendDeathMsg(`${b.owner.nameWithColor()}'s ${chatWeapon(b.wepnID)}`);
             b.owner.baseKilled();
-            let multiplier = this.isMini ? 1 : 2 * Math.abs(this.sy - mapSz / 2 - 0.5);
+            let multiplier = this.isMini ? 1 : 2;
             let numInRange = 0;
             for (const i in players[this.sy][this.sx]) { // Count all players in range
                 const p = players[this.sy][this.sx][i];

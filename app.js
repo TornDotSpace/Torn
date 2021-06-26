@@ -348,10 +348,10 @@ function init () { // start the server!
     global.wormhole = vorts[v.sy][v.sx][id] = v;
 
     // 3 Black Holes
-    for (let vortno = 0; vortno < 9; vortno++) {
-        if (vortno % 3 != 2) continue;
+    for (let vortno = 0; vortno < mapSz; vortno++) {
+        if (vortno % mapSz / 3 != 1) continue;
         id = Math.random();
-        v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, vortno, 4, 0.15, 0, false);
+        v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, vortno, Math.floor(mapSz / 2), 0.15, 0, false);
         vorts[v.sy][v.sx][id] = v;
     }
 

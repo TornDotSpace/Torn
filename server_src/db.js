@@ -77,7 +77,7 @@ global.loadPlayerData = async function (player) {
         player[key] = record[key];
     }
 
-    if (bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx].color != player.color) {
+    if (player.sx >= mapSz || player.sy >= mapSz || bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx].color != player.color) {
         player.sx = baseMap[player.color][0];
         player.sy = baseMap[player.color][1];
     }
@@ -120,6 +120,9 @@ global.deleteTurret = function (turret) {
 global.loadTurretData = async function () {
     console.log(`\nLoading Turrets...`);
     const items = await TURRET_DATABASE.find();
+    if (items.sx >= mapSz || items.sy >= mapSz) {
+        return;
+    }
 
     items.forEach((i) => {
         const b = new Base(0, 0, 0, 0, 0, 0, 0);
