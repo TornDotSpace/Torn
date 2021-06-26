@@ -1119,14 +1119,14 @@ class Player {
     }
 
     calculateGenerators () { // count how many gens I have
-        let gens = 0;
-        if (this.ship >= wepns[20].level) { // gotta have sufficiently high ship
-            let maxSlots = 0;
-            if (this.ship == 22) maxSlots = 10;
-            else maxSlots = ships[this.ship].weapons;
+        // let gens = 0;
+        // if (this.ship >= wepns[20].level) { // gotta have sufficiently high ship
+        //     let maxSlots = 0;
+        //     if (this.ship == 22) maxSlots = 10;
+        //     else maxSlots = ships[this.ship].weapons;
 
-            for (let slot = 0; slot < maxSlots; slot++) if (this.weapons[slot] == 20) gens++;
-        }
+        //     for (let slot = 0; slot < maxSlots; slot++) if (this.weapons[slot] == 20) gens++;
+        // }
 
         // this.generators = gens;
         this.generators = 0;
