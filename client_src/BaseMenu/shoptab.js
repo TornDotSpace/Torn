@@ -76,15 +76,20 @@ global.rBuyShipWindow = function () {
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80, 12);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80, 12); if (shipView != 17) { baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80, 12); } // 17 has infinite cargo
 
+        baseMenuCtx.strokeStyle = `white`;
         baseMenuCtx.fillStyle = compareColor(shipView, ship, `thrust`);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80 * ships[shipView].thrust / maxShipThrust, 12);
+        baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80 * ships[ship].thrust / maxShipThrust, 12);
         baseMenuCtx.fillStyle = compareColor(shipView, ship, `agility`);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80 * ships[shipView].agility / maxShipAgility, 12);
+        baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80 * ships[ship].agility / maxShipAgility, 12);
         baseMenuCtx.fillStyle = compareColor(shipView, ship, `health`);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80 * ships[shipView].health / maxShipHealth, 12);
+        baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80 * ships[ship].health / maxShipHealth, 12);
         if (shipView != 17) {
             baseMenuCtx.fillStyle = compareColor(shipView, ship, `capacity`);
             baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[shipView].capacity / maxShipCapacity, 12);
+            baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[ship].capacity / maxShipCapacity, 12);
         } // 17 has infinite cargo
     }
 
@@ -101,31 +106,16 @@ global.rBuyShipWindow = function () {
     }
 };
 
-function compareColor (shipView, ship, stat) { // If there's a way to make it better, please correct this
+function compareColor (shipView, ship, stat) {
     if (shipView == ship) return `white`;
-    let better = `#089B00`;
-    let equal = `#C8C761`;
-    let worse = `#9B0000`;
-    let veredict;
-    switch (stat) {
-        case `thrust`:
-            if (ships[shipView].thrust == ships[ship].thrust) veredict = equal;
-            else veredict = (ships[shipView].thrust < ships[ship].thrust) ? worse : better;
-            break;
-        case `agility`:
-            if (ships[shipView].agility == ships[ship].agility) veredict = equal;
-            else veredict = (ships[shipView].agility < ships[ship].agility) ? worse : better;
-            break;
-        case `health`:
-            if (ships[shipView].health == ships[ship].health) veredict = equal;
-            else veredict = (ships[shipView].health < ships[ship].health) ? worse : better;
-            break;
-        case `capacity`:
-            if (ships[shipView].capacity == ships[ship].capacity) veredict = equal;
-            else veredict = (ships[shipView].capacity < ships[ship].capacity) ? worse : better;
-            break;
-    }
-    return veredict;
+    let gradient = `blue`;
+    const owned = ships[ship][stat];
+    const view = ships[shipView][stat];
+    const compare = Math.min(1, view / (owned * 2));
+    const r = Math.floor((1 - compare) * 255);
+    const g = Math.floor(255 * compare);
+    const b = Math.floor(64 * compare);
+    return `rgb(${r}, ${g}, ${b})`;
 }
 
 global.rOreShop = function () {
