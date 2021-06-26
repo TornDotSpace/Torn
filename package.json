@@ -4,7 +4,6 @@
   "description": "A midly popular space simulator MMO",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack --progress --config ./deploy/webpack.dev.js",
     "build": "webpack --progress --config ./deploy/webpack.prod.js",
     "test-build": "webpack --progress --config ./deploy/webpack.test.js",
@@ -69,7 +68,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "socket.io": "^4.1.2",
-    "socket.io-client": "^4.1.2",
-    "socket.io-msgpack-parser": "^3.0.1"
+    "socket.io-client": "^4.1.2"
   }
 }
