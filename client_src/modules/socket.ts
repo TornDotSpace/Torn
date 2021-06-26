@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { io, Socket } from 'socket.io-client';
-import msgpack from 'socket.io-msgpack-parser';
+// import msgpack from 'socket.io-msgpack-parser';
 
 declare const TORN_GAMESERVER_URL: string;
 

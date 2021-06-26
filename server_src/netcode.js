@@ -28,7 +28,7 @@ filter.removeWords(`god`, `hell`, `crap`, `flipping the bird`, `Lipshitz`, `Lips
 const PlayerMP = require(`./player_mp.js`);
 
 const exec = require(`child_process`).execSync;
-const msgpack = require(`socket.io-msgpack-parser`);
+// const msgpack = require(`socket.io-msgpack-parser`);
 
 let guestNumber = 0; // Enumerate guests since server boot
 

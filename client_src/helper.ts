@@ -279,8 +279,9 @@ const techPrice = (tech: number) => techEnergy(nextTechLevel(tech)) - techEnergy
  * @returns A numerical representation of the amount.
  */
 const techPriceForDowngrade = (tech: number, paid: boolean) => {
-    if (paid) return techEnergy(lastTechLevel(tech)) - techEnergy(tech);
-    return Math.max(techEnergy(lastTechLevel(tech)) - techEnergy(tech), -300000000);
+    return paid
+        ? techEnergy(lastTechLevel(tech)) - techEnergy(tech)
+        : Math.max(techEnergy(lastTechLevel(tech)) - techEnergy(tech), -300000000);
 };
 
 /**
