@@ -121,7 +121,9 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) 
         const lossConstant = commandExecuter.tag === `B` ? 0.95 : 0.9; // MVPs lose less when switching teams
         commandExecuter.money *= lossConstant;
         commandExecuter.experience *= lossConstant;
-        commandExecuter.changeSectors(commandExecuter.sy, (commandExecuter.sx + 3 * (teamDict[split[1]] - teamDict[oldColor])) % mapSz);
+        commandExecuter.sx = baseMap[commandExecuter.color][0];
+        commandExecuter.sy = baseMap[commandExecuter.color][1];
+        commandExecuter.changeSectors(commandExecuter.sy, commandExecuter.sx);
         commandExecuter.save();
     }
 });
