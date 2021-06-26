@@ -206,6 +206,11 @@ global.rWeapons = function () { // Weapon selector on right side of game
     write(ctx, translate(`Weapon`), w - 80, h - 432 + (-1 + 10) * 16);
     write(ctx, translate(`Ammo`), w - 16, h - 432 + (-1 + 10) * 16);
     for (let i = 0; i < 10; i++) {
+        const local_weapon = wepns[equipped[i]];
+
+        if (local_weapon === undefined) {
+            continue;
+        }
         ctx.fillStyle = scroll == i ? `lime` : `yellow`;
         if (i >= ships[ship].weapons) ctx.fillStyle = `orange`;
         if (ship < wepns[equipped[i]].level) ctx.fillStyle = `red`;
