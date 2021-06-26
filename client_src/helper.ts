@@ -278,8 +278,8 @@ const techPrice = (tech: number) => techEnergy(nextTechLevel(tech)) - techEnergy
  * @param tech The tech level to calculate with.
  * @returns A numerical representation of the amount.
  */
-const techPriceForDowngrade = (tech: number) => {
-    if (myName.startsWith(`[V] `) || myName.startsWith(`[B] `)) return techEnergy(lastTechLevel(tech)) - techEnergy(tech);
+const techPriceForDowngrade = (tech: number, paid: boolean) => {
+    if (paid) return techEnergy(lastTechLevel(tech)) - techEnergy(tech);
     return Math.max(techEnergy(lastTechLevel(tech)) - techEnergy(tech), -300000000);
 };
 
