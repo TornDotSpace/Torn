@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import * as React from 'react';
+import React from 'react';
 
 import socket from '../../modules/socket';
 
@@ -24,7 +24,7 @@ declare const stopTyping: any;
 let ChatState: { init: any, activate: any, focusChat: any, unfocusChat: any };
 
 class ChatInput extends React.Component<{}, { value: string, activated: boolean }> {
-    constructor (props) {
+    constructor (props: {}) {
         super(props);
 
         this.state = {
