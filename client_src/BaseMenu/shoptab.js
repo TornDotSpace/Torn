@@ -175,7 +175,7 @@ global.rWeaponsInShop = function () {
     for (let i = 0; i < 10; i++) {
         baseMenuCtx.fillStyle = (seller - 10 == i) ? `lime` : `yellow`;
         if (ships[shipView].weapons <= i) baseMenuCtx.fillStyle = `orange`;
-        if (shipView < wepns[equipped[i]].level) baseMenuCtx.fillStyle = `red`;
+        if (typeof wepns[equipped[i]] !== `undefined` && shipView < wepns[equipped[i]].level) baseMenuCtx.fillStyle = `red`;
         let tag = `       `;
         if (equipped[i] == -1) tag = `${translate(`[BUY]`)}  `;
         else if (equipped[i] > -1) tag = `${translate(`[SELL]`)} `;
