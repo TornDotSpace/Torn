@@ -86,7 +86,7 @@ const renderStatistics = () => {
     if (tag === `B`) write(baseMenuCtx, `MVP`, 192, 112);
 
     let eMult = e2;
-    let activeGens = 0;
+    // let activeGens = 0;
     let activeNavShields = 0;
 
     /* if (ship >= wepns[20].level) { // Generators
@@ -97,7 +97,7 @@ const renderStatistics = () => {
             if (equipped[i] == 20) activeGens++;
         }
     } */
-    for (let i = 0; i < activeGens; i++) eMult *= 1.08;
+    // for (let i = 0; i < activeGens; i++) eMult *= 1.08;
 
     if (ship >= wepns[49].level) { // Navigational shields
         for (let i = 0; i < 10; i++) {
