@@ -24,16 +24,11 @@ MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn"
 from pymongo import MongoClient
 from datetime import datetime
 
-print("*** RUNNING WEEKLY DECAY ***")
+print("*** RUNNING HALVE EXPERIENCE ***")
 client = MongoClient(MONGO_CONNECTION_STR)
 db = client.torn
 players = db.players
-import time; ms = time.time()*1000
-
-decayed = 0
-total = 0
 for player in players.find():
-    total += 1
     print(f"Processing: {player['_id']}")
 
     experience = player['experience']*.5
@@ -42,4 +37,4 @@ for player in players.find():
     players.update_one(
         {"_id": player["_id"]}, {"$set": {"experience": experience}}
     )
-print(f"decayed {decayed}/{total}")
+print("done")
