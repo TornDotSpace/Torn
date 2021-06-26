@@ -69,7 +69,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "socket.io": "^4.1.2",
-    "socket.io-client": "^4.1.2",
-    "socket.io-msgpack-parser": "^3.0.1"
+    "socket.io-client": "^4.1.2"
   }
 }
