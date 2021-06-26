@@ -89,14 +89,14 @@ const renderStatistics = () => {
     let activeGens = 0;
     let activeNavShields = 0;
 
-    if (ship >= wepns[20].level) { // Generators
+    /* if (ship >= wepns[20].level) { // Generators
         let maxSlots = 0;
         if (ship == 22) maxSlots = 10;
         else maxSlots = ships[ship].weapons;
         for (let i = 0; i < maxSlots; i++) {
             if (equipped[i] == 20) activeGens++;
         }
-    }
+    } */
     for (let i = 0; i < activeGens; i++) eMult *= 1.08;
 
     if (ship >= wepns[49].level) { // Navigational shields
