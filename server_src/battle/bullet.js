@@ -83,6 +83,7 @@ class Bullet {
                     a.dmg(this.dmg * (this.wepnID == 0 ? 2 : 1), this); // hurt the asteroid. ternary: Stock Gun does double damage.
                     a.vx += this.vx / 256; // push the asteroid
                     a.vy += this.vy / 256;
+                    a.owner = this.owner;
                     this.die(); // delete this bullet
                     break;
                 }

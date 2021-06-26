@@ -304,6 +304,7 @@ class Player {
                         const vel = -1000000 / Math.max(d2, 200000);
                         a.vx += Math.cos(ang) * vel;
                         a.vy += Math.sin(ang) * vel;
+                        a.owner = this;
                     }
                     for (const i in missiles[this.sy][this.sx]) {
                         const m = missiles[this.sy][this.sx][i];

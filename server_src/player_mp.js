@@ -200,7 +200,14 @@ class PlayerMP extends Player {
         this.quest = 0;
         this.emit(`quest`, { quest: 0, complete: false });// reset quest and update client
 
-        if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
+        if (b.type === `Asteroid`) {
+            if (b.owner === 0)
+                chatAll(`${this.nameWithColor()} crashed into an asteroid!`);
+            else {
+                b.owner.onKill(this);
+                chatAll(`${this.nameWithColor()} crashed into ${b.owner.nameWithColor()}'s asteroid!`);
+            }
+        } else if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
             const customMessageArr = eng.weapons[b.wepnID].killmessages;
             const useCustomKillMessage = Math.random() < 0.5 && typeof customMessageArr !== `undefined` && customMessageArr.length > 0;
 
@@ -212,7 +219,6 @@ class PlayerMP extends Player {
                 b.owner.sendAchievementsDrift(true);
             }
         } else if (b.type === `Vortex`) chatAll(`${this.nameWithColor()} crashed into a black hole!`); // send messages
-        else if (b.type === `Planet` || b.type === `Asteroid`) chatAll(`${this.nameWithColor()} crashed into an asteroid!`);
         else if (b.owner !== undefined && b.owner.type === `Base`) chatAll(`${this.nameWithColor()} was destroyed by base ${b.owner.nameWithColor()}!`);
 
         if (b.type !== `Vortex`) {

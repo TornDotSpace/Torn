@@ -14,6 +14,7 @@ for (let i = 0; i < mapSz; i++) {
 class Asteroid {
     constructor (i, h, sx, sy, x, y, vx, vy, metal) {
         this.type = `Asteroid`,
+        this.owner = 0,
         this.id = i, // unique identifier
         this.x = x,
         this.y = y,
@@ -65,7 +66,7 @@ class Asteroid {
 
     move () {
         this.angle += this.va;
-        if (Math.abs(this.vx) + Math.abs(this.vy) < 0.5) return;
+        if (Math.abs(this.vx) + Math.abs(this.vy) < 0.5) { this.owner = 0; return; }
         this.vx *= 0.997;
         this.vy *= 0.997;
         // ASTEROID GRAVITY, ACTIVATE AT YOUR OWN LAGGY RISK
