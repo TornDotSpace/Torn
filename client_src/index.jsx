@@ -183,15 +183,8 @@ require(`./chat.ts`);
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 
-ReactDOM.render(
-    <ReactRoot data={{
-        toggleMusic: audioUtil.toggleMusic,
-        toggleSFX: audioUtil.toggleSFX
-    }} />,
-
-    // Render to secondary container to prevent canvas from being affected.
-    document.querySelector(`#a`)
-);
+// Render the react overlay to the DOM.
+ReactDOM.render(<ReactRoot />, document.querySelector(`#a`));
 
 // Used in the ship store to make the bar graphs
 global.maxShipThrust = -1000;
