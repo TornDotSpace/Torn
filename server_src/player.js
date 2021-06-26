@@ -1128,7 +1128,8 @@ class Player {
             for (let slot = 0; slot < maxSlots; slot++) if (this.weapons[slot] == 20) gens++;
         }
 
-        this.generators = gens;
+        // this.generators = gens;
+        this.generators = 0;
     }
 
     navigationalShieldCount () { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
