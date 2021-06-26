@@ -16,6 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import React from 'react';
+
 import { ChatInput } from './ChatInput';
 
 class ChatMessage {
@@ -35,7 +36,7 @@ class ChatMessage {
 }
 
 class Chat extends React.Component<{}, { messages: any[] }> {
-    constructor (props) {
+    constructor (props: {}) {
         super(props);
 
         this.state = {

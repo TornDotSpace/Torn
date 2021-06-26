@@ -23,7 +23,13 @@ import MusicButton from './components/MusicButton';
 import LoginOverlay from './components/LoginOverlay';
 import Register from './components/Register';
 
-let RootState: { toggleDisplay: any, turnOnDisplay: any, turnOffDisplay: any, turnOnRegister: any, turnOffRegister: any };
+let RootState: {
+    toggleDisplay: any,
+    turnOnDisplay: any,
+    turnOffDisplay: any,
+    turnOnRegister: any,
+    turnOffRegister: any
+};
 
 class ReactRoot extends React.Component<{}, { display: string, register: string }> {
     constructor (props: {}) {

@@ -16,7 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import React from 'react';
+
 import { toggleSFX } from '../../modules/audio';
+
 class MuteButton extends React.Component<{}, { muted: boolean }> {
     constructor (props: {}) {
         super(props);
