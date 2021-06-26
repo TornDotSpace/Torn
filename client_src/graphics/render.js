@@ -385,8 +385,8 @@ global.updateTrails = function () {
                     vip: trail > 15,
                     dx: cos * selfo.speed / 2,
                     dy: sin * selfo.speed / 2,
-                    x: selfo.x + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cos * rando - cos * selfo.speed,
-                    y: selfo.y + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sin * rando - sin * selfo.speed,
+                    x: selfo.x + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cosLow(selfo.driftAngle) * (rando - selfo.speed),
+                    y: selfo.y + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sinLow(selfo.driftAngle) * (rando - selfo.speed),
                     time: -1,
                     color: col
                 };
