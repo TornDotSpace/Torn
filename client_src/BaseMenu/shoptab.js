@@ -176,10 +176,11 @@ global.rWeaponsInShop = function () {
         baseMenuCtx.fillStyle = (seller - 10 == i) ? `lime` : `yellow`;
         if (ships[shipView].weapons <= i) baseMenuCtx.fillStyle = `orange`;
         if (typeof wepns[equipped[i]] !== `undefined` && shipView < wepns[equipped[i]].level) baseMenuCtx.fillStyle = `red`;
+
         let tag = `       `;
         if (equipped[i] == -1) tag = `${translate(`[BUY]`)}  `;
         else if (equipped[i] > -1) tag = `${translate(`[SELL]`)} `;
-        write(baseMenuCtx, `${tag + (` ${i + 1}`).slice(-2)}: ${wepns[equipped[i]].name}`, 256 + 32, 256 + i * 16);
+        write(baseMenuCtx, `${tag + (` ${i + 1}`).slice(-2)}: ${wepns[equipped[i]]?.name}`, 256 + 32, 256 + i * 16);
     }
 };
 
@@ -188,7 +189,7 @@ global.rConfirm = function () {
     baseMenuCtx.fillStyle = `cyan`;
     baseMenuCtx.textAlign = `center`;
     baseMenuCtx.font = `16px ShareTech`;
-    write(baseMenuCtx, translate(`Are you sure you would like to sell your # for $#?`, [wepns[equipped[confirmer]].name, wepns[equipped[confirmer]].price * 0.75]), 128 * 3, 128);
+    write(baseMenuCtx, translate(`Are you sure you would like to sell your # for $#?`, [wepns[equipped[confirmer]]?.name, wepns[equipped[confirmer]]?.price * 0.75]), 128 * 3, 128);
     baseMenuCtx.font = `15px ShareTech`;
     write(baseMenuCtx, translate(`Press Y to confirm or N to return.`), 128 * 3, 192);
     baseMenuCtx.font = `14px ShareTech`;

@@ -301,7 +301,6 @@ module.exports = initNetcode = () => {
 
                 players[player.sy][player.sx][socket.id] = player;
 
-                player.calculateGenerators();
                 socket.emit(`raid`, { raidTimer: raidTimer });
                 player.checkTrailAchs();
                 player.randmAchs[0] = true;
@@ -502,7 +501,6 @@ module.exports = initNetcode = () => {
             socket.emit(`equip`, { scroll: player.equipped });
 
             for (let i = 0; i < 10; i++) if (player.weapons[i] == -2 && i < ships[player.ship].weapons) player.weapons[i] = -1; // unlock new possible weapon slots
-            player.calculateGenerators();
             sendWeapons(player);
             player.save();
         });
@@ -523,7 +521,6 @@ module.exports = initNetcode = () => {
             player.weapons[data.slot] = data.weapon; // give them the weapon
             player.refillAllAmmo(); // give them ammo
             sendWeapons(player); // tell the client what they've been given
-            player.calculateGenerators();
             player.save();
         });
         socket.on(`buyLife`, (data) => { // client wants to buy a life
@@ -669,7 +666,6 @@ module.exports = initNetcode = () => {
             data.slot = Math.floor(data.slot);
             if (!player.docked || player.weapons[data.slot] < 0) return; // can't sell what you don't have. or when you're not in base.
             player.money += wepns[player.weapons[data.slot]].price * 0.75; // refund them a good bit
-            player.calculateGenerators();
             player.weapons[data.slot] = -1; // no weapon here anymore. TODO should this ever turn into -2?
             player.refillAllAmmo(); // remove their ammo
             sendWeapons(player); // alert client of transaction
