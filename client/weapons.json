@@ -388,7 +388,7 @@
       "level": 7,
       "type": "Misc",
       "bot": false,
-      "enabled": false
+      "enabled": true
     },
     "30": {
       "name": "Ore Cannon",
