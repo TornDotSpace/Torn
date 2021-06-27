@@ -267,7 +267,7 @@ global.spawnBot = function (sx, sy, col, force) {
     bot.angle = Math.random() * Math.PI * 2;
     bot.sx = sx;
     bot.sy = sy;
-    const rand = 4.5 * Math.random();
+    const rand = 4 * Math.random();
     bot.experience = Math.sqrt(Math.pow(2, Math.pow(2, rand)) - 2) * 100 + 3 * rand;
     bot.updateRank();
     bot.ship = Math.min(bot.rank, 21);
