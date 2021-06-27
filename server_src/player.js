@@ -563,7 +563,7 @@ class Player {
             this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
         }
 
-        if (this.isBot && this.empTimer < 0) this.botPlay(); // simulates a player and presses keys.
+        if (this.isBot && this.empTimer <= 0) this.botPlay(); // simulates a player and presses keys.
 
         const amDrifting = this.e || this.gyroTimer > 0;
         const ore = this.iron + this.silver + this.platinum + this.copper;
@@ -831,6 +831,12 @@ class Player {
         // if out of range, return. Only try this once every fifth of second.
         if (tick % 2 != 0 || squaredDist(p, this) > square(512)) return;
 
+        // cooldown to prevent chat spam when 2 people are on the planet
+        const cool = p.cooldown;
+        if (cool < 0) {
+            p.cooldown = 20;
+        }
+
         this.checkQuestStatus(true); // lots of quests are planet based
 
         if (this.guest) return; // You must create an account in the base before you can claim planets!
@@ -859,9 +865,9 @@ class Player {
             chatAll(`Planet ${p.name} colonized by ${this.nameWithColor()}!`); // Colonizing planets. Since this will happen once per planet it will not be spammy
         }
         // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy when people fight over a planet
+        this.refillAllAmmo();
         p.color = this.color; // claim
         p.owner = this.name;
-        this.refillAllAmmo();
 
         for (const i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();// send them new planet data
 
