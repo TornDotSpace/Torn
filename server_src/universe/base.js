@@ -37,8 +37,8 @@ class Base {
 
         this.shots = 0,
         this.reload = 0, // timer for shooting
-        this.health = (type == SENTRY ? 0.2 : 1) * baseHealth,
-        this.maxHealth = (type == SENTRY ? 0.2 : 1) * baseHealth,
+        this.health = (type == SENTRY ? 0.15 : 1) * baseHealth,
+        this.maxHealth = (type == SENTRY ? 0.15 : 1) * baseHealth,
         this.empTimer = -1,
         this.speed = 0; // vs unused but there for bullets,
         this.assimilatedTimer = 0;
