@@ -165,16 +165,20 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                         </div>
                     </div>
 
-                    <div className="discord">
-                        <a href="legal/privacy_policy.pdf"> Privacy Policy | </a>
-                        <a href="legal/tos.pdf"> Terms of Service </a><br/>
-
-                        <a onClick={this.langEng}>Eng|</a>
-                        <a onClick={this.langEsp}>Esp|</a>
-                        <a onClick={this.langTki}>Tki|</a>
-                        <a onClick={this.langChn}>Chn</a>
+                    <div className="link-container">
+                        <div className="link-legal">
+                            <a href="legal/privacy_policy.pdf">Privacy Policy</a>
+                            <a href="legal/tos.pdf">Terms of Service</a>
+                        </div>
+                        <div className="link-lang">
+                            <a onClick={this.langEng}>Eng</a>
+                            <a onClick={this.langEsp}>Esp</a>
+                            <a onClick={this.langTki}>Tki</a>
+                            <a onClick={this.langChn}>Chn</a>
+                        </div>
                     </div>
-                </div>);
+                </div>
+            );
     }
 }
 

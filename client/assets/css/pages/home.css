@@ -1,0 +1,277 @@
+@import '../index.css';
+
+* {
+    box-sizing: border-box;
+}
+
+html, body, #root {
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+    margin: 0;
+
+    font-size: 10px;
+    text-size-adjust: 100%;
+}
+
+/* React DOM */
+#root {
+    position: absolute;
+    overflow: hidden;
+
+    top: 0;
+    left: 0;
+
+    margin: 0;
+    padding: 0;
+}
+
+/* Login / Register overlays */
+.overlay-menu, .register-menu {
+    position: absolute;
+    margin: auto;
+
+    height: 200px;
+    padding: 0;
+
+    color: var(--white);
+    animation: a-overlay 0.3s;
+}
+
+.overlay-menu {
+    width: 100%;
+    top: 50%;
+
+    transform: translateY(-100%);
+}
+
+.register-menu {
+    width: 780px;
+    margin-top: -100px;
+
+    top: 50%;
+}
+
+.container {
+    margin: 0 auto;
+    width: 65%;
+
+    float: none;
+}
+
+.guests, .login {
+    width: 25%;
+    margin-top: 10px;
+
+    opacity: 0.5;
+
+    transition: opacity 0.5s;
+    animation: fade-in 1s, slide-in 1s forwards;
+}
+
+.guests {
+    float: left;
+    transform: translateX(-50%);
+}
+
+.login {
+    float: right;
+    transform: translateX(50%);
+}
+
+.video {
+    float: left;
+    padding-top: 30px;
+
+    width: 50%;
+    margin-top: 10px;
+
+    opacity: 0.5;
+    
+    transition: 0.5s;
+    animation: fade-in 2s;
+}
+
+.guests:hover, .login:hover, .video:hover {
+    transition: 0.3s;
+    opacity: 1;
+}
+
+.overlay-input, .register, #registerR, #registerG, #registerB, .overlay-button {
+    font-family: 'ShareTech';
+    font-size: 16px;
+
+    padding: 5px;
+
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.overlay-input {
+    float: none;
+    width: 176px;
+}
+
+.register {
+    width: 190px;
+
+    background-color: var(--black);
+    color: var(--white);
+}
+
+#registerR, #registerG, #registerB, .overlay-button {
+    width: 60%;
+    float: none;
+
+    color: var(--white);
+    background-color: var(--grey);
+}
+
+/* Register Buttons */
+#registerR {
+    border: 2px solid red;
+}
+
+#registerG {
+    border: 2px solid green;
+}
+
+#registerB {
+    border: 2px solid blue;
+}
+
+.overlay-input {
+    width: 60%;
+
+    border: 2px solid var(--grey);
+    color: var(--black);
+}
+
+/* Link container */
+.link-container {
+    position: absolute;
+    margin: 8px;
+
+    font-size: 16px;
+
+    left: 0;
+    bottom: 0;
+}
+
+.link-container a {
+    color: #808080;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.link-container a:hover {
+    color: #A0A0A0;
+}
+
+.link-container > div > *:not(:last-child) {
+    border-right: 2px solid #606060;
+}
+
+.overlay-input:hover {
+    background-color: var(--white);
+}
+
+.overlay-input:focus {
+    background-color: var(--black);
+    color: var(--white);
+}
+
+/* Overlay hovers */
+#registerA:hover, #reegisterH:hover, .overlay-button:hover {
+    background-color: #787878;
+}
+
+/* Chat menu */
+.chat {
+    position: fixed;
+    padding: 10px;
+
+    bottom: 0;
+    left: 0;
+}
+
+.chat-input {
+    font-family: 'ShareTech';
+
+    background-color: var(--black);
+    color: var(--white);
+
+    width: 384px;
+    border: none;
+}
+
+.chat-input:focus {
+    background-color: var(--black);
+}
+
+.chat-msg {
+    transition: opacity 0.3s;
+    font-size: 13px;
+}
+
+.chat-msg.fadeout {
+    opacity: 0;
+}
+
+/* Music / mute buttons */
+.sfx-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+}
+
+.sfx-wrapper > div {
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Get rid of Google's ugly autofill colors */
+input:-webkit-autofill {
+    -box-shadow: 0 0 0 30px white inset;
+}
+
+input:-webkit-autofill:hover {
+    box-shadow: 0 0 0 30px #FFB inset;
+}
+
+input:-webkit-autofill:focus {
+    box-shadow: 0 0 0 30px black inset;
+}
+
+/* Helper classes */
+.center {
+    display: inline;
+}
+
+.text-center {
+    text-align: center;
+}
+
+h3 {
+    font-size: 18.72px;
+}
+
+/* Animations */
+@keyframes slide-in {
+    100% { transform: translateY(0%); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 0.5; }
+}
+
+@keyframes a-overlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

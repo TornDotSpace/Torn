@@ -184,7 +184,7 @@ global.wepns = jsn.weapons;
 global.ships = jsn.ships;
 
 // Render the react overlay to the DOM.
-ReactDOM.render(<ReactRoot />, document.querySelector(`#a`));
+ReactDOM.render(<ReactRoot />, document.querySelector(`#root`));
 
 // Used in the ship store to make the bar graphs
 global.maxShipThrust = -1000;

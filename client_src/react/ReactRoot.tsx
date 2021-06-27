@@ -80,8 +80,10 @@ class ReactRoot extends React.Component<{}, { display: string, register: string 
         <span>
             <Chat />
 
-            <MuteButton />
-            <MusicButton />
+            <div className="sfx-wrapper">
+                <MusicButton />
+                <MuteButton />
+            </div>
 
             <LoginOverlay display={this.state.display === `LoginOverlay`} />
             <Register register={this.state.register === `Register`} />
