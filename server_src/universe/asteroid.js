@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2021  torn.space (https://torn.space)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 const isOutOfBounds = (obj) => // TODO this works but I'm not even using it anywhere. it would simplify some code if used.
     obj.x < 0 || obj.y < 0 || obj.x >= sectorWidth || obj.y >= sectorWidth;
 
@@ -35,7 +52,7 @@ class Asteroid {
 
     tick () {
         const asteroidsHere = astCount[this.sy][this.sx];
-        this.health -= Math.max(asteroidsHere / 200, 0); // decay asteroids so they don't get too bunched up in any one area
+        this.health -= Math.max(asteroidsHere * asteroidsHere / 2000, 0); // decay asteroids so they don't get too bunched up in any one area
         if (this.health < -50) this.die(0);
         this.move();
         if (Math.abs(this.vx) + Math.abs(this.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players.
