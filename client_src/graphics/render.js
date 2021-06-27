@@ -762,12 +762,6 @@ global.rRadar = function () {
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-    ctx.beginPath();
-    const lineAngle = stime % (2 * Math.PI);
-    ctx.moveTo(112, 342);
-    ctx.lineTo(112 + Math.cos(lineAngle) * 96, 342 + Math.sin(lineAngle) * 96);
-    ctx.closePath();
-    ctx.stroke();
 
     const r = va2 * 3840 - 1280;
     const r2z2 = square(r * radarZoom);
@@ -817,14 +811,14 @@ global.rRadar = function () {
         ctx.closePath();
         ctx.stroke();
     }
-    ctx.globalAlpha = ctx.lineWidth = 1;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.5;
     if (basesInfo !== undefined) {
         const dx = basesInfo.x - px;
         const dy = basesInfo.y - py;
         if (square(dx) + square(dy) < r2z2) {
             const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
             const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
-            ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
             ctx.beginPath();
             ctx.arc(rx, ry, (va2 > 1.24) ? 5 : 3, 0, 2 * Math.PI, false);
             ctx.fillStyle = `lightgray`;
@@ -841,7 +835,6 @@ global.rRadar = function () {
         if (square(dx) + square(dy) > r2z2) continue;
         const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
         const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
-        ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
         ctx.beginPath();
         ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
         if (va2 > 1.36) ctx.fillStyle = brighten(p.color);
@@ -857,7 +850,6 @@ global.rRadar = function () {
             if (square(dx) + square(dy) > r2z2) continue;
             const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
             const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
-            ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
             ctx.beginPath();
             ctx.arc(rx, ry, 2, 0, 2 * Math.PI, false);
             ctx.fill();
@@ -871,7 +863,6 @@ global.rRadar = function () {
         if (square(dx) + square(dy) < r2z2) {
             const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
             const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
-            ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
             ctx.beginPath();
             ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
             ctx.fill();
@@ -887,7 +878,6 @@ global.rRadar = function () {
         if (square(dx) + square(dy) > r2z2) continue;
         const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
         const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
-        ctx.globalAlpha = ((pa - stime + 2000000000 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI);
         ctx.beginPath();
         ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
         if (va2 > 1.24) ctx.strokeStyle = ctx.fillStyle = `orange`;
@@ -901,7 +891,6 @@ global.rRadar = function () {
         else ctx.fill();
         ctx.closePath();
     }
-    ctx.globalAlpha = 0.5;
     const radius = wepns[equipped[scroll]].range * 960 / r;
     if (va2 > 1.8 && radius / radarZoom > 3 && radius / radarZoom < 96) {
         ctx.beginPath();
