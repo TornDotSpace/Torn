@@ -1043,12 +1043,13 @@ class Player {
     }
 
     EMP (t) {
-        if (this.empTimer > 0) return; // EMPs don't stack. Once EMP'd, a ship cannot be EMP'd again until the previous EMP has ended.
  	    if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // Emp works better on elite ships.
-        if (this.ship == 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // It will also heal the ship a very small bit.
+        if (this.ship === 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // It will also heal the ship a very small bit.
+
         if (this.shield) t *= 0.33; // Shield offers some protection for electronic components
+
         this.empTimer = t;
-        this.emit(`emp`, { t: t });
+        this.emit(`emp`, { t });
     }
 
     save () {}
