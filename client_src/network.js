@@ -581,6 +581,7 @@ socket.on(`planetMap`, (data) => {
     planetMap2D[data.sx][data.sy] = data;
 });
 socket.on(`baseMap`, (data) => {
+    expToRank = data.expToRank;
     mapSz = data.mapSz;
     console.log(`Got basemap of size ${mapSz}`);
     const baseMap = data.baseMap;
