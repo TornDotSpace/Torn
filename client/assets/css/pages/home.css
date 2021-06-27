@@ -13,12 +13,13 @@ html, body, #root {
 
     font-size: 10px;
     text-size-adjust: 100%;
+
+    overflow: hidden;
 }
 
 /* React DOM */
 #root {
     position: absolute;
-    overflow: hidden;
 
     top: 0;
     left: 0;
@@ -194,20 +195,18 @@ html, body, #root {
 
     bottom: 0;
     left: 0;
+
+    word-wrap: break-word;
 }
 
 .chat-input {
     font-family: 'ShareTech';
 
-    background-color: var(--black);
+    background: transparent;
     color: var(--white);
 
     width: 384px;
     border: none;
-}
-
-.chat-input:focus {
-    background-color: var(--black);
 }
 
 .chat-msg {
@@ -235,19 +234,6 @@ html, body, #root {
     user-select: none;
 }
 
-/* Get rid of Google's ugly autofill colors */
-input:-webkit-autofill {
-    -box-shadow: 0 0 0 30px white inset;
-}
-
-input:-webkit-autofill:hover {
-    box-shadow: 0 0 0 30px #FFB inset;
-}
-
-input:-webkit-autofill:focus {
-    box-shadow: 0 0 0 30px black inset;
-}
-
 /* Helper classes */
 .center {
     display: inline;
@@ -259,6 +245,23 @@ input:-webkit-autofill:focus {
 
 h3 {
     font-size: 18.72px;
+}
+
+canvas {
+    z-index: 2000 !important;
+}
+
+/* Get rid of Google's ugly autofill colors */
+input:-webkit-autofill {
+    -box-shadow: 0 0 0 30px white inset;
+}
+
+input:-webkit-autofill:hover {
+    box-shadow: 0 0 0 30px #FFB inset;
+}
+
+input:-webkit-autofill:focus {
+    box-shadow: 0 0 0 30px black inset;
 }
 
 /* Animations */
