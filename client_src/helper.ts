@@ -154,8 +154,7 @@ const colorSelect = (col: string, red: number, blue: number, green: number) => {
  * @returns The experience needed to level up to the next rank.
  */
 const rankToExp = (rank: number) => {
-    const ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000, 200000000, 400000000, 1000000000];
-    return rank < 0 ? 0 : ranks[rank];
+    return rank < 0 ? 0 : expToRank[rank];
 };
 
 // TODO: Add JSDoc comment.

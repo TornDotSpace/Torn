@@ -74,6 +74,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 global.ctx = canvas.getContext(`2d`, { alpha: false });
 
+global.expToRank = [0];
 global.guiColor = `#333333`;
 global.guiOpacity = 0.5;
 global.teamColors = [`red`, `blue`, `green`];
