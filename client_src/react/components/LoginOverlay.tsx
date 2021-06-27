@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import * as React from 'react';
+import React from 'react';
 
 import sendAPI from '../../utils/sendAPI';
 import socket from '../../modules/socket';
@@ -27,7 +27,7 @@ declare let credentialState: number;
 declare let loginInProgress: boolean;
 
 class LoginOverlay extends React.Component<{ display: boolean }, { user: string, pass: string, seed: number }> {
-    constructor (props) {
+    constructor (props: { display: boolean }) {
         super(props);
 
         this.state = {

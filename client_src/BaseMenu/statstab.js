@@ -24,7 +24,7 @@ import {
     techPrice,
     techPriceForDowngrade,
     techEnergy
-} from '../helper';
+} from '../utils/helper';
 
 import socket from '../modules/socket';
 

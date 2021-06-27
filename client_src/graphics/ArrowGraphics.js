@@ -20,7 +20,7 @@ import {
     sinLow,
     cosLow,
     colorSelect
-} from '../helper';
+} from '../utils/helper';
 
 // pointer rendering
 global.rEdgePointer = function () {

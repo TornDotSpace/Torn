@@ -15,10 +15,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import * as React from 'react';
+import React from 'react';
 
-class MusicButton extends React.Component<{ toggleMusic: any }, { muted: boolean }> {
-    constructor (props) {
+import { toggleMusic } from '../../modules/audio';
+
+class MusicButton extends React.Component<{}, { muted: boolean }> {
+    constructor (props: {}) {
         super(props);
 
         this.state = {
@@ -27,7 +29,7 @@ class MusicButton extends React.Component<{ toggleMusic: any }, { muted: boolean
     }
 
     click = () => {
-        this.setState({ muted: this.props.toggleMusic() });
+        this.setState({ muted: toggleMusic() });
     }
 
     render = () => (

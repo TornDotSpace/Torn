@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { translate } from './localizer';
+import { translate } from '../localizer';
 
 declare const sectorWidth: number;
 declare const bigNotes: any[];
@@ -276,6 +276,7 @@ const techPrice = (tech: number) => techEnergy(nextTechLevel(tech)) - techEnergy
 /**
  * Get the monetary amount required to downgrade tech.
  * @param tech The tech level to calculate with.
+ * @param paid Whether the user has paid for VIP or a higher rank.
  * @returns A numerical representation of the amount.
  */
 const techPriceForDowngrade = (tech: number, paid: boolean) => {

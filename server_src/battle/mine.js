@@ -238,7 +238,6 @@ class Mine {
         for (const i in players[this.sy][this.sx]) {
             const p = players[this.sy][this.sx][i];
             if (squaredDist(p, this) < square(80)) {
-                if (this.wepnID == 17) p.EMP(110); // EMP mine
                 p.dmg(this.dmg / 10, this); // if i'm in range of a player on explosion, damage them
             }
         }

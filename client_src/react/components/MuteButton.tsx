@@ -15,9 +15,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import * as React from 'react';
-class MuteButton extends React.Component<{ toggleSFX: any }, { muted: boolean }> {
-    constructor (props) {
+import React from 'react';
+
+import { toggleSFX } from '../../modules/audio';
+
+class MuteButton extends React.Component<{}, { muted: boolean }> {
+    constructor (props: {}) {
         super(props);
 
         this.state = {
@@ -26,7 +29,7 @@ class MuteButton extends React.Component<{ toggleSFX: any }, { muted: boolean }>
     }
 
     click = () => {
-        this.setState({ muted: this.props.toggleSFX() });
+        this.setState({ muted: toggleSFX() });
     }
 
     render = () => (

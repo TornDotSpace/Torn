@@ -161,7 +161,7 @@
       "range": 600,
       "damage": 25,
       "speed": 90,
-      "charge": 50,
+      "charge": 25,
       "price": 40000,
       "ammo": 10,
       "level": 7,
@@ -226,7 +226,7 @@
       "range": 96,
       "damage": 72,
       "speed": 0,
-      "charge": 200,
+      "charge": 25,
       "price": 10000,
       "ammo": 5,
       "level": 6,
@@ -330,7 +330,7 @@
       "range": 100000,
       "damage": -1,
       "speed": -1,
-      "charge": 150,
+      "charge": 50,
       "price": 50000,
       "ammo": 2,
       "level": 9,
@@ -388,7 +388,7 @@
       "level": 7,
       "type": "Misc",
       "bot": false,
-      "enabled": false
+      "enabled": true
     },
     "30": {
       "name": "Ore Cannon",

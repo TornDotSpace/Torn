@@ -15,11 +15,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import * as React from 'react';
+import React from 'react';
 
 import socket from '../../modules/socket';
+
 class Register extends React.Component<{ register: boolean }, { user: string, pass: string, on: boolean }> {
-    constructor (props) {
+    constructor (props: { register: boolean }) {
         super(props);
 
         this.state = {

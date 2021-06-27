@@ -23,7 +23,7 @@ import {
     weaponWithOrder,
     numToLS,
     ammoCodeToString
-} from '../helper';
+} from '../utils/helper';
 
 import socket from '../modules/socket';
 

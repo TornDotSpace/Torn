@@ -25,7 +25,7 @@ import {
     cosLow,
     lerp,
     addBigNote
-} from './helper';
+} from './utils/helper';
 
 import socket from './modules/socket';
 import { playAudio } from './modules/audio';
