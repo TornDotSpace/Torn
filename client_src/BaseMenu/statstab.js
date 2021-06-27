@@ -72,7 +72,7 @@ const renderStatistics = () => {
 
     const ore = iron + silver + platinum + copper;
     let upgradeCosts = 0;
-    upgradeCosts += techEnergy(t2) + techEnergy(va2) + techEnergy(ag2) + techEnergy(c2) + techEnergy(mh2) + techEnergy(e2) * 8;
+    upgradeCosts += techEnergy(t2) + techEnergy(va2) + techEnergy(ag2) + techEnergy(c2) + techEnergy(mh2) + techEnergy(e2);
     let achievements = 0;
 
     for (const i in achs) if (achs[i]) achievements++;
@@ -163,11 +163,11 @@ const renderUpgradeButtons = () => {
 
         // upgrades
         baseMenuCtx.fillStyle = (seller == 200 + i) ? `lime` : `white`;
-        write(baseMenuCtx, `[+] $${numToLS(techPrice(currTechArr[i]) * (i == 4 ? 8 : 1))}`, 118 + 128 * (i % 3), 380 + 64 * (i % 2));
+        write(baseMenuCtx, `[+] $${numToLS(techPrice(currTechArr[i]))}`, 118 + 128 * (i % 3), 380 + 64 * (i % 2));
 
         // downgrades
         baseMenuCtx.fillStyle = (seller == 206 + i) ? `red` : `white`;
-        if (currTechArr[i] > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(currTechArr[i], tag === `V` || tag === `B`) * (i == 4 ? 8 : 1))}`, 118 + 128 * (i % 3), 394 + 64 * (i % 2));
+        if (currTechArr[i] > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(currTechArr[i], tag === `V` || tag === `B`))}`, 118 + 128 * (i % 3), 394 + 64 * (i % 2));
     }
 };
 

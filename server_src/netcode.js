@@ -566,7 +566,7 @@ module.exports = initNetcode = () => {
                     break;
                 }
                 case 4: { // energy
-            		const price = techPrice(player.energy2) * 8;
+            		const price = techPrice(player.energy2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.energy2 = nextTechLevel(player.energy2);
@@ -630,7 +630,7 @@ module.exports = initNetcode = () => {
                 }
                 case 4: { // energy
                 	if (player.energy2 <= 1) break;
-            		const price = techPriceForDowngrade(player.energy2, player.tag === `V` || player.tag === `B`) * 8;
+            		const price = techPriceForDowngrade(player.energy2, player.tag === `V` || player.tag === `B`);
                     if (player.money >= price) {
                         player.money -= price;
                         player.energy2 = lastTechLevel(player.energy2);
