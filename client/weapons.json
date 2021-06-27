@@ -133,7 +133,7 @@
     "10": {
       "name": "Missile",
       "range": 750,
-      "damage": 20,
+      "damage": 15,
       "speed": 100,
       "charge": 12,
       "price": 4000,
@@ -146,7 +146,7 @@
     "11": {
       "name": "Heavy Missile",
       "range": 450,
-      "damage": 60,
+      "damage": 40,
       "speed": 50,
       "charge": 25,
       "price": 10000,
@@ -159,7 +159,7 @@
     "12": {
       "name": "EMP Missile",
       "range": 600,
-      "damage": 25,
+      "damage": 15,
       "speed": 90,
       "charge": 25,
       "price": 40000,
@@ -185,7 +185,7 @@
     "14": {
       "name": "Torpedo",
       "range": 5000,
-      "damage": 16,
+      "damage": 15,
       "speed": 180,
       "charge": 30,
       "price": 18000,
@@ -737,7 +737,7 @@
   "ships": [
     {
       "thrust": 0.7,
-      "health": 50,
+      "health": 80,
       "agility": 1.5,
       "width": 64,
       "price": 7500,
@@ -746,7 +746,7 @@
     },
     {
       "thrust": 0.7,
-      "health": 60,
+      "health": 100,
       "agility": 1.75,
       "width": 64,
       "price": 12500,
@@ -755,7 +755,7 @@
     },
     {
       "thrust": 0.6,
-      "health": 90,
+      "health": 120,
       "agility": 0.85,
       "width": 64,
       "price": 20000,
@@ -764,7 +764,7 @@
     },
     {
       "thrust": 0.8,
-      "health": 40,
+      "health": 60,
       "agility": 1.9,
       "width": 64,
       "price": 25000,
@@ -773,7 +773,7 @@
     },
     {
       "thrust": 0.6,
-      "health": 75,
+      "health": 100,
       "agility": 1.9,
       "width": 64,
       "price": 40000,
@@ -782,7 +782,7 @@
     },
     {
       "thrust": 0.52,
-      "health": 80,
+      "health": 120,
       "agility": 1.3,
       "width": 64,
       "price": 50000,
@@ -791,7 +791,7 @@
     },
     {
       "thrust": 0.58,
-      "health": 60,
+      "health": 90,
       "agility": 0.7,
       "width": 64,
       "price": 75000,
@@ -800,7 +800,7 @@
     },
     {
       "thrust": 0.4,
-      "health": 110,
+      "health": 130,
       "agility": 0.6,
       "width": 128,
       "price": 100000,
@@ -809,7 +809,7 @@
     },
     {
       "thrust": 0.5,
-      "health": 80,
+      "health": 100,
       "agility": 0.7,
       "width": 128,
       "price": 200000,
@@ -818,7 +818,7 @@
     },
     {
       "thrust": 0.35,
-      "health": 120,
+      "health": 130,
       "agility": 0.6,
       "width": 128,
       "price": 250000,
@@ -827,7 +827,7 @@
     },
     {
       "thrust": 0.4,
-      "health": 110,
+      "health": 120,
       "agility": 0.7,
       "width": 128,
       "price": 250000,
@@ -836,7 +836,7 @@
     },
     {
       "thrust": 0.42,
-      "health": 100,
+      "health": 110,
       "agility": 0.6,
       "width": 128,
       "weapons": 8,

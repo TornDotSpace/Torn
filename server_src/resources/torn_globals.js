@@ -30,7 +30,7 @@ global.translateCircumfix = `\`t`;
 global.bulletWidth = 16; // collision radius
 global.mineLifetime = 3 * tickRate * 60; // mines despawn after this many minutes (3)
 global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
-global.baseHealth = 4000; // max base health
+global.baseHealth = 3000; // max base health
 global.baseKillExp = 5000; // Exp reward for killing a base
 global.baseKillMoney = 250000; // ditto but money
 global.baseRegenSpeed = 3; // How many times faster bases regenerate health than players
@@ -54,7 +54,7 @@ global.botFrequency = trainingMode ? 0.0014 : 0.003;// higher: more bots spawn.
 global.playerHeal = 0.2; // player healing speed
 global.baseHeal = 1; // base healing speed
 global.guestsCantChat = !Config.getValue(`want_guest_chat`, true);
-global.ranks = [0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 4000, 8000, 14000, 20000, 40000, 70000, 100000, 140000, 200000, 300000, 500000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000, 16000000, 32000000, 64000000, 100000000, 200000000, 400000000, 1000000000]; // exp to rank conversion.
+global.ranks = [0, 5, 12, 25, 50, 100, 150, 250, 400, 800, 1200, 1800, 2500, 4000, 6000, 9000, 12000, 15000, 20000, 30000, 50000, 80000, 100000, 150000, 200000, 300000, 500000, 800000, 1200000, 1600000, 3200000, 6400000, 10000000, 20000000, 40000000, 100000000]; // exp to rank conversion.
 global.afkTimerConst = 15 * tickRate * 60; // 15 minutes till we kick players for being afk
 
 global.tick = 0;

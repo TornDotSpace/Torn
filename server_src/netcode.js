@@ -196,7 +196,7 @@ module.exports = initNetcode = () => {
             player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
             sendWeapons(player);
             socket.emit(`raid`, { raidTimer: raidTimer });
-            socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz });
+            socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz, expToRank: ranks });
 
             chatAll(`Welcome ${player.nameWithColor()} to the universe!`);
         });
@@ -323,7 +323,7 @@ module.exports = initNetcode = () => {
                 player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
                 player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
                 sendWeapons(player);
-                socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz });
+                socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz, expToRank: ranks });
                 socket.emit(`you`, { trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper });
             }, wait_time);
         });
@@ -566,7 +566,7 @@ module.exports = initNetcode = () => {
                     break;
                 }
                 case 4: { // energy
-            		const price = techPrice(player.energy2) * 8;
+            		const price = techPrice(player.energy2);
                     if (player.money >= price) {
                         player.money -= price;
                         player.energy2 = nextTechLevel(player.energy2);
@@ -630,7 +630,7 @@ module.exports = initNetcode = () => {
                 }
                 case 4: { // energy
                 	if (player.energy2 <= 1) break;
-            		const price = techPriceForDowngrade(player.energy2, player.tag === `V` || player.tag === `B`) * 8;
+            		const price = techPriceForDowngrade(player.energy2, player.tag === `V` || player.tag === `B`);
                     if (player.money >= price) {
                         player.money -= price;
                         player.energy2 = lastTechLevel(player.energy2);

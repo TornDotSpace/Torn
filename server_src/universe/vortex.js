@@ -105,8 +105,8 @@ class Vortex {
         // input node
         this.vx += Math.sin(7.197 * t) * 0.75;
         this.vy -= Math.sin(5.019 * t) * 0.75;
-        this.vx *= 0.99;
-        this.vy *= 0.99;
+        this.vx *= 0.97;
+        this.vy *= 0.97;
         const bx = (this.x + this.sx * sectorWidth + this.vx + mapSz * sectorWidth) % (mapSz * sectorWidth);
         const by = (this.y + this.sy * sectorWidth + this.vy + mapSz * sectorWidth) % (mapSz * sectorWidth);
 
