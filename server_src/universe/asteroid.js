@@ -35,7 +35,7 @@ class Asteroid {
 
     tick () {
         const asteroidsHere = astCount[this.sy][this.sx];
-        this.health -= Math.max(asteroidsHere / 200, 0); // decay asteroids so they don't get too bunched up in any one area
+        this.health -= Math.max(asteroidsHere * asteroidsHere / 2000, 0); // decay asteroids so they don't get too bunched up in any one area
         if (this.health < -50) this.die(0);
         this.move();
         if (Math.abs(this.vx) + Math.abs(this.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players.
