@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { jsn, translate } from '../localizer';
 import { pasteChat } from '../chat';
-import { write } from '../helper';
+import { write } from '../utils/helper';
 
 import { RootState } from '../react/ReactRoot';
 

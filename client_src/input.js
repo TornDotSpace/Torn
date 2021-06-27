@@ -28,7 +28,7 @@ import {
     chatLength
 } from './chat';
 
-import { getMousePos, addBigNote } from './helper';
+import { getMousePos, addBigNote } from './utils/helper';
 
 // input
 document.onkeydown = function (event) {

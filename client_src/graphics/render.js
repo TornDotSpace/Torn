@@ -35,7 +35,7 @@ import {
     brighten,
     numToLS,
     ammoCodeToString
-} from '../helper';
+} from '../utils/helper';
 
 global.LIVEBASE = 0;
 global.DEADBASE = 1;

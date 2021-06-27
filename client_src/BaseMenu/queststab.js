@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { translate } from '../localizer';
-import { getQuestDescription, write, numToLS } from '../helper';
+import { getQuestDescription, write, numToLS } from '../utils/helper';
 
 import socket from '../modules/socket';
 

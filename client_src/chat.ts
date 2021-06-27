@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { translate } from './localizer';
-import { square, brighten, getPosition } from './helper';
+import { square, brighten, getPosition } from './utils/helper';
 
 import socket from './modules/socket';
 

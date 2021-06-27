@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { translate } from '../localizer';
-import { write, abbrevInt, brighten } from '../helper';
+import { write, abbrevInt, brighten } from '../utils/helper';
 
 const leaderboardcanvas = document.createElement(`canvas`);
 leaderboardcanvas.width = 260;

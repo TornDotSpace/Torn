@@ -22,7 +22,7 @@ import { ReactRoot, RootState } from './react/ReactRoot';
 import { ChatState } from './react/components/ChatInput';
 
 import { jsn, translate } from './localizer';
-import { square, coherentNoise, weaponWithOrder } from './helper';
+import { square, coherentNoise, weaponWithOrder } from './utils/helper';
 
 import loadAllAudio from './utils/loadAllAudio';
 import loadAllImages from './utils/loadAllImages';

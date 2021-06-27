@@ -26,7 +26,7 @@ import {
     coherentNoise,
     lerp,
     brighten
-} from '../helper';
+} from '../utils/helper';
 
 const minimapcanvas = document.createElement(`canvas`);
 minimapcanvas.width = minimapcanvas.height = 208;
