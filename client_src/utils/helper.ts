@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { translate } from '../localizer';
 
 declare const sectorWidth: number;
+declare const expToRank: number[];
+
 declare const bigNotes: any[];
 declare const wepns: any;
 
