@@ -276,6 +276,7 @@ const techPrice = (tech: number) => techEnergy(nextTechLevel(tech)) - techEnergy
 /**
  * Get the monetary amount required to downgrade tech.
  * @param tech The tech level to calculate with.
+ * @param paid Whether the user has paid for VIP or a higher rank.
  * @returns A numerical representation of the amount.
  */
 const techPriceForDowngrade = (tech: number, paid: boolean) => {
