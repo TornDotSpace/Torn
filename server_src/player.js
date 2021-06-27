@@ -24,15 +24,17 @@ const Mine = require(`./battle/mine.js`);
 const Beam = require(`./battle/beam.js`);
 const Asteroid = require(`./universe/asteroid.js`);
 
+let nextPlayerId = 0;
+
 class Player {
-    constructor (id) {
+    constructor () {
         this.name = ``,
         this.type = `Player`,
 
         this.tag = ``,
-        this.id = id, // unique identifier
+        this.id = nextPlayerId++, // unique identifier
         this.trail = 0,
-        this.color = id > 0.5 ? `red` : `blue`,
+        this.color = `yellow`,
         this.ship = 0,
         this.experience = 0,
         this.rank = 0,

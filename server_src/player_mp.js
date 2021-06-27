@@ -20,7 +20,7 @@ const Package = require(`./universe/package.js`);
 
 class PlayerMP extends Player {
     constructor (socket) {
-        super(socket.id);
+        super();
 
         socket.player = this;
         this.socket = socket;
