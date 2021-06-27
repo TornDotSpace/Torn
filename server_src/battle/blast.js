@@ -105,7 +105,7 @@ class Blast {
     }
 
     hit (b) {
-        if (this.weaponID === 25 && this.owner.color !== b.color) b.EMP(81); // EMP Blast
+        if (this.weaponID === 25 && this.owner.color !== b.color) b.EMP(126); // emp blast
         else if ((this.weaponID === 34 || this.weaponID === 47) && this.owner.color !== b.color) b.dmg(this.dmg, this); // muon and lepton
         else if (this.weaponID === 41) b.brainwashedBy = this.owner.id; // brainwashing laser
     }

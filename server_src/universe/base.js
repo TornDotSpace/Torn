@@ -61,11 +61,11 @@ class Base {
 
         this.empTimer--;
         this.reload--;
-        this.assimilatedTimer--;
 
-        if (this.assimilatedTimer <= 0 && this.assimilatedCol !== this.trueColor) {
-            this.unassimilate();
-        }
+        if (this.assimilatedTimer <= 0) {
+            if (this.assimilatedCol !== this.trueColor) this.unassimilate();
+        } else this.assimilatedTimer--;
+
         if (this.health < this.maxHealth) this.health += baseRegenSpeed;
         if (tick % 50 == 0 && (this.baseType == SENTRY || this.baseType == TURRET)) this.tryGiveToOwner();
     }
@@ -313,11 +313,12 @@ class Base {
         this.dmg(this.health * 0.15, assimilator);
         this.EMP(time / 3); // The crew is fighting hard to fend off the invaders! Some systems stop working and the base will take some damage
         this.assimilatedCol = assimilator.color; // But resistance is futile
-        this.assimilatedTimer = time; // At least until the remaining crew manage to vent the invaders.
+        this.assimilatedTimer += time; // At least until the remaining crew manage to vent the invaders.
         if (this.assimilatedTimer >= 4600) { // If the base gets overwhelmed, it temporarily changes teams. 4600 is high enough this happening would be very rare
-            note(`WE ARE THE CYBORG. RESISTANCE IS FUTILE`, this.x, this.y - 64, this.sx, this.sy);
             this.assimilatedCol = assimilator.color;
             this.color = assimilator.color;
+            note(`WE ARE THE CYBORG. RESISTANCE IS FUTILE`, this.x, this.y - 64, this.sx, this.sy);
+            this.EMP(10);
         }
     }
 

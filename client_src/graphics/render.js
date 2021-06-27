@@ -436,10 +436,11 @@ global.rLore = function () {
 };
 global.rEnergyBar = function () {
     if (equipped === 0) return;
-    let Charge = wepns[equipped[scroll]].charge;
+    let weaponUsed = wepns[equipped[scroll]];
+    let Charge = weaponUsed.charge;
     if (Charge < 12 && charge < 12) return;
     if (Charge < 12 && charge >= 12) Charge = 150;
-    const div = charge / Charge;
+    const div = charge / Charge / ((equipped[scroll] == 25 || equipped[scroll] == 17 || equipped[scroll] == 12) ? (e2 + 1) / 1.8 : 1);
     if (div > 1) return;
     ctx.fillStyle = `lime`;
     ctx.globalAlpha = 0.5;
