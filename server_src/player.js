@@ -146,7 +146,7 @@ class Player {
     }
 
     tick () {
-    // timer business
+        // timer business
         if (this.killStreakTimer-- < 0) this.killStreak = 0; // Sensitive to off-by-ones.
         if (this.borderJumpTimer > 0) this.borderJumpTimer--;
         if (this.superchargerTimer >= 0) this.superchargerTimer--;
@@ -178,13 +178,13 @@ class Player {
 
     fire () {
         if (this.empTimer > 0) return; // Cannot shoot while EMP'd.
+
         if (this.c && this.charge > 0) this.shootEliteWeapon();
         if (this.bulletQueue > 0) this.shootBullet(40); // SMG
+
         const wepId = this.weapons[this.equipped];
         const wep = wepns[wepId];
-        if (!wep || !wep.enabled) {
-            return;
-        }
+        if (!wep || !wep.enabled) return;
 
         // In case of insufficient ammo
         if (this.ammos[this.equipped] == 0 && this.charge > 10) {
@@ -568,15 +568,15 @@ class Player {
         const ore = this.iron + this.silver + this.platinum + this.copper;
 
         // In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
-        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer <= 5 ? 1 : 0.2);
+        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer < 0 ? 1 : 0.2);
 
         // Reusable Trig
         const ssa = Math.sin(this.angle); const ssd = Math.sin(this.driftAngle); const csa = Math.cos(this.angle); const csd = Math.cos(this.driftAngle);
 
         this.vx = csd * this.speed; // convert polars to rectangulars
         this.vy = ssd * this.speed;
-        this.vx *= (amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92;
-        this.vy *= (amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92; // Air resistance
+        this.vx *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88;
+        this.vy *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88; // Air resistance
 
         if (this.w) { // Accelerate!
             this.vx += csa * newThrust;
@@ -610,21 +610,25 @@ class Player {
 
         this.x += this.vx; // Update position from velocity
         this.y += this.vy;
-        if (this.jukeTimer > 1 || this.jukeTimer < -1) { // Q or E keys. Juke mechanics.
-            this.x += this.jukeTimer * Math.sin(this.angle) * (this.empTimer <= 5 ? 1 : 0.33);
-            this.y -= this.jukeTimer * Math.cos(this.angle) * (this.empTimer <= 5 ? 1 : 0.33);
+        if (this.empTimer < 0 && (this.jukeTimer > 1 || this.jukeTimer < -1)) {
+            // Q or E keys. Juke mechanics.
+            this.x += this.jukeTimer * Math.sin(this.angle);
+            this.y -= this.jukeTimer * Math.cos(this.angle);
+
             this.jukeTimer *= 0.8;
         }
 
         let angAccel = 0; // angular acceleration
         if (this.a) angAccel -= (this.va + this.cva / (amDrifting ? 1.5 : 1)) / 3;
         if (this.d) angAccel += (this.va - this.cva / (amDrifting ? 1.5 : 1)) / 3; // ternary reduces angular air resistance while drifting
+
         if (this.superchargerTimer > 0) angAccel *= 2;
-        this.cva += angAccel; // update angular velofity from thrust
+        this.cva += angAccel; // Update angular velocity from thrust.
+
         if (!this.d && !this.a && !amDrifting) this.cva /= 2; // When not drifting, apply air resistance to angular velocity.
 
         // If we have a drift trail, we turn faster. Generators reduce turning speed.
-        this.angle += this.cva * (1 - this.generators / 10) * (this.trail % 16 == 3 ? 1.05 : 1) / 1.5;
+        if (this.empTimer < 0) this.angle += this.cva * (1 - this.generators / 10) * (this.trail % 16 == 3 ? 1.05 : 1) / 1.5;
 
         // Make sure everything is in the range 0-2pi
         this.driftAngle += Math.PI * 4;
