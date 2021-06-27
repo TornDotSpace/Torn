@@ -133,7 +133,7 @@
     "10": {
       "name": "Missile",
       "range": 750,
-      "damage": 20,
+      "damage": 15,
       "speed": 100,
       "charge": 12,
       "price": 4000,
@@ -146,7 +146,7 @@
     "11": {
       "name": "Heavy Missile",
       "range": 450,
-      "damage": 60,
+      "damage": 40,
       "speed": 50,
       "charge": 25,
       "price": 10000,
@@ -159,7 +159,7 @@
     "12": {
       "name": "EMP Missile",
       "range": 600,
-      "damage": 25,
+      "damage": 15,
       "speed": 90,
       "charge": 50,
       "price": 40000,
@@ -185,7 +185,7 @@
     "14": {
       "name": "Torpedo",
       "range": 5000,
-      "damage": 16,
+      "damage": 15,
       "speed": 180,
       "charge": 30,
       "price": 18000,
