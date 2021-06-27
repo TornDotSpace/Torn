@@ -38,6 +38,16 @@ global.colorSelect = function (col, red, blue, green) {
     return green;
 };
 
+global.updateElo = function (winner, loser) {
+    probabilityThatHappened = eloProbability(winner.elo, loser.elo);
+    probabilityThatDidntHappen = eloProbability(loser.elo, winner.elo);
+    winner.elo += eloVolatility * (1 - probabilityThatHappened); // note- do not substitute the function calls into these two lines because of codependence.
+    loser.elo += eloVolatility * (0 - probabilityThatDidntHappen); // leave as 4 lines.
+};
+global.eloProbability = function (rating1, rating2) {
+    return 1.0 / (1.0 + Math.pow(10.0, (rating1 - rating2) / 400.0));
+};
+
 global.findBisector = function (a1, a2) { // finds the angle bisector of a1 and a2
     a1 = a1 * 180 / Math.PI;
     a2 = a2 * 180 / Math.PI;

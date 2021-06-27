@@ -32,6 +32,7 @@ class Player {
         this.tag = ``,
         this.id = id, // unique identifier
         this.trail = 0,
+        this.elo = 1200,
         this.color = id > 0.5 ? `red` : `blue`,
         this.ship = 0,
         this.experience = 0,
