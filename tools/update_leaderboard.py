@@ -163,8 +163,8 @@ def updateLB(conn_str, path):
     time = datetime.datetime.now()
     newFile = f'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
             <meta charset="utf-8"/><html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en"><head><title>Leaderboard</title>\
-                <link rel="stylesheet" href="/assets/css/page.css" /></head><body><br><br><h1><div style="padding: 20px"><center><font color="#0099ff">\
-                Leaderboard</font></center></div></h1><font color="#0099ff"><center><nobr><table>{teamFile}<tr><td>-</td></tr>{playerFile}\
+                <link rel="stylesheet" href="/assets/css/index.css" /></head><body><br><br><h1><div style="padding: 20px"><center><font color="#0099ff">\
+                Leaderboard</font></center></div></h1><font color="#0099ff"><center><nobr><table>{teamFile}<tr><td>---</td></tr>{playerFile}\
                 </table></nobr><br/>Last updated: {time.strftime("%m/%d/%y %H:%M")} {time.astimezone().tzinfo.tzname(None)}</center></font></body></html>'
     # Write out
     with open(path, "w") as lb:
