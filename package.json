@@ -61,7 +61,7 @@
     "bad-words": "^3.0.4",
     "cors": "^2.8.5",
     "discord.js": "^12.5.3",
-    "howler": "^2.2.1",
+    "howler": "^2.2.2",
     "mongodb": "^3.6.9",
     "node-fetch": "^2.6.1",
     "react": "^17.0.2",
