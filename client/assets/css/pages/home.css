@@ -188,15 +188,13 @@ html, body, #root {
     background-color: #787878;
 }
 
-/* Chat menu */
+/* Chat Input */
 .chat {
     position: fixed;
     padding: 10px;
 
     bottom: 0;
     left: 0;
-
-    word-wrap: break-word;
 }
 
 .chat-input {
