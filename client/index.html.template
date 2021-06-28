@@ -18,7 +18,7 @@
     <!-- Icon --> 
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 
-    <link rel="stylesheet" href="/assets/css/index.css">
+    <link rel="stylesheet" href="/assets/css/pages/home.css">
 
     <!-- Google Analytics -->
     <script src="https://www.googletagmanager.com/gtag/js?id=UA-81486045-1"></script>
@@ -38,8 +38,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" data-ad-client="ca-pub-7362501745456542"></script>
 </head>
 <body>
-    <canvas id="ctx"></canvas>
-    <div id="a"></div>
+    <div id="root"></div>
 
     <script src="client.min.js?v={GIT_HASH}"></script>
 </body>

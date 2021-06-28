@@ -63,13 +63,17 @@ const printStartup = () => {
 
 printStartup();
 
+// Render the react overlay to the DOM.
+ReactDOM.render(<ReactRoot />, document.querySelector(`#root`));
+
 global.loginInProgress = false;
 
 window.document.title = `torn.space`;
 
 global.isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);// broken
 
-global.canvas = document.getElementById(`ctx`);
+global.canvas = document.querySelector(`#ctx`);
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 global.ctx = canvas.getContext(`2d`, { alpha: false });
@@ -183,9 +187,6 @@ require(`./chat.ts`);
 
 global.wepns = jsn.weapons;
 global.ships = jsn.ships;
-
-// Render the react overlay to the DOM.
-ReactDOM.render(<ReactRoot />, document.querySelector(`#a`));
 
 // Used in the ship store to make the bar graphs
 global.maxShipThrust = -1000;

@@ -22,6 +22,7 @@ class PlayerMP extends Player {
     constructor (socket) {
         super();
 
+        this.elo = 1200;
         socket.player = this;
         this.socket = socket;
         this.guild = ``;
@@ -264,7 +265,7 @@ class PlayerMP extends Player {
 
         this.health = this.maxHealth;
 
-        await handlePlayerDeath(this, this.driftAchs[8], this.randmAchs[4]);
+        await handlePlayerDeath(this, this.driftAchs[8], this.randmAchs[4], this.elo);
 
         this.x = this.y = sectorWidth / 2;
         const whereToRespawn = Math.floor(Math.random() * basesPerTeam) * 2;
@@ -562,6 +563,8 @@ class PlayerMP extends Player {
         else if (p.color === this.color) this.killsAchs[9] = true;
         this.sendAchievementsKill(true);
         if (p.color === this.color) this.save();
+        if (!p.isBot)
+            updateElo(this, p);
     }
 }
 

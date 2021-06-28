@@ -76,7 +76,8 @@ global.rBuyShipWindow = function () {
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80, 12);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80, 12); if (shipView != 17) { baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80, 12); } // 17 has infinite cargo
 
-        baseMenuCtx.strokeStyle = `white`;
+        baseMenuCtx.lineWidth = 1;
+        baseMenuCtx.strokeStyle = `black`;
         baseMenuCtx.fillStyle = compareColor(shipView, ship, `thrust`);
         baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80 * ships[shipView].thrust / maxShipThrust, 12);
         baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80 * ships[ship].thrust / maxShipThrust, 12);
@@ -89,7 +90,8 @@ global.rBuyShipWindow = function () {
         if (shipView != 17) {
             baseMenuCtx.fillStyle = compareColor(shipView, ship, `capacity`);
             baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[shipView].capacity / maxShipCapacity, 12);
-            baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[ship].capacity / maxShipCapacity, 12);
+            if (ship != 17)
+                baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[ship].capacity / maxShipCapacity, 12);
         } // 17 has infinite cargo
     }
 

@@ -35,6 +35,7 @@ class Player {
         this.id = nextPlayerId++, // unique identifier
         this.trail = 0,
         this.color = `yellow`,
+        this.elo = 1200,
         this.ship = 0,
         this.experience = 0,
         this.rank = 0,
@@ -835,8 +836,7 @@ class Player {
         // cooldown to prevent chat spam when 2 people are on the planet
         const cool = p.cooldown;
         if (cool < 0) {
-            this.refillAllAmmo(); p.cooldown = 20;
-            this.health += Math.min(Math.max(1, this.health * 0.01), this.maxHealth - this.health);
+            p.cooldown = 20;
         }
 
         this.checkQuestStatus(true); // lots of quests are planet based
@@ -867,6 +867,7 @@ class Player {
             chatAll(`Planet ${p.name} colonized by ${this.nameWithColor()}!`); // Colonizing planets. Since this will happen once per planet it will not be spammy
         }
         // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy when people fight over a planet
+        this.refillAllAmmo();
         p.color = this.color; // claim
         p.owner = this.name;
 

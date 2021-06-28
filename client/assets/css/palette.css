@@ -1,0 +1,12 @@
+/* Color Palette */
+:root {
+    /* Teams */
+    --human: cyan;
+    --alien: pink;
+    --cyborg: lime;
+
+    /* UI Colors */
+    --white: white;
+    --black: black;
+    --grey: #505050;
+}
