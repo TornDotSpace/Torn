@@ -31,7 +31,7 @@ players = db.players
 for player in players.find():
     print(f"Processing: {player['_id']}")
 
-    energy2 = player["energy2"] + 0.25;
+    energy2 = player["energy2"] + 0.25
 
     # Remove name field and set the tag
     players.update_one({"_id": player["_id"]}, {"$set": {"energy2": energy2}})
