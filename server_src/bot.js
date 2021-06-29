@@ -20,10 +20,11 @@ const Package = require(`./universe/package.js`);
 const fs = require(`fs`);
 
 class Bot extends Player {
-    constructor (id) {
-        super(id);
+    constructor () {
+        super();
         this.isBot = true;
         this.brainwashedBy = 0; // for enslaved bots
+        this.rng = Math.random();
     }
 
     flock () {
@@ -95,7 +96,7 @@ class Bot extends Player {
     }
 
     botPlay () {
-        if (tick % 8 != Math.floor(this.id * 8)) return; // Lag prevention, also makes the bots a bit easier
+        if (tick % 8 != Math.floor(this.rng * 8)) return; // Lag prevention, also makes the bots a bit easier
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
         this.equipped = 0;
@@ -262,8 +263,8 @@ global.spawnBot = function (sx, sy, col, force) {
         spawnNNBot(sx, sy, col);
         return;
     }
-    const id = Math.random();
-    const bot = new Bot(id);
+
+    const bot = new Bot();
     bot.angle = Math.random() * Math.PI * 2;
     bot.sx = sx;
     bot.sy = sy;
@@ -286,7 +287,7 @@ global.spawnBot = function (sx, sy, col, force) {
         while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot);
     }
     bot.refillAllAmmo();
-    players[bot.sy][bot.sx][id] = bot;
+    players[bot.sy][bot.sx][bot.id] = bot;
 };
 
 global.spawnNNBot = function (sx, sy, col) {

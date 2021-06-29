@@ -189,7 +189,7 @@ module.exports = initNetcode = () => {
 
             player.getAllPlanets();
 
-            players[player.sy][player.sx][socket.id] = player;
+            players[player.sy][player.sx][player.id] = player;
             player.va = ships[player.ship].agility * 0.08 * player.agility2;
             player.thrust = ships[player.ship].thrust * player.thrust2;
             player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
@@ -214,7 +214,7 @@ module.exports = initNetcode = () => {
                 return;
             }
 
-            const playerDocked = dockers[socket.id];
+            const playerDocked = dockers[player.id];
             if (typeof playerDocked === `undefined`) return;
 
             let user = data.user; const pass = data.pass;
@@ -299,7 +299,7 @@ module.exports = initNetcode = () => {
                 if (player.sx >= mapSz) player.sx--;
                 if (player.sy >= mapSz) player.sy--;
 
-                players[player.sy][player.sx][socket.id] = player;
+                players[player.sy][player.sx][player.id] = player;
 
                 socket.emit(`raid`, { raidTimer: raidTimer });
                 player.checkTrailAchs();

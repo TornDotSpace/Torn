@@ -3,8 +3,8 @@ name: Node CI
 on: [push,pull_request]
 
 jobs:
-  lint:
-    name: Lint
+  lint-js:
+    name: Lint Javascript/Typescript via eslint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,3 +23,12 @@ jobs:
       run: npm run dev:lint
       env:
         CI: true
+  lint-py:
+    name: Lint via python-black
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Lint (via python-black)
+        uses: psf/black@stable
+        

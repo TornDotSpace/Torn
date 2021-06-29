@@ -128,7 +128,7 @@ def updateLB(conn_str, path):
         teamdata[player["color"]]["rank"] += rank
         teamdata[player["color"]]["spot"] += i
 
-        elo = floor(elo);
+        elo = floor(elo)
 
         moneyStr = (
             f"{int(money //1000000+.5)}M"
