@@ -13,9 +13,9 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [master, torn-production]
+    # Dependabot doesn't have write access
+    branches-ignore: [dependabot/**]
   pull_request:
-    branches: [master]
   schedule:
     - cron: '25 7 * * 1'
 
