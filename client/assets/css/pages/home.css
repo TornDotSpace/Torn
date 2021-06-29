@@ -99,7 +99,7 @@ html, body, #root {
     opacity: 1;
 }
 
-.login-input, .login-button, .register, #registerR, #registerG, #registerB {
+.login-input, .login-btn, .register-btn, #registerR, #registerG, #registerB {
     font-family: 'ShareTech';
     font-size: 16px;
 
@@ -121,15 +121,15 @@ html, body, #root {
     color: var(--white);
 }
 
-#registerR, #registerG, #registerB, .login-button {
+#registerR, #registerG, #registerB, .login-btn {
     width: 188px;
     float: none;
 
     color: var(--white);
 }
 
-.login-button {
-    background-color: var(--black);
+.login-btn {
+    background-color: #78787880;
     border: none;
 }
 
@@ -142,21 +142,26 @@ html, body, #root {
 
 #registerR {
     background-color: #b3070d80;
-    border: 1px solid #b3070d;
 }
 
 #registerG {
     background-color: #04db3d80;
-    border: 1px solid #04db3d;
 }
 
 #registerB {
     background-color: #3660eb80;
-    border: 1px solid #3660eb;
 }
 
-#registerR:hover, #registerG:hover, #registerB:hover {
-    border: 1px solid #FFFFFF;
+#registerR:hover {
+    background-color: #b3070d;
+}
+
+#registerG:hover {
+    background-color: #04db3d;
+}
+
+#registerB:hover {
+    background-color: #3660eb;
 }
 
 #registerR:active, #registerG:active, #registerB:active {
@@ -164,11 +169,11 @@ html, body, #root {
     background-color: #FFFFFF;
 }
 
-.login-input {
-    width: 188px;
-
-    border: 2px solid var(--grey);
+.login-input, .register-input {
     color: var(--black);
+    border: none;
+
+    width: 188px;
 }
 
 /* Link container */
@@ -196,8 +201,9 @@ html, body, #root {
     border-right: 2px solid #606060;
 }
 
-.login-input, .login-button {
-
+.login-input, .register-input, .login-btn, .register-btn {
+    padding: 1rem;
+    border-radius: 1rem;
 }
 
 .login-input:hover {
@@ -210,7 +216,7 @@ html, body, #root {
 }
 
 /* Overlay hovers */
-#registerA:hover, #reegisterH:hover, .login-button:hover {
+#registerA:hover, #reegisterH:hover, .login-btn:hover {
     background-color: #787878;
 }
 

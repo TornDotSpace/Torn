@@ -71,15 +71,16 @@ class Register extends React.Component<{ register: boolean }, { user: string, pa
 
                         <br />
 
-                        <input className="overlay-input" type="text" onChange={this.changeUsername} placeholder="Username" maxLength={16} style={{ margin: 8 }} />
-                        <input className="overlay-input" type="password" onChange={this.changePassword} placeholder="Password" maxLength={32} style={{ margin: 8 }} />
-
-                        <br />
-                        <button className="register" onClick={this.register}>Register!</button>
-
-                        <br />
+                        <input className="register-input" type="text" onChange={this.changeUsername} placeholder="Username" maxLength={16} style={{ margin: 8 }} />
                         <br />
 
+                        <input className="register-input" type="password" onChange={this.changePassword} placeholder="Password" maxLength={32} style={{ margin: 8 }} />
+                        <br />
+
+                        <button className="register-btn" onClick={this.register}>Register!</button>
+                        <br />
+
+                        <br />
                         <p>By registering, you agree to follow our terms of service and abide by our privacy policy.</p>
 
                         <a href="/legal/privacy_policy.pdf" >Privacy Policy | </a>

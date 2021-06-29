@@ -159,7 +159,7 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                                     <input className="login-input" type="text" id="usernameid" autoComplete="username" onChange={this.changeUsername} placeholder="Username" />
                                     <input className="login-input" type="password" id="passid" autoComplete="current-password" onChange={this.changePassword} placeholder="Password" />
 
-                                    <input className="login-button" type="submit" value="Login" id="loginButton" />
+                                    <input className="login-btn" type="submit" value="Login" id="loginButton" />
                                 </form>
                             </div>
                         </div>
