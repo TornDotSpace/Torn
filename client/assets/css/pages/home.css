@@ -99,7 +99,7 @@ html, body, #root {
     opacity: 1;
 }
 
-.login-input, .login-btn, .register-btn, #registerR, #registerG, #registerB {
+.login-input, .register-input, .login-btn, .register-btn, #registerR, #registerG, #registerB {
     font-family: 'ShareTech';
     font-size: 16px;
 
@@ -121,25 +121,23 @@ html, body, #root {
     color: var(--white);
 }
 
-#registerR, #registerG, #registerB, .login-btn {
+
+/* Button Styling */
+#registerR, #registerG, #registerB, .login-input, .register-input, .login-btn, .register-btn {
+    border: none;
+    border-radius: 1rem;
+    padding: 1rem;
+
     width: 188px;
     float: none;
 
     color: var(--white);
 }
 
-.login-btn {
-    background-color: #78787880;
-    border: none;
-}
+/* #registerR, #registerG, #registerB, .login-btn {
+} */
 
-/* Register Buttons */
-#registerR, #registerG, #registerB {
-    border: none;
-    border-radius: 1rem;
-    padding: 1rem;
-}
-
+/* Guest Overlay */
 #registerR {
     background-color: #b3070d80;
 }
@@ -169,11 +167,36 @@ html, body, #root {
     background-color: #FFFFFF;
 }
 
-.login-input, .register-input {
-    color: var(--black);
-    border: none;
+/* Login & Register Overlays */
+.login-btn, .register-btn {
+    background-color: #78787880;
+}
 
-    width: 188px;
+.login-btn:hover, .register-btn:hover {
+    background-color: #787878;
+}
+
+.login-btn:focus, .register-btn:focus {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+/* Login Inputs */
+.login-input {
+    background-color: #33333380;
+}
+
+.login-input:hover {
+    background-color: #00000080;
+}
+
+/* Register Inputs */
+.register-input {
+    background-color: #00000080;
+}
+
+.register-input:hover {
+    background-color: #000000;
 }
 
 /* Link container */
@@ -187,37 +210,18 @@ html, body, #root {
     bottom: 0;
 }
 
-.link-container a {
+.link-container a, .register-menu a {
     color: #808080;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 }
 
-.link-container a:hover {
+.link-container a:hover, .register-menu a:hover {
     color: #A0A0A0;
 }
 
-.link-container > div > *:not(:last-child) {
+.link-container > div > *:not(:last-child), .register-menu .legal-info > *:not(:last-child) {
     border-right: 2px solid #606060;
-}
-
-.login-input, .register-input, .login-btn, .register-btn {
-    padding: 1rem;
-    border-radius: 1rem;
-}
-
-.login-input:hover {
-    background-color: var(--white);
-}
-
-.login-input:focus {
-    background-color: var(--black);
-    color: var(--white);
-}
-
-/* Overlay hovers */
-#registerA:hover, #reegisterH:hover, .login-btn:hover {
-    background-color: #787878;
 }
 
 /* Register Menu */
@@ -234,6 +238,10 @@ html, body, #root {
     justify-content: center;
     align-items: center;
     margin: auto;
+}
+
+.register-menu p, .register-menu a {
+    font-size: 14px;
 }
 
 /* Chat Input */
@@ -293,21 +301,8 @@ h3 {
     font-size: 18.72px;
 }
 
-canvas {
-    z-index: 2000 !important;
-}
-
-/* Get rid of Google's ugly autofill colors */
-input:-webkit-autofill {
-    -box-shadow: 0 0 0 30px white inset;
-}
-
-input:-webkit-autofill:hover {
-    box-shadow: 0 0 0 30px #FFB inset;
-}
-
-input:-webkit-autofill:focus {
-    box-shadow: 0 0 0 30px black inset;
+.login-input:-webkit-autofill, .register-input:-webkit-autofill {
+    -webkit-text-fill-color: #FFF;
 }
 
 /* Animations */

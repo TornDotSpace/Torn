@@ -83,9 +83,10 @@ class Register extends React.Component<{ register: boolean }, { user: string, pa
                         <br />
                         <p>By registering, you agree to follow our terms of service and abide by our privacy policy.</p>
 
-                        <a href="/legal/privacy_policy.pdf" >Privacy Policy | </a>
-                        <a href="/legal/tos.pdf">Terms of Service</a>
-                        <br />
+                        <div className="legal-info">
+                            <a href="/legal/privacy_policy.pdf">Privacy Policy</a>
+                            <a href="/legal/tos.pdf">Terms of Service</a>
+                        </div>
 
                         <br />
                         <p>Remember, never give your password to anyone!</p>
