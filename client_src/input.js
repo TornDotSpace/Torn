@@ -161,8 +161,8 @@ document.addEventListener(`mousemove`, (evt) => {
     const mousePos = getMousePos(canvas, evt);
     mx = mousePos.x;
     my = mousePos.y;
-    if (mb == 1 && mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
-    if (mx > w - 32 - 20 - 128 && my > h - 52) volTransparency = 1;
+    if (mb == 1 && mx > w - 32 - 20 - 224 && mx < w - 32 - 20 - 224 + 128 && my > h - 70) gVol = (mx + 20 + 32 + 224 - w) / 128;
+    if (mx > w - 32 - 20 - 224 && mx < w - 32 - 20 - 224 + 128 && my > h - 52) volTransparency = 1;
     const preSeller = seller;
 
     // Map movement
@@ -197,7 +197,7 @@ document.addEventListener(`mousedown`, (evt) => {
         socket.emit(`guest`, VERSION);
         return;
     }
-    if (mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
+    if (mx > w - 32 - 20 - 224 && mx < w - 32 - 20 - 224 + 128 && my > h - 70) gVol = (mx + 20 + 32 + 224 - w) / 128;
     const mousePos = getMousePos(canvas, evt);
     mx = mousePos.x;
     my = mousePos.y;
@@ -238,7 +238,7 @@ document.addEventListener(`mouseup`, (evt) => {
     }
 }, false);
 
-canvas.addEventListener(`wheel`, () => {
+canvas.addEventListener(`wheel`, event => {
     if (typeof event == `undefined`) return;
     const d = -Math.sign(event.deltaY);
 

@@ -1,4 +1,4 @@
-/*
+"""
 Copyright (C) 2021  torn.space (https://torn.space)
 
 This program is free software: you can redistribute it and/or modify
@@ -13,30 +13,26 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+"""
 
-import React from 'react';
+######################################
+# Date: 06/26/2021
+# Purpose: Add 2 energy tech to all players
+#####################################
 
-import { toggleMusic } from '../../modules/audio';
+MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn"
+from pymongo import MongoClient
+from datetime import datetime
 
-class MusicButton extends React.Component<{}, { muted: boolean }> {
-    constructor (props: {}) {
-        super(props);
+print("*** RUNNING ADD 2 ENERGY ***")
+client = MongoClient(MONGO_CONNECTION_STR)
+db = client.torn
+players = db.players
+for player in players.find():
+    print(f"Processing: {player['_id']}")
 
-        this.state = {
-            muted: false
-        };
-    }
+    energy2 = player["energy2"] + 0.25
 
-    click = () => {
-        this.setState({ muted: toggleMusic() });
-    }
-
-    render = () => (
-        <button className="music-button" onClick={this.click.bind(this)}>
-            {<img src={`/img/sound/music${!this.state.muted ? `On` : `Off`}.png`} alt="Music mute button"/>}
-        </button>
-    )
-}
-
-export default MusicButton;
+    # Remove name field and set the tag
+    players.update_one({"_id": player["_id"]}, {"$set": {"energy2": energy2}})
+print("done")

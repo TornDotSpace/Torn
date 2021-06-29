@@ -38,9 +38,7 @@ def filefix():
         if "elo" in player:
             continue
 
-        players.update_one(
-            {"_id": player["_id"]}, {"$set": {"elo": 1200}}
-        )
+        players.update_one({"_id": player["_id"]}, {"$set": {"elo": 1200}})
 
         print(f"Added elo for {player['_id']}")
 

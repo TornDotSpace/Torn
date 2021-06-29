@@ -99,7 +99,7 @@ html, body, #root {
     opacity: 1;
 }
 
-.overlay-input, .register, #registerR, #registerG, #registerB, .overlay-button {
+.login-input, .register-input, .login-btn, .register-btn, #registerR, #registerG, #registerB {
     font-family: 'ShareTech';
     font-size: 16px;
 
@@ -109,7 +109,7 @@ html, body, #root {
     margin-bottom: 5px;
 }
 
-.overlay-input {
+.login-input {
     float: none;
     width: 176px;
 }
@@ -121,32 +121,78 @@ html, body, #root {
     color: var(--white);
 }
 
-#registerR, #registerG, #registerB, .overlay-button {
-    width: 60%;
+/* Button Styling */
+#registerR, #registerG, #registerB, .login-input, .register-input, .login-btn, .register-btn {
+    border: none;
+    border-radius: 1rem;
+    padding: 1rem;
+
+    width: 188px;
     float: none;
 
     color: var(--white);
-    background-color: var(--grey);
 }
 
-/* Register Buttons */
+/* Guest Overlay */
 #registerR {
-    border: 2px solid red;
+    background-color: #b3070d80;
 }
 
 #registerG {
-    border: 2px solid green;
+    background-color: #04db3d80;
 }
 
 #registerB {
-    border: 2px solid blue;
+    background-color: #3660eb80;
 }
 
-.overlay-input {
-    width: 60%;
+#registerR:hover {
+    background-color: #b3070d;
+}
 
-    border: 2px solid var(--grey);
-    color: var(--black);
+#registerG:hover {
+    background-color: #04db3d;
+}
+
+#registerB:hover {
+    background-color: #3660eb;
+}
+
+#registerR:active, #registerG:active, #registerB:active {
+    color: #000000;
+    background-color: #FFFFFF;
+}
+
+/* Login & Register Overlays */
+.login-btn, .register-btn {
+    background-color: #78787880;
+}
+
+.login-btn:hover, .register-btn:hover {
+    background-color: #787878;
+}
+
+.login-btn:focus, .register-btn:focus {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+/* Login Inputs */
+.login-input {
+    background-color: #33333380;
+}
+
+.login-input:hover {
+    background-color: #00000080;
+}
+
+/* Register Inputs */
+.register-input {
+    background-color: #00000080;
+}
+
+.register-input:hover {
+    background-color: #000000;
 }
 
 /* Link container */
@@ -160,43 +206,47 @@ html, body, #root {
     bottom: 0;
 }
 
-.link-container a {
+.link-container a, .register-menu a {
     color: #808080;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 }
 
-.link-container a:hover {
+.link-container a:hover, .register-menu a:hover {
     color: #A0A0A0;
 }
 
-.link-container > div > *:not(:last-child) {
+.link-container > div > *:not(:last-child), .register-menu .legal-info > *:not(:last-child) {
     border-right: 2px solid #606060;
 }
 
-.overlay-input:hover {
-    background-color: var(--white);
+/* Register Menu */
+.register-menu {
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 77.5%;
+
+    display: flex;
+    position: absolute;
+
+    justify-content: center;
+    align-items: center;
+    margin: auto;
 }
 
-.overlay-input:focus {
-    background-color: var(--black);
-    color: var(--white);
+.register-menu p, .register-menu a {
+    font-size: 14px;
 }
 
-/* Overlay hovers */
-#registerA:hover, #reegisterH:hover, .overlay-button:hover {
-    background-color: #787878;
-}
-
-/* Chat menu */
+/* Chat Input */
 .chat {
     position: fixed;
     padding: 10px;
 
     bottom: 0;
     left: 0;
-
-    word-wrap: break-word;
 }
 
 .chat-input {
@@ -226,12 +276,21 @@ html, body, #root {
     margin: 10px;
 }
 
-.sfx-wrapper > div {
-    margin-top: 5px;
-    margin-bottom: 5px;
+.sfx-wrapper button {
+    margin-left: 5px;
+    margin-right: 5px;
 
-    cursor: pointer;
+    background-color: #00000080;
+    border-radius: 1rem;
+
+    border: none;
+    padding: 1rem;
+
     user-select: none;
+}
+
+.sfx-wrapper button:hover {
+    background-color: #78787880;
 }
 
 /* Helper classes */
@@ -247,21 +306,16 @@ h3 {
     font-size: 18.72px;
 }
 
-canvas {
-    z-index: 2000 !important;
+.login-input:-webkit-autofill, .register-input:-webkit-autofill {
+    -webkit-text-fill-color: #FFF;
 }
 
-/* Get rid of Google's ugly autofill colors */
-input:-webkit-autofill {
-    -box-shadow: 0 0 0 30px white inset;
-}
+.login-input:focus, .register-input:focus {
+    outline: none;
+    background-color: #FFFFFF;
 
-input:-webkit-autofill:hover {
-    box-shadow: 0 0 0 30px #FFB inset;
-}
-
-input:-webkit-autofill:focus {
-    box-shadow: 0 0 0 30px black inset;
+    color: #000000;
+    -webkit-text-fill-color: #000000;
 }
 
 /* Animations */
