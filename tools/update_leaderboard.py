@@ -7,7 +7,7 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
+but WITHOUT ANY WARRANTY without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
@@ -16,43 +16,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 # Import libraries.
-import json as JSON;
+import json as JSON
 
-import pymongo;
-from pymongo import MongoClient;
+import pymongo
+from pymongo import MongoClient
 
-from math import floor;
+from math import floor
 
-from pathlib import Path;
-from os import path;
+from pathlib import Path
+from os import path
 
 # Environment variables.
-MONGO_URI = "mongodb://localhost:27017/torn";
-OUTPUT = "../client/leaderboard/players.json";
+MONGO_URI = "mongodb://localhost:27017/torn"
+OUTPUT = "../client/leaderboard/players.json"
 
 def __init__ ():
-    updateLB(MONGO_URI, OUTPUT);
-    pass;
+    updateLB(MONGO_URI, OUTPUT)
+    pass
 
 def updateLB (uri, output):
-    print("Updating leaderboard...");
+    print("Updating leaderboard...")
 
     # Connect to the database.
-    client = MongoClient(uri);
+    client = MongoClient(uri)
 
     # Get all players.
-    players = client.torn.players;
-    playerData = [];
+    players = client.torn.players
+    playerData = []
 
-    i = 1;
+    i = 1
     for player in players.find().sort("experience", pymongo.DESCENDING):
-        if (i > 2000): break;
+        if (i > 2000): break
 
-        tag = player["tag"];
+        tag = player["tag"]
         if "O" in tag:
-            continue;
+            continue
 
-        pMoney = player["money"];
+        pMoney = player["money"]
 
         if pMoney > 10000000:
             money = f"{int(pMoney // 1000000.5)}M"
@@ -72,18 +72,18 @@ def updateLB (uri, output):
             "rank": player["rank"],
 
             "tech": int(((player["thrust2"] + player["radar2"] + player["capacity2"] + player["agility2"] + player["maxHealth2"] + player["energy2"]) / 6 - 1) * 8 * 100) / 100
-        };
+        }
 
-        playerData.append(newPlayer);
-        i += 1;
+        playerData.append(newPlayer)
+        i += 1
 
     # Determine the file path.
-    filePath = str(Path(Path(__file__).parent, output).resolve());
-    print(f"Using '{filePath}' as output...");
+    filePath = str(Path(Path(__file__).parent, output).resolve())
+    print(f"Using '{filePath}' as output...")
 
     with open(filePath, "w") as lb:
-        lb.write(JSON.dumps(playerData));
+        lb.write(JSON.dumps(playerData))
 
-    print("Updated leaderboard succesfully!");
+    print("Updated leaderboard succesfully!")
 
-__init__();
+__init__()
