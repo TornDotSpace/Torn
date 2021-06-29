@@ -310,6 +310,14 @@ h3 {
     -webkit-text-fill-color: #FFF;
 }
 
+.login-input:focus, .register-input:focus {
+    outline: none;
+    background-color: #FFFFFF;
+
+    color: #000000;
+    -webkit-text-fill-color: #000000;
+}
+
 /* Animations */
 @keyframes slide-in {
     100% { transform: translateY(0%); }
