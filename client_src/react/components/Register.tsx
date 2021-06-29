@@ -66,7 +66,7 @@ class Register extends React.Component<{ register: boolean }, { user: string, pa
         this.props.register
             ? (
                 <div className="register-menu">
-                    <div className="text-center m-auto">
+                    <div className="text-center">
                         <h3>New Players</h3>
 
                         <br />

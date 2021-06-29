@@ -99,7 +99,7 @@ html, body, #root {
     opacity: 1;
 }
 
-.overlay-input, .register, #registerR, #registerG, #registerB, .overlay-button {
+.login-input, .login-button, .register, #registerR, #registerG, #registerB {
     font-family: 'ShareTech';
     font-size: 16px;
 
@@ -109,7 +109,7 @@ html, body, #root {
     margin-bottom: 5px;
 }
 
-.overlay-input {
+.login-input {
     float: none;
     width: 176px;
 }
@@ -121,14 +121,14 @@ html, body, #root {
     color: var(--white);
 }
 
-#registerR, #registerG, #registerB, .overlay-button {
-    width: 60%;
+#registerR, #registerG, #registerB, .login-button {
+    width: 188px;
     float: none;
 
     color: var(--white);
 }
 
-.overlay-button {
+.login-button {
     background-color: var(--black);
     border: none;
 }
@@ -137,22 +137,35 @@ html, body, #root {
 #registerR, #registerG, #registerB {
     border: none;
     border-radius: 1rem;
+    padding: 1rem;
 }
 
 #registerR {
-    background-color: red;
+    background-color: #b3070d80;
+    border: 1px solid #b3070d;
 }
 
 #registerG {
-    background-color: green;
+    background-color: #04db3d80;
+    border: 1px solid #04db3d;
 }
 
 #registerB {
-    background-color: blue;
+    background-color: #3660eb80;
+    border: 1px solid #3660eb;
 }
 
-.overlay-input {
-    width: 60%;
+#registerR:hover, #registerG:hover, #registerB:hover {
+    border: 1px solid #FFFFFF;
+}
+
+#registerR:active, #registerG:active, #registerB:active {
+    color: #000000;
+    background-color: #FFFFFF;
+}
+
+.login-input {
+    width: 188px;
 
     border: 2px solid var(--grey);
     color: var(--black);
@@ -183,18 +196,38 @@ html, body, #root {
     border-right: 2px solid #606060;
 }
 
-.overlay-input:hover {
+.login-input, .login-button {
+
+}
+
+.login-input:hover {
     background-color: var(--white);
 }
 
-.overlay-input:focus {
+.login-input:focus {
     background-color: var(--black);
     color: var(--white);
 }
 
 /* Overlay hovers */
-#registerA:hover, #reegisterH:hover, .overlay-button:hover {
+#registerA:hover, #reegisterH:hover, .login-button:hover {
     background-color: #787878;
+}
+
+/* Register Menu */
+.register-menu {
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 77.5%;
+
+    display: flex;
+    position: absolute;
+
+    justify-content: center;
+    align-items: center;
+    margin: auto;
 }
 
 /* Chat Input */
