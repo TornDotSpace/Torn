@@ -31,10 +31,8 @@ players = db.players
 for player in players.find():
     print(f"Processing: {player['_id']}")
 
-    experience = player['experience']*.5
+    experience = player["experience"] * 0.5
 
     # Remove name field and set the tag
-    players.update_one(
-        {"_id": player["_id"]}, {"$set": {"experience": experience}}
-    )
+    players.update_one({"_id": player["_id"]}, {"$set": {"experience": experience}})
 print("done")
