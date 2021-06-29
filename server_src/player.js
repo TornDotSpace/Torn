@@ -834,9 +834,10 @@ class Player {
         if (tick % 2 != 0 || squaredDist(p, this) > square(512)) return;
 
         // cooldown to prevent chat spam when 2 people are on the planet
-        const cool = p.cooldown;
-        if (cool < 0) {
+        let cool = p.cooldown;
+        if (!cool || cool < 0) {
             p.cooldown = 20;
+            cool = p.cooldown;
         }
 
         this.checkQuestStatus(true); // lots of quests are planet based
