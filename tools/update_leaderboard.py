@@ -35,6 +35,7 @@ def __init__():
     updateLB(MONGO_URI, OUTPUT)
     pass
 
+
 def updateLB(uri, output):
     print("Updating leaderboard...")
 
@@ -47,7 +48,8 @@ def updateLB(uri, output):
 
     i = 1
     for player in players.find().sort("experience", pymongo.DESCENDING):
-        if (i > 2000): break
+        if (i > 2000):
+            break
 
         tag = player["tag"]
         if "O" in tag:
