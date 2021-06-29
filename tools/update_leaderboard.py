@@ -30,11 +30,12 @@ from os import path
 MONGO_URI = "mongodb://localhost:27017/torn"
 OUTPUT = "../client/leaderboard/players.json"
 
-def __init__ ():
+
+def __init__():
     updateLB(MONGO_URI, OUTPUT)
     pass
 
-def updateLB (uri, output):
+def updateLB(uri, output):
     print("Updating leaderboard...")
 
     # Connect to the database.
@@ -63,15 +64,28 @@ def updateLB (uri, output):
             "name": player["_id"],
             "team": player["color"],
             "spot": i,
-
             "xp": player["experience"],
             "kills": player["kills"],
             "elo": floor(player["elo"]),
-
             "money": player["money"],
             "rank": player["rank"],
-
-            "tech": int(((player["thrust2"] + player["radar2"] + player["capacity2"] + player["agility2"] + player["maxHealth2"] + player["energy2"]) / 6 - 1) * 8 * 100) / 100
+            "tech": int(
+                (
+                    (
+                        player["thrust2"]
+                        + player["radar2"]
+                        + player["capacity2"]
+                        + player["agility2"]
+                        + player["maxHealth2"]
+                        + player["energy2"]
+                    )
+                    / 6
+                    - 1
+                )
+                * 8
+                * 100
+            )
+            / 100,
         }
 
         playerData.append(newPlayer)
@@ -85,5 +99,6 @@ def updateLB (uri, output):
         lb.write(JSON.dumps(playerData))
 
     print("Updated leaderboard succesfully!")
+
 
 __init__()
