@@ -27,6 +27,7 @@ global.weaponCircumfix = `\`w`;
 global.translateCircumfix = `\`t`;
 
 // some global FINAL game mechanics
+global.eloVolatility = 30;
 global.bulletWidth = 16; // collision radius
 global.mineLifetime = 3 * tickRate * 60; // mines despawn after this many minutes (3)
 global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick

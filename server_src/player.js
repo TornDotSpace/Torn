@@ -32,6 +32,7 @@ class Player {
         this.tag = ``,
         this.id = id, // unique identifier
         this.trail = 0,
+        this.elo = 1200,
         this.color = id > 0.5 ? `red` : `blue`,
         this.ship = 0,
         this.experience = 0,
@@ -562,7 +563,7 @@ class Player {
             this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
         }
 
-        if (this.isBot && this.empTimer <= 0) this.botPlay(); // simulates a player and presses keys.
+        if (this.isBot && this.empTimer < 0) this.botPlay(); // simulates a player and presses keys.
 
         const amDrifting = this.e || this.gyroTimer > 0;
         const ore = this.iron + this.silver + this.platinum + this.copper;
@@ -830,13 +831,6 @@ class Player {
         // if out of range, return. Only try this once every fifth of second.
         if (tick % 2 != 0 || squaredDist(p, this) > square(512)) return;
 
-        // cooldown to prevent chat spam when 2 people are on the planet
-        const cool = p.cooldown;
-        if (cool < 0) {
-            this.refillAllAmmo(); p.cooldown = 20;
-            this.health += Math.min(Math.max(1, this.health * 0.01), this.maxHealth - this.health);
-        }
-
         this.checkQuestStatus(true); // lots of quests are planet based
 
         if (this.guest) return; // You must create an account in the base before you can claim planets!
@@ -867,6 +861,7 @@ class Player {
         // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy when people fight over a planet
         p.color = this.color; // claim
         p.owner = this.name;
+        this.refillAllAmmo();
 
         for (const i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();// send them new planet data
 
@@ -1047,10 +1042,8 @@ class Player {
     }
 
     EMP (t) {
- 	    if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // Emp works better on elite ships.
-        if (this.ship === 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // It will also heal the ship a very small bit.
-
-        if (this.shield) t *= 0.33; // Shield offers some protection for electronic components
+ 	    if (this.ship === 16) t *= 1.25; // Emp works better on r16.
+        if (this.ship === 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // r21's get a tiny healing benefit.
 
         this.empTimer = t;
         this.emit(`emp`, { t });

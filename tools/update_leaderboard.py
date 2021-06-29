@@ -47,6 +47,7 @@ def updateLB(conn_str, path):
             "kills": 0,
             "tech": 0,
             "experience": 0,
+            "elo": 0,
             "rank": 0,
             "spot": 0,
         },
@@ -57,6 +58,7 @@ def updateLB(conn_str, path):
             "kills": 0,
             "tech": 0,
             "experience": 0,
+            "elo": 0,
             "rank": 0,
             "spot": 0,
         },
@@ -67,13 +69,14 @@ def updateLB(conn_str, path):
             "kills": 0,
             "tech": 0,
             "experience": 0,
+            "elo": 0,
             "rank": 0,
             "spot": 0,
         },
     }  # players
 
     # Players
-    playerFile = "<tr><th>#</th><th>Name</th><th>Exp</th><th>Rank</th><th>Kills</th><th>Money</th><th>Tech</th></tr>"
+    playerFile = "<tr><th>#</th><th>Name</th><th>Exp</th><th>ELO</th><th>Rank</th><th>Kills</th><th>Money</th><th>Tech</th></tr>"
     # Grab needed data
     i = 0
     for player in players.find().sort("experience", pymongo.DESCENDING):
@@ -86,6 +89,7 @@ def updateLB(conn_str, path):
             break
         kills = player["kills"]
         rank = player["rank"]
+        elo = player["elo"]
         tech = (
             int(
                 (
@@ -117,18 +121,21 @@ def updateLB(conn_str, path):
             teamdata[player["color"]]["players"] + 1
         )
         teamdata[player["color"]]["experience"] += player["experience"]
+        teamdata[player["color"]]["elo"] += elo
         teamdata[player["color"]]["money"] += money
         teamdata[player["color"]]["kills"] += kills
         teamdata[player["color"]]["tech"] += tech
         teamdata[player["color"]]["rank"] += rank
         teamdata[player["color"]]["spot"] += i
 
+        elo = floor(elo);
+
         moneyStr = (
             f"{int(money //1000000+.5)}M"
             if money > 10000000
             else f"{int(money//1000+.5)}K"
         )
-        out = f'<tr style="color:{color}"><td>{i}.</td><td>{name}</td><td>{xp}</td><td>{rank}</td><td>{kills}</td><td>{moneyStr}\
+        out = f'<tr style="color:{color}"><td>{i}.</td><td>{name}</td><td>{xp}</td><td>{elo}</td><td>{rank}</td><td>{kills}</td><td>{moneyStr}\
                 </td><td>{tech}</td></tr>'
 
         playerFile = f"{playerFile}{out}"  # append to file
@@ -138,6 +145,7 @@ def updateLB(conn_str, path):
             <td>Average Place</td>
             <td>Total Players</td>
             <td>Average Experience</td>
+            <td>Average ELO</td>
             <td>Average Rank</td>
             <td>Average Kills</td>
             <td>Average Money</td>
@@ -148,8 +156,9 @@ def updateLB(conn_str, path):
     for key in teamdata:
         teamFile = f'{teamFile}<tr style="color:{teamdata[key]["dispcol"]}"><td>{key}: {int(teamdata[key]["spot"]/teamdata[key]["players"])}\
             </td><td>{teamdata[key]["players"]}</td><td>{int(teamdata[key]["experience"]/teamdata[key]["players"])}\
-                </td><td>{(int(teamdata[key]["rank"]/teamdata[key]["players"]))}</td><td>{int(teamdata[key]["kills"]/teamdata[key]["players"])}\
-                    </td><td>{int(teamdata[key]["money"]/teamdata[key]["players"])}</td><td>{(int(teamdata[key]["tech"]/teamdata[key]["players"]))}</td></tr>'
+                </td><td>{int(teamdata[key]["elo"]/teamdata[key]["players"])}\
+                    </td><td>{(int(teamdata[key]["rank"]/teamdata[key]["players"]))}</td><td>{int(teamdata[key]["kills"]/teamdata[key]["players"])}\
+                        </td><td>{int(teamdata[key]["money"]/teamdata[key]["players"])}</td><td>{(int(teamdata[key]["tech"]/teamdata[key]["players"]))}</td></tr>'
 
     time = datetime.datetime.now()
     newFile = f'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\

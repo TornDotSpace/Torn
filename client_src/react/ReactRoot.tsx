@@ -87,6 +87,8 @@ class ReactRoot extends React.Component<{}, { display: string, register: string 
 
             <LoginOverlay display={this.state.display === `LoginOverlay`} />
             <Register register={this.state.register === `Register`} />
+
+            <canvas id="ctx"></canvas>
         </span>
     )
 }

@@ -47,7 +47,7 @@ global.connectToDB = function () {
     });
 };
 
-global.handlePlayerDeath = async function (player, inertia_drift, blackhole_death) {
+global.handlePlayerDeath = async function (player, inertia_drift, blackhole_death, elo) {
     if (player.guest) return;
 
     const record = await PLAYER_DATABASE.findOne({ _id: player.name });
@@ -64,6 +64,7 @@ global.handlePlayerDeath = async function (player, inertia_drift, blackhole_deat
 
     player.experience *= 1 - playerKillExpFraction;
     player.money *= 1 - playerKillMoneyFraction;
+    player.elo = elo;
     player.randmAchs[1] = true; // Death Achievement
     player.driftAchs[8] = inertia_drift; // inertia drift Achievement
     player.randmAchs[4] = blackhole_death; // BH death Achievement
@@ -140,6 +141,7 @@ global.savePlayerEmail = function (player, email) {
 global.savePlayerData = function (player) {
     const record = {
         color: player.color,
+        elo: player.elo,
         ship: player.ship,
         weapons: player.weapons,
         tag: player.tag,

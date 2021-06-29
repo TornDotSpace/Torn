@@ -238,7 +238,7 @@ document.addEventListener(`mouseup`, (evt) => {
     }
 }, false);
 
-canvas.addEventListener(`wheel`, () => {
+canvas.addEventListener(`wheel`, event => {
     if (typeof event == `undefined`) return;
     const d = -Math.sign(event.deltaY);
 
