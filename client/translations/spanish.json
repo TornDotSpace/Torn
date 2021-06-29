@@ -354,8 +354,8 @@
 			"desc":"Un tipo normal de mina... magnéticamente atraída a las naves enemigas demasiado incautas."
 		},
 		{
-			"name":"Escudo de navegación",
-			"desc":"Una antena deflectora, permite a naves espaciales viajar con seguridad de no sufir daños de escombros y pequeños asteroides, al igual que de algunos rayos cósmicos."
+			"name":"Escudo de nav.",
+			"desc":"Un escudo de navegación basado en una antena deflectora, permite a naves espaciales viajar con seguridad de no sufir daños de escombros y pequeños asteroides, al igual que de algunos rayos cósmicos."
 		}
 	],
 	"splashes":[
