@@ -48,7 +48,7 @@ def updateLB(uri, output):
 
     i = 1
     for player in players.find().sort("experience", pymongo.DESCENDING):
-        if (i > 2000):
+        if i > 2000:
             break
 
         tag = player["tag"]
