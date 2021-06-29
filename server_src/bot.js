@@ -24,6 +24,7 @@ class Bot extends Player {
         super();
         this.isBot = true;
         this.brainwashedBy = 0; // for enslaved bots
+        this.rng = Math.random();
     }
 
     flock () {
@@ -95,7 +96,7 @@ class Bot extends Player {
     }
 
     botPlay () {
-        if (tick % 8 != Math.floor(this.id * 8)) return; // Lag prevention, also makes the bots a bit easier
+        if (tick % 8 != Math.floor(this.rng * 8)) return; // Lag prevention, also makes the bots a bit easier
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
         this.equipped = 0;
