@@ -121,7 +121,6 @@ html, body, #root {
     color: var(--white);
 }
 
-
 /* Button Styling */
 #registerR, #registerG, #registerB, .login-input, .register-input, .login-btn, .register-btn {
     border: none;
@@ -133,9 +132,6 @@ html, body, #root {
 
     color: var(--white);
 }
-
-/* #registerR, #registerG, #registerB, .login-btn {
-} */
 
 /* Guest Overlay */
 #registerR {
@@ -280,12 +276,21 @@ html, body, #root {
     margin: 10px;
 }
 
-.sfx-wrapper > div {
-    margin-top: 5px;
-    margin-bottom: 5px;
+.sfx-wrapper button {
+    margin-left: 5px;
+    margin-right: 5px;
 
-    cursor: pointer;
+    background-color: #00000080;
+    border-radius: 1rem;
+
+    border: none;
+    padding: 1rem;
+
     user-select: none;
+}
+
+.sfx-wrapper button:hover {
+    background-color: #78787880;
 }
 
 /* Helper classes */

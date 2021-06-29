@@ -458,27 +458,40 @@ global.rEnergyBar = function () {
 global.rVolumeBar = function () {
     if (volTransparency <= 0) return;
     ctx.save();
+
     ctx.globalAlpha = volTransparency;
     volTransparency -= 0.01;
+
     ctx.fillStyle = `#ffffff`;
-    ctx.fillRect(w - 32 - 20 - 128, h - 10 - 16 - 6, 128, 6);
+
+    // Base volume bar.
+    ctx.fillRect(w - 32 - 20 - 224, h - 10 - 24 - 6, 128, 6);
+
+    // Left rounded corners.
     ctx.beginPath();
-    ctx.arc(w - 32 - 20 - 128, h - 10 - 16 - 3, 3, 0, 2 * Math.PI, false);
+    ctx.arc(w - 32 - 20 - 224, h - 10 - 24 - 3, 3, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.closePath();
+
+    // Right rounded corners.
     ctx.beginPath();
-    ctx.arc(w - 32 - 20, h - 10 - 16 - 3, 3, 0, 2 * Math.PI, false);
+    ctx.arc(w - 32 - 20 - 224 + 128, h - 10 - 24 - 3, 3, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.closePath();
+
+    // Slider button outline.
     ctx.beginPath();
-    ctx.arc(w - 32 - 20 - 128 + 128 * gVol, h - 10 - 16 - 3, 6, 0, 2 * Math.PI, false);
+    ctx.arc(w - 32 - 20 - 224 + 128 * gVol, h - 10 - 24 - 3, 6, 0, 2 * Math.PI, false);
     ctx.fill();
+    ctx.closePath();
+
+    // Slider button.
     ctx.fillStyle = `#000000`;
-    ctx.closePath();
     ctx.beginPath();
-    ctx.arc(w - 32 - 20 - 128 + 128 * gVol, h - 10 - 16 - 3, 4, 0, 2 * Math.PI, false);
+    ctx.arc(w - 32 - 20 - 224 + 128 * gVol, h - 10 - 24 - 3, 4, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.closePath();
+
     ctx.restore();
 };
 global.rExpBar = function () {
