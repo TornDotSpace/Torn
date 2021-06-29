@@ -125,20 +125,29 @@ html, body, #root {
     float: none;
 
     color: var(--white);
-    background-color: var(--grey);
+}
+
+.overlay-button {
+    background-color: var(--black);
+    border: none;
 }
 
 /* Register Buttons */
+#registerR, #registerG, #registerB {
+    border: none;
+    border-radius: 1rem;
+}
+
 #registerR {
-    border: 2px solid red;
+    background-color: red;
 }
 
 #registerG {
-    border: 2px solid green;
+    background-color: green;
 }
 
 #registerB {
-    border: 2px solid blue;
+    background-color: blue;
 }
 
 .overlay-input {
