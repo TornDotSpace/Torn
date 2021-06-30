@@ -1,0 +1,47 @@
+@import '../index.css';
+
+h1, thead > tr {
+    color: #0099ff;;
+}
+
+.table-wrapper {
+    background-color: #00000080;
+
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+/* Table Actions */
+.table-actions {
+    
+}
+
+select, input {
+    background-color: #00000080 !important;
+    color: #FFFFFF !important;
+}
+
+select {
+    width: 16rem !important;
+}
+
+table {
+    margin-bottom: 0 !important;
+}
+
+table td {
+    padding: 0.125rem !important;
+}
+
+/* Team colors */
+.team-red {
+    color: var(--alien);
+}
+
+.team-green {
+    color: var(--cyborg);
+}
+
+.team-blue {
+    color: var(--human);
+}

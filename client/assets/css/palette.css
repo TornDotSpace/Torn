@@ -1,9 +1,9 @@
 /* Color Palette */
 :root {
     /* Teams */
-    --human: cyan;
-    --alien: pink;
-    --cyborg: lime;
+    --human: #2d7aed;
+    --alien: #ed3b3b;
+    --cyborg: #1aed48;
 
     /* UI Colors */
     --white: white;
