@@ -66,7 +66,20 @@ const sortLB = () => {
     updateLB();
 };
 
+/**
+ * Update the header to automatically toggle stickiness.
+ */
+const updateHeader = () => {
+    const tableHeader = document.querySelector(`thead > tr`);
+
+    window.pageYOffset === tableHeader.offsetTop
+        ? tableHeader.classList.add(`th-sticky`)
+        : tableHeader.classList.remove(`th-sticky`);
+};
+
 window.onload = async () => {
     await getTornUsers();
     updateLB();
 };
+
+window.onscroll = () => updateHeader();
