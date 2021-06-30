@@ -6,32 +6,60 @@ let tornUsers = [];
 const getTornUsers = async () => await fetch(`./players.json`).then(data => data.json()).then(data => (tornUsers = data));
 
 /**
- * Update the visual leaderboard.
+ * Update the leaderboard.
  */
 const updateLB = () => {
-    const lb = document.querySelector(`tbody`);
+    let lbData = ``;
     for (const player of tornUsers) {
-        const playerEntry = document.createElement(`tr`);
-        playerEntry.innerHTML = `
-            <td>${player.spot}.</td>
-            <td>${player.name}</td>
-            <td>${player.xp}</td>
-            <td>${player.elo}</td>
-            <td>${player.rank}</td>
-            <td>${player.kills}</td>
-            <td>${player.money}</td>
-            <td>${player.tech}</td>
-        `;
-
         const playerTeam = player.team === 0
             ? `blue`
             : player.team === 1
                 ? `red`
                 : `green`;
 
-        playerEntry.classList.add(`team-${playerTeam}`);
-        lb.appendChild(playerEntry);
+        const playerEntry = `
+        <tr class="team-${playerTeam}">
+            <td aria-label="spot">${player.spot}.</td>
+            <td aria-label="name">${player.name}</td>
+            <td aria-label="xp">${player.xp}</td>
+            <td aria-label="elo">${player.elo}</td>
+            <td aria-label="rank">${player.rank}</td>
+            <td aria-label="kills">${player.kills}</td>
+            <td aria-label="money">${player.money}</td>
+            <td aria-label="tech">${player.tech}</td>
+        </tr>`;
+
+        lbData += playerEntry;
     }
+
+    document.querySelector(`tbody`).innerHTML = lbData;
+};
+
+/**
+ * Sort the leaderboard.
+ */
+const sortLB = () => {
+    const sortBy = document.querySelector(`#sort-by`)?.value;
+    if (!tornUsers || !sortBy || sortBy === `default`) return;
+
+    switch (sortBy) {
+        case `experience`:
+            tornUsers.sort((a, b) => a.xp - b.xp).reverse();
+            break;
+        case `elo`:
+            tornUsers.sort((a, b) => a.elo - b.elo).reverse();
+            break;
+        case `kills`:
+            tornUsers.sort((a, b) => a.kills - b.kills).reverse();
+            break;
+        case `tech`:
+            tornUsers.sort((a, b) => a.tech - b.tech).reverse();
+            break;
+        default:
+            return;
+    }
+
+    updateLB();
 };
 
 window.onload = async () => {

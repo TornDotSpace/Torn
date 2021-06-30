@@ -17,18 +17,14 @@
     <main class="container text-light text-center">
         <h1 class="my-5">Leaderboard</h1>
         <div class="table-wrapper">
-            <div class="table-actions d-flex mx-5 mt-2 mb-3">
-                <select name="sort-by" id="sort-by" class="form-select">
-                    <option value="" selected>Sort By</option>
+            <div class="table-actions d-flex mx-5 mt-2 mb-4">
+                <select name="sort-by" id="sort-by" class="form-select" onchange="sortLB()">
+                    <option value="default" selected>Sort By</option>
                     <option value="experience">Experience</option>
                     <option value="elo">ELO</option>
                     <option value="kills">Kills</option>
                     <option value="tech">Tech</option>
                 </select>
-                <form class="d-flex ms-auto">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
             </div>
     
             <table class="table table-borderless">

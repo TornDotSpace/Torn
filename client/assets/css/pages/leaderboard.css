@@ -11,17 +11,12 @@ h1, thead > tr {
     padding: 1rem;
 }
 
-/* Table Actions */
-.table-actions {
-    
-}
-
 select, input {
     background-color: #00000080 !important;
     color: #FFFFFF !important;
 }
 
-select {
+select, input {
     width: 16rem !important;
 }
 
