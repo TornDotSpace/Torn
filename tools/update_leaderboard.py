@@ -66,10 +66,10 @@ def updateLB(uri, output):
             "name": player["_id"],
             "team": player["color"],
             "spot": i,
-            "xp": player["experience"],
+            "xp": floor(player["experience"]),
             "kills": player["kills"],
             "elo": floor(player["elo"]),
-            "money": player["money"],
+            "money": money,
             "rank": player["rank"],
             "tech": int(
                 (
