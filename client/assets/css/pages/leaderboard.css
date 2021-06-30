@@ -11,6 +11,7 @@ h1, thead > tr {
     padding: 1rem;
 }
 
+/* Sort By */
 select, input {
     background-color: #00000080 !important;
     color: #FFFFFF !important;
@@ -20,6 +21,7 @@ select, input {
     width: 16rem !important;
 }
 
+/* Table Layout */
 table {
     margin-bottom: 0 !important;
 }
