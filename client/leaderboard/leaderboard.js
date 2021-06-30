@@ -40,12 +40,9 @@ const updateLB = () => {
  */
 const sortLB = () => {
     const sortBy = document.querySelector(`#sort-by`)?.value;
-    if (!tornUsers || !sortBy || sortBy === `default`) return;
+    if (!tornUsers || !sortBy) return;
 
     switch (sortBy) {
-        case `experience`:
-            tornUsers.sort((a, b) => a.xp - b.xp).reverse();
-            break;
         case `elo`:
             tornUsers.sort((a, b) => a.elo - b.elo).reverse();
             break;
@@ -56,7 +53,8 @@ const sortLB = () => {
             tornUsers.sort((a, b) => a.tech - b.tech).reverse();
             break;
         default:
-            return;
+            tornUsers.sort((a, b) => a.xp - b.xp).reverse();
+            break;
     }
 
     updateLB();
