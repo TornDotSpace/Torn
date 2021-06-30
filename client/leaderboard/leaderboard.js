@@ -1,9 +1,21 @@
-let tornUsers = [];
+let tornUsers, xpLB, eloLB, killsLB, techLB;
 
 /**
  * Generate a list of Torn users.
  */
-const getTornUsers = async () => await fetch(`./players.json`).then(data => data.json()).then(data => (tornUsers = data));
+const getTornUsers = async () => await fetch(`./players.json`).then(data => data.json()).then(data => {
+    tornUsers = data;
+
+    xpLB = [...data];
+    eloLB = [...data];
+    killsLB = [...data];
+    techLB = [...data];
+
+    xpLB.sort((a, b) => a.xp - b.xp).reverse();
+    eloLB.sort((a, b) => a.elo - b.elo).reverse();
+    killsLB.sort((a, b) => a.kills - b.kills).reverse();
+    techLB.sort((a, b) => a.tech - b.tech).reverse();
+});
 
 /**
  * Update the leaderboard.
@@ -38,16 +50,16 @@ const sortLB = () => {
 
     switch (sortBy) {
         case `elo`:
-            tornUsers.sort((a, b) => a.elo - b.elo).reverse();
+            tornUsers = eloLB;
             break;
         case `kills`:
-            tornUsers.sort((a, b) => a.kills - b.kills).reverse();
+            tornUsers = killsLB;
             break;
         case `tech`:
-            tornUsers.sort((a, b) => a.tech - b.tech).reverse();
+            tornUsers = techLB;
             break;
         default:
-            tornUsers.sort((a, b) => a.xp - b.xp).reverse();
+            tornUsers = xpLB;
             break;
     }
 
