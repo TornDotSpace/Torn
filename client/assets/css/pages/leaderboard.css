@@ -47,12 +47,10 @@ thead > tr.th-sticky > th {
 }
 
 thead > tr.th-sticky > th:first-child {
-    /* border-top-left-radius: 1rem; */
     border-bottom-left-radius: 1rem;
 }
 
 thead > tr.th-sticky > th:last-child {
-    /* border-top-right-radius: 1rem; */
     border-bottom-right-radius: 1rem;
 }
 
