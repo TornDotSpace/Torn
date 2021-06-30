@@ -11,14 +11,8 @@ const getTornUsers = async () => await fetch(`./players.json`).then(data => data
 const updateLB = () => {
     let lbData = ``;
     for (const player of tornUsers) {
-        const playerTeam = player.team === 0
-            ? `blue`
-            : player.team === 1
-                ? `red`
-                : `green`;
-
         const playerEntry = `
-        <tr class="team-${playerTeam}">
+        <tr class="team-${player.team}">
             <td aria-label="spot">${player.spot}.</td>
             <td aria-label="name">${player.name}</td>
             <td aria-label="xp">${player.xp}</td>
