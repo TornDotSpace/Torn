@@ -42,7 +42,7 @@ class Mine {
 
         if (this.wepnID != 44) {
             this.collideWithGuns();
-	    this.collideWithMissiles();
+            this.collideWithMissiles();
             this.collideWithBases();
         }
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
@@ -168,11 +168,11 @@ class Mine {
         for (const i in bullets[this.sy][this.sx]) {
             const b = bullets[this.sy][this.sx][i];
             if (b.color !== this.color && squaredDist(b, this) < square(this.range)) {
-		    b.die(); // destroy the bullet
-		    if (this.time >= mineLifetime) { // Old mines die faster
-		        this.die(); // the mine dies too
-		        break;
-		    } else this.time += Math.round(b.dmg * 25);
+                b.die(); // destroy the bullet
+                if (this.time >= mineLifetime) { // Old mines die faster
+                    this.die(); // the mine dies too
+                    break;
+                } else this.time += Math.round(b.dmg * 25);
             }
         }
     }

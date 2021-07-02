@@ -115,7 +115,7 @@ class Asteroid {
             this.sx = (this.sx + 1 + mapSz) % mapSz;
         } else if (this.y > sectorWidth) {
             if (this.sy >= mapSz - 1) {
-      	delete asts[old_sy][old_sx][this.id];
+                delete asts[old_sy][old_sx][this.id];
             } else {
                 this.y = 1;
                 this.sy++;
@@ -125,7 +125,7 @@ class Asteroid {
             this.sx = (this.sx - 1 + mapSz) % mapSz;
         } else if (this.y < 0) {
             if (this.sy == 0) {
-      	delete asts[old_sy][old_sx][this.id];
+                delete asts[old_sy][old_sx][this.id];
             } else {
                 this.y = (sectorWidth - 1);
                 this.sy--;

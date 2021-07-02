@@ -69,7 +69,7 @@ module.exports = {
     },
 
     plugins: [
-	    new Webpack.DefinePlugin({
+        new Webpack.DefinePlugin({
             VERSION: JSON.stringify(gitRevisionPlugin.version()),
             COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
             BRANCH: JSON.stringify(gitRevisionPlugin.branch())
