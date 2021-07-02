@@ -39,9 +39,8 @@
         }],
 
         // Semicolons and backticks should always be used.
-        "semi": [1, "always"],
+        "semi": [2, "always"],
         "quotes": [2, "backtick"],
-
 
         // Use templating strings with backticks whenever possible.
         "prefer-template": 1,
