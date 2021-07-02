@@ -1051,9 +1051,8 @@ class Player {
     }
 
     EMP (t) {
- 	if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // Emp works better on elite ships.
+ 	    if (this.ship === 16) t *= 1.25; // Emp works better on r16.
         if (this.ship === 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // r21's get a tiny healing benefit.
-        if (this.shield) t *= 0.5; // Shield offers some protection for electronic components
 
         this.empTimer = t;
         this.emit(`emp`, { t });
