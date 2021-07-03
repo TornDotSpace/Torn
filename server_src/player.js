@@ -508,7 +508,7 @@ class Player {
                 if (this.color !== `green` && nearBEnemy.color !== nearBEnemy.trueColor) { // It's an assimilated base!
                     const beameAB = new Beam(this, reB, 45, nearBEnemy, this); // Healing beam
                     beams[this.sy][this.sx][reB] = beameAB;
-	            nearBFriendly.unassimilate(); // Quickly cures the assimilation
+                    nearBFriendly.unassimilate(); // Quickly cures the assimilation
                 } else {
                     const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
                     beams[this.sy][this.sx][reB] = beameB;
@@ -525,9 +525,9 @@ class Player {
             if (nearBFriendly != 0 && nearBFriendly.assimilatedCol != this.color) { // Anti-assimilation beam
                 const beamfB = new Beam(this, rfP, 45, nearBFriendly, this); // Healing beam
                 beams[this.sy][this.sx][rfP] = beamfB;
-	        nearBFriendly.unassimilate(); // Quickly cures the assimilation
+                nearBFriendly.unassimilate(); // Quickly cures the assimilation
                 nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
-	    }
+            }
 
             sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
         } // A healing leech beam, only for helping teammates, or when near an asteroid.
@@ -1029,7 +1029,7 @@ class Player {
         }
 
         if (this.empTimer <= 0 && origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) { // navigational shield fails when EMPd
-	    if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
+            if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
         }
 
         d /= (this.trail % 16 == 1 ? 1.05 : 1); // blood trail: less damage
@@ -1051,8 +1051,10 @@ class Player {
     }
 
     EMP (t) {
- 	    if (this.ship === 16) t *= 1.25; // Emp works better on r16.
+        if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // EMP works better on elite ships.
         if (this.ship === 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // r21's get a tiny healing benefit.
+
+        if (this.shield) t *= 0.33; // Shield offers some protection for electronic components.
 
         this.empTimer = t;
         this.emit(`emp`, { t });
@@ -1111,7 +1113,7 @@ class Player {
     refillAllAmmo () {
         let ammoHasChanged = false;
         for (let i = 0; i < 10; i++) {
-    	const beforeAmmo = this.ammos[i];
+            const beforeAmmo = this.ammos[i];
             this.refillAmmo(i);
             if (beforeAmmo != this.ammos[i]) ammoHasChanged = true;
         }

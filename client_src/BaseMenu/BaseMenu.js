@@ -54,8 +54,8 @@ global.rBaseGui = function () {
     const x = mx - baseMenuX;
     const y = my - baseMenuY;
     for (let i = 0; i < 5; i++) { // Fill Tabs In
-    	const highlightTab = tab == i || (x > 0 && x < baseMenuCanvas.width && y > 0 && y < 40 && Math.floor(x / tabWidth) == i);
-    	baseMenuCtx.fillStyle = highlightTab ? `#666666` : guiColor;
+        const highlightTab = tab == i || (x > 0 && x < baseMenuCanvas.width && y > 0 && y < 40 && Math.floor(x / tabWidth) == i);
+        baseMenuCtx.fillStyle = highlightTab ? `#666666` : guiColor;
         roundRect(baseMenuCtx, i * tabWidth + 8, 4, tabWidth - 8, 32, 16, true, false);
     }
 

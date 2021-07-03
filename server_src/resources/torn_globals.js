@@ -93,8 +93,8 @@ global.planetNames = jsn.planets;
 
 // bases
 global.basesPerTeam = 4;
-global.baseMap =	{
-    red: [	// x, y
+global.baseMap = {
+    red: [ // x, y
         1, 0,
         3, 0,
         2, 2,

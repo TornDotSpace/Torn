@@ -39,9 +39,8 @@
         }],
 
         // Semicolons and backticks should always be used.
-        "semi": [1, "always"],
+        "semi": [2, "always"],
         "quotes": [2, "backtick"],
-
 
         // Use templating strings with backticks whenever possible.
         "prefer-template": 1,
@@ -63,8 +62,6 @@
         "curly": 0,
         "camelcase": 0,
         "no-sequences": 0,
-        "no-tabs": 0,
-        "no-mixed-spaces-and-tabs": 0,
 
         // Too lazy to fix.
         "react/prop-types": 0,

@@ -20,7 +20,7 @@ jobs:
       run: npm ci
       env:
         CI: true
-    - name: Lint
+    - name: Lint (via ESLint)
       run: npm run dev:lint
       env:
         CI: true
