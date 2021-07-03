@@ -36,7 +36,6 @@ require(`./achievementstab.js`);
 global.baseMenuX = w / 2 - 128 * 3; global.baseMenuY = h / 4 - 128; // Where do we render the base menu subcanvas?
 
 global.rBaseGui = function () {
-    console.log(tab);
     baseMenuCtx.lineWidth = 2;
     baseMenuCtx.textAlign = `right`;
     baseMenuCtx.fillStyle = `yellow`;

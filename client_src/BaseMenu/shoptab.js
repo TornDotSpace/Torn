@@ -250,7 +250,7 @@ global.rMoneyInBaseTopRight = function () {
     write(baseMenuCtx, translate(`Money: #`, [numToLS(Math.floor(money))]), 128 * 6 - 16, 64);
 };
 
-global.rWeaponStore = function () {
+global.renderWeaponStore = function () {
     rMoneyInBaseTopRight();
     baseMenuCtx.fillStyle = `yellow`;
     baseMenuCtx.textAlign = `center`;
@@ -335,7 +335,7 @@ const weaponShopOnHover = function (x, y) {
     return true;
 };
 
-const weaponStoreOnHover = function (x, y) {
+global.weaponStoreOnHover = function (x, y) {
     const rows = Math.floor(wepnCount / 3);
     for (let i = 0; i < 3; i++) {
         if (y > 76 && y < 76 + 16 * (rows + 1) && x > 16 + 240 * i && x < 64 + 240 * i) {
@@ -343,8 +343,6 @@ const weaponStoreOnHover = function (x, y) {
             return true;
         }
     }
-
-    seller = 0;
 };
 
 global.shopOnHover = function () {

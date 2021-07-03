@@ -132,17 +132,17 @@ class Player {
         this.c = false,
         this.space = false,
 
-        this.killsAchs = {}, // 13 of em
-        this.moneyAchs = {}, // 12
-        this.driftAchs = {}, // 12
-        this.randmAchs = {}, // 12
+        this.killAchievements = {}, // 10 of em. Lengths are written in torn_globals.js
+        this.moneyAchievements = {}, // 5
+        this.driftAchievements = {}, // 5
+        this.randomAchievements = {}, // 5
 
         // various achievement stuff
         this.driftTimer = 0, // How many ticks this account has been drifting.
         this.cornersTouched = 0, // bitmask
         this.oresMined = 0, // bitmask
         this.questsDone = 0, // bitmask
-        this.planetsClaimed = `000000000` + `000000000` + `000000000` + `000000000` + `000000000` + `000000000` + `000000000` + `000000000` + `000000000`,
+        this.planetsClaimed = `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000`,
         this.points = 0,
 
         this.equipped = 0;
@@ -370,22 +370,10 @@ class Player {
                 this.vx *= mult;
                 this.vy *= mult;
                 // no need to updatePolars, since force is parallel with the player... i think? is that the case when drifting?
-
-                if (isDrifting && !this.driftAchs[5] && this.w) { // Forced Induction
-                    this.driftAchs[5] = true;
-                    this.sendAchievementsDrift(true);
-                } else if (isDrifting && this.s && !this.driftAchs[10]) { // Reverse Turbo Drift
-                    this.driftAchs[10] = true;
-                    this.sendAchievementsDrift(true);
-                }
             } else if (wep.name === `Hyperdrive`) {
                 const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
                 this.emit(`sound`, { file: `hyperspace`, x: this.x, y: this.y });
                 this.hyperdriveTimer = 200;
-                if (isDrifting && this.w && !this.driftAchs[6]) { // Hyper-drift
-                    this.driftAchs[6] = true;
-                    this.sendAchievementsDrift(true);
-                }
             }
 
             // If we run out of ammo on a one-use weapon, delete that weapon.
@@ -601,13 +589,7 @@ class Player {
             else this.driftAngle = findBisector(findBisector(findBisector(findBisector(this.driftAngle, this.angle), this.driftAngle), this.driftAngle), this.driftAngle);// This happens immediately after shift released, noDrift increases with time.
         } else { // In drift.
             this.gyroTimer--;
-            if (this.a != this.d) {
-                if (this.w) this.driftTimer++;
-                else if (this.s && !this.driftAchs[7]) { // I can go backwards!?!
-                    this.driftAchs[7] = true;
-                    this.sendAchievementsDrift(true);
-                }
-            }
+            if (this.a != this.d && this.w) this.driftTimer++;
             this.noDrift = 0; // Time elapsed since last drift
         }
 
@@ -723,13 +705,7 @@ class Player {
                 this.borderJumpTimer += 100;
             }
         }
-        if (giveBounce && !this.randmAchs[5]) {
-            if (this.guest) this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`You must create an account to explore the universe!`) });
-            else {
-                this.randmAchs[5] = true;
-                this.sendAchievementsMisc(true);
-            }
-        }
+        if (giveBounce) this.checkRandomAchievements(true, true, false);
 
         if (this.hyperdriveTimer <= 0 && this.borderJumpTimer > 100) { // damage for running away from fights, hyperdrive won't automatically trigger it
             this.health = (this.health - 1) * 0.9 + 1;
@@ -770,10 +746,6 @@ class Player {
             if (this.sy == 0 && (this.cornersTouched & 4) != 4) this.cornersTouched += 4;
             else if (this.sy == mapSz - 1 && (this.cornersTouched & 8) != 8) this.cornersTouched += 8;
         }
-        if (this.cornersTouched == 15) {
-            this.randmAchs[7] = true;
-            this.sendAchievementsMisc(true);
-        }
 
         if ((this.sx % 3 == 2 && this.sy == 4) && this.quest.type === `Secret3`) {
             this.spoils(`money`, this.quest.exp); // reward the player
@@ -785,14 +757,7 @@ class Player {
             this.quest = 0; // reset quest and tell the client
             this.emit(`quest`, { quest: this.quest, complete: true });
 
-            if (!this.moneyAchs[9]) { // Questor
-                this.moneyAchs[9] = true;
-                this.sendAchievementsCash(true);
-            }
-            if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
-                this.moneyAchs[10] = true;
-                this.sendAchievementsCash(true);
-            }
+            this.checkKillAchievements(true, false, false);
         }
 
         if (this.quest != 0 && this.quest.type === `Secret` && this.sx == this.quest.sx && this.sy == this.quest.sy) { // advance in secret quest to phase 2
@@ -809,11 +774,6 @@ class Player {
         const checkStr = this.planetsClaimed.substring(index, index + 1);
         const postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
         if (checkStr !== `2`) this.planetsClaimed = `${prevStr}1${postStr}`;
-
-        if (!this.planetsClaimed.includes(`0`) && !this.randmAchs[6]) {
-            this.randmAchs[6] = true;
-            this.sendAchievementsMisc(true);
-        }
     }
 
     updateRank () {
@@ -836,8 +796,8 @@ class Player {
         // cooldown to prevent chat spam when 2 people are on the planet
         let cool = p.cooldown;
         if (!cool || cool < 0) {
-            p.cooldown = 20;
             cool = p.cooldown;
+            p.cooldown = 20;
         }
 
         this.checkQuestStatus(true); // lots of quests are planet based
@@ -874,11 +834,6 @@ class Player {
 
         for (const i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();// send them new planet data
 
-        if (!this.randmAchs[8]) { // Astronaut
-            this.randmAchs[8] = true;
-            this.sendAchievementsMisc(true);
-        }
-
         this.emit(`planetMap`, { x: p.x, y: p.y, sx: p.sx, sy: p.sy });
 
         // Update list of claimed planets.
@@ -886,6 +841,7 @@ class Player {
         const prevStr = this.planetsClaimed.substring(0, index);
         const postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
         this.planetsClaimed = `${prevStr}2${postStr}`;
+        this.checkRandomAchievements(true, false, false);
     }
 
     checkQuestStatus (touchingPlanet) {}
@@ -1088,14 +1044,11 @@ class Player {
 
     // Player_MP stubs
     onMined (a) {}
-    sendAchievementsKill (note) {}
-    sendAchievementsCash (note) {}
-    sendAchievementsDrift (note) {}
-    sendAchievementsMisc (note) {}
+    checkKillAchievements (note, trailKill, friendKill) {}
+    checkMoneyAchievements (note) {}
+    checkDriftAchievements (note, lucky) {}
+    checkRandomAchievements (note, boing, thief) {}
     sendStatus () {}
-    checkMoneyAchievements () {}
-    checkDriftAchs () {}
-    checkTrailAchs () {}
     baseKilled () {}
     getAllPlanets () {}
 

@@ -47,7 +47,7 @@ global.connectToDB = function () {
     });
 };
 
-global.handlePlayerDeath = async function (player, inertia_drift, blackhole_death, elo) {
+global.handlePlayerDeath = async function (player, elo) {
     if (player.guest) return;
 
     const record = await PLAYER_DATABASE.findOne({ _id: player.name });
@@ -55,7 +55,7 @@ global.handlePlayerDeath = async function (player, inertia_drift, blackhole_deat
     if (record == null) return;
 
     // Certain variables should NOT be reverted
-    const persist = [`lastLogin`, `randmAchs`, `killAchs`, `moneyAchs`, `driftAchs`, `planetsClaimed`, `lives`, `experience`, `rank`];
+    const persist = [`lastLogin`, `planetsClaimed`, `lives`, `experience`, `rank`];
     for (const key in record) {
         if (key in persist) continue;
 
@@ -65,9 +65,6 @@ global.handlePlayerDeath = async function (player, inertia_drift, blackhole_deat
     player.experience *= 1 - playerKillExpFraction;
     player.money *= 1 - playerKillMoneyFraction;
     player.elo = elo;
-    player.randmAchs[1] = true; // Death Achievement
-    player.driftAchs[8] = inertia_drift; // inertia drift Achievement
-    player.randmAchs[4] = blackhole_death; // BH death Achievement
 };
 
 global.loadPlayerData = async function (player) {
@@ -162,16 +159,16 @@ global.savePlayerData = function (player) {
         capacity2: player.capacity2,
         maxHealth2: player.maxHealth2,
         energy2: player.energy2,
-        killsAchs: player.killsAchs,
+        killAchievements: player.killAchievements,
         baseKills: player.baseKills,
         oresMined: player.oresMined,
-        moneyAchs: player.moneyAchs,
+        moneyAchievements: player.moneyAchievements,
         questsDone: player.questsDone,
         driftTimer: player.driftTimer,
-        driftAchs: player.driftAchs,
+        driftAchievements: player.driftAchievements,
         cornersTouched: player.cornersTouched,
         lastLogin: player.lastLogin,
-        randmAchs: player.randmAchs,
+        randomAchievements: player.randomAchievements,
         lives: player.lives,
         guild: player.guild,
         sx: player.sx,

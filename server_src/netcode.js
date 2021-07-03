@@ -302,12 +302,10 @@ module.exports = initNetcode = () => {
                 players[player.sy][player.sx][player.id] = player;
 
                 socket.emit(`raid`, { raidTimer: raidTimer });
-                player.checkTrailAchs();
-                player.randmAchs[0] = true;
-                player.sendAchievementsKill(false);
-                player.sendAchievementsCash(false);
-                player.sendAchievementsDrift(false);
-                player.sendAchievementsMisc(false);
+                player.checkKillAchievements(false, false, false);
+                player.checkMoneyAchievements(false);
+                player.checkDriftAchievements(false, false);
+                player.checkRandomAchievements(false, false, false);
                 player.sendStatus();
 
                 player.getAllPlanets();
@@ -382,7 +380,7 @@ module.exports = initNetcode = () => {
             if (data.inputId === `x`) player.dock(); // x or esc to enter base
             if (data.inputId === `shift`) { // drift
                 player.e = data.state;
-                if (!data.state) player.checkDriftAchs(); // if they let go of the drift key
+                if (!data.state) player.checkDriftAchievements(true, false); // if they let go of the drift key
             }
         });
 
@@ -579,6 +577,7 @@ module.exports = initNetcode = () => {
                         player.money -= price;
                         player.agility2 = nextTechLevel(player.agility2);
                         player.va = ships[player.ship].agility * 0.08 * player.agility2;
+                        player.checkDriftAchievements(true, false);
                     }
                     break;
                 }
@@ -691,10 +690,6 @@ module.exports = initNetcode = () => {
                     hasBH = hasBH || !bh.isWorm;
                 }
             }
-            if (hasBH && !player.randmAchs[2]) { // risky business
-                player.randmAchs[2] = true;
-                player.sendAchievementsMisc(true);
-            }
 
             teamQuests[player.color][qid] = 0;
             player.quest = quest; // give them the quest and tell the client.
@@ -714,10 +709,10 @@ module.exports = initNetcode = () => {
             if (typeof data === `undefined` || player == 0 || !player.docked || typeof data.trail !== `number`) return;
 
             if (data.trail == 0) player.trail = 0;
-            if (data.trail == 1 && (player.killsAchs[12] || player.tag === `B`)) player.trail = 1;
-            if (data.trail == 2 && (player.moneyAchs[11] || player.tag === `B`)) player.trail = 2;
-            if (data.trail == 3 && (player.driftAchs[11] || player.tag === `B`)) player.trail = 3;
-            if (data.trail == 4 && (player.randmAchs[10] || player.tag === `B`)) player.trail = 4;
+            if (data.trail == 1 && (player.killAchievements[killAchievementsAmount - 1] || player.tag === `B`)) player.trail = 1;
+            if (data.trail == 2 && (player.moneyAchievements[moneyAchievementsAmount - 1] || player.tag === `B`)) player.trail = 2;
+            if (data.trail == 3 && (player.driftAchievements[driftAchievementsAmount - 1] || player.tag === `B`)) player.trail = 3;
+            if (data.trail == 4 && (player.randomAchievements[randomAchievementsAmount - 1] || player.tag === `B`)) player.trail = 4;
             if (data.trail == 5 && (player.tag === `B` || player.tag === `O` || player.tag === `A`)) player.trail = 5;
             if (player.tag === `V` || player.tag === `B` || player.tag === `O` || player.tag === `A`) player.trail += 16;
         });

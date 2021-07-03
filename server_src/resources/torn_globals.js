@@ -46,6 +46,12 @@ global.playerKillMoneyFraction = 0.01; // The amount of money you steal from som
 global.minSectorAsteroidCount = 8;
 global.missileLockTimeout = 7 * tickRate; // if locked for >7s, die
 
+// achievements
+global.killAchievementsAmount = 10;
+global.moneyAchievementsAmount = 5;
+global.driftAchievementsAmount = 5;
+global.randomAchievementsAmount = 5;
+
 // Machine Learning
 global.trainingMode = false; // specifies whether this server is being used strictly to train neural network bots.
 global.neuralFiles = 1500; // how many files should be in competition

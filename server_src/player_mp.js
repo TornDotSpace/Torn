@@ -214,11 +214,6 @@ class PlayerMP extends Player {
 
             if (useCustomKillMessage) chatAll(customMessageArr[Math.floor(Math.random() * customMessageArr.length)].replace(`P1`, b.owner.nameWithColor()).replace(`P2`, this.nameWithColor()));
             else chatAll(`${this.nameWithColor()} was destroyed by ${b.owner.nameWithColor()}'s ${chatWeapon(b.wepnID)}!`);
-
-            if (b.owner.w && b.owner.e && (b.owner.a || b.owner.d) && !b.owner.driftAchs[9]) { // driftkill
-                b.owner.driftAchs[9] = true;
-                b.owner.sendAchievementsDrift(true);
-            }
         } else if (b.type === `Vortex`) chatAll(`${this.nameWithColor()} crashed into a black hole!`); // send messages
         else if (b.owner !== undefined && b.owner.type === `Base`) chatAll(`${this.nameWithColor()} was destroyed by base ${b.owner.nameWithColor()}!`);
 
@@ -265,7 +260,7 @@ class PlayerMP extends Player {
 
         this.health = this.maxHealth;
 
-        await handlePlayerDeath(this, this.driftAchs[8], this.randmAchs[4], this.elo);
+        await handlePlayerDeath(this, this.elo);
 
         this.x = this.y = sectorWidth / 2;
         const whereToRespawn = Math.floor(Math.random() * basesPerTeam) * 2;
@@ -280,7 +275,6 @@ class PlayerMP extends Player {
         }
 
         this.sendStatus();
-        this.sendAchievementsMisc(true);
 
         // put this player in the dead list
         deads[this.id] = this;
@@ -327,8 +321,6 @@ class PlayerMP extends Player {
             return;
         }
 
-        this.checkTrailAchs();
-
         let base = 0;
         const b = bases[this.sy][this.sx];
         if ((b.baseType == LIVEBASE || b.baseType == DEADBASE) && b.color == this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
@@ -350,8 +342,10 @@ class PlayerMP extends Player {
         if (type === `experience`) {
             this.experience += amt;
             this.updateRank();
-        } else if (type === `money`) this.money += amt * ((amt > 0 && this.trail % 16 == 2) ? 1.05 : 1);
-        else if (type === `life` && this.lives < 20) this.lives += amt;
+        } else if (type === `money`) {
+            this.money += amt * ((amt > 0 && this.trail % 16 == 2) ? 1.05 : 1);
+            this.checkMoneyAchievements(true);
+        } else if (type === `life` && this.lives < 20) this.lives += amt;
         this.experience = Math.max(this.experience, 0);
         this.emit(`spoils`, { type: type, amt: amt });
     }
@@ -361,84 +355,68 @@ class PlayerMP extends Player {
         if ((this.oresMined & (1 << a)) == 0) this.oresMined += 1 << a;
 
         // achievementy stuff
-        if (this.oresMined == 15 && !this.moneyAchs[1]) this.moneyAchs[1] = true;
-        else if (!this.moneyAchs[0]) this.moneyAchs[0] = true;
-        else if (!this.moneyAchs[2] && this.iron + this.silver + this.copper + this.platinum >= 4000) this.moneyAchs[2] = true;
-        else if (!this.moneyAchs[3] && this.iron + this.silver + this.copper + this.platinum >= 15000) this.moneyAchs[3] = true;
-        else return;
-        this.sendAchievementsCash(true);
-    }
-
-    sendAchievementsKill (note) {
-        this.emit(`achievementsKill`, { note: note, achs: this.killsAchs });
-    }
-
-    sendAchievementsCash (note) {
-        this.emit(`achievementsCash`, { note: note, achs: this.moneyAchs });
-    }
-
-    sendAchievementsDrift (note) {
-        this.emit(`achievementsDrift`, { note: note, achs: this.driftAchs });
-    }
-
-    sendAchievementsMisc (note) {
-        this.randmAchs[9] = !this.planetsClaimed.includes(`0`) && !this.planetsClaimed.includes(`1`); // I had no clue where to put this. couldn't go in onPlanetCollision, trust me.
-        this.emit(`achievementsMisc`, { note: note, achs: this.randmAchs });
+        this.checkMoneyAchievements(true);
     }
 
     sendStatus () {
         this.emit(`status`, { docked: this.docked, state: this.dead, lives: this.lives });
     }
 
-    checkMoneyAchievements () {
-        if (this.money >= 10000 && !this.moneyAchs[4]) this.moneyAchs[4] = true;
-        else if (this.money >= 100000 && !this.moneyAchs[5]) this.moneyAchs[5] = true;
-        else if (this.money >= 1000000 && !this.moneyAchs[6]) this.moneyAchs[6] = true;
-        else if (this.money >= 10000000 && !this.moneyAchs[7]) this.moneyAchs[7] = true;
-        else return;
-        this.sendAchievementsCash(true);
-    }
-
-    checkDriftAchs () {
-        if (this.driftTimer >= 25 && !this.driftAchs[0]) this.driftAchs[0] = true; // drift 1sex
-        else if (this.driftTimer >= 25 * 60 && !this.driftAchs[1]) this.driftAchs[1] = true; // 1min
-        else if (this.driftTimer >= 25 * 60 * 10 && !this.driftAchs[2]) this.driftAchs[2] = true; // 10mins
-        else if (this.driftTimer >= 25 * 60 * 60 && !this.driftAchs[3]) this.driftAchs[3] = true; // 1hr
-        else if (this.driftTimer >= 25 * 60 * 60 * 10 && !this.driftAchs[4]) this.driftAchs[4] = true; // 10hrs
-        else return;
-        this.sendAchievementsDrift(true);
-    }
-
-    checkTrailAchs () {
-    // Check if they have all achievements of a type. If so, give them the corresponding trail achievement of that type
+    checkKillAchievements (note, trailKill, friendKill) {
+        this.killAchievements[0] = this.kills >= 1;
+        this.killAchievements[1] = this.kills >= 10;
+        this.killAchievements[2] = this.kills >= 100;
+        this.killAchievements[3] = this.kills >= 1000;
+        this.killAchievements[4] |= trailKill;
+        this.killAchievements[5] = this.baseKills >= 1;
+        this.killAchievements[6] = this.baseKills >= 100;
+        this.killAchievements[7] |= friendKill;
+        this.killAchievements[8] = this.questsDone == 15;
 
         let rAll = true;
-        for (let i = 0; i < 10; i++) if (!this.randmAchs[i]) rAll = false;
-        if (!this.randmAchs[10] && rAll) {
-            this.randmAchs[10] = true;
-            this.sendAchievementsMisc(false);
-        }
+        for (let i = 0; i < killAchievementsAmount - 1; i++) if (!this.killAchievements[i]) rAll = false;
+        this.killAchievements[killAchievementsAmount - 1] = rAll;
 
-        rAll = true;
-        for (let i = 0; i < 12; i++) if (!this.killsAchs[i]) rAll = false;
-        if (!this.killsAchs[12] && rAll) {
-            this.killsAchs[12] = true;
-            this.sendAchievementsKill(false);
-        }
+        this.emit(`achievementsKill`, { note: note, achs: this.killAchievements });
+    }
 
-        rAll = true;
-        for (let i = 0; i < 11; i++) if (!this.driftAchs[i]) rAll = false;
-        if (!this.driftAchs[11] && rAll) {
-            this.driftAchs[11] = true;
-            this.sendAchievementsDrift(false);
-        }
+    checkMoneyAchievements (note) {
+        this.moneyAchievements[0] = this.oresMined == 15;
+        this.moneyAchievements[1] = this.money >= 100000;
+        this.moneyAchievements[2] = this.money >= 1000000;
+        this.moneyAchievements[3] = this.money >= 10000000;
 
-        rAll = true;
-        for (let i = 0; i < 11; i++) if (!this.moneyAchs[i]) rAll = false;
-        if (!this.moneyAchs[11] && rAll) {
-            this.moneyAchs[11] = true;
-            this.sendAchievementsCash(false);
-        }
+        let rAll = true;
+        for (let i = 0; i < moneyAchievementsAmount - 1; i++) if (!this.moneyAchievements[i]) rAll = false;
+        this.moneyAchievements[moneyAchievementsAmount - 1] = rAll;
+
+        this.emit(`achievementsCash`, { note: note, achs: this.moneyAchievements });
+    }
+
+    checkDriftAchievements (note, lucky) {
+        this.driftAchievements[0] = this.agility2 >= 2.5; // lvl 12 = 12*.25+1 = 2.5
+        this.driftAchievements[1] |= lucky;
+        this.driftAchievements[2] = this.elo > 2200;
+        this.driftAchievements[3] = this.driftTimer >= 25 * 60 * 60; // 1hr
+
+        let rAll = true;
+        for (let i = 0; i < driftAchievementsAmount - 1; i++) if (!this.driftAchievements[i]) rAll = false;
+        this.driftAchievements[driftAchievementsAmount - 1] = rAll;
+
+        this.emit(`achievementsDrift`, { note: note, achs: this.driftAchievements });
+    }
+
+    checkRandomAchievements (note, boing, thief) {
+        this.randomAchievements[0] |= boing;
+        this.randomAchievements[1] |= thief;
+        this.randomAchievements[2] = !this.planetsClaimed.includes(`0`);
+        this.randomAchievements[3] = !this.planetsClaimed.includes(`0`) && !this.planetsClaimed.includes(`1`);
+
+        let rAll = true;
+        for (let i = 0; i < randomAchievementsAmount - 1; i++) if (!this.randomAchievements[i]) rAll = false;
+        this.randomAchievements[randomAchievementsAmount - 1] = rAll;
+
+        this.emit(`achievementsMisc`, { note: note, achs: this.randomAchievements });
     }
 
     noteLocal (msg, x, y) {
@@ -452,11 +430,6 @@ class PlayerMP extends Player {
     baseKilled () {
         this.baseKills++;
 
-        // achievementy stuff
-        this.killsAchs[7] = this.baseKills >= 1;
-        this.killsAchs[8] = this.baseKills >= 100;
-        this.sendAchievementsKill(true);
-
         // base quest checking
         if (this.quest != 0 && this.quest.type == `Base`) {
             if (this.sx == this.quest.sx && this.sy == this.quest.sy) {
@@ -467,18 +440,11 @@ class PlayerMP extends Player {
                 this.quest = 0; // tell client it's done
                 this.emit(`quest`, { quest: this.quest, complete: true });
                 if ((this.questsDone & 4) == 0) this.questsDone += 4;
-
-                if (!this.moneyAchs[9]) { // Questor
-                    this.moneyAchs[9] = true;
-                    this.sendAchievementsCash(true);
-                }
             }
         }
 
-        if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
-            this.moneyAchs[10] = true;
-            this.sendAchievementsCash(true);
-        }
+        // they might have gotten an achievement
+        this.checkKillAchievements(true, false, false);
     }
 
     checkQuestStatus (touchingPlanet) {
@@ -504,11 +470,6 @@ class PlayerMP extends Player {
             this.quest = 0;
             this.emit(`quest`, { quest: this.quest, complete: true }); // tell client quest is over
 
-            if (!this.moneyAchs[9]) { // Questor
-                this.moneyAchs[9] = true;
-                this.sendAchievementsCash(true);
-            }
-
             if ((this.questsDone & 1) == 0) this.questsDone += 1;
         } else if (this.quest.type === `Delivery` && touchingPlanet) {
             // pickup
@@ -526,18 +487,10 @@ class PlayerMP extends Player {
                 this.quest = 0;
                 this.emit(`quest`, { quest: this.quest, complete: true }); // tell client it's over
                 if ((this.questsDone & 2) == 0) this.questsDone += 2;
-
-                if (!this.moneyAchs[9]) { // Questor
-                    this.moneyAchs[9] = true;
-                    this.sendAchievementsCash(true);
-                }
             }
         }
 
-        if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
-            this.moneyAchs[10] = true;
-            this.sendAchievementsCash(true);
-        }
+        this.checkKillAchievements(true, false, false);
     }
 
     getAllPlanets () {
@@ -551,20 +504,10 @@ class PlayerMP extends Player {
         super.onKill(p);
 
         // achievementy stuff
-        this.killsAchs[0] = this.kills >= 1;
-        this.killsAchs[1] = this.kills >= 10;
-        this.killsAchs[2] = this.kills >= 100;
-        this.killsAchs[3] = this.kills >= 1000;
-        this.killsAchs[4] = this.kills >= 4000;
-        this.killsAchs[5] = this.kills >= 10000;
-        if (p.trail != 0) this.killsAchs[6] = true;
-        if (p.hasPackage) this.killsAchs[10] = true;
-        if (p.name === this.name) this.killsAchs[11] = true;
-        else if (p.color === this.color) this.killsAchs[9] = true;
-        this.sendAchievementsKill(true);
-        if (p.color === this.color) this.save();
-        if (!p.isBot)
-            updateElo(this, p);
+        const suicide = p.name === this.name;
+        this.checkKillAchievements(true, !suicide && p.trail != 0, !suicide && p.color === this.color);
+        if (!p.isBot) updateElo(this, p);
+        this.checkDriftAchievements(true, p.elo > 2200);
     }
 }
 

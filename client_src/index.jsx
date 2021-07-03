@@ -240,7 +240,11 @@ global.Img_prgs = [0 /* Count of loaded images */, 0];
 loadAllImages();
 loadAllAudio();
 
-global.achs = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+global.achs = [false, false, false, false, false,
+    false, false, false, false, false,
+    false, false, false, false, false,
+    false, false, false, false, false,
+    false, false, false, false, false];
 global.bigNotes = [-1, -1, -1, -1];
 
 const forceRefresh = () => {

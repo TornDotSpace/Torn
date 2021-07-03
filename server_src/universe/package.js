@@ -44,8 +44,7 @@ class Package {
 
     onCollide (p) {
         if (this.type == 0) {
-            p.moneyAchs[8] = true; // Thief: steal a package
-            p.sendAchievementsCash(true);
+            p.checkRandomAchievements(true, false, true);
 
             const possible = [`money`, `ore`];
             const contents = possible[Math.floor(Math.random() * 2)]; // figure out what reward to give

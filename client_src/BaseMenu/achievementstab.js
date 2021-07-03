@@ -34,19 +34,19 @@ global.renderAchievementsTab = function () {
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `center`;
     for (let i = 0; i < achs.length; i++) {
-        if (i < 13) baseMenuCtx.fillStyle = achs[i] ? `red` : `pink`;
-        else if (i < 25) baseMenuCtx.fillStyle = achs[i] ? `gold` : `lime`;
-        else if (i < 37) baseMenuCtx.fillStyle = achs[i] ? `lightgray` : `white`;
+        if (i < 10) baseMenuCtx.fillStyle = achs[i] ? `red` : `pink`;
+        else if (i < 15) baseMenuCtx.fillStyle = achs[i] ? `gold` : `lime`;
+        else if (i < 20) baseMenuCtx.fillStyle = achs[i] ? `lightgray` : `white`;
         else baseMenuCtx.fillStyle = achs[i] ? `cyan` : `yellow`;
         if (i == achHover) {
             baseMenuCtx.fillStyle = getRainbowColor();
         }
         if (achs[i]) {
             baseMenuCtx.font = `11px ShareTech`;
-            write(baseMenuCtx, jsn.achNames[i].split(`:`)[1], baseMenuCanvas.width * (1 + (i % 5) * 2) / 10, 20 + 40 * Math.floor(i / 5) + 60);
+            write(baseMenuCtx, jsn.achNames[i].split(`:`)[1], baseMenuCanvas.width * (1 + (i % 5) * 2) / 10, 20 + 80 * Math.floor(i / 5) + 70);
         }
         baseMenuCtx.font = `15px ShareTech`;
-        write(baseMenuCtx, achs[i] ? jsn.achNames[i].split(`:`)[0] : translate(`???`), baseMenuCanvas.width * (1 + (i % 5) * 2) / 10, 8 + 40 * Math.floor(i / 5) + 60);
+        write(baseMenuCtx, achs[i] ? jsn.achNames[i].split(`:`)[0] : translate(`???`), baseMenuCanvas.width * (1 + (i % 5) * 2) / 10, 8 + 80 * Math.floor(i / 5) + 70);
     }
     baseMenuCtx.restore();
 };
@@ -55,21 +55,25 @@ global.achievementsOnHover = () => {
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
-    const achLengthArray = [0, 12, 24, 36, 46, 1];
+    const achLengthArray = [0, 9, 14, 19, 24];
     seller = 0;
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
         const ach = achLengthArray[i];
         const ax = baseMenuCanvas.width * (1 + (ach % 5) * 2) / 10;
-        const ay = 20 + 40 * Math.floor(ach / 5) + 60;
+        const ay = 20 + 80 * Math.floor(ach / 5) + 70;
         if (x > ax - 64 && x < ax + 64 && y > ay - 25 && y < ay + 10) {
             seller = 700 + i;
             achHover = ach;
             break;
         }
     }
-    if (seller == 0 || (tag !== `B` && ((seller == 701 && !achs[12]) || (seller == 702 && !achs[24]) || (seller == 703 && !achs[36]) || (seller == 704 && !achs[47]) || (seller == 705 && !(tag === `O` || tag === `A`))))) {
+    if (seller == 0 || (tag !== `B` && ((seller == 701 && !achs[9]) || (seller == 702 && !achs[14]) || (seller == 703 && !achs[19]) || (seller == 704 && !achs[24])))) {
         seller = 0;
         achHover = -1;
+    }
+
+    if (seller == 700 && `BOA`.includes(tag)) {
+        seller = 705;
     }
 };
 
