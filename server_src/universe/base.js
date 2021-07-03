@@ -137,6 +137,7 @@ class Base {
             if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {
                 this.shootMuon(); return;
             }
+            if (Math.random() < 0.01) this.shootEMPMissile();
             if (cDist2 < square(wepns[8].range * 10)) this.shootLaser(c);// range:60
             else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb();// range:125
             else if (cDist2 < square(175 * 10)) this.shootMissile();// range:175
@@ -164,6 +165,14 @@ class Base {
         if (this.reload < 0) {
             if (cDist2 < 5 * 10 + square(wepns[5].range * 10)) this.shootMachineGun(); // range:??? + the small extra range machine gun bullets are still capable of hitting a target. Basically this allows the turret not to be attacked with the same weapon by players without the turret reacting.
         }
+    }
+
+    shootEMPMissile () {
+        this.reload = wepns[12].charge / 2;
+        const r = Math.random();
+        const missile = new Missile(this, r, 12, this.angle);
+        missiles[this.sy][this.sx][r] = missile;
+        sendAllSector(`sound`, { file: `missile`, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootOrb () {
