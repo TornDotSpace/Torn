@@ -65,34 +65,22 @@ global.rBuyShipWindow = function () {
 
     if (shipView <= rank) {
         const shipStatsRx = 288; const shipStatsRy = 421;
-        baseMenuCtx.fillStyle = `white`;
-        write(baseMenuCtx, translate(`Thrust  : `), shipStatsRx, shipStatsRy + 0 * 16);
-        write(baseMenuCtx, translate(`Agility : `), shipStatsRx, shipStatsRy + 1 * 16);
-        write(baseMenuCtx, translate(`Health  : `), shipStatsRx, shipStatsRy + 2 * 16);
-        write(baseMenuCtx, translate(`Cargo   : `) + (shipView == 17 ? `Infinite` : ``), shipStatsRx, shipStatsRy + 3 * 16);
-        write(baseMenuCtx, translate(`Weapons : `) + numToLS(ships[shipView].weapons), shipStatsRx, shipStatsRy + 4 * 16);
-        baseMenuCtx.fillStyle = `#555`;
-        baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80, 12);
-        baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80, 12);
-        baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80, 12); if (shipView != 17) { baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80, 12); } // 17 has infinite cargo
-
+        const statArrColon = [`Thrust  : `, `Agility : `, `Health  : `, `Cargo   : `];
+        const statArr = [`thrust`, `agility`, `health`, `capacity`];
+        const maxStatArr = [maxShipThrust, maxShipAgility, maxShipHealth, maxShipCapacity];
         baseMenuCtx.lineWidth = 1;
         baseMenuCtx.strokeStyle = `black`;
-        baseMenuCtx.fillStyle = compareColor(shipView, ship, `thrust`);
-        baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80 * ships[shipView].thrust / maxShipThrust, 12);
-        baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 0 * 16 - 10, 80 * ships[ship].thrust / maxShipThrust, 12);
-        baseMenuCtx.fillStyle = compareColor(shipView, ship, `agility`);
-        baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80 * ships[shipView].agility / maxShipAgility, 12);
-        baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 1 * 16 - 10, 80 * ships[ship].agility / maxShipAgility, 12);
-        baseMenuCtx.fillStyle = compareColor(shipView, ship, `health`);
-        baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80 * ships[shipView].health / maxShipHealth, 12);
-        baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 2 * 16 - 10, 80 * ships[ship].health / maxShipHealth, 12);
-        if (shipView != 17) {
-            baseMenuCtx.fillStyle = compareColor(shipView, ship, `capacity`);
-            baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[shipView].capacity / maxShipCapacity, 12);
-            if (ship != 17)
-                baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + 3 * 16 - 10, 80 * ships[ship].capacity / maxShipCapacity, 12);
-        } // 17 has infinite cargo
+        for (let i = 0; i < 4; i++) {
+            baseMenuCtx.fillStyle = `white`;
+            write(baseMenuCtx, translate(statArrColon[i]), shipStatsRx, shipStatsRy + i * 16);
+            baseMenuCtx.fillStyle = `#555`;
+            baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + i * 16 - 10, 80, 12);
+            baseMenuCtx.fillStyle = compareColor(shipView, ship, statArr[i]);
+            baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + i * 16 - 10, 80 * Math.min(ships[shipView][statArr[i]], maxStatArr[i]) / maxStatArr[i], 12);
+            baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + i * 16 - 10, 80 * Math.min(ships[ship][statArr[i]], maxStatArr[i]) / maxStatArr[i], 12);
+        }
+        baseMenuCtx.fillStyle = `white`;
+        write(baseMenuCtx, translate(`Weapons : `) + numToLS(ships[shipView].weapons), shipStatsRx, shipStatsRy + 4 * 16);
     }
 
     baseMenuCtx.fillStyle = `white`;
