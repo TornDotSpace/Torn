@@ -341,7 +341,7 @@ class Base {
 
     unassimilate () { // A cure for the cyborg assimilation
         this.EMP((this.assimilatedTimer >= 4600 ? 140 : 60));
-    	this.assimilatedTimer = 0;
+        this.assimilatedTimer = 0;
         this.assimilatedCol = this.trueColor;
         this.color = this.trueColor;
     }
