@@ -271,6 +271,7 @@ const brighten = (x: string) => {
 // TODO: Add JSDoc comment.
 const numToLS = (x: number) => {
     if (!Number.isFinite(x)) return `NaN`;
+    if (x > 1000000000000000) return `lots`;
 
     if (x < 0) return `-${numToLS(-x)}`;
     if (x == 0) return `0`;

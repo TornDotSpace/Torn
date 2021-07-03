@@ -182,7 +182,7 @@ document.addEventListener(`mousemove`, (evt) => {
         else if (preSeller != seller) rChat();
     } else if (docked && tab == 0) shopOnHover(); // Shop
     else if (docked && tab == 1) questsOnHover(preSeller); // Quests
-    else if (docked && tab == 2) statsOnHover(); // Stats
+    else if (docked && tab == 2) achievementsOnHover(); // achievements (trails)
     else if (docked && tab == 7) weaponStoreOnHover(); // Buy Weapon
     else if (docked && tab == 4) moreOnHover(); // More
     else seller = 0;

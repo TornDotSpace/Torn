@@ -21,7 +21,7 @@ import { getQuestDescription, write, numToLS } from '../utils/helper';
 import socket from '../modules/socket';
 
 // Render the quests tab.
-global.rQuests = function () {
+global.renderQuests = function () {
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `left`;
     const mult = (myTrail % 16 == 2) ? 1.05 : 1;

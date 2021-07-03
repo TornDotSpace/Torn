@@ -25,14 +25,19 @@ import {
     ammoCodeToString,
     metalToQuantity,
     metalToName,
-    metalToColor
+    metalToColor,
+    techPrice,
+    techPriceForDowngrade,
+    techEnergy
 } from '../utils/helper';
 
 import socket from '../modules/socket';
 
 const lifeShopYVal = 405;
-const renderOreShopX = 192;
+const renderOreShopX = 160;
 const renderOreShopY = 128;
+const renderTechShopX = 352;
+const renderTechShopY = 80;
 
 global.rBuyShipWindow = function () {
     baseMenuCtx.fillStyle = baseMenuCtx.strokeStyle = `black`;
@@ -184,7 +189,7 @@ global.rConfirm = function () {
 };
 
 // Render the shop tab
-global.rShop = function () {
+global.renderShop = function () {
     rMoneyInBaseTopRight();
 
     rOreShop();
@@ -194,6 +199,47 @@ global.rShop = function () {
     rWeaponsInShop();
 
     rBuyShipWindow();
+
+    renderUpgradeButtons();
+};
+
+const renderUpgradeButtons = () => {
+    baseMenuCtx.fillStyle = `yellow`;
+    baseMenuCtx.textAlign = `left`;
+    baseMenuCtx.font = `24px ShareTech`;
+    write(baseMenuCtx, translate(`Upgrades`), renderTechShopX, renderTechShopY - 8);
+
+    // upgrade titles
+    baseMenuCtx.font = `12px ShareTech`;
+    baseMenuCtx.textAlign = `center`;
+
+    const currTechArr = [[t2, va2, c2], [mh2, e2, ag2]];
+    const titlesArr = [[`Thrust lvl `, `Hull lvl `, `Energy lvl `], [`Radar lvl `, `Cargo lvl `, `Agility lvl `]];
+
+    for (let y = 0; y < 2; y++) {
+        for (let x = 0; x < 3; x++) {
+            // rectange background
+            baseMenuCtx.fillStyle = `black`;
+            baseMenuCtx.globalAlpha = 0.25;
+            roundRect(baseMenuCtx, renderTechShopX + 4 + x * 128, renderTechShopY + 4 + y * 64, 128 - 8, 64 - 8, 16, true, false);
+            baseMenuCtx.globalAlpha = 1;
+
+            const textX = renderTechShopX + 64 + 128 * x;
+            const textY = renderTechShopY + 20 + 64 * y;
+
+            // titles
+            baseMenuCtx.fillStyle = `white`;
+            write(baseMenuCtx, translate(titlesArr[y][x]) + ((currTechArr[y][x] - 1) * 8), textX, textY);
+
+            // upgrades
+            baseMenuCtx.fillStyle = (seller == 200 + y * 3 + x) ? `lime` : `white`;
+            write(baseMenuCtx, `[+] $${numToLS(techPrice(currTechArr[y][x]))}`, textX, textY + 14);
+
+            // downgrades
+            baseMenuCtx.fillStyle = (seller == 206 + y * 3 + x) ? `red` : `white`;
+            if (currTechArr[y][x] > 1) write(baseMenuCtx, `[-] $${numToLS(-techPriceForDowngrade(currTechArr[y][x], tag === `V` || tag === `B`))}`, textX, textY + 28);
+        }
+    }
 };
 
 global.rMoneyInBaseTopRight = function () {
@@ -265,34 +311,52 @@ global.rWeaponStats = function (i, buyable, starCol) {
     baseMenuCtx.font = `14px ShareTech`;
 };
 
-global.shopOnHover = function () {
-    const x = mx - baseMenuX;
-    const y = my - baseMenuY; // mouse coordinates
-
-    if (x > renderOreShopX && x < renderOreShopX + 64 && y > renderOreShopY - 14 + 4 * 16 && y < renderOreShopY - 14 + 5 * 16) seller = 610; // sell all
-    else if (x > renderOreShopX && x < renderOreShopX + 64 && y > renderOreShopY - 12 && y < renderOreShopY - 14 + 4 * 16) seller = 5 + Math.floor((y + 12 - renderOreShopY) / 16); // sell ore
-    else if (y > 246 && y < 240 + 160 && x > 256 + 32 && x < 256 + 192) seller = Math.floor((y - 246) / 16 + 10); // buy or sell weapon
-    else if (y > 256 - 30 && y < 256 - 16 && x > 512 - 64 && x < 512 - 64 + ctx.measureText(translate(`[View All]`)).width) seller = 601; // view all weapons
-    else if (x > 768 - 16 - ctx.measureText(translate(`[BUY]`)).width && x < 768 - 16 && y > lifeShopYVal - 16 && y < lifeShopYVal + 8) seller = 611; // buy life
-    else if (y > 256 - 16 && y < 512 - 16 && x > 16 && x < 256 + 16) {
-        if (y > 256 + 128 + 32) seller = 100;
-        else seller = 0;
-    } else seller = 0;
+const techShopOnHover = function (x, y) {
+    for (let uy = 0; uy < 2; uy++) {
+        for (let ux = 0; ux < 3; ux++) {
+            if (y > renderTechShopY + 20 + 64 * uy && y < renderTechShopY + 37 + 64 * uy && x > renderTechShopX + 128 * ux && x < renderTechShopX + 128 + 128 * ux) { seller = 200 + uy * 3 + ux; return true; } // tech upgrades
+            if (y > renderTechShopY + 37 + 64 * uy && y < renderTechShopY + 52 + 64 * uy && x > renderTechShopX + 128 * ux && x < renderTechShopX + 128 + 128 * ux) { seller = 206 + uy * 3 + ux; return true; } // tech downgrades
+        }
+    }
+    return false;
 };
 
-global.weaponStoreOnHover = function () {
-    const x = mx - baseMenuX;
-    const y = my - baseMenuY; // mouse coordinates
+const oreShopOnHover = function (x, y) {
+    if (x > renderOreShopX && x < renderOreShopX + 64 && y > renderOreShopY - 14 + 4 * 16 && y < renderOreShopY - 14 + 5 * 16) seller = 610; // sell all
+    else if (x > renderOreShopX && x < renderOreShopX + 64 && y > renderOreShopY - 12 && y < renderOreShopY - 14 + 4 * 16) seller = 5 + Math.floor((y + 12 - renderOreShopY) / 16); // sell ore
+    else return false;
+    return true;
+};
 
+const weaponShopOnHover = function (x, y) {
+    if (y > 246 && y < 240 + 160 && x > 256 + 32 && x < 256 + 192) seller = Math.floor((y - 246) / 16 + 10); // buy or sell weapon
+    else if (y > 256 - 30 && y < 256 - 16 && x > 512 - 64 && x < 512 - 64 + ctx.measureText(translate(`[View All]`)).width) seller = 601; // view all weapons
+    else return false;
+    return true;
+};
+
+const weaponStoreOnHover = function (x, y) {
     const rows = Math.floor(wepnCount / 3);
     for (let i = 0; i < 3; i++) {
         if (y > 76 && y < 76 + 16 * (rows + 1) && x > 16 + 240 * i && x < 64 + 240 * i) {
             seller = weaponWithOrder(Math.floor((y - 92) / 16 + rows * i)) + 20;
-            return;
+            return true;
         }
     }
 
     seller = 0;
+};
+
+global.shopOnHover = function () {
+    const x = mx - baseMenuX;
+    const y = my - baseMenuY; // mouse coordinates
+
+    if (x > 768 - 16 - ctx.measureText(translate(`[BUY]`)).width && x < 768 - 16 && y > lifeShopYVal - 16 && y < lifeShopYVal + 8) seller = 611; // buy life
+    else if (y > 256 - 16 && y < 512 - 16 && x > 16 && x < 256 + 16) {
+        if (y > 256 + 128 + 32) seller = 100;
+        else seller = 0;
+    } else if (!techShopOnHover(x, y) && !oreShopOnHover(x, y) && !weaponShopOnHover(x, y))
+        seller = 0;
 };
 
 global.shopOnClick = function (buttonID) {
@@ -331,4 +395,8 @@ global.shopOnClick = function (buttonID) {
         else if (x > 16 + 128 && shipView < ships.length - 1) shipView++;
         else if (x < 16 + 128 && shipView > 0) shipView--;
     }
+
+    // Upgrades and Downgrades
+    if (buttonID > 199 && buttonID < 206) socket.emit(`upgrade`, { item: buttonID - 200 });
+    if (buttonID > 205 && buttonID < 212) socket.emit(`downgrade`, { item: buttonID - 206 });
 };
