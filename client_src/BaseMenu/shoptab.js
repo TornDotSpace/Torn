@@ -177,7 +177,7 @@ global.rWeaponsInShop = function () {
 };
 
 // Render the base menu for selling weapons
-global.rConfirm = function () {
+global.renderConfirm = function () {
     baseMenuCtx.fillStyle = `cyan`;
     baseMenuCtx.textAlign = `center`;
     baseMenuCtx.font = `16px ShareTech`;
@@ -335,14 +335,17 @@ const weaponShopOnHover = function (x, y) {
     return true;
 };
 
-global.weaponStoreOnHover = function (x, y) {
+global.weaponStoreOnHover = function () {
+    const x = mx - baseMenuX;
+    const y = my - baseMenuY; // mouse coords
     const rows = Math.floor(wepnCount / 3);
     for (let i = 0; i < 3; i++) {
         if (y > 76 && y < 76 + 16 * (rows + 1) && x > 16 + 240 * i && x < 64 + 240 * i) {
             seller = weaponWithOrder(Math.floor((y - 92) / 16 + rows * i)) + 20;
-            return true;
+            return;
         }
     }
+    seller = 0;
 };
 
 global.shopOnHover = function () {
@@ -373,9 +376,9 @@ global.shopOnClick = function (buttonID) {
     if (buttonID == 611) socket.emit(`buyLife`, {});
 
     const x = mx - baseMenuX;
-    const y = my - baseMenuY; // mouse coordinates
+    const y = my - baseMenuY; // mouse coords
 
-    if (y > 246 && y < 240 + 160 && x > 256 + 32 && x < 256 + 78) {
+    if (y > 246 && y < 240 + 160 && x > 256 + 32 && x < 256 + 192) {
         if (equipped[buttonID - 10] == -1) {
             tab = 7;
             actuallyBuying = true;
