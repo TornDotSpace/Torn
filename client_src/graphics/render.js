@@ -34,7 +34,9 @@ import {
     getTimeAngle,
     brighten,
     numToLS,
-    ammoCodeToString
+    ammoCodeToString,
+    metalToColor,
+    metalToQuantity
 } from '../utils/helper';
 
 global.LIVEBASE = 0;
@@ -708,14 +710,12 @@ global.renderBG = function (more) {
 global.rCargo = function () {
     if (guest) return;
     if (quest.type === `Mining`) {
-        ctx.fillStyle = `#d44`;
-        let metalWeHave = iron;
-        if (quest.metal === `copper`) {
-            ctx.fillStyle = `#960`; metalWeHave = copper;
-        } else if (quest.metal === `platinum`) {
-            ctx.fillStyle = `#90f`; metalWeHave = platinum;
-        } else if (quest.metal === `silver`) {
-            ctx.fillStyle = `#eef`; metalWeHave = silver;
+        let metalWeHave = 0;
+        for (let i = 0; i < 4; i++) {
+            if (quest.metal === `iron`) {
+                ctx.fillStyle = `#d44`;
+                metalWeHave = iron;
+            }
         }
         write(ctx, `${metalWeHave}/${quest.amt} ${quest.metal}`, 248, 16);
     }
@@ -732,26 +732,14 @@ global.rCargo = function () {
     let myCapacity = ships[ship].capacity * c2;
     if (ship == 17) myCapacity = iron + platinum + silver + copper; // because it has infinite cargo
 
-    const ironBarHeight = iron * 208 / myCapacity;
-    const silvBarHeight = silver * 208 / myCapacity;
-    const alumBarHeight = copper * 208 / myCapacity;
-    const platBarHeight = platinum * 208 / myCapacity;
+    let runningY = 216;
 
-    let runningY = 216 - alumBarHeight;
-    ctx.fillStyle = `#960`;
-    ctx.fillRect(224, runningY, 16, alumBarHeight);
-
-    runningY -= platBarHeight;
-    ctx.fillStyle = `#90f`;
-    ctx.fillRect(224, runningY, 16, platBarHeight);
-
-    runningY -= silvBarHeight;
-    ctx.fillStyle = `#eef`;
-    ctx.fillRect(224, runningY, 16, silvBarHeight);
-
-    runningY -= ironBarHeight;
-    ctx.fillStyle = `#d44`;
-    ctx.fillRect(224, runningY, 16, ironBarHeight);
+    for (let i = 0; i < 4; i++) {
+        let thisBarHeight = metalToQuantity(i) * 208 / myCapacity;
+        runningY -= thisBarHeight;
+        ctx.fillStyle = metalToColor(i);
+        ctx.fillRect(224, runningY, 16, thisBarHeight);
+    }
 
     ctx.fillStyle = guiColor;
     ctx.fillRect(224, 8, 16, runningY - 8);
@@ -894,12 +882,7 @@ global.rRadar = function () {
         ctx.beginPath();
         ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
         if (va2 > 1.24) ctx.strokeStyle = ctx.fillStyle = `orange`;
-        if (va2 > 1.74) {
-            if (a.metal == 0) ctx.strokeStyle = ctx.fillStyle = `#d44`;
-            else if (a.metal == 1) ctx.strokeStyle = ctx.fillStyle = `#eef`;
-            else if (a.metal == 2) ctx.strokeStyle = ctx.fillStyle = `#960`;
-            else if (a.metal == 3) ctx.strokeStyle = ctx.fillStyle = `#90f`;
-        }
+        if (va2 > 1.74) ctx.strokeStyle = ctx.fillStyle = metalToColor(a.metal);
         if (va2 > 1.62) ctx.stroke();
         else ctx.fill();
         ctx.closePath();

@@ -75,6 +75,33 @@ const getRainbowColor = () => {
 };
 
 /**
+ * Get the corresponding color of a given metal code
+ * @returns RGB color string.
+ */
+const metalToColor = (i: number) => {
+    const colorArray = [`#d44`, `#eef`, `#90f`, `#960`];
+    return colorArray[i];
+};
+
+/**
+ * Get the corresponding name of a given metal code
+ * @returns Uncapitalized english metal name.
+ */
+const metalToName = (i: number) => {
+    const nameArray = [`iron`, `silver`, `platinum`, `copper`];
+    return nameArray[i];
+};
+
+/**
+ * Get the corresponding quantity owned of a given metal code
+ * @returns Number.
+ */
+const metalToQuantity = (i: number) => {
+    const nameArray = [iron, silver, platinum, copper];
+    return nameArray[i];
+};
+
+/**
  * Write some content to be rendered by the canvas.
  * @param context The rendering context of the canvas to write to.
  * @param str The string to write.
@@ -355,5 +382,8 @@ export {
     techPriceForDowngrade,
     techEnergy,
     getPosition,
-    ammoCodeToString
+    ammoCodeToString,
+    metalToColor,
+    metalToQuantity,
+    metalToName
 };
