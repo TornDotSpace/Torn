@@ -174,7 +174,7 @@ class NeuralNetBot extends Bot {
 
     botPlay () {
     // Play for a neural network bot
-        if (tick % 8 != Math.floor(this.id * 8)) return; // Don't go too crazy running the whole network each tick. Lag prevention.
+        if (tick % 8 != Math.floor(this.rng * 8)) return; // Don't go too crazy running the whole network each tick. Lag prevention.
 
         if (this.net === 1) { // If we haven't yet initialized a neural net
             this.net = new NeuralNet();
