@@ -43,7 +43,6 @@
         "prefer-const": 0,
 
         // More redundant manual linting.
-        "new-cap": 0,
         "eqeqeq": 0,
         "curly": 0,
         "camelcase": 0,
