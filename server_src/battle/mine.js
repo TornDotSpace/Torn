@@ -39,7 +39,7 @@ class Mine {
 
     tick () {
         // All mines check for collision on placement; magnetic mine checks constantly as it heatseeks.
-        if ((this.time === 0 && [15, 16, 17, 32, 33].includes(this.wepnID)) || this.wepnID === 48) this.collideWithMines();
+        if ((this.time === 0 && [15, 16, 17, 32].includes(this.wepnID)) || this.wepnID === 48) this.collideWithMines();
 
         if (this.wepnID != 44) {
             this.collideWithGuns();
