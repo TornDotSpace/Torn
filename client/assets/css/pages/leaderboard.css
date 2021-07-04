@@ -1,0 +1,68 @@
+@import '../index.css';
+
+h1 {
+    font-family: var(--bs-font-sans-serif) !important;
+}
+
+h1, thead > tr {
+    color: #0099ff;
+}
+
+.table-wrapper {
+    background-color: #00000080;
+
+    border-radius: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* Sort By */
+select, input {
+    background-color: #00000080 !important;
+    color: #FFFFFF !important;
+}
+
+select, input {
+    width: 16rem !important;
+}
+
+/* Table Layout */
+table {
+    margin-bottom: 0 !important;
+}
+
+table td {
+    padding: 0.125rem !important;
+}
+
+thead > tr {
+    position: sticky;
+    top: 0;
+
+    transition: 0.3s;
+}
+
+thead > tr.th-sticky > th {
+    background-color: #000000DE;
+}
+
+thead > tr.th-sticky > th:first-child {
+    border-bottom-left-radius: 1rem;
+}
+
+thead > tr.th-sticky > th:last-child {
+    border-bottom-right-radius: 1rem;
+}
+
+/* Team colors */
+.team-red {
+    color: var(--alien);
+}
+
+.team-green {
+    color: var(--cyborg);
+}
+
+.team-blue {
+    color: var(--human);
+}

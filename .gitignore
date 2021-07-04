@@ -118,7 +118,7 @@ dist
 # Temporary files.
 server/
 
-client/leaderboard
+client/leaderboard/players.json
 client/accountusage/data.json
 
 # Logs

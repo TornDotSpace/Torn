@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Torn | Leaderboard</title>
+    <meta name="description" content="Complete and upgrade your warship in the ongoing space war!">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/pages/leaderboard.css">
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <main class="container text-light text-center">
+        <h1 class="my-5">Leaderboard</h1>
+        <div class="table-wrapper">
+            <div class="table-actions d-flex mx-5 mt-2 mb-4">
+                <select name="sort-by" id="sort-by" class="form-select" onchange="sortLB()">
+                    <option value="default" selected>Sort By</option>
+                    <option value="elo">ELO</option>
+                    <option value="kills">Kills</option>
+                    <option value="tech">Tech</option>
+                </select>
+            </div>
+    
+            <table class="table table-borderless">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Experience</th>
+                        <th scope="col">ELO</th>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Kills</th>
+                        <th scope="col">Money</th>
+                        <th scope="col">Tech</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </main>
+    <br />
+
+    <script src="./leaderboard.js"></script>
+</body>
+</html>
