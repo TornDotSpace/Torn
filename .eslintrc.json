@@ -36,7 +36,6 @@
 
         // ESLint globals have not been configured for these.
         "no-undef": 0,
-        "no-var": 0,
         "no-use-before-define": 0,
         "no-unused-vars": 0,
         "no-unused-expressions": 0,
