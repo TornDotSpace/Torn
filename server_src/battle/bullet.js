@@ -19,23 +19,22 @@ const Vortex = require(`../universe/vortex.js`);
 
 class Bullet {
     constructor (ownr, i, wepnID, angl, info) {
-        this.type = `Bullet`,
-        this.id = i, // unique identifier
-        this.time = 0, // time since spawn
-        this.color = ownr.color, // whose team
-        this.dist = 0, // TRACKS distance. Doesn't control it.
-        this.dmg = wepns[wepnID].damage,
+        this.type = `Bullet`;
+        this.id = i; // unique identifier
+        this.time = 0; // time since spawn
+        this.color = ownr.color; // whose team
+        this.dist = 0; // TRACKS distance. Doesn't control it.
+        this.dmg = wepns[wepnID].damage;
 
-        this.x = ownr.x + (wepnID == 6 ? Math.sin(angl) * 16 * info : 0), // spawn where my owner was
-        this.y = ownr.y - (wepnID == 6 ? Math.cos(angl) * 16 * info : 0), // if minigun, move left or right based on which bullet I am
-        this.sx = ownr.sx,
-        this.sy = ownr.sy,
-        this.vx = Math.cos(angl) * wepns[wepnID].speed,
-        this.vy = Math.sin(angl) * wepns[wepnID].speed,
-
-        this.owner = ownr,
-        this.angle = angl, // has to be a parameter since not all bullets shoot straight
-        this.info = info, // used to differentiate left and right minigun bullets
+        this.x = ownr.x + (wepnID == 6 ? Math.sin(angl) * 16 * info : 0); // spawn where my owner was
+        this.y = ownr.y - (wepnID == 6 ? Math.cos(angl) * 16 * info : 0); // if minigun, move left or right based on which bullet I am
+        this.sx = ownr.sx;
+        this.sy = ownr.sy;
+        this.vx = Math.cos(angl) * wepns[wepnID].speed;
+        this.vy = Math.sin(angl) * wepns[wepnID].speed;
+        this.owner = ownr;
+        this.angle = angl; // has to be a parameter since not all bullets shoot straight
+        this.info = info; // used to differentiate left and right minigun bullets
         this.wepnID = wepnID;
     }
 

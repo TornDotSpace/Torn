@@ -30,33 +30,33 @@ global.TURRET = 2;
 global.SENTRY = 3;
 
 class Base {
-    constructor (i, type, sx, syy, col, x, y) {
+    constructor (i, type, sx, sy, col, x, y) {
         console.log(`Base constructed with type ${type}`);
-        this.type = `Base`,
-        this.kills = 0,
-        this.experience = 0,
-        this.money = 0,
-        this.id = i, // unique identifier
-        this.trueColor = col, // The team this base originally is
-        this.color = col, // The team this base is now
-        this.assimilatedCol = col, // The team that is attempting to overtake the base
-        this.owner = 0,
-        this.name = ``,
-        this.isMini = (type == SENTRY),
-        this.baseType = type, // Constants above
-        this.angle = 0, // angle of the turret
+        this.type = `Base`;
+        this.kills = 0;
+        this.experience = 0;
+        this.money = 0;
+        this.id = i; // unique identifier
+        this.trueColor = col; // The team this base originally is
+        this.color = col; // The team this base is now
+        this.assimilatedCol = col; // The team that is attempting to overtake the base
+        this.owner = 0;
+        this.name = ``;
+        this.isMini = (type == SENTRY);
+        this.baseType = type; // Constants above
+        this.angle = 0; // angle of the turret
 
-        this.x = x,
-        this.y = y,
-        this.sx = sx,
-        this.sy = syy,
-        this.deathTimer = 0,
+        this.x = x;
+        this.y = y;
+        this.sx = sx;
+        this.sy = sy;
+        this.deathTimer = 0;
 
-        this.shots = 0,
-        this.reload = 0, // timer for shooting
-        this.health = (type == SENTRY ? 0.15 : 1) * baseHealth,
-        this.maxHealth = (type == SENTRY ? 0.15 : 1) * baseHealth,
-        this.empTimer = -1,
+        this.shots = 0;
+        this.reload = 0; // timer for shooting
+        this.health = (type == SENTRY ? 0.15 : 1) * baseHealth;
+        this.maxHealth = (type == SENTRY ? 0.15 : 1) * baseHealth;
+        this.empTimer = -1;
         this.speed = 0; // vs unused but there for bullets,
         this.assimilatedTimer = 0;
     }

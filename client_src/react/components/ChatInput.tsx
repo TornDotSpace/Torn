@@ -24,6 +24,7 @@ declare const stopTyping: any;
 let ChatState: { init: any, activate: any, focusChat: any, unfocusChat: any };
 
 class ChatInput extends React.Component<{}, { value: string, activated: boolean }> {
+    chat: React.RefObject<HTMLInputElement>
     constructor (props: {}) {
         super(props);
 
@@ -31,6 +32,8 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
             value: ``,
             activated: false
         };
+
+        this.chat = React.createRef<HTMLInputElement>();
     }
 
     init = (data: { value: string, activated: boolean }) => {
@@ -42,11 +45,11 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
     }
 
     focusChat = () => {
-        (this.refs.chat as any).focus();
+        this.chat.current.focus();
     }
 
     unfocusChat = () => {
-        (this.refs.chat as any).blur();
+        this.chat.current.blur();
     }
 
     keypress = (event) => {
@@ -84,7 +87,7 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
         ? (
             <input
                 className="chat-input"
-                ref={`chat`}
+                ref={this.chat}
                 maxLength={128}
                 onKeyDown={this.keypress.bind(this)}
                 onChange={this.change.bind(this)}

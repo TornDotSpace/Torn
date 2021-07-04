@@ -70,8 +70,6 @@ global.loginInProgress = false;
 
 window.document.title = `torn.space`;
 
-global.isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);// broken
-
 global.canvas = document.querySelector(`#ctx`);
 
 canvas.width = window.innerWidth;
@@ -266,7 +264,8 @@ setInterval(() => {
         canvas.width = w;
         canvas.height = h;
     }
-    baseMenuX = w / 2 - 128 * 3, baseMenuY = h / 4 - 128;
+    baseMenuX = w / 2 - 128 * 3;
+    baseMenuY = h / 4 - 128;
 }, 40);
 
 const loop = () => {
@@ -358,7 +357,10 @@ const loop = () => {
             ctx.drawImage((j % 2 == 0 ? Img.astUnderlayBlue : Img.astUnderlayGreen), -pw, -pw, pw * 2, pw * 2);
             angleNow = -Math.atan2(5 * Math.sin(5 * t), 4 * Math.cos(4 * t));
             ctx.rotate(angleNow + Math.PI / 2);
-            fireWidth = 32 * 1.2 * Math.sqrt(pw / 64), fireHeight = spd * 1.4 * pw / 64 + Math.random() * pw / 25;
+
+            fireWidth = 32 * 1.2 * Math.sqrt(pw / 64);
+            fireHeight = spd * 1.4 * pw / 64 + Math.random() * pw / 25;
+
             if (spd > 0) ctx.drawImage(Img.fire, 0, Math.floor(Math.random() * 8) * 64, 64, 64, -fireWidth / 2, 0, fireWidth, fireHeight);
             ctx.restore();
             ctx.save();

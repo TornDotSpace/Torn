@@ -16,22 +16,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 class Orb {
     constructor (ownr, i, wepnID) { // currently the only orbs are energy disk and photon orb
-        this.type = `Orb`,
-        this.id = i, // unique identifier
-        this.color = ownr.color, // owned by which team
-        this.dmg = wepns[wepnID].damage,
+        this.type = `Orb`;
+        this.id = i; // unique identifier
+        this.color = ownr.color; // owned by which team
+        this.dmg = wepns[wepnID].damage;
 
-        this.owner = ownr,
-        this.x = ownr.x,
-        this.y = ownr.y, // spawn where its owner is
-        this.sx = ownr.sx,
-        this.sy = ownr.sy,
-        this.vx = wepns[wepnID].speed * Math.cos(ownr.angle) * 2,
-        this.vy = wepns[wepnID].speed * Math.sin(ownr.angle) * 2,
+        this.owner = ownr;
+        this.x = ownr.x;
+        this.y = ownr.y; // spawn where its owner is
+        this.sx = ownr.sx;
+        this.sy = ownr.sy;
+        this.vx = wepns[wepnID].speed * Math.cos(ownr.angle) * 2;
+        this.vy = wepns[wepnID].speed * Math.sin(ownr.angle) * 2;
 
-        this.locked = 0, // the id of the player I'm locked on to
-        this.timer = 0, // how long this orb has existed
-        this.lockedTimer = 0, // timer of how long it's been locked onto a player
+        this.locked = 0; // the id of the player I'm locked on to
+        this.timer = 0; // how long this orb has existed
+        this.lockedTimer = 0; // timer of how long it's been locked onto a player
         this.wepnID = wepnID;
     }
 

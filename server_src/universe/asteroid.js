@@ -30,19 +30,19 @@ for (let i = 0; i < mapSz; i++) {
 
 class Asteroid {
     constructor (i, h, sx, sy, x, y, vx, vy, metal) {
-        this.type = `Asteroid`,
-        this.owner = 0,
-        this.id = i, // unique identifier
-        this.x = x,
-        this.y = y,
-        this.angle = 0,
-        this.health = h,
-        this.maxHealth = h,
-        this.sx = sx,
-        this.sy = sy,
-        this.vx = vx,
-        this.vy = vy,
-        this.metal = metal,
+        this.type = `Asteroid`;
+        this.owner = 0;
+        this.id = i; // unique identifier
+        this.x = x;
+        this.y = y;
+        this.angle = 0;
+        this.health = h;
+        this.maxHealth = h;
+        this.sx = sx;
+        this.sy = sy;
+        this.vx = vx;
+        this.vy = vy;
+        this.metal = metal;
         this.va = (Math.random() - 0.5) / 10;
         if (this.vx == 0 && this.vy == 0) {
             this.vx = 3 * (Math.random() - 0.5);

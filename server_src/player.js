@@ -28,74 +28,74 @@ let nextPlayerId = 0;
 
 class Player {
     constructor () {
-        this.name = ``,
-        this.type = `Player`,
+        this.name = ``;
+        this.type = `Player`;
 
-        this.tag = ``,
-        this.id = nextPlayerId++, // unique identifier
-        this.trail = 0,
-        this.color = `yellow`,
-        this.elo = 1200,
-        this.ship = 0,
-        this.experience = 0,
-        this.rank = 0,
+        this.tag = ``;
+        this.id = nextPlayerId++; // unique identifier
+        this.trail = 0;
+        this.color = `yellow`;
+        this.elo = 1200;
+        this.ship = 0;
+        this.experience = 0;
+        this.rank = 0;
 
-        this.guest = false,
-        this.dead = false,
-        this.docked = false,
+        this.guest = false;
+        this.dead = false;
+        this.docked = false;
 
         // misc timers
-        this.noDrift = 50, // A timer used for decelerating angular momentum
-        this.jukeTimer = 0,
-        this.hyperdriveTimer = -1,
-        this.borderJumpTimer = 0, // for deciding whether to hurt the player
-        this.planetTimer = 0,
-        this.leaveBaseShield = 0,
+        this.noDrift = 50; // A timer used for decelerating angular momentum
+        this.jukeTimer = 0;
+        this.hyperdriveTimer = -1;
+        this.borderJumpTimer = 0; // for deciding whether to hurt the player
+        this.planetTimer = 0;
+        this.leaveBaseShield = 0;
         this.superchargerTimer = -1;
-        this.empTimer = -1,
-        this.disguise = -1,
-        this.timer = 0,
-        this.gyroTimer = 0,
-        this.charge = 0,
+        this.empTimer = -1;
+        this.disguise = -1;
+        this.timer = 0;
+        this.gyroTimer = 0;
+        this.charge = 0;
 
-        this.weapons = {}, // my equipped weapons and ammo counts
-        this.ammos = {},
-        this.bulletQueue = 0, // For submachinegun (5 bullet bursts)
+        this.weapons = {}; // my equipped weapons and ammo counts
+        this.ammos = {};
+        this.bulletQueue = 0; // For submachinegun (5 bullet bursts)
 
-        this.sx = 0, // sector
-        this.sy = 0,
-        this.x = sectorWidth / 2,
-        this.y = sectorWidth / 2,
-        this.vx = 0,
-        this.vy = 0,
-        this.cva = 0,
-        this.angle = 0,
-        this.speed = 0,
-        this.driftAngle = 0,
+        this.sx = 0; // sector
+        this.sy = 0;
+        this.x = sectorWidth / 2;
+        this.y = sectorWidth / 2;
+        this.vx = 0;
+        this.vy = 0;
+        this.cva = 0;
+        this.angle = 0;
+        this.speed = 0;
+        this.driftAngle = 0;
 
-        this.money = 8000,
-        this.kills = 0,
-        this.killStreakTimer = -1,
-        this.killStreak = 0,
-        this.baseKills = 0,
+        this.money = 8000;
+        this.kills = 0;
+        this.killStreakTimer = -1;
+        this.killStreak = 0;
+        this.baseKills = 0;
 
-        this.shield = false,
+        this.shield = false;
         this.navigationalShield = 0;
-        this.generators = 0,
-        this.isLocked = false,
-        this.lives = 20,
-        this.quest = 0,
-        this.health = 1,
+        this.generators = 0;
+        this.isLocked = false;
+        this.lives = 20;
+        this.quest = 0;
+        this.health = 1;
 
-        this.iron = 0,
-        this.silver = 0,
-        this.platinum = 0,
-        this.copper = 0,
+        this.iron = 0;
+        this.silver = 0;
+        this.platinum = 0;
+        this.copper = 0;
 
         // bot stuff
-        this.net = 0, // where the neural network is stored
-        this.isBot = false,
-        this.isNNBot = false,
+        this.net = 0; // where the neural network is stored
+        this.isBot = false;
+        this.isNNBot = false;
 
         /* please don't touch these
                nearestEnemyDist = 0,//for nnBots
@@ -112,38 +112,38 @@ class Player {
                nearestBulletAngleV = 0,
                */
 
-        this.thrust = 1, // These are techs multiplied by ship stats, used for actual physics
-        this.va = 1,
-        this.capacity = 1,
-        this.maxHealth = 2,
+        this.thrust = 1; // These are techs multiplied by ship stats, used for actual physics
+        this.va = 1;
+        this.capacity = 1;
+        this.maxHealth = 2;
 
-        this.thrust2 = 1, // these just track the player tech levels
-        this.radar2 = 1,
-        this.agility2 = 1,
-        this.capacity2 = 1,
-        this.maxHealth2 = 1,
-        this.energy2 = 1,
+        this.thrust2 = 1; // these just track the player tech levels
+        this.radar2 = 1;
+        this.agility2 = 1;
+        this.capacity2 = 1;
+        this.maxHealth2 = 1;
+        this.energy2 = 1;
 
-        this.w = false, // what keys are pressed currently
-        this.s = false,
-        this.a = false,
-        this.d = false,
-        this.e = false,
-        this.c = false,
-        this.space = false,
+        this.w = false; // what keys are pressed currently
+        this.s = false;
+        this.a = false;
+        this.d = false;
+        this.e = false;
+        this.c = false;
+        this.space = false;
 
-        this.killAchievements = {}, // 10 of em. Lengths are written in torn_globals.js
-        this.moneyAchievements = {}, // 5
-        this.driftAchievements = {}, // 5
-        this.randomAchievements = {}, // 5
+        this.killAchievements = {}; // 10 of em. Lengths are written in torn_globals.js
+        this.moneyAchievements = {}; // 5
+        this.driftAchievements = {}; // 5
+        this.randomAchievements = {}; // 5
 
         // various achievement stuff
-        this.driftTimer = 0, // How many ticks this account has been drifting.
-        this.cornersTouched = 0, // bitmask
-        this.oresMined = 0, // bitmask
-        this.questsDone = 0, // bitmask
-        this.planetsClaimed = `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000`,
-        this.points = 0,
+        this.driftTimer = 0; // How many ticks this account has been drifting.
+        this.cornersTouched = 0; // bitmask
+        this.oresMined = 0; // bitmask
+        this.questsDone = 0; // bitmask
+        this.planetsClaimed = `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000`;
+        this.points = 0;
 
         this.equipped = 0;
     }
@@ -984,9 +984,9 @@ class Player {
             this.health -= 10000;
         }
 
-        if (this.empTimer <= 0 && origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) { // navigational shield fails when EMPd
-            if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
-        }
+        // If player is not EMP'd, has navigational shield, and they are hit either by an asteroid or laser beam. then activate navigational shield perks.
+        if (this.empTimer <= 0 && this.navigationalShield > 0 &&
+            ((origin.type === `Beam` && origin.wepnID === 8) || origin.type === `Asteroid`)) d /= (origin.type === `Asteroid` ? 2048 : 5);
 
         d /= (this.trail % 16 == 1 ? 1.05 : 1); // blood trail: less damage
         d *= ((this.shield && d > 0) ? 0.25 : 1); // Shield- 1/4th damage. Won't block healing items
