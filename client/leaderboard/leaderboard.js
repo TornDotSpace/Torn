@@ -5,16 +5,7 @@ let tornUsers, xpLB, eloLB, killsLB, techLB;
  */
 const getTornUsers = async () => await fetch(`./players.json`).then(data => data.json()).then(data => {
     tornUsers = data;
-
-    xpLB = [...data];
-    eloLB = [...data];
-    killsLB = [...data];
-    techLB = [...data];
-
-    xpLB.sort((b, a) => a.xp - b.xp);
-    eloLB.sort((b, a) => a.elo - b.elo);
-    killsLB.sort((b, a) => a.kills - b.kills);
-    techLB.sort((b, a) => a.tech - b.tech);
+    xpLB = [...data].sort((a, b) => b.xp - a.xp);
 });
 
 /**
@@ -50,12 +41,21 @@ const sortLB = () => {
 
     switch (sortBy) {
         case `elo`:
+            if (eloLB == undefined) {
+                eloLB = [...tornUsers].sort((a, b) => b.elo - a.elo);
+            }
             tornUsers = eloLB;
             break;
         case `kills`:
+            if (killsLB == undefined) {
+                killsLB = [...tornUsers].sort((a, b) => b.kills - a.kills);
+            }
             tornUsers = killsLB;
             break;
         case `tech`:
+            if (techLB == undefined) {
+                techLB = [...tornUsers].sort((a, b) => b.tech - a.tech);
+            }
             tornUsers = techLB;
             break;
         default:
