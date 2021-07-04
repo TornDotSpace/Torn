@@ -49,7 +49,6 @@
         "no-sequences": 0,
 
         // Too lazy to fix.
-        "react/no-string-refs": 0,
         "no-useless-escape": 0,
         "no-func-assign": 0,
         "no-global-assign": 0,
