@@ -38,7 +38,8 @@ class Mine {
     }
 
     tick () {
-        if (this.time == 0 && [15, 16, 17, 32, 33, 43, 44, 48].includes(this.wepnID)) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
+        // All mines check for collision on placement; magnetic mine checks constantly as it heatseeks.
+        if ((this.time === 0 && [15, 16, 17, 32, 33].includes(this.wepnID)) || this.wepnID === 48) this.collideWithMines();
 
         if (this.wepnID != 44) {
             this.collideWithGuns();
