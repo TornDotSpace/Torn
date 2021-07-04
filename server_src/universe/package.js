@@ -17,12 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Package {
     constructor (ownr, i, type) {
-        this.id = i, // unique identifier
-        this.type = type, // ammo? coin? lives? actual courier package?
-        this.x = ownr.x,
-        this.y = ownr.y,
-        this.sx = ownr.sx,
-        this.sy = ownr.sy,
+        this.id = i; // unique identifier
+        this.type = typ; // ammo? coin? lives? actual courier package?
+        this.x = ownr.x;
+        this.y = ownr.y;
+        this.sx = ownr.sx;
+        this.sy = ownr.sy;
         this.time = 0; // since spawn
     }
 

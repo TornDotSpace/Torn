@@ -17,15 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Beam {
     constructor (ownr, i, weaponID, enemy, orign) {
-        this.type = `Beam`,
-        this.id = i, // unique identifier
-        this.dmg = wepns[weaponID].damage,
-        this.sx = ownr.sx,
-        this.sy = ownr.sy,
-        this.origin = orign,
-        this.owner = ownr,
-        this.enemy = enemy, // person we're hitting
-        this.wepnID = weaponID,
+        this.type = `Beam`;
+        this.id = i; // unique identifier
+        this.dmg = wepns[weaponID].damage;
+        this.sx = ownr.sx;
+        this.sy = ownr.sy;
+        this.origin = orign;
+        this.owner = ownr;
+        this.enemy = enemy; // person we're hitting
+        this.wepnID = weaponID;
         this.time = 0; // since spawn
     }
 

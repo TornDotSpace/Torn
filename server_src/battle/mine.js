@@ -19,21 +19,21 @@ const Beam = require(`./beam.js`);
 
 class Mine {
     constructor (ownr, i, weaponID) {
-        this.type = `Mine`,
-        this.id = i, // unique identifier
-        this.time = 0, // time since spawned
-        this.color = ownr.color, // what team owns me
-        this.dmg = wepns[weaponID].damage,
-        this.range = wepns[weaponID].range,
+        this.type = `Mine`;
+        this.id = i; // unique identifier
+        this.time = 0; // time since spawned
+        this.color = ownr.color; // what team owns me
+        this.dmg = wepns[weaponID].damage;
+        this.range = wepns[weaponID].range;
 
-        this.x = ownr.x,
-        this.y = ownr.y,
-        this.vx = Math.cos(ownr.angle) * wepns[weaponID].speed, // grenades are the only mines that move on its own
-        this.vy = Math.sin(ownr.angle) * wepns[weaponID].speed,
-        this.sx = ownr.sx,
-        this.sy = ownr.sy,
+        this.x = ownr.x;
+        this.y = ownr.y;
+        this.vx = Math.cos(ownr.angle) * wepns[weaponID].speed; // grenades are the only mines that move on its own
+        this.vy = Math.sin(ownr.angle) * wepns[weaponID].speed;
+        this.sx = ownr.sx;
+        this.sy = ownr.sy;
 
-        this.owner = ownr,
+        this.owner = ownr;
         this.wepnID = weaponID;
     }
 

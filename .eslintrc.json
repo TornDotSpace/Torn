@@ -33,6 +33,7 @@
         "semi": [2, "always"],
         "quotes": [2, "backtick"],
         "prefer-template": 1,
+        "curly": 0,
 
         // ESLint globals have not been configured for these.
         "no-undef": 0,
@@ -43,9 +44,7 @@
 
         // More redundant manual linting.
         "eqeqeq": 0,
-        "curly": 0,
         "camelcase": 0,
-        "no-sequences": 0,
 
         // Too lazy to fix.
         "no-useless-escape": 0,

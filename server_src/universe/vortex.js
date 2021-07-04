@@ -16,24 +16,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 class Vortex {
-    constructor (i, x, y, sxx, syy, size, ownr, isWorm) {
-        this.isWorm = isWorm, // am i a wormhole or black hole
-        this.sxo = Math.floor(Math.random() * mapSz), // output node location for wormhole
-        this.syo = Math.floor(Math.random() * mapSz),
-        this.xo = Math.random() * sectorWidth,
-        this.yo = Math.random() * sectorWidth,
+    constructor (i, x, y, sx, sy, size, ownr, isWorm) {
+        this.isWorm = isWorm; // am i a wormhole or black hole
+        this.sxo = Math.floor(Math.random() * mapSz); // output node location for wormhole
+        this.syo = Math.floor(Math.random() * mapSz);
+        this.xo = Math.random() * sectorWidth;
+        this.yo = Math.random() * sectorWidth;
 
-        this.type = `Vortex`,
-        this.wepnID = 28,
-        this.owner = ownr,
-        this.id = i, // unique identifier
+        this.type = `Vortex`;
+        this.wepnID = 28;
+        this.owner = ownr;
+        this.id = i; // unique identifier
 
-        this.vx = 0,
-        this.vy = 0,
-        this.x = x, // input node or black hole location
-        this.y = y,
-        this.sx = sxx,
-        this.sy = syy,
+        this.vx = 0;
+        this.vy = 0;
+        this.x = x; // input node or black hole location
+        this.y = y;
+        this.sx = sx;
+        this.sy = sy;
 
         this.size = size;
     }

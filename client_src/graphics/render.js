@@ -567,10 +567,11 @@ global.rBooms = function () {
             ctx.restore();
         }
 
-        if (!b.shockwave) {
-            continue;
-        }
-        rendX = b.x - px + w / 2 + scrx, rendY = b.y - py + h / 2 + scry;
+        if (!b.shockwave) continue;
+
+        rendX = b.x - px + w / 2 + scrx;
+        rendY = b.y - py + h / 2 + scry;
+
         const ss = Math.sqrt(b.time) * 96;
         ctx.globalAlpha = 0.9 - b.time / 500.0;
         ctx.drawImage(Img.shockwave, rendX - ss / 2, rendY - ss / 2, ss, ss);
