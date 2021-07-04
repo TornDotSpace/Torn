@@ -32,4 +32,7 @@ players = db.players
 for player in players.find():
     print(f"Processing: {player['_id']}")
 
-    players.update_one({"_id": player["_id"]}, {"$unset": {"killsAchs": 0, "moneyAchs": 0, "driftAchs": 0, "randmAchs": 0}})
+    players.update_one(
+        {"_id": player["_id"]},
+        {"$unset": {"killsAchs": 0, "moneyAchs": 0, "driftAchs": 0, "randmAchs": 0}},
+    )
