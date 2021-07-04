@@ -11,10 +11,10 @@ const getTornUsers = async () => await fetch(`./players.json`).then(data => data
     killsLB = [...data];
     techLB = [...data];
 
-    xpLB.sort((a, b) => a.xp - b.xp).reverse();
-    eloLB.sort((a, b) => a.elo - b.elo).reverse();
-    killsLB.sort((a, b) => a.kills - b.kills).reverse();
-    techLB.sort((a, b) => a.tech - b.tech).reverse();
+    xpLB.sort((b, a) => a.xp - b.xp);
+    eloLB.sort((b, a) => a.elo - b.elo);
+    killsLB.sort((b, a) => a.kills - b.kills);
+    techLB.sort((b, a) => a.tech - b.tech);
 });
 
 /**
