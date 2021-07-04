@@ -214,7 +214,7 @@ const renderUpgradeButtons = () => {
     baseMenuCtx.textAlign = `center`;
 
     const currTechArr = [[t2, va2, c2], [mh2, e2, ag2]];
-    const titlesArr = [[`Thrust lvl `, `Hull lvl `, `Energy lvl `], [`Radar lvl `, `Cargo lvl `, `Agility lvl `]];
+    const titlesArr = [[`Thrust lvl `, `Radar lvl `, `Agility lvl `], [`Hull lvl `, `Cargo lvl `, `Energy lvl `]];
 
     for (let y = 0; y < 2; y++) {
         for (let x = 0; x < 3; x++) {
