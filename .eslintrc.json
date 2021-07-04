@@ -27,22 +27,11 @@
         }
     },
     "rules": {
-        // Eval should not be allowed ever, regardless of use case.
         "no-eval": 2,
-
-        // } else {}
         "brace-style": 1,
-
-        // Indents should be four spaces.
-        "indent": ["warn", 4, {
-            "SwitchCase": 1
-        }],
-
-        // Semicolons and backticks should always be used.
+        "indent": ["warn", 4, { "SwitchCase": 1 }],
         "semi": [2, "always"],
         "quotes": [2, "backtick"],
-
-        // Use templating strings with backticks whenever possible.
         "prefer-template": 1,
 
         // ESLint globals have not been configured for these.
@@ -52,9 +41,6 @@
         "no-unused-vars": 0,
         "no-unused-expressions": 0,
         "prefer-const": 0,
-
-        // Unnecessary.
-        "no-mixed-operators": 0,
 
         // More redundant manual linting.
         "new-cap": 0,

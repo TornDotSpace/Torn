@@ -38,7 +38,7 @@ class Mine {
     }
 
     tick () {
-        if (this.time == 0 && this.wepnID < 32 || this.wepnID > 47) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
+        if (this.time == 0 && [15, 16, 17, 32, 33, 43, 44, 48].includes(this.wepnID)) this.collideWithMines(); // When the mine is created, make sure it isn't placed on top of any other mines.
 
         if (this.wepnID != 44) {
             this.collideWithGuns();

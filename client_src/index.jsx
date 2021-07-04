@@ -70,8 +70,6 @@ global.loginInProgress = false;
 
 window.document.title = `torn.space`;
 
-global.isChrome = true || !(!window.chrome) && !(!window.chrome.webstore);// broken
-
 global.canvas = document.querySelector(`#ctx`);
 
 canvas.width = window.innerWidth;

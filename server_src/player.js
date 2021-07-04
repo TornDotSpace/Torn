@@ -984,9 +984,9 @@ class Player {
             this.health -= 10000;
         }
 
-        if (this.empTimer <= 0 && origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) { // navigational shield fails when EMPd
-            if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
-        }
+        // If player is not EMP'd, has navigational shield, and they are hit either by an asteroid or laser beam. then activate navigational shield perks.
+        if (this.empTimer <= 0 && this.navigationalShield > 0 &&
+            ((origin.type === `Beam` && origin.wepnID === 8) || origin.type === `Asteroid`)) d /= (origin.type === `Asteroid` ? 2048 : 5);
 
         d /= (this.trail % 16 == 1 ? 1.05 : 1); // blood trail: less damage
         d *= ((this.shield && d > 0) ? 0.25 : 1); // Shield- 1/4th damage. Won't block healing items
