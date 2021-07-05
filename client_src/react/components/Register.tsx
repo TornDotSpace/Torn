@@ -19,8 +19,8 @@ import React from 'react';
 
 import socket from '../../modules/socket';
 
-class Register extends React.Component<{ register: boolean }, { user: string, pass: string, on: boolean }> {
-    constructor (props: { register: boolean }) {
+class Register extends React.Component<{ display: boolean }, { user: string, pass: string, on: boolean }> {
+    constructor (props: { display: boolean }) {
         super(props);
 
         this.state = {
@@ -63,7 +63,7 @@ class Register extends React.Component<{ register: boolean }, { user: string, pa
     }
 
     render = () => (
-        this.props.register
+        this.props.display
             ? (
                 <div className="register-menu">
                     <div className="text-center">
