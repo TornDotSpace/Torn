@@ -352,7 +352,7 @@ const getPosition = (string: string, subString: string, limit: number) => string
 /**
  * Get the definition of an ammo code.
  * @param code The ammo code.
- * @returns A string representation
+ * @returns A string representation of the ammo code definition.
  */
 const ammoCodeToString = (code: number) => {
     if (code >= 0) return `${code}`;

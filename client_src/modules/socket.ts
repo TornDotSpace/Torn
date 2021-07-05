@@ -20,6 +20,9 @@ import { io, Socket } from 'socket.io-client';
 
 declare const TORN_GAMESERVER_URL: string;
 
+/**
+ * The socket connection to the server.
+ */
 const socket: Socket = io(TORN_GAMESERVER_URL, {
     autoConnect: false
     // parser: msgpack
