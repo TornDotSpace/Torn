@@ -23,6 +23,11 @@ declare const expToRank: number[];
 declare const bigNotes: any[];
 declare const wepns: any;
 
+declare const iron: string;
+declare const silver: string;
+declare const platinum: string;
+declare const copper: string;
+
 declare let rank: number;
 declare let guest: number;
 declare let experience: number;
