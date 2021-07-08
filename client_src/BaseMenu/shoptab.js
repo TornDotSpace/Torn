@@ -170,9 +170,11 @@ global.rWeaponsInShop = function () {
         if (ships[shipView].weapons <= i) baseMenuCtx.fillStyle = `orange`;
         if (typeof wepns[equipped[i]] !== `undefined` && shipView < wepns[equipped[i]].level) baseMenuCtx.fillStyle = `red`;
 
-        if (equipped[i] == -1) tag = translate(`BUY`);
-        else if (equipped[i] > -1) tag = translate(`SELL`);
-        write(baseMenuCtx, `${(` ${i + 1}`).slice(-2)}: ${hover ? tag : wepns[equipped[i]]?.name}`, 256 + 32, 256 + i * 16);
+        let wepTag = ``;
+        if (equipped[i] == -1) wepTag = translate(`BUY`);
+        else if (equipped[i] > -1) wepTag = translate(`SELL`);
+
+        write(baseMenuCtx, `${(` ${i + 1}`).slice(-2)}: ${hover ? wepTag : wepns[equipped[i]]?.name}`, 256 + 32, 256 + i * 16);
     }
 };
 

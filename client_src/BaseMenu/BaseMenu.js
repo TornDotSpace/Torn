@@ -128,18 +128,10 @@ global.rInBase = function () {
 };
 
 global.baseMenuOnClick = function (buttonID) {
-    if (tab == 0) {
-        shopOnClick(buttonID);
-    }
-    if (tab == 1) {
-        questsOnClick(buttonID);
-    }
-    if (tab == 2) {
-        achievementsOnClick(buttonID);
-    }
-    if (tab == 3) {
-        moreOnClick(buttonID);
-    }
+    if (tab === 0) shopOnClick(buttonID);
+    else if (tab === 1) questsOnClick(buttonID);
+    else if (tab === 2) achievementsOnClick(buttonID);
+    else if (tab === 3) moreOnClick(buttonID);
 
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates

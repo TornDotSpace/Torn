@@ -23,6 +23,11 @@ declare const expToRank: number[];
 declare const bigNotes: any[];
 declare const wepns: any;
 
+declare const iron: string;
+declare const silver: string;
+declare const platinum: string;
+declare const copper: string;
+
 declare let rank: number;
 declare let guest: number;
 declare let experience: number;
@@ -347,7 +352,7 @@ const getPosition = (string: string, subString: string, limit: number) => string
 /**
  * Get the definition of an ammo code.
  * @param code The ammo code.
- * @returns A string representation
+ * @returns A string representation of the ammo code definition.
  */
 const ammoCodeToString = (code: number) => {
     if (code >= 0) return `${code}`;
