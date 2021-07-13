@@ -18,7 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const MONGO_CONNECTION_STR = Config.getValue(`mongo_connection_string`, `mongodb://localhost:27017/torn`);
 let PLAYER_DATABASE = null;
 let TURRET_DATABASE = null;
-const Mongo = require(`mongodb`).MongoClient(MONGO_CONNECTION_STR, { useUnifiedTopology: true });
+const MongoClient = require(`mongodb`).MongoClient;
+const Mongo = new MongoClient(MONGO_CONNECTION_STR, { useUnifiedTopology: true });
 const Base = require(`./universe/base.js`);
 
 // TODO: Implement failover in the event we lose connection
