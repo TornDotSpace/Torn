@@ -38,7 +38,7 @@
     "@babel/runtime": "^7.14.6",
     "@types/howler": "^2.2.3",
     "@types/react": "^17.0.14",
-    "@typescript-eslint/eslint-plugin": "^4.28.3",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.3",
     "babel-loader": "^8.2.2",
     "eslint": "^7.30.0",
