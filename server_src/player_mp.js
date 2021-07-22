@@ -209,7 +209,9 @@ class PlayerMP extends Player {
                 chatAll(`${this.nameWithColor()} crashed into ${b.owner.nameWithColor()}'s asteroid!`);
             }
         } else if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
-            const customMessageArr = eng.weapons[b.wepnID].killmessages;
+            const weapon = eng.weapons[b.wepnID];
+            const customMessageArr = (weapon !== undefined ? weapon.killmessages : undefined);
+
             const useCustomKillMessage = Math.random() < 0.5 && typeof customMessageArr !== `undefined` && customMessageArr.length > 0;
 
             if (useCustomKillMessage) chatAll(customMessageArr[Math.floor(Math.random() * customMessageArr.length)].replace(`P1`, b.owner.nameWithColor()).replace(`P2`, this.nameWithColor()));
