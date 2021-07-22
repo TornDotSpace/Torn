@@ -34,6 +34,7 @@
         "quotes": [2, "backtick"],
         "prefer-template": 1,
         "curly": 0,
+        "prefer-regex-literals":0,
 
         // ESLint globals have not been configured for these.
         "no-undef": 0,
