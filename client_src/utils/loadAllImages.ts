@@ -44,7 +44,7 @@ const loadImageEnd = (): void => {
 /**
  * Load all images.
  */
-const loadAllImages = () => {
+const loadAllImages = (): void => {
     // Misc.
     loadImage(`grad`, `/img/grad.png`);
     loadImage(`fire`, `/img/fire.png`);
