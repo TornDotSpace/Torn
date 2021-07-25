@@ -86,7 +86,7 @@ socket.on(`unmute`, function (data) {
     delete clientmutes[data.player];
 });
 
-export function rChat () {
+export function rChat (): void {
     chatCanvas.width = chatCanvas.width;
     chatCTX.font = `14px ShareTech`;
     chatCTX.save();
@@ -144,11 +144,11 @@ export function rChat () {
 
     chatCTX.restore();
 }
-export function pasteChat () {
+export function pasteChat (): void {
     ctx.drawImage(chatCanvas, 0, h - chatCanvas.height);
 }
 
-function onReceiveChat (data) {
+function onReceiveChat (data): void {
     while (data.msg.includes(weaponCircumfix)) {
         const find1 = getPosition(data.msg, weaponCircumfix, 1);
         const find2 = getPosition(data.msg, weaponCircumfix, 2);
@@ -186,7 +186,7 @@ function onReceiveChat (data) {
     rChat();
 }
 
-function preProcessChat () { // This is slow and buggy. We should rewrite it.
+function preProcessChat (): void { // This is slow and buggy. We should rewrite it.
     const chatList = messages[whichChatMenu];
     preChatArr = {};
     chati = 0;
@@ -209,7 +209,7 @@ function preProcessChat () { // This is slow and buggy. We should rewrite it.
     }
     chati--;
 }
-function clearChat () {
+function clearChat (): void {
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < chatLength; j++) {
             messages[i][j] = ``;
@@ -224,7 +224,7 @@ function clearChat () {
 clearChat();
 preProcessChat();
 
-export function chatMenuButtonClick (buttonID) {
+export function chatMenuButtonClick (buttonID: number) {
     const newChat = buttonID - 800;
 
     socket.emit(`toggleGlobal`, { gc: newChat });
