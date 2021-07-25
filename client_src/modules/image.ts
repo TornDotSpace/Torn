@@ -27,7 +27,7 @@ declare let greenShips: any;
  * @param name The name of the image to load.
  * @param src The absolute path to the image to load.
  */
-const loadImage = (name: string, src: string) => {
+const loadImage = (name: string, src: string): void => {
     const imageExists = Img[name];
     if (imageExists) return console.error(`Image already loaded: ${name}`);
 
@@ -47,7 +47,7 @@ const loadImage = (name: string, src: string) => {
  * @param team The team of the ship to load.
  * @param rank The rank of the ship to load.
  */
-const loadShipImage = (color: string, rank: number) => {
+const loadShipImage = (color: string, rank: number): void => {
     const img = new Image();
 
     if (color === `red`) {

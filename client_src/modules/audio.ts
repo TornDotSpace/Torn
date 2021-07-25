@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Howl } from 'howler';
 
-declare const login: any;
-declare const gVol: any;
+declare const login: boolean;
+declare const gVol: number;
 
 declare let currLoading: string;
 declare let Aud_prgs: number[];
@@ -35,7 +35,7 @@ const Aud: Map<string, Howl> = new Map();
  * Toggle whether SFX can be heard or not.
  * @returns Current SFX mute state.
  */
-const toggleSFX = () => {
+const toggleSFX = (): boolean => {
     muted = !muted;
     if (!muted)
         for (const entry of Aud)
@@ -48,7 +48,7 @@ const toggleSFX = () => {
  * Toggle whether music can be heard or not.
  * @returns Current music mute state.
  */
-const toggleMusic = () => {
+const toggleMusic = (): boolean => {
     const music = Aud.get(`music1`);
     musicMuted = !musicMuted;
 
@@ -63,7 +63,7 @@ const toggleMusic = () => {
  * @param name The name of the file to play.
  * @param vol The volume at which to play the file.
  */
-const playAudio = (name: string, vol: any) => {
+const playAudio = (name: string, vol: any): void => {
     if (muted) return;
 
     const audio = Aud.get(name);
@@ -86,7 +86,7 @@ const playAudio = (name: string, vol: any) => {
  * @param name The name of the audio file to load.
  * @param src The absolute path to the audio file.
  */
-const loadAudio = (name: string, src: string) => {
+const loadAudio = (name: string, src: string): void => {
     const audExists = Aud.get(name);
     if (audExists) return console.error(`Audio already exists: ${name}`);
 
@@ -97,7 +97,7 @@ const loadAudio = (name: string, src: string) => {
         preload: true,
         pool: 15,
 
-        onload: () => {
+        onload: (): void => {
             currLoading = `Loaded audio ${name}`;
             Aud_prgs[0]++;
         }
