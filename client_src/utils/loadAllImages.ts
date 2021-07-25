@@ -26,7 +26,7 @@ declare let Img_prgs: number[];
 /**
  * Helper function to clean up image loader.
  */
-const loadImageEnd = () => {
+const loadImageEnd = (): void => {
     const loaded = () => {
         if (Img_prgs[0] === Img_prgs[1]) {
             EVERYTHING_LOADED = true;

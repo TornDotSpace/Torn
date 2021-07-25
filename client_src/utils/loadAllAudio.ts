@@ -20,7 +20,7 @@ import { loadAudio } from '../modules/audio';
 /**
  * Load all audio files.
  */
-const loadAllAudio = () => {
+const loadAllAudio = (): void => {
     loadAudio(`minigun`, `/aud/minigun.mp3`);
     loadAudio(`boom`, `/aud/boom.mp3`);
     loadAudio(`hyperspace`, `/aud/hyperspace.mp3`);

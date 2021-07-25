@@ -23,7 +23,7 @@ declare const TORN_API_URL: string;
  * @param data The payload being sent to the URI.
  * @returns An HTTP response pertaining to the request sent.
  */
-const sendAPI = async (endpoint: string, data: any) => await fetch(`${TORN_API_URL}/api${endpoint}`, {
+const sendAPI = async (endpoint: string, data: any): Promise<Response> => await fetch(`${TORN_API_URL}/api${endpoint}`, {
     method: `POST`,
     body: data,
     headers: {
