@@ -1,19 +1,18 @@
 @import './palette.css';
 
 @font-face {
-    font-family: 'ShareTech';
-    src: url('/assets/fonts/ShareTech.ttf');
-    font-stretch: condensed;
+  font-family: 'ShareTech';
+  src: url('/assets/fonts/ShareTech.ttf');
+  font-stretch: condensed;
 }
 
 body {
-    font-family: 'ShareTech';
-    color: var(--white);
-
-    background-image: url('/img/space/Background.png');
-    background-color: var(--black);
+  font-family: 'ShareTech';
+  color: var(--white);
+  background-image: url('/img/space/Background.png');
+  background-color: var(--black);
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }

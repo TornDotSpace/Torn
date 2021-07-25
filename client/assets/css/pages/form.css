@@ -1,19 +1,20 @@
 @import '../index.css';
 
 body {
-    font-family: var(--bs-font-sans-serif) !important;
+  font-family: var(--bs-font-sans-serif) !important;
 }
 
 form {
-    background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
 }
 
-input.form-control, input.form-control:focus {
-    background-color: rgba(100, 100, 100, 0.25);
-    color: #fff;
-    border: none;
+input.form-control,
+input.form-control:focus {
+  background-color: rgba(100, 100, 100, 0.25);
+  color: #fff;
+  border: none;
 }
 
 input.form-control:focus {
-    border: 1px solid #1e90ff;
+  border: 1px solid #1e90ff;
 }

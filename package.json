@@ -22,7 +22,12 @@
     "*.css":"stylelint --fix"
   },
   "stylelint": {
-    "extends": "stylelint-config-standard"
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "font-family-no-missing-generic-family-keyword":null,
+      "no-duplicate-selectors":null,
+      "no-descending-specificity":null
+    }
   },
   "pre-commit": [
     "lint-staged"

@@ -1,334 +1,331 @@
 @import '../index.css';
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-html, body, #root {
-    width: 100%;
-    height: 100%;
-
-    padding: 0;
-    margin: 0;
-
-    font-size: 10px;
-    text-size-adjust: 100%;
-
-    overflow: hidden;
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-size: 10px;
+  text-size-adjust: 100%;
+  overflow: hidden;
 }
 
 /* React DOM */
 #root {
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
-    margin: 0;
-    padding: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /* Login / Register overlays */
-.overlay-menu, .register-menu {
-    position: absolute;
-    margin: auto;
-
-    height: 200px;
-    padding: 0;
-
-    color: var(--white);
-    animation: a-overlay 0.3s;
+.overlay-menu,
+.register-menu {
+  position: absolute;
+  margin: auto;
+  height: 200px;
+  padding: 0;
+  color: var(--white);
+  animation: a-overlay 0.3s;
 }
 
 .overlay-menu {
-    width: 100%;
-    top: 50%;
-
-    transform: translateY(-100%);
+  width: 100%;
+  top: 50%;
+  transform: translateY(-100%);
 }
 
 .register-menu {
-    width: 780px;
-    margin-top: -100px;
-
-    top: 50%;
+  width: 780px;
+  margin-top: -100px;
+  top: 50%;
 }
 
 .container {
-    margin: 0 auto;
-    width: 65%;
-
-    float: none;
+  margin: 0 auto;
+  width: 65%;
+  float: none;
 }
 
-.guests, .login {
-    width: 25%;
-    margin-top: 10px;
-
-    opacity: 0.5;
-
-    transition: opacity 0.5s;
-    animation: fade-in 1s, slide-in 1s forwards;
+.guests,
+.login {
+  width: 25%;
+  margin-top: 10px;
+  opacity: 0.5;
+  transition: opacity 0.5s;
+  animation: fade-in 1s, slide-in 1s forwards;
 }
 
 .guests {
-    float: left;
-    transform: translateX(-50%);
+  float: left;
+  transform: translateX(-50%);
 }
 
 .login {
-    float: right;
-    transform: translateX(50%);
+  float: right;
+  transform: translateX(50%);
 }
 
 .video {
-    float: left;
-    padding-top: 30px;
-
-    width: 50%;
-    margin-top: 10px;
-
-    opacity: 0.5;
-    
-    transition: 0.5s;
-    animation: fade-in 2s;
+  float: left;
+  padding-top: 30px;
+  width: 50%;
+  margin-top: 10px;
+  opacity: 0.5;
+  transition: 0.5s;
+  animation: fade-in 2s;
 }
 
-.guests:hover, .login:hover, .video:hover {
-    transition: 0.3s;
-    opacity: 1;
+.guests:hover,
+.login:hover,
+.video:hover {
+  transition: 0.3s;
+  opacity: 1;
 }
 
-.login-input, .register-input, .login-btn, .register-btn, #registerR, #registerG, #registerB {
-    font-family: 'ShareTech';
-    font-size: 16px;
-
-    padding: 5px;
-
-    margin-top: 5px;
-    margin-bottom: 5px;
+.login-input,
+.register-input,
+.login-btn,
+.register-btn,
+#registerR,
+#registerG,
+#registerB {
+  font-family: 'ShareTech';
+  font-size: 16px;
+  padding: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .login-input {
-    float: none;
-    width: 176px;
+  float: none;
+  width: 176px;
 }
 
 .register {
-    width: 190px;
-
-    background-color: var(--black);
-    color: var(--white);
+  width: 190px;
+  background-color: var(--black);
+  color: var(--white);
 }
 
 /* Button Styling */
-#registerR, #registerG, #registerB, .login-input, .register-input, .login-btn, .register-btn {
-    border: none;
-    border-radius: 1rem;
-    padding: 1rem;
-
-    width: 188px;
-    float: none;
-
-    color: var(--white);
+#registerR,
+#registerG,
+#registerB,
+.login-input,
+.register-input,
+.login-btn,
+.register-btn {
+  border: none;
+  border-radius: 1rem;
+  padding: 1rem;
+  width: 188px;
+  float: none;
+  color: var(--white);
 }
 
 /* Guest Overlay */
 #registerR {
-    background-color: #b3070d80;
+  background-color: #b3070d80;
 }
 
 #registerG {
-    background-color: #04db3d80;
+  background-color: #04db3d80;
 }
 
 #registerB {
-    background-color: #3660eb80;
+  background-color: #3660eb80;
 }
 
 #registerR:hover {
-    background-color: #b3070d;
+  background-color: #b3070d;
 }
 
 #registerG:hover {
-    background-color: #04db3d;
+  background-color: #04db3d;
 }
 
 #registerB:hover {
-    background-color: #3660eb;
+  background-color: #3660eb;
 }
 
-#registerR:active, #registerG:active, #registerB:active {
-    color: #000000;
-    background-color: #FFFFFF;
+#registerR:active,
+#registerG:active,
+#registerB:active {
+  color: #000;
+  background-color: #fff;
 }
 
 /* Login & Register Overlays */
-.login-btn, .register-btn {
-    background-color: #78787880;
+.login-btn,
+.register-btn {
+  background-color: #78787880;
 }
 
-.login-btn:hover, .register-btn:hover {
-    background-color: #787878;
+.login-btn:hover,
+.register-btn:hover {
+  background-color: #787878;
 }
 
-.login-btn:focus, .register-btn:focus {
-    background-color: #FFFFFF;
-    color: #000000;
+.login-btn:focus,
+.register-btn:focus {
+  background-color: #fff;
+  color: #000;
 }
 
 /* Login Inputs */
 .login-input {
-    background-color: #33333380;
+  background-color: #33333380;
 }
 
 .login-input:hover {
-    background-color: #00000080;
+  background-color: #00000080;
 }
 
 /* Register Inputs */
 .register-input {
-    background-color: #00000080;
+  background-color: #00000080;
 }
 
 .register-input:hover {
-    background-color: #000000;
+  background-color: #000;
 }
 
 /* Link container */
 .link-container {
-    position: absolute;
-    margin: 8px;
-
-    font-size: 16px;
-
-    left: 0;
-    bottom: 0;
+  position: absolute;
+  margin: 8px;
+  font-size: 16px;
+  left: 0;
+  bottom: 0;
 }
 
-.link-container a, .register-menu a {
-    color: #808080;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+.link-container a,
+.register-menu a {
+  color: #808080;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
-.link-container a:hover, .register-menu a:hover {
-    color: #A0A0A0;
+.link-container a:hover,
+.register-menu a:hover {
+  color: #a0a0a0;
 }
 
-.link-container > div > *:not(:last-child), .register-menu .legal-info > *:not(:last-child) {
-    border-right: 2px solid #606060;
+.link-container > div > *:not(:last-child),
+.register-menu .legal-info > *:not(:last-child) {
+  border-right: 2px solid #606060;
 }
 
 /* Register Menu */
 .register-menu {
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 77.5%;
-
-    display: flex;
-    position: absolute;
-
-    justify-content: center;
-    align-items: center;
-    margin: auto;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 77.5%;
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
 }
 
-.register-menu p, .register-menu a {
-    font-size: 14px;
+.register-menu p,
+.register-menu a {
+  font-size: 14px;
 }
 
 /* Chat Input */
 .chat {
-    position: fixed;
-    padding: 10px;
-
-    bottom: 0;
-    left: 0;
+  position: fixed;
+  padding: 10px;
+  bottom: 0;
+  left: 0;
 }
 
 .chat-input {
-    font-family: 'ShareTech';
-
-    background: transparent;
-    color: var(--white);
-
-    width: 384px;
-    border: none;
+  font-family: 'ShareTech';
+  background: transparent;
+  color: var(--white);
+  width: 384px;
+  border: none;
 }
 
 .chat-msg {
-    transition: opacity 0.3s;
-    font-size: 13px;
+  transition: opacity 0.3s;
+  font-size: 13px;
 }
 
 .chat-msg.fadeout {
-    opacity: 0;
+  opacity: 0;
 }
 
 /* Music / mute buttons */
 .sfx-wrapper {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    margin: 10px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 10px;
 }
 
 .sfx-wrapper button {
-    margin-left: 5px;
-    margin-right: 5px;
-
-    background-color: #00000080;
-    border-radius: 1rem;
-
-    border: none;
-    padding: 1rem;
-
-    user-select: none;
+  margin-left: 5px;
+  margin-right: 5px;
+  background-color: #00000080;
+  border-radius: 1rem;
+  border: none;
+  padding: 1rem;
+  user-select: none;
 }
 
 .sfx-wrapper button:hover {
-    background-color: #78787880;
+  background-color: #78787880;
 }
 
 /* Helper classes */
 .center {
-    display: inline;
+  display: inline;
 }
 
 .text-center {
-    text-align: center;
+  text-align: center;
 }
 
 h3 {
-    font-size: 18.72px;
+  font-size: 18.72px;
 }
 
-.login-input:-webkit-autofill, .register-input:-webkit-autofill {
-    -webkit-text-fill-color: #FFF;
+.login-input:-webkit-autofill,
+.register-input:-webkit-autofill {
+  -webkit-text-fill-color: #fff;
 }
 
-.login-input:focus, .register-input:focus {
-    outline: none;
-    background-color: #FFFFFF;
-
-    color: #000000;
-    -webkit-text-fill-color: #000000;
+.login-input:focus,
+.register-input:focus {
+  outline: none;
+  background-color: #fff;
+  color: #000;
+  -webkit-text-fill-color: #000;
 }
 
 /* Animations */
 @keyframes slide-in {
-    100% { transform: translateY(0%); }
+  100% { transform: translateY(0%); }
 }
 
 @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 0.5; }
+  from { opacity: 0; }
+  to { opacity: 0.5; }
 }
 
 @keyframes a-overlay {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

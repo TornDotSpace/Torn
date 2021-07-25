@@ -1,12 +1,12 @@
 /* Color Palette */
 :root {
-    /* Teams */
-    --human: #16c5f5;
-    --alien: #ed3b3b;
-    --cyborg: #1aed48;
+  /* Teams */
+  --human: #16c5f5;
+  --alien: #ed3b3b;
+  --cyborg: #1aed48;
 
-    /* UI Colors */
-    --white: white;
-    --black: black;
-    --grey: #505050;
+  /* UI Colors */
+  --white: white;
+  --black: black;
+  --grey: #505050;
 }
