@@ -21,7 +21,7 @@ jobs:
       env:
         CI: true
     - name: Lint (via ESLint)
-      run: npm run dev:lint
+      run: npm run ci:lint
       env:
         CI: true
   lint-py:

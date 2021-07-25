@@ -8,7 +8,8 @@
     "build": "webpack --progress --config ./deploy/webpack.prod.js",
     "test-build": "webpack --progress --config ./deploy/webpack.test.js",
     "build:ptb": "webpack --progress --config ./deploy/webpack.ptb.js",
-    "dev:lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx",
+    "dev:lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx && stylelint \"**/*.css\" --fix",
+    "ci:lint": "eslint . --ext .ts,.tsx,.js,.jsx && stylelint \"**/*.css\"",
     "dev:serve": "webpack serve --config ./deploy/webpack.dev.js",
     "lint-staged": "lint-staged"
   },
@@ -17,7 +18,11 @@
     "url": "git+https://github.com/TornDotSpace/Torn.git"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": "eslint --fix"
+    "**/*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.css":"stylelint --fix"
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard"
   },
   "pre-commit": [
     "lint-staged"
@@ -50,6 +55,8 @@
     "git-revision-webpack-plugin": "^5.0.0",
     "lint-staged": "^11.1.0",
     "pre-commit": "^1.2.2",
+    "stylelint": "^13.13.1",
+    "stylelint-config-standard": "^22.0.0",
     "ts-loader": "^9.2.3",
     "typescript": "^4.3.5",
     "webpack": "^5.46.0",
