@@ -37,53 +37,53 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         };
     }
 
-    langEng = () => {
+    langEng = (): void => {
         loadLang(`eng`);
     }
 
-    langEsp = () => {
+    langEsp = (): void => {
         loadLang(`esp`);
     }
 
-    langTki = () => {
+    langTki = (): void => {
         loadLang(`tki`);
     }
 
-    langChn = () => {
+    langChn = (): void => {
         loadLang(`chn`);
     }
 
-    changeUsername = (event) => {
+    changeUsername = (event: React.ChangeEvent<HTMLInputElement>): void => {
         this.setState({
             user: event.target.value,
             pass: this.state.pass
         });
     }
 
-    changePassword = (event) => {
+    changePassword = (event: React.ChangeEvent<HTMLInputElement>): void => {
         this.setState({
             user: this.state.user,
             pass: event.target.value
         });
     }
 
-    registerR = () => {
+    registerR = (): void => {
         socket.open();
         socket?.emit(`lore`, { team: `red` });
     }
 
-    registerB = () => {
+    registerB = (): void => {
         socket.open();
         socket?.emit(`lore`, { team: `blue` });
     }
 
-    registerG = () => {
+    registerG = (): void => {
         socket.open();
         socket?.emit(`lore`, { team: `green` });
     }
 
-    login = async (e: React.FormEvent) => {
-        e.preventDefault();
+    login = async (event: React.FormEvent): Promise<void> => {
+        event.preventDefault();
 
         const user = this.state.user;
         const pass = this.state.pass;
@@ -112,7 +112,7 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
         socket?.emit(`login`, { cookie: playCookieData, version: VERSION });
     }
 
-    render = () => {
+    render = (): JSX.Element => {
         const buttonOrder = (this.state.seed < 0.66)
             ? ((this.state.seed < 0.33)
                 ? (

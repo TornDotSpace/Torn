@@ -28,11 +28,11 @@ class MusicButton extends React.Component<{}, { muted: boolean }> {
         };
     }
 
-    click = () => {
+    click = (): void => {
         this.setState({ muted: toggleMusic() });
     }
 
-    render = () => (
+    render = (): JSX.Element => (
         <button className="music-button" onClick={this.click.bind(this)}>
             {<img src={`/img/sound/music${!this.state.muted ? `On` : `Off`}.png`} alt="Music mute button"/>}
         </button>

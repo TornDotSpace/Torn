@@ -38,14 +38,14 @@ class Register extends React.Component<{ display: boolean }, { user: string, pas
         this.setState({ on: false });
     }
 
-    changeUsername = (event) => {
+    changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
             user: event.target.value,
             pass: this.state.pass
         });
     }
 
-    changePassword = (event) => {
+    changePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
             user: this.state.user,
             pass: event.target.value

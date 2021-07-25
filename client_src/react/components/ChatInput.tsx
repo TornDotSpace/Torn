@@ -36,23 +36,23 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
         this.chat = React.createRef<HTMLInputElement>();
     }
 
-    init = (data: { value: string, activated: boolean }) => {
+    init = (data: { value: string, activated: boolean }): void => {
         this.setState(data);
     }
 
-    activate = () => {
+    activate = (): void => {
         this.setState({ value: this.state.value, activated: true });
     }
 
-    focusChat = () => {
+    focusChat = (): void => {
         this.chat.current.focus();
     }
 
-    unfocusChat = () => {
+    unfocusChat = (): void => {
         this.chat.current.blur();
     }
 
-    keypress = (event) => {
+    keypress = (event: KeyboardEvent): void => {
         if (event.key === `Enter`) {
             const val = this.state.value;
             this.unfocusChat();
@@ -66,14 +66,14 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
         }
     }
 
-    change = (event) => {
+    change = (event: React.ChangeEvent<HTMLInputElement>): void => {
         this.setState({
             value: event.target.value,
             activated: this.state.activated
         });
     }
 
-    componentDidMount = () => {
+    componentDidMount = (): void => {
         // Pass internal states to the exportable object.
         ChatState = {
             init: (data: { value: string, activated: boolean }) => this.init(data),
@@ -83,7 +83,7 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
         };
     }
 
-    render = () => this.state.activated
+    render = (): JSX.Element => this.state.activated
         ? (
             <input
                 className="chat-input"

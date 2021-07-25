@@ -42,28 +42,28 @@ class ReactRoot extends React.Component<{}, { display: string, register: string 
         };
     }
 
-    toggleDisplay = () => {
+    toggleDisplay = (): void => {
         if (this.state.display === `display`) this.turnOffDisplay();
         else this.turnOnDisplay();
     }
 
-    turnOnDisplay = () => {
+    turnOnDisplay = (): void => {
         this.setState({ display: `LoginOverlay` });
     }
 
-    turnOffDisplay = () => {
+    turnOffDisplay = (): void => {
         this.setState({ display: `none` });
     }
 
-    turnOnRegister = () => {
+    turnOnRegister = (): void => {
         this.setState({ register: `Register` });
     }
 
-    turnOffRegister = () => {
+    turnOffRegister = (): void => {
         this.setState({ register: `none` });
     }
 
-    componentDidMount = () => {
+    componentDidMount = (): void => {
         // Pass internal states to the exportable object.
         RootState = {
             toggleDisplay: () => this.toggleDisplay(),
@@ -76,7 +76,7 @@ class ReactRoot extends React.Component<{}, { display: string, register: string 
         };
     }
 
-    render = () => (
+    render = (): JSX.Element => (
         <span>
             <Chat />
 
