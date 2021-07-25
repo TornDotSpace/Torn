@@ -23,10 +23,10 @@ declare const expToRank: number[];
 declare const bigNotes: any[];
 declare const wepns: any;
 
-declare const iron: string;
-declare const silver: string;
-declare const platinum: string;
-declare const copper: string;
+declare const iron: number;
+declare const silver: number;
+declare const platinum: number;
+declare const copper: number;
 
 declare let rank: number;
 declare let guest: number;
@@ -46,14 +46,14 @@ for (let i = 0; i < 1571; i++) sins[i] = Math.sin(i / 1e3);
  * @param y The sector's column.
  * @returns A string representation of the sector name.
  */
-const getSectorName = (x: number, y: number) => `${String.fromCharCode(97 + x).toUpperCase()}${y + 1}`;
+const getSectorName = (x: number, y: number): string => `${String.fromCharCode(97 + x).toUpperCase()}${y + 1}`;
 
 /**
  * Get the description of a quest.
  * @param q The quest to parse.
  * @returns A string representation of the quest description.
  */
-const getQuestDescription = (q: any) => {
+const getQuestDescription = (q: any): string => {
     if (q.type === `Mining`) return translate(`Bring # units of # to sector #.`, [numToLS(q.amt), q.metal, getSectorName(q.sx, q.sy)]);
     else if (q.type === `Base`) {
         if (rank > 6) return translate(`Eliminate enemy base in sector #.`, [getSectorName(q.sx, q.sy)]);
@@ -71,7 +71,7 @@ const getQuestDescription = (q: any) => {
  * Get the current clocked shade of the RGB spectrum.
  * @returns RGBA color string.
  */
-const getRainbowColor = () => {
+const getRainbowColor = (): string => {
     const t = new Date().getTime() / (35 * 16);
     const r = Math.floor(16 * Math.sqrt(Math.sin(t) * 128 + 128));
     const g = Math.floor(16 * Math.sqrt(Math.sin(t + Math.PI * 2 / 3) * 128 + 128));
@@ -83,7 +83,7 @@ const getRainbowColor = () => {
  * Get the corresponding color of a given metal code
  * @returns RGB color string.
  */
-const metalToColor = (i: number) => {
+const metalToColor = (i: number): string => {
     const colorArray = [`#d44`, `#eef`, `#90f`, `#960`];
     return colorArray[i];
 };
@@ -92,7 +92,7 @@ const metalToColor = (i: number) => {
  * Get the corresponding name of a given metal code
  * @returns Uncapitalized english metal name.
  */
-const metalToName = (i: number) => {
+const metalToName = (i: number): string => {
     const nameArray = [`iron`, `silver`, `platinum`, `copper`];
     return nameArray[i];
 };
@@ -101,7 +101,7 @@ const metalToName = (i: number) => {
  * Get the corresponding quantity owned of a given metal code
  * @returns Number.
  */
-const metalToQuantity = (i: number) => {
+const metalToQuantity = (i: number): number => {
     const nameArray = [iron, silver, platinum, copper];
     return nameArray[i];
 };
@@ -113,7 +113,7 @@ const metalToQuantity = (i: number) => {
  * @param x The x-coordinate of the text location.
  * @param y The y-coordinate of the text location.
  */
-const write = (context: CanvasRenderingContext2D, str: string, x: number, y: number) => {
+const write = (context: CanvasRenderingContext2D, str: string, x: number, y: number): void => {
     context.fillText(str, x, y);
 };
 
@@ -123,7 +123,7 @@ const write = (context: CanvasRenderingContext2D, str: string, x: number, y: num
  * @param e The mouse event emitted.
  * @returns An object representation of the relative mouse coordinates.
  */
-const getMousePos = (canvas: HTMLCanvasElement, e: MouseEvent) => {
+const getMousePos = (canvas: HTMLCanvasElement, e: MouseEvent): { x: number, y: number } => {
     const rect = canvas.getBoundingClientRect();
     return {
         x: e.clientX - rect.left,
@@ -136,21 +136,21 @@ const getMousePos = (canvas: HTMLCanvasElement, e: MouseEvent) => {
  * @param x The number to be squared.
  * @returns A numerical representation of the product.
  */
-const square = (x: number) => x ** 2;
+const square = (x: number): number => x ** 2;
 
 /**
  * Cube a number.
  * @param x The number to be cubed.
  * @returns A numerical representation of the product.
  */
-const cube = (x: number) => x ** 3;
+const cube = (x: number): number => x ** 3;
 
 /**
  * Calculate the lowest sin based on a given number.
  * @param x A given number.
  * @returns A numerical representation of the sin.
  */
-const sinLow = (x: number) => {
+const sinLow = (x: number): number => {
     x += Math.PI * 200;
     x %= Math.PI * 2;
 
@@ -163,7 +163,7 @@ const sinLow = (x: number) => {
  * @param x A given number.
  * @returns A numerican representation of the cosin.
  */
-const cosLow = (x: number) => sinLow((Math.PI / 2) + x);
+const cosLow = (x: number): number => sinLow((Math.PI / 2) + x);
 
 // TODO: Elaborate on parameters in JSDoc comment.
 // TODO: Refactor all calls into RGB from RBG.
@@ -176,7 +176,7 @@ const cosLow = (x: number) => sinLow((Math.PI / 2) + x);
  * @param green The value of green in the RGB string.
  * @returns A numerical representation of that value.
  */
-const colorSelect = (col: string, red: number, blue: number, green: number) => {
+const colorSelect = (col: string, red: number, blue: number, green: number): number => {
     if (col === `red`) return red;
     else if (col === `blue`) return blue;
     else return green;
@@ -187,12 +187,12 @@ const colorSelect = (col: string, red: number, blue: number, green: number) => {
  * @param rank The rank
  * @returns The experience needed to level up to the next rank.
  */
-const rankToExp = (rank: number) => {
+const rankToExp = (rank: number): number => {
     return rank < 0 ? 0 : expToRank[rank];
 };
 
 // TODO: Add JSDoc comment.
-const coherentNoise = (x: number) => {
+const coherentNoise = (x: number): number => {
     const intX = Math.floor(x);
     const w = x - intX;
 
@@ -203,27 +203,27 @@ const coherentNoise = (x: number) => {
 };
 
 // TODO: Add JSDoc comment.
-const lerp = (a: number, b: number, w: number) => a * (1 - w) + b * w;
+const lerp = (a: number, b: number, w: number): number => a * (1 - w) + b * w;
 
 /**
  * Get the amount of money required to buy a life.
  * @returns A numerical representation of the amount.
  */
-const expToLife = () => Math.floor(guest ? 0 : 800000 * Math.atan(experience / 600000.0)) + 500;
+const expToLife = (): number => Math.floor(guest ? 0 : 800000 * Math.atan(experience / 600000.0)) + 500;
 
 /**
  * Get the abbreviated form of a number.
  * @param num The number to abbreviate.
  * @returns A string representation of the abbreviation.
  */
-const abbrevInt = (num: number) => {
-    if (num < 1e4) return `${Math.round(num)}`;
-    if (num < 1e7) return Math.round(num / 1e3) + translate(`K`);
-    if (num < 1e10) return Math.round(num / 1e6) + translate(`M`);
+const abbrevInt = (num: number): string => {
+    if (num < 1e4) return Math.round(num).toString();
+    if (num < 1e7) return Math.round(num / 1e3).toString() + translate(`K`);
+    if (num < 1e10) return Math.round(num / 1e6).toString() + translate(`M`);
 };
 
 // TODO: Add JSDoc comment.
-const lagMath = (arr: any) => {
+const lagMath = (arr: any): void => {
     if (lagArr == 0) {
         lagArr = arr;
         return;
@@ -236,7 +236,7 @@ const lagMath = (arr: any) => {
  * Add a note.
  * @param note The note to add.
  */
-const addBigNote = (note: number) => {
+const addBigNote = (note: number): void => {
     let i = 0;
 
     for (i; i < 4; i++) if (bigNotes[i] == -1) break;
@@ -244,29 +244,29 @@ const addBigNote = (note: number) => {
 };
 
 // TODO: Add JSDoc comment.
-const bgPos = (x: number, px: number, scrx: any, i: number, tileSize: any) => ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
+const bgPos = (x: number, px: number, scrx: number, i: number, tileSize: number): number => ((scrx - px) / ((sectorWidth / tileSize) >> i)) % tileSize + tileSize * x;
 
 /**
  * Get the ID of a matching weapon order.
  * @param x The order of a weapon.
  * @returns The ID of the matching weapon order.
  */
-const weaponWithOrder = (x: any) => {
-    for (const i in wepns) if (wepns[i].order == x) return parseInt(i);
+const weaponWithOrder = (x: number): number => {
+    for (const i in wepns) if (wepns[i].order === x) return parseInt(i);
 };
 
 /**
  * Get the time angle.
  * @returns Numerical representation of the time angle.
  */
-const getTimeAngle = () => tick / 10;
+const getTimeAngle = (): number => tick / 10;
 
 /**
  * Get the corresponding color of a team.
  * @param x The team to get the color of.
  * @returns A string representation of the color.
  */
-const brighten = (x: string) => {
+const brighten = (x: string): string => {
     if (x === `red`) return `pink`;
     else if (x === `green`) return `lime`;
     else if (x === `blue`) return `cyan`;
@@ -274,7 +274,7 @@ const brighten = (x: string) => {
 };
 
 // TODO: Add JSDoc comment.
-const numToLS = (x: number) => {
+const numToLS = (x: number): string => {
     if (!Number.isFinite(x)) return `NaN`;
     if (x > 1000000000000000) return `lots`;
 
@@ -305,7 +305,7 @@ const numToLS = (x: number) => {
  * @param tech The tech level to calculate with.
  * @returns A numerical representation of the amount.
  */
-const techPrice = (tech: number) => techEnergy(nextTechLevel(tech)) - techEnergy(tech);
+const techPrice = (tech: number): number => techEnergy(nextTechLevel(tech)) - techEnergy(tech);
 
 /**
  * Get the monetary amount required to downgrade tech.
@@ -313,7 +313,7 @@ const techPrice = (tech: number) => techEnergy(nextTechLevel(tech)) - techEnergy
  * @param paid Whether the user has paid for VIP or a higher rank.
  * @returns A numerical representation of the amount.
  */
-const techPriceForDowngrade = (tech: number, paid: boolean) => {
+const techPriceForDowngrade = (tech: number, paid: boolean): number => {
     return paid
         ? techEnergy(lastTechLevel(tech)) - techEnergy(tech)
         : Math.max(techEnergy(lastTechLevel(tech)) - techEnergy(tech), -300000000);
@@ -324,21 +324,21 @@ const techPriceForDowngrade = (tech: number, paid: boolean) => {
  * @param tech The tech level to calculate with.
  * @returns A numerical representation of the amount.
  */
-const techEnergy = (tech: number) => Math.round(Math.pow(1024, tech) / 1000) * 500;
+const techEnergy = (tech: number): number => Math.round(Math.pow(1024, tech) / 1000) * 500;
 
 /**
  * Get the next tech level.
  * @param tech The tech level to calculate with.
  * @returns A numerical representation of the amount.
  */
-const nextTechLevel = (tech: number) => Math.floor(tech * 8 + 1) / 8;
+const nextTechLevel = (tech: number): number => Math.floor(tech * 8 + 1) / 8;
 
 /**
  * Get the previous tech level.
  * @param tech The tech level to calculate with.
  * @returns A numerical representation of the amount.
  */
-const lastTechLevel = (tech: number) => Math.floor(tech * 8 - 0.001) / 8;
+const lastTechLevel = (tech: number): number => Math.floor(tech * 8 - 0.001) / 8;
 
 /**
  * Split a string based on a substring.
@@ -347,14 +347,14 @@ const lastTechLevel = (tech: number) => Math.floor(tech * 8 - 0.001) / 8;
  * @param limit The number of maximum splits.
  * @returns A numerical representation of the length of the new string.
  */
-const getPosition = (string: string, subString: string, limit: number) => string.split(subString, limit).join(subString).length;
+const getPosition = (string: string, subString: string, limit: number): number => string.split(subString, limit).join(subString).length;
 
 /**
  * Get the definition of an ammo code.
  * @param code The ammo code.
  * @returns A string representation of the ammo code definition.
  */
-const ammoCodeToString = (code: number) => {
+const ammoCodeToString = (code: number): string => {
     if (code >= 0) return `${code}`;
     else if (code == -1) return translate(`Inf.`);
     else if (code == -2) return translate(`Only One`);
