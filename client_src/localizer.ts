@@ -31,14 +31,14 @@ let languageNumber = 0;
 
 let splash = ``;
 
-export const getSplash = () => splash;
+export const getSplash = (): string => splash;
 
 /**
  * Load a language file.
  * @param lang The URI of the language file to load.
  * @returns A JSON representation of the language file.
  */
-const load = (lang: string) => {
+const load = (lang: string): void => {
     const request = new XMLHttpRequest();
     request.open(`GET`, lang, false);
 
@@ -53,7 +53,7 @@ const load = (lang: string) => {
     return JSON.parse(data);
 };
 
-global.loadLang = (name) => {
+global.loadLang = (name: string): void => {
     let assigned = null;
 
     // re-think value assigned to var "assigned"
@@ -122,7 +122,7 @@ loadLang(null);
  * @param arr Arbitrary value.
  * @returns A translated string of the given text.
  */
-const translate = (text, arr = undefined) => { // arr = undefined???
+const translate = (text, arr = undefined): string => { // arr = undefined???
     if (typeof mEng[text] === `undefined`) return text;
 
     let translated = (languageNumber == 0) ? text : mEng[text][languageNumber - 1];
