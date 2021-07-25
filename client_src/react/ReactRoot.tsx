@@ -76,7 +76,7 @@ class ReactRoot extends React.Component<{}, { display: string, register: string 
         };
     }
 
-    render = (): JSX.Element => (
+    render = () => (
         <span>
             <Chat />
 

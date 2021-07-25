@@ -62,7 +62,7 @@ class Chat extends React.Component<{}, { messages: any[] }> {
         this.setState({ messages: this.state.messages.filter(message => message.id !== id) });
     }
 
-    render = (): JSX.Element => (
+    render = () => (
         <div className="chat">
             {
                 this.state.messages.map((message, i) =>

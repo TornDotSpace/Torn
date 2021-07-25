@@ -83,7 +83,7 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
         };
     }
 
-    render = (): JSX.Element => this.state.activated
+    render = () => this.state.activated
         ? (
             <input
                 className="chat-input"
