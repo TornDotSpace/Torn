@@ -15,8 +15,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import mEng from '../client/translations/translate.json';
-import jsn from '../client/weapons.json';
+const mEng = require(`../client/translations/translate.json`);
+const jsn = require(`../client/weapons.json`);
 
 declare const global: any;
 declare const loadLang: any;
