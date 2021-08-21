@@ -34,7 +34,7 @@ module.exports = merge(common, {
         })
     ],
     devServer: {
-        contentBase: path.join(__dirname, `../client`),
+        static: path.join(__dirname, `../client`),
         compress: true,
         port: 7301
     }
