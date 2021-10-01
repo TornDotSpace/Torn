@@ -537,27 +537,27 @@ socket.on(`achievementsKill`, (data) => {
 socket.on(`achievementsCash`, (data) => {
     for (let a in data.achs) {
         a = Number(a);
-        if (achs[a + 13] != data.achs[a]) {
-            achs[a + 13] = data.achs[a];
-            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a + 13].split(`:`)[0], jsn.achNames[a + 13].split(`:`)[1]]);
+        if (achs[a + 10] != data.achs[a]) {
+            achs[a + 10] = data.achs[a];
+            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a + 10].split(`:`)[0], jsn.achNames[a + 10].split(`:`)[1]]);
         }
     }
 });
 socket.on(`achievementsDrift`, (data) => {
     for (let a in data.achs) {
         a = Number(a);
-        if (achs[a + 25] != data.achs[a]) {
-            achs[a + 25] = data.achs[a];
-            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a + 25].split(`:`)[0], jsn.achNames[a + 25].split(`:`)[1]]);
+        if (achs[a + 15] != data.achs[a]) {
+            achs[a + 15] = data.achs[a];
+            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a + 15].split(`:`)[0], jsn.achNames[a + 15].split(`:`)[1]]);
         }
     }
 });
 socket.on(`achievementsMisc`, (data) => {
     for (let a in data.achs) {
         a = Number(a);
-        if (achs[a + 37] != data.achs[a]) {
-            achs[a + 37] = data.achs[a];
-            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a + 37].split(`:`)[0], jsn.achNames[a + 37].split(`:`)[1]]);
+        if (achs[a + 20] != data.achs[a]) {
+            achs[a + 20] = data.achs[a];
+            if (data.note && !guest) addBigNote([256, `Achievement Get!`, jsn.achNames[a + 20].split(`:`)[0], jsn.achNames[a + 20].split(`:`)[1]]);
         }
     }
 });

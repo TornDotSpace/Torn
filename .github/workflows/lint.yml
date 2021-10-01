@@ -1,16 +1,17 @@
-name: Node CI
+name: Lint
 
 on: [push,pull_request]
 
 jobs:
-  lint:
-    name: Lint
+  lint-js:
+    name: JS & TS
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [16.x]
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout Repository
+      uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -19,7 +20,15 @@ jobs:
       run: npm ci
       env:
         CI: true
-    - name: Lint
-      run: npm run dev:lint
+    - name: Lint (via ESLint)
+      run: npm run ci:lint
       env:
         CI: true
+  lint-py:
+    name: Python
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Lint (via python-black)
+        uses: psf/black@stable

@@ -17,15 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Planet {
     constructor (i, name) {
-        this.type = `Planet`,
-        this.name = name,
-        this.color = `yellow`,
-        this.owner = 0, // string name of the player who owns it.
-        this.id = i, // unique identifier
-        this.x = sectorWidth / 2, // this is updated by the createPlanet function to a random location
-        this.y = sectorWidth / 2,
-        this.cooldown = 0, // to prevent chat "planet claimed" spam
-        this.sx = 0,
+        this.type = `Planet`;
+        this.name = name;
+        this.color = `yellow`;
+        this.owner = 0; // string name of the player who owns it.
+        this.id = i; // unique identifier
+        this.x = sectorWidth / 2; // this is updated by the createPlanet function to a random location
+        this.y = sectorWidth / 2;
+        this.cooldown = 0; // to prevent chat "planet claimed" spam
+        this.sx = 0;
         this.sy = 0;
     }
 

@@ -1,4 +1,4 @@
-/*
+"""
 Copyright (C) 2021  torn.space (https://torn.space)
 
 This program is free software: you can redistribute it and/or modify
@@ -13,19 +13,26 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+"""
 
-import { io, Socket } from 'socket.io-client';
-// import msgpack from 'socket.io-msgpack-parser';
+######################################
+# Date: 06/26/2021
+# Purpose: Add 2 energy tech to all players
+#####################################
 
-declare const TORN_GAMESERVER_URL: string;
+MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn"
+from pymongo import MongoClient
+from datetime import datetime
 
-/**
- * The socket connection to the server.
- */
-const socket: Socket = io(TORN_GAMESERVER_URL, {
-    autoConnect: false
-    // parser: msgpack
-});
+print("*** RUNNING ADD 2 ENERGY ***")
+client = MongoClient(MONGO_CONNECTION_STR)
+db = client.torn
+players = db.players
+for player in players.find():
+    print(f"Processing: {player['_id']}")
 
-export default socket;
+    energy2 = player["energy2"] + 0.25
+
+    # Remove name field and set the tag
+    players.update_one({"_id": player["_id"]}, {"$set": {"energy2": energy2}})
+print("done")

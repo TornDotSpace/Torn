@@ -17,27 +17,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Missile {
     constructor (ownr, i, wepnID, angl) {
-        this.type = `Missile`,
-        this.id = i, // unique identifier
-        this.color = ownr.color, // whose side i'm on
-        this.dmg = wepns[wepnID].damage,
+        this.type = `Missile`;
+        this.id = i; // unique identifier
+        this.color = ownr.color; // whose side i'm on
+        this.dmg = wepns[wepnID].damage;
 
-        this.x = ownr.x,
-        this.y = ownr.y,
-        this.sx = ownr.sx,
-        this.sy = ownr.sy,
-        this.vx = Math.cos(angl) * wepns[wepnID].speed,
-        this.vy = Math.sin(angl) * wepns[wepnID].speed,
-        this.emvx = 0,
-        this.emvy = 0,
-        this.angle = angl,
+        this.x = ownr.x;
+        this.y = ownr.y;
+        this.sx = ownr.sx;
+        this.sy = ownr.sy;
+        this.vx = Math.cos(angl) * wepns[wepnID].speed;
+        this.vy = Math.sin(angl) * wepns[wepnID].speed;
+        this.emvx = 0;
+        this.emvy = 0;
+        this.angle = angl;
 
-        this.owner = ownr,
-        this.locked = 0, // player I'm locked onto
-        this.timer = 0, // since spawn
-        this.lockedTimer = 0, // since locking on to my current target (or is it since first locking onto anyone?)
-        this.distTravelled = 0, // distance I've travelled
-        this.wepnID = wepnID,
+        this.owner = ownr;
+        this.locked = 0; // player I'm locked onto
+        this.timer = 0; // since spawn
+        this.lockedTimer = 0; // since locking on to my current target (or is it since first locking onto anyone?)
+        this.distTravelled = 0; // distance I've travelled
+        this.wepnID = wepnID;
         this.goalAngle = 0; // the angle I'm turning to match
     }
 

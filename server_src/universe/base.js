@@ -30,33 +30,33 @@ global.TURRET = 2;
 global.SENTRY = 3;
 
 class Base {
-    constructor (i, type, sx, syy, col, x, y) {
+    constructor (i, type, sx, sy, col, x, y) {
         console.log(`Base constructed with type ${type}`);
-        this.type = `Base`,
-        this.kills = 0,
-        this.experience = 0,
-        this.money = 0,
-        this.id = i, // unique identifier
-        this.trueColor = col, // The team this base originally is
-        this.color = col, // The team this base is now
-        this.assimilatedCol = col, // The team that is attempting to overtake the base
-        this.owner = 0,
-        this.name = ``,
-        this.isMini = (type == SENTRY),
-        this.baseType = type, // Constants above
-        this.angle = 0, // angle of the turret
+        this.type = `Base`;
+        this.kills = 0;
+        this.experience = 0;
+        this.money = 0;
+        this.id = i; // unique identifier
+        this.trueColor = col; // The team this base originally is
+        this.color = col; // The team this base is now
+        this.assimilatedCol = col; // The team that is attempting to overtake the base
+        this.owner = 0;
+        this.name = ``;
+        this.isMini = (type == SENTRY);
+        this.baseType = type; // Constants above
+        this.angle = 0; // angle of the turret
 
-        this.x = x,
-        this.y = y,
-        this.sx = sx,
-        this.sy = syy,
-        this.deathTimer = 0,
+        this.x = x;
+        this.y = y;
+        this.sx = sx;
+        this.sy = sy;
+        this.deathTimer = 0;
 
-        this.shots = 0,
-        this.reload = 0, // timer for shooting
-        this.health = (type == SENTRY ? 0.15 : 1) * baseHealth,
-        this.maxHealth = (type == SENTRY ? 0.15 : 1) * baseHealth,
-        this.empTimer = -1,
+        this.shots = 0;
+        this.reload = 0; // timer for shooting
+        this.health = (type == SENTRY ? 0.15 : 1) * baseHealth;
+        this.maxHealth = (type == SENTRY ? 0.15 : 1) * baseHealth;
+        this.empTimer = -1;
         this.speed = 0; // vs unused but there for bullets,
         this.assimilatedTimer = 0;
     }
@@ -137,6 +137,7 @@ class Base {
             if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {
                 this.shootMuon(); return;
             }
+            if (Math.random() < 0.01) this.shootEMPMissile();
             if (cDist2 < square(wepns[8].range * 10)) this.shootLaser(c);// range:60
             else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb();// range:125
             else if (cDist2 < square(175 * 10)) this.shootMissile();// range:175
@@ -164,6 +165,14 @@ class Base {
         if (this.reload < 0) {
             if (cDist2 < 5 * 10 + square(wepns[5].range * 10)) this.shootMachineGun(); // range:??? + the small extra range machine gun bullets are still capable of hitting a target. Basically this allows the turret not to be attacked with the same weapon by players without the turret reacting.
         }
+    }
+
+    shootEMPMissile () {
+        this.reload = wepns[12].charge / 2;
+        const r = Math.random();
+        const missile = new Missile(this, r, 12, this.angle);
+        missiles[this.sy][this.sx][r] = missile;
+        sendAllSector(`sound`, { file: `missile`, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootOrb () {
@@ -341,7 +350,7 @@ class Base {
 
     unassimilate () { // A cure for the cyborg assimilation
         this.EMP((this.assimilatedTimer >= 4600 ? 140 : 60));
-    	this.assimilatedTimer = 0;
+        this.assimilatedTimer = 0;
         this.assimilatedCol = this.trueColor;
         this.color = this.trueColor;
     }

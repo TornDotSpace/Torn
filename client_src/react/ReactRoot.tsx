@@ -81,12 +81,12 @@ class ReactRoot extends React.Component<{}, { display: string, register: string 
             <Chat />
 
             <div className="sfx-wrapper">
-                <MusicButton />
                 <MuteButton />
+                <MusicButton />
             </div>
 
             <LoginOverlay display={this.state.display === `LoginOverlay`} />
-            <Register register={this.state.register === `Register`} />
+            <Register display={this.state.register === `Register`} />
 
             <canvas id="ctx"></canvas>
         </span>

@@ -30,19 +30,19 @@ for (let i = 0; i < mapSz; i++) {
 
 class Asteroid {
     constructor (i, h, sx, sy, x, y, vx, vy, metal) {
-        this.type = `Asteroid`,
-        this.owner = 0,
-        this.id = i, // unique identifier
-        this.x = x,
-        this.y = y,
-        this.angle = 0,
-        this.health = h,
-        this.maxHealth = h,
-        this.sx = sx,
-        this.sy = sy,
-        this.vx = vx,
-        this.vy = vy,
-        this.metal = metal,
+        this.type = `Asteroid`;
+        this.owner = 0;
+        this.id = i; // unique identifier
+        this.x = x;
+        this.y = y;
+        this.angle = 0;
+        this.health = h;
+        this.maxHealth = h;
+        this.sx = sx;
+        this.sy = sy;
+        this.vx = vx;
+        this.vy = vy;
+        this.metal = metal;
         this.va = (Math.random() - 0.5) / 10;
         if (this.vx == 0 && this.vy == 0) {
             this.vx = 3 * (Math.random() - 0.5);
@@ -115,7 +115,7 @@ class Asteroid {
             this.sx = (this.sx + 1 + mapSz) % mapSz;
         } else if (this.y > sectorWidth) {
             if (this.sy >= mapSz - 1) {
-      	delete asts[old_sy][old_sx][this.id];
+                delete asts[old_sy][old_sx][this.id];
             } else {
                 this.y = 1;
                 this.sy++;
@@ -125,7 +125,7 @@ class Asteroid {
             this.sx = (this.sx - 1 + mapSz) % mapSz;
         } else if (this.y < 0) {
             if (this.sy == 0) {
-      	delete asts[old_sy][old_sx][this.id];
+                delete asts[old_sy][old_sx][this.id];
             } else {
                 this.y = (sectorWidth - 1);
                 this.sy--;

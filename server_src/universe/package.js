@@ -17,12 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Package {
     constructor (ownr, i, type) {
-        this.id = i, // unique identifier
-        this.type = type, // ammo? coin? lives? actual courier package?
-        this.x = ownr.x,
-        this.y = ownr.y,
-        this.sx = ownr.sx,
-        this.sy = ownr.sy,
+        this.id = i; // unique identifier
+        this.type = type; // ammo? coin? lives? actual courier package?
+        this.x = ownr.x;
+        this.y = ownr.y;
+        this.sx = ownr.sx;
+        this.sy = ownr.sy;
         this.time = 0; // since spawn
     }
 
@@ -44,8 +44,7 @@ class Package {
 
     onCollide (p) {
         if (this.type == 0) {
-            p.moneyAchs[8] = true; // Thief: steal a package
-            p.sendAchievementsCash(true);
+            p.checkRandomAchievements(true, false, true);
 
             const possible = [`money`, `ore`];
             const contents = possible[Math.floor(Math.random() * 2)]; // figure out what reward to give

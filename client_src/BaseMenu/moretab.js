@@ -19,7 +19,7 @@ import { translate } from '../localizer';
 import { write } from '../utils/helper';
 
 // Render "More" page.
-global.rMore = function () {
+global.renderMore = function () {
     baseMenuCtx.textAlign = `center`;
     baseMenuCtx.font = `26px ShareTech`;
     const data = [`Wiki`, `Store`, `Leaderboard`, `Github`, `Discord`, `Credits`];

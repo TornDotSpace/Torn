@@ -8,7 +8,8 @@
     "build": "webpack --progress --config ./deploy/webpack.prod.js",
     "test-build": "webpack --progress --config ./deploy/webpack.test.js",
     "build:ptb": "webpack --progress --config ./deploy/webpack.ptb.js",
-    "dev:lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx",
+    "dev:lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx && stylelint \"**/*.css\" --fix",
+    "ci:lint": "eslint . --ext .ts,.tsx,.js,.jsx && stylelint \"**/*.css\"",
     "dev:serve": "webpack serve --config ./deploy/webpack.dev.js",
     "lint-staged": "lint-staged"
   },
@@ -17,7 +18,16 @@
     "url": "git+https://github.com/TornDotSpace/Torn.git"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": "eslint --fix"
+    "**/*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.css":"stylelint --fix"
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "font-family-no-missing-generic-family-keyword":null,
+      "no-duplicate-selectors":null,
+      "no-descending-specificity":null
+    }
   },
   "pre-commit": [
     "lint-staged"
@@ -30,43 +40,45 @@
   "author": "The Torn.Space Team",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "@babel/core": "^7.14.6",
+    "@babel/core": "^7.15.5",
     "@babel/plugin-proposal-class-properties": "^7.14.5",
-    "@babel/plugin-transform-runtime": "^7.14.5",
-    "@babel/preset-env": "^7.14.5",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.15.4",
     "@babel/preset-react": "^7.14.5",
-    "@babel/runtime": "^7.14.6",
-    "@types/howler": "^2.2.2",
-    "@types/react": "^17.0.11",
-    "@typescript-eslint/eslint-plugin": "^4.28.0",
-    "@typescript-eslint/parser": "^4.28.0",
+    "@babel/runtime": "^7.15.4",
+    "@types/howler": "^2.2.4",
+    "@types/react": "^17.0.20",
+    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "@typescript-eslint/parser": "^4.31.0",
     "babel-loader": "^8.2.2",
-    "eslint": "^7.28.0",
+    "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react": "^7.25.1",
     "git-revision-webpack-plugin": "^5.0.0",
-    "lint-staged": "^11.0.0",
+    "lint-staged": "^11.1.2",
     "pre-commit": "^1.2.2",
-    "ts-loader": "^9.2.3",
-    "typescript": "^4.3.4",
-    "webpack": "^5.40.0",
-    "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.2",
+    "stylelint": "^13.13.1",
+    "stylelint-config-standard": "^22.0.0",
+    "ts-loader": "^9.2.5",
+    "typescript": "^4.4.2",
+    "webpack": "^5.52.0",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.2.0",
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
     "bad-words": "^3.0.4",
     "cors": "^2.8.5",
-    "discord.js": "^12.5.3",
-    "howler": "^2.2.1",
-    "mongodb": "^3.6.9",
-    "node-fetch": "^2.6.1",
+    "discord.js": "^13.1.0",
+    "howler": "^2.2.3",
+    "mongodb": "^4.1.1",
+    "node-fetch": "^3.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "socket.io": "^4.1.2",
-    "socket.io-client": "^4.1.2"
+    "socket.io": "^4.2.0",
+    "socket.io-client": "^4.2.0"
   }
 }

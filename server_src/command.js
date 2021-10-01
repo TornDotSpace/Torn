@@ -50,10 +50,10 @@ global.cmds = {};
 cmds.help = new Command(`/help - Displays commands & usages`, EVERYONE, (commandExecuter, msg) => {
     for (const p in commandExecuter.permissionLevels) {
         const lvl = commandExecuter.permissionLevels[p];
-	    for (let x = 0; x < HELP_TABLE[lvl].length; ++x) {
-	        const cmd = HELP_TABLE[lvl][x];
+        for (let x = 0; x < HELP_TABLE[lvl].length; ++x) {
+            const cmd = HELP_TABLE[lvl][x];
             commandExecuter.socket.emit(`chat`, { msg: chatColor(`orange`) + cmd.usage, gc: commandExecuter.globalChat });
-	    }
+        }
     }
 });
 
@@ -457,8 +457,8 @@ cmds.smite = new Command(`/smite <player> - Smites the specified player`, ADMINP
 
     const recipient = getPlayerFromName(name);
     if (recipient == -1) {
-	    commandExecuter.socket.emit(`chat`, { msg: `Player '${name}' not found.` });
-	    return;
+        commandExecuter.socket.emit(`chat`, { msg: `Player '${name}' not found.` });
+        return;
     }
     recipient.die(0);
     chatAll(`${chatColor(`violet`)}${player.name}${chatColor(`yellow`)} has been Smitten!`);
@@ -470,8 +470,8 @@ cmds.kick = new Command(`/kick <player> - Kicks the specified player`, ADMINPLUS
 
     const recipient = getPlayerFromName(name);
     if (recipient == -1) {
-	    commandExecuter.socket.emit(`chat`, { msg: `Player '${name}' not found.` });
-	    return;
+        commandExecuter.socket.emit(`chat`, { msg: `Player '${name}' not found.` });
+        return;
     }
     recipient.kick();
     chatAll(`${chatColor(`violet`)}${name}${chatColor(`yellow`)} has been kicked!`);
@@ -502,8 +502,8 @@ if (Config.getValue(`debug`, false)) {
 for (const x in PERM_TABLE) {
     HELP_TABLE[PERM_TABLE[x]] = []; // construct empty array
     for (const c in cmds) {
-    	const cmd = cmds[c];
-    	for (const p in cmd.permissions) {
+        const cmd = cmds[c];
+        for (const p in cmd.permissions) {
             if (cmd.permissions[p] == PERM_TABLE[x] && cmd.visible) {
                 HELP_TABLE[PERM_TABLE[x]].push(cmd);
             }

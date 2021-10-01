@@ -1,4 +1,4 @@
-/*
+"""
 Copyright (C) 2021  torn.space (https://torn.space)
 
 This program is free software: you can redistribute it and/or modify
@@ -13,19 +13,26 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+"""
 
-import { io, Socket } from 'socket.io-client';
-// import msgpack from 'socket.io-msgpack-parser';
+######################################
+# Torn "FileFix" 4
+# Date: 07/03/2021
+# Purpose: Reset all players' achievements
+#####################################
 
-declare const TORN_GAMESERVER_URL: string;
+MONGO_CONNECTION_STR = "mongodb://localhost:27017/torn"
+from pymongo import MongoClient
 
-/**
- * The socket connection to the server.
- */
-const socket: Socket = io(TORN_GAMESERVER_URL, {
-    autoConnect: false
-    // parser: msgpack
-});
+print("*** RUNNING TORN FILEFIX 4: RESETTING ACHIEVEMENTS ***")
+client = MongoClient(MONGO_CONNECTION_STR)
+db = client.torn
+players = db.players
 
-export default socket;
+for player in players.find():
+    print(f"Processing: {player['_id']}")
+
+    players.update_one(
+        {"_id": player["_id"]},
+        {"$unset": {"killsAchs": 0, "moneyAchs": 0, "driftAchs": 0, "randmAchs": 0}},
+    )

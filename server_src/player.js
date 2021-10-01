@@ -28,74 +28,74 @@ let nextPlayerId = 0;
 
 class Player {
     constructor () {
-        this.name = ``,
-        this.type = `Player`,
+        this.name = ``;
+        this.type = `Player`;
 
-        this.tag = ``,
-        this.id = nextPlayerId++, // unique identifier
-        this.trail = 0,
-        this.color = `yellow`,
-        this.elo = 1200,
-        this.ship = 0,
-        this.experience = 0,
-        this.rank = 0,
+        this.tag = ``;
+        this.id = nextPlayerId++; // unique identifier
+        this.trail = 0;
+        this.color = `yellow`;
+        this.elo = 1200;
+        this.ship = 0;
+        this.experience = 0;
+        this.rank = 0;
 
-        this.guest = false,
-        this.dead = false,
-        this.docked = false,
+        this.guest = false;
+        this.dead = false;
+        this.docked = false;
 
         // misc timers
-        this.noDrift = 50, // A timer used for decelerating angular momentum
-        this.jukeTimer = 0,
-        this.hyperdriveTimer = -1,
-        this.borderJumpTimer = 0, // for deciding whether to hurt the player
-        this.planetTimer = 0,
-        this.leaveBaseShield = 0,
+        this.noDrift = 50; // A timer used for decelerating angular momentum
+        this.jukeTimer = 0;
+        this.hyperdriveTimer = -1;
+        this.borderJumpTimer = 0; // for deciding whether to hurt the player
+        this.planetTimer = 0;
+        this.leaveBaseShield = 0;
         this.superchargerTimer = -1;
-        this.empTimer = -1,
-        this.disguise = -1,
-        this.timer = 0,
-        this.gyroTimer = 0,
-        this.charge = 0,
+        this.empTimer = -1;
+        this.disguise = -1;
+        this.timer = 0;
+        this.gyroTimer = 0;
+        this.charge = 0;
 
-        this.weapons = {}, // my equipped weapons and ammo counts
-        this.ammos = {},
-        this.bulletQueue = 0, // For submachinegun (5 bullet bursts)
+        this.weapons = {}; // my equipped weapons and ammo counts
+        this.ammos = {};
+        this.bulletQueue = 0; // For submachinegun (5 bullet bursts)
 
-        this.sx = 0, // sector
-        this.sy = 0,
-        this.x = sectorWidth / 2,
-        this.y = sectorWidth / 2,
-        this.vx = 0,
-        this.vy = 0,
-        this.cva = 0,
-        this.angle = 0,
-        this.speed = 0,
-        this.driftAngle = 0,
+        this.sx = 0; // sector
+        this.sy = 0;
+        this.x = sectorWidth / 2;
+        this.y = sectorWidth / 2;
+        this.vx = 0;
+        this.vy = 0;
+        this.cva = 0;
+        this.angle = 0;
+        this.speed = 0;
+        this.driftAngle = 0;
 
-        this.money = 8000,
-        this.kills = 0,
-        this.killStreakTimer = -1,
-        this.killStreak = 0,
-        this.baseKills = 0,
+        this.money = 8000;
+        this.kills = 0;
+        this.killStreakTimer = -1;
+        this.killStreak = 0;
+        this.baseKills = 0;
 
-        this.shield = false,
+        this.shield = false;
         this.navigationalShield = 0;
-        this.generators = 0,
-        this.isLocked = false,
-        this.lives = 20,
-        this.quest = 0,
-        this.health = 1,
+        this.generators = 0;
+        this.isLocked = false;
+        this.lives = 20;
+        this.quest = 0;
+        this.health = 1;
 
-        this.iron = 0,
-        this.silver = 0,
-        this.platinum = 0,
-        this.copper = 0,
+        this.iron = 0;
+        this.silver = 0;
+        this.platinum = 0;
+        this.copper = 0;
 
         // bot stuff
-        this.net = 0, // where the neural network is stored
-        this.isBot = false,
-        this.isNNBot = false,
+        this.net = 0; // where the neural network is stored
+        this.isBot = false;
+        this.isNNBot = false;
 
         /* please don't touch these
                nearestEnemyDist = 0,//for nnBots
@@ -112,38 +112,38 @@ class Player {
                nearestBulletAngleV = 0,
                */
 
-        this.thrust = 1, // These are techs multiplied by ship stats, used for actual physics
-        this.va = 1,
-        this.capacity = 1,
-        this.maxHealth = 2,
+        this.thrust = 1; // These are techs multiplied by ship stats, used for actual physics
+        this.va = 1;
+        this.capacity = 1;
+        this.maxHealth = 2;
 
-        this.thrust2 = 1, // these just track the player tech levels
-        this.radar2 = 1,
-        this.agility2 = 1,
-        this.capacity2 = 1,
-        this.maxHealth2 = 1,
-        this.energy2 = 1,
+        this.thrust2 = 1; // these just track the player tech levels
+        this.radar2 = 1;
+        this.agility2 = 1;
+        this.capacity2 = 1;
+        this.maxHealth2 = 1;
+        this.energy2 = 1;
 
-        this.w = false, // what keys are pressed currently
-        this.s = false,
-        this.a = false,
-        this.d = false,
-        this.e = false,
-        this.c = false,
-        this.space = false,
+        this.w = false; // what keys are pressed currently
+        this.s = false;
+        this.a = false;
+        this.d = false;
+        this.e = false;
+        this.c = false;
+        this.space = false;
 
-        this.killsAchs = {}, // 13 of em
-        this.moneyAchs = {}, // 12
-        this.driftAchs = {}, // 12
-        this.randmAchs = {}, // 12
+        this.killAchievements = {}; // 10 of em. Lengths are written in torn_globals.js
+        this.moneyAchievements = {}; // 5
+        this.driftAchievements = {}; // 5
+        this.randomAchievements = {}; // 5
 
         // various achievement stuff
-        this.driftTimer = 0, // How many ticks this account has been drifting.
-        this.cornersTouched = 0, // bitmask
-        this.oresMined = 0, // bitmask
-        this.questsDone = 0, // bitmask
-        this.planetsClaimed = `000000000` + `000000000` + `000000000` + `000000000` + `000000000` + `000000000` + `000000000` + `000000000` + `000000000`,
-        this.points = 0,
+        this.driftTimer = 0; // How many ticks this account has been drifting.
+        this.cornersTouched = 0; // bitmask
+        this.oresMined = 0; // bitmask
+        this.questsDone = 0; // bitmask
+        this.planetsClaimed = `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000`;
+        this.points = 0;
 
         this.equipped = 0;
     }
@@ -370,22 +370,10 @@ class Player {
                 this.vx *= mult;
                 this.vy *= mult;
                 // no need to updatePolars, since force is parallel with the player... i think? is that the case when drifting?
-
-                if (isDrifting && !this.driftAchs[5] && this.w) { // Forced Induction
-                    this.driftAchs[5] = true;
-                    this.sendAchievementsDrift(true);
-                } else if (isDrifting && this.s && !this.driftAchs[10]) { // Reverse Turbo Drift
-                    this.driftAchs[10] = true;
-                    this.sendAchievementsDrift(true);
-                }
             } else if (wep.name === `Hyperdrive`) {
                 const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
                 this.emit(`sound`, { file: `hyperspace`, x: this.x, y: this.y });
                 this.hyperdriveTimer = 200;
-                if (isDrifting && this.w && !this.driftAchs[6]) { // Hyper-drift
-                    this.driftAchs[6] = true;
-                    this.sendAchievementsDrift(true);
-                }
             }
 
             // If we run out of ammo on a one-use weapon, delete that weapon.
@@ -508,7 +496,7 @@ class Player {
                 if (this.color !== `green` && nearBEnemy.color !== nearBEnemy.trueColor) { // It's an assimilated base!
                     const beameAB = new Beam(this, reB, 45, nearBEnemy, this); // Healing beam
                     beams[this.sy][this.sx][reB] = beameAB;
-	            nearBFriendly.unassimilate(); // Quickly cures the assimilation
+                    nearBFriendly.unassimilate(); // Quickly cures the assimilation
                 } else {
                     const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
                     beams[this.sy][this.sx][reB] = beameB;
@@ -525,9 +513,9 @@ class Player {
             if (nearBFriendly != 0 && nearBFriendly.assimilatedCol != this.color) { // Anti-assimilation beam
                 const beamfB = new Beam(this, rfP, 45, nearBFriendly, this); // Healing beam
                 beams[this.sy][this.sx][rfP] = beamfB;
-	        nearBFriendly.unassimilate(); // Quickly cures the assimilation
+                nearBFriendly.unassimilate(); // Quickly cures the assimilation
                 nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
-	    }
+            }
 
             sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
         } // A healing leech beam, only for helping teammates, or when near an asteroid.
@@ -565,7 +553,7 @@ class Player {
             this.speed = (wepns[22].speed - square(100 - this.hyperdriveTimer)) / (this.ship == 16 ? 7 : 10);
         }
 
-        if (this.isBot && this.empTimer <= 0) this.botPlay(); // simulates a player and presses keys.
+        if (this.isBot && this.empTimer < 0) this.botPlay(); // simulates a player and presses keys.
 
         const amDrifting = this.e || this.gyroTimer > 0;
         const ore = this.iron + this.silver + this.platinum + this.copper;
@@ -601,13 +589,7 @@ class Player {
             else this.driftAngle = findBisector(findBisector(findBisector(findBisector(this.driftAngle, this.angle), this.driftAngle), this.driftAngle), this.driftAngle);// This happens immediately after shift released, noDrift increases with time.
         } else { // In drift.
             this.gyroTimer--;
-            if (this.a != this.d) {
-                if (this.w) this.driftTimer++;
-                else if (this.s && !this.driftAchs[7]) { // I can go backwards!?!
-                    this.driftAchs[7] = true;
-                    this.sendAchievementsDrift(true);
-                }
-            }
+            if (this.a != this.d && this.w) this.driftTimer++;
             this.noDrift = 0; // Time elapsed since last drift
         }
 
@@ -723,13 +705,7 @@ class Player {
                 this.borderJumpTimer += 100;
             }
         }
-        if (giveBounce && !this.randmAchs[5]) {
-            if (this.guest) this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`You must create an account to explore the universe!`) });
-            else {
-                this.randmAchs[5] = true;
-                this.sendAchievementsMisc(true);
-            }
-        }
+        if (giveBounce) this.checkRandomAchievements(true, true, false);
 
         if (this.hyperdriveTimer <= 0 && this.borderJumpTimer > 100) { // damage for running away from fights, hyperdrive won't automatically trigger it
             this.health = (this.health - 1) * 0.9 + 1;
@@ -770,10 +746,6 @@ class Player {
             if (this.sy == 0 && (this.cornersTouched & 4) != 4) this.cornersTouched += 4;
             else if (this.sy == mapSz - 1 && (this.cornersTouched & 8) != 8) this.cornersTouched += 8;
         }
-        if (this.cornersTouched == 15) {
-            this.randmAchs[7] = true;
-            this.sendAchievementsMisc(true);
-        }
 
         if ((this.sx % 3 == 2 && this.sy == 4) && this.quest.type === `Secret3`) {
             this.spoils(`money`, this.quest.exp); // reward the player
@@ -785,14 +757,7 @@ class Player {
             this.quest = 0; // reset quest and tell the client
             this.emit(`quest`, { quest: this.quest, complete: true });
 
-            if (!this.moneyAchs[9]) { // Questor
-                this.moneyAchs[9] = true;
-                this.sendAchievementsCash(true);
-            }
-            if (this.questsDone == 15 && !this.moneyAchs[10]) { // Adventurer
-                this.moneyAchs[10] = true;
-                this.sendAchievementsCash(true);
-            }
+            this.checkKillAchievements(true, false, false);
         }
 
         if (this.quest != 0 && this.quest.type === `Secret` && this.sx == this.quest.sx && this.sy == this.quest.sy) { // advance in secret quest to phase 2
@@ -809,11 +774,6 @@ class Player {
         const checkStr = this.planetsClaimed.substring(index, index + 1);
         const postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
         if (checkStr !== `2`) this.planetsClaimed = `${prevStr}1${postStr}`;
-
-        if (!this.planetsClaimed.includes(`0`) && !this.randmAchs[6]) {
-            this.randmAchs[6] = true;
-            this.sendAchievementsMisc(true);
-        }
     }
 
     updateRank () {
@@ -834,8 +794,9 @@ class Player {
         if (tick % 2 != 0 || squaredDist(p, this) > square(512)) return;
 
         // cooldown to prevent chat spam when 2 people are on the planet
-        const cool = p.cooldown;
-        if (cool < 0) {
+        let cool = p.cooldown;
+        if (!cool || cool < 0) {
+            cool = p.cooldown;
             p.cooldown = 20;
         }
 
@@ -873,11 +834,6 @@ class Player {
 
         for (const i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();// send them new planet data
 
-        if (!this.randmAchs[8]) { // Astronaut
-            this.randmAchs[8] = true;
-            this.sendAchievementsMisc(true);
-        }
-
         this.emit(`planetMap`, { x: p.x, y: p.y, sx: p.sx, sy: p.sy });
 
         // Update list of claimed planets.
@@ -885,6 +841,7 @@ class Player {
         const prevStr = this.planetsClaimed.substring(0, index);
         const postStr = this.planetsClaimed.substring(index + 1, mapSz * mapSz);
         this.planetsClaimed = `${prevStr}2${postStr}`;
+        this.checkRandomAchievements(true, false, false);
     }
 
     checkQuestStatus (touchingPlanet) {}
@@ -1027,9 +984,9 @@ class Player {
             this.health -= 10000;
         }
 
-        if (this.empTimer <= 0 && origin.type === `Asteroid` || (origin.type === `Beam` && origin.wepnID == 8)) { // navigational shield fails when EMPd
-	    if (this.navigationalShield > 0) d /= (origin.type === `Asteroid` ? 2048 : 5);
-        }
+        // If player is not EMP'd, has navigational shield, and they are hit either by an asteroid or laser beam. then activate navigational shield perks.
+        if (this.empTimer <= 0 && this.navigationalShield > 0 &&
+            ((origin.type === `Beam` && origin.wepnID === 8) || origin.type === `Asteroid`)) d /= (origin.type === `Asteroid` ? 2048 : 5);
 
         d /= (this.trail % 16 == 1 ? 1.05 : 1); // blood trail: less damage
         d *= ((this.shield && d > 0) ? 0.25 : 1); // Shield- 1/4th damage. Won't block healing items
@@ -1050,10 +1007,10 @@ class Player {
     }
 
     EMP (t) {
- 	    if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // Emp works better on elite ships.
-        if (this.ship === 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // It will also heal the ship a very small bit.
+        if (this.ship >= 16 && this.ship <= 20) t *= 1.25; // EMP works better on elite ships.
+        if (this.ship === 21 && this.health * 1.05 < this.maxHealth) this.health *= 1.05; // r21's get a tiny healing benefit.
 
-        if (this.shield) t *= 0.33; // Shield offers some protection for electronic components
+        if (this.shield) t *= 0.33; // Shield offers some protection for electronic components.
 
         this.empTimer = t;
         this.emit(`emp`, { t });
@@ -1089,14 +1046,11 @@ class Player {
 
     // Player_MP stubs
     onMined (a) {}
-    sendAchievementsKill (note) {}
-    sendAchievementsCash (note) {}
-    sendAchievementsDrift (note) {}
-    sendAchievementsMisc (note) {}
+    checkKillAchievements (note, trailKill, friendKill) {}
+    checkMoneyAchievements (note) {}
+    checkDriftAchievements (note, lucky) {}
+    checkRandomAchievements (note, boing, thief) {}
     sendStatus () {}
-    checkMoneyAchievements () {}
-    checkDriftAchs () {}
-    checkTrailAchs () {}
     baseKilled () {}
     getAllPlanets () {}
 
@@ -1112,7 +1066,7 @@ class Player {
     refillAllAmmo () {
         let ammoHasChanged = false;
         for (let i = 0; i < 10; i++) {
-    	const beforeAmmo = this.ammos[i];
+            const beforeAmmo = this.ammos[i];
             this.refillAmmo(i);
             if (beforeAmmo != this.ammos[i]) ammoHasChanged = true;
         }

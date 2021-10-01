@@ -25,34 +25,15 @@ global.baseMenuCanvas = document.createElement(`canvas`);
 baseMenuCanvas.width = 768;
 baseMenuCanvas.height = 512;
 global.baseMenuCtx = baseMenuCanvas.getContext(`2d`, { alpha: true });
+const tabCount = 4;
+const tabWidth = baseMenuCanvas.width / tabCount;
 
 require(`./shoptab.js`);
-require(`./statstab.js`);
 require(`./moretab.js`);
 require(`./queststab.js`);
+require(`./achievementstab.js`);
 
 global.baseMenuX = w / 2 - 128 * 3; global.baseMenuY = h / 4 - 128; // Where do we render the base menu subcanvas?
-
-// Render the Achievements tab
-global.rAchievements = function () {
-    baseMenuCtx.save();
-    baseMenuCtx.fillStyle = `yellow`;
-    baseMenuCtx.font = `14px ShareTech`;
-    baseMenuCtx.textAlign = `center`;
-    for (let i = 0; i < achs.length; i++) {
-        if (i < 13) baseMenuCtx.fillStyle = achs[i] ? `red` : `pink`;
-        else if (i < 25) baseMenuCtx.fillStyle = achs[i] ? `gold` : `lime`;
-        else if (i < 37) baseMenuCtx.fillStyle = achs[i] ? `lightgray` : `white`;
-        else baseMenuCtx.fillStyle = achs[i] ? `cyan` : `yellow`;
-        if (achs[i]) {
-            baseMenuCtx.font = `11px ShareTech`;
-            write(baseMenuCtx, jsn.achNames[i].split(`:`)[1], baseMenuCanvas.width * (1 + (i % 5) * 2) / 10, 20 + 40 * Math.floor(i / 5) + 60);
-        }
-        baseMenuCtx.font = `15px ShareTech`;
-        write(baseMenuCtx, achs[i] ? jsn.achNames[i].split(`:`)[0] : translate(`???`), baseMenuCanvas.width * (1 + (i % 5) * 2) / 10, 8 + 40 * Math.floor(i / 5) + 60);
-    }
-    baseMenuCtx.restore();
-};
 
 global.rBaseGui = function () {
     baseMenuCtx.lineWidth = 2;
@@ -62,7 +43,7 @@ global.rBaseGui = function () {
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.lineWidth = 2;
 
-    const tabs = [`Shop`, `Quests`, `Stats`, `Achievements`, `More`];
+    const tabs = [`Shop`, `Quests`, `Achievements`, `More`];
 
     baseMenuCtx.globalAlpha = guiOpacity;
     baseMenuCtx.fillStyle = guiColor;
@@ -72,16 +53,16 @@ global.rBaseGui = function () {
     const x = mx - baseMenuX;
     const y = my - baseMenuY;
     for (let i = 0; i < 5; i++) { // Fill Tabs In
-    	const highlightTab = tab == i || (x > 0 && x < baseMenuCanvas.width && y > 0 && y < 40 && Math.floor(x / (baseMenuCanvas.width / 5)) == i);
-    	baseMenuCtx.fillStyle = highlightTab ? `#666666` : guiColor;
-        roundRect(baseMenuCtx, i * baseMenuCanvas.width / 5 + 8, 4, baseMenuCanvas.width / 5 - 8, 32, 16, true, false);
+        const highlightTab = tab == i || (x > 0 && x < baseMenuCanvas.width && y > 0 && y < 40 && Math.floor(x / tabWidth) == i);
+        baseMenuCtx.fillStyle = highlightTab ? `#666666` : guiColor;
+        roundRect(baseMenuCtx, i * tabWidth + 8, 4, tabWidth - 8, 32, 16, true, false);
     }
 
     baseMenuCtx.globalAlpha = 1;
 
     baseMenuCtx.fillStyle = `white`;
-    for (let i = 0; i < 5; i++) { // Write tab names
-        write(baseMenuCtx, translate(tabs[i]), (i * baseMenuCanvas.width / 5 + baseMenuCanvas.width / 10), 23);
+    for (let i = 0; i < tabCount; i++) { // Write tab names
+        write(baseMenuCtx, translate(tabs[i]), ((i + 0.5) * tabWidth), 23);
     }
 
     baseMenuCtx.fillStyle = `yellow`;
@@ -90,7 +71,6 @@ global.rBaseGui = function () {
     write(baseMenuCtx, translate(`PRESS X TO EXIT BASE`), baseMenuCanvas.width - 16, baseMenuCanvas.height - 16);
     baseMenuCtx.font = `14px ShareTech`;
     baseMenuCtx.textAlign = `left`;
-    // baseMenuCtx.drawImage(Img.baseOutline, -4, -4);
     paste3DMap(8, 8);
     rCargo();
 };
@@ -109,26 +89,26 @@ global.rInBase = function () {
     rBaseGui();
     if (tab != -1) RootState.turnOffRegister();
     switch (tab) {
+        case -1:
+            rCreds();
+            break;
         case 0:
-            rShop();
+            renderShop();
             break;
         case 1:
-            rQuests();
+            renderQuests();
             break;
         case 2:
-            rStats();
+            renderAchievementsTab();
             break;
         case 3:
-            rAchievements();
-            break;
-        case 4:
-            rMore();
+            renderMore();
             break;
         case 7:
-            rWeaponStore();
+            renderWeaponStore();
             break;
         case 8:
-            rConfirm();
+            renderConfirm();
             break;
         default:
             break;
@@ -136,7 +116,6 @@ global.rInBase = function () {
     if (savedNote-- > 0 && !guest) {
         rSavedNote();
     }
-    if (tab == -1) rCreds();
     if (quest != 0) rCurrQuest();
     if (lb != 0) pasteLeaderboard();
     rRaid();
@@ -149,21 +128,13 @@ global.rInBase = function () {
 };
 
 global.baseMenuOnClick = function (buttonID) {
-    if (tab == 0) {
-        shopOnClick(buttonID);
-    }
-    if (tab == 1) {
-        questsOnClick(buttonID);
-    }
-    if (tab == 2) {
-        statsOnClick(buttonID);
-    }
-    if (tab == 4) {
-        moreOnClick(buttonID);
-    }
+    if (tab === 0) shopOnClick(buttonID);
+    else if (tab === 1) questsOnClick(buttonID);
+    else if (tab === 2) achievementsOnClick(buttonID);
+    else if (tab === 3) moreOnClick(buttonID);
 
     const x = mx - baseMenuX;
     const y = my - baseMenuY; // mouse coordinates
 
-    if (x > 0 && x < 128 * 6 && y > 0 && y < 40) tab = Math.floor(x / (baseMenuCanvas.width / 5));
+    if (x > 0 && x < 128 * 6 && y > 0 && y < 40) tab = Math.floor(x / tabWidth);
 };

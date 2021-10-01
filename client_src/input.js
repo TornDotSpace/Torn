@@ -161,8 +161,8 @@ document.addEventListener(`mousemove`, (evt) => {
     const mousePos = getMousePos(canvas, evt);
     mx = mousePos.x;
     my = mousePos.y;
-    if (mb == 1 && mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
-    if (mx > w - 32 - 20 - 128 && my > h - 52) volTransparency = 1;
+    if (mb == 1 && mx > w - 32 - 20 - 224 && mx < w - 32 - 20 - 224 + 128 && my > h - 70) gVol = (mx + 20 + 32 + 224 - w) / 128;
+    if (mx > w - 32 - 20 - 224 && mx < w - 32 - 20 - 224 + 128 && my > h - 52) volTransparency = 1;
     const preSeller = seller;
 
     // Map movement
@@ -180,11 +180,11 @@ document.addEventListener(`mousemove`, (evt) => {
         seller = 800 + Math.floor((my - h + 61) / 18);
         if (seller > 802 || seller < 800) seller = 0;
         else if (preSeller != seller) rChat();
-    } else if (docked && tab == 0) shopOnHover(); // Shop
-    else if (docked && tab == 1) questsOnHover(preSeller); // Quests
-    else if (docked && tab == 2) statsOnHover(); // Stats
-    else if (docked && tab == 7) weaponStoreOnHover(); // Buy Weapon
-    else if (docked && tab == 4) moreOnHover(); // More
+    } else if (docked && tab === 0) shopOnHover(); // Shop
+    else if (docked && tab === 1) questsOnHover(preSeller); // Quests
+    else if (docked && tab === 2) achievementsOnHover(); // achievements (trails)
+    else if (docked && tab === 7) weaponStoreOnHover(); // Buy Weapon
+    else if (docked && tab === 3) moreOnHover(); // More
     else seller = 0;
 
     if (seller != 0 && seller != preSeller) playAudio(`button2`, 0.2);
@@ -197,7 +197,7 @@ document.addEventListener(`mousedown`, (evt) => {
         socket.emit(`guest`, VERSION);
         return;
     }
-    if (mx > w - 32 - 20 - 128 && mx < w - 32 - 20 && my > h - 52) gVol = (mx + 20 + 32 + 128 - w) / 128;
+    if (mx > w - 32 - 20 - 224 && mx < w - 32 - 20 - 224 + 128 && my > h - 70) gVol = (mx + 20 + 32 + 224 - w) / 128;
     const mousePos = getMousePos(canvas, evt);
     mx = mousePos.x;
     my = mousePos.y;
@@ -238,7 +238,7 @@ document.addEventListener(`mouseup`, (evt) => {
     }
 }, false);
 
-canvas.addEventListener(`wheel`, () => {
+canvas.addEventListener(`wheel`, event => {
     if (typeof event == `undefined`) return;
     const d = -Math.sign(event.deltaY);
 

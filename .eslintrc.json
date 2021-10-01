@@ -27,49 +27,27 @@
         }
     },
     "rules": {
-        // Eval should not be allowed ever, regardless of use case.
         "no-eval": 2,
-
-        // } else {}
         "brace-style": 1,
-
-        // Indents should be four spaces.
-        "indent": ["warn", 4, {
-            "SwitchCase": 1
-        }],
-
-        // Semicolons and backticks should always be used.
-        "semi": [1, "always"],
+        "indent": ["warn", 4, { "SwitchCase": 1 }],
+        "semi": [2, "always"],
         "quotes": [2, "backtick"],
-
-
-        // Use templating strings with backticks whenever possible.
         "prefer-template": 1,
+        "curly": 0,
+        "prefer-regex-literals":0,
 
         // ESLint globals have not been configured for these.
         "no-undef": 0,
-        "no-var": 0,
         "no-use-before-define": 0,
         "no-unused-vars": 0,
         "no-unused-expressions": 0,
         "prefer-const": 0,
 
-        // Unnecessary.
-        "no-mixed-operators": 0,
-
         // More redundant manual linting.
-        "new-cap": 0,
         "eqeqeq": 0,
-        "curly": 0,
         "camelcase": 0,
-        "no-sequences": 0,
-        "no-tabs": 0,
-        "no-mixed-spaces-and-tabs": 0,
 
         // Too lazy to fix.
-        "react/prop-types": 0,
-        "react/no-string-refs": 0,
-        "prefer-regex-literals": 0,
         "no-useless-escape": 0,
         "no-func-assign": 0,
         "no-global-assign": 0,

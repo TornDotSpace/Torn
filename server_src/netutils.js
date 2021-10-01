@@ -14,8 +14,8 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+const fetch = (...args) => import(`node-fetch`).then(({ default: fetch }) => fetch(...args));
 
-const fetch = require(`node-fetch`);
 // Miscellaneous Networking
 global.sendWeapons = function (player) { // tells a client what weapons that player has;
     if (player == 0) return;

@@ -19,8 +19,8 @@ import React from 'react';
 
 import socket from '../../modules/socket';
 
-class Register extends React.Component<{ register: boolean }, { user: string, pass: string, on: boolean }> {
-    constructor (props: { register: boolean }) {
+class Register extends React.Component<{ display: boolean }, { user: string, pass: string, on: boolean }> {
+    constructor (props: { display: boolean }) {
         super(props);
 
         this.state = {
@@ -63,28 +63,30 @@ class Register extends React.Component<{ register: boolean }, { user: string, pa
     }
 
     render = () => (
-        this.props.register
+        this.props.display
             ? (
                 <div className="register-menu">
-                    <div className="text-center m-auto">
+                    <div className="text-center">
                         <h3>New Players</h3>
 
                         <br />
 
-                        <input className="overlay-input" type="text" onChange={this.changeUsername} placeholder="Username" maxLength={16} style={{ margin: 8 }} />
-                        <input className="overlay-input" type="password" onChange={this.changePassword} placeholder="Password" maxLength={32} style={{ margin: 8 }} />
-
-                        <br />
-                        <button className="register" onClick={this.register}>Register!</button>
-
-                        <br />
+                        <input className="register-input" type="text" onChange={this.changeUsername} placeholder="Username" maxLength={16} style={{ margin: 8 }} />
                         <br />
 
+                        <input className="register-input" type="password" onChange={this.changePassword} placeholder="Password" maxLength={32} style={{ margin: 8 }} />
+                        <br />
+
+                        <button className="register-btn" onClick={this.register}>Register!</button>
+                        <br />
+
+                        <br />
                         <p>By registering, you agree to follow our terms of service and abide by our privacy policy.</p>
 
-                        <a href="/legal/privacy_policy.pdf" >Privacy Policy | </a>
-                        <a href="/legal/tos.pdf">Terms of Service</a>
-                        <br />
+                        <div className="legal-info">
+                            <a href="/legal/privacy_policy.pdf">Privacy Policy</a>
+                            <a href="/legal/tos.pdf">Terms of Service</a>
+                        </div>
 
                         <br />
                         <p>Remember, never give your password to anyone!</p>

@@ -16,24 +16,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 class Vortex {
-    constructor (i, x, y, sxx, syy, size, ownr, isWorm) {
-        this.isWorm = isWorm, // am i a wormhole or black hole
-        this.sxo = Math.floor(Math.random() * mapSz), // output node location for wormhole
-        this.syo = Math.floor(Math.random() * mapSz),
-        this.xo = Math.random() * sectorWidth,
-        this.yo = Math.random() * sectorWidth,
+    constructor (i, x, y, sx, sy, size, ownr, isWorm) {
+        this.isWorm = isWorm; // am i a wormhole or black hole
+        this.sxo = Math.floor(Math.random() * mapSz); // output node location for wormhole
+        this.syo = Math.floor(Math.random() * mapSz);
+        this.xo = Math.random() * sectorWidth;
+        this.yo = Math.random() * sectorWidth;
 
-        this.type = `Vortex`,
-        this.wepnID = 28,
-        this.owner = ownr,
-        this.id = i, // unique identifier
+        this.type = `Vortex`;
+        this.wepnID = 28;
+        this.owner = ownr;
+        this.id = i; // unique identifier
 
-        this.vx = 0,
-        this.vy = 0,
-        this.x = x, // input node or black hole location
-        this.y = y,
-        this.sx = sxx,
-        this.sy = syy,
+        this.vx = 0;
+        this.vy = 0;
+        this.x = x; // input node or black hole location
+        this.y = y;
+        this.sx = sx;
+        this.sy = sy;
 
         this.size = size;
     }
@@ -68,18 +68,8 @@ class Vortex {
                 if (this.owner != 0) { // if I'm a gravity bomb
                     this.size += p.ship; // Eating the ship will make the gravity bomb BH grow. The bigger the ship, the more it will grow.
                 }
-                if (p.e) {
-                    p.driftAchs[8] = true; // drift into a black hole
-                    p.sendAchievementsDrift(true);
-                }
-
-                p.randmAchs[4] = true; // fall into a black hole
-                p.sendAchievementsMisc(true);
                 p.die(this);
             } else if (dist < 15 && this.isWorm && !p.guest) { // collision with wormhole
-                p.randmAchs[3] = true; // fall into a wormhole
-                p.sendAchievementsMisc(true);
-
                 p.y = this.yo;
                 p.x = this.xo; // teleport them to the output node
 

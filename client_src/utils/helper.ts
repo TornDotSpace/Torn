@@ -23,6 +23,11 @@ declare const expToRank: number[];
 declare const bigNotes: any[];
 declare const wepns: any;
 
+declare const iron: string;
+declare const silver: string;
+declare const platinum: string;
+declare const copper: string;
+
 declare let rank: number;
 declare let guest: number;
 declare let experience: number;
@@ -72,6 +77,33 @@ const getRainbowColor = () => {
     const g = Math.floor(16 * Math.sqrt(Math.sin(t + Math.PI * 2 / 3) * 128 + 128));
     const b = Math.floor(16 * Math.sqrt(Math.sin(t + Math.PI * 4 / 3) * 128 + 128));
     return `rgba(${r}, ${g}, ${b}, 1)`;
+};
+
+/**
+ * Get the corresponding color of a given metal code
+ * @returns RGB color string.
+ */
+const metalToColor = (i: number) => {
+    const colorArray = [`#d44`, `#eef`, `#90f`, `#960`];
+    return colorArray[i];
+};
+
+/**
+ * Get the corresponding name of a given metal code
+ * @returns Uncapitalized english metal name.
+ */
+const metalToName = (i: number) => {
+    const nameArray = [`iron`, `silver`, `platinum`, `copper`];
+    return nameArray[i];
+};
+
+/**
+ * Get the corresponding quantity owned of a given metal code
+ * @returns Number.
+ */
+const metalToQuantity = (i: number) => {
+    const nameArray = [iron, silver, platinum, copper];
+    return nameArray[i];
 };
 
 /**
@@ -244,6 +276,7 @@ const brighten = (x: string) => {
 // TODO: Add JSDoc comment.
 const numToLS = (x: number) => {
     if (!Number.isFinite(x)) return `NaN`;
+    if (x > 1000000000000000) return `lots`;
 
     if (x < 0) return `-${numToLS(-x)}`;
     if (x == 0) return `0`;
@@ -319,7 +352,7 @@ const getPosition = (string: string, subString: string, limit: number) => string
 /**
  * Get the definition of an ammo code.
  * @param code The ammo code.
- * @returns A string representation
+ * @returns A string representation of the ammo code definition.
  */
 const ammoCodeToString = (code: number) => {
     if (code >= 0) return `${code}`;
@@ -355,5 +388,8 @@ export {
     techPriceForDowngrade,
     techEnergy,
     getPosition,
-    ammoCodeToString
+    ammoCodeToString,
+    metalToColor,
+    metalToQuantity,
+    metalToName
 };
