@@ -518,8 +518,12 @@ class Player {
             }
 
             sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
-        } // A healing leech beam, only for helping teammates, or when near an asteroid.
-
+        } else if (this.ship == 23 && tick % 30 == 0) { // r23 super-minefield
+            const r = Math.random();
+            const mine = new Mine(this, r, 48);
+            mines[this.sy][this.sx][r] = mine;
+            sendAllSector(`mine`, { x: this.x, y: this.y }, this.sx, this.sy);
+        }
         this.reload(true, 0);
     }
 
