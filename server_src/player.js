@@ -37,7 +37,7 @@ class Player {
         this.color = `yellow`;
         this.elo = 1200;
         this.ship = 0;
-        this.experience = 9999999999999999990;
+        this.experience = 0;
         this.rank = 0;
 
         this.guest = false;
@@ -73,7 +73,7 @@ class Player {
         this.speed = 0;
         this.driftAngle = 0;
 
-        this.money = 800099999999999999999999999;
+        this.money = 8000;
         this.kills = 0;
         this.killStreakTimer = -1;
         this.killStreak = 0;
@@ -414,111 +414,7 @@ class Player {
             this.shootBlast(41);
             this.save();
         } else if (this.ship == 22 && tick % 10 == 0) { // r22 healing/leech/assimilator beam
-            // this.shootLeechBeam();
-            const ox = this.x; const oy = this.y; // Current emitter coordinates
-            let nearBEnemy = 0; // enemy turret target, which we will compute
-            let nearBFriendly = 0; // friendly turret target, which we will compute
-            let nearPFriendly = 0; // friendly ship target, which we will compute
-            let nearPEnemy = 0; // enemy ship target, which we will compute
-            let nearA = 0; // asteroid target, which we will compute
-            const range2 = square(100 * 10); // Range 100
-
-            // base
-            const b = bases[this.sy][this.sx];
-            if ((b != 0) && b.baseType != DEADBASE && b.color !== this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBEnemy = b;
-            if ((b != 0) && b.baseType != DEADBASE && b.color === this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBFriendly = b;
-
-            // search players
-            for (const i in players[this.sy][this.sx]) {
-                const p = players[this.sy][this.sx][i];
-                if (!(p.disguise > 0 || this.id == p.id)) { // You can only heal decloaked teammates.
-                    const dx = p.x - ox; const dy = p.y - oy;
-                    const dist2 = dx * dx + dy * dy;
-
-                    if (dist2 < range2) {
-                        if (p.color == this.color) {
-                            if (nearPFriendly == 0 || dist2 < square(nearPFriendly.x - ox) + square(nearPFriendly.y - oy)) nearPFriendly = p;
-                        } else {
-                            if (nearPEnemy == 0 || dist2 < square(nearPEnemy.x - ox) + square(nearPEnemy.y - oy)) nearPEnemy = p;
-                        }
-                    }
-                }
-            }
-
-            // search asteroids
-            for (const i in asts[this.sy][this.sx]) {
-                const a = asts[this.sy][this.sx][i];
-                if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
-                const dx = a.x - ox; const dy = a.y - oy;
-                const dist2 = dx * dx + dy * dy;
-                if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
-            }
-
-            if (nearA != 0) {
-                this.dmg(-30, this); // Heals myself.
-                const rA = Math.random();
-                const beamA = new Beam(this, rA, 30, nearA, this); // Ore Cannon
-                beams[this.sy][this.sx][rA] = beamA;
-            }
-
-            if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
-            this.spoils(`money`, 365); // reward the player for healing a teammate
-            this.spoils(`experience`, 10); // The medic gets more experience from healing
-            const rfP = Math.random();
-
-            if (nearA != 0) {
-                if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-                    const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-                    beams[this.sy][this.sx][rfP] = beamfP;
-                }
-            }
-            if (nearPEnemy != 0) {
-                const reP = Math.random();
-                if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-                    const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-                    beams[this.sy][this.sx][rfP] = beamfP;
-                }
-
-                const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
-                beams[this.sy][this.sx][reP] = beameP;
-
-                if (this.color == `blue` && tick % 250 == 0) {
-                    const beameP2 = new Beam(this, reP, 31, nearPEnemy, this); // Destabilizer
-                    beams[this.sy][this.sx][reP] = beameP2;
-                }
-            }
-            if (nearBEnemy != 0) {
-                const reB = Math.random();
-                if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-                    const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-                    beams[this.sy][this.sx][rfP] = beamfP;
-                }
-
-                if (this.color !== `green` && nearBEnemy.color !== nearBEnemy.trueColor) { // It's an assimilated base!
-                    const beameAB = new Beam(this, reB, 45, nearBEnemy, this); // Healing beam
-                    beams[this.sy][this.sx][reB] = beameAB;
-                    nearBFriendly.unassimilate(); // Quickly cures the assimilation
-                } else {
-                    const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
-                    beams[this.sy][this.sx][reB] = beameB;
-
-                    if (this.color === `green` && tick % 750 == 0) { // Assimilation beam
-                        nearBEnemy.assimilate(660, this);
-                        const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
-                        beams[this.sy][this.sx][reB] = beameB2;
-                        this.dmg(-73, this);
-                        sendAllSector(`sound`, { file: `assimilation`, x: ox, y: oy }, this.sx, this.sy);
-                    }
-                }
-            }
-            if (nearBFriendly != 0 && nearBFriendly.assimilatedCol != this.color) { // Anti-assimilation beam
-                const beamfB = new Beam(this, rfP, 45, nearBFriendly, this); // Healing beam
-                beams[this.sy][this.sx][rfP] = beamfB;
-                nearBFriendly.unassimilate(); // Quickly cures the assimilation
-                nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
-            }
-
-            sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
+            this.shootLeechBeam();
         } else if (this.ship == 23 && tick % 30 == 0) { // r23 super-minefield
             this.shootMine2(48);
             if (this.color === `blue` && tick % 500 == 0) { // Blues are more combat-focused
@@ -883,7 +779,6 @@ class Player {
         }
     }
 
-
     shootMissile2 (aWeapon) {
         const r = Math.random();
         const bAngle = this.angle;
@@ -921,114 +816,114 @@ class Player {
             this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`You may not place a mine here.`) });
             return;
         }
-        this.shootMine2(this.weapons[this.equipped])
+        this.shootMine2(this.weapons[this.equipped]);
     }
 
     shootLeechBeam () {
-            const ox = this.x; const oy = this.y; // Current emitter coordinates
-            let nearBEnemy = 0; // enemy turret target, which we will compute
-            let nearBFriendly = 0; // friendly turret target, which we will compute
-            let nearPFriendly = 0; // friendly ship target, which we will compute
-            let nearPEnemy = 0; // enemy ship target, which we will compute
-            let nearA = 0; // asteroid target, which we will compute
-            const range2 = square(100 * 10); // Range 100
+        const ox = this.x; const oy = this.y; // Current emitter coordinates
+        let nearBEnemy = 0; // enemy turret target, which we will compute
+        let nearBFriendly = 0; // friendly turret target, which we will compute
+        let nearPFriendly = 0; // friendly ship target, which we will compute
+        let nearPEnemy = 0; // enemy ship target, which we will compute
+        let nearA = 0; // asteroid target, which we will compute
+        const range2 = square(100 * 10); // Range 100
 
-            // base
-            const b = bases[this.sy][this.sx];
-            if ((b != 0) && b.baseType != DEADBASE && b.color !== this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBEnemy = b;
-            if ((b != 0) && b.baseType != DEADBASE && b.color === this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBFriendly = b;
+        // base
+        const b = bases[this.sy][this.sx];
+        if ((b != 0) && b.baseType != DEADBASE && b.color !== this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBEnemy = b;
+        if ((b != 0) && b.baseType != DEADBASE && b.color === this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBFriendly = b;
 
-            // search players
-            for (const i in players[this.sy][this.sx]) {
-                const p = players[this.sy][this.sx][i];
-                if (!(p.disguise > 0 || this.id == p.id)) { // You can only heal decloaked teammates.
-                    const dx = p.x - ox; const dy = p.y - oy;
-                    const dist2 = dx * dx + dy * dy;
-
-                    if (dist2 < range2) {
-                        if (p.color == this.color) {
-                            if (nearPFriendly == 0 || dist2 < square(nearPFriendly.x - ox) + square(nearPFriendly.y - oy)) nearPFriendly = p;
-                        } else {
-                            if (nearPEnemy == 0 || dist2 < square(nearPEnemy.x - ox) + square(nearPEnemy.y - oy)) nearPEnemy = p;
-                        }
-                    }
-                }
-            }
-
-            // search asteroids
-            for (const i in asts[this.sy][this.sx]) {
-                const a = asts[this.sy][this.sx][i];
-                if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
-                const dx = a.x - ox; const dy = a.y - oy;
+        // search players
+        for (const i in players[this.sy][this.sx]) {
+            const p = players[this.sy][this.sx][i];
+            if (!(p.disguise > 0 || this.id == p.id)) { // You can only heal decloaked teammates.
+                const dx = p.x - ox; const dy = p.y - oy;
                 const dist2 = dx * dx + dy * dy;
-                if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
-            }
 
-            if (nearA != 0) {
-                this.dmg(-30, this); // Heals myself.
-                const rA = Math.random();
-                const beamA = new Beam(this, rA, 30, nearA, this); // Ore Cannon
-                beams[this.sy][this.sx][rA] = beamA;
-            }
-
-            if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
-            this.spoils(`money`, 365); // reward the player for healing a teammate
-            this.spoils(`experience`, 10); // The medic gets more experience from healing
-            const rfP = Math.random();
-
-            if (nearA != 0) {
-                if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-                    const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-                    beams[this.sy][this.sx][rfP] = beamfP;
-                }
-            }
-            if (nearPEnemy != 0) {
-                const reP = Math.random();
-                if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-                    const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-                    beams[this.sy][this.sx][rfP] = beamfP;
-                }
-
-                const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
-                beams[this.sy][this.sx][reP] = beameP;
-
-                if (this.color == `blue` && tick % 250 == 0) {
-                    const beameP2 = new Beam(this, reP, 31, nearPEnemy, this); // Destabilizer
-                    beams[this.sy][this.sx][reP] = beameP2;
-                }
-            }
-            if (nearBEnemy != 0) {
-                const reB = Math.random();
-                if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
-                    const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
-                    beams[this.sy][this.sx][rfP] = beamfP;
-                }
-
-                if (this.color !== `green` && nearBEnemy.color !== nearBEnemy.trueColor) { // It's an assimilated base!
-                    const beameAB = new Beam(this, reB, 45, nearBEnemy, this); // Healing beam
-                    beams[this.sy][this.sx][reB] = beameAB;
-                    nearBFriendly.unassimilate(); // Quickly cures the assimilation
-                } else {
-                    const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
-                    beams[this.sy][this.sx][reB] = beameB;
-
-                    if (this.color === `green` && tick % 750 == 0) { // Assimilation beam
-                        nearBEnemy.assimilate(660, this);
-                        const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
-                        beams[this.sy][this.sx][reB] = beameB2;
-                        this.dmg(-73, this);
-                        sendAllSector(`sound`, { file: `assimilation`, x: ox, y: oy }, this.sx, this.sy);
+                if (dist2 < range2) {
+                    if (p.color == this.color) {
+                        if (nearPFriendly == 0 || dist2 < square(nearPFriendly.x - ox) + square(nearPFriendly.y - oy)) nearPFriendly = p;
+                    } else {
+                        if (nearPEnemy == 0 || dist2 < square(nearPEnemy.x - ox) + square(nearPEnemy.y - oy)) nearPEnemy = p;
                     }
                 }
             }
-            if (nearBFriendly != 0 && nearBFriendly.assimilatedCol != this.color) { // Anti-assimilation beam
-                const beamfB = new Beam(this, rfP, 45, nearBFriendly, this); // Healing beam
-                beams[this.sy][this.sx][rfP] = beamfB;
-                nearBFriendly.unassimilate(); // Quickly cures the assimilation
-                nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
+        }
+
+        // search asteroids
+        for (const i in asts[this.sy][this.sx]) {
+            const a = asts[this.sy][this.sx][i];
+            if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
+            const dx = a.x - ox; const dy = a.y - oy;
+            const dist2 = dx * dx + dy * dy;
+            if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
+        }
+
+        if (nearA != 0) {
+            this.dmg(-30, this); // Heals myself.
+            const rA = Math.random();
+            const beamA = new Beam(this, rA, 30, nearA, this); // Ore Cannon
+            beams[this.sy][this.sx][rA] = beamA;
+        }
+
+        if (nearPFriendly == 0 || (nearPEnemy == 0 && nearBEnemy == 0 && nearA == 0)) return;
+        this.spoils(`money`, 365); // reward the player for healing a teammate
+        this.spoils(`experience`, 10); // The medic gets more experience from healing
+        const rfP = Math.random();
+
+        if (nearA != 0) {
+            if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
+                const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+                beams[this.sy][this.sx][rfP] = beamfP;
+            }
+        }
+        if (nearPEnemy != 0) {
+            const reP = Math.random();
+            if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
+                const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+                beams[this.sy][this.sx][rfP] = beamfP;
             }
 
-            sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
+            const beameP = new Beam(this, reP, 8, nearPEnemy, this); // Laser beam
+            beams[this.sy][this.sx][reP] = beameP;
+
+            if (this.color == `blue` && tick % 250 == 0) {
+                const beameP2 = new Beam(this, reP, 31, nearPEnemy, this); // Destabilizer
+                beams[this.sy][this.sx][reP] = beameP2;
+            }
+        }
+        if (nearBEnemy != 0) {
+            const reB = Math.random();
+            if (nearPFriendly.maxHealth >= (nearPFriendly.health - wepns[45].damage)) {
+                const beamfP = new Beam(this, rfP, 45, nearPFriendly, this); // Healing beam
+                beams[this.sy][this.sx][rfP] = beamfP;
+            }
+
+            if (this.color !== `green` && nearBEnemy.color !== nearBEnemy.trueColor) { // It's an assimilated base!
+                const beameAB = new Beam(this, reB, 45, nearBEnemy, this); // Healing beam
+                beams[this.sy][this.sx][reB] = beameAB;
+                nearBFriendly.unassimilate(); // Quickly cures the assimilation
+            } else {
+                const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
+                beams[this.sy][this.sx][reB] = beameB;
+
+                if (this.color === `green` && tick % 750 == 0) { // Assimilation beam
+                    nearBEnemy.assimilate(660, this);
+                    const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
+                    beams[this.sy][this.sx][reB] = beameB2;
+                    this.dmg(-73, this);
+                    sendAllSector(`sound`, { file: `assimilation`, x: ox, y: oy }, this.sx, this.sy);
+                }
+            }
+        }
+        if (nearBFriendly != 0 && nearBFriendly.assimilatedCol != this.color) { // Anti-assimilation beam
+            const beamfB = new Beam(this, rfP, 45, nearBFriendly, this); // Healing beam
+            beams[this.sy][this.sx][rfP] = beamfB;
+            nearBFriendly.unassimilate(); // Quickly cures the assimilation
+            nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
+        }
+
+        sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
     }
 
     shootBeam (origin, restricted) { // restricted is for recursive calls from quarriers
