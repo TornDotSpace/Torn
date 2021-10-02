@@ -407,19 +407,19 @@ class Player {
         } else if (this.ship == 18) { // r18 Built-in spreadshot
             if (this.disguise > 0 || this.shield) return;
             this.shootBullet(39);
-        } else if (this.ship == 19) { // r19 healing
+        } else if (this.ship === 19) { // r19 healing
             // if (this.disguise > 0) return;
             if (this.health < this.maxHealth) this.health++;
-        } else if (this.ship == 20) { // r20 Built-in hypno ray
+        } else if (this.ship === 20) { // r20 Built-in hypno ray
             this.shootBlast(41);
             this.save();
-        } else if (this.ship == 22 && tick % 10 == 0) { // r22 healing/leech/assimilator beam
+        } else if (this.ship === 22 && tick % 10 === 0) { // r22 healing/leech/assimilator beam
             this.shootLeechBeam();
-        } else if (this.ship == 23 && tick % 30 == 0) { // r23 super-minefield
+        } else if (this.ship === 23 && tick % 30 === 0) { // r23 super-minefield
             this.shootMine2(48);
-            if (this.color === `blue` && tick % 500 == 0) { // Blues are more combat-focused
+            if (this.color === `blue` && tick % 500 === 0) { // Blues are more combat-focused
                 this.shootMissile2(13);
-            } else if (this.color === `red` && tick % 2000 == 0) { // Reds are more healing-focused
+            } else if (this.color === `red` && tick % 2000 === 0) { // Reds are more healing-focused
                 this.shootMine2(44);
             }
         }
