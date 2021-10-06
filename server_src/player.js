@@ -222,7 +222,7 @@ class Player {
             // <= 9 are plasma, laser, hadron beams.
             else if (wepId <= 9 || wep.name === `Jammer` || wep.name === `Mining Laser` || wep.name === `Ore Cannon` || wep.name === `Destabilizer` || wep.name === `Healing Beam`) this.shootBeam(this, false);
             // Traditional missiles
-            else if (wepId <= 14 || wep.name === `Proximity Fuze`) this.shootMissile();
+            else if (wepId <= 14 || wep.name === `Proximity Fuze`) this.shootMissileSpecific(wepId);
             // <= 17: Traditional Mines
             else if (wepId <= 17 || wep.name === `Impulse Mine` || wep.name === `Grenades` || wep.name === `Pulse Mine` || wep.name === `Campfire` || wep.name === `Magnetic Mine`) this.shootMine();
             else if (wep.name === `Energy Disk` || wep.name === `Photon Orb`) this.shootOrb();
@@ -418,9 +418,9 @@ class Player {
         } else if (this.ship === 23 && tick % 30 === 0) { // r23 super-minefield
             this.shootMine2(48);
             if (this.color === `blue` && tick % 500 === 0) { // Blues are more combat-focused
-                this.shootMissile2(13);
+                this.shootMissileSpecific(13);
             } else if (this.color === `red` && tick % 2000 === 0) { // Reds are more healing-focused
-                this.shootMine2(44);
+                this.shootMineSpecific(44);
             }
         }
         this.reload(true, 0);
@@ -779,7 +779,7 @@ class Player {
         }
     }
 
-    shootMissile2 (aWeapon) {
+    shootMissileSpecific (aWeapon) {
         const r = Math.random();
         const bAngle = this.angle;
         const missile = new Missile(this, r, aWeapon, bAngle);
@@ -798,7 +798,7 @@ class Player {
         sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
-    shootMine2 (aWeapon) {
+    shootMineSpecific (aWeapon) {
         const r = Math.random();
         const mine = new Mine(this, r, aWeapon);
         mines[this.sy][this.sx][r] = mine;
@@ -816,7 +816,7 @@ class Player {
             this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`You may not place a mine here.`) });
             return;
         }
-        this.shootMine2(this.weapons[this.equipped]);
+        this.shootMineSpecific(this.weapons[this.equipped]);
     }
 
     shootLeechBeam () {
