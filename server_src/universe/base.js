@@ -336,7 +336,7 @@ class Base {
     }
 
     assimilate (time, assimilator) { // A weapon of cyborg origin
-        this.dmg(this.health * 0.15, assimilator);
+        this.dmg(this.health * 0.02, assimilator);
         this.EMP(time / 3); // The crew is fighting hard to fend off the invaders! Some systems stop working and the base will take some damage
         this.assimilatedCol = assimilator.color; // But resistance is futile
         this.assimilatedTimer += time; // At least until the remaining crew manage to vent the invaders.
