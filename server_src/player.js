@@ -416,7 +416,7 @@ class Player {
         } else if (this.ship === 22 && tick % 10 === 0) { // r22 healing/leech/assimilator beam
             this.shootLeechBeam();
         } else if (this.ship === 23 && tick % 30 === 0) { // r23 super-minefield
-            this.shootMine2(48);
+            this.shootMineSpecific(48);
             if (this.color === `blue` && tick % 500 === 0) { // Blues are more combat-focused
                 this.shootMissileSpecific(13);
             } else if (this.color === `red` && tick % 2000 === 0) { // Reds are more healing-focused
