@@ -422,6 +422,8 @@ class Player {
             } else if (this.color === `red` && tick % 2000 === 0) { // Reds are more healing-focused
                 this.shootMineSpecific(44);
             }
+        } else if (this.ship === 24 && tick % 60 === 0) { // r24 beehive swarm
+            spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
         }
         this.reload(true, 0);
     }
