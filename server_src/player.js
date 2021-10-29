@@ -423,7 +423,7 @@ class Player {
                 this.shootMineSpecific(44);
             }
         } else if (this.ship === 24 && tick % 60 === 0) { // r24 beehive swarm
-            spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+            spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped);
         }
         this.reload(true, 0);
     }

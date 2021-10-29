@@ -665,6 +665,18 @@
 			"nameH":"Nigromante",
 			"nameC":"Lamprea",
 			"desc":"Ambulancia de respuesta rápida, siempre necesita de un compañero para usar su rayo curativo, salvo asteroides."
+		},
+		{
+			"nameA":"Mandelbrot",
+			"nameH":"Claymore",
+			"nameC":"G-23M Replicador",
+			"desc":"Un poderoso lanzaminas. Se dice que revolucionará la Guerra Galáctica."
+		},
+		{
+			"nameA":"CG Móvil",
+			"nameH":"Base Estelar",
+			"nameC":"Unicomplejo",
+			"desc":"Una base estelar móvil, por razones de seguridad solo acepta drones."
 		}
 	]
 }
