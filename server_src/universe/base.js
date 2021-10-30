@@ -67,7 +67,7 @@ class Base {
             const botSpawn = Math.random();
             const healthPercent = Math.max(this.health / this.maxHealth, 0.1);
             if (botSpawn * healthPercent < botFrequency) {
-                spawnBot(this.sx, this.sy, this.assimilatedCol, healthPercent < 0.9);
+                spawnBaseBot(this.sx, this.sy, this.x, this.y, this.assimilatedCol, healthPercent < 0.9);
             }
         }
 
@@ -240,7 +240,7 @@ class Base {
             this.die = function () { };
         } else {
             const numBotsToSpawn = 2 + 4 * Math.random() * Math.random();
-            for (let i = 0; i < numBotsToSpawn; i++) spawnBot(this.sx, this.sy, this.color, true);
+            for (let i = 0; i < numBotsToSpawn; i++) spawnBaseBot(this.sx, this.sy, this.x, this.y, this.assimilatedCol, true);
             this.baseType = DEADBASE;
             this.deathTimer = raidTimer < 15000 ? 75 * 60 : (25 * 125);
         }
