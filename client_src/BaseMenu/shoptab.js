@@ -88,6 +88,10 @@ global.rBuyShipWindow = function () {
             baseMenuCtx.fillStyle = compareColor(shipView, ship, statArr[i]);
             baseMenuCtx.fillRect(shipStatsRx + 60, shipStatsRy + i * 16 - 10, 80 * Math.min(ships[shipView][statArr[i]], maxStatArr[i]) / maxStatArr[i], 12);
             baseMenuCtx.strokeRect(shipStatsRx + 60, shipStatsRy + i * 16 - 10, 80 * Math.min(ships[ship][statArr[i]], maxStatArr[i]) / maxStatArr[i], 12);
+            if (i == 2) {
+                baseMenuCtx.fillStyle = `black`;
+                write(baseMenuCtx, numToLS(ships[shipView].health), shipStatsRx + 70, shipStatsRy + i * 16 + 1);
+            }
         }
         baseMenuCtx.fillStyle = `white`;
         write(baseMenuCtx, translate(`Weapons : `) + numToLS(ships[shipView].weapons), shipStatsRx, shipStatsRy + 4 * 16);

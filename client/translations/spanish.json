@@ -677,6 +677,12 @@
 			"nameH":"Base Estelar",
 			"nameC":"Unicomplejo",
 			"desc":"Una base estelar móvil, por razones de seguridad solo acepta drones."
+		},
+		{
+			"nameA":"Cuanto",
+			"nameH":"Fantasma",
+			"nameC":"Eigenvector",
+			"desc":"Una nave extremadamente experimental."
 		}
 	]
 }

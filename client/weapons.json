@@ -953,12 +953,21 @@
     },
     {
       "thrust": 0.01,
-      "health": 100000,
+      "health": 10000,
       "agility": 1.0,
       "width": 400,
       "price": 12000000,
       "weapons": 10,
       "capacity": 50000
+    },
+    {
+      "thrust": 0.66,
+      "health": 1.0,
+      "agility": 1.0,
+      "width": 128,
+      "price": 12000000,
+      "weapons": 10,
+      "capacity": 5
     }
   ],
   "techs": {

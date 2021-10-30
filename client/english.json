@@ -642,6 +642,12 @@
 			"nameH":"Starbase",
 			"nameC":"Unicomplex",
 			"desc":"A Mobile deployable starbase, for security reasons it only accepts drones."
+		},
+		{
+			"nameA":"Quantum",
+			"nameH":"Ghost",
+			"nameC":"Eigenvector",
+			"desc":"An extremely experimental ship."
 		}
 	]
 }

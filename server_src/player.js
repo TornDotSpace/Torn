@@ -175,7 +175,7 @@ class Player {
         this.navigationalShieldCount();
 
         for (let i = 0; i < this.navigationalShield; i++) chargeVal /= 1.08; // For each navigational shield you carry, you lose the equivalent of two generators, the one that really is in your slots, and the potential one you could have placed instead of the item. 1.08/1.08 = 1
-        if (this.charge < 0 || this.space || this.c) this.charge += chargeVal;
+        if ((this.charge < 0 || this.space || this.c) && !(this.ship === 25 && this.equipped === 9)) this.charge += chargeVal;
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
     }
 
@@ -389,13 +389,13 @@ class Player {
 
     shootEliteWeapon () {
         if (this.rank < this.ship) return;
-        if (this.ship == 16) { // Elite Raider turbo
+        if (this.ship === 16 || (this.ship == 25 && this.equipped === 0)) { // Elite Raider turbo
             // This effectively just shoots turbo.
             const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.015 : 1.01);
             this.speed *= mult;
             this.vx *= mult;
             this.vy *= mult;
-        } else if (this.ship == 17 && this.iron >= 250 && this.silver >= 250 && this.copper >= 250 && this.platinum >= 250) { // Quarrier Ore-launcher
+        } else if ((this.ship === 17 || (this.ship === 25 && this.equipped === 1)) && this.iron >= 250 && this.silver >= 250 && this.copper >= 250 && this.platinum >= 250) { // Quarrier Ore-launcher
             if (this.disguise > 0 || this.shield) return;
             this.iron -= 250; // This just shoots an asteroid out of the ship as if it were a bullet.
             this.silver -= 250;
@@ -404,26 +404,29 @@ class Player {
             const randId = Math.random();
             const ast = new Asteroid(randId, health, this.sx, this.sy, this.x + Math.cos(this.angle) * 256, this.y + Math.sin(this.angle) * 256, Math.cos(this.angle) * 15, Math.sin(this.angle) * 15, Math.floor(Math.random() * 4));
             asts[this.sy][this.sx][randId] = ast;
-        } else if (this.ship == 18) { // r18 Built-in spreadshot
+        } else if (this.ship === 18 || (this.ship === 25 && this.equipped === 2)) { // r18 Built-in spreadshot
             if (this.disguise > 0 || this.shield) return;
             this.shootBullet(39);
-        } else if (this.ship === 19) { // r19 healing
+        } else if (this.ship === 19 || (this.ship == 25 && this.equipped === 3)) { // r19 healing
             // if (this.disguise > 0) return;
             if (this.health < this.maxHealth) this.health++;
-        } else if (this.ship === 20) { // r20 Built-in hypno ray
+        } else if (this.ship === 20 || (this.ship === 25 && this.equipped === 4)) { // r20 Built-in hypno ray
             this.shootBlast(41);
             this.save();
-        } else if (this.ship === 22 && tick % 10 === 0) { // r22 healing/leech/assimilator beam
+        } else if ((this.ship === 22 || (this.ship === 25 && this.equipped === 5)) && tick % 10 === 0) { // r22 healing/leech/assimilator beam
             this.shootLeechBeam();
-        } else if (this.ship === 23 && tick % 30 === 0) { // r23 super-minefield
+        } else if ((this.ship === 23 || (this.ship === 25 && this.equipped === 6)) && tick % 30 === 0) { // r23 super-minefield
             this.shootMineSpecific(48);
             if (this.color === `blue` && tick % 500 === 0) { // Blues are more combat-focused
                 this.shootMissileSpecific(13);
             } else if (this.color === `red` && tick % 2000 === 0) { // Reds are more healing-focused
                 this.shootMineSpecific(44);
             }
-        } else if (this.ship === 24 && tick % 60 === 0) { // r24 beehive swarm
-            spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped);
+        } else if ((this.ship === 24 || (this.ship === 25 && this.equipped === 7)) && tick % 60 === 0) { // r24 beehive swarm
+            if (this.ship === 24) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped);
+            else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+        } else if (this.ship === 25 && this.equipped === 8) { // r25 disguise
+            this.disguise = 5;
         }
         this.reload(true, 0);
     }
@@ -1002,6 +1005,12 @@ class Player {
         if (this.isNNBot && origin.type === `Bullet` && origin.owner.type === `Player` && origin.owner.net != 0) {
             origin.owner.net.save(this.isNNBot ? this.net.id : Math.floor(Math.random()));
             this.health -= 10000;
+        }
+
+        if (this.ship === 25 && this.equipped === 9) {
+            this.shield = true;
+            d = 0;
+            this.charge = 0;
         }
 
         // If player is not EMP'd, has navigational shield, and they are hit either by an asteroid or laser beam. then activate navigational shield perks.
