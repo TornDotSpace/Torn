@@ -137,7 +137,7 @@ const loadAllImages = () => {
     loadImage(`blackArrow`, `/img/arrows/blackArrow.png`);
 
     // Ships.
-    for (let i = 0; i < 23; i++) {
+    for (let i = 0; i < 26; i++) {
         loadShipImage(`blue`, i);
         loadShipImage(`red`, i);
         loadShipImage(`green`, i);

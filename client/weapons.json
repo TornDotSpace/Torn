@@ -941,6 +941,33 @@
       "price": 12000000,
       "weapons": 3,
       "capacity": 16500
+    },
+    {
+      "thrust": 0.1,
+      "health": 1000,
+      "agility": 0.1,
+      "width": 185,
+      "price": 12000000,
+      "weapons": 10,
+      "capacity": 36500
+    },
+    {
+      "thrust": 0.01,
+      "health": 10000,
+      "agility": 1.0,
+      "width": 400,
+      "price": 12000000,
+      "weapons": 10,
+      "capacity": 50000
+    },
+    {
+      "thrust": 0.66,
+      "health": 1.0,
+      "agility": 1.0,
+      "width": 128,
+      "price": 12000000,
+      "weapons": 10,
+      "capacity": 5000
     }
   ],
   "techs": {

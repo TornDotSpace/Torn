@@ -290,6 +290,84 @@ global.spawnBot = function (sx, sy, col, force) {
     players[bot.sy][bot.sx][bot.id] = bot;
 };
 
+global.spawnBaseBot = function (sx, sy, x, y, col, force) {
+    if (!Config.getValue(`want-bots`, true)) return;
+
+    if (playerCount + botCount + guestCount > playerLimit && !force) return;
+
+    if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
+
+    if (trainingMode && Math.random() < 0.5) {
+        spawnNNBot(sx, sy, col);
+        return;
+    }
+
+    const bot = new Bot();
+    bot.angle = Math.random() * Math.PI * 2;
+    bot.sx = sx;
+    bot.sy = sy;
+    const rand = 4 * Math.random();
+    bot.experience = Math.sqrt(Math.pow(2, Math.pow(2, rand)) - 2) * 100 + 3 * rand;
+    bot.updateRank();
+    bot.ship = Math.min(bot.rank, 21);
+    bot.x = x;
+    bot.y = y;
+    bot.color = col;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `DRONE`;
+    bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * 0.25) + 0.7);
+    bot.energy2 = Math.floor((bot.thrust2 - 1) * 5 / 2) / 5 + 1;
+    bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
+    bot.thrust = ships[bot.ship].thrust * bot.thrust2;
+    bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
+    bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
+    const keys = Object.keys(wepns);
+    for (let i = 0; i < 10; i++) {
+        do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
+        while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot);
+    }
+    bot.refillAllAmmo();
+    players[bot.sy][bot.sx][bot.id] = bot;
+};
+
+global.spawnPlayerBot = function (sx, sy, x, y, col, force, ship) {
+    if (!Config.getValue(`want-bots`, true)) return;
+
+    if (playerCount + botCount + guestCount > playerLimit && !force) return;
+
+    if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
+
+    if (trainingMode && Math.random() < 0.5) {
+        spawnNNBot(sx, sy, col);
+        return;
+    }
+
+    const bot = new Bot();
+    bot.angle = Math.random() * Math.PI * 2;
+    bot.sx = sx;
+    bot.sy = sy;
+    const rand = 4 * Math.random();
+    bot.experience = Math.sqrt(Math.pow(2, Math.pow(2, rand)) - 2) * 100 + 3 * rand;
+    bot.updateRank();
+    bot.ship = ship;
+    bot.x = x;
+    bot.y = y;
+    bot.color = col;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `DRONE`;
+    bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * 0.25) + 0.7);
+    bot.energy2 = Math.floor((bot.thrust2 - 1) * 5 / 2) / 5 + 1;
+    bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
+    bot.thrust = ships[bot.ship].thrust * bot.thrust2;
+    bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
+    bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
+    const keys = Object.keys(wepns);
+    for (let i = 0; i < 10; i++) {
+        do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
+        while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot);
+    }
+    bot.refillAllAmmo();
+    players[bot.sy][bot.sx][bot.id] = bot;
+};
+
 global.spawnNNBot = function (sx, sy, col) {
     if (trainingMode) {
         sx = 2; sy = 4;

@@ -397,6 +397,24 @@
 			"nameH":"Necromancer",
 			"nameC":"Lamprey",
 			"desc":"A medical, fast response ship. Always needs a partner to use the leech heal, except from asteroids."
+		},
+		{
+			"nameA":"Mandelbrot",
+			"nameH":"Claymore",
+			"nameC":"G-23M Replicator",
+			"desc":"A powerful magnetic mine layer. It is said it will revolutionize how War is fought in the galaxy."
+		},
+		{
+			"nameA":"Mobile HQ",
+			"nameH":"Starbase",
+			"nameC":"Unicomplex",
+			"desc":"A Mobile deployable starbase, for security reasons it only accepts drones."
+		},
+		{
+			"nameA":"Quantum",
+			"nameH":"Ghost",
+			"nameC":"Eigenvector",
+			"desc":"An extremely experimental ship."
 		}
 	]
 }

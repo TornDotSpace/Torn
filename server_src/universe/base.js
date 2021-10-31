@@ -67,7 +67,7 @@ class Base {
             const botSpawn = Math.random();
             const healthPercent = Math.max(this.health / this.maxHealth, 0.1);
             if (botSpawn * healthPercent < botFrequency) {
-                spawnBot(this.sx, this.sy, this.assimilatedCol, healthPercent < 0.9);
+                spawnBaseBot(this.sx, this.sy, this.x, this.y, this.assimilatedCol, healthPercent < 0.9);
             }
         }
 
@@ -240,7 +240,7 @@ class Base {
             this.die = function () { };
         } else {
             const numBotsToSpawn = 2 + 4 * Math.random() * Math.random();
-            for (let i = 0; i < numBotsToSpawn; i++) spawnBot(this.sx, this.sy, this.color, true);
+            for (let i = 0; i < numBotsToSpawn; i++) spawnBaseBot(this.sx, this.sy, this.x, this.y, this.assimilatedCol, true);
             this.baseType = DEADBASE;
             this.deathTimer = raidTimer < 15000 ? 75 * 60 : (25 * 125);
         }
@@ -336,7 +336,7 @@ class Base {
     }
 
     assimilate (time, assimilator) { // A weapon of cyborg origin
-        this.dmg(this.health * 0.15, assimilator);
+        this.dmg(this.health * 0.02, assimilator);
         this.EMP(time / 3); // The crew is fighting hard to fend off the invaders! Some systems stop working and the base will take some damage
         this.assimilatedCol = assimilator.color; // But resistance is futile
         this.assimilatedTimer += time; // At least until the remaining crew manage to vent the invaders.
