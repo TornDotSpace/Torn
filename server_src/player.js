@@ -238,8 +238,11 @@ class Player {
                 else if (wep.name === `Photon Cloak`) this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
                 else if (wep.name === `Warp Drive`) {
                     this.speed = (wepns[29].speed * (this.ship === 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
+                    if (this.hyperdriveTimer > 0) { // Hyperspace warp
+                        this.hyperdriveTimer *= (this.energy2 + 0.5) * (this.superchargerTimer > 0 ? 2 : 1);
+                    }
                 }
-            } else if (wep.name === `Pulse Wave`) { // Velocity-Altering WWeapons
+            } else if (wep.name === `Pulse Wave`) { // Velocity-Altering Weapons
                 sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
                 for (const i in players[this.sy][this.sx]) {
                     const p = players[this.sy][this.sx][i];
@@ -389,7 +392,7 @@ class Player {
 
     shootEliteWeapon () {
         if (this.rank < this.ship) return;
-        if (this.ship === 16 || (this.ship == 25 && this.equipped === 0)) { // Elite Raider turbo
+        if (this.ship === 16) { // Elite Raider turbo
             // This effectively just shoots turbo.
             const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.015 : 1.01);
             this.speed *= mult;
@@ -423,10 +426,11 @@ class Player {
                 this.shootMineSpecific(44);
             }
         } else if ((this.ship === 24 || (this.ship === 25 && this.equipped === 7)) && tick % 60 === 0) { // r24 beehive swarm
-            if (this.ship === 24) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped);
-            else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
-        } else if (this.ship === 25 && this.equipped === 8) { // r25 disguise
-            this.disguise = 5;
+            if (this.ship === 24) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 1);
+            else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 25);
+        } else if (this.ship === 25) { // r25 improved slots
+            if (this.equipped === 0) this.hyperdriveTimer = 15; // Improved r16 "turbo", it's actually a max speed nerf, but an acceleration buff.
+            if (this.equipped === 8) this.disguise = 5; // r25 active disguise
         }
         this.reload(true, 0);
     }
@@ -467,15 +471,17 @@ class Player {
         const ore = this.iron + this.silver + this.platinum + this.copper;
 
         // In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
-        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer < 0 ? 1 : 0.2);
+        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer < 0 ? 1 : 0.3);
 
         // Reusable Trig
         const ssa = Math.sin(this.angle); const ssd = Math.sin(this.driftAngle); const csa = Math.cos(this.angle); const csd = Math.cos(this.driftAngle);
 
         this.vx = csd * this.speed; // convert polars to rectangulars
         this.vy = ssd * this.speed;
-        this.vx *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88;
-        this.vy *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88; // Air resistance
+        if (this.hyperdriveTimer <= 0) { // Air resistance doesn't make sense in hyperspace since between one tick and another we set the speed ignoring all of this
+            this.vx *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88;
+            this.vy *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88; // Air resistance
+        }
 
         if (this.w) { // Accelerate!
             this.vx += csa * newThrust;
