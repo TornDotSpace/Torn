@@ -154,13 +154,26 @@ class Bot extends Player {
 
         // give the killer stuff
         if ((b.owner != 0) && (typeof b.owner !== `undefined`) && (b.owner.type === `Player` || b.owner.type === `Base`)) {
-            b.owner.onKill(this);
-            b.owner.spoils(`experience`, (10 + diff * (this.color === b.owner.color ? -1 : 1)));
+            let objective = b;
+            if ((b.owner.type === `Player` && b.owner.isBot && b.owner.brainwashedBy !== 0)) { // Hypnoed bots give their master the spoils of killing other bots
+                let master = 0;
+                for (let sy = 0; sy < mapSz; sy++) {
+                    for (let sx = 0; sx < mapSz; sx++) {
+                        if (b.owner.brainwashedBy in players[sy][sx]) {
+                            master = players[sy][sx][b.owner.brainwashedBy];
+                            break;
+                        }
+                    }
+                }
+                if (!(typeof master === `undefined` || master === 0)) objective = master;
+            }
+            objective.owner.onKill(this);
+            objective.owner.spoils(`experience`, (10 + diff * (this.color === b.owner.color ? -1 : 1)));
             // Prevent farming and disincentivize targetting guests
-            b.owner.spoils(`money`, b.owner.type === `Player` ? (b.owner.killStreak * playerKillMoney) : playerKillMoney);
+            objective.owner.spoils(`money`, objective.owner.type === `Player` ? (objective.owner.killStreak * playerKillMoney) : playerKillMoney);
 
             if (this.points > 0) { // raid points
-                b.owner.points++;
+                objective.owner.points += this.points;
             }
         }
     }
