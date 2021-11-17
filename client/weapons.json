@@ -649,6 +649,19 @@
       "type": "Misc",
       "bot": false,
       "enabled": true
+    },
+    "50": {
+      "name": "Nailoth Web",
+      "range": 0,
+      "damage": 1,
+      "speed": 25,
+      "charge": 100,
+      "price": 15000,
+      "ammo": 20,
+      "level": 19,
+      "type": "Mine",
+      "bot": false,
+      "enabled": true
     }
   },
   "planets": [
