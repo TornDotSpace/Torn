@@ -426,8 +426,10 @@ class Player {
                 this.shootMineSpecific(44);
             }
         } else if ((this.ship === 24 || (this.ship === 25 && this.equipped === 7)) && tick % 60 === 0) { // r24 beehive swarm
-            if (this.ship === 24) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 1);
-            else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 25);
+            if (this.ship === 24) {
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 1);
+                if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 10);
+            } else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 25);
         } else if (this.ship === 25) { // r25 improved slots
             if (this.equipped === 0) this.hyperdriveTimer = 15; // Improved r16 "turbo", it's actually a max speed nerf, but an acceleration buff.
             if (this.equipped === 8) this.disguise = 5; // r25 active disguise
@@ -1032,7 +1034,14 @@ class Player {
 
         this.health -= d;
         if (this.health > this.maxHealth) this.health = this.maxHealth;
-        if (this.health < 0) this.die(origin);
+        if (this.health < 0) {
+            if (this.ship === 24) { // r24 beehive swarm
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 12);
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 22);
+            }
+            this.die(origin);
+        }
 
         if (d > 0) note(`-${Math.floor(d)}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
         if (d === 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)

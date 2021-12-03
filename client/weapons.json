@@ -965,8 +965,8 @@
       "capacity": 36500
     },
     {
-      "thrust": 0.01,
-      "health": 10000,
+      "thrust": 0.02,
+      "health": 9000,
       "agility": 1.0,
       "width": 400,
       "price": 12000000,
