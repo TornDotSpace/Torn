@@ -53,7 +53,7 @@ class Asteroid {
     tick () {
         const asteroidsHere = astCount[this.sy][this.sx];
         this.health -= Math.max(asteroidsHere * asteroidsHere / 2000, 0); // decay asteroids so they don't get too bunched up in any one area
-        if (this.health < -50) this.die(0);
+        if (this.health < 0) this.die(0);
         this.move();
         if (Math.abs(this.vx) + Math.abs(this.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players.
             for (const i in players[this.sy][this.sx]) {
@@ -135,6 +135,7 @@ class Asteroid {
         if (old_sx !== this.sx || old_sy !== this.sy) {
             delete asts[old_sy][old_sx][this.id];
             asts[this.sy][this.sx][this.id] = this;
+            if (this.health < 0) this.die(0);
         }
     }
 
@@ -184,6 +185,7 @@ class Asteroid {
         if (b.owner.type === `Player`) expGained = b.owner.rank < 10 ? 2 - b.owner.rank / 5 : 0;
         if (b.owner.type === `Player` || b.owner.type === `Base`) b.owner.spoils(`experience`, expGained);
         sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        delete asts[this.sy][this.sx][this.id];
     }
 
     dmg (d, origin) {
