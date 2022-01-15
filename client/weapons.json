@@ -556,8 +556,8 @@
       "ammo": -1,
       "level": 6,
       "type": "Orb",
-      "bot": false,
-      "enabled": false
+      "bot": true,
+      "enabled": true
     },
     "43": {
       "name": "Pulse Mine",
