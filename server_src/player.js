@@ -224,7 +224,7 @@ class Player {
             // Traditional missiles
             else if (wepId <= 14 || wep.name === `Proximity Fuze`) this.shootMissileSpecific(wepId);
             // <= 17: Traditional Mines
-            else if (wepId <= 17 || wep.name === `Impulse Mine` || wep.name === `Grenades` || wep.name === `Pulse Mine` || wep.name === `Campfire` || wep.name === `Magnetic Mine`) this.shootMine();
+            else if (wepId <= 17 || wep.name === `Impulse Mine` || wep.name === `Grenades` || wep.name === `Pulse Mine` || wep.name === `Campfire` || wep.name === `Magnetic Mine` || wep.name === `Nailoth Web`) this.shootMine();
             else if (wep.name === `Energy Disk` || wep.name === `Photon Orb`) this.shootOrb();
             else if (wep.name === `Muon Ray` || wep.name === `EMP Blast` || wep.name === `Hypno Ray` || wep.name === `Lepton Pulse`) this.shootBlast(wepId);
 
@@ -427,8 +427,15 @@ class Player {
             }
         } else if ((this.ship === 24 || (this.ship === 25 && this.equipped === 7)) && tick % 60 === 0) { // r24 beehive swarm
             if (this.ship === 24) {
-                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 1);
-                if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 10);
+                if (this.color === `red` || this.color === `green`) {
+                    spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 1);
+                    if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 10);
+                } else {
+                    for (let i = 0; i < this.ship * 0.5; i++) {
+                        spawnPortanavesBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+                        if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+                    }
+                }
             } else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 25);
         } else if (this.ship === 25) { // r25 improved slots
             if (this.equipped === 0) this.hyperdriveTimer = 15; // Improved r16 "turbo", it's actually a max speed nerf, but an acceleration buff.

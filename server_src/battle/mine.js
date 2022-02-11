@@ -58,7 +58,7 @@ class Mine {
                     this.shootMineSpecific(this.wepnID, this.angle + 3.1415 / 2, this.child + 1);
                     this.die();
                 }
-            } else if (this.time > 25) {
+            } else if (this.time > 25 && this.time % 5 == 0) {
                 this.shootBlast(34, 0);
                 this.shootBlast(47, 3.1415 / 2);
                 this.shootBlast(47, 3.1415);

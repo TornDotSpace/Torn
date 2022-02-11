@@ -25,6 +25,7 @@ class Bot extends Player {
         this.isBot = true;
         this.brainwashedBy = 0; // for enslaved bots
         this.rng = Math.random();
+        this.temporary = false;
     }
 
     flock () {
@@ -124,7 +125,8 @@ class Bot extends Player {
         if (enemies == 0 && Math.random() < 0.001) this.refillAllAmmo();
         let myDespawnRate = botDespawnRate;
         if (this.brainwashedBy !== 0) myDespawnRate /= 4;
-        if (enemies == 0 && Math.random() < myDespawnRate) this.die();
+        if (this.temporary) this.timer++;
+        if ((enemies == 0 && Math.random() < myDespawnRate) || (this.temporary && this.timer > 500)) this.die();
 
         const base = bases[this.sy][this.sx];
         if (base != 0 && hypot2(base.x, this.x, base.y, this.y) < close * 3 + square(150) && base.color != this.color) {
@@ -372,6 +374,45 @@ global.spawnPlayerBot = function (sx, sy, x, y, col, force, ship) {
     bot.thrust = ships[bot.ship].thrust * bot.thrust2;
     bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
     bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
+    const keys = Object.keys(wepns);
+    for (let i = 0; i < 10; i++) {
+        do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
+        while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot);
+    }
+    bot.refillAllAmmo();
+    players[bot.sy][bot.sx][bot.id] = bot;
+};
+
+global.spawnPortanavesBot = function (sx, sy, x, y, col, force, ship) {
+    if (!Config.getValue(`want-bots`, true)) return;
+
+    if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
+
+    if (trainingMode && Math.random() < 0.5) {
+        spawnNNBot(sx, sy, col);
+        return;
+    }
+
+    const bot = new Bot();
+    bot.angle = Math.random() * Math.PI * 2;
+    bot.sx = sx;
+    bot.sy = sy;
+    const rand = 4 * Math.random();
+    bot.experience = 1;
+    bot.updateRank();
+    bot.ship = ship;
+    bot.x = x;
+    bot.y = y;
+    bot.color = col;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `DRONE`;
+    bot.thrust2 = bot.capacity2 = bot.maxHealth2 = 0.5;
+    bot.agility2 = 15;
+    bot.energy2 = 0.25;
+    bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
+    bot.thrust = ships[bot.ship].thrust * bot.thrust2;
+    bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
+    bot.maxHealth = 1;
+    bot.temporary = true;
     const keys = Object.keys(wepns);
     for (let i = 0; i < 10; i++) {
         do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
