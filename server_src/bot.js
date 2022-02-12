@@ -444,7 +444,7 @@ global.spawnPortanavesBot = function (sx, sy, x, y, col, force, ship) {
 global.spawnBossBot = function (sx, sy, x, y) {
     if (!Config.getValue(`want-bots`, true)) return;
 
-    if (playerCount + botCount + guestCount > playerLimit && (!force || botCount > 2 * playerLimit)) return;
+    if (playerCount + botCount + guestCount > playerLimit && (botCount > 2 * playerLimit)) return;
 
     if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 
