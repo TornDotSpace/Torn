@@ -154,7 +154,7 @@ class Bot extends Player {
         if (b.type !== `Vortex`) {
             // drop a package
             const r = Math.random();
-            if (this.color !== `yellow`) {
+            if (this.temporary <= 0) {
                 if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier), only makes sense if this is not a bot
                 else if (Math.random() < 0.012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);// life
                 else if (Math.random() < 0.1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);// ammo
