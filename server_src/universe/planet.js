@@ -37,6 +37,11 @@ class Planet {
                 if (this.owner === p.name) p.money = p.money + 1 + Math.floor(Math.random() * 5); // give money to owner
             }
         }
+        /*
+        if (tick % 1000 == 6 && Math.random() < 0.01) {
+            spawnBossBot(this.sx, this.sy, this.x, this.y, true, 26);
+        }
+*/
     }
 }
 

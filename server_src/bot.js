@@ -25,7 +25,7 @@ class Bot extends Player {
         this.isBot = true;
         this.brainwashedBy = 0; // for enslaved bots
         this.rng = Math.random();
-        this.temporary = false;
+        this.temporary = 0;
     }
 
     flock () {
@@ -125,8 +125,8 @@ class Bot extends Player {
         if (enemies == 0 && Math.random() < 0.001) this.refillAllAmmo();
         let myDespawnRate = botDespawnRate;
         if (this.brainwashedBy !== 0) myDespawnRate /= 4;
-        if (this.temporary) this.timer++;
-        if ((enemies == 0 && Math.random() < myDespawnRate) || (this.temporary && this.timer > 500)) this.die();
+        if (this.temporary < 0) this.temporary--;
+        if ((enemies == 0 && Math.random() < myDespawnRate) || (this.temporary < -1000)) this.die();
 
         const base = bases[this.sy][this.sx];
         if (base != 0 && hypot2(base.x, this.x, base.y, this.y) < close * 3 + square(150) && base.color != this.color) {
@@ -176,6 +176,15 @@ class Bot extends Player {
 
             if (this.points > 0) { // raid points
                 objective.owner.points += this.points;
+            }
+            if (this.ship == 24 && this.color == `yellow`) { // Boss ship
+                for (const i in players[this.sy][this.sx]) { // Reward appropriately
+                    const p = players[this.sy][this.sx][i];
+                    p.spoils(`experience`, 100000); // reward them
+                    p.spoils(`money`, 20011109);
+                    p.killStreak += 5; // Bosses count for kill streaks
+                    p.killStreakTimer = 2000; // 80s
+                }
             }
         }
     }
@@ -412,7 +421,44 @@ global.spawnPortanavesBot = function (sx, sy, x, y, col, force, ship) {
     bot.thrust = ships[bot.ship].thrust * bot.thrust2;
     bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
     bot.maxHealth = 1;
-    bot.temporary = true;
+    bot.temporary = -960;
+    const keys = Object.keys(wepns);
+    for (let i = 0; i < 10; i++) {
+        do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
+        while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot);
+    }
+    bot.refillAllAmmo();
+    players[bot.sy][bot.sx][bot.id] = bot;
+};
+global.spawnBossBot = function (sx, sy, x, y, force, ship) {
+    if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
+
+    if (trainingMode && Math.random() < 0.5) {
+        spawnNNBot(sx, sy, col);
+        return;
+    }
+
+    const bot = new Bot();
+    bot.angle = Math.random() * Math.PI * 2;
+    bot.sx = sx;
+    bot.sy = sy;
+    const rand = 4 * Math.random();
+    bot.experience = 100000;
+    bot.updateRank();
+    bot.ship = ship;
+    bot.x = x;
+    bot.y = y;
+    bot.color = `yellow`;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `BOSS BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `BEHEMOTH`;
+    bot.thrust2 = bot.capacity2 = 6;
+    bot.maxHealth2 = 10;
+    bot.agility2 = 0.15;
+    bot.energy2 = 2;
+    bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
+    bot.thrust = ships[bot.ship].thrust * bot.thrust2;
+    bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
+    bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
+    bot.temporary = -1;
     const keys = Object.keys(wepns);
     for (let i = 0; i < 10; i++) {
         do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
