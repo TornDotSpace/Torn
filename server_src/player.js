@@ -1095,6 +1095,32 @@ class Player {
         this.kills++;
     }
 
+    onKillCheck (p, temporary) {
+    // kill streaks
+    // Don't award for guest kills
+        if (!p.guest && p.color !== this.color && !temporary) {
+            this.killStreak++;
+            this.killStreakTimer = 750;// 30s
+        }
+
+        if (this.ship == 19) {
+            for (const i in players[this.sy][this.sx]) {
+                const p = players[this.sy][this.sx][i];
+                if (p.color !== this.color) {
+                    if (p.isBot) p.EMP(100); // Original 70
+                    else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
+                }
+            }
+            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE) {
+                const b = bases[this.sy][this.sx];
+                b.EMP(150);
+            }
+            this.health += Math.min(Math.max(5, this.maxHealth * 0.03), this.maxHealth - this.health);
+        }
+
+        this.kills++;
+    }
+
     // Player_MP stubs
     onMined (a) {}
     checkKillAchievements (note, trailKill, friendKill) {}

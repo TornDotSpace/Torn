@@ -154,7 +154,7 @@ class Bot extends Player {
         if (b.type !== `Vortex`) {
             // drop a package
             const r = Math.random();
-            if (this.temporary <= 0) {
+            if (this.temporary >= 0) {
                 if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier), only makes sense if this is not a bot
                 else if (Math.random() < 0.012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);// life
                 else if (Math.random() < 0.1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);// ammo
@@ -177,7 +177,8 @@ class Bot extends Player {
                 }
                 if (!(typeof master === `undefined` || master === 0)) objective = master;
             }
-            objective.owner.onKill(this);
+            if (this.temporary >= 0) objective.owner.onKillCheck(this, true);
+            else objective.owner.onKill(this);
             objective.owner.spoils(`experience`, (10 + diff * (this.color === b.owner.color ? -1 : 1)));
             // Prevent farming and disincentivize targetting guests
             objective.owner.spoils(`money`, objective.owner.type === `Player` ? (objective.owner.killStreak * playerKillMoney) : playerKillMoney);
@@ -391,6 +392,7 @@ global.spawnPlayerBot = function (sx, sy, x, y, col, force, ship) {
     bot.thrust = ships[bot.ship].thrust * bot.thrust2;
     bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
     bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
+    bot.temporary = -1;
     const keys = Object.keys(wepns);
     for (let i = 0; i < 10; i++) {
         do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
