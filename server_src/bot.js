@@ -97,7 +97,7 @@ class Bot extends Player {
     }
 
     botPlay () {
-        if ((this.color === `yellow`) && (tick % 60 == 0) && (this.health < this.maxHealth * 0.5)) {
+        if ((this.color === `yellow`) && (tick % 60 == 0) && (this.health < this.maxHealth * 0.25)) {
             for (let i = 0; i < this.ship * 0.5; i++) {
                 spawnPortanavesBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
                 if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
@@ -384,7 +384,7 @@ global.spawnPlayerBot = function (sx, sy, x, y, col, force, ship) {
     bot.x = x;
     bot.y = y;
     bot.color = col;
-    bot.name = Config.getValue(`want_bot_names`, false) ? `BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `DRONE`;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `P BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `P DRONE`;
     bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * 0.25) + 0.7);
     bot.energy2 = Math.floor((bot.thrust2 - 1) * 5 / 2) / 5 + 1;
     bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
@@ -422,7 +422,7 @@ global.spawnPortanavesBot = function (sx, sy, x, y, col, force, ship) {
     bot.x = x;
     bot.y = y;
     bot.color = col;
-    bot.name = Config.getValue(`want_bot_names`, false) ? `BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `DRONE`;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `Interceptor ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `INTERCEPTOR`;
     bot.thrust2 = bot.capacity2 = bot.maxHealth2 = 0.5;
     bot.agility2 = 15;
     bot.energy2 = 0.25;
