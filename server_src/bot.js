@@ -97,6 +97,12 @@ class Bot extends Player {
     }
 
     botPlay () {
+        if ((this.color === `yellow`) && (tick % 60 == 0) && (this.health < this.maxHealth * 0.5)) {
+            for (let i = 0; i < this.ship * 0.5; i++) {
+                spawnPortanavesBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+                if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
+            }
+        }
         if (tick % 8 != Math.floor(this.rng * 8)) return; // Lag prevention, also makes the bots a bit easier
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
@@ -148,10 +154,12 @@ class Bot extends Player {
         if (b.type !== `Vortex`) {
             // drop a package
             const r = Math.random();
-            if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier), only makes sense if this is not a bot
-            else if (Math.random() < 0.012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);// life
-            else if (Math.random() < 0.1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);// ammo
-            else packs[this.sy][this.sx][r] = new Package(this, r, 1);// coin
+            if (this.color !== `yellow`) {
+                if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier), only makes sense if this is not a bot
+                else if (Math.random() < 0.012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);// life
+                else if (Math.random() < 0.1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);// ammo
+                else packs[this.sy][this.sx][r] = new Package(this, r, 1);// coin
+            }
         }
 
         // give the killer stuff
@@ -430,7 +438,7 @@ global.spawnPortanavesBot = function (sx, sy, x, y, col, force, ship) {
     bot.refillAllAmmo();
     players[bot.sy][bot.sx][bot.id] = bot;
 };
-global.spawnBossBot = function (sx, sy, x, y, force, ship) {
+global.spawnBossBot = function (sx, sy, x, y) {
     if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 
     if (trainingMode && Math.random() < 0.5) {
@@ -445,19 +453,19 @@ global.spawnBossBot = function (sx, sy, x, y, force, ship) {
     const rand = 4 * Math.random();
     bot.experience = 100000;
     bot.updateRank();
-    bot.ship = ship;
+    bot.ship = 15;
     bot.x = x;
     bot.y = y;
     bot.color = `yellow`;
-    bot.name = Config.getValue(`want_bot_names`, false) ? `BOSS BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `BEHEMOTH`;
-    bot.thrust2 = bot.capacity2 = 6;
-    bot.maxHealth2 = 10;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `BEHEMOTH ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `BEHEMOTH`;
+    bot.thrust2 = bot.capacity2 = 1;
+    bot.maxHealth2 = 20;
     bot.agility2 = 0.15;
-    bot.energy2 = 2;
+    bot.energy2 = 5;
     bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
     bot.thrust = ships[bot.ship].thrust * bot.thrust2;
     bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
-    bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
+    bot.maxHealth = bot.health = 50000;
     bot.temporary = -1;
     const keys = Object.keys(wepns);
     for (let i = 0; i < 10; i++) {
