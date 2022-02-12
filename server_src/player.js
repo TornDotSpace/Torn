@@ -1098,7 +1098,7 @@ class Player {
     onKillCheck (p, temporary) {
     // kill streaks
     // Don't award for guest kills
-        if (!p.guest && p.color !== this.color && !temporary) {
+        if (!p.guest && p.color !== this.color && temporary >= 0) {
             this.killStreak++;
             this.killStreakTimer = 750;// 30s
         }
