@@ -93,9 +93,8 @@ process.on(`unhandledRejection`, (err) => {
     console.log(`[SERVER] Unhandled promise rejection - this is a bug!`);
 
     const crashReport = `==== TORN.SPACE ERROR REPORT ====\nUnhandled promise rejection\n\nTime: ${new Date()}\nStack Trace: ${err.stack}`;
-    if (Config.getValue(`debug`, true)) {
-        console.error(crashReport);
-    } else {
+    console.log(crashReport);
+    if (!Config.getValue(`debug`, true)) {
         send_rpc(`/crash/`, crashReport);
     }
 });
