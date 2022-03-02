@@ -1,15 +1,15 @@
-@import './palette.css';
+@import "./palette.css";
 
 @font-face {
-  font-family: 'ShareTech';
-  src: url('/assets/fonts/ShareTech.ttf');
+  font-family: ShareTech;
+  src: url("/assets/fonts/ShareTech.ttf");
   font-stretch: condensed;
 }
 
 body {
-  font-family: 'ShareTech';
+  font-family: ShareTech;
   color: var(--white);
-  background-image: url('/img/space/Background.png');
+  background-image: url("/img/space/Background.png");
   background-color: var(--black);
 }
 

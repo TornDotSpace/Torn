@@ -46,7 +46,7 @@ class Chat extends React.Component<{}, { messages: any[] }> {
 
     fadeOut = (id: number) => {
         this.setState({ messages: this.state.messages.map(message => (message.id === id ? { ...message, fadeOut: true } : message)) });
-    }
+    };
 
     addMsg = (data: any) => {
         data.id = Math.floor(Math.random() * 999);
@@ -56,11 +56,11 @@ class Chat extends React.Component<{}, { messages: any[] }> {
             this.fadeOut(data.id);
             setTimeout(() => this.removeMsg(data.id), 2e3);
         }, 6e4);
-    }
+    };
 
     removeMsg = (id: number) => {
         this.setState({ messages: this.state.messages.filter(message => message.id !== id) });
-    }
+    };
 
     render = () => (
         <div className="chat">
@@ -81,7 +81,7 @@ class Chat extends React.Component<{}, { messages: any[] }> {
 
             <ChatInput />
         </div>
-    )
+    );
 }
 
 export default Chat;

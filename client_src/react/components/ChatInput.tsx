@@ -24,7 +24,7 @@ declare const stopTyping: any;
 let ChatState: { init: any, activate: any, focusChat: any, unfocusChat: any };
 
 class ChatInput extends React.Component<{}, { value: string, activated: boolean }> {
-    chat: React.RefObject<HTMLInputElement>
+    chat: React.RefObject<HTMLInputElement>;
     constructor (props: {}) {
         super(props);
 
@@ -38,19 +38,19 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
 
     init = (data: { value: string, activated: boolean }) => {
         this.setState(data);
-    }
+    };
 
     activate = () => {
         this.setState({ value: this.state.value, activated: true });
-    }
+    };
 
     focusChat = () => {
         this.chat.current.focus();
-    }
+    };
 
     unfocusChat = () => {
         this.chat.current.blur();
-    }
+    };
 
     keypress = (event) => {
         if (event.key === `Enter`) {
@@ -64,14 +64,14 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
             // but we want the typing=false event to dominate.
             setTimeout(stopTyping, 50);
         }
-    }
+    };
 
     change = (event) => {
         this.setState({
             value: event.target.value,
             activated: this.state.activated
         });
-    }
+    };
 
     componentDidMount = () => {
         // Pass internal states to the exportable object.
@@ -81,7 +81,7 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
             focusChat: () => this.focusChat(),
             unfocusChat: () => this.unfocusChat()
         };
-    }
+    };
 
     render = () => this.state.activated
         ? (
@@ -95,7 +95,7 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
                 placeholder="Press enter to chat!"
                 type="text" />
         )
-        : null
+        : null;
 }
 
 export {

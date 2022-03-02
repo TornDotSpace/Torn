@@ -26,7 +26,8 @@
     "rules": {
       "font-family-no-missing-generic-family-keyword": null,
       "no-duplicate-selectors": null,
-      "no-descending-specificity": null
+      "no-descending-specificity": null,
+      "selector-id-pattern": null
     }
   },
   "pre-commit": [

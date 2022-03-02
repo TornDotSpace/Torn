@@ -30,13 +30,13 @@ class MuteButton extends React.Component<{}, { muted: boolean }> {
 
     click = () => {
         this.setState({ muted: toggleSFX() });
-    }
+    };
 
     render = () => (
         <button className="mute-button" onClick={this.click.bind(this)}>
             {<img src={`/img/sound/sound${!this.state.muted ? `On` : `Off`}.png`} alt="SFX mute button"/>}
         </button>
-    )
+    );
 }
 
 export default MuteButton;

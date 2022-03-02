@@ -1,4 +1,4 @@
-@import '../index.css';
+@import "../index.css";
 
 * {
   box-sizing: border-box;
@@ -97,7 +97,7 @@ body,
 #registerR,
 #registerG,
 #registerB {
-  font-family: 'ShareTech';
+  font-family: ShareTech;
   font-size: 16px;
   padding: 5px;
   margin-top: 5px;
@@ -251,7 +251,7 @@ body,
 }
 
 .chat-input {
-  font-family: 'ShareTech';
+  font-family: ShareTech;
   background: transparent;
   color: var(--white);
   width: 384px;

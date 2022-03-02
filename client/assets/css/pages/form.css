@@ -1,16 +1,16 @@
-@import '../index.css';
+@import "../index.css";
 
 body {
   font-family: var(--bs-font-sans-serif) !important;
 }
 
 form {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgb(0 0 0 / 50%);
 }
 
 input.form-control,
 input.form-control:focus {
-  background-color: rgba(100, 100, 100, 0.25);
+  background-color: rgb(100 100 100 / 25%);
   color: #fff;
   border: none;
 }
