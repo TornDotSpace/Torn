@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const MONGO_CONNECTION_STR = Config.getValue(`mongo_connection_string`, `mongodb://localhost:27017/torn`);
+const MONGO_CONNECTION_STR = Config.getValue(`mongo_connection_string`, `mongodb://127.0.0.1:27017/torn`);
 let PLAYER_DATABASE = null;
 let TURRET_DATABASE = null;
 const MongoClient = require(`mongodb`).MongoClient;
