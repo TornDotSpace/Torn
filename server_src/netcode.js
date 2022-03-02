@@ -141,7 +141,8 @@ module.exports = initNetcode = () => {
                     listener(data);
                 } catch (err) {
                     // Log data to help us perform bug triage
-                    const crashReport = `==== TORN.SPACE ERROR REPORT ====\nError Time: ${new Date()}\n\Event: ${the_event}\n\Stack Trace: ${err.stack}`;
+                    const name = socket.player === undefined ? `{UNCONNECTED}` : socket.player.name;
+                    const crashReport = `==== TORN.SPACE ERROR REPORT ====\nError Time: ${new Date()}\n\Event: ${the_event}\n\Stack Trace: ${err.stack}\n${name}`;
                     if (Config.getValue(`debug`, true)) console.error(crashReport);
                     else send_rpc(`/crash/`, crashReport);
 
@@ -715,6 +716,15 @@ module.exports = initNetcode = () => {
             if (data.trail == 4 && (player.randomAchievements[randomAchievementsAmount - 1] || player.tag === `B`)) player.trail = 4;
             if (data.trail == 5 && (player.tag === `B` || player.tag === `O` || player.tag === `A`)) player.trail = 5;
             if (player.tag === `V` || player.tag === `B` || player.tag === `O` || player.tag === `A`) player.trail += 16;
+        });
+        socket.on(`error`, (data) => {
+            // should use the crash logger here but i dont feel like getting it banned from discord for spam.
+            // since anyone can just emit an error? (what the hell socket.io!)
+            const name = socket.player === undefined ? `{UNCONNECTED}` : socket.player.name;
+            console.error(`Received error event from client, terminating connection to ${ip} / ${name}. ${data}`);
+            // Eject the player from the game: we don't know if they're in a valid state
+            socket.emit(`kick`, { msg: `Internal server error.` });
+            socket.disconnect();
         });
     });
 };
