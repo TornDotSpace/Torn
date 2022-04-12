@@ -53,16 +53,23 @@ class Mine {
         if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
         if (this.wepnID === 50) { // Nailoth mine
             if (this.time === 25) {
-                if (this.child < 2) {
-                    this.shootMineSpecific(this.wepnID, this.angle - 3.1415 / 2, this.child + 1);
-                    this.shootMineSpecific(this.wepnID, this.angle + 3.1415 / 2, this.child + 1);
+                if (this.child == 0) {
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle + 3.1415 / 2, this.child + 2, wepns[this.wepnID].speed);
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle + 3.1415 / 2, this.child + 1, -wepns[this.wepnID].speed);
                     this.die();
+                } else if (this.child == 1 || this.child == 2) {
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle - 3.1415 / 2, this.child + 2, 1.5 * wepns[this.wepnID].speed);
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle - 3.1415 / 2 * (this.child - 1), this.child + 4, 0);
+                    this.die();
+                } else if (this.child == 3 || this.child == 4) {
+                    this.angle += (3.1415 / 2 * (this.child - 1));
                 }
             } else if (this.time > 25 && this.time % 5 == 0) {
+                this.vx = 0;
+                this.vy = 0;
                 this.shootBlast(34, 0);
-                this.shootBlast(47, 3.1415 / 2);
-                this.shootBlast(47, 3.1415);
-                this.shootBlast(47, 3 * 3.1415 / 2);
+                if (this.time % 500 == 0 && Math.random() < 0.1) this.shootBlast(25, -3.1415 / 4);
+                this.shootBlast(47, -3.1415 / 2);
             } else this.move();
         } else this.move(); // not only grenade, anything EM'ed
         if (this.wepnID == 43 && this.time % 8 == 0) this.doPulse(); // pulse
@@ -228,14 +235,19 @@ class Mine {
     }
 
     shootMineSpecific (aWeapon, angle, gen) {
+        shootMineSpecificSpeed(aWeapon, angle, gen, wepns[aWeapon].speed);
+    }
+
+    shootMineSpecificSpeed (aWeapon, angle, gen, speed) {
         const r = Math.random();
         const mine = new Mine(this.owner, r, aWeapon);
         mine.x = this.x;
         mine.y = this.y;
         mine.sx = this.sx;
         mine.sy = this.sy;
-        mine.vx = Math.cos(angle) * wepns[aWeapon].speed; // grenades are the only mines that move on its own
-        mine.vy = Math.sin(angle) * wepns[aWeapon].speed;
+        mine.angle = angle;
+        mine.vx = Math.cos(angle) * speed; // grenades are the only mines that move on its own
+        mine.vy = Math.sin(angle) * speed;
         mine.child = gen;
         mines[this.sy][this.sx][r] = mine;
     }
