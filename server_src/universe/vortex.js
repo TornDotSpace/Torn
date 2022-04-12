@@ -98,6 +98,7 @@ class Vortex {
                         a.y = this.yo;
                         a.x = this.xo; // teleport them to the output node
                         asts[a.sy][a.sx][a.id] = a;
+                        if (a.health < 0) a.die(this);
                     }
                 }
             }

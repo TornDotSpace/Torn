@@ -109,6 +109,7 @@ const loadAllImages = () => {
     loadImage(`laserMine`, `/img/weapons/laserMine.png`);
     loadImage(`pulseMine`, `/img/weapons/pulseMine.png`);
     loadImage(`campfire`, `/img/weapons/campfire.png`);
+    loadImage(`nailoth`, `/img/weapons/nailothWeb.png`);
 
     loadImage(`bigBullet`, `/img/weapons/bigBullet.png`);
 

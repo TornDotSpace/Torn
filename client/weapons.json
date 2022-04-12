@@ -556,8 +556,8 @@
       "ammo": -1,
       "level": 6,
       "type": "Orb",
-      "bot": false,
-      "enabled": false
+      "bot": true,
+      "enabled": true
     },
     "43": {
       "name": "Pulse Mine",
@@ -647,6 +647,19 @@
       "ammo": -1,
       "level": 13,
       "type": "Misc",
+      "bot": false,
+      "enabled": true
+    },
+    "50": {
+      "name": "Nailoth Web",
+      "range": 0,
+      "damage": 1,
+      "speed": 25,
+      "charge": 100,
+      "price": 15000,
+      "ammo": 20,
+      "level": 19,
+      "type": "Mine",
       "bot": false,
       "enabled": true
     }
@@ -952,8 +965,8 @@
       "capacity": 36500
     },
     {
-      "thrust": 0.01,
-      "health": 10000,
+      "thrust": 0.02,
+      "health": 9000,
       "agility": 1.0,
       "width": 400,
       "price": 12000000,
@@ -962,9 +975,9 @@
     },
     {
       "thrust": 0.66,
-      "health": 1.0,
+      "health": 5.0,
       "agility": 1.0,
-      "width": 128,
+      "width": 48,
       "price": 12000000,
       "weapons": 10,
       "capacity": 5000

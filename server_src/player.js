@@ -224,7 +224,7 @@ class Player {
             // Traditional missiles
             else if (wepId <= 14 || wep.name === `Proximity Fuze`) this.shootMissileSpecific(wepId);
             // <= 17: Traditional Mines
-            else if (wepId <= 17 || wep.name === `Impulse Mine` || wep.name === `Grenades` || wep.name === `Pulse Mine` || wep.name === `Campfire` || wep.name === `Magnetic Mine`) this.shootMine();
+            else if (wepId <= 17 || wep.name === `Impulse Mine` || wep.name === `Grenades` || wep.name === `Pulse Mine` || wep.name === `Campfire` || wep.name === `Magnetic Mine` || wep.name === `Nailoth Web`) this.shootMine();
             else if (wep.name === `Energy Disk` || wep.name === `Photon Orb`) this.shootOrb();
             else if (wep.name === `Muon Ray` || wep.name === `EMP Blast` || wep.name === `Hypno Ray` || wep.name === `Lepton Pulse`) this.shootBlast(wepId);
 
@@ -238,8 +238,11 @@ class Player {
                 else if (wep.name === `Photon Cloak`) this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
                 else if (wep.name === `Warp Drive`) {
                     this.speed = (wepns[29].speed * (this.ship === 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
+                    if (this.hyperdriveTimer > 0) { // Hyperspace warp
+                        this.hyperdriveTimer *= (this.energy2 + 0.5) * (this.superchargerTimer > 0 ? 2 : 1);
+                    }
                 }
-            } else if (wep.name === `Pulse Wave`) { // Velocity-Altering WWeapons
+            } else if (wep.name === `Pulse Wave`) { // Velocity-Altering Weapons
                 sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
                 for (const i in players[this.sy][this.sx]) {
                     const p = players[this.sy][this.sx][i];
@@ -389,7 +392,7 @@ class Player {
 
     shootEliteWeapon () {
         if (this.rank < this.ship) return;
-        if (this.ship === 16 || (this.ship == 25 && this.equipped === 0)) { // Elite Raider turbo
+        if (this.ship === 16) { // Elite Raider turbo
             // This effectively just shoots turbo.
             const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.015 : 1.01);
             this.speed *= mult;
@@ -423,10 +426,20 @@ class Player {
                 this.shootMineSpecific(44);
             }
         } else if ((this.ship === 24 || (this.ship === 25 && this.equipped === 7)) && tick % 60 === 0) { // r24 beehive swarm
-            if (this.ship === 24) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped);
-            else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
-        } else if (this.ship === 25 && this.equipped === 8) { // r25 disguise
-            this.disguise = 5;
+            if (this.ship === 24) {
+                if (this.color === `red` || this.color === `green`) {
+                    spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 1);
+                    if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 10);
+                } else {
+                    for (let i = 0; i < this.ship * 0.5; i++) {
+                        spawnPortanavesBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+                        if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+                    }
+                }
+            } else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 25);
+        } else if (this.ship === 25) { // r25 improved slots
+            if (this.equipped === 0) this.hyperdriveTimer = 15; // Improved r16 "turbo", it's actually a max speed nerf, but an acceleration buff.
+            if (this.equipped === 8) this.disguise = 5; // r25 active disguise
         }
         this.reload(true, 0);
     }
@@ -467,15 +480,17 @@ class Player {
         const ore = this.iron + this.silver + this.platinum + this.copper;
 
         // In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
-        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer < 0 ? 1 : 0.2);
+        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer < 0 ? 1 : 0.3);
 
         // Reusable Trig
         const ssa = Math.sin(this.angle); const ssd = Math.sin(this.driftAngle); const csa = Math.cos(this.angle); const csd = Math.cos(this.driftAngle);
 
         this.vx = csd * this.speed; // convert polars to rectangulars
         this.vy = ssd * this.speed;
-        this.vx *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88;
-        this.vy *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88; // Air resistance
+        if (this.hyperdriveTimer <= 0) { // Air resistance doesn't make sense in hyperspace since between one tick and another we set the speed ignoring all of this
+            this.vx *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88;
+            this.vy *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88; // Air resistance
+        }
 
         if (this.w) { // Accelerate!
             this.vx += csa * newThrust;
@@ -1026,7 +1041,14 @@ class Player {
 
         this.health -= d;
         if (this.health > this.maxHealth) this.health = this.maxHealth;
-        if (this.health < 0) this.die(origin);
+        if (this.health < 0) {
+            if (this.ship === 24) { // r24 beehive swarm
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 12);
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 22);
+            }
+            this.die(origin);
+        }
 
         if (d > 0) note(`-${Math.floor(d)}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
         if (d === 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
@@ -1051,6 +1073,32 @@ class Player {
     // kill streaks
     // Don't award for guest kills
         if (!p.guest && p.color !== this.color) {
+            this.killStreak++;
+            this.killStreakTimer = 750;// 30s
+        }
+
+        if (this.ship == 19) {
+            for (const i in players[this.sy][this.sx]) {
+                const p = players[this.sy][this.sx][i];
+                if (p.color !== this.color) {
+                    if (p.isBot) p.EMP(100); // Original 70
+                    else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
+                }
+            }
+            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE) {
+                const b = bases[this.sy][this.sx];
+                b.EMP(150);
+            }
+            this.health += Math.min(Math.max(5, this.maxHealth * 0.03), this.maxHealth - this.health);
+        }
+
+        this.kills++;
+    }
+
+    onKillCheck (p, temporary) {
+    // kill streaks
+    // Don't award for guest kills
+        if (!p.guest && p.color !== this.color && temporary >= 0) {
             this.killStreak++;
             this.killStreakTimer = 750;// 30s
         }

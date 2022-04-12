@@ -1268,6 +1268,8 @@ global.rMines = function () {
             img = Img.campfire;
         } else if (selfo.wepnID == 48) {
             img = Img.magneticMine;
+        } else if (selfo.wepnID == 50) {
+            img = Img.nailoth;
         } else if (selfo.wepnID == 32) {
             ctx.save();
             ctx.globalAlpha = 0.1;

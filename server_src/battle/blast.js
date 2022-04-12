@@ -74,7 +74,7 @@ class Blast {
 
                 const fx = m.x - Math.cos(this.angle) * pDist;
                 const fy = m.y - Math.sin(this.angle) * pDist;
-                if (Math.hypot(fx - this.bx, fy - this.by) < 64 * 2 / 3) m.die(); // hits the mine.
+                if (Math.hypot(fx - this.bx, fy - this.by) < 64 * 2 / 3 && ((m.wepnID != 50) || (m.wepnID == 50 && m.color == !this.owner.color))) m.die(); // hits the mine.
             }
 
             if (this.weaponID !== 25) {

@@ -16,6 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 const Beam = require(`./beam.js`);
+const Blast = require(`./blast.js`);
 
 class Mine {
     constructor (ownr, i, weaponID) {
@@ -28,6 +29,7 @@ class Mine {
 
         this.x = ownr.x;
         this.y = ownr.y;
+        this.angle = ownr.angle;
         this.vx = Math.cos(ownr.angle) * wepns[weaponID].speed; // grenades are the only mines that move on its own
         this.vy = Math.sin(ownr.angle) * wepns[weaponID].speed;
         this.sx = ownr.sx;
@@ -35,6 +37,7 @@ class Mine {
 
         this.owner = ownr;
         this.wepnID = weaponID;
+        this.child = 0;
     }
 
     tick () {
@@ -48,8 +51,27 @@ class Mine {
         }
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
         if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
-
-        this.move(); // not only grenade, anything EM'ed
+        if (this.wepnID === 50) { // Nailoth mine
+            if (this.time === 25) {
+                if (this.child == 0) {
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle + 3.1415 / 2, this.child + 2, wepns[this.wepnID].speed);
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle + 3.1415 / 2, this.child + 1, -wepns[this.wepnID].speed);
+                    this.die();
+                } else if (this.child == 1 || this.child == 2) {
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle - 3.1415 / 2, this.child + 2, 1.5 * wepns[this.wepnID].speed);
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle - 3.1415 / 2 * (this.child - 1), this.child + 4, 0);
+                    this.die();
+                } else if (this.child == 3 || this.child == 4) {
+                    this.angle += (3.1415 / 2 * (this.child - 1));
+                }
+            } else if (this.time > 25 && this.time % 5 == 0) {
+                this.vx = 0;
+                this.vy = 0;
+                this.shootBlast(34, 0);
+                if (this.time % 500 == 0 && Math.random() < 0.1) this.shootBlast(25, -3.1415 / 4);
+                this.shootBlast(47, -3.1415 / 2);
+            } else this.move();
+        } else this.move(); // not only grenade, anything EM'ed
         if (this.wepnID == 43 && this.time % 8 == 0) this.doPulse(); // pulse
         if (this.wepnID == 44 && this.time % 25 == 0) this.doHeal(); // campfire
     }
@@ -210,6 +232,36 @@ class Mine {
             b.dmg(this.dmg, this);
             this.die();
         }
+    }
+
+    shootMineSpecific (aWeapon, angle, gen) {
+        shootMineSpecificSpeed(aWeapon, angle, gen, wepns[aWeapon].speed);
+    }
+
+    shootMineSpecificSpeed (aWeapon, angle, gen, speed) {
+        const r = Math.random();
+        const mine = new Mine(this.owner, r, aWeapon);
+        mine.x = this.x;
+        mine.y = this.y;
+        mine.sx = this.sx;
+        mine.sy = this.sy;
+        mine.angle = angle;
+        mine.vx = Math.cos(angle) * speed; // grenades are the only mines that move on its own
+        mine.vy = Math.sin(angle) * speed;
+        mine.child = gen;
+        mines[this.sy][this.sx][r] = mine;
+    }
+
+    shootBlast (aWeapon, angle) {
+        const r = Math.random();
+        const blast = new Blast(this.owner, r, aWeapon);
+        blast.bx = this.x;
+        blast.by = this.y;
+        blast.sx = this.sx;
+        blast.sy = this.sy;
+        blast.angle = this.angle + angle;
+        blast.webMult = 1000;
+        blasts[this.sy][this.sx][r] = blast;
     }
 
     die () {

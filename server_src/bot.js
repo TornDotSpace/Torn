@@ -25,6 +25,7 @@ class Bot extends Player {
         this.isBot = true;
         this.brainwashedBy = 0; // for enslaved bots
         this.rng = Math.random();
+        this.temporary = 0;
     }
 
     flock () {
@@ -96,6 +97,12 @@ class Bot extends Player {
     }
 
     botPlay () {
+        if ((this.color === `yellow`) && (tick % 60 == 0) && (this.health < this.maxHealth * 0.25)) {
+            for (let i = 0; i < this.ship * 0.5; i++) {
+                spawnPortanavesBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+                if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
+            }
+        }
         if (tick % 8 != Math.floor(this.rng * 8)) return; // Lag prevention, also makes the bots a bit easier
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
@@ -124,7 +131,8 @@ class Bot extends Player {
         if (enemies == 0 && Math.random() < 0.001) this.refillAllAmmo();
         let myDespawnRate = botDespawnRate;
         if (this.brainwashedBy !== 0) myDespawnRate /= 4;
-        if (enemies == 0 && Math.random() < myDespawnRate) this.die();
+        if (this.temporary < 0) this.temporary--;
+        if ((enemies == 0 && Math.random() < myDespawnRate) || (this.temporary < -1000)) this.die();
 
         const base = bases[this.sy][this.sx];
         if (base != 0 && hypot2(base.x, this.x, base.y, this.y) < close * 3 + square(150) && base.color != this.color) {
@@ -146,21 +154,45 @@ class Bot extends Player {
         if (b.type !== `Vortex`) {
             // drop a package
             const r = Math.random();
-            if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier), only makes sense if this is not a bot
-            else if (Math.random() < 0.012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);// life
-            else if (Math.random() < 0.1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);// ammo
-            else packs[this.sy][this.sx][r] = new Package(this, r, 1);// coin
+            if (this.temporary >= 0) {
+                if (this.hasPackage && !this.isBot) packs[this.sy][this.sx][r] = new Package(this, r, 0); // an actual package (courier), only makes sense if this is not a bot
+                else if (Math.random() < 0.012 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 2);// life
+                else if (Math.random() < 0.1 && !this.guest) packs[this.sy][this.sx][r] = new Package(this, r, 3);// ammo
+                else packs[this.sy][this.sx][r] = new Package(this, r, 1);// coin
+            }
         }
 
         // give the killer stuff
         if ((b.owner != 0) && (typeof b.owner !== `undefined`) && (b.owner.type === `Player` || b.owner.type === `Base`)) {
-            b.owner.onKill(this);
-            b.owner.spoils(`experience`, (10 + diff * (this.color === b.owner.color ? -1 : 1)));
+            let objective = b;
+            if ((b.owner.type === `Player` && b.owner.isBot && b.owner.brainwashedBy !== 0)) { // Hypnoed bots give their master the spoils of killing other bots
+                let master = 0;
+                for (let sy = 0; sy < mapSz; sy++) {
+                    for (let sx = 0; sx < mapSz; sx++) {
+                        if (b.owner.brainwashedBy in players[sy][sx]) {
+                            master = players[sy][sx][b.owner.brainwashedBy];
+                            break;
+                        }
+                    }
+                }
+                if (!(typeof master === `undefined` || master === 0)) objective = master;
+            }
+            objective.owner.onKillCheck(this, temporary);
+            objective.owner.spoils(`experience`, (10 + diff * (this.color === b.owner.color ? -1 : 1)));
             // Prevent farming and disincentivize targetting guests
-            b.owner.spoils(`money`, b.owner.type === `Player` ? (b.owner.killStreak * playerKillMoney) : playerKillMoney);
+            objective.owner.spoils(`money`, objective.owner.type === `Player` ? (objective.owner.killStreak * playerKillMoney) : playerKillMoney);
 
             if (this.points > 0) { // raid points
-                b.owner.points++;
+                objective.owner.points += this.points;
+            }
+            if (this.ship == 24 && this.color == `yellow`) { // Boss ship
+                for (const i in players[this.sy][this.sx]) { // Reward appropriately
+                    const p = players[this.sy][this.sx][i];
+                    p.spoils(`experience`, 100000); // reward them
+                    p.spoils(`money`, 20011109);
+                    p.killStreak += 5; // Bosses count for kill streaks
+                    p.killStreakTimer = 2000; // 80s
+                }
             }
         }
     }
@@ -332,7 +364,7 @@ global.spawnBaseBot = function (sx, sy, x, y, col, force) {
 global.spawnPlayerBot = function (sx, sy, x, y, col, force, ship) {
     if (!Config.getValue(`want-bots`, true)) return;
 
-    if (playerCount + botCount + guestCount > playerLimit && !force) return;
+    if (playerCount + botCount + guestCount > playerLimit && (!force || botCount > 2 * playerLimit)) return;
 
     if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 
@@ -352,13 +384,96 @@ global.spawnPlayerBot = function (sx, sy, x, y, col, force, ship) {
     bot.x = x;
     bot.y = y;
     bot.color = col;
-    bot.name = Config.getValue(`want_bot_names`, false) ? `BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `DRONE`;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `P BOT ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `P DRONE`;
     bot.thrust2 = bot.capacity2 = bot.maxHealth2 = bot.agility2 = Math.max(1, (Math.floor(rand * 2) * 0.25) + 0.7);
     bot.energy2 = Math.floor((bot.thrust2 - 1) * 5 / 2) / 5 + 1;
     bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
     bot.thrust = ships[bot.ship].thrust * bot.thrust2;
     bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
     bot.maxHealth = bot.health = Math.round(ships[bot.ship].health * bot.maxHealth2);
+    bot.temporary = -1;
+    const keys = Object.keys(wepns);
+    for (let i = 0; i < 10; i++) {
+        do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
+        while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot);
+    }
+    bot.refillAllAmmo();
+    players[bot.sy][bot.sx][bot.id] = bot;
+};
+
+global.spawnPortanavesBot = function (sx, sy, x, y, col, force, ship) {
+    if (!Config.getValue(`want-bots`, true)) return;
+
+    if (playerCount + botCount + guestCount > playerLimit && (!force || botCount > 2 * playerLimit)) return;
+
+    if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
+
+    if (trainingMode && Math.random() < 0.5) {
+        spawnNNBot(sx, sy, col);
+        return;
+    }
+
+    const bot = new Bot();
+    bot.angle = Math.random() * Math.PI * 2;
+    bot.sx = sx;
+    bot.sy = sy;
+    const rand = 4 * Math.random();
+    bot.experience = 1;
+    bot.updateRank();
+    bot.ship = ship;
+    bot.x = x;
+    bot.y = y;
+    bot.color = col;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `Interceptor ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `INTERCEPTOR`;
+    bot.thrust2 = bot.capacity2 = bot.maxHealth2 = 0.5;
+    bot.agility2 = 15;
+    bot.energy2 = 0.25;
+    bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
+    bot.thrust = ships[bot.ship].thrust * bot.thrust2;
+    bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
+    bot.maxHealth = 1;
+    bot.temporary = -960;
+    const keys = Object.keys(wepns);
+    for (let i = 0; i < 10; i++) {
+        do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];
+        while (wepns[bot.weapons[i]].level > bot.rank || !wepns[bot.weapons[i]].bot);
+    }
+    bot.refillAllAmmo();
+    players[bot.sy][bot.sx][bot.id] = bot;
+};
+global.spawnBossBot = function (sx, sy, x, y) {
+    if (!Config.getValue(`want-bots`, true)) return;
+
+    if (playerCount + botCount + guestCount > playerLimit && (botCount > 2 * playerLimit)) return;
+
+    if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
+
+    if (trainingMode && Math.random() < 0.5) {
+        spawnNNBot(sx, sy, col);
+        return;
+    }
+
+    const bot = new Bot();
+    bot.angle = Math.random() * Math.PI * 2;
+    bot.sx = sx;
+    bot.sy = sy;
+    const rand = 4 * Math.random();
+    bot.experience = 100000;
+    bot.updateRank();
+    bot.ship = 15;
+    bot.x = x;
+    bot.y = y;
+    bot.color = `yellow`;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `BEHEMOTH ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `BEHEMOTH`;
+    bot.thrust2 = bot.capacity2 = 1;
+    bot.maxHealth2 = 20;
+    bot.agility2 = 0.15;
+    bot.energy2 = 5;
+    bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
+    bot.thrust = ships[bot.ship].thrust * bot.thrust2;
+    bot.capacity = Math.round(ships[bot.ship].capacity * bot.capacity2);
+    bot.maxHealth = bot.health = 50000;
+    bot.temporary = -1;
     const keys = Object.keys(wepns);
     for (let i = 0; i < 10; i++) {
         do bot.weapons[i] = keys[Math.floor(Math.random() * keys.length)];

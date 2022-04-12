@@ -356,6 +356,10 @@
 		{
 			"name":"Escudo de nav.",
 			"desc":"Un escudo de navegación basado en una antena deflectora, permite a naves espaciales viajar con seguridad de no sufir daños de escombros y pequeños asteroides, al igual que de algunos rayos cósmicos."
+		},
+		{
+			"name":"Red Nailoth",
+			"desc":"Un cluster de minas diseñado para atrapar enemigos bajo miedo a morir."
 		}
 	],
 	"splashes":[
