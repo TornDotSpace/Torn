@@ -1,4 +1,4 @@
-aiohttp==3.7.4.post0
+aiohttp==3.8.3
 aiosmtplib==1.1.6
 aiohttp_cors==0.7.0
 bcrypt==3.2.0
