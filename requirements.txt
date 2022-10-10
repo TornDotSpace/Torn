@@ -1,7 +1,7 @@
 aiohttp==3.7.4.post0
 aiosmtplib==1.1.6
 aiohttp_cors==0.7.0
-bcrypt==3.2.0
+bcrypt==4.0.1
 discord_webhook==0.14.0
 motor==2.5.1
 pymongo==3.12.0
