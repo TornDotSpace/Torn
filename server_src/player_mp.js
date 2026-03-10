@@ -502,8 +502,8 @@ class PlayerMP extends Player {
         this.emit(`planets`, { pack: packHere });
     }
 
-    onKill (p) {
-        super.onKill(p);
+    onKill (p, temporary = 0) {
+        super.onKill(p, temporary);
 
         // achievementy stuff
         const suicide = p.name === this.name;
