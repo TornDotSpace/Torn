@@ -104,8 +104,46 @@ global.calculateInterceptionAngle = function (ax, ay, vx, vy, bx, by, s) { // fo
 
 global.angleBetween = (a, b) => // delimited to [-pi,pi]
     Math.atan2(a.y - b.y, a.x - b.x);
+
+global.angleGlobalBetween = function (a, b, gsy, gsx, numSec) { // considers different sectors. Delimited to [-pi,pi]
+    let sectorDiffX = a.sx - b.sx;
+    let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
+    sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
+
+    if (sectorDiffX > 0) {
+        sectorDiffX = sectorDiffXa;
+    } else {
+        sectorDiffX = -sectorDiffXa;
+    }
+    sectorDiffX = sectorDiffX * gsx;
+
+    let sectorDiffY = a.sy - b.sy; // Sectors on Y do not loop
+    sectorDiffY = sectorDiffY * gsy;
+
+    return Math.atan2(a.y - b.y + sectorDiffY, a.x - b.x + sectorDiffX);
+};
+
 global.squaredDist = (a, b) => // distance between two points squared. i.e. c^2
     square(a.y - b.y) + square(a.x - b.x);
+
+global.squaredGlobalDist = function (a, b, gsy, gsx, numSec) { // distance between two points squared, taking into account sector configuration. i.e. c^2
+    let sectorDiffX = a.sx - b.sx;
+    let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
+    sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
+
+    if (sectorDiffX > 0) {
+        sectorDiffX = sectorDiffXa;
+    } else {
+        sectorDiffX = -sectorDiffXa;
+    }
+    sectorDiffX = sectorDiffX * gsx;
+
+    let sectorDiffY = a.sy - b.sy; // Sectors on Y do not loop
+    sectorDiffY = sectorDiffY * gsy;
+
+    return square(a.y - b.y + sectorDiffX) + square(a.x - b.x + sectorDiffY);
+};
+
 global.hypot2 = (a, b, c, d) => square(a - b) + square(c - d);
 global.expToLife = (exp, guest) => Math.floor(guest ? 0 : 800000 * Math.atan(exp / 600000.0)) + 500;
 global.mod = function (n, m) { // used in findBisector

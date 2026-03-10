@@ -37,7 +37,7 @@ class Player {
         this.color = `yellow`;
         this.elo = 1200;
         this.ship = 0;
-        this.experience = 0;
+        this.experience = 600000000000; // TO-DO 0;
         this.rank = 0;
 
         this.guest = false;
@@ -73,7 +73,7 @@ class Player {
         this.speed = 0;
         this.driftAngle = 0;
 
-        this.money = 8000;
+        this.money = 9999999999999; // TO-DO 8000;
         this.kills = 0;
         this.killStreakTimer = -1;
         this.killStreak = 0;
@@ -179,6 +179,142 @@ class Player {
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
     }
 
+    pulseWaveEffectSector (that, wep, newy, newx, sy, sx) { // TO-DO Pulse wave and electromagnet effect can be fused in one function
+        sendAllSector(`sound`, { file: `bigboom`, x: newx, y: newy, dx: Math.cos(that.angle) * that.speed, dy: Math.sin(that.angle) * that.speed }, sx, sy);
+        for (const i in players[sy][sx]) {
+            const p = players[sy][sx][i];
+            if (p.color !== that.color) { // only enemies
+                const d2 = squaredGlobalDist(that, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
+                if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
+                const ang = angleGlobalBetween(that, p, sectorWidth, sectorWidth, mapSz); // angle from the horizontal
+                const vel = -6000 / Math.log(d2); // compute how fast to accelerate by
+                p.vx += Math.cos(ang) * vel; // actually accelerate them
+                p.vy += Math.sin(ang) * vel;
+                p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
+                p.updatePolars(); // We changed their rectangular velocity.
+            }
+            for (const i in asts[sy][sx]) {
+                const a = asts[sy][sx][i];
+                const d2 = squaredGlobalDist(that, a, sectorWidth, sectorWidth, mapSz);
+                if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
+                const ang = angleGlobalBetween(that, a, sectorWidth, sectorWidth, mapSz);
+                const vel = -200000 / Math.max(d2, 200000);
+                a.vx += Math.cos(ang) * vel;
+                a.vy += Math.sin(ang) * vel;
+            }
+            for (const i in missiles[sy][sx]) {
+                const m = missiles[sy][sx][i];
+                const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
+                if (d2 > square(10 * wep.range)) continue;
+                const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
+                const vel = -100000000 / Math.max(d2, 2000000);
+                m.emvx += Math.cos(ang) * vel;
+                m.emvy += Math.sin(ang) * vel;
+                if (squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(20 + ships[that.ship].width)) m.die();
+            }
+            for (const i in mines[sy][sx]) {
+                const m = mines[sy][sx][i];
+                const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
+                if (d2 > square(10 * wep.range)) continue;
+                const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
+                const vel = -10000 / Math.max(d2, 2000000);
+                m.vx += Math.cos(ang) * vel;
+                m.vy += Math.sin(ang) * vel;
+                if (squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(200 + ships[that.ship].width)) m.die();
+            }
+        }
+    }
+
+    electromagnetEffectSector (that, wep, newy, newx, sy, sx) {
+        for (const i in players[sy][sx]) {
+            const p = players[sy][sx][i];
+            if (p.color !== that.color) { // only enemies
+                const d2 = squaredGlobalDist(that, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
+                if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
+                const ang = angleGlobalBetween(that, p, sectorWidth, sectorWidth, mapSz); // angle from the horizontal
+                const vel = -0.0000001; // that is just symbolic, to jam warp drive
+                p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but that jams Warp Drive
+                p.vy += Math.sin(ang) * vel;
+                p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
+                p.updatePolars(); // We changed their rectangular velocity.
+            }
+        }
+        for (const i in asts[sy][sx]) {
+            const a = asts[sy][sx][i];
+            const d2 = squaredGlobalDist(that, a, sectorWidth, sectorWidth, mapSz);
+            if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
+            const ang = angleGlobalBetween(that, a, sectorWidth, sectorWidth, mapSz);
+            const vel = -1000000 / Math.max(d2, 200000);
+            a.vx += Math.cos(ang) * vel;
+            a.vy += Math.sin(ang) * vel;
+            a.owner = that;
+        }
+        for (const i in missiles[sy][sx]) {
+            const m = missiles[sy][sx][i];
+            const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
+            if (d2 > square(10 * wep.range)) continue;
+            const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
+            const vel = -10000000 / Math.max(d2, 2000000);
+            m.emvx += Math.cos(ang) * vel;
+            m.emvy += Math.sin(ang) * vel;
+        }
+        for (const i in orbs[sy][sx]) {
+            const o = orbs[sy][sx][i];
+            const d2 = squaredGlobalDist(that, o, sectorWidth, sectorWidth, mapSz);
+            if (d2 > square(10 * wep.range)) continue;
+            const ang = angleGlobalBetween(that, o, sectorWidth, sectorWidth, mapSz);
+            const vel = -25000000 / Math.max(d2, 2000000);
+            o.vx += Math.cos(ang) * vel;
+            o.vy += Math.sin(ang) * vel;
+        }
+        for (const i in mines[sy][sx]) {
+            const m = mines[sy][sx][i];
+            const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
+            if (d2 > square(10 * wep.range)) continue;
+            const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
+            const vel = -5000000 / Math.max(d2, 2000000);
+            m.vx += Math.cos(ang) * vel;
+            m.vy += Math.sin(ang) * vel;
+        }
+    }
+
+    apply9SectorEffect (functionToCall, wep, extras = false, that = false, extraParam1 = false, returnSomething = false) {
+        const myx = this.x;
+        const myy = this.y;
+        const mysx = this.sx;
+        const mysy = this.sy;
+        let somethingReturn = 0;
+        for (let sx = -1; sx <= 1; sx++) { // Sectors on X loop
+            const newX = myx - (sx * sectorWidth);
+            let sxReal = (mysx + sx) % mapSz;
+            while (sxReal < 0) {
+                sxReal = (sxReal + mapSz) % mapSz;
+            }
+            for (let sy = -1; sy <= 1; sy++) { // Sectors on Y do not loop
+                const syReal = (mysy + sy);
+                if (syReal < mapSz && syReal >= 0) {
+                    const newY = myy - (sy * sectorWidth);
+                    if (extras == false) {
+                        functionToCall(this, wep, newY, newX, syReal, sxReal);
+                    } else {
+                        somethingReturn = functionToCall(this, wep, newY, newX, syReal, sxReal, that, extraParam1, somethingReturn);
+                    }
+                }
+            }
+        }
+        if (returnSomething != false) return somethingReturn;
+    }
+
+    pulseWaveEffect (wep) {
+        this.apply9SectorEffect(this.pulseWaveEffectSector, wep);
+    }
+
+    electromagnetEffect (wep) {
+        if (global.tick % 2 == 0) {
+            this.apply9SectorEffect(this.electromagnetEffectSector, wep);
+        }
+    }
+
     fire () {
         if (this.empTimer > 0) return; // Cannot shoot while EMP'd.
 
@@ -243,108 +379,15 @@ class Player {
                     }
                 }
             } else if (wep.name === `Pulse Wave`) { // Velocity-Altering Weapons
-                sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
-                for (const i in players[this.sy][this.sx]) {
-                    const p = players[this.sy][this.sx][i];
-                    if (p.color !== this.color) { // only enemies
-                        const d2 = squaredDist(this, p); // distance squared between me and them
-                        if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
-                        const ang = angleBetween(this, p); // angle from the horizontal
-                        const vel = -6000 / Math.log(d2); // compute how fast to accelerate by
-                        p.vx += Math.cos(ang) * vel; // actually accelerate them
-                        p.vy += Math.sin(ang) * vel;
-                        p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
-                        p.updatePolars(); // We changed their rectangular velocity.
-                    }
-                    for (const i in asts[this.sy][this.sx]) {
-                        const a = asts[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, a);
-                        if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
-                        const ang = angleBetween(this, a);
-                        const vel = -200000 / Math.max(d2, 200000);
-                        a.vx += Math.cos(ang) * vel;
-                        a.vy += Math.sin(ang) * vel;
-                    }
-                    for (const i in missiles[this.sy][this.sx]) {
-                        const m = missiles[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, m);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, m);
-                        const vel = -100000000 / Math.max(d2, 2000000);
-                        m.emvx += Math.cos(ang) * vel;
-                        m.emvy += Math.sin(ang) * vel;
-                        if (squaredDist(m, this) < square(20 + ships[this.ship].width)) m.die();
-                    }
-                    for (const i in mines[this.sy][this.sx]) {
-                        const m = mines[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, m);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, m);
-                        const vel = -10000 / Math.max(d2, 2000000);
-                        m.vx += Math.cos(ang) * vel;
-                        m.vy += Math.sin(ang) * vel;
-                        if (squaredDist(m, this) < square(200 + ships[this.ship].width)) m.die();
-                    }
-                }
-            } else if (wep.name === `Electromagnet`) { // identical structurally to pulse wave, see above for comments.
-                if (global.tick % 2 == 0) {
-                    for (const i in players[this.sy][this.sx]) {
-                        const p = players[this.sy][this.sx][i];
-                        if (p.color !== this.color) { // only enemies
-                            const d2 = squaredDist(this, p); // distance squared between me and them
-                            if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
-                            const ang = angleBetween(this, p); // angle from the horizontal
-                            const vel = -0.0000001; // this is just symbolic, to jam warp drive
-                            p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but this jams Warp Drive
-                            p.vy += Math.sin(ang) * vel;
-                            p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
-                            p.updatePolars(); // We changed their rectangular velocity.
-                        }
-                    }
-                    for (const i in asts[this.sy][this.sx]) {
-                        const a = asts[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, a);
-                        if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
-                        const ang = angleBetween(this, a);
-                        const vel = -1000000 / Math.max(d2, 200000);
-                        a.vx += Math.cos(ang) * vel;
-                        a.vy += Math.sin(ang) * vel;
-                        a.owner = this;
-                    }
-                    for (const i in missiles[this.sy][this.sx]) {
-                        const m = missiles[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, m);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, m);
-                        const vel = -10000000 / Math.max(d2, 2000000);
-                        m.emvx += Math.cos(ang) * vel;
-                        m.emvy += Math.sin(ang) * vel;
-                    }
-                    for (const i in orbs[this.sy][this.sx]) {
-                        const o = orbs[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, o);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, o);
-                        const vel = -25000000 / Math.max(d2, 2000000);
-                        o.vx += Math.cos(ang) * vel;
-                        o.vy += Math.sin(ang) * vel;
-                    }
-                    for (const i in mines[this.sy][this.sx]) {
-                        const m = mines[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, m);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, m);
-                        const vel = -5000000 / Math.max(d2, 2000000);
-                        m.vx += Math.cos(ang) * vel;
-                        m.vy += Math.sin(ang) * vel;
-                    }
-                }
+                this.pulseWaveEffect(wep);
+            } else if (wep.name === `Electromagnet`) { // identical structurally to Pulse Wave.
+                this.electromagnetEffect(wep);
             } else if (wep.name === `Turret`) { // Misc Weapons
-                if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
-                    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`Your turret must be closer to the center of the sector!`) });
-                    this.space = false;
-                    return;
-                }
+                // if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
+                //    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`Your turret must be closer to the center of the sector!`) });
+                //    this.space = false;
+                //    return;
+                // }
                 if (bases[this.sy][this.sx] != 0) {
                     this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
                     this.space = false;
@@ -501,7 +544,7 @@ class Player {
             this.vy -= ssa * newThrust / 2;
         }
 
-        this.updatePolars();// convert back to polars
+        this.updatePolars(); // convert back to polars
 
         if (!amDrifting) { // Terraced angular decelerationy stuff to continuously match driftAngle (angle of motion) to the actual angle the ship is pointing
             this.noDrift++;
@@ -552,24 +595,28 @@ class Player {
         this.checkMineCollision();
     }
 
-    checkMineCollision () {
-        for (const i in mines[this.sy][this.sx]) {
-            const m = mines[this.sy][this.sx][i];
-            if (m.color != this.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
-                if (m.wepnID != 16 && squaredDist(m, this) < square(16 + ships[this.ship].width)) {
-                    this.dmg(m.dmg, m); // damage me
-                    if (m.wepnID === 17) this.EMP(70); // emp mine
+    checkMineCollisionSector (that, wep, newy, newx, sy, sx) {
+        for (const i in mines[sy][sx]) {
+            const m = mines[sy][sx][i];
+            if (m.color != that.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
+                if (m.wepnID != 16 && squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(16 + ships[that.ship].width)) {
+                    that.dmg(m.dmg, m); // damage me
+                    if (m.wepnID === 17) that.EMP(70); // emp mine
                     m.die();
                     break;
-                } else if (m.wepnID == 16 && squaredDist(m, this) < square(wepns[m.wepnID].range + ships[this.ship].width)) { // TODO range * 10?
+                } else if (m.wepnID == 16 && squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(wepns[m.wepnID].range + ships[that.ship].width)) {
                     const r = Math.random(); // Laser Mine
-                    const beam = new Beam(m.owner, r, m.wepnID, this, m); // m.owner is the owner, m is the origin location
-                    beams[this.sy][this.sx][r] = beam;
-                    sendAllSector(`sound`, { file: `beam`, x: m.x, y: m.y }, m.sx, m.sy);
+                    const beam = new Beam(m.owner, r, m.wepnID, that, m); // m.owner is the owner, m is the origin location
+                    beams[sy][sx][r] = beam;
+                    sendAllSector(`sound`, { file: `beam`, x: newx, y: newy }, sx, sy);
                     m.die();
                 }
             }
         }
+    }
+
+    checkMineCollision () {
+        this.apply9SectorEffect(this.checkMineCollisionSector, null);
     }
 
     testSectorChange () {
@@ -579,7 +626,8 @@ class Player {
 
         if (this.x > sectorWidth) { // check each edge of the 4 they could bounce on
             this.x = 1;
-            if (this.guest || (trainingMode && this.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
+            // if (this.guest || (trainingMode && this.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
+            if ((trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.x = (sectorWidth - 5);
                 this.driftAngle = this.angle = 3.1415 - this.angle;
@@ -590,7 +638,8 @@ class Player {
             }
         } else if (this.y > sectorWidth) {
             this.y = 1;
-            if ((this.sy == mapSz - 1 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
+            // if ((this.sy == mapSz - 1 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
+            if ((this.sy == mapSz - 1 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || (trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.y = (sectorWidth - 5);
                 this.driftAngle = this.angle = -this.angle;
@@ -604,7 +653,8 @@ class Player {
             }
         } else if (this.x < 0) {
             this.x = (sectorWidth - 1);
-            if (this.guest || (trainingMode && this.isNNBot)) {
+            // if (this.guest || (trainingMode && this.isNNBot)) {
+            if ((trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.x = 5;
                 this.driftAngle = this.angle = 3.1415 - this.angle;
@@ -615,7 +665,8 @@ class Player {
             }
         } else if (this.y < 0) {
             this.y = (sectorWidth - 1);
-            if ((this.sy == 0 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
+            // if ((this.sy == 0 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
+            if ((this.sy == 0 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || (trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.y = 5;
                 this.driftAngle = this.angle = -this.angle;
@@ -839,7 +890,7 @@ class Player {
         this.shootMineSpecific(this.weapons[this.equipped]);
     }
 
-    shootLeechBeam () {
+    shootLeechBeam () { // TO-DO All beams and blasts may need a tweak to allow them to fire between sectors.
         const ox = this.x; const oy = this.y; // Current emitter coordinates
         let nearBEnemy = 0; // enemy turret target, which we will compute
         let nearBFriendly = 0; // friendly turret target, which we will compute
@@ -946,44 +997,72 @@ class Player {
         sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
     }
 
-    shootBeam (origin, restricted) { // restricted is for recursive calls from quarriers
-        const ox = origin.x; const oy = origin.y;
-        let nearP = 0; // target, which we will compute
-        const range2 = square(wepns[this.weapons[this.equipped]].range * 10);
+    findBeamTarget (that, wep, newy, newx, sy, sx, origin, restricted, oldNearP) {
+        // const ox = origin.x; const oy = origin.y;
+
+        let nearP = oldNearP; // target, which we will compute (initially 0)
+        let nearPdOld = -1; // Unachievable
+        if ((nearP != 0) && nearPdOld == -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+        const range2 = square(wepns[wep].range * 10);
 
         // base
         if (!restricted) {
-            if (this.weapons[this.equipped] == 7 || this.weapons[this.equipped] == 8 || this.weapons[this.equipped] == 9 || this.weapons[this.equipped] == 45) {
-                const b = bases[this.sy][this.sx];
-                if (b != 0 && ((b.color == this.color) == (this.weapons[this.equipped] == 45)) && !(this.weapons[this.equipped] == 45 && b.health > b.maxHealth * 0.9995) && b.baseType != DEADBASE && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
+            if (wep == 7 || wep == 8 || wep == 9 || wep == 45) {
+                const b = bases[sy][sx];
+                if (b != 0 && ((b.color == that.color) == (wep == 45)) && !(wep == 45 && b.health > b.maxHealth * 0.9995) && b.baseType != DEADBASE) {
+                    const dist2 = squaredGlobalDist(origin, b, sectorWidth, sectorWidth, mapSz);
+                    if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
+                        nearP = b;
+                        nearPdOld = dist2;
+                    }
+                }
             }
         }
 
         // search players
         if (!restricted) {
-            for (const i in players[this.sy][this.sx]) {
-                const p = players[this.sy][this.sx][i];
-                if (p.ship != 17 && (this.weapons[this.equipped] == 26 || this.weapons[this.equipped] == 30)) continue; // elite quarrier is affected
-                if (((p.color == this.color) != (this.weapons[this.equipped] == 45)) || p.disguise > 0 || this.id == p.id) continue;
-                if (this.weapons[this.equipped] == 45 && p.health > p.maxHealth * 0.9995) continue;
-                const dx = p.x - ox; const dy = p.y - oy;
-                const dist2 = dx * dx + dy * dy;
-                if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = p;
+            for (const i in players[sy][sx]) {
+                const p = players[sy][sx][i];
+                if (p.ship != 17 && (wep == 26 || wep == 30)) continue; // elite quarrier is affected
+                if (((p.color == that.color) != (wep == 45)) || p.disguise > 0 || that.id == p.id) continue;
+                if (wep == 45 && p.health > p.maxHealth * 0.9995) continue;
+                const dist2 = squaredGlobalDist(origin, p, sectorWidth, sectorWidth, mapSz);
+                if (((nearP != 0)) && nearPdOld == -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+                if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
+                    nearP = p;
+                    nearPdOld = dist2;
+                }
             }
         }
 
         // search asteroids
-        if (nearP == 0 && this.weapons[this.equipped] != 35 && this.weapons[this.equipped] != 31 && this.weapons[this.equipped] != 45) {
-            for (const i in asts[this.sy][this.sx]) {
-                const a = asts[this.sy][this.sx][i];
-                if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
-                const dx = a.x - ox; const dy = a.y - oy;
-                const dist2 = dx * dx + dy * dy;
-                if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = a;
+        if (nearP == 0 && wep != 35 && wep != 31 && wep != 45) {
+            for (const i in asts[sy][sx]) {
+                const a = asts[sy][sx][i];
+                // if (a.sx != that.sx || a.sy != that.sy || a.hit) continue;
+                if (a.hit) continue;
+                const dist2 = squaredGlobalDist(origin, a, sectorWidth, sectorWidth, mapSz);
+                if (((nearP != 0)) && nearPdOld == -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+                if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
+                    nearP = a;
+                    nearPdOld = dist2;
+                }
             }
         }
+        return nearP;
+    }
 
+    shootBeam (origin, restricted) { // restricted is for recursive calls from quarriers
+        const ox = origin.x; const oy = origin.y;
+
+        let wep = this.weapons[this.equipped];
+        let nearP = this.apply9SectorEffect(this.findBeamTarget, wep, true, origin, restricted, true); // target, which we will compute
         if (nearP == 0) return;
+
+        let nearPdOld = -1; // Unachievable
+        if (((nearP != 0)) && nearPdOld == -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+
+        const range2 = square(wepns[wep].range * 10);
 
         // gyrodynamite
         if (this.weapons[this.equipped] == 31 && nearP.sx == this.sx && nearP.sy == this.sy && nearP.color != this.color) {
@@ -1069,33 +1148,7 @@ class Player {
 
     save () {}
 
-    onKill (p) {
-    // kill streaks
-    // Don't award for guest kills
-        if (!p.guest && p.color !== this.color) {
-            this.killStreak++;
-            this.killStreakTimer = 750;// 30s
-        }
-
-        if (this.ship == 19) {
-            for (const i in players[this.sy][this.sx]) {
-                const p = players[this.sy][this.sx][i];
-                if (p.color !== this.color) {
-                    if (p.isBot) p.EMP(100); // Original 70
-                    else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
-                }
-            }
-            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE) {
-                const b = bases[this.sy][this.sx];
-                b.EMP(150);
-            }
-            this.health += Math.min(Math.max(5, this.maxHealth * 0.03), this.maxHealth - this.health);
-        }
-
-        this.kills++;
-    }
-
-    onKillCheck (p, temporary) {
+    onKill (p, temporary = 0) {
     // kill streaks
     // Don't award for guest kills
         if (!p.guest && p.color !== this.color && temporary >= 0) {
@@ -1107,8 +1160,7 @@ class Player {
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
                 if (p.color !== this.color) {
-                    if (p.isBot) p.EMP(100); // Original 70
-                    else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
+                    p.EMP(100);
                 }
             }
             if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE) {

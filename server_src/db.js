@@ -109,11 +109,11 @@ global.saveTurret = function (turret) {
         baseType: turret.baseType,
         name: turret.name
     };
-    TURRET_DATABASE.replaceOne({ _id: turret.id }, record, { upsert: true });
+    if (!(Object.is(TURRET_DATABASE, null) || Object.is(TURRET_DATABASE, undefined))) TURRET_DATABASE.replaceOne({ _id: turret.id }, record, { upsert: true });
 };
 
 global.deleteTurret = function (turret) {
-    TURRET_DATABASE.deleteOne({ _id: turret.id });
+    if (!(Object.is(TURRET_DATABASE, null) || Object.is(TURRET_DATABASE, undefined))) TURRET_DATABASE.deleteOne({ _id: turret.id });
 };
 
 global.loadTurretData = async function () {
@@ -134,7 +134,7 @@ global.loadTurretData = async function () {
 };
 
 global.savePlayerEmail = function (player, email) {
-    PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: { email: email } }, { upsert: true });
+    if (!(Object.is(PLAYER_DATABASE, null) || Object.is(PLAYER_DATABASE, undefined))) PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: { email: email } }, { upsert: true });
 };
 global.savePlayerData = function (player) {
     const record = {
@@ -175,5 +175,5 @@ global.savePlayerData = function (player) {
         sx: player.sx,
         sy: player.sy
     };
-    PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: record }, { upsert: true });
+    if (!(Object.is(PLAYER_DATABASE, null) || Object.is(PLAYER_DATABASE, undefined))) PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: record }, { upsert: true });
 };

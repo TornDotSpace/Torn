@@ -310,7 +310,7 @@ class Base {
         this.empTimer = t;
     }
 
-    onKill () {
+    onKill (p = undefined, temporary = 0) {
         this.kills++;
     }
 
