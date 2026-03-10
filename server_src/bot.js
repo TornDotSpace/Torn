@@ -177,7 +177,7 @@ class Bot extends Player {
                 }
                 if (!(typeof master === `undefined` || master === 0)) objective = master;
             }
-            objective.owner.onKillCheck(this, temporary);
+            objective.owner.onKillCheck(this, this.temporary);
             objective.owner.spoils(`experience`, (10 + diff * (this.color === b.owner.color ? -1 : 1)));
             // Prevent farming and disincentivize targetting guests
             objective.owner.spoils(`money`, objective.owner.type === `Player` ? (objective.owner.killStreak * playerKillMoney) : playerKillMoney);
