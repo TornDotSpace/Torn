@@ -170,7 +170,8 @@ global.center3D = function (xxp, yyp, zzp) {
     }
 };
 global.r3DMap = function () {
-    if (sectorPoints == 0 || guest) return;
+    // if (sectorPoints == 0 || guest) return;
+    if (sectorPoints == 0) return;
 
     minimapcanvas.width = minimapcanvas.width;
     minictx.lineWidth = 2;
@@ -397,7 +398,8 @@ global.r3DMap = function () {
     minictx.globalAlpha = 1;
 };
 global.paste3DMap = function (xp, yp) {
-    if (sectorPoints == 0 || guest) return;
+    // if (sectorPoints == 0 || guest) return;
+    if (sectorPoints == 0) return;
     /* let d = new Date();
   let t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
   t/=1000;
