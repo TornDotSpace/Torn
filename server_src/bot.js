@@ -26,7 +26,7 @@ class Bot extends Player {
         this.brainwashedBy = 0; // for enslaved bots
         this.rng = Math.random();
         this.temporary = 0;
-        // this.owner = this
+        this.owner = this;
     }
 
     flock () {
