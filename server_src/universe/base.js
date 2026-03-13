@@ -236,7 +236,8 @@ class Base {
         sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
         if (this.baseType != LIVEBASE) {
-            bases[this.sy][this.sx] = 0;
+            if (bases[this.sy][this.sx][this.id] !== undefined || bases[this.sy][this.sx][this.id] !== null) delete bases[this.sy][this.sx][this.id];
+            // bases[this.sy][this.sx][this.id] = 0;
             this.die = function () { };
         } else {
             const numBotsToSpawn = 2 + 4 * Math.random() * Math.random();

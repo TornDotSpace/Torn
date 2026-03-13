@@ -94,9 +94,13 @@ class Missile {
             if (this.locked != 0) return;
 
             // check base
-            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
-                this.locked = bases[this.sy][this.sx].id;
-                return;
+            if (bases[this.sy][this.sx] != 0) {
+                for (const id in bases[this.sy][this.sx]) {
+                    if (bases[this.sy][this.sx][id].color !== this.color && bases[this.sy][this.sx][id].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx][id], this) < square(wepns[this.wepnID].range * 10)) {
+                        this.locked = bases[this.sy][this.sx][id].id;
+                        return;
+                    }
+                }
             }
 
             // search asteroids
@@ -116,7 +120,15 @@ class Missile {
             if (this.lockedTimer++ > missileLockTimeout) this.die();
 
             let target = players[this.sy][this.sx][this.locked]; // try 2 find the target object
-            if (typeof target === `undefined` && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
+            if ((typeof target === `undefined` || target == 0) && bases[this.sy][this.sx] != 0) {
+                for (const id in bases[this.sy][this.sx]) {
+                    const base = bases[this.sy][this.sx][id];
+                    if (base.color != this.color && base.baseType != DEADBASE && squaredDist(base, this) < square(wepns[this.wepnID].range * 10)) {
+                        target = base;
+                        break;
+                    }
+                }
+            }
             if (target == 0) target = asts[this.sy][this.sx][this.locked];
             if (typeof target === `undefined`) this.locked = 0;
 
@@ -174,18 +186,23 @@ class Missile {
                 missiles[this.sy][this.sx][r] = missile;
             }
         }
-        if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
-            const r = Math.random();
-            const bAngle = this.angle + r * 2 - 1;
-            let wepid = 10; // Normal Missile
-            if (squaredDist(bases[this.sy][this.sx], this) < square(wepns[11].range * 10)) wepid = 11; // Heavy Missile
-            const missile = new Missile(this.owner, r, wepid, bAngle);
-            missile.x = this.x;
-            missile.y = this.y;
-            missile.sx = this.sx; // this is crucial, otherwise rings of fire happen
-            missile.sy = this.sy; // because owner is not necessarily in the same sector as parent missile
-            missile.locked = bases[this.sy][this.sx].id;
-            missiles[this.sy][this.sx][r] = missile;
+        if (bases[this.sy][this.sx] != 0) {
+            for (const id in bases[this.sy][this.sx]) {
+                const base = bases[this.sy][this.sx][id];
+                if (base.color !== this.color && base.baseType != DEADBASE && squaredDist(base, this) < square(wepns[this.wepnID].range * 10)) {
+                    const r = Math.random();
+                    const bAngle = this.angle + r * 2 - 1;
+                    let wepid = 10; // Normal Missile
+                    if (squaredDist(base, this) < square(wepns[11].range * 10)) wepid = 11; // Heavy Missile
+                    const missile = new Missile(this.owner, r, wepid, bAngle);
+                    missile.x = this.x;
+                    missile.y = this.y;
+                    missile.sx = this.sx; // this is crucial, otherwise rings of fire happen
+                    missile.sy = this.sy; // because owner is not necessarily in the same sector as parent missile
+                    missile.locked = bases[this.sy][this.sx][id].id;
+                    missiles[this.sy][this.sx][r] = missile;
+                }
+            }
         }
         this.die(); // and then die
     }

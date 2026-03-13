@@ -324,8 +324,16 @@ class PlayerMP extends Player {
         }
 
         let base = 0;
-        const b = bases[this.sy][this.sx];
-        if ((b.baseType == LIVEBASE || b.baseType == DEADBASE) && b.color == this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
+        if (bases[this.sy][this.sx] != 0) {
+            for (const id in bases[this.sy][this.sx]) {
+                const b = bases[this.sy][this.sx][id];
+                if ((b.baseType == LIVEBASE || b.baseType == DEADBASE) && b.color == this.color && squaredDist(this, b) < square(512)) {
+                    base = b; // try to find a base on our team that's in range and isn't just a turret
+                    break;
+                }
+            }
+        }
+
         if (base == 0) return;
 
         this.refillAllAmmo();
@@ -498,8 +506,8 @@ class PlayerMP extends Player {
     getAllPlanets () {
         let packHere = 0;
         const planet = planets[this.sy][this.sx];
-        packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color };
-        this.emit(`planets`, { pack: packHere });
+        packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color, sx: planet.sx, sy: planet.sy };
+        this.emit(`planets`, { pack: packHere, id: planet.id });
     }
 
     onKill (p, temporary = 0) {

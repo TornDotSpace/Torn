@@ -141,7 +141,7 @@ class Vortex {
         this.yo = ((byo * mapSz) % 1) * sectorWidth;
 
         // every 2 seconds, tell the players where I am (for radar only, I think)
-        if (tick % 25 == 0) sendAll(`worm`, { bx: bx / (mapSz * sectorWidth), by: by / (mapSz * sectorWidth), bxo: bxo, byo: byo });
+        if (tick % 25 == 0) sendAll(`worm`, { bx: bx / (mapSz * sectorWidth), by: by / (mapSz * sectorWidth), bxo: bxo, byo: byo, sx: this.sx, sy: this.sy });
     }
 
     die () {

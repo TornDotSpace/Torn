@@ -89,18 +89,19 @@ class Blast {
                     if (Math.hypot(fx - this.bx, fy - this.by) < 64 * 2 / 3) ast.dmg(this.dmg, this); // hits the asteroid.
                 }
             }
+            for (const id in bases[this.sy][this.sx]) {
+                const base = bases[this.sy][this.sx][id];
 
-            const base = bases[this.sy][this.sx];
+                if (base.color === this.owner.color || base.baseType === DEADBASE) return;
+                if ((this.bx - base.x) * Math.cos(this.angle) + (this.by - base.y) * Math.sin(this.angle) > 0) return;
 
-            if (base.color === this.owner.color || base.baseType === DEADBASE) return;
-            if ((this.bx - base.x) * Math.cos(this.angle) + (this.by - base.y) * Math.sin(this.angle) > 0) return;
+                const pDist = Math.hypot(base.x - this.bx, base.y - this.by);
 
-            const pDist = Math.hypot(base.x - this.bx, base.y - this.by);
+                const fx = base.x - Math.cos(this.angle) * pDist;
+                const fy = base.y - Math.sin(this.angle) * pDist;
 
-            const fx = base.x - Math.cos(this.angle) * pDist;
-            const fy = base.y - Math.sin(this.angle) * pDist;
-
-            if (Math.hypot(fx - this.bx, fy - this.by) < 128 * 2 / 3) this.hit(base);
+                if (Math.hypot(fx - this.bx, fy - this.by) < 128 * 2 / 3) this.hit(base);
+            }
         }
     }
 

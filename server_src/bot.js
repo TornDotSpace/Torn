@@ -135,9 +135,11 @@ class Bot extends Player {
         if (this.temporary < 0) this.temporary--;
         if ((enemies == 0 && Math.random() < myDespawnRate) || (this.temporary < -1000)) this.die();
 
-        const base = bases[this.sy][this.sx];
-        if (base != 0 && hypot2(base.x, this.x, base.y, this.y) < close * 3 + square(150) && base.color != this.color) {
-            target = base; enemies++;
+        for (const id in bases[this.sy][this.sx]) {
+            const base = bases[this.sy][this.sx][id];
+            if (base != 0 && hypot2(base.x, this.x, base.y, this.y) < close * 3 + square(150) && base.color != this.color) {
+                target = base; enemies++;
+            }
         }
 
         if (this.brainwashedBy !== 0 && (!(this.brainwashedBy in players[this.sy][this.sx]) || target == 0)) this.goToOwner();

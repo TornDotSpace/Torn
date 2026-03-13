@@ -145,7 +145,7 @@ for (let i = 0; i < mapSz; i++) { // it's 2d
         beams[i][j] = {};
         blasts[i][j] = {};
 
-        bases[i][j] = 0; // only one base per sector
+        bases[i][j] = {}; // 0; // TO-DO only one base per sector
         packs[i][j] = {};
         vorts[i][j] = {};
         asts[i][j] = {};

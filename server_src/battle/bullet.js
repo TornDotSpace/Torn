@@ -47,9 +47,11 @@ class Bullet {
         this.move();
         this.dist += wepns[this.wepnID].speed / 10;
         if (this.wepnID == 28 && this.time > 25 * 3) { // gravity bomb has 3 seconds to explode
-            const base = bases[this.sy][this.sx];
-            if (squaredDist(base, this) < square(5000)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 500 units away
-            this.dieAndMakeVortex(); // collapse into black hole
+            for (const id in bases[this.sy][this.sx]) {
+                const base = bases[this.sy][this.sx][id];
+                if (squaredDist(base, this) < square(5000)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 500 units away
+                this.dieAndMakeVortex(); // collapse into black hole
+            }
         } else if (this.dist > wepns[this.wepnID].range) this.die(); // out of range
     }
 
@@ -57,11 +59,12 @@ class Bullet {
         this.x += this.vx;
         this.y += this.vy; // move on tick
         if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die();
-
-        const b = bases[this.sy][this.sx];
-        if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
-            b.dmg(this.dmg, this);
-            this.die();
+        for (const id in bases[this.sy][this.sx]) {
+            const b = bases[this.sy][this.sx][id];
+            if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
+                b.dmg(this.dmg, this);
+                this.die();
+            }
         }
 
         for (const i in players[this.sy][this.sx]) {

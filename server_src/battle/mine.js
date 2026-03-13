@@ -226,11 +226,13 @@ class Mine {
     }
 
     collideWithBases () {
-        const b = bases[this.sy][this.sx];
-        if (b != 0 && b.baseType != DEADBASE && b.color !== this.color && squaredDist(b, this) < square(16 + 32)) {
-            if (this.wepnID == 17) b.EMP(25);
-            b.dmg(this.dmg, this);
-            this.die();
+        for (const id in bases[this.sy][this.sx]) {
+            const b = bases[this.sy][this.sx][id];
+            if (b != 0 && b.baseType != DEADBASE && b.color !== this.color && squaredDist(b, this) < square(16 + 32)) {
+                if (this.wepnID == 17) b.EMP(25);
+                b.dmg(this.dmg, this);
+                this.die();
+            }
         }
     }
 

@@ -75,9 +75,11 @@ global.saveTurrets = function () {
     // save em
     for (let i = 0; i < mapSz; i++) {
         for (let j = 0; j < mapSz; j++) {
-            const base = bases[i][j];
-            if (base != 0 && (base.baseType == TURRET || base.baseType == SENTRY)) {
-                base.save();
+            for (let id in bases[i][j]) {
+                const base = bases[i][j][id];
+                if (base != 0 && (base.baseType == TURRET || base.baseType == SENTRY)) {
+                    base.save();
+                }
             }
         }
     }
@@ -291,6 +293,7 @@ for (let i = 0; i < mapSz; i++) {
         planetPack[i][j] = { };
         astPack[i][j] = { };
         vortPack[i][j] = { };
+        basePack[i][j] = { };
     }
 }
 
@@ -398,7 +401,7 @@ function spawnBases () {
             // make a base at these coords
             const randBase = Math.random();
             const thisBase = new Base(randBase, LIVEBASE, thisMap[i], thisMap[i + 1], teamColor, sectorWidth / 2, sectorWidth / 2);
-            bases[thisMap[i + 1]][thisMap[i]] = thisBase;
+            bases[thisMap[i + 1]][thisMap[i]][thisBase.id] = thisBase;
         }
     }
     console.log(`\nBases Spawned!`);
@@ -414,6 +417,7 @@ function createPlanet (name, sx, sy) {
         planet.y = Math.floor(Math.random() * sectorWidth * 15 / 16 + sectorWidth / 32);
     }
     planets[sy][sx] = planet;
+    planetPack[sy][sx][randA] = planet; // TO-DO addition because it seems to be duplicated
 }
 function endRaid () {
     let winners = `yellow`;
@@ -430,6 +434,26 @@ function endRaid () {
     }
     sendRaidData();
     if (winners !== `yellow`) chatAll(`${chatColor(winners)}${winners}${chatColor(`yellow`)} team won the raid, and made $${winnerPoints * moneyPerRaidPoint}!`);
+}
+
+function get9SectorDict (dictionar, mysx, mysy, origX = -1, origY = -1, endX = 1, endY = 1, wedebug = false) {
+    let combinedDict = {};
+    for (let asx = origX; asx <= endX; asx++) { // Sectors on X loop
+        // const newX = myx - (asx * sectorWidth);
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
+        }
+        for (let asy = origY; asy <= endY; asy++) { // Sectors on Y do not loop
+            const syReal = (mysy + asy);
+            if (syReal < mapSz && syReal >= 0) {
+                // const newY = myy - (asy * sectorWidth);
+                if (wedebug) console.log(`STEP COORD (${syReal}, ${sxReal} -> ${dictionar[syReal][sxReal]} combinedDict before this: ${combinedDict} and its keys are ${Object.keys(combinedDict)}`);
+                combinedDict = Object.assign({}, combinedDict, dictionar[syReal][sxReal]);
+            }
+        }
+    }
+    return combinedDict;
 }
 
 function update () {
@@ -456,7 +480,7 @@ function update () {
 
     for (let y = 0; y < mapSz; y++) {
         for (let x = 0; x < mapSz; x++) {
-            const gameState = {
+            let gameState = {
                 vorts: [],
                 players: [],
                 mines: [],
@@ -466,29 +490,55 @@ function update () {
                 asteroids: [],
                 orbs: [],
                 missiles: [],
-                base: undefined
+                // base: undefined
+                base: []
             };
 
-            for (const i in players[y][x]) {
-                const player = players[y][x][i];
-                let pack = playerPack[y][x][i];
+            const syReal = y;
+            const sxReal = x;
+            // TO-DO THIS BELOW IS A TEST
+            /*
+            const startX = -1; // TO-DO set these 4 values to 0 to enable sector-"fog-of-war"
+            const startY = -1;
+            const endX = -1;
+            const endY = -1;
+            for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
+            let sxReal = (x + asx) % mapSz;
+            while (sxReal < 0) {
+                sxReal = (sxReal + mapSz) % mapSz;
+            }
+            for (let asy = startY; asy <= endY; asy++) { // Sectors on Y do not loop
+                const syReal = (y + asy);
+                if (syReal >= 0 && syReal < mapSz) {
+            */
+            // TO-DO TEST ABOVE
+            for (const i in players[syReal][sxReal]) { // TO-DO All these "[syReal][sxReal]" were [y][x]
+                const player = players[syReal][sxReal][i];
+                let pack = playerPack[syReal][sxReal][i];
 
-                if (!player.isBot && player.chatTimer > 0) player.chatTimer--;
-                player.muteTimer--;
+                if (y === syReal && x === sxReal) {
+                    if (!player.isBot && player.chatTimer > 0) player.chatTimer--;
+                    player.muteTimer--;
+                }
                 if (player.testAfk()) continue;
                 player.isLocked = false;
-                player.tick();
+                if (y == syReal && x == sxReal) {
+                    player.tick();
+                }
 
                 // Check for creation
                 if (pack === undefined) {
                     // Store pack for joining clients & delta calculation
-                    pack = playerPack[y][x][i] = { disguise: player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle };
+                    pack = playerPack[syReal][sxReal][i] = { disguise: player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle, sx: player.sx, sy: player.sy };
                     // Send create
                     sendAllSector(`player_create`, pack, x, y);
 
                     // Send full update to the player
                     if (!player.isBot) {
-                        player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: packPack[player.sy][player.sx], vorts: vortPack[player.sy][player.sx], mines: minePack[player.sy][player.sx], missiles: missilePack[player.sy][player.sx], orbs: orbPack[player.sy][player.sx], blasts: blastPack[player.sy][player.sx], beams: beamPack[player.sy][player.sx], planets: planetPack[player.sy][player.sx], asteroids: astPack[player.sy][player.sx], players: playerPack[player.sy][player.sx], bases: basePack[player.sy][player.sx] });
+                        player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: get9SectorDict(packPack, player.sx, player.sy), vorts: get9SectorDict(vortPack, player.sx, player.sy), mines: get9SectorDict(minePack, player.sx, player.sy), missiles: get9SectorDict(missilePack, player.sx, player.sy), orbs: get9SectorDict(orbPack, player.sx, player.sy), blasts: get9SectorDict(blastPack, player.sx, player.sy), beams: get9SectorDict(beamPack, player.sx, player.sy), planets: get9SectorDict(planetPack, player.sx, player.sy), asteroids: get9SectorDict(astPack, player.sx, player.sy), players: get9SectorDict(playerPack, player.sx, player.sy), bases: get9SectorDict(basePack, player.sx, player.sy) });
+                        // get9SectorDict (dictionar, mysx, mysy)
+                        // TO-DO original below
+                        // player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: packPack[player.sy][player.sx], vorts: vortPack[player.sy][player.sx], mines: minePack[player.sy][player.sx], missiles: missilePack[player.sy][player.sx], orbs: orbPack[player.sy][player.sx], blasts: blastPack[player.sy][player.sx], beams: beamPack[player.sy][player.sx], planets: planetPack[player.sy][player.sx], asteroids: astPack[player.sy][player.sx], players: playerPack[player.sy][player.sx], bases: basePack[player.sy][player.sx] });
                     }
                     continue;
                 }
@@ -511,6 +561,7 @@ function update () {
                 }
 
                 // Handle cloaking
+                // TO-DOif (need_update && cloak && (y == syReal && x == sxReal) ) {
                 if (need_update && cloak) {
                     player.socket.emit(`update`, { disguise: player.disguise, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: { players: [{ delta: delta, id: i }] } });
                     continue;
@@ -518,18 +569,18 @@ function update () {
 
                 if (!need_update) continue;
 
-                gameState.players.push({ delta: delta, id: i });
+                gameState.players.push({ delta: delta, id: i }); // TO-DO ALL OF THESE deltas need an update to consider the 9-sector effect thing now
             }
 
-            for (const i in vorts[y][x]) {
-                const vort = vorts[y][x][i];
-                let pack = vortPack[y][x][i];
+            for (const i in vorts[syReal][sxReal]) {
+                const vort = vorts[syReal][sxReal][i];
+                let pack = vortPack[syReal][sxReal][i];
 
-                vort.tick();
+                if (y === syReal && x === sxReal) vort.tick();
                 // Check for creation
                 if (pack === undefined) {
                     // Store pack for joining clients & delta calculation
-                    pack = vortPack[y][x][i] = { x: vort.x, y: vort.y, size: vort.size, isWorm: vort.isWorm };
+                    pack = vortPack[syReal][sxReal][i] = { x: vort.x, y: vort.y, size: vort.size, isWorm: vort.isWorm, sx: vort.sx, sy: vort.sy };
                     // Send create
                     sendAllSector(`vort_create`, { pack: pack, id: i }, x, y);
                     continue;
@@ -551,17 +602,17 @@ function update () {
                 gameState.vorts.push({ delta: delta, id: i });
             }
 
-            for (const i in bullets[y][x]) bullets[y][x][i].tick();
+            for (const i in bullets[syReal][sxReal]) if (y === syReal && x === sxReal) bullets[syReal][sxReal][i].tick();
 
-            for (const i in mines[y][x]) {
-                const mine = mines[y][x][i];
-                let pack = minePack[y][x][i];
+            for (const i in mines[syReal][sxReal]) {
+                const mine = mines[syReal][sxReal][i];
+                let pack = minePack[syReal][sxReal][i];
 
-                mine.tick();
+                if (y === syReal && x === sxReal) mine.tick();
 
                 // Check for creation
                 if (pack === undefined) {
-                    pack = minePack[y][x][i] = { wepnID: mine.wepnID, color: mine.color, x: mine.x, y: mine.y, angle: mine.angle };
+                    pack = minePack[syReal][sxReal][i] = { wepnID: mine.wepnID, color: mine.color, x: mine.x, y: mine.y, angle: mine.angle, sx: mine.sx, sy: mine.sy };
                     // Send create
                     sendAllSector(`mine_create`, { pack: pack, id: i }, x, y);
                     continue;
@@ -582,19 +633,19 @@ function update () {
                 gameState.mines.push({ delta: delta, id: i });
             }
 
-            planets[y][x].tick();
+            if (y === syReal && x === sxReal) planets[y][x].tick();
 
             // We only pulse these every 5 ticks
             if (tick % 5 == 0) {
-                for (const i in packs[y][x]) {
-                    const boon = packs[y][x][i];
-                    let pack = packPack[y][x][i];
+                for (const i in packs[syReal][sxReal]) {
+                    const boon = packs[syReal][sxReal][i];
+                    let pack = packPack[syReal][sxReal][i];
 
-                    boon.tick();
+                    if (y === syReal && x === sxReal) boon.tick();
 
                     // Check for creation
                     if (pack === undefined) {
-                        pack = packPack[y][x][i] = { x: boon.x, y: boon.y, type: boon.type };
+                        pack = packPack[syReal][sxReal][i] = { x: boon.x, y: boon.y, type: boon.type, sx: boon.sx, sy: boon.sy };
 
                         // Send create
                         sendAllSector(`pack_create`, { pack: pack, id: i }, x, y);
@@ -617,16 +668,16 @@ function update () {
                 }
             }
 
-            for (const i in beams[y][x]) {
-                const beam = beams[y][x][i];
-                let pack = beamPack[y][x][i];
+            for (const i in beams[syReal][sxReal]) {
+                const beam = beams[syReal][sxReal][i];
+                let pack = beamPack[syReal][sxReal][i];
 
-                beam.tick();
+                if (y === syReal && x === sxReal) beam.tick();
 
                 // Check for creation
                 if (pack == undefined) {
                     // Store pack for joining clients & delta calculation
-                    pack = beamPack[y][x][i] = { time: beam.time, wepnID: beam.wepnID, bx: beam.origin.x, by: beam.origin.y, ex: beam.enemy.x, ey: beam.enemy.y };
+                    pack = beamPack[syReal][sxReal][i] = { time: beam.time, wepnID: beam.wepnID, bx: beam.origin.x, by: beam.origin.y, ex: beam.enemy.x, ey: beam.enemy.y, sx: beam.sx, sy: beam.sy };
                     // Send create
                     sendAllSector(`beam_create`, { pack: pack, id: i }, x, y);
                     continue;
@@ -674,15 +725,15 @@ function update () {
                 gameState.beams.push({ delta: delta, id: i });
             }
 
-            for (const i in blasts[y][x]) {
-                const blast = blasts[y][x][i];
-                let pack = blastPack[y][x][i];
+            for (const i in blasts[syReal][sxReal]) {
+                const blast = blasts[syReal][sxReal][i];
+                let pack = blastPack[syReal][sxReal][i];
 
-                blast.tick();
+                if (y === syReal && x === sxReal) blast.tick();
 
                 // Check for creation
                 if (pack === undefined) {
-                    pack = blastPack[y][x][i] = { time: blast.time, wepnID: blast.wepnID, bx: blast.bx, by: blast.by, angle: blast.angle };
+                    pack = blastPack[syReal][sxReal][i] = { time: blast.time, wepnID: blast.wepnID, bx: blast.bx, by: blast.by, angle: blast.angle, sx: blast.sx, sy: blast.sy };
 
                     sendAllSector(`blast_create`, { pack: pack, id: i }, x, y);
                     continue;
@@ -703,46 +754,52 @@ function update () {
                 gameState.blasts.push({ delta: delta, id: i });
             }
 
-            const base = bases[y][x];
+            for (const id in bases[syReal][sxReal]) {
+                const base = bases[syReal][sxReal][id];
 
-            if (base !== 0) {
-                let pack = basePack[y][x];
+                if (base !== null && base !== undefined && base !== 0) {
+                    let packS = basePack[syReal][sxReal];
+                    let pack;
+                    if (y === syReal && x === sxReal) base.tick();
 
-                base.tick();
-
-                // Check for creation (only happens once, on first tick, or when a turret is placd)
-                if (pack === undefined) {
-                    pack = basePack[y][x] = { id: base.id, baseType: base.baseType, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, name: base.name };
-                    sendAllSector(`base_create`, pack, x, y);
-                    continue;
-                }
-
-                const delta = { };
-                let need_update = false;
-
-                // Compute delta
-                for (const key in pack) {
-                    if (pack[key] !== base[key]) {
-                        delta[key] = pack[key] = base[key];
-                        need_update = true;
+                    // Check for creation (only happens once, on first tick, or when a turret is placd)
+                    if (packS === undefined || packS[id] === undefined || typeof packS[id] !== `object`) {
+                        pack = basePack[syReal][sxReal][id] = { id: base.id, baseType: base.baseType, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, name: base.name, sx: base.sx, sy: base.sy };
+                        sendAllSector(`base_create`, pack, x, y);
+                        continue;
+                    } else {
+                        pack = packS[id];
                     }
-                }
 
-                if (need_update) {
-                    gameState.base = { delta: delta };
+                    let deltarune = { };
+                    let need_updaterune = false;
+
+                    // Compute delta(rune)
+                    for (const key in pack) {
+                        if (pack[key] !== base[key]) {
+                            deltarune[key] = pack[key] = base[key];
+                            need_updaterune = true;
+                        }
+                    }
+
+                    if (need_updaterune) {
+                        // gameState.base = { delta: deltarune }; // TO-DO ORIGINAL
+                        gameState.base.push = { delta: deltarune, id: id };
+                    }
                 }
             }
 
             astCt = 0;
-            for (const i in asts[y][x]) {
-                const ast = asts[y][x][i];
-                let pack = astPack[y][x][i];
-                astCt++;
-
-                ast.tick();
+            for (const i in asts[syReal][sxReal]) {
+                const ast = asts[syReal][sxReal][i];
+                let pack = astPack[syReal][sxReal][i];
+                if (y === syReal && x === sxReal) {
+                    astCt++;
+                    ast.tick();
+                }
                 // Check for creation
                 if (pack === undefined) {
-                    pack = astPack[y][x][i] = { metal: ast.metal, id: i, x: ast.x, y: ast.y, angle: ast.angle, health: ast.health, maxHealth: ast.maxHealth };
+                    pack = astPack[syReal][sxReal][i] = { metal: ast.metal, id: i, x: ast.x, y: ast.y, angle: ast.angle, health: ast.health, maxHealth: ast.maxHealth, sx: ast.sx, sy: ast.sy };
                     sendAllSector(`asteroid_create`, pack, x, y);
                     continue;
                 }
@@ -762,17 +819,17 @@ function update () {
 
                 gameState.asteroids.push({ delta: delta, id: i });
             }
-            astCount[y][x] = astCt;
+            if (y === syReal && x === sxReal) astCount[y][x] = astCt;
 
-            for (const j in orbs[y][x]) {
-                const orb = orbs[y][x][j];
-                let pack = orbPack[y][x][j];
+            for (const j in orbs[syReal][sxReal]) {
+                const orb = orbs[syReal][sxReal][j];
+                let pack = orbPack[syReal][sxReal][j];
 
-                orb.tick();
+                if (y === syReal && x === sxReal) orb.tick();
 
                 // Check for creation
                 if (pack === undefined) {
-                    pack = orbPack[y][x][j] = { wepnID: orb.wepnID, x: orb.x, y: orb.y };
+                    pack = orbPack[syReal][sxReal][j] = { wepnID: orb.wepnID, x: orb.x, y: orb.y, sx: orb.sx, sy: orb.sy };
                     sendAllSector(`orb_create`, { pack: pack, id: j }, x, y);
 
                     continue;
@@ -794,15 +851,15 @@ function update () {
                 gameState.orbs.push({ delta: delta, id: j });
             }
 
-            for (const j in missiles[y][x]) {
-                const missile = missiles[y][x][j];
-                let pack = missilePack[y][x][j];
+            for (const j in missiles[syReal][sxReal]) {
+                const missile = missiles[syReal][sxReal][j];
+                let pack = missilePack[syReal][sxReal][j];
 
-                missile.tick();
+                if (y === syReal && x === sxReal) missile.tick();
 
                 // Check for creation
                 if (pack === undefined) {
-                    pack = missilePack[y][x][j] = { wepnID: missile.wepnID, x: missile.x, y: missile.y, angle: missile.angle };
+                    pack = missilePack[syReal][sxReal][j] = { wepnID: missile.wepnID, x: missile.x, y: missile.y, angle: missile.angle, sx: missile.sx, sy: missile.sy };
 
                     sendAllSector(`missile_create`, { pack: pack, id: j }, x, y);
                     continue;
@@ -823,6 +880,12 @@ function update () {
 
                 gameState.missiles.push({ delta: delta, id: j });
             }
+            /*
+            }// TO-DO THIS IS A TEST
+
+            } // TO-DO THIS IS A TEST!!!
+            } // TO-DO THIS IS A TEST!!!
+            */
 
             for (const i in vortPack[y][x]) {
                 if (vorts[y][x][i] === undefined) {
@@ -835,7 +898,7 @@ function update () {
             }
 
             // Check for deletions
-            for (const i in playerPack[y][x]) {
+            for (const i in playerPack[y][x]) { // TO-DO CHECK FOR OUTDATED out-area vessels
                 if (players[y][x][i] === undefined) {
                     // Send delete
                     sendAllSector(`player_delete`, i, x, y);
@@ -908,8 +971,10 @@ function update () {
             }
 
             if (basePack[y][x] !== undefined && bases[y][x] === 0) {
-                sendAllSector(`base_delete`, 0, x, y);
-                delete basePack[y][x];
+                for (const id in basePack[y][x]) {
+                    sendAllSector(`base_delete`, id, x, y);
+                    delete basePack[y][x][id];
+                }
             }
 
             for (const i in players[y][x]) {
@@ -917,10 +982,10 @@ function update () {
                 if (player.isBot) continue;
                 if (tick % 12 == 0) { // LAG CONTROL
                     player.socket.emit(`online`, { lag: lag });
-                    player.socket.emit(`you`, { tag: player.tag, trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper }); // TODO combine this with the lower YOU message, send less frequently, but send in base when player upgrades a stat
+                    player.socket.emit(`you`, { tag: player.tag, trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, points: player.points, va2: player.radar2, experience: player.experience, rank: player.rank, ship: player.ship, docked: player.docked, color: player.color, money: player.money, kills: player.kills, baseKills: player.baseKills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper, sx: player.sx, sy: player.sy }); // TODO combine this with the lower YOU message, send less frequently, but send in base when player upgrades a stat
                 }
 
-                player.socket.emit(`update`, { cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: gameState });
+                player.socket.emit(`update`, { cloaked: player.disguise > 0, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: gameState, sx: player.sx, sy: player.sy });
             }
 
             // Clear

@@ -86,9 +86,13 @@ class Orb {
             if (this.locked != 0) return;
 
             // check base
-            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx], this) < square(wepns[this.wepnID].range * 10)) {
-                this.locked = bases[this.sy][this.sx].id;
-                return;
+            if (bases[this.sy][this.sx] != 0) {
+                for (const id in bases[this.sy][this.sx]) {
+                    if (bases[this.sy][this.sx][id].color !== this.color && bases[this.sy][this.sx][id].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx][id], this) < square(wepns[this.wepnID].range * 10)) {
+                        this.locked = bases[this.sy][this.sx][id].id;
+                        return;
+                    }
+                }
             }
 
             // search asteroids
@@ -107,9 +111,16 @@ class Orb {
         if (this.locked != 0) {
             if (this.lockedTimer++ > secs(2.5)) this.die(); // after 2.5 seconds of being locked on -> delete this
 
-            const baseHere = bases[this.sy][this.sx];
             let target = players[this.sy][this.sx][this.locked];
-            if (typeof target === `undefined` && bases[this.sy][this.sx].color != this.color) target = bases[this.sy][this.sx];
+            if ((typeof target === `undefined` || target == 0) && bases[this.sy][this.sx] != 0) {
+                for (const id in bases[this.sy][this.sx]) {
+                    const base = bases[this.sy][this.sx][id];
+                    if (base.color != this.color && base.baseType != DEADBASE && squaredDist(base, this) < square(wepns[this.wepnID].range * 10)) {
+                        target = base;
+                        break;
+                    }
+                }
+            }
             if (target == 0) target = asts[this.sy][this.sx][this.locked];
             if (typeof target === `undefined`) this.locked = 0;
             else { // if we are locked onto something

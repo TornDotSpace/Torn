@@ -130,9 +130,11 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) 
 
 cmds.nameturret = new Command(`/nameturret <name>`, REGISTERED, (commandExecuter, msg) => {
     let num = 0;
-    const base = bases[commandExecuter.sy][commandExecuter.sx];
-    if (base != 0 && base.owner == commandExecuter.name) {
-        base.name = msg.substring(12); num++;
+    for (const id in bases[commandExecuter.sy][commandExecuter.sx]) {
+        const base = bases[commandExecuter.sy][commandExecuter.sx][id]; // TO-DO maybe update regarding range?
+        if (base != 0 && base.owner == commandExecuter.name) {
+            base.name = msg.substring(12); num++;
+        }
     }
     commandExecuter.socket.emit(`chat`, { msg: `${num} turret(s) renamed.` });
 });

@@ -179,10 +179,10 @@ class Player {
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
     }
 
-    pulseWaveEffectSector (that, wep, newy, newx, sy, sx) { // TO-DO Pulse wave and electromagnet effect can be fused in one function
-        sendAllSector(`sound`, { file: `bigboom`, x: newx, y: newy, dx: Math.cos(that.angle) * that.speed, dy: Math.sin(that.angle) * that.speed }, sx, sy);
-        for (const i in players[sy][sx]) {
-            const p = players[sy][sx][i];
+    pulseWaveEffectSector (that, wep, newy, newx, lsy, lsx) { // TO-DO Pulse wave and electromagnet effect can be fused in one function
+        sendAllSector(`sound`, { file: `bigboom`, x: newx, y: newy, dx: Math.cos(that.angle) * that.speed, dy: Math.sin(that.angle) * that.speed }, lsx, lsy);
+        for (const i in players[lsy][lsx]) {
+            const p = players[lsy][lsx][i];
             if (p.color !== that.color) { // only enemies
                 const d2 = squaredGlobalDist(that, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
                 if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
@@ -193,8 +193,8 @@ class Player {
                 p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
                 p.updatePolars(); // We changed their rectangular velocity.
             }
-            for (const i in asts[sy][sx]) {
-                const a = asts[sy][sx][i];
+            for (const i in asts[lsy][lsx]) {
+                const a = asts[lsy][lsx][i];
                 const d2 = squaredGlobalDist(that, a, sectorWidth, sectorWidth, mapSz);
                 if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
                 const ang = angleGlobalBetween(that, a, sectorWidth, sectorWidth, mapSz);
@@ -202,8 +202,8 @@ class Player {
                 a.vx += Math.cos(ang) * vel;
                 a.vy += Math.sin(ang) * vel;
             }
-            for (const i in missiles[sy][sx]) {
-                const m = missiles[sy][sx][i];
+            for (const i in missiles[lsy][lsx]) {
+                const m = missiles[lsy][lsx][i];
                 const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
                 if (d2 > square(10 * wep.range)) continue;
                 const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
@@ -212,8 +212,8 @@ class Player {
                 m.emvy += Math.sin(ang) * vel;
                 if (squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(20 + ships[that.ship].width)) m.die();
             }
-            for (const i in mines[sy][sx]) {
-                const m = mines[sy][sx][i];
+            for (const i in mines[lsy][lsx]) {
+                const m = mines[lsy][lsx][i];
                 const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
                 if (d2 > square(10 * wep.range)) continue;
                 const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
@@ -225,9 +225,9 @@ class Player {
         }
     }
 
-    electromagnetEffectSector (that, wep, newy, newx, sy, sx) {
-        for (const i in players[sy][sx]) {
-            const p = players[sy][sx][i];
+    electromagnetEffectSector (that, wep, newy, newx, lsy, lsx) {
+        for (const i in players[lsy][lsx]) {
+            const p = players[lsy][lsx][i];
             if (p.color !== that.color) { // only enemies
                 const d2 = squaredGlobalDist(that, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
                 if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
@@ -239,8 +239,8 @@ class Player {
                 p.updatePolars(); // We changed their rectangular velocity.
             }
         }
-        for (const i in asts[sy][sx]) {
-            const a = asts[sy][sx][i];
+        for (const i in asts[lsy][lsx]) {
+            const a = asts[lsy][lsx][i];
             const d2 = squaredGlobalDist(that, a, sectorWidth, sectorWidth, mapSz);
             if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
             const ang = angleGlobalBetween(that, a, sectorWidth, sectorWidth, mapSz);
@@ -249,8 +249,8 @@ class Player {
             a.vy += Math.sin(ang) * vel;
             a.owner = that;
         }
-        for (const i in missiles[sy][sx]) {
-            const m = missiles[sy][sx][i];
+        for (const i in missiles[lsy][lsx]) {
+            const m = missiles[lsy][lsx][i];
             const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
             if (d2 > square(10 * wep.range)) continue;
             const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
@@ -258,8 +258,8 @@ class Player {
             m.emvx += Math.cos(ang) * vel;
             m.emvy += Math.sin(ang) * vel;
         }
-        for (const i in orbs[sy][sx]) {
-            const o = orbs[sy][sx][i];
+        for (const i in orbs[lsy][lsx]) {
+            const o = orbs[lsy][lsx][i];
             const d2 = squaredGlobalDist(that, o, sectorWidth, sectorWidth, mapSz);
             if (d2 > square(10 * wep.range)) continue;
             const ang = angleGlobalBetween(that, o, sectorWidth, sectorWidth, mapSz);
@@ -267,8 +267,8 @@ class Player {
             o.vx += Math.cos(ang) * vel;
             o.vy += Math.sin(ang) * vel;
         }
-        for (const i in mines[sy][sx]) {
-            const m = mines[sy][sx][i];
+        for (const i in mines[lsy][lsx]) {
+            const m = mines[lsy][lsx][i];
             const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
             if (d2 > square(10 * wep.range)) continue;
             const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
@@ -278,22 +278,22 @@ class Player {
         }
     }
 
-    apply9SectorEffect (functionToCall, wep, extras = false, that = false, extraParam1 = false, returnSomething = false) {
+    apply9SectorEffect (functionToCall, wep, extras = false, that = false, extraParam1 = false, returnSomething = false, startX = -1, startY = -1, endX = 1, endY = 1) {
         const myx = this.x;
         const myy = this.y;
         const mysx = this.sx;
         const mysy = this.sy;
         let somethingReturn = 0;
-        for (let sx = -1; sx <= 1; sx++) { // Sectors on X loop
-            const newX = myx - (sx * sectorWidth);
-            let sxReal = (mysx + sx) % mapSz;
+        for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
+            const newX = myx - (asx * sectorWidth);
+            let sxReal = (mysx + asx) % mapSz;
             while (sxReal < 0) {
                 sxReal = (sxReal + mapSz) % mapSz;
             }
-            for (let sy = -1; sy <= 1; sy++) { // Sectors on Y do not loop
-                const syReal = (mysy + sy);
+            for (let asy = startY; asy <= endY; asy++) { // Sectors on Y do not loop
+                const syReal = (mysy + asy);
                 if (syReal < mapSz && syReal >= 0) {
-                    const newY = myy - (sy * sectorWidth);
+                    const newY = myy - (asy * sectorWidth);
                     if (extras == false) {
                         functionToCall(this, wep, newY, newX, syReal, sxReal);
                     } else {
@@ -389,25 +389,33 @@ class Player {
                 //    return;
                 // }
                 if (bases[this.sy][this.sx] != 0) {
-                    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
-                    this.space = false;
-                    return;
+                    let numTurrets = 0;
+                    for (const id in bases[this.sy][this.sx]) numTurrets++;
+                    if (numTurrets > 0) {
+                        this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
+                        this.space = false;
+                        return;
+                    }
                 }
                 const r = Math.random();
                 const b = new Base(r, TURRET, this.sx, this.sy, this.color, this.x, this.y);
                 b.owner = this.name;
-                bases[this.sy][this.sx] = b;
+                bases[this.sy][this.sx][b.id] = b;
                 this.emit(`chat`, { msg: chatColor(`lime`) + chatTranslate(`You placed a turret! Name it with "/nameturret <name>".`) });
             } else if (wep.name === `Sentry`) {
                 if (bases[this.sy][this.sx] != 0) {
-                    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
-                    this.space = false;
-                    return;
+                    let numTurrets = 0;
+                    for (const id in bases[this.sy][this.sx]) numTurrets++;
+                    if (numTurrets > 0) {
+                        this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
+                        this.space = false;
+                        return;
+                    }
                 }
                 const r = Math.random();
                 const b = new Base(r, SENTRY, this.sx, this.sy, this.color, this.x, this.y);
                 b.owner = this.name;
-                bases[this.sy][this.sx] = b;
+                bases[this.sy][this.sx][b.id] = b;
                 this.emit(`chat`, { msg: chatColor(`lime`) + chatTranslate(`You placed a turret! Name it with "/nameturret <name>".`) });
             } else if (wep.name === `Turbo`) {
                 const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
@@ -595,9 +603,9 @@ class Player {
         this.checkMineCollision();
     }
 
-    checkMineCollisionSector (that, wep, newy, newx, sy, sx) {
-        for (const i in mines[sy][sx]) {
-            const m = mines[sy][sx][i];
+    checkMineCollisionSector (that, wep, newy, newx, lsy, lsx) {
+        for (const i in mines[lsy][lsx]) {
+            const m = mines[lsy][lsx][i];
             if (m.color != that.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
                 if (m.wepnID != 16 && squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(16 + ships[that.ship].width)) {
                     that.dmg(m.dmg, m); // damage me
@@ -607,8 +615,8 @@ class Player {
                 } else if (m.wepnID == 16 && squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(wepns[m.wepnID].range + ships[that.ship].width)) {
                     const r = Math.random(); // Laser Mine
                     const beam = new Beam(m.owner, r, m.wepnID, that, m); // m.owner is the owner, m is the origin location
-                    beams[sy][sx][r] = beam;
-                    sendAllSector(`sound`, { file: `beam`, x: newx, y: newy }, sx, sy);
+                    beams[lsy][lsx][r] = beam;
+                    sendAllSector(`sound`, { file: `beam`, x: newx, y: newy }, lsx, lsy);
                     m.die();
                 }
             }
@@ -776,7 +784,7 @@ class Player {
 
         this.checkQuestStatus(true); // lots of quests are planet based
 
-        if (this.guest) return; // You must create an account in the base before you can claim planets!
+        // if (this.guest) return; // TO-DO You must create an account in the base before you can claim planets!
 
         if (typeof this.quest !== `undefined` && this.quest != 0 && this.quest.type === `Secret2` && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
             // compute whether there are any unkilled enemies in this sector
@@ -788,7 +796,15 @@ class Player {
                     break;
                 }
             }
-            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].baseType != DEADBASE) cleared = false;// also check base is dead
+            if (bases[this.sy][this.sx] != 0) {
+                for (const id in bases[this.sy][this.sx]) {
+                    const base = bases[this.sy][this.sx][id];
+                    if (base.baseType != DEADBASE) { // also check base is dead
+                        cleared = false;
+                        break;
+                    }
+                }
+            }
 
             if (cleared) { // 2 ifs needed, don't merge this one with the last one
                 this.hasPackage = true;
@@ -900,9 +916,14 @@ class Player {
         const range2 = square(100 * 10); // Range 100
 
         // base
-        const b = bases[this.sy][this.sx];
-        if ((b != 0) && b.baseType != DEADBASE && b.color !== this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBEnemy = b;
-        if ((b != 0) && b.baseType != DEADBASE && b.color === this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBFriendly = b;
+        const bS = bases[this.sy][this.sx];
+        if (bS != 0) {
+            for (const id in bases[this.sy][this.sx]) {
+                const b = bases[this.sy][this.sx][id];
+                if ((b != 0) && b.baseType != DEADBASE && b.color !== this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBEnemy = b;
+                if ((b != 0) && b.baseType != DEADBASE && b.color === this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBFriendly = b;
+            }
+        }
 
         // search players
         for (const i in players[this.sy][this.sx]) {
@@ -997,7 +1018,7 @@ class Player {
         sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
     }
 
-    findBeamTarget (that, wep, newy, newx, sy, sx, origin, restricted, oldNearP) {
+    findBeamTarget (that, wep, newy, newx, lsy, lsx, origin, restricted, oldNearP) {
         // const ox = origin.x; const oy = origin.y;
 
         let nearP = oldNearP; // target, which we will compute (initially 0)
@@ -1007,13 +1028,15 @@ class Player {
 
         // base
         if (!restricted) {
-            if (wep == 7 || wep == 8 || wep == 9 || wep == 45) {
-                const b = bases[sy][sx];
-                if (b != 0 && ((b.color == that.color) == (wep == 45)) && !(wep == 45 && b.health > b.maxHealth * 0.9995) && b.baseType != DEADBASE) {
-                    const dist2 = squaredGlobalDist(origin, b, sectorWidth, sectorWidth, mapSz);
-                    if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
-                        nearP = b;
-                        nearPdOld = dist2;
+            if ((wep == 7 || wep == 8 || wep == 9 || wep == 45) && bases[lsy][lsx] != 0 && bases[lsy][lsx] != undefined) {
+                for (const id in bases[lsy][lsx]) {
+                    const b = bases[lsy][lsx][id];
+                    if (b != 0 && ((b.color == that.color) == (wep == 45)) && !(wep == 45 && b.health > b.maxHealth * 0.9995) && b.baseType != DEADBASE) {
+                        const dist2 = squaredGlobalDist(origin, b, sectorWidth, sectorWidth, mapSz);
+                        if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
+                            nearP = b;
+                            nearPdOld = dist2;
+                        }
                     }
                 }
             }
@@ -1021,8 +1044,8 @@ class Player {
 
         // search players
         if (!restricted) {
-            for (const i in players[sy][sx]) {
-                const p = players[sy][sx][i];
+            for (const i in players[lsy][lsx]) {
+                const p = players[lsy][lsx][i];
                 if (p.ship != 17 && (wep == 26 || wep == 30)) continue; // elite quarrier is affected
                 if (((p.color == that.color) != (wep == 45)) || p.disguise > 0 || that.id == p.id) continue;
                 if (wep == 45 && p.health > p.maxHealth * 0.9995) continue;
@@ -1037,8 +1060,8 @@ class Player {
 
         // search asteroids
         if (nearP == 0 && wep != 35 && wep != 31 && wep != 45) {
-            for (const i in asts[sy][sx]) {
-                const a = asts[sy][sx][i];
+            for (const i in asts[lsy][lsx]) {
+                const a = asts[lsy][lsx][i];
                 // if (a.sx != that.sx || a.sy != that.sy || a.hit) continue;
                 if (a.hit) continue;
                 const dist2 = squaredGlobalDist(origin, a, sectorWidth, sectorWidth, mapSz);
@@ -1057,6 +1080,7 @@ class Player {
 
         let wep = this.weapons[this.equipped];
         let nearP = this.apply9SectorEffect(this.findBeamTarget, wep, true, origin, restricted, true); // target, which we will compute
+        // let nearP = this.apply9SectorEffect(this.findBeamTarget, wep, true, origin, restricted, true, 0, 0, 0, 0); // TO-DO temporarily disabled cross-sector beams
         if (nearP == 0) return;
 
         let nearPdOld = -1; // Unachievable
@@ -1163,9 +1187,11 @@ class Player {
                     p.EMP(100);
                 }
             }
-            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE) {
-                const b = bases[this.sy][this.sx];
-                b.EMP(150);
+            if (bases[this.sy][this.sx] != 0) {
+                for (const id in bases[this.sy][this.sx]) {
+                    const b = bases[this.sy][this.sx][id];
+                    if (b.color !== this.color && b.baseType != DEADBASE) b.EMP(150);
+                }
             }
             this.health += Math.min(Math.max(5, this.maxHealth * 0.03), this.maxHealth - this.health);
         }

@@ -63,16 +63,17 @@ socket.on(`posUp`, (data) => {
     gyroTimer--;
     killStreakTimer--;
     docked = false;
-    packsInfo = data.packs;
-    playersInfo = data.players;
-    basesInfo = data.bases;
-    astsInfo = data.asteroids;
-    beamsInfo = data.beams;
-    blastsInfo = data.blasts;
-    missilesInfo = data.missiles;
-    orbsInfo = data.orbs;
-    minesInfo = data.mines;
-    vortsInfo = data.vorts;
+    packsInfo = data.packs; // TO-DO
+    playersInfo = data.players; // TO-DO
+    basesInfo = data.bases; // TO-DO
+    planets = data.planets;
+    astsInfo = data.asteroids; // TO-DO
+    beamsInfo = data.beams; // TO-DO
+    blastsInfo = data.blasts; // TO-DO
+    missilesInfo = data.missiles; // TO-DO
+    orbsInfo = data.orbs; // TO-DO
+    minesInfo = data.mines; // TO-DO
+    vortsInfo = data.vorts; // TO-DO
     if (sx != data.sx || sy != data.sy) {
         sx = data.sx;
         sy = data.sy;
@@ -92,49 +93,55 @@ socket.on(`update`, (data) => {
     if (!delta) return;
 
     for (let index = 0; index < delta.players.length; ++index) {
-        player_update(delta.players[index]);
+        player_update(delta.players[index]); // TO-DO
     }
 
     for (let index = 0; index < delta.vorts.length; ++index) {
-        vort_update(delta.vorts[index]);
+        vort_update(delta.vorts[index]); // TO-DO
     }
 
     for (let index = 0; index < delta.mines.length; ++index) {
-        mine_update(delta.mines[index]);
+        mine_update(delta.mines[index]); // TO-DO
     }
 
     for (let index = 0; index < delta.beams.length; ++index) {
-        beam_update(delta.beams[index]);
+        beam_update(delta.beams[index]); // TO-DO
     }
 
     for (let index = 0; index < delta.blasts.length; ++index) {
-        blast_update(delta.blasts[index]);
+        blast_update(delta.blasts[index]); // TO-DO
     }
 
     for (let index = 0; index < delta.asteroids.length; ++index) {
-        asteroid_update(delta.asteroids[index]);
+        asteroid_update(delta.asteroids[index]); // TO-DO
     }
 
     for (let index = 0; index < delta.missiles.length; ++index) {
-        missile_update(delta.missiles[index]);
+        missile_update(delta.missiles[index]); // TO-DO
     }
 
     for (let index = 0; index < delta.packs.length; ++index) {
-        pack_update(delta.packs[index]);
+        pack_update(delta.packs[index]); // TO-DO
     }
 
     for (let index = 0; index < delta.orbs.length; ++index) {
-        orb_update(delta.orbs[index]);
+        orb_update(delta.orbs[index]); // TO-DO
     }
 
     if (delta.base !== undefined) {
-        base_update(delta.base);
+        base_update(delta.base); // TO-DO
     }
 
-    updateBooms();
-    updateNotes();
-    updateBullets();
-    updateTrails();
+    if (delta.bases !== undefined) { // TO-DO AN ADDITION
+        for (const id in delta.bases) {
+            base_update(delta.bases[id]); // TO-DO
+        }
+    }
+
+    updateBooms(); // TO-DO
+    updateNotes(); // TO-DO
+    updateBullets(); // TO-DO
+    updateTrails(); // TO-DO
     empTimer--;
     gyroTimer--;
     killStreakTimer--;
@@ -214,11 +221,13 @@ socket.on(`blast_delete`, (data) => {
 });
 
 socket.on(`base_create`, (data) => {
-    basesInfo = data;
+    basesInfo[data.id] = data;
+    console.log(`TO-DO base_create with data =${data}`);
 });
 
 socket.on(`base_delete`, (data) => {
-    basesInfo = undefined;
+    console.log(`TO-DO base_delete for data =${data}`);
+    basesInfo[data.id] = undefined;
 });
 
 socket.on(`asteroid_create`, (data) => {
@@ -572,9 +581,10 @@ socket.on(`status`, (data) => {
     lives = data.lives;
 });
 socket.on(`planets`, (data) => {
-    planets = data.pack;
+    if (planets == 0 || planets == undefined || planets == null) planets = {};
+    planets[data.id] = data.pack;
     if (quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
-        secret2PlanetName = planets.name;
+        secret2PlanetName = planets[data.id].name;
     }
 });
 socket.on(`planetMap`, (data) => {

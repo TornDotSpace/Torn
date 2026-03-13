@@ -44,6 +44,8 @@ global.DEADBASE = 1;
 global.TURRET = 2;
 global.SENTRY = 3;
 
+global.TURRET_DETECT_RANGE = (sectorWidth / 2.0 * 1.1);
+
 global.render = function () {
     if (dead) {
         ctx.globalAlpha = 0.02;
@@ -338,6 +340,53 @@ global.updateNotes = function () {
         }
     }
 };
+
+global.squaredCGlobalDist = function (a, b, gsy = sectorWidth, gsx = sectorWidth, numSec = mapSz) { // distance between two points squared, taking into account sector configuration. i.e. c^2
+    let sectorDiffX = a.sx - b.sx;
+    let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
+    sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
+
+    if (sectorDiffX > 0) {
+        sectorDiffX = sectorDiffXa;
+    } else {
+        sectorDiffX = -sectorDiffXa;
+    }
+    sectorDiffX = sectorDiffX * gsx;
+
+    let sectorDiffY = a.sy - b.sy; // Sectors on Y do not loop
+    sectorDiffY = sectorDiffY * gsy;
+
+    return square(a.y - b.y + sectorDiffX) + square(a.x - b.x + sectorDiffY);
+};
+
+global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { // obtainSXDrift(player, other)
+    if (Object.is(asx, null) || Object.is(asx, undefined) || Object.is(bsx, null) || Object.is(bsx, undefined)) {
+        console.warn(`asx is ${asx} , bsx is ${bsx} , gsx is ${gsx} and numSec = ${numSec}`);
+        return 0;
+    }
+
+    let sectorDiffX = bsx - asx;
+    let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
+    sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
+
+    if (sectorDiffX > 0) {
+        sectorDiffX = sectorDiffXa;
+    } else {
+        sectorDiffX = -sectorDiffXa;
+    }
+
+    return sectorDiffX * gsx;
+};
+
+global.obtainSYDrift = function (asy, bsy, gsy = sectorWidth, numSec = mapSz) {
+    if (Object.is(asy, null) || Object.is(asy, undefined) || Object.is(bsy, null) || Object.is(bsy, undefined)) {
+        console.warn(`asy is ${asy} , bsy is ${bsy} , gsy is ${gsy} and numSec = ${numSec}`);
+        return 0;
+    }
+    let sectorDiffY = bsy - asy; // Sectors on Y do not loop
+    return sectorDiffY * gsy;
+};
+
 global.updateTrails = function () {
     /* trails:
     0 -> default
@@ -388,13 +437,19 @@ global.updateTrails = function () {
                     t = Math.random() * Math.PI * 60;
                     col = ((Math.floor(Math.cos(t) * 128 + 128) << 16) + (Math.floor(Math.cos(t + Math.PI * 2 / 3) * 128 + 128) << 8) + Math.floor(Math.cos(t + Math.PI * 4 / 3) * 128 + 128)).toString(16);
                 } else if (mod == 5) col = ((Math.floor(Math.cos(t) * 128 + 128) << 16) + (Math.floor(Math.cos(t + Math.PI * 2 / 3) * 128 + 128) << 8) + Math.floor(Math.cos(t + Math.PI * 4 / 3) * 128 + 128)).toString(16);
+
+                let extraX = 0;
+                let extraY = 0;
+                if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+                if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
                 while (col.length < 6) col = `0${col}`;
                 trails[Math.random()] = {
                     vip: trail > 15,
                     dx: cos * selfo.speed / 2,
                     dy: sin * selfo.speed / 2,
-                    x: selfo.x + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cosLow(selfo.driftAngle) * (rando - selfo.speed),
-                    y: selfo.y + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sinLow(selfo.driftAngle) * (rando - selfo.speed),
+                    x: selfo.x + extraX + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cosLow(selfo.driftAngle) * (rando - selfo.speed),
+                    y: selfo.y + extraY + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sinLow(selfo.driftAngle) * (rando - selfo.speed),
                     time: -1,
                     color: col
                 };
@@ -403,7 +458,13 @@ global.updateTrails = function () {
         if (selfo.health / selfo.maxHealth < 0.4) {
             for (let j = 0; j < 10; j++) {
                 const r = Math.random();
-                trails[Math.random()] = { vip: false, dx: cos * selfo.speed / 2, dy: sin * selfo.speed / 2, x: selfo.x + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cos * r * selfo.speed, y: selfo.y + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sin * r * selfo.speed, time: -1, color: ((Math.round(112 + 32 * r) << 16) + (Math.round(112 + 32 * r) << 8) + Math.round(112 + 32 * r)).toString(16) };
+
+                let extraX = 0;
+                let extraY = 0;
+                if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+                if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
+                trails[Math.random()] = { vip: false, dx: cos * selfo.speed / 2, dy: sin * selfo.speed / 2, x: selfo.x + extraX + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cos * r * selfo.speed, y: selfo.y + extraY + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sin * r * selfo.speed, time: -1, color: ((Math.round(112 + 32 * r) << 16) + (Math.round(112 + 32 * r) << 8) + Math.round(112 + 32 * r)).toString(16) };
             }
         }
     }
@@ -497,7 +558,7 @@ global.rVolumeBar = function () {
     ctx.restore();
 };
 global.rExpBar = function () {
-    if (guest) return;
+    // if (guest) return;
 
     ctx.lineWidth = 0.5;
     ctx.fillStyle = `black`;
@@ -555,7 +616,13 @@ global.rBooms = function () {
     for (const i in booms) {
         const b = booms[i];
         const pw = 128; const ph = 128;
-        let rendX = b.x - px + w / 2 - pw / 2 + scrx; let rendY = b.y - py + h / 2 - ph / 2 + scry;
+
+        let extraX = 0;
+        let extraY = 0;
+        if (!(Object.is(b.sx, null) || Object.is(b.sx, undefined))) extraX = obtainSXDrift(sx, b.sx);
+        if (!(Object.is(b.sy, null) || Object.is(b.sy, undefined))) extraY = obtainSYDrift(sy, b.sy);
+
+        let rendX = b.x + extraX - px + w / 2 - pw / 2 + scrx; let rendY = b.y + extraY - py + h / 2 - ph / 2 + scry;
 
         if (b.time < 114) {
             const img = Img.booms;
@@ -569,8 +636,8 @@ global.rBooms = function () {
 
         if (!b.shockwave) continue;
 
-        rendX = b.x - px + w / 2 + scrx;
-        rendY = b.y - py + h / 2 + scry;
+        rendX = b.x + extraX - px + w / 2 + scrx;
+        rendY = b.y + extraY - py + h / 2 + scry;
 
         const ss = Math.sqrt(b.time) * 96;
         ctx.globalAlpha = 0.9 - b.time / 500.0;
@@ -586,8 +653,15 @@ global.rBooms = function () {
         ctx.fillStyle = `white`;
         ctx.fillRect(selfo.x - 3 - px + w / 2, selfo.y - 3 - py + h / 2, 7, 7);
         ctx.globalAlpha = (15 - selfo.time) / 22;
-        ctx.moveTo(selfo.x - px + w / 2, selfo.y - py + h / 2);
-        ctx.lineTo(selfo.x - px + w / 2 - (cosLow(selfo.angle) * 25 + selfo.dx), selfo.y - py + h / 2 - (sinLow(selfo.angle) * 25 + selfo.dy));
+
+        let extraX = 0;
+        let extraY = 0;
+
+        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
+        ctx.moveTo(selfo.x + extraX - px + w / 2, selfo.y + extraY - py + h / 2);
+        ctx.lineTo(selfo.x + extraY - px + w / 2 - (cosLow(selfo.angle) * 25 + selfo.dx), selfo.y + extraY - py + h / 2 - (sinLow(selfo.angle) * 25 + selfo.dy));
         ctx.stroke();
         ctx.closePath();
         ctx.globalAlpha = 1;
@@ -596,10 +670,17 @@ global.rBooms = function () {
 global.rTrails = function () {
     for (const i in trails) {
         const selfo = trails[i];
+
+        let extraX = 0;
+        let extraY = 0;
+
+        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
         ctx.globalAlpha = (7 - selfo.time) / 7;
         ctx.strokeStyle = ctx.fillStyle = `#${selfo.color}`;
-        if (!selfo.vip) ctx.fillRect(selfo.x - 1 - px + w / 2 + scrx, selfo.y - 1 - py + scry + h / 2, 3, 3);
-        else drawStar(selfo.x - px + w / 2 + scrx, selfo.y - py + scry + h / 2, 5, 3, 8);
+        if (!selfo.vip) ctx.fillRect(selfo.x + extraX - 1 - px + w / 2 + scrx, selfo.y + extraY - 1 - py + scry + h / 2, 3, 3);
+        else drawStar(selfo.x + extraX - px + w / 2 + scrx, selfo.y + extraY - py + scry + h / 2, 5, 3, 8);
     }
     ctx.globalAlpha = 1;
 };
@@ -816,24 +897,39 @@ global.rRadar = function () {
     ctx.lineWidth = 1;
     ctx.globalAlpha = 0.5;
     if (basesInfo !== undefined) {
-        const dx = basesInfo.x - px;
-        const dy = basesInfo.y - py;
-        if (square(dx) + square(dy) < r2z2) {
-            const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-            const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
-            ctx.beginPath();
-            ctx.arc(rx, ry, (va2 > 1.24) ? 5 : 3, 0, 2 * Math.PI, false);
-            ctx.fillStyle = `lightgray`;
-            if (va2 > 1.36) ctx.fillStyle = brighten(basesInfo.color);
-            ctx.fill();
-            ctx.closePath();
+        for (let id in basesInfo) {
+            const aBase = basesInfo[id];
+
+            let extraX = 0;
+            let extraY = 0;
+            if (!(Object.is(aBase.sx, null) || Object.is(aBase.sx, undefined))) extraX = obtainSXDrift(sx, aBase.sx);
+            if (!(Object.is(aBase.sy, null) || Object.is(aBase.sy, undefined))) extraY = obtainSYDrift(sy, aBase.sy);
+
+            const dx = aBase.x + extraX - px;
+            const dy = aBase.y + extraY - py;
+            if (square(dx) + square(dy) < r2z2) {
+                const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+                const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+                ctx.beginPath();
+                ctx.arc(rx, ry, (va2 > 1.24) ? 5 : 3, 0, 2 * Math.PI, false);
+                ctx.fillStyle = `lightgray`;
+                if (va2 > 1.36) ctx.fillStyle = brighten(aBase.color);
+                ctx.fill();
+                ctx.closePath();
+            }
         }
     }
     ctx.fillStyle = `white`;
     for (const p_pack in playersInfo) {
         const p = playersInfo[p_pack];
-        const dx = p.x - px;
-        const dy = p.y - py;
+
+        let extraX = 0;
+        let extraY = 0;
+        if (!(Object.is(p.sx, null) || Object.is(p.sx, undefined))) extraX = obtainSXDrift(sx, p.sx);
+        if (!(Object.is(p.sy, null) || Object.is(p.sy, undefined))) extraY = obtainSYDrift(sy, p.sy);
+
+        const dx = p.x + extraX - px;
+        const dy = p.y + extraY - py;
         if (square(dx) + square(dy) > r2z2) continue;
         const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
         const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
@@ -847,8 +943,10 @@ global.rRadar = function () {
         ctx.fillStyle = `gold`;
         for (const p_pack in packsInfo) {
             const p = packsInfo[p_pack];
-            const dx = p.x - px;
-            const dy = p.y - py;
+
+            const dx = p.x + obtainSXDrift(sx, p.sx) - px;
+            const dy = p.y + obtainSYDrift(sy, p.sy) - py;
+
             if (square(dx) + square(dy) > r2z2) continue;
             const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
             const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
@@ -859,24 +957,30 @@ global.rRadar = function () {
         }
     }
     if (tag === `B`) {
-        ctx.fillStyle = brighten(planets.color);
-        const dx = planets.x - px;
-        const dy = planets.y - py;
-        if (square(dx) + square(dy) < r2z2) {
-            const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-            const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
-            ctx.beginPath();
-            ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
+        if (!(planets == 0 || planets == undefined)) {
+            for (const id in planets) {
+                const planet = planets[id];
+                ctx.fillStyle = brighten(planet.color);
+
+                const dx = planet.x + obtainSXDrift(sx, planet.sx) - px;
+                const dy = planet.y + obtainSYDrift(sy, planet.sy) - py;
+                console.log(`TO-DO Calling rRadar tag = B 2`);
+                if (square(dx) + square(dy) < r2z2) {
+                    const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+                    const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+                    ctx.beginPath();
+                    ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
         }
     }
     ctx.lineWidth = 2;
     for (let a in astsInfo) {
         a = astsInfo[a];
-
-        const dx = a.x - px;
-        const dy = a.y - py;
+        const dx = a.x + obtainSXDrift(sx, a.sx) - px;
+        const dy = a.y + obtainSYDrift(sy, a.sy) - py;
         if (square(dx) + square(dy) > r2z2) continue;
         const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
         const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
@@ -1171,8 +1275,14 @@ global.rBullets = function () {
     for (const i in bullets) {
         const selfo = bullets[i];
         let img = Img.redbullet;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        let extraX = 0;
+        let extraY = 0;
+
+        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
+        const rendX = selfo.x + extraX - px + w / 2 + scrx;
+        const rendY = selfo.y + extraY - py + h / 2 + scry;
         if (selfo.wepnID == 28) {
             ctx.save();
             ctx.globalAlpha = 0.1;
@@ -1221,8 +1331,10 @@ global.rMissiles = function () {
         }
         const pw = img.width;
         const ph = img.height;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
+
         ctx.save();
         ctx.translate(rendX, rendY);
         ctx.rotate(selfo.angle + Math.PI / 2);
@@ -1239,8 +1351,8 @@ global.rOrbs = function () {
         }
         const pw = img.width;
         const ph = img.height;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
         ctx.save();
         ctx.translate(rendX, rendY);
         ctx.rotate(getTimeAngle() + Math.PI / 2);
@@ -1254,8 +1366,8 @@ global.rMines = function () {
         let img = Img.mine;
         const pw = img.width;
         const ph = img.height;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
         if (selfo.wepnID == 16) {
             img = Img.laserMine;
         } else if (selfo.wepnID == 17) {
@@ -1308,10 +1420,10 @@ global.rBeams = function () {
         else if (selfo.wepnID == 45) ctx.strokeStyle = `cyan`;
         else if (selfo.wepnID == 33 || selfo.wepnID == 26 || selfo.wepnID == 30) ctx.strokeStyle = `#d0c090`;
         else ctx.strokeStyle = `red`;
-        const bx = selfo.bx - px + w / 2 + scrx;
-        const by = selfo.by - py + h / 2 + scry;
-        const ex = selfo.ex - px + w / 2 + scrx;
-        const ey = selfo.ey - py + h / 2 + scry;
+        const bx = selfo.bx + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const by = selfo.by + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
+        const ex = selfo.ex + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const ey = selfo.ey + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
         ctx.beginPath();
         ctx.moveTo(bx, by);
         ctx.lineTo(ex, ey);
@@ -1329,10 +1441,10 @@ global.rBlasts = function () {
         if (selfo.wepnID == 25) {
             ctx.strokeStyle = `white`;
         }
-        const bx = selfo.bx - px + w / 2 + scrx;
-        const by = selfo.by - py + h / 2 + scry;
-        const ex = selfo.bx + Math.cos(selfo.angle) * 10000 - px + w / 2 + scrx;
-        const ey = selfo.by + Math.sin(selfo.angle) * 10000 - py + h / 2 + scry;
+        const bx = selfo.bx + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const by = selfo.by + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
+        const ex = selfo.bx + obtainSXDrift(sx, selfo.sx) + Math.cos(selfo.angle) * 10000 - px + w / 2 + scrx;
+        const ey = selfo.by + obtainSYDrift(sy, selfo.sy) + Math.sin(selfo.angle) * 10000 - py + h / 2 + scry;
         ctx.beginPath();
         ctx.moveTo(bx, by);
         ctx.lineTo(ex, ey);
@@ -1342,80 +1454,110 @@ global.rBlasts = function () {
     }
     ctx.globalAlpha = 1;
 };
+
+global.inTheVoid = function () {
+    return (sx === null || typeof sx === `undefined` || sy === null || typeof sy === `undefined`);
+};
 global.rAsteroids = function () {
     let nearA = 0;
-    for (let selfo in astsInfo) {
-        selfo = astsInfo[selfo];
+    if (inTheVoid()) return; // Probably just docked
+    const selfsx = sx;
+    const selfsy = sy;
+    let extraXn = 0;
+    let extraYn = 0;
+    for (const id in astsInfo) {
+        const selfo = astsInfo[id];
 
         const img = (selfo.metal == 0 ? Img.iron : (selfo.metal == 3 ? Img.platinum : (selfo.metal == 1 ? Img.silver : Img.copper)));
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        const extraX = obtainSXDrift(selfsx, selfo.sx);
+        const extraY = obtainSYDrift(selfsy, selfo.sy);
+        const rendX = selfo.x + extraX - px + w / 2 + scrx;
+        const rendY = selfo.y + extraY - py + h / 2 + scry;
         const d = new Date();
         const healthDec = (0.5 + selfo.health / selfo.maxHealth) / 1.5;
         const stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
-        const sx = (stime % 8) * 128;
-        const sy = Math.floor((stime / 8) % 4 + 4 * (Math.floor(selfo.metal) % 2)) * 128;
+        const tsx = (stime % 8) * 128;
+        const tsy = Math.floor((stime / 8) % 4 + 4 * (Math.floor(selfo.metal) % 2)) * 128;
         ctx.save();
         ctx.translate(rendX, rendY);
         ctx.drawImage(Img.astUnderlayBlue, -128, -128);
         ctx.rotate(selfo.angle + Math.PI / 2);
-        ctx.drawImage(img, sx, sy, 128, 128, -64 * healthDec, -64 * healthDec, 128 * healthDec, 128 * healthDec);
+        ctx.drawImage(img, tsx, tsy, 128, 128, -64 * healthDec, -64 * healthDec, 128 * healthDec, 128 * healthDec);
         ctx.restore();
 
         if (selfo.color != pc) { // update nearest enemy for pointer
-            if (nearA == 0 || square(selfo.x - px) + square(selfo.y - py) < square(nearA.x - px) + square(nearA.y - py)) {
+            const dDistPX = selfo.x - px + obtainSXDrift(selfsx, selfo.sx);
+            const dDistPY = selfo.y - py + obtainSYDrift(selfsy, selfo.sy);
+
+            if (nearA == 0) {
                 nearA = selfo;
+                extraXn = dDistPX;
+                extraYn = dDistPY;
+            } else {
+                const dDistAX = nearA.x - px + obtainSXDrift(selfsx, nearA.sx);
+                const dDistAY = nearA.y - py + obtainSYDrift(selfsy, nearA.sy);
+                if (square(dDistPX) + square(dDistPY) < square(dDistAX) + square(dDistAY)) {
+                    nearA = selfo;
+                    extraXn = dDistPX;
+                    extraYn = dDistPY;
+                }
             }
         }
     }
     if (nearA !== 0) {
-        rAstPointer(nearA);
+        rAstPointer(nearA, extraXn, extraYn);
     }
 };
 global.rPlanets = function () {
-    if (planets == 0) return;
-    const selfo = planets;
-    const rendX = (selfo.x - px + scrx) / 4 + w / 2;
-    const rendY = (selfo.y - py + scry) / 4 + h / 2;
-    if (rendX < -150 || rendX > w + 150 || rendY < -150 || rendY > h + 220) return;
+    if (planets == 0 || planets == undefined) return;
+    if (inTheVoid()) return; // Probably just docked
+    for (let id in planets) {
+        const selfo = planets[id];
+        // console.log("TO-DO rPlanets planetlist is " + planets + " and structure is " + Object.keys(planets))
+        // console.log("TO-DO rPlanets selfo, a planet, is " + selfo + " and structure is " + Object.keys(selfo))
+        const rendX = (selfo.x + obtainSXDrift(sx, selfo.sx) - px + scrx) / 4 + w / 2;
+        const rendY = (selfo.y + obtainSYDrift(sy, selfo.sy) - py + scry) / 4 + h / 2;
+        if (rendX < -150 || rendX > w + 150 || rendY < -150 || rendY > h + 220) return;
 
-    const d = new Date();
-    const stime = d.getTime() / 150000;
+        const d = new Date();
+        const stime = d.getTime() / 150000;
 
-    const imgi = (sx + sy * mapSz) % 5 + 1;
-    const img = planetImgs[imgi];
+        const imgi = (sx + sy * mapSz) % 5 + 1;
+        const img = planetImgs[imgi];
 
-    if (typeof img === `undefined`) return;
+        if (typeof img === `undefined`) return;
 
-    const ox = (sinLow(stime * 5) / 2 + 0.5) * (img.width - 256) + 128;// error on t05 width of undefined
-    const oy = (cosLow(stime * 4) / 2 + 0.5) * (img.height - 256) + 128;
+        const ox = (sinLow(stime * 5) / 2 + 0.5) * (img.width - 256) + 128;// error on t05 width of undefined
+        const oy = (cosLow(stime * 4) / 2 + 0.5) * (img.height - 256) + 128;
 
-    ctx.save();
-    const pattern = ctx.createPattern(img, `no-repeat`);
-    ctx.fillStyle = pattern;
-    ctx.translate(rendX, rendY);
-    ctx.drawImage(selfo.color === `yellow` ? Img.planetU : colorSelect(selfo.color, Img.planetUR, Img.planetUB, Img.planetUG), -155, -155, 310, 310);
-    ctx.translate(-ox, -oy);
-    ctx.beginPath();
-    ctx.arc(ox, oy, 128, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    ctx.translate(ox, oy);
-    ctx.drawImage(Img.planetO, -128, -128);
-    ctx.restore();
-    ctx.textAlign = `center`;
-    ctx.fillStyle = brighten(selfo.color);
-    ctx.font = `30px ShareTech`;
-    write(ctx, translate(`Planet `) + selfo.name, rendX, rendY - 196);
-    ctx.textAlign = `left`;
-    ctx.font = `14px ShareTech`;
+        ctx.save();
+        const pattern = ctx.createPattern(img, `no-repeat`);
+        ctx.fillStyle = pattern;
+        ctx.translate(rendX, rendY);
+        ctx.drawImage(selfo.color === `yellow` ? Img.planetU : colorSelect(selfo.color, Img.planetUR, Img.planetUB, Img.planetUG), -155, -155, 310, 310);
+        ctx.translate(-ox, -oy);
+        ctx.beginPath();
+        ctx.arc(ox, oy, 128, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.translate(ox, oy);
+        ctx.drawImage(Img.planetO, -128, -128);
+        ctx.restore();
+        ctx.textAlign = `center`;
+        ctx.fillStyle = brighten(selfo.color);
+        ctx.font = `30px ShareTech`;
+        write(ctx, translate(`Planet `) + selfo.name, rendX, rendY - 196);
+        ctx.textAlign = `left`;
+        ctx.font = `14px ShareTech`;
+    }
 };
 global.rPacks = function () {
-    for (let selfo in packsInfo) {
-        selfo = packsInfo[selfo];
+    if (inTheVoid()) return; // Probably just docked
+    for (const id in packsInfo) {
+        const selfo = packsInfo[id];
         const img = selfo.type == 0 ? Img.pack : (selfo.type == 1 ? Img.bonus : (selfo.type == 2 ? Img.life : Img.ammo));
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
         const d = new Date();
         const stime = (d.getMilliseconds() / 1000 + d.getSeconds()) / 3;
         ctx.save();
@@ -1427,6 +1569,7 @@ global.rPacks = function () {
     }
 };
 global.rVorts = function () {
+    if (inTheVoid()) return; // Probably just docked
     const d = new Date();
     const angleT = d.getTime() / 1000;
     for (let selfo in vortsInfo) {
@@ -1434,8 +1577,10 @@ global.rVorts = function () {
         selfo = vortsInfo[selfo];
         const img = selfo.isWorm ? Img.worm : Img.vort;
         const size = 24 * selfo.size / 64;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        const extraX = obtainSXDrift(sx, selfo.sx);
+        const extraY = obtainSYDrift(sy, selfo.sy);
+        const rendX = selfo.x + extraX - px + w / 2 + scrx;
+        const rendY = selfo.y + extraY - py + h / 2 + scry;
         ctx.translate(rendX, rendY);
         ctx.rotate(angleT % (Math.PI * 2));
         ctx.drawImage(img, -size / 2, -size / 2, size, size);
@@ -1445,10 +1590,11 @@ global.rVorts = function () {
         ctx.restore();
         if (selfo.isWorm) currAlert = translate(`Wormhole Nearby!`);
         else bigAlert = translate(`Black Hole Nearby!`);
-        rBlackHoleWarning(selfo.x, selfo.y);
+        rBlackHoleWarning(selfo.x, selfo.y, extraX, extraY);
     }
 };
 global.rPlayers = function () {
+    if (inTheVoid()) return; // Probably just docked
     const pointers = [0, 0, 0];
     for (let selfo in playersInfo) {
         selfo = playersInfo[selfo];
@@ -1460,9 +1606,8 @@ global.rPlayers = function () {
         const pw = img.width;
         const ph = img.height;
         if (pw == 0 || ph == 0) return;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
-
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
         ctx.save();
         ctx.translate(rendX, rendY);
         ctx.globalAlpha = 0.8;
@@ -1486,10 +1631,16 @@ global.rPlayers = function () {
         if (selfo.name === myName) {
             if (selfo.health < selfo.maxHealth * 0.3) currAlert = translate(`Low Health!`);
         } else {
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < pointers.length; i++) {
                 if (selfo.color === teamColors[i]) {
                     if (pointers[i] === 0) pointers[i] = selfo;
-                    else if (square(selfo.x - px) + square(selfo.y - py) < square(pointers[i].x - px) + square(pointers[i].y - py)) pointers[i] = selfo;
+                    else {
+                        const dDistPX = selfo.x - px + obtainSXDrift(sx, selfo.sx);
+                        const dDistPY = selfo.y - py + obtainSYDrift(sy, selfo.sy);
+                        const dDistAX = pointers[i].x - px + obtainSXDrift(sx, pointers[i].sx);
+                        const dDistAY = pointers[i].y - py + obtainSYDrift(sy, pointers[i].sy);
+                        if (square(dDistPX) + square(dDistPY) < square(dDistAX) + square(dDistAY)) pointers[i] = selfo;
+                    }
                 }
             }
         }
@@ -1512,7 +1663,16 @@ global.rPlayers = function () {
         ctx.arc(rendX, rendY, pw / 1.5, (2.5 - selfo.health / selfo.maxHealth * 0.99) * Math.PI, (0.501 + selfo.health / selfo.maxHealth) * Math.PI, false);
         ctx.stroke();
     }
-    rTeamPointers(pointers);
+
+    let extraX = [0, 0, 0];
+    let extraY = [0, 0, 0];
+    for (let i = 0; i < pointers.length; i++) {
+        if ((pointers[i] !== undefined) && typeof pointers[i] == `object`) {
+            extraX[i] = obtainSXDrift(sx, pointers[i].sx);
+            extraY[i] = obtainSYDrift(sy, pointers[i].sy);
+        }
+    }
+    rTeamPointers(pointers, extraX, extraY);
 };
 global.rSelfCloaked = function () {
     ctx.strokeStyle = `grey`;
@@ -1554,67 +1714,97 @@ global.rSelfCloaked = function () {
     ctx.stroke();
 };
 global.rBases = function () {
+    if (inTheVoid()) return; // Probably just docked
     if (basesInfo !== undefined) { // render bases
-        const image = colorSelect(basesInfo.color, Img.rss, Img.bss, Img.gss);
-        let pw = image.width;
-        let ph = image.height;
-        const rendX = basesInfo.x - px + w / 2 + scrx;
-        const rendY = basesInfo.y - py + h / 2 + scry;
-        if (basesInfo.color !== pc) currAlert = translate(`Enemy Base Nearby!`);
-
-        if (basesInfo.baseType == DEADBASE || basesInfo.baseType == LIVEBASE) {
-            ctx.save();
-            ctx.translate(rendX, rendY);
-            ctx.rotate(tick / 1000 + Math.PI / 2);
-            ctx.drawImage(colorSelect(basesInfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -512, -512, 1024, 1024);
-            ctx.drawImage(image, -384, -384, 768, 768);
-            ctx.restore();
-            ctx.textAlign = `center`;
-            ctx.fillStyle = `lime`;
-            if (experience < 64 && basesInfo.color == pc && square(px - basesInfo.x) + square(py - basesInfo.y) < square(512)) {
-                ctx.font = `${2.5 * sinLow(tick / 8) + 15}px ShareTech`;
-                write(ctx, translate(`X TO DOCK WITH BASE`), rendX, rendY - 96);
+        for (const id in basesInfo) {
+            const aBase = basesInfo[id];
+            if (aBase === undefined || aBase === 0 || aBase == null || typeof aBase !== `object`) continue;
+            const image = colorSelect(aBase.color, Img.rss, Img.bss, Img.gss);
+            let pw = image.width;
+            let ph = image.height;
+            // console.log("TO-DO Calling rBases 1, aBase = " + aBase + " and its parameters are " + Object.keys(aBase));
+            const rendX = aBase.x + obtainSXDrift(sx, aBase.sx) - px + w / 2 + scrx;
+            const rendY = aBase.y + obtainSYDrift(sy, aBase.sy) - py + h / 2 + scry;
+            let tooClose = false;
+            let warningRange = TURRET_DETECT_RANGE;
+            if (aBase.baseType == DEADBASE || aBase.baseType == LIVEBASE) {
+                ctx.save();
+                ctx.translate(rendX, rendY);
+                ctx.rotate(tick / 1000 + Math.PI / 2);
+                ctx.drawImage(colorSelect(aBase.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -512, -512, 1024, 1024);
+                ctx.drawImage(image, -384, -384, 768, 768);
+                ctx.restore();
+                ctx.textAlign = `center`;
+                ctx.fillStyle = `lime`;
+                const dDistAX = aBase.x - px + obtainSXDrift(sx, aBase.sx);
+                const dDistAY = aBase.y - py + obtainSYDrift(sy, aBase.sy);
+                const moduSqDis = square(dDistAX) + square(dDistAY);
+                if (aBase.baseType == SENTRY) warningRange = warningRange * 0.75;
+                tooClose = (moduSqDis < square(warningRange * 10));
+                if (tooClose && aBase.baseType == DEADBASE) {
+                    if (aBase.color !== pc) currAlert = translate(`Enemy Base Nearby!`);
+                }
+                if (experience < 64 && aBase.color == pc && moduSqDis < square(512)) {
+                    ctx.font = `${2.5 * sinLow(tick / 8) + 15}px ShareTech`;
+                    write(ctx, translate(`X TO DOCK WITH BASE`), rendX, rendY - 96);
+                    ctx.font = `14px ShareTech`;
+                }
+                ctx.textAlign = `left`;
+            } else { // write name
+                ctx.textAlign = `center`;
+                ctx.fillStyle = `white`;
                 ctx.font = `14px ShareTech`;
+                write(ctx, aBase.name, rendX, rendY - 64);
             }
-            ctx.textAlign = `left`;
-        } else { // write name
-            ctx.textAlign = `center`;
-            ctx.fillStyle = `white`;
-            ctx.font = `14px ShareTech`;
-            write(ctx, basesInfo.name, rendX, rendY - 64);
-        }
 
-        if (basesInfo.baseType != DEADBASE) {
-            let timage = 0;
-            if (basesInfo.baseType == SENTRY) timage = colorSelect(basesInfo.color, Img.rsentry, Img.bsentry, Img.gsentry);
-            else timage = colorSelect(basesInfo.color, Img.rt, Img.bt, Img.gt);
-            pw = timage.width; // render turrets
-            ph = timage.height;
-            ctx.save();
-            ctx.translate(rendX, rendY);
-            ctx.rotate(basesInfo.angle + Math.PI / 2);
-            ctx.drawImage(timage, -pw / 2, -ph / 2);
-            ctx.restore();
+            if (aBase.baseType != DEADBASE) {
+                let timage = 0;
+                if (aBase.baseType == SENTRY) {
+                    timage = colorSelect(aBase.color, Img.rsentry, Img.bsentry, Img.gsentry);
+                    if (tooClose) {
+                        if (aBase.color !== pc) currAlert = translate(`Enemy Sentry Nearby!`);
+                    }
+                } else {
+                    timage = colorSelect(aBase.color, Img.rt, Img.bt, Img.gt);
+                    if (aBase.baseType == TURRET) {
+                        if (tooClose) {
+                            if (aBase.color !== pc) currAlert = translate(`Enemy Armed Base Nearby!`);
+                        }
+                    } else {
+                        if (tooClose) {
+                            if (aBase.color !== pc) currAlert = translate(`Enemy Unknwon Station Nearby!`);
+                        }
+                    }
+                }
 
-            if (basesInfo.health / basesInfo.maxHealth < 1) {
-                ctx.lineWidth = 4;
-                const r = Math.floor((1 - basesInfo.health / basesInfo.maxHealth) * 255);
-                const g = Math.floor(255 * basesInfo.health / basesInfo.maxHealth);
-                const b = Math.floor(64 * basesInfo.health / basesInfo.maxHealth);
-                ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
-                ctx.beginPath();
-                ctx.arc(rendX, rendY, pw / 1.5, (2.5 - 0.99 * basesInfo.health / basesInfo.maxHealth) * Math.PI, (0.501 + basesInfo.health / basesInfo.maxHealth) * Math.PI, false);
-                ctx.stroke();
+                pw = timage.width; // render turrets
+                ph = timage.height;
+                ctx.save();
+                ctx.translate(rendX, rendY);
+                ctx.rotate(aBase.angle + Math.PI / 2);
+                ctx.drawImage(timage, -pw / 2, -ph / 2);
+                ctx.restore();
+                if (aBase.health / aBase.maxHealth < 1) {
+                    ctx.lineWidth = 4;
+                    const r = Math.floor((1 - aBase.health / aBase.maxHealth) * 255);
+                    const g = Math.floor(255 * aBase.health / aBase.maxHealth);
+                    const b = Math.floor(64 * aBase.health / aBase.maxHealth);
+                    ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+                    ctx.beginPath();
+                    ctx.arc(rendX, rendY, pw / 1.5, (2.5 - 0.99 * aBase.health / aBase.maxHealth) * Math.PI, (0.501 + aBase.health / aBase.maxHealth) * Math.PI, false);
+                    ctx.stroke();
+                }
             }
+            rBasePointer(aBase, obtainSXDrift(sx, aBase.sx), obtainSYDrift(sy, aBase.sy));
         }
-
-        rBasePointer(basesInfo);
     }
 };
+
 global.rBackPack = function (selfo) {
+    if (inTheVoid()) return; // Probably just docked
     const img = Img.pack;
-    const rendX = selfo.x - px + w / 2 + scrx;
-    const rendY = selfo.y - py + h / 2 + scry;
+    const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+    const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
     ctx.save();
     ctx.translate(rendX, rendY);
     ctx.drawImage(img, -16, -16, 32, 32);

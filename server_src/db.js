@@ -76,7 +76,7 @@ global.loadPlayerData = async function (player) {
         player[key] = record[key];
     }
 
-    if (player.sx >= mapSz || player.sy >= mapSz || bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx].color != player.color) {
+    if (player.sx >= mapSz || player.sy >= mapSz || bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx] === {} || bases[player.sy][player.sx].color != player.color) {
         player.sx = baseMap[player.color][0];
         player.sy = baseMap[player.color][1];
     }
@@ -128,7 +128,7 @@ global.loadTurretData = async function () {
         for (const x in i) {
             b[x] = i[x];
         }
-        bases[b.sy][b.sx] = b;
+        bases[b.sy][b.sx][b.id] = b;
         console.log(`Turret (${b.sy},${b.sx}) loaded!`);
     });
 };

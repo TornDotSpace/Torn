@@ -72,11 +72,13 @@ class Asteroid {
                 }
             }
 
-            const b = bases[this.sy][this.sx];
-            if (b != 0 && b.baseType != DEADBASE && squaredDist(this, b) < 3686.4) { // collision with base
-                b.dmg(10 * Math.hypot(this.vx, this.vy), this);
-                sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
-                this.die(b);
+            for (const id in bases[this.sy][this.sx]) {
+                const b = bases[this.sy][this.sx][id];
+                if (b != 0 && b.baseType != DEADBASE && squaredDist(this, b) < 3686.4) { // collision with base
+                    b.dmg(10 * Math.hypot(this.vx, this.vy), this);
+                    sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+                    this.die(b);
+                }
             }
         }
     }
