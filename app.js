@@ -515,20 +515,20 @@ function update () {
             // TO-DO TEST ABOVE
 
             // TO-DO ANOTHER TEST BELOW
-            /*
-            const fullpackPack = get9SectorDict(packPack, sxReal, syReal)
-            const fullvorts = get9SectorDict(vortPack, sxReal, syReal)
-            const fullmines = get9SectorDict(minePack, sxReal, syReal)
-            const fullmissiles = get9SectorDict(missilePack, sxReal, syReal)
-            const fullorbs = get9SectorDict(orbPack, sxReal, syReal)
-            const fullblasts = get9SectorDict(blastPack, sxReal, syReal)
-            const fullbeams = get9SectorDict(beamPack, sxReal, syReal)
-            const fullplanets = get9SectorDict(planetPack, sxReal, syReal)
-            const fullasteroids = get9SectorDict(astPack, sxReal, syReal)
-            const fullplayers = get9SectorDict(players, sxReal, syReal)
-            const fullplayerPacks = get9SectorDict(playerPack, sxReal, syReal)
-            const fullbases = get9SectorDict(basePack, sxReal, syReal)
-            */
+
+            const fullpackPack = get9SectorDict(packPack, sxReal, syReal);
+            const fullvorts = get9SectorDict(vortPack, sxReal, syReal);
+            const fullmines = get9SectorDict(minePack, sxReal, syReal);
+            const fullmissiles = get9SectorDict(missilePack, sxReal, syReal);
+            const fullorbs = get9SectorDict(orbPack, sxReal, syReal);
+            const fullblasts = get9SectorDict(blastPack, sxReal, syReal);
+            const fullbeams = get9SectorDict(beamPack, sxReal, syReal);
+            const fullplanets = get9SectorDict(planetPack, sxReal, syReal);
+            const fullasteroids = get9SectorDict(astPack, sxReal, syReal);
+            const fullplayers = get9SectorDict(players, sxReal, syReal);
+            let fullplayerPacks = get9SectorDict(playerPack, sxReal, syReal);
+            const fullbases = get9SectorDict(basePack, sxReal, syReal);
+
             // TO-DO ANOTHER TEST ABOVE
             for (const i in players[syReal][sxReal]) { // TO-DO ORIGINAL // TO-DO All these "[syReal][sxReal]" were [y][x]
             // for (const i in fullplayers) {
@@ -552,7 +552,7 @@ function update () {
                 // Check for creation
                 if (pack === undefined) {
                     // Store pack for joining clients & delta calculation
-                    // pack = playerPack[player.sy][player.sx][i] = { disguise: player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle, sx: player.sx, sy: player.sy };
+                    // pack = playerPack[player.sy][player.sx][i] = { disguise: player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle, sx: player.sx, sy: player.sy, need_update: true }; //TO-DO random idea: first we verify if they need an update and then we apply the update message
                     // TO-DO Pre-test below
                     pack = playerPack[syReal][sxReal][i] = { disguise: player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle, sx: player.sx, sy: player.sy };
                     // Send create
@@ -603,6 +603,88 @@ function update () {
                 // }
             }
 
+            /* TO-DO A TEST, IF WE SPLIT THE CALCULATIONS FOR CREATION...
+            //for (const i in players[syReal][sxReal]) { //TO-DO ORIGINAL PART A // TO-DO All these "[syReal][sxReal]" were [y][x]
+            for (const i in fullplayers) { // TO-DO CHECK
+
+                //const player = players[syReal][sxReal][i]; //TO-DO ORIGINAL
+                const player = fullplayers[i];
+                //let pack = playerPack[syReal][sxReal][i]; //TO-DO ORIGINAL
+                let pack = fullplayerPacks[i];
+                if (player.testAfk()) continue;
+
+                // Check for creation
+                if (pack === undefined) {
+                    // Store pack for joining clients & delta calculation
+                    //pack = playerPack[player.sy][player.sx][i] = { disguise: player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle, sx: player.sx, sy: player.sy };
+                    // TO-DO Pre-test below
+                    pack = playerPack[syReal][sxReal][i] = { disguise: player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle, sx: player.sx, sy: player.sy };
+                    // Send create
+                    //sendAllSector(`player_create`, pack, player.sx, player.sy);
+                    // TO-DO Pre-test below
+                    sendAllSector(`player_create`, pack, x, y);
+
+                    // Send full update to the player
+                    if (!player.isBot) {
+                        //player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: fullpackPack, vorts: fullvorts, mines: fullmines, missiles: fullmissiles, orbs: fullorbs, blasts: fullblasts, beams: fullbeams, planets: fullplanets, asteroids: fullasteroids, players: fullplayers, bases: fullbases });
+                        // TO-DO pre-test below
+                        player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: get9SectorDict(packPack, player.sx, player.sy), vorts: get9SectorDict(vortPack, player.sx, player.sy), mines: get9SectorDict(minePack, player.sx, player.sy), missiles: get9SectorDict(missilePack, player.sx, player.sy), orbs: get9SectorDict(orbPack, player.sx, player.sy), blasts: get9SectorDict(blastPack, player.sx, player.sy), beams: get9SectorDict(beamPack, player.sx, player.sy), planets: get9SectorDict(planetPack, player.sx, player.sy), asteroids: get9SectorDict(astPack, player.sx, player.sy), players: get9SectorDict(playerPack, player.sx, player.sy), bases: get9SectorDict(basePack, player.sx, player.sy) });
+                        // get9SectorDict (dictionar, mysx, mysy)
+                        // TO-DO original below
+                        // player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: packPack[player.sy][player.sx], vorts: vortPack[player.sy][player.sx], mines: minePack[player.sy][player.sx], missiles: missilePack[player.sy][player.sx], orbs: orbPack[player.sy][player.sx], blasts: blastPack[player.sy][player.sx], beams: beamPack[player.sy][player.sx], planets: planetPack[player.sy][player.sx], asteroids: astPack[player.sy][player.sx], players: playerPack[player.sy][player.sx], bases: basePack[player.sy][player.sx] });
+                    }
+                    continue;
+                }
+            }
+
+            //fullplayerPacks = get9SectorDict(playerPack, sxReal, syReal)
+            for (const i in players[syReal][sxReal]) { //TO-DO ORIGINAL, part B // TO-DO All these "[syReal][sxReal]" were [y][x]
+            //for (const i in fullplayers) { // TO-DO CHECK
+
+                const player = players[syReal][sxReal][i]; //TO-DO ORIGINAL
+                let pack = playerPack[syReal][sxReal][i]; //TO-DO ORIGINAL
+
+                if (!player.isBot && player.chatTimer > 0) player.chatTimer--;
+                player.muteTimer--;
+                if (player.testAfk()) continue;
+                player.isLocked = false;
+                player.tick();
+
+                const delta = { };
+                let need_update = false;
+
+                let cloak = false;
+
+                if (!player.isBot && pack.disguise > 0) {
+                    cloak = true;
+                }
+
+                // Compute delta
+                for (const i in fullplayers) { // TO-DO
+                const onePlayer = fullplayers[i]
+                let onePack = fullplayerPacks[i];
+                for (const key in pack) { // TO-DO MAYBE IF HERE WE PLACE fullplayers...
+                    if (onePack[key] !== onePlayer[key]) {
+                        delta[key] = onePlayer[key]
+                        if (onePlayer.id === player.id) onePack[key] = onePlayer[key];
+                        need_update = true;
+                    }
+                }
+                }
+
+                // Handle cloaking
+                if (need_update && cloak) {
+                    player.socket.emit(`update`, { disguise: player.disguise, isLocked: player.isLocked, planetTimer: player.planetTimer, charge: player.charge, energy: player.energy, state: { players: [{ delta: delta, id: i }] } });
+                    continue;
+                }
+
+                if (!need_update) continue;
+                gameState.players.push({ delta: delta, id: i }); // TO-DO ALL OF THESE deltas need an update to consider the 9-sector effect thing now
+                //}
+
+            }
+
+            */
             for (const i in vorts[syReal][sxReal]) {
                 const vort = vorts[syReal][sxReal][i];
                 let pack = vortPack[syReal][sxReal][i];
