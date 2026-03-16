@@ -582,7 +582,7 @@ function update () {
                 }
 
                 // Compute delta
-                for (const key in pack) {
+                for (const key in pack) { // TO-DO MAYBE IF HERE WE PLACE fullplayers...
                     if (pack[key] !== player[key]) {
                         delta[key] = pack[key] = player[key];
                         need_update = true;
@@ -598,7 +598,7 @@ function update () {
                     continue;
                 }
 
-                // if (!need_update) continue;
+                if (!need_update) continue;
                 gameState.players.push({ delta: delta, id: i }); // TO-DO ALL OF THESE deltas need an update to consider the 9-sector effect thing now
                 // }
             }
