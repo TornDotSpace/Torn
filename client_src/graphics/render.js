@@ -1576,6 +1576,7 @@ global.rVorts = function () {
         ctx.save();
         selfo = vortsInfo[selfo];
         const img = selfo.isWorm ? Img.worm : Img.vort;
+        const imgArrow = selfo.isWorm ? Img.blackArrow : Img.blackPurpleTipArrow;
         const size = 24 * selfo.size / 64;
         const extraX = obtainSXDrift(sx, selfo.sx);
         const extraY = obtainSYDrift(sy, selfo.sy);
@@ -1590,12 +1591,12 @@ global.rVorts = function () {
         ctx.restore();
         if (selfo.isWorm) currAlert = translate(`Wormhole Nearby!`);
         else bigAlert = translate(`Black Hole Nearby!`);
-        rBlackHoleWarning(selfo.x, selfo.y, extraX, extraY);
+        rBlackHoleWarning(selfo.x, selfo.y, extraX, extraY, imgArrow);
     }
 };
 global.rPlayers = function () {
     if (inTheVoid()) return; // Probably just docked
-    const pointers = [0, 0, 0];
+    const pointers = [0, 0, 0, 0];
     for (let selfo in playersInfo) {
         selfo = playersInfo[selfo];
         if (selfo.disguise > 0) continue;
@@ -1664,8 +1665,8 @@ global.rPlayers = function () {
         ctx.stroke();
     }
 
-    let extraX = [0, 0, 0];
-    let extraY = [0, 0, 0];
+    let extraX = [0, 0, 0, 0];
+    let extraY = [0, 0, 0, 0];
     for (let i = 0; i < pointers.length; i++) {
         if ((pointers[i] !== undefined) && typeof pointers[i] == `object`) {
             extraX[i] = obtainSXDrift(sx, pointers[i].sx);
@@ -1768,11 +1769,11 @@ global.rBases = function () {
                     timage = colorSelect(aBase.color, Img.rt, Img.bt, Img.gt);
                     if (aBase.baseType == TURRET) {
                         if (tooClose) {
-                            if (aBase.color !== pc) currAlert = translate(`Enemy Armed Base Nearby!`);
+                            if (aBase.color !== pc) currAlert = translate(`Enemy Turret Nearby!`);
                         }
                     } else {
                         if (tooClose) {
-                            if (aBase.color !== pc) currAlert = translate(`Enemy Unknwon Station Nearby!`);
+                            if (aBase.color !== pc) currAlert = translate(`Enemy Starbase Nearby!`);
                         }
                     }
                 }

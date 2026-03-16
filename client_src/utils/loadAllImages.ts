@@ -129,6 +129,7 @@ const loadAllImages = () => {
     loadImage(`life`, `/img/packs/life.png`);
 
     // Distance pointer arrows.
+    loadImage(`yellowHollowArrow`, `/img/arrows/yellowHollowArrow.png`);
     loadImage(`yellowArrow`, `/img/arrows/yellowArrow.png`);
     loadImage(`orangeArrow`, `/img/arrows/orangeArrow.png`);
     loadImage(`greenArrow`, `/img/arrows/greenArrow.png`);
@@ -136,6 +137,7 @@ const loadAllImages = () => {
     loadImage(`blueArrow`, `/img/arrows/blueArrow.png`);
     loadImage(`whiteArrow`, `/img/arrows/whiteArrow.png`);
     loadImage(`blackArrow`, `/img/arrows/blackArrow.png`);
+    loadImage(`blackPurpleTipArrow`, `/img/arrows/blackPurpleTipArrow.png`);
 
     // Ships.
     for (let i = 0; i < 26; i++) {

@@ -37,12 +37,14 @@ global.rEdgePointer = function () {
     else if (angle == 3) text = py;
     else if (angle == 2) text = px;
     else if (angle == 1) text = sectorWidth - py;
-    rPointerArrow(Img.yellowArrow, angle * Math.PI / 2, text, `yellow`);
+    rPointerArrow(Img.yellowHollowArrow, angle * Math.PI / 2, text, `yellow`);
 };
 global.rBasePointer = function (nearB, extraX = 0, extraY = 0) {
     const text = Math.hypot(nearB.x - px + extraX, nearB.y - py + extraY);
     const angle = Math.atan2(nearB.y - py + extraY, nearB.x - px + extraX);
-    rPointerArrow(Img.whiteArrow, angle, text, `lightgray`);
+    let colorBase = `lightgray`;
+    if (typeof nearB.color !== `undefined`) colorBase = colorSelect(nearB.color, `red`, `cyan`, `lime`, `lightgray`);
+    rPointerArrow(Img.whiteArrow, angle, text, colorBase, 1.0, true);
 };
 global.rTeamPointers = function (pointers, extraX = undefined, extraY = undefined) {
     const lenW = pointers.length;
@@ -52,7 +54,7 @@ global.rTeamPointers = function (pointers, extraX = undefined, extraY = undefine
         if (pointers[i] === 0) continue;
         const text = Math.hypot(pointers[i].x - px + extraX, pointers[i].y - py + extraY);
         const angle = Math.atan2(pointers[i].y - py + extraY, pointers[i].x - px + extraX);
-        rPointerArrow(colorSelect(teamColors[i], Img.redArrow, Img.blueArrow, Img.greenArrow), angle, text, colorSelect(teamColors[i], `red`, `cyan`, `lime`));
+        rPointerArrow(colorSelect(teamColors[i], Img.redArrow, Img.blueArrow, Img.greenArrow, Img.yellowArrow), angle, text, colorSelect(teamColors[i], `red`, `cyan`, `lime`, `yellow`));
     }
 };
 global.rAstPointer = function (nearE, extraX = 0, extraY = 0) {
@@ -60,15 +62,15 @@ global.rAstPointer = function (nearE, extraX = 0, extraY = 0) {
     const angle = Math.atan2(nearE.y - py + extraY, nearE.x - px + extraX);
     rPointerArrow(Img.orangeArrow, angle, text, `orange`);
 };
-global.rBlackHoleWarning = function (x, y, extraX = 0, extraY = 0) {
+global.rBlackHoleWarning = function (x, y, extraX = 0, extraY = 0, defaultImg = Img.blackArrow) {
     const dx = x - px + extraX;
     const dy = y - py + extraY;
     const angle = Math.atan2(dy, dx);
-    rPointerArrow(Img.blackArrow, angle, Math.hypot(dx, dy), `white`, 3.0);
+    rPointerArrow(defaultImg, angle, Math.hypot(dx, dy), `white`, 3.0);
 };
-global.rPointerArrow = function (img, angle, dist, textColor, factorChange = 1.0) {
-    if (textColor !== `lightgray` && textColor !== `orange`) {
-        if (dist < 100 || dist > (va2 * 3840 - 1280) * factorChange) return;
+global.rPointerArrow = function (img, angle, dist, textColor, factorChange = 1.0, tooBig = false) {
+    if (tooBig == true || (textColor !== `lightgray` && textColor !== `orange`)) {
+        if (dist < 100 || (tooBig == false && dist > (va2 * 3840 - 1280) * factorChange)) return;
     }
     dist = Math.floor(dist / 10);
     ctx.fillStyle = textColor;

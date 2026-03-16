@@ -239,7 +239,7 @@ function updateQuests () {
             if (teamQuests[teamColor][i] !== 0) continue;
             const r = Math.random();
             const r2 = Math.random();
-            const whatTeam = (Math.random() < 0.5) ? colorSelect(teamColor, `blue`, `green`, `red`) : colorSelect(teamColor, `green`, `red`, `blue`);
+            const whatTeam = (Math.random() < 0.5) ? colorSelect(teamColor, `blue`, `green`, `red`, `yellow`) : colorSelect(teamColor, `green`, `red`, `blue`, `yellow`);
             const metals = [`copper`, `silver`, `platinum`, `iron`];
             let nm = 0;
             if (i < 4) {
@@ -1049,7 +1049,7 @@ function updateHeatmap () {
                 if (p.isBot) botCount++;
                 else if (p.guest) guestCount++;
                 else playerCount++;
-                hmap[p.sx][p.sy] += 0.1 + colorSelect(p.color, 1 << 16, 1, 1 << 8); // this is not supposed to be x-y order. TODO fix
+                hmap[p.sx][p.sy] += 0.1 + colorSelect(p.color, 1 << 16, 1, 1 << 8, ((1 << 16) + (1 << 8))); // this is not supposed to be x-y order. TODO fix
             }
         }
     }

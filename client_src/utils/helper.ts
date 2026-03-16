@@ -176,9 +176,10 @@ const cosLow = (x: number) => sinLow((Math.PI / 2) + x);
  * @param green The value of green in the RGB string.
  * @returns A numerical representation of that value.
  */
-const colorSelect = (col: string, red: number, blue: number, green: number) => {
+const colorSelect = (col: string, red: number, blue: number, green: number, yellow?: number) => {
     if (col === `red`) return red;
     else if (col === `blue`) return blue;
+    else if (col === `yellow` && yellow !== undefined) return yellow;
     else return green;
 };
 
