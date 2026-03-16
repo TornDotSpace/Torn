@@ -1511,14 +1511,12 @@ global.rAsteroids = function () {
 global.rPlanets = function () {
     if (planets == 0 || planets == undefined) return;
     if (inTheVoid()) return; // Probably just docked
-    console.log(`Rendering ${planets} with keys${Object.keys(planets)}`);
     for (let id in planets) {
         const selfo = planets[id];
         // console.log("TO-DO rPlanets planetlist is " + planets + " and structure is " + Object.keys(planets))
         // console.log("TO-DO rPlanets selfo, a planet, is " + selfo + " and structure is " + Object.keys(selfo))
         const rendX = (selfo.x + obtainSXDrift(sx, selfo.sx) - px + scrx) / 4 + w / 2;
         const rendY = (selfo.y + obtainSYDrift(sy, selfo.sy) - py + scry) / 4 + h / 2;
-        console.log(`Rendering ${selfo.name}at (${rendX} X, ${rendY} Y)`);
         // const rendX = (selfo.x - px + scrx) / 4 + w / 2;
         // const rendY = (selfo.y - py + scry) / 4 + h / 2;
         if (rendX < -150 || rendX > w + 150 || rendY < -150 || rendY > h + 220) continue;
@@ -1600,7 +1598,7 @@ global.rVorts = function () {
 };
 global.rPlayers = function () {
     if (inTheVoid()) return; // Probably just docked
-    const pointers = [0, 0, 0];
+    const pointers = [0, 0, 0, 0];
     for (let selfo in playersInfo) {
         selfo = playersInfo[selfo];
         if (selfo.disguise > 0) continue;
@@ -1669,10 +1667,10 @@ global.rPlayers = function () {
         ctx.stroke();
     }
 
-    let extraX = [0, 0, 0];
-    let extraY = [0, 0, 0];
+    let extraX = [0, 0, 0, 0];
+    let extraY = [0, 0, 0, 0];
     for (let i = 0; i < pointers.length; i++) {
-        if ((pointers[i] !== undefined) && typeof pointers[i] == `object`) {
+        if ((pointers[i] !== undefined) && pointers[i] !== 0) {
             extraX[i] = obtainSXDrift(sx, pointers[i].sx);
             extraY[i] = obtainSYDrift(sy, pointers[i].sy);
         }

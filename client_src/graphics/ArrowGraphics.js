@@ -52,8 +52,8 @@ global.rTeamPointers = function (pointers, extraX = undefined, extraY = undefine
     if (extraY === undefined) (extraY = []).length = lenW; extraY.fill(0);
     for (let i = 0; i < lenW; i++) {
         if (pointers[i] === 0) continue;
-        const text = Math.hypot(pointers[i].x - px + extraX, pointers[i].y - py + extraY);
-        const angle = Math.atan2(pointers[i].y - py + extraY, pointers[i].x - px + extraX);
+        const text = Math.hypot(pointers[i].x - px + extraX[i], pointers[i].y - py + extraY[i]);
+        const angle = Math.atan2(pointers[i].y - py + extraY[i], pointers[i].x - px + extraX[i]);
         rPointerArrow(colorSelect(teamColors[i], Img.redArrow, Img.blueArrow, Img.greenArrow, Img.yellowArrow), angle, text, colorSelect(teamColors[i], `red`, `cyan`, `lime`, `yellow`));
     }
 };
