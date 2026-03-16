@@ -32,10 +32,11 @@ global.chatWeapon = (w) => weaponCircumfix + w + weaponCircumfix;
 global.chatColor = (c) => colorCircumfix + c + colorCircumfix;
 global.chatTranslate = (t) => translateCircumfix + t + translateCircumfix;
 
-global.colorSelect = function (col, red, blue, green) {
+global.colorSelect = function (col, red, blue, green, yellow = `yellow`) {
     if (col === `red`) return red;
     if (col === `blue`) return blue;
-    return green;
+    if (col === `green`) return green;
+    return yellow;
 };
 
 global.updateElo = function (winner, loser) {

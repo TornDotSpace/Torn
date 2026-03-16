@@ -69,7 +69,7 @@ global.playerCount = 0;
 global.botCount = 0;
 global.guestCount = 0; // blue/red players/guests/bots
 global.raidTimer = 50000;
-global.teamQuests = { blue: [], red: [], green: [] };// A list of the 10 available quests for humans and aliens
+global.teamQuests = { blue: [], red: [], green: [], yellow: [] };// A list of the 10 available quests for humans and aliens
 
 // Object lists. All of them are in Y-MAJOR ORDER.
 global.guildPlayers = {};

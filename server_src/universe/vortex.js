@@ -56,8 +56,8 @@ class Vortex {
             const p = players[this.sy][this.sx][i];
 
             // compute distance and angle to players
-            const dist = Math.pow(squaredDist(this, p), 0.25);
-            const a = angleBetween(p, this);
+            const dist = Math.pow(squaredGlobalDist(this, p, sectorWidth, mapSz), 0.25); // Math.pow(squaredDist(this, p), 0.25);
+            const a = angleGlobalBetween(p, this, sectorWidth, mapSz); // angleBetween(p, this);
             // then move them.
             let guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
             if (p.ship == 21 && !this.isWorm) guestMult = 0.45 * (-1 + (35 / dist)); // R21 ship gets pushed from a BH if too far, BUT IT'S STILL PULLED WITH FORCE IF TOO CLOSE. Reason this isn't an increment is because someone could get a GUEST at level 21, buy the ship, and then the old *=0.5 would actually be more OP than the old code.
@@ -78,10 +78,10 @@ class Vortex {
         }
         if (Math.random() < 0.2) { // limited for lag
             for (const i in asts[this.sy][this.sx]) {
-                const dist = Math.pow(squaredDist(this, i), 0.25);
+                const dist = Math.pow(squaredGlobalDist(this, i, sectorWidth, mapSz), 0.25);
                 const a = asts[this.sy][this.sx][i];
-                const d2 = squaredDist(this, a);
-                const ang = angleBetween(this, a);
+                const d2 = squaredGlobalDist(this, a, sectorWidth, mapSz); // squaredDist(this, a);
+                const ang = angleGlobalBetween(this, a, sectorWidth, mapSz); // angleBetween(this, a);
                 const vel = 0.005 * this.size / Math.log(d2);
                 a.vx += Math.cos(ang) * vel;
                 a.vy += Math.sin(ang) * vel;

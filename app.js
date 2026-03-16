@@ -215,7 +215,7 @@ require(`./server_src/universe/asteroid.js`);
 
 let broadcastMsg = 0;
 let lag = 0; let ops = 0; // ticks elapsed since boot, lag, count of number of instances of update() running at once
-let raidRed = 0; let raidBlue = 0; let raidGreen = 0; // Timer and points
+let raidRed = 0; let raidBlue = 0; let raidGreen = 0; let raidYellow = 0; // Timer and points
 
 function sendRaidData () { // tell everyone when the next raid is happening
     sendAll(`raid`, { raidTimer: raidTimer });
@@ -1032,7 +1032,7 @@ function updateHeatmap () {
         for (let j = 0; j < mapSz; j++) hmap[i][j] = 0;
     }
     let j = 0;
-    raidRed = raidBlue = raidGreen = playerCount = botCount = guestCount = 0;
+    raidRed = raidBlue = raidGreen = raidYellow = playerCount = botCount = guestCount = 0;
 
     for (let x = 0; x < mapSz; x++) {
         for (let y = 0; y < mapSz; y++) {
@@ -1041,6 +1041,7 @@ function updateHeatmap () {
                 if (p.color === `red`) raidRed += p.points;
                 else if (p.color === `blue`) raidBlue += p.points;
                 else if (p.color === `green`) raidGreen += p.points;
+                else if (p.color === `yellow`) raidYellow += p.points;
                 if (p.name !== `` && !p.isBot) {
                     lb[j] = p;
                     j++;
@@ -1057,6 +1058,7 @@ function updateHeatmap () {
         if (p.color === `red`) raidRed += p.points;
         else if (p.color === `blue`) raidBlue += p.points;
         else if (p.color === `green`) raidGreen += p.points;
+        else if (p.color === `yellow`) raidYellow += p.points;
         if (p.isBot) botCount++;
         else if (p.guest) botCount++;
         else playerCount++;
@@ -1068,6 +1070,7 @@ function updateHeatmap () {
         if (p.color === `red`) raidRed += p.points;
         else if (p.color === `blue`) raidBlue += p.points;
         else if (p.color === `green`) raidGreen += p.points;
+        else if (p.color === `yellow`) raidYellow += p.points;
         if (p.isBot) botCount++;
         else if (p.guest) botCount++;
         else playerCount++;
@@ -1107,7 +1110,7 @@ function updateHeatmap () {
 
     for (const i in lb) {
         const myGuild = guildPlayers[lb[i].guild];
-        lb[i].socket.emit(`heatmap`, { myGuild: myGuild, hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen });
+        lb[i].socket.emit(`heatmap`, { myGuild: myGuild, hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen, raidYellow: raidYellow });
     }
 }
 
