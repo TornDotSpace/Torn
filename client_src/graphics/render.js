@@ -1524,7 +1524,7 @@ global.rPlanets = function () {
         const d = new Date();
         const stime = d.getTime() / 150000;
 
-        const imgi = (sx + sy * mapSz) % 5 + 1;
+        const imgi = (selfo.sx + selfo.sy * mapSz) % 5 + 1;
         const img = planetImgs[imgi];
 
         if (typeof img === `undefined`) continue;
