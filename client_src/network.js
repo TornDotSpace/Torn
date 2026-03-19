@@ -111,7 +111,6 @@ socket.on(`update`, (data) => {
     for (let index = 0; index < delta.blasts.length; ++index) {
         blast_update(delta.blasts[index]); // TO-DO
     }
-
     for (let index = 0; index < delta.asteroids.length; ++index) {
         asteroid_update(delta.asteroids[index]); // TO-DO
     }
@@ -129,7 +128,10 @@ socket.on(`update`, (data) => {
     }
 
     if (delta.base !== undefined) {
-        base_update(delta.base); // TO-DO
+        for (const id in delta.bases) {
+            base_update(delta.bases[id]); // TO-DO
+        }
+        // base_update(delta.base); // TO-DO
     }
 
     if (delta.bases !== undefined) { // TO-DO AN ADDITION
@@ -156,7 +158,6 @@ function player_update (data) {
     const delta = data.delta;
     // We just changed sectors or are just loading in
     if (playersInfo[id] === undefined) return;
-
     for (const d in delta) {
         playersInfo[id][d] = delta[d];
     }
@@ -222,11 +223,9 @@ socket.on(`blast_delete`, (data) => {
 
 socket.on(`base_create`, (data) => {
     basesInfo[data.id] = data;
-    console.log(`TO-DO base_create with data =${data}`);
 });
 
 socket.on(`base_delete`, (data) => {
-    console.log(`TO-DO base_delete for data =${data}`);
     basesInfo[data.id] = undefined;
 });
 
@@ -329,7 +328,6 @@ function base_update (data) {
 
 function asteroid_update (data) {
     const id = data.id;
-
     if (astsInfo[id] === undefined) return;
     const delta = data.delta;
 

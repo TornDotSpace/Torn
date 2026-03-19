@@ -68,6 +68,31 @@ global.sendAllSector = function (out, data, sx, sy) {
     }
 };
 
+global.apply9SectorCall = function (functionToCall, command, stuff, mysx, mysy, myx = undefined, myy = undefined, extras = undefined, startX = -1, startY = -1, endX = 1, endY = 1, returnSomething = false) {
+    let somethingReturn = 0;
+    for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
+        let newX;
+        if (myx !== undefined) newX = myx - (asx * sectorWidth);
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
+        }
+        for (let asy = startY; asy <= endY; asy++) { // Sectors on Y do not loop
+            const syReal = (mysy + asy);
+            if (syReal < mapSz && syReal >= 0) {
+                let newY;
+                if (myy !== undefined) newY = myy - (asy * sectorWidth);
+                if (extras == false) {
+                    functionToCall(command, stuff, sxReal, syReal);
+                } else { // Potential TO-DO if we need more paremeters we will edit this
+                    somethingReturn = functionToCall(command, stuff, sxReal, syReal, extras);
+                }
+            }
+        }
+    }
+    if (returnSomething != false) return somethingReturn;
+};
+
 global.sendAllGlobal = function (out, data) {
     for (const i in sockets) {
         const p = sockets[i].player;
