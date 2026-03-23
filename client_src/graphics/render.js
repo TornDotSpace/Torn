@@ -365,17 +365,16 @@ global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { 
         return 0;
     }
 
-    let sectorDiffX = bsx - asx;
-    // console.log("TO-DO sector X Difference 1 is = ", sectorDiffX)
-    let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
-    sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
-
-    if (sectorDiffX > 0) {
+    let sectorDiffX = bsx - asx; // 0 - 6 = -6
+    console.log(`TO-DO sector X Difference 1 is = `, sectorDiffX);
+    let sectorDiffXab = Math.abs(sectorDiffX); // Sectors on X loop // -6 -> 6
+    let sectorDiffXa = Math.min(sectorDiffXab, (numSec - sectorDiffXab)); // min(6, 7 - 6) = 1
+    if (sectorDiffX > 0 && sectorDiffXa == sectorDiffX) {
         sectorDiffX = sectorDiffXa;
     } else {
-        sectorDiffX = -sectorDiffXa;
+        sectorDiffX = -sectorDiffXa; // 1 -> -1
     }
-    // console.log("TO-DO sector X Difference 2 is = ", sectorDiffX, " and we return ", sectorDiffX * gsx)
+    console.log(`TO-DO sector X Difference 2...  sectorDiffXab = `, sectorDiffXab, ` sectorDiffXa = `, sectorDiffXa, `, sectorDiffX = `, sectorDiffX);
     sectorDiffX = sectorDiffX * gsx;
     return sectorDiffX;
 };
@@ -630,11 +629,11 @@ global.rBooms = function () {
 
         if (b.time < 114) {
             const img = Img.booms;
-            const sx = (b.time % 10) * 128;
-            const sy = Math.floor(b.time / 10) * 128;
+            const bsx = (b.time % 10) * 128;
+            const bsy = Math.floor(b.time / 10) * 128;
 
             ctx.save();
-            ctx.drawImage(img, sx, sy, 128, 128, rendX, rendY, 128, 128);
+            ctx.drawImage(img, bsx, bsy, 128, 128, rendX, rendY, 128, 128);
             ctx.restore();
         }
 
@@ -908,7 +907,7 @@ global.rRadar = function () {
             let extraY = 0;
             if (!(Object.is(aBase.sx, null) || Object.is(aBase.sx, undefined))) extraX = obtainSXDrift(sx, aBase.sx);
             if (!(Object.is(aBase.sy, null) || Object.is(aBase.sy, undefined))) extraY = obtainSYDrift(sy, aBase.sy);
-
+            console.log(`TO-DO en radar base (X: `, aBase.sx, `, Y: `, aBase.sy, `) los extraX = `, extraX, ` extraY = `, extraY);
             const dx = aBase.x + extraX - px;
             const dy = aBase.y + extraY - py;
             if (square(dx) + square(dy) < r2z2) {
@@ -1490,8 +1489,8 @@ global.rAsteroids = function () {
         ctx.restore();
 
         if (selfo.color != pc) { // update nearest enemy for pointer
-            const dDistPX = selfo.x - px + obtainSXDrift(selfsx, selfo.sx);
-            const dDistPY = selfo.y - py + obtainSYDrift(selfsy, selfo.sy);
+            const dDistPX = selfo.x - px + extraX; // TO-DO + extraX;
+            const dDistPY = selfo.y - py + extraY; // TO-DO + extraY;
 
             if (nearA == 0) {
                 nearA = selfo;
@@ -1500,7 +1499,7 @@ global.rAsteroids = function () {
             } else {
                 const dDistAX = nearA.x - px + obtainSXDrift(selfsx, nearA.sx);
                 const dDistAY = nearA.y - py + obtainSYDrift(selfsy, nearA.sy);
-                if (square(dDistPX) + square(dDistPY) < square(dDistAX) + square(dDistAY)) {
+                if ((square(dDistPX) + square(dDistPY)) < (square(dDistAX) + square(dDistAY))) {
                     nearA = selfo;
                     extraXn = dDistPX;
                     extraYn = dDistPY;

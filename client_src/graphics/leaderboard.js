@@ -24,7 +24,7 @@ leaderboardcanvas.height = (21 + 4) * 16 + 2;
 const lbctx = leaderboardcanvas.getContext(`2d`, { alpha: true });
 
 global.renderLeaderboard = function () {
-    if (guest) return;
+    // if (guest) return;
 
     leaderboardcanvas.width = leaderboardcanvas.width;
 

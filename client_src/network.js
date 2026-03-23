@@ -74,6 +74,7 @@ socket.on(`posUp`, (data) => {
     orbsInfo = data.orbs; // TO-DO
     minesInfo = data.mines; // TO-DO
     vortsInfo = data.vorts; // TO-DO
+    console.log(`TO-DO CALLED posUp, current (sx: ${sx}, sy: ${sy}) vs data(sx: ${data.sx}, sy: ${data.sy})`);
     if (sx != data.sx || sy != data.sy) {
         sx = data.sx;
         sy = data.sy;
@@ -91,7 +92,7 @@ socket.on(`update`, (data) => {
 
     const delta = data.state;
     if (!delta) return;
-
+    console.log(`TO-DO CALLED update`);
     for (let index = 0; index < delta.players.length; ++index) {
         player_update(delta.players[index]); // TO-DO
     }
@@ -150,6 +151,8 @@ socket.on(`update`, (data) => {
 });
 
 socket.on(`player_create`, (data) => {
+    const id = data.id; // TO-DO TEST LINES
+    if (id == myId) console.log(`TO-DO CALLED player_create for myself , current (sx: ${sx}, sy: ${sy}) vs data (sx: `, data.sx, `, sy: `, data.sy, `)`);
     playersInfo[data.id] = data;
 });
 
@@ -157,12 +160,14 @@ function player_update (data) {
     const id = data.id;
     const delta = data.delta;
     // We just changed sectors or are just loading in
-    if (playersInfo[id] === undefined) return;
+    if (playersInfo[id] === undefined || delta === undefined) return;
+
     for (const d in delta) {
         playersInfo[id][d] = delta[d];
     }
 
     if (id == myId) {
+        console.log(`TO-DO CALLED player_update for myself , current (sx: ${sx}, sy: ${sy}) vs delta (sx: `, playersInfo[id].sx, `, sy: `, playersInfo[id].sy, `)`);
         pvx = -px;
         pvy = -py;
         px = playersInfo[id].x;
@@ -174,8 +179,13 @@ function player_update (data) {
         scrx = -cosLow(pangle) * playersInfo[id].speed;
         scry = -sinLow(pangle) * playersInfo[id].speed;
         disguise = delta.disguise;
-        if (playersInfo[id].sx !== undefined) sx = playersInfo[id].sx;
-        if (playersInfo[id].sy !== undefined) sy = playersInfo[id].sy;
+        if (delta.sx !== undefined) {
+            playersInfo[id].sx = sx = delta.sx;
+        } else playersInfo[id].sx = sx;
+
+        if (delta.sy !== undefined) {
+            playersInfo[id].sy = sy = delta.sy;
+        } else playersInfo[id].sy = sy;
     }
 }
 
@@ -361,10 +371,21 @@ function missile_update (data) {
 
 socket.on(`newBullet`, (data) => {
     bullets[data.id] = data;
-    bullets[data.id].tick = 0;
+    if (bullets[data.id].tick === undefined) bullets[data.id].tick = 0;
 });
+
 socket.on(`delBullet`, (data) => {
     delete bullets[data.id];
+});
+
+socket.on(`bullet_update`, (data) => {
+    if (bullets[data.id] === undefined) return;
+
+    const delta = data.delta;
+
+    for (const d in delta) {
+        bullets[data.id][d] = delta[d];
+    }
 });
 
 socket.on(`invalidCredentials`, (data) => {
@@ -460,20 +481,34 @@ socket.on(`weapons`, (data) => {
     }
 });
 socket.on(`sound`, (data) => {
+    let extraX = 0;
+    let extraY = 0;
+    let currSX;
+    let currSY;
+    if (!(Object.is(data.sx, null) || Object.is(data.sx, undefined))) {
+        extraX = obtainSXDrift(sx, data.sx);
+        currSX = data.sx;
+    } else currSX = sx;
+    if (!(Object.is(data.sy, null) || Object.is(data.sy, undefined))) {
+        extraY = obtainSYDrift(sy, data.sy);
+        currSY = data.sy;
+    } else currSY = sy;
+
     if (data.file.includes(`boom`)) {
         if (data.file === `bigboom`) flash = 1;
-        booms[Math.random()] = { x: data.x, y: data.y, time: 0, shockwave: data.file === `bigboom` };
-        for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: data.x, y: data.y, angle: Math.random() * 6.28, time: -1, dx: data.dx / 1.5, dy: data.dy / 1.5 };
+        booms[Math.random()] = { x: data.x, y: data.y, sx: currSX, sy: currSY, time: 0, shockwave: data.file === `bigboom` };
+        for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: data.x, y: data.y, sx: currSX, sy: currSY, angle: Math.random() * 6.28, time: -1, dx: data.dx / 1.5, dy: data.dy / 1.5 };
     }
-    const dx = (px - data.x) / 1000;
-    const dy = (py - data.y) / 1000;
+
+    const dx = (px - data.x + extraX) / 1000;
+    const dy = (py - data.y + extraY) / 1000;
     const dist = Math.hypot(Math.abs(dx) + 10, Math.abs(dy) + 10);
     let vol = 0.6 / dist;
     if (data.file === `hyperspace`) {
         hyperdriveTimer = 200;
         vol = 2;
     }
-    playAudio(data.file, vol);
+    if (!data.file.includes(`boom`) || (currSX === sx && currSY === sy)) playAudio(data.file, vol);
 });
 socket.on(`equip`, (data) => {
     scroll = data.scroll;

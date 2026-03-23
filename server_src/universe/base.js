@@ -172,7 +172,7 @@ class Base {
         const r = Math.random();
         const missile = new Missile(this, r, 12, this.angle);
         missiles[this.sy][this.sx][r] = missile;
-        sendAllSector(`sound`, { file: `missile`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootOrb () {
@@ -180,7 +180,7 @@ class Base {
         const r = Math.random();
         const orb = new Orb(this, r, 37);
         orbs[this.sy][this.sx][r] = orb;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMuon () {
@@ -188,7 +188,7 @@ class Base {
         const r = Math.random();
         const blast = new Blast(this, r, 34);
         blasts[this.sy][this.sx][r] = blast;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootRifle () {
@@ -196,7 +196,7 @@ class Base {
         const r = Math.random();
         const bullet = new Bullet(this, r, 3, this.angle, 0);
         bullets[this.sy][this.sx][r] = bullet;
-        sendAllSector(`sound`, { file: `shot`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMachineGun () {
@@ -205,7 +205,7 @@ class Base {
         const r = Math.random();
         const bullet = new Bullet(this, r, 5, this.angle, 0);
         bullets[this.sy][this.sx][r] = bullet;
-        sendAllSector(`sound`, { file: `shot`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
         if (this.shots > 5000) { this.die(0); }
     }
 
@@ -215,7 +215,7 @@ class Base {
         const bAngle = this.angle;
         const missile = new Missile(this, r, 14, bAngle);
         missiles[this.sy][this.sx][r] = missile;
-        sendAllSector(`sound`, { file: `missile`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootLaser (nearP) { // TODO merge this into Beam object, along with player.shootBeam()
@@ -223,7 +223,7 @@ class Base {
         const r = Math.random();
         const beam = new Beam(this, r, 8, nearP, this); // Laser
         beams[this.sy][this.sx][r] = beam;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
         this.reload = wepns[8].charge / 2;
     }
 
@@ -233,7 +233,7 @@ class Base {
         deleteTurret(this);
 
         this.health = this.maxHealth;
-        sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
         if (this.baseType != LIVEBASE) {
             if (bases[this.sy][this.sx][this.id] !== undefined || bases[this.sy][this.sx][this.id] !== null) delete bases[this.sy][this.sx][this.id];

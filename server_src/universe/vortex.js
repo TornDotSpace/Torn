@@ -145,7 +145,7 @@ class Vortex {
     }
 
     die () {
-        sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete vorts[this.sy][this.sx][this.id];
     }
 

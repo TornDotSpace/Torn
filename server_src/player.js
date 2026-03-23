@@ -180,7 +180,7 @@ class Player {
     }
 
     pulseWaveEffectSector (that, wep, newy, newx, lsy, lsx) { // TO-DO Pulse wave and electromagnet effect can be fused in one function
-        sendAllSector(`sound`, { file: `bigboom`, x: newx, y: newy, dx: Math.cos(that.angle) * that.speed, dy: Math.sin(that.angle) * that.speed }, lsx, lsy);
+        sendAllSector(`sound`, { file: `bigboom`, sx: that.sx, sy: that.sy, x: newx, y: newy, dx: Math.cos(that.angle) * that.speed, dy: Math.sin(that.angle) * that.speed }, lsx, lsy);
         for (const i in players[lsy][lsx]) {
             const p = players[lsy][lsx][i];
             if (p.color !== that.color) { // only enemies
@@ -862,7 +862,7 @@ class Player {
 
             const bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
             bullets[this.sy][this.sx][r] = bullet;
-            sendAllSector(`sound`, { file: (currWep == 5 || currWep == 6 || currWep == 39) ? `minigun` : `shot`, x: this.x, y: this.y }, this.sx, this.sy);
+            sendAllSector(`sound`, { file: (currWep == 5 || currWep == 6 || currWep == 39) ? `minigun` : `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
         }
     }
 
@@ -871,7 +871,7 @@ class Player {
         const bAngle = this.angle;
         const missile = new Missile(this, r, aWeapon, bAngle);
         missiles[this.sy][this.sx][r] = missile;
-        sendAllSector(`sound`, { file: `missile`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMissile () {
@@ -882,7 +882,7 @@ class Player {
         const r = Math.random();
         const orb = new Orb(this, r, this.weapons[this.equipped]);
         orbs[this.sy][this.sx][r] = orb;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMineSpecific (aWeapon) {
@@ -1004,7 +1004,7 @@ class Player {
                     const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
                     beams[this.sy][this.sx][reB] = beameB2;
                     this.dmg(-73, this);
-                    sendAllSector(`sound`, { file: `assimilation`, x: ox, y: oy }, this.sx, this.sy);
+                    sendAllSector(`sound`, { file: `assimilation`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
                 }
             }
         }
@@ -1015,7 +1015,7 @@ class Player {
             nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
         }
 
-        sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
     }
 
     findBeamTarget (that, wep, newy, newx, lsy, lsx, origin, restricted, oldNearP) {
@@ -1103,14 +1103,14 @@ class Player {
         const r = Math.random();
         const beam = new Beam(this, r, this.weapons[this.equipped], nearP, origin);
         beams[this.sy][this.sx][r] = beam;
-        sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
     }
 
     shootBlast (currWep) {
         const r = Math.random();
         const blast = new Blast(this, r, currWep);
         blasts[this.sy][this.sx][r] = blast;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     async die (b) {

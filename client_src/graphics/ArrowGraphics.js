@@ -44,6 +44,9 @@ global.rBasePointer = function (nearB, extraX = 0, extraY = 0) {
     const angle = Math.atan2(nearB.y - py + extraY, nearB.x - px + extraX);
     let colorBase = `lightgray`;
     if (typeof nearB.color !== `undefined`) colorBase = colorSelect(nearB.color, `red`, `cyan`, `lime`, `lightgray`);
+
+    console.log(`TO-DO en rBasePointer (X: `, nearB.sx, `, Y: `, nearB.sy, `) los extraX = `, extraX, ` extraY = `, extraY);
+
     rPointerArrow(Img.whiteArrow, angle, text, colorBase, 1.0, true);
 };
 global.rTeamPointers = function (pointers, extraX = undefined, extraY = undefined) {

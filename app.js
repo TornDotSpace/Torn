@@ -597,7 +597,7 @@ function phase1y2update () {
                     // Store pack for joining clients & delta calculation
                     // updateStatus: 0 means created, updateStatus: 1 finished creating, updateStatus: 2 need to update
                     pack = playerPack[y][x][i] = { disguise: player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle, sx: player.sx, sy: player.sy, updateStatus: 0, updatedDelta: undefined };
-                    apply9SectorCall(sendAllSector, `player_delete`, pack, x, y);
+                    // apply9SectorCall(sendAllSector, `player_delete`, pack, x, y);
                     apply9SectorCall(sendAllSector, `player_create`, pack, x, y); // TO-DO , startX = -1, startY = -1, endX = 1, endY = 1
                     // sendAllSector(`player_create`, pack, x, y); // TO-DO maybe affects - TO-DO maybe apply the 9 effect thing on here?
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;

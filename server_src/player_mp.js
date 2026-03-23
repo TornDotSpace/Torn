@@ -195,7 +195,7 @@ class PlayerMP extends Player {
         this.leaveBaseShield = 25;
         this.refillAllAmmo();
 
-        sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
 
         // clear quest
         this.quest = 0;

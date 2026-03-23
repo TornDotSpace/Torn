@@ -40,8 +40,10 @@ class Bullet {
 
     tick () {
         if (this.time++ == 0) { // if this was just spawned
-            apply9SectorCall(sendAllSector, `newBullet`, { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color }, this.sx, this.sy);
-            // TO-DO OLD sendAllSector(`newBullet`, { x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color }, this.sx, this.sy);
+            // TO-DO NEW
+            apply9SectorCall(sendAllSector, `newBullet`, { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color, tick: this.time }, this.sx, this.sy);
+            // TO-DO OLD
+            // sendAllSector(`newBullet`, { x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color }, this.sx, this.sy);
             // this.x -= this.vx; //These were here before Alex's refactor. Not sure if they should exist.
             // this.y -= this.vy;
         }
@@ -59,7 +61,97 @@ class Bullet {
     move () {
         this.x += this.vx;
         this.y += this.vy; // move on tick
-        if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // TO-DO SWITCH SO IT FIRES BEYOND THE SECTORS
+        if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) {
+            // Crossing through sectors
+            let idied = false;
+
+            /* TO-DO WIP
+          const old_sx = this.sx;
+          const old_sy = this.sy;
+          const SXtoEast = (this.x > sectorWidth);
+          const SXtoWest = (this.x < 0);
+          const SYtoNorth = (this.y < 0);
+          const SYtoSouth = (this.y > sectorWidth);
+          if (SXtoEast) { // check each edge of the 4 they could cross.
+              this.x = 1;
+              this.sx = (this.sx + 1 + mapSz) % mapSz;
+          } else if (SYtoSouth) {
+              if (this.sy == mapSz - 1) {
+                  idied = true;
+              } else {
+                  this.y = 1;
+                  this.sy++;
+              }
+          } else if (SXtoWest) {
+              this.x = (sectorWidth - 1);
+              this.sx = (this.sx - 1 + mapSz) % mapSz;
+          } else if (SYtoNorth) {
+              if (this.sy == 0) {
+                  idied = true;
+              } else {
+                  this.y = (sectorWidth - 1);
+                  this.sy--;
+              }
+          }
+          */
+
+            if (idied) this.die();
+            else {
+                // TO-DO OLD
+                this.die(); // TO-DO SWITCH SO IT FIRES BEYOND THE SECTORS
+                /* TO-DO WIP
+              let startX = -1;
+              let endX = 1;
+              let startY = -1;
+              let endY = 1;
+              let UstartX = -1;
+              let UendX = 1;
+              let UstartY = -1;
+              let UendY = 1;
+              let CstartX = -1;
+              let CendX = 1;
+              let CstartY = -1;
+              let CendY = 1;
+              // We send an update message to our neighbours
+              if (SYtoNorth) {
+                  startY = 1;
+                  endY = 1;
+                  UstartY = 0;
+                  UendY = -1;
+                  CstartY = -1;
+                  CendY = -1;
+              } else if (SYtoSouth) {
+                  startY = -1;
+                  endY = -1;
+                  UstartY = 1;
+                  UendY = 0;
+                  CstartY = 1;
+                  CendY = 1;
+              } else if (SXtoWest) {
+                  startX = 1;
+                  endX = 1;
+                  UstartX = 0;
+                  UendX = 1;
+                  CstartX = -1;
+                  CendX = -1;
+              } else if (SXtoEast) {
+                  startX = -1;
+                  endX = -1;
+                  UstartX = -1;
+                  UendX = 0;
+                  CstartX = 1;
+                  CendX = 1;
+              }
+              // First, we delete the ones on the back sectors
+              apply9SectorCall(sendAllSector, `delBullet`, { id: this.id }, old_sx, old_sy, undefined, undefined, undefined, startX, startY, endX, endY);
+              // Then we update those on the sides
+              const delta = {sx: this.sx, sy: this.sy, x: this.x, y: this.y};
+              apply9SectorCall(sendAllSector, `bullet_update`, {delta: delta, id: this.id}, this.sx, this.sy, undefined, undefined, undefined, UstartX, UstartY, UendX, UendY);
+              // Then we create entries for the front sectors
+              apply9SectorCall(sendAllSector, `newBullet`, { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color, tick: this.time }, this.sx, this.sy, undefined, undefined, undefined, CstartX, CstartY, CendX, CendY);
+              */
+            }
+        }
         for (const id in bases[this.sy][this.sx]) {
             const b = bases[this.sy][this.sx][id];
             if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
@@ -95,10 +187,15 @@ class Bullet {
     }
 
     die () {
+        // TO-DO NEW
         apply9SectorCall(sendAllSector, `delBullet`, { id: this.id }, this.sx, this.sy);
+        // TO-DO OLD
         // sendAllSector(`delBullet`, { id: this.id }, this.sx, this.sy);
         const reverse = this.wepnID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
-        sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy }, this.sx, this.sy);
+        // TO-DO NEW
+        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy }, this.sx, this.sy);
+        // TO-DO OLD
+        // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy }, this.sx, this.sy);
         delete bullets[this.sy][this.sx][this.id];
     }
 

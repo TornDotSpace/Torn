@@ -157,7 +157,7 @@ class Mine {
         }
 
         if (playerFound) {
-            sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+            sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
             this.time += 25 * 3;
         }
     }
@@ -184,7 +184,7 @@ class Mine {
                 beams[this.sy][this.sx][r] = beam;
             }
         }
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     collideWithGuns () { // Guns will make enemy mines explode and vice-versa, but it'll take a while to kill them.
@@ -296,7 +296,7 @@ class Mine {
                 p.dmg(this.dmg / 10, this); // if i'm in range of a player on explosion, damage them
             }
         }
-        sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete mines[this.sy][this.sx][this.id];
     }
 }

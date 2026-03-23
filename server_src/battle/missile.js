@@ -208,7 +208,7 @@ class Missile {
     }
 
     die () {
-        sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
         delete missiles[this.sy][this.sx][this.id];
     }
 }

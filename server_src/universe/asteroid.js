@@ -60,7 +60,7 @@ class Asteroid {
                 const p = players[this.sy][this.sx][i];
                 if (squaredDist(p, this) < square(32 + ships[p.ship].width) / 10) { // on collision,
                     p.dmg(5 * Math.hypot(p.vx - this.vx, p.vy - this.vy), this); // damage proportional to impact velocity
-                    sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+                    sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
                     // bounce the player off. Same formula as used for mine impulse.
                     const mult = 200 / Math.max(1, 0.001 + Math.hypot(p.x - this.x, p.y - this.y));
@@ -76,7 +76,7 @@ class Asteroid {
                 const b = bases[this.sy][this.sx][id];
                 if (b != 0 && b.baseType != DEADBASE && squaredDist(this, b) < 3686.4) { // collision with base
                     b.dmg(10 * Math.hypot(this.vx, this.vy), this);
-                    sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+                    sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
                     this.die(b);
                 }
             }
@@ -186,7 +186,7 @@ class Asteroid {
         let expGained = 1;
         if (b.owner.type === `Player`) expGained = b.owner.rank < 10 ? 2 - b.owner.rank / 5 : 0;
         if (b.owner.type === `Player` || b.owner.type === `Base`) b.owner.spoils(`experience`, expGained);
-        sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete asts[this.sy][this.sx][this.id];
     }
 

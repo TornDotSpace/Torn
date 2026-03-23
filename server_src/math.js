@@ -111,7 +111,7 @@ global.angleGlobalBetween = function (a, b, gsy, gsx, numSec) { // considers dif
     let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
     sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
 
-    if (sectorDiffX > 0) {
+    if (sectorDiffX > 0 && sectorDiffXa == sectorDiffX) {
         sectorDiffX = sectorDiffXa;
     } else {
         sectorDiffX = -sectorDiffXa;
@@ -132,7 +132,7 @@ global.squaredGlobalDist = function (a, b, gsy, gsx, numSec) { // distance betwe
     let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
     sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
 
-    if (sectorDiffX > 0) {
+    if (sectorDiffX > 0 && sectorDiffXa == sectorDiffX) {
         sectorDiffX = sectorDiffXa;
     } else {
         sectorDiffX = -sectorDiffXa;
