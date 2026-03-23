@@ -174,6 +174,8 @@ function player_update (data) {
         scrx = -cosLow(pangle) * playersInfo[id].speed;
         scry = -sinLow(pangle) * playersInfo[id].speed;
         disguise = delta.disguise;
+        if (playersInfo[id].sx !== undefined) sx = playersInfo[id].sx;
+        if (playersInfo[id].sy !== undefined) sy = playersInfo[id].sy;
     }
 }
 

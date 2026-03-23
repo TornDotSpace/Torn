@@ -366,6 +366,7 @@ global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { 
     }
 
     let sectorDiffX = bsx - asx;
+    // console.log("TO-DO sector X Difference 1 is = ", sectorDiffX)
     let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
     sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
 
@@ -374,8 +375,9 @@ global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { 
     } else {
         sectorDiffX = -sectorDiffXa;
     }
-
-    return sectorDiffX * gsx;
+    // console.log("TO-DO sector X Difference 2 is = ", sectorDiffX, " and we return ", sectorDiffX * gsx)
+    sectorDiffX = sectorDiffX * gsx;
+    return sectorDiffX;
 };
 
 global.obtainSYDrift = function (asy, bsy, gsy = sectorWidth, numSec = mapSz) {
@@ -384,7 +386,9 @@ global.obtainSYDrift = function (asy, bsy, gsy = sectorWidth, numSec = mapSz) {
         return 0;
     }
     let sectorDiffY = bsy - asy; // Sectors on Y do not loop
-    return sectorDiffY * gsy;
+    // console.log("TO-DO sector Y Difference is = ", sectorDiffY, " and we return ", sectorDiffY * gsy)
+    sectorDiffY = sectorDiffY * gsy;
+    return sectorDiffY;
 };
 
 global.updateTrails = function () {
@@ -1599,6 +1603,8 @@ global.rVorts = function () {
 global.rPlayers = function () {
     if (inTheVoid()) return; // Probably just docked
     const pointers = [0, 0, 0, 0];
+    let extraX = [0, 0, 0, 0];
+    let extraY = [0, 0, 0, 0];
     for (let selfo in playersInfo) {
         selfo = playersInfo[selfo];
         if (selfo.disguise > 0) continue;
@@ -1636,13 +1642,25 @@ global.rPlayers = function () {
         } else {
             for (let i = 0; i < pointers.length; i++) {
                 if (selfo.color === teamColors[i]) {
-                    if (pointers[i] === 0) pointers[i] = selfo;
-                    else {
-                        const dDistPX = selfo.x - px + obtainSXDrift(sx, selfo.sx);
+                    const diffSX = obtainSXDrift(sx, selfo.sx);
+                    const diffSY = obtainSYDrift(sy, selfo.sy);
+                    // console.log("TO-DO Sectors for origin (SX:," + sx +", SY: " + sy + ") TARGET (SX : " + selfo.sx + ", SY: " + selfo.sy + ") with extra SX: " + diffSX + " and extra SY: " + diffSY)
+                    if (pointers[i] === 0) {
+                        pointers[i] = selfo;
+                        extraX[i] = diffSX;
+                        extraY[i] = diffSY;
+                    } else {
+                        const diffSX = obtainSXDrift(sx, selfo.sx);
+                        const diffSY = obtainSYDrift(sy, selfo.sy);
+                        const dDistPX = selfo.x - px + diffSX;
                         const dDistPY = selfo.y - py + obtainSYDrift(sy, selfo.sy);
-                        const dDistAX = pointers[i].x - px + obtainSXDrift(sx, pointers[i].sx);
-                        const dDistAY = pointers[i].y - py + obtainSYDrift(sy, pointers[i].sy);
-                        if (square(dDistPX) + square(dDistPY) < square(dDistAX) + square(dDistAY)) pointers[i] = selfo;
+                        const dDistAX = pointers[i].x - px + extraX[i]; // obtainSXDrift(sx, pointers[i].sx);
+                        const dDistAY = pointers[i].y - py + extraY[i]; // obtainSYDrift(sy, pointers[i].sy);
+                        if (square(dDistPX) + square(dDistPY) < square(dDistAX) + square(dDistAY)) {
+                            pointers[i] = selfo;
+                            extraX[i] = diffSX;
+                            extraY[i] = diffSY;
+                        }
                     }
                 }
             }
@@ -1667,14 +1685,6 @@ global.rPlayers = function () {
         ctx.stroke();
     }
 
-    let extraX = [0, 0, 0, 0];
-    let extraY = [0, 0, 0, 0];
-    for (let i = 0; i < pointers.length; i++) {
-        if ((pointers[i] !== undefined) && pointers[i] !== 0) {
-            extraX[i] = obtainSXDrift(sx, pointers[i].sx);
-            extraY[i] = obtainSYDrift(sy, pointers[i].sy);
-        }
-    }
     rTeamPointers(pointers, extraX, extraY);
 };
 global.rSelfCloaked = function () {

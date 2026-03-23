@@ -48,8 +48,12 @@ global.rBasePointer = function (nearB, extraX = 0, extraY = 0) {
 };
 global.rTeamPointers = function (pointers, extraX = undefined, extraY = undefined) {
     const lenW = pointers.length;
-    if (extraX === undefined) (extraX = []).length = lenW; extraX.fill(0);
-    if (extraY === undefined) (extraY = []).length = lenW; extraY.fill(0);
+    if (extraX === undefined) {
+        (extraX = []).length = lenW; extraX.fill(0);
+    }
+    if (extraY === undefined) {
+        (extraY = []).length = lenW; extraY.fill(0);
+    }
     for (let i = 0; i < lenW; i++) {
         if (pointers[i] === 0) continue;
         const text = Math.hypot(pointers[i].x - px + extraX[i], pointers[i].y - py + extraY[i]);

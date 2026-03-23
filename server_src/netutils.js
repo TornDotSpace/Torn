@@ -68,8 +68,57 @@ global.sendAllSector = function (out, data, sx, sy) {
     }
 };
 
+global.getNeighborSectorsAffected = function (mysx, mysy, myx = undefined, myy = undefined, startX = -1, startY = -1, endX = 1, endY = 1) {
+    let sectors = {};
+    for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
+        let newX;
+        if (myx !== undefined) newX = myx - (asx * sectorWidth);
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
+        }
+        sectors[sxReal] = {};
+        for (let asy = startY; asy <= endY; asy++) { // Sectors on Y do not loop
+            const syReal = (mysy + asy);
+            if (syReal < mapSz && syReal >= 0) {
+                let newY;
+                if (myy !== undefined) newY = myy - (asy * sectorWidth);
+                sectors[sxReal][syReal] = true;
+            }
+        }
+    }
+    return sectors;
+};
+
 global.apply9SectorCall = function (functionToCall, command, stuff, mysx, mysy, myx = undefined, myy = undefined, extras = undefined, startX = -1, startY = -1, endX = 1, endY = 1, returnSomething = false) {
     let somethingReturn = 0;
+    let foundSX;
+    let foundSY;
+    let notAffectSectors;
+    if (extras !== undefined) { // - We first need to find the exception TO-DO may need to make it more robust
+        for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
+            let sxReal = (mysx + asx) % mapSz;
+            while (sxReal < 0) {
+                sxReal = (sxReal + mapSz) % mapSz;
+            }
+            for (let asy = startY; asy <= endY; asy++) { // Sectors on Y do not loop
+                const syReal = (mysy + asy);
+                if (syReal < mapSz && syReal >= 0) {
+                    if (extras[syReal][sxReal][stuff] !== undefined && extras[syReal][sxReal][stuff] !== 0) {
+                        const item = extras[syReal][sxReal][stuff];
+                        if ((item.dead === undefined) || (item.dead === false)) { // If it's an alive player, or if it is not a player (then they seem to handle deletion on their own) we have to include these exceptions
+                            foundSX = sxReal;
+                            foundSY = syReal;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (foundSX !== undefined && foundSY !== undefined) break;
+        }
+    }
+    if (foundSX !== undefined && foundSY !== undefined) notAffectSectors = getNeighborSectorsAffected(foundSX, foundSY);
+
     for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
         let newX;
         if (myx !== undefined) newX = myx - (asx * sectorWidth);
@@ -82,10 +131,12 @@ global.apply9SectorCall = function (functionToCall, command, stuff, mysx, mysy, 
             if (syReal < mapSz && syReal >= 0) {
                 let newY;
                 if (myy !== undefined) newY = myy - (asy * sectorWidth);
-                if (extras == false) {
+                if (extras === undefined || extras == false) {
                     functionToCall(command, stuff, sxReal, syReal);
                 } else { // Potential TO-DO if we need more paremeters we will edit this
-                    somethingReturn = functionToCall(command, stuff, sxReal, syReal, extras);
+                    const shallDo = ((notAffectSectors === undefined) || notAffectSectors[sxReal] === undefined || notAffectSectors[sxReal][syReal] === undefined || notAffectSectors[sxReal][syReal] !== true);
+                    if (shallDo && (((foundSX !== sxReal) && (foundSY !== syReal)) || (extras[syReal] !== undefined && extras[syReal][sxReal] !== undefined && (extras[syReal][sxReal][stuff] === undefined || extras[syReal][sxReal][stuff] === 0)))) functionToCall(command, stuff, sxReal, syReal);
+                    // somethingReturn = functionToCall(command, stuff, sxReal, syReal, extras);
                 }
             }
         }

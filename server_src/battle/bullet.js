@@ -40,7 +40,8 @@ class Bullet {
 
     tick () {
         if (this.time++ == 0) { // if this was just spawned
-            sendAllSector(`newBullet`, { x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color }, this.sx, this.sy);
+            apply9SectorCall(sendAllSector, `newBullet`, { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color }, this.sx, this.sy);
+            // TO-DO OLD sendAllSector(`newBullet`, { x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color }, this.sx, this.sy);
             // this.x -= this.vx; //These were here before Alex's refactor. Not sure if they should exist.
             // this.y -= this.vy;
         }
@@ -58,7 +59,7 @@ class Bullet {
     move () {
         this.x += this.vx;
         this.y += this.vy; // move on tick
-        if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die();
+        if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // TO-DO SWITCH SO IT FIRES BEYOND THE SECTORS
         for (const id in bases[this.sy][this.sx]) {
             const b = bases[this.sy][this.sx][id];
             if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
@@ -94,7 +95,8 @@ class Bullet {
     }
 
     die () {
-        sendAllSector(`delBullet`, { id: this.id }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `delBullet`, { id: this.id }, this.sx, this.sy);
+        // sendAllSector(`delBullet`, { id: this.id }, this.sx, this.sy);
         const reverse = this.wepnID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
         sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy }, this.sx, this.sy);
         delete bullets[this.sy][this.sx][this.id];
