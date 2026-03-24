@@ -622,12 +622,12 @@ global.rBooms = function () {
 
         let extraX = 0;
         let extraY = 0;
-        if (!(Object.is(b.sx, null) || Object.is(b.sx, undefined))) extraX = obtainSXDrift(sx, b.sx); // TO-DO obtainSXDrift(sx, b.sx);
-        if (!(Object.is(b.sy, null) || Object.is(b.sy, undefined))) extraY = obtainSYDrift(sy, b.sy); // TO-DO obtainSYDrift(sy, b.sy);
+        if (!(Object.is(b.sx, null) || Object.is(b.sx, undefined))) extraX = obtainSXDrift(sx, b.sx);
+        if (!(Object.is(b.sy, null) || Object.is(b.sy, undefined))) extraY = obtainSYDrift(sy, b.sy);
 
         let rendX = b.x + extraX - px + w / 2 - pw / 2 + scrx;
         let rendY = b.y + extraY - py + h / 2 - ph / 2 + scry;
-        console.log(`TO-DO rBooms BOOMS we have b.sx = `, b.sx, ` b.sy = `, b.sy, ` extraX = `, extraX, ` extraY = `, extraY, `b.x = `, b.x, `, b.y = `, b.y);
+        // console.log(`TO-DO rBooms BOOMS we have b.sx = `, b.sx, ` b.sy = `, b.sy, ` extraX = `, extraX, ` extraY = `, extraY, `b.x = `, b.x, `, b.y = `, b.y);
         if (b.time < 114) {
             if (!(rendX < -(5 * (w + pw) + 220) || rendX > (5 * (w + pw) + 220) || rendY < -(5 * (h + ph) + 220) || rendY > (5 * (h + ph) + 220))) {
                 const img = Img.booms;
@@ -659,10 +659,10 @@ global.rBooms = function () {
         let extraX = 0;
         let extraY = 0;
 
-        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx); // TO-DO obtainSXDrift(sx, selfo.sx);
-        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy); // TO-DO obtainSYDrift(sy, selfo.sy);
+        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
 
-        console.log(`TO-DO rBooms boomParticles we have selfo.sx = `, selfo.sx, ` selfo.sy = `, selfo.sy, ` extraX = `, extraX, ` extraY = `, extraY, `selfo.x = `, selfo.x, `, selfo.y = `, selfo.y);
+        // console.log(`TO-DO rBooms boomParticles we have selfo.sx = `, selfo.sx, ` selfo.sy = `, selfo.sy, ` extraX = `, extraX, ` extraY = `, extraY, `selfo.x = `, selfo.x, `, selfo.y = `, selfo.y);
 
         const rendX = selfo.x + extraX - px + (w / 2);
         const rendY = selfo.y + extraY - py + (h / 2);
@@ -971,15 +971,15 @@ global.rRadar = function () {
             ctx.closePath();
         }
     }
-    if (tag === `B`) {
+    if (tag === `B` || va2 >= 2.6) {
         if (!(planets == 0 || planets == undefined)) {
             for (const id in planets) {
                 const planet = planets[id];
                 ctx.fillStyle = brighten(planet.color);
 
-                const dx = planet.x + obtainSXDrift(sx, planet.sx) - px;
-                const dy = planet.y + obtainSYDrift(sy, planet.sy) - py;
-                console.log(`TO-DO Calling rRadar tag = B 2`);
+                const dx = planet.x - px + obtainSXDrift(sx, planet.sx);
+                const dy = planet.y - py + obtainSYDrift(sy, planet.sy);
+                // console.log(`TO-DO Calling rRadar tag = B 2`);
                 if (square(dx) + square(dy) < r2z2) {
                     const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
                     const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
@@ -1501,16 +1501,16 @@ global.rAsteroids = function () {
         ctx.restore();
 
         if (selfo.color != pc) { // update nearest enemy for pointer
-            const dDistPX = selfo.x - px + extraX; // TO-DO + extraX;
-            const dDistPY = selfo.y - py + extraY; // TO-DO + extraY;
+            const dDistPX = selfo.x - px + extraX;
+            const dDistPY = selfo.y - py + extraY;
 
             if (nearA == 0) {
                 nearA = selfo;
                 extraXn = dDistPX;
                 extraYn = dDistPY;
             } else {
-                const dDistAX = nearA.x - px + obtainSXDrift(selfsx, nearA.sx);
-                const dDistAY = nearA.y - py + obtainSYDrift(selfsy, nearA.sy);
+                const dDistAX = nearA.x - px + obtainSXDrift(selfsx, nearA.sx); // TO-DO extraXn
+                const dDistAY = nearA.y - py + obtainSYDrift(selfsy, nearA.sy); // TO-DO extraYn
                 if ((square(dDistPX) + square(dDistPY)) < (square(dDistAX) + square(dDistAY))) {
                     nearA = selfo;
                     extraXn = dDistPX;
