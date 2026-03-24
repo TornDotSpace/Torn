@@ -366,7 +366,7 @@ global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { 
     }
 
     let sectorDiffX = bsx - asx; // 0 - 6 = -6
-    console.log(`TO-DO sector X Difference 1 is = `, sectorDiffX);
+    // console.log(`TO-DO sector X Difference 1 is = `, sectorDiffX);
     let sectorDiffXab = Math.abs(sectorDiffX); // Sectors on X loop // -6 -> 6
     let sectorDiffXa = Math.min(sectorDiffXab, (numSec - sectorDiffXab)); // min(6, 7 - 6) = 1
     if (sectorDiffX > 0 && sectorDiffXa == sectorDiffX) {
@@ -374,7 +374,7 @@ global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { 
     } else {
         sectorDiffX = -sectorDiffXa; // 1 -> -1
     }
-    console.log(`TO-DO sector X Difference 2...  sectorDiffXab = `, sectorDiffXab, ` sectorDiffXa = `, sectorDiffXa, `, sectorDiffX = `, sectorDiffX);
+    // console.log(`TO-DO sector X Difference 2...  sectorDiffXab = `, sectorDiffXab, ` sectorDiffXa = `, sectorDiffXa, `, sectorDiffX = `, sectorDiffX);
     sectorDiffX = sectorDiffX * gsx;
     return sectorDiffX;
 };
@@ -622,19 +622,22 @@ global.rBooms = function () {
 
         let extraX = 0;
         let extraY = 0;
-        if (!(Object.is(b.sx, null) || Object.is(b.sx, undefined))) extraX = obtainSXDrift(sx, b.sx);
-        if (!(Object.is(b.sy, null) || Object.is(b.sy, undefined))) extraY = obtainSYDrift(sy, b.sy);
+        if (!(Object.is(b.sx, null) || Object.is(b.sx, undefined))) extraX = obtainSXDrift(sx, b.sx); // TO-DO obtainSXDrift(sx, b.sx);
+        if (!(Object.is(b.sy, null) || Object.is(b.sy, undefined))) extraY = obtainSYDrift(sy, b.sy); // TO-DO obtainSYDrift(sy, b.sy);
 
-        let rendX = b.x + extraX - px + w / 2 - pw / 2 + scrx; let rendY = b.y + extraY - py + h / 2 - ph / 2 + scry;
-
+        let rendX = b.x + extraX - px + w / 2 - pw / 2 + scrx;
+        let rendY = b.y + extraY - py + h / 2 - ph / 2 + scry;
+        console.log(`TO-DO rBooms BOOMS we have b.sx = `, b.sx, ` b.sy = `, b.sy, ` extraX = `, extraX, ` extraY = `, extraY, `b.x = `, b.x, `, b.y = `, b.y);
         if (b.time < 114) {
-            const img = Img.booms;
-            const bsx = (b.time % 10) * 128;
-            const bsy = Math.floor(b.time / 10) * 128;
+            if (!(rendX < -(5 * (w + pw) + 220) || rendX > (5 * (w + pw) + 220) || rendY < -(5 * (h + ph) + 220) || rendY > (5 * (h + ph) + 220))) {
+                const img = Img.booms;
+                const bsx = (b.time % 10) * 128;
+                const bsy = Math.floor(b.time / 10) * 128;
 
-            ctx.save();
-            ctx.drawImage(img, bsx, bsy, 128, 128, rendX, rendY, 128, 128);
-            ctx.restore();
+                ctx.save();
+                ctx.drawImage(img, bsx, bsy, 128, 128, rendX, rendY, 128, 128);
+                ctx.restore();
+            }
         }
 
         if (!b.shockwave) continue;
@@ -643,28 +646,38 @@ global.rBooms = function () {
         rendY = b.y + extraY - py + h / 2 + scry;
 
         const ss = Math.sqrt(b.time) * 96;
+
+        if (rendX < -(w + 150 + (sectorWidth / 4) + ss) || rendX > (w + 150 + (sectorWidth / 4) + ss) || rendY < -(h + 220 + (sectorWidth / 4) + ss) || rendY > (h + 220 + (sectorWidth / 4) + ss)) continue;
+
         ctx.globalAlpha = 0.9 - b.time / 500.0;
         ctx.drawImage(Img.shockwave, rendX - ss / 2, rendY - ss / 2, ss, ss);
         ctx.globalAlpha = 1;
     }
     for (const i in boomParticles) {
         const selfo = boomParticles[i];
+
+        let extraX = 0;
+        let extraY = 0;
+
+        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx); // TO-DO obtainSXDrift(sx, selfo.sx);
+        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy); // TO-DO obtainSYDrift(sy, selfo.sy);
+
+        console.log(`TO-DO rBooms boomParticles we have selfo.sx = `, selfo.sx, ` selfo.sy = `, selfo.sy, ` extraX = `, extraX, ` extraY = `, extraY, `selfo.x = `, selfo.x, `, selfo.y = `, selfo.y);
+
+        const rendX = selfo.x + extraX - px + (w / 2);
+        const rendY = selfo.y + extraY - py + (h / 2);
+        if (rendX < -(sectorWidth + w) || rendX > (w + 150 + sectorWidth) || rendY < -(150 + sectorWidth) || rendY > (h + 220 + sectorWidth)) continue;
+
         ctx.beginPath();
         ctx.strokeStyle = `gray`;
         ctx.lineWidth = 6;
         ctx.globalAlpha = (15 - selfo.time) / 15;
         ctx.fillStyle = `white`;
-        ctx.fillRect(selfo.x - 3 - px + w / 2, selfo.y - 3 - py + h / 2, 7, 7);
+        ctx.fillRect(rendX - 3, rendY - 3, 7, 7);
         ctx.globalAlpha = (15 - selfo.time) / 22;
 
-        let extraX = 0;
-        let extraY = 0;
-
-        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
-        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
-
-        ctx.moveTo(selfo.x + extraX - px + w / 2, selfo.y + extraY - py + h / 2);
-        ctx.lineTo(selfo.x + extraY - px + w / 2 - (cosLow(selfo.angle) * 25 + selfo.dx), selfo.y + extraY - py + h / 2 - (sinLow(selfo.angle) * 25 + selfo.dy));
+        ctx.moveTo(rendX, rendY);
+        ctx.lineTo(rendX - (cosLow(selfo.angle) * 25 + selfo.dx), rendY - (sinLow(selfo.angle) * 25 + selfo.dy));
         ctx.stroke();
         ctx.closePath();
         ctx.globalAlpha = 1;
@@ -907,7 +920,6 @@ global.rRadar = function () {
             let extraY = 0;
             if (!(Object.is(aBase.sx, null) || Object.is(aBase.sx, undefined))) extraX = obtainSXDrift(sx, aBase.sx);
             if (!(Object.is(aBase.sy, null) || Object.is(aBase.sy, undefined))) extraY = obtainSYDrift(sy, aBase.sy);
-            console.log(`TO-DO en radar base (X: `, aBase.sx, `, Y: `, aBase.sy, `) los extraX = `, extraX, ` extraY = `, extraY);
             const dx = aBase.x + extraX - px;
             const dy = aBase.y + extraY - py;
             if (square(dx) + square(dy) < r2z2) {

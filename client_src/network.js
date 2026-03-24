@@ -63,18 +63,17 @@ socket.on(`posUp`, (data) => {
     gyroTimer--;
     killStreakTimer--;
     docked = false;
-    packsInfo = data.packs; // TO-DO
-    playersInfo = data.players; // TO-DO
-    basesInfo = data.bases; // TO-DO
+    packsInfo = data.packs;
+    playersInfo = data.players;
+    basesInfo = data.bases;
     planets = data.planets;
-    astsInfo = data.asteroids; // TO-DO
-    beamsInfo = data.beams; // TO-DO
-    blastsInfo = data.blasts; // TO-DO
-    missilesInfo = data.missiles; // TO-DO
-    orbsInfo = data.orbs; // TO-DO
-    minesInfo = data.mines; // TO-DO
-    vortsInfo = data.vorts; // TO-DO
-    console.log(`TO-DO CALLED posUp, current (sx: ${sx}, sy: ${sy}) vs data(sx: ${data.sx}, sy: ${data.sy})`);
+    astsInfo = data.asteroids;
+    beamsInfo = data.beams;
+    blastsInfo = data.blasts;
+    missilesInfo = data.missiles;
+    orbsInfo = data.orbs;
+    minesInfo = data.mines;
+    vortsInfo = data.vorts;
     if (sx != data.sx || sy != data.sy) {
         sx = data.sx;
         sy = data.sy;
@@ -92,52 +91,51 @@ socket.on(`update`, (data) => {
 
     const delta = data.state;
     if (!delta) return;
-    console.log(`TO-DO CALLED update`);
     for (let index = 0; index < delta.players.length; ++index) {
-        player_update(delta.players[index]); // TO-DO
+        player_update(delta.players[index]);
     }
 
     for (let index = 0; index < delta.vorts.length; ++index) {
-        vort_update(delta.vorts[index]); // TO-DO
+        vort_update(delta.vorts[index]);
     }
 
     for (let index = 0; index < delta.mines.length; ++index) {
-        mine_update(delta.mines[index]); // TO-DO
+        mine_update(delta.mines[index]);
     }
 
     for (let index = 0; index < delta.beams.length; ++index) {
-        beam_update(delta.beams[index]); // TO-DO
+        beam_update(delta.beams[index]);
     }
 
     for (let index = 0; index < delta.blasts.length; ++index) {
-        blast_update(delta.blasts[index]); // TO-DO
+        blast_update(delta.blasts[index]);
     }
     for (let index = 0; index < delta.asteroids.length; ++index) {
-        asteroid_update(delta.asteroids[index]); // TO-DO
+        asteroid_update(delta.asteroids[index]);
     }
 
     for (let index = 0; index < delta.missiles.length; ++index) {
-        missile_update(delta.missiles[index]); // TO-DO
+        missile_update(delta.missiles[index]);
     }
 
     for (let index = 0; index < delta.packs.length; ++index) {
-        pack_update(delta.packs[index]); // TO-DO
+        pack_update(delta.packs[index]);
     }
 
     for (let index = 0; index < delta.orbs.length; ++index) {
-        orb_update(delta.orbs[index]); // TO-DO
+        orb_update(delta.orbs[index]);
     }
 
     if (delta.base !== undefined) {
         for (const id in delta.bases) {
-            base_update(delta.bases[id]); // TO-DO
+            base_update(delta.bases[id]);
         }
-        // base_update(delta.base); // TO-DO
+        // base_update(delta.base);
     }
 
-    if (delta.bases !== undefined) { // TO-DO AN ADDITION
+    if (delta.bases !== undefined) { // AN ADDITION
         for (const id in delta.bases) {
-            base_update(delta.bases[id]); // TO-DO
+            base_update(delta.bases[id]);
         }
     }
 
@@ -151,8 +149,6 @@ socket.on(`update`, (data) => {
 });
 
 socket.on(`player_create`, (data) => {
-    const id = data.id; // TO-DO TEST LINES
-    if (id == myId) console.log(`TO-DO CALLED player_create for myself , current (sx: ${sx}, sy: ${sy}) vs data (sx: `, data.sx, `, sy: `, data.sy, `)`);
     playersInfo[data.id] = data;
 });
 
@@ -167,7 +163,6 @@ function player_update (data) {
     }
 
     if (id == myId) {
-        console.log(`TO-DO CALLED player_update for myself , current (sx: ${sx}, sy: ${sy}) vs delta (sx: `, playersInfo[id].sx, `, sy: `, playersInfo[id].sy, `)`);
         pvx = -px;
         pvy = -py;
         px = playersInfo[id].x;
@@ -486,14 +481,17 @@ socket.on(`sound`, (data) => {
     let currSX;
     let currSY;
     if (!(Object.is(data.sx, null) || Object.is(data.sx, undefined))) {
-        extraX = obtainSXDrift(sx, data.sx);
+        // console.log("TO-DO WE HAVE SX - ", data.sx);
+        extraX = obtainSXDrift(data.sx, sx);
         currSX = data.sx;
     } else currSX = sx;
     if (!(Object.is(data.sy, null) || Object.is(data.sy, undefined))) {
-        extraY = obtainSYDrift(sy, data.sy);
+        extraY = obtainSYDrift(data.sy, sy);
         currSY = data.sy;
+        // console.log("TO-DO WE HAVE SY - ", data.sy);
     } else currSY = sy;
 
+    console.log(`TO-DO currSX = `, currSX, ` currSY = `, currSY);
     if (data.file.includes(`boom`)) {
         if (data.file === `bigboom`) flash = 1;
         booms[Math.random()] = { x: data.x, y: data.y, sx: currSX, sy: currSY, time: 0, shockwave: data.file === `bigboom` };
@@ -508,7 +506,8 @@ socket.on(`sound`, (data) => {
         hyperdriveTimer = 200;
         vol = 2;
     }
-    if (!data.file.includes(`boom`) || (currSX === sx && currSY === sy)) playAudio(data.file, vol);
+    // TO-DO if (!data.file.includes(`boom`) || (currSX === sx && currSY === sy))
+    playAudio(data.file, vol);
 });
 socket.on(`equip`, (data) => {
     scroll = data.scroll;
