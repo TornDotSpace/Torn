@@ -65,91 +65,103 @@ class Bullet {
             // Crossing through sectors
             let idied = false;
 
-            /* TO-DO WIP
-          const old_sx = this.sx;
-          const old_sy = this.sy;
-          const SXtoEast = (this.x > sectorWidth);
-          const SXtoWest = (this.x < 0);
-          const SYtoNorth = (this.y < 0);
-          const SYtoSouth = (this.y > sectorWidth);
-          if (SXtoEast) { // check each edge of the 4 they could cross.
-              this.x = 1;
-              this.sx = (this.sx + 1 + mapSz) % mapSz;
-          } else if (SYtoSouth) {
-              if (this.sy == mapSz - 1) {
-                  idied = true;
-              } else {
-                  this.y = 1;
-                  this.sy++;
-              }
-          } else if (SXtoWest) {
-              this.x = (sectorWidth - 1);
-              this.sx = (this.sx - 1 + mapSz) % mapSz;
-          } else if (SYtoNorth) {
-              if (this.sy == 0) {
-                  idied = true;
-              } else {
-                  this.y = (sectorWidth - 1);
-                  this.sy--;
-              }
-          }
-          */
+            /* TO-DO WIP */
+
+            let new_sx = this.sx;
+            let new_sy = this.sy;
+            let new_x = this.x;
+            let new_y = this.y;
+
+            const SXtoEast = (this.x > sectorWidth);
+            const SXtoWest = (this.x < 0);
+            const SYtoNorth = (this.y < 0);
+            const SYtoSouth = (this.y > sectorWidth);
+            if (SXtoEast) { // check each edge of the 4 they could cross.
+                new_x = 1;
+                new_sx = (this.sx + 1 + mapSz) % mapSz;
+            } else if (SYtoSouth) {
+                if (this.sy == mapSz - 1) {
+                    idied = true;
+                } else {
+                    new_y = 1;
+                    new_sy = this.sy + 1;
+                }
+            } else if (SXtoWest) {
+                new_x = (sectorWidth - 1);
+                new_sx = (this.sx - 1 + mapSz) % mapSz;
+            } else if (SYtoNorth) {
+                if (this.sy == 0) {
+                    idied = true;
+                } else {
+                    new_y = (sectorWidth - 1);
+                    new_sy = this.sy - 1;
+                }
+            }
+            /**/
 
             if (idied) this.die();
-            else {
+            else if (SXtoEast || SXtoWest || SYtoNorth || SYtoSouth) {
                 // TO-DO OLD
-                this.die(); // TO-DO SWITCH SO IT FIRES BEYOND THE SECTORS
-                /* TO-DO WIP
-              let startX = -1;
-              let endX = 1;
-              let startY = -1;
-              let endY = 1;
-              let UstartX = -1;
-              let UendX = 1;
-              let UstartY = -1;
-              let UendY = 1;
-              let CstartX = -1;
-              let CendX = 1;
-              let CstartY = -1;
-              let CendY = 1;
-              // We send an update message to our neighbours
-              if (SYtoNorth) {
-                  startY = 1;
-                  endY = 1;
-                  UstartY = 0;
-                  UendY = -1;
-                  CstartY = -1;
-                  CendY = -1;
-              } else if (SYtoSouth) {
-                  startY = -1;
-                  endY = -1;
-                  UstartY = 1;
-                  UendY = 0;
-                  CstartY = 1;
-                  CendY = 1;
-              } else if (SXtoWest) {
-                  startX = 1;
-                  endX = 1;
-                  UstartX = 0;
-                  UendX = 1;
-                  CstartX = -1;
-                  CendX = -1;
-              } else if (SXtoEast) {
-                  startX = -1;
-                  endX = -1;
-                  UstartX = -1;
-                  UendX = 0;
-                  CstartX = 1;
-                  CendX = 1;
-              }
-              // First, we delete the ones on the back sectors
-              apply9SectorCall(sendAllSector, `delBullet`, { id: this.id }, old_sx, old_sy, undefined, undefined, undefined, startX, startY, endX, endY);
-              // Then we update those on the sides
-              const delta = {sx: this.sx, sy: this.sy, x: this.x, y: this.y};
-              apply9SectorCall(sendAllSector, `bullet_update`, {delta: delta, id: this.id}, this.sx, this.sy, undefined, undefined, undefined, UstartX, UstartY, UendX, UendY);
-              // Then we create entries for the front sectors
-              apply9SectorCall(sendAllSector, `newBullet`, { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color, tick: this.time }, this.sx, this.sy, undefined, undefined, undefined, CstartX, CstartY, CendX, CendY);
-              */
+                // this.die(); // TO-DO SWITCH SO IT FIRES BEYOND THE SECTORS
+                /* TO-DO WIP */
+                const old_sx = this.sx;
+                const old_sy = this.sy;
+                delete bullets[this.sy][this.sx][this.id];
+                this.sx = new_sx;
+                this.sy = new_sy;
+                this.x = new_x;
+                this.y = new_y;
+                bullets[this.sy][this.sx][this.id] = this;
+                let startX = -1;
+                let endX = 1;
+                let startY = -1;
+                let endY = 1;
+                let UstartX = -1;
+                let UendX = 1;
+                let UstartY = -1;
+                let UendY = 1;
+                let CstartX = -1;
+                let CendX = 1;
+                let CstartY = -1;
+                let CendY = 1;
+                // We send an update message to our neighbours
+                if (SYtoNorth) {
+                    startY = 1;
+                    endY = 1;
+                    UstartY = 0;
+                    UendY = -1;
+                    CstartY = -1;
+                    CendY = -1;
+                } else if (SYtoSouth) {
+                    startY = -1;
+                    endY = -1;
+                    UstartY = 1;
+                    UendY = 0;
+                    CstartY = 1;
+                    CendY = 1;
+                } else if (SXtoWest) {
+                    startX = 1;
+                    endX = 1;
+                    UstartX = 0;
+                    UendX = 1;
+                    CstartX = -1;
+                    CendX = -1;
+                } else if (SXtoEast) {
+                    startX = -1;
+                    endX = -1;
+                    UstartX = -1;
+                    UendX = 0;
+                    CstartX = 1;
+                    CendX = 1;
+                }
+                // First, we delete the ones on the back sectors
+                apply9SectorCall(sendAllSector, `delBullet`, { id: this.id }, old_sx, old_sy, undefined, undefined, undefined, startX, startY, endX, endY);
+                // Then we update those on the sides
+                const delta = { sx: this.sx, sy: this.sy, x: this.x, y: this.y };
+                apply9SectorCall(sendAllSector, `bullet_update`, { delta: delta, id: this.id }, this.sx, this.sy, undefined, undefined, undefined, UstartX, UstartY, UendX, UendY);
+                // Then we create entries for the front sectors
+                apply9SectorCall(sendAllSector, `newBullet`, { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color, tick: this.time }, this.sx, this.sy, undefined, undefined, undefined, CstartX, CstartY, CendX, CendY);
+                /**/
             }
         }
         for (const id in bases[this.sy][this.sx]) {

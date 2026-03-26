@@ -194,9 +194,9 @@ global.maxShipAgility = -1000;
 for (const i in ships) {
     const ship = ships[i];
     if (ship.thrust > maxShipThrust) maxShipThrust = ship.thrust;
-    if (ship.capacity > maxShipCapacity && i != 17) maxShipCapacity = ship.capacity;
+    if (ship.capacity > maxShipCapacity && (ship.capacity < 80000)) maxShipCapacity = ship.capacity;
     if (ship.agility > maxShipAgility) maxShipAgility = ship.agility;
-    if (ship.health > maxShipHealth) maxShipHealth = ship.health;
+    if (ship.health > maxShipHealth && (ship.health < 10000)) maxShipHealth = ship.health;
 }
 
 for (const j in wepns) {

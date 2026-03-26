@@ -73,7 +73,7 @@ class Player {
         this.speed = 0;
         this.driftAngle = 0;
 
-        this.money = 8000; // 9999999999999; //TO-DO 8000;
+        this.money = 12000; // 9999999999999; //TO-DO 8000;
         this.kills = 0;
         this.killStreakTimer = -1;
         this.killStreak = 0;
@@ -862,7 +862,8 @@ class Player {
 
             const bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
             bullets[this.sy][this.sx][r] = bullet;
-            sendAllSector(`sound`, { file: (currWep == 5 || currWep == 6 || currWep == 39) ? `minigun` : `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+            apply9SectorCall(sendAllSector, `sound`, { file: (currWep == 5 || currWep == 6 || currWep == 39) ? `minigun` : `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+            // sendAllSector(`sound`, { file: (currWep == 5 || currWep == 6 || currWep == 39) ? `minigun` : `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
         }
     }
 
@@ -871,7 +872,8 @@ class Player {
         const bAngle = this.angle;
         const missile = new Missile(this, r, aWeapon, bAngle);
         missiles[this.sy][this.sx][r] = missile;
-        sendAllSector(`sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMissile () {
@@ -882,14 +884,16 @@ class Player {
         const r = Math.random();
         const orb = new Orb(this, r, this.weapons[this.equipped]);
         orbs[this.sy][this.sx][r] = orb;
-        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMineSpecific (aWeapon) {
         const r = Math.random();
         const mine = new Mine(this, r, aWeapon);
         mines[this.sy][this.sx][r] = mine;
-        sendAllSector(`mine`, { x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `mine`, { x: this.x, y: this.y }, this.sx, this.sy);
+        // sendAllSector(`mine`, { x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMine () {
@@ -1004,7 +1008,8 @@ class Player {
                     const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
                     beams[this.sy][this.sx][reB] = beameB2;
                     this.dmg(-73, this);
-                    sendAllSector(`sound`, { file: `assimilation`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
+                    apply9SectorCall(sendAllSector, `sound`, { file: `assimilation`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
+                    // sendAllSector(`sound`, { file: `assimilation`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
                 }
             }
         }
@@ -1014,8 +1019,8 @@ class Player {
             nearBFriendly.unassimilate(); // Quickly cures the assimilation
             nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
         }
-
-        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
     }
 
     findBeamTarget (that, wep, newy, newx, lsy, lsx, origin, restricted, oldNearP) {
@@ -1080,7 +1085,6 @@ class Player {
 
         let wep = this.weapons[this.equipped];
         let nearP = this.apply9SectorEffect(this.findBeamTarget, wep, true, origin, restricted, true); // target, which we will compute
-        // let nearP = this.apply9SectorEffect(this.findBeamTarget, wep, true, origin, restricted, true, 0, 0, 0, 0); // TO-DO temporarily disabled cross-sector beams
         if (nearP == 0) return;
 
         let nearPdOld = -1; // Unachievable
@@ -1103,17 +1107,20 @@ class Player {
         const r = Math.random();
         const beam = new Beam(this, r, this.weapons[this.equipped], nearP, origin);
         beams[this.sy][this.sx][r] = beam;
-        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
     }
 
     shootBlast (currWep) {
         const r = Math.random();
         const blast = new Blast(this, r, currWep);
         blasts[this.sy][this.sx][r] = blast;
-        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     async die (b) {
+        apply9SectorCall(sendAllSector, `sound`, { file: (this.ship < 9 ? `boom` : `bigboom`), sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
     }
 
     dmg (d, origin) {

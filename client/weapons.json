@@ -119,8 +119,8 @@
     },
     "9": {
       "name": "Hadron Beam",
-      "range": 135,
-      "damage": 80,
+      "range": 250,
+      "damage": 95,
       "speed": -1,
       "charge": 50,
       "price": 30000,
@@ -185,11 +185,11 @@
     "14": {
       "name": "Torpedo",
       "range": 5000,
-      "damage": 15,
-      "speed": 180,
-      "charge": 30,
+      "damage": 25,
+      "speed": 192,
+      "charge": 25,
       "price": 18000,
-      "ammo": 15,
+      "ammo": 16,
       "level": 5,
       "type": "Missile",
       "bot": true,
@@ -379,12 +379,12 @@
     },
     "29": {
       "name": "Warp Drive",
-      "range": -1,
+      "range": 716,
       "damage": -1,
       "speed": 716,
-      "charge": 80,
+      "charge": 50,
       "price": 150000,
-      "ammo": 2,
+      "ammo": 16,
       "level": 7,
       "type": "Misc",
       "bot": false,
@@ -749,7 +749,7 @@
   ],
   "ships": [
     {
-      "thrust": 0.7,
+      "thrust": 1,
       "health": 80,
       "agility": 1.5,
       "width": 64,
@@ -758,7 +758,7 @@
       "capacity": 6000
     },
     {
-      "thrust": 0.7,
+      "thrust": 1.2,
       "health": 100,
       "agility": 1.75,
       "width": 64,
@@ -767,7 +767,7 @@
       "capacity": 8000
     },
     {
-      "thrust": 0.6,
+      "thrust": 1.0,
       "health": 120,
       "agility": 0.85,
       "width": 64,
@@ -776,7 +776,7 @@
       "capacity": 15000
     },
     {
-      "thrust": 0.8,
+      "thrust": 1.75,
       "health": 60,
       "agility": 1.9,
       "width": 64,
@@ -785,8 +785,8 @@
       "capacity": 3000
     },
     {
-      "thrust": 0.6,
-      "health": 100,
+      "thrust": 1.05,
+      "health": 120,
       "agility": 1.9,
       "width": 64,
       "price": 40000,
@@ -794,8 +794,8 @@
       "capacity": 2500
     },
     {
-      "thrust": 0.52,
-      "health": 120,
+      "thrust": 0.92,
+      "health": 222,
       "agility": 1.3,
       "width": 64,
       "price": 50000,
@@ -803,8 +803,8 @@
       "capacity": 5000
     },
     {
-      "thrust": 0.58,
-      "health": 90,
+      "thrust": 1,
+      "health": 182,
       "agility": 0.7,
       "width": 64,
       "price": 75000,
@@ -812,8 +812,8 @@
       "capacity": 4000
     },
     {
-      "thrust": 0.4,
-      "health": 130,
+      "thrust": 0.8,
+      "health": 350,
       "agility": 0.6,
       "width": 128,
       "price": 100000,
@@ -821,8 +821,8 @@
       "capacity": 4000
     },
     {
-      "thrust": 0.5,
-      "health": 100,
+      "thrust": 0.92,
+      "health": 330,
       "agility": 0.7,
       "width": 128,
       "price": 200000,
@@ -830,8 +830,8 @@
       "capacity": 3000
     },
     {
-      "thrust": 0.35,
-      "health": 130,
+      "thrust": 0.8,
+      "health": 500,
       "agility": 0.6,
       "width": 128,
       "price": 250000,
@@ -839,8 +839,8 @@
       "capacity": 8000
     },
     {
-      "thrust": 0.4,
-      "health": 120,
+      "thrust": 0.75,
+      "health": 510,
       "agility": 0.7,
       "width": 128,
       "price": 250000,
@@ -848,8 +848,8 @@
       "capacity": 5000
     },
     {
-      "thrust": 0.42,
-      "health": 110,
+      "thrust": 0.9,
+      "health": 410,
       "agility": 0.6,
       "width": 128,
       "weapons": 8,
@@ -857,8 +857,8 @@
       "capacity": 2000
     },
     {
-      "thrust": 0.25,
-      "health": 230,
+      "thrust": 0.5,
+      "health": 1030,
       "agility": 0.25,
       "width": 192,
       "price": 400000,
@@ -866,8 +866,8 @@
       "capacity": 50000
     },
     {
-      "thrust": 0.27,
-      "health": 180,
+      "thrust": 0.67,
+      "health": 666,
       "agility": 0.2,
       "width": 185,
       "price": 500000,
@@ -875,8 +875,8 @@
       "capacity": 10000
     },
     {
-      "thrust": 0.32,
-      "health": 140,
+      "thrust": 0.7,
+      "health": 540,
       "agility": 0.42,
       "width": 128,
       "price": 1000000,
@@ -884,8 +884,8 @@
       "capacity": 2000
     },
     {
-      "thrust": 0.26,
-      "health": 230,
+      "thrust": 0.49,
+      "health": 1300,
       "agility": 0.25,
       "width": 190,
       "price": 1000000,
@@ -893,8 +893,8 @@
       "capacity": 20000
     },
     {
-      "thrust": 0.38,
-      "health": 130,
+      "thrust": 0.86,
+      "health": 430,
       "agility": 0.32,
       "width": 128,
       "weapons": 10,
@@ -902,8 +902,8 @@
       "capacity": 5000
     },
     {
-      "thrust": 0.18,
-      "health": 430,
+      "thrust": 0.43,
+      "health": 1330,
       "agility": 0.25,
       "width": 192,
       "price": 2500000,
@@ -911,8 +911,8 @@
       "capacity": 999999
     },
     {
-      "thrust": 0.26,
-      "health": 260,
+      "thrust": 0.66,
+      "health": 760,
       "agility": 0.3,
       "width": 185,
       "price": 3000000,
@@ -920,8 +920,8 @@
       "capacity": 10000
     },
     {
-      "thrust": 0.34,
-      "health": 190,
+      "thrust": 0.68,
+      "health": 690,
       "agility": 0.42,
       "width": 128,
       "price": 5000000,
@@ -929,8 +929,8 @@
       "capacity": 5000
     },
     {
-      "thrust": 0.24,
-      "health": 390,
+      "thrust": 0.4,
+      "health": 1600,
       "agility": 0.2,
       "width": 190,
       "price": 8000000,
@@ -939,7 +939,7 @@
     },
     {
       "thrust": 0.2,
-      "health": 460,
+      "health": 2460,
       "agility": 0.17,
       "width": 200,
       "price": 10000000,
@@ -947,8 +947,8 @@
       "capacity": 18000
     },
     {
-      "thrust": 1.15,
-      "health": 110,
+      "thrust": 1.618,
+      "health": 128,
       "agility": 0.55,
       "width": 100,
       "price": 12000000,
@@ -956,8 +956,8 @@
       "capacity": 16500
     },
     {
-      "thrust": 0.1,
-      "health": 1000,
+      "thrust": 0.3,
+      "health": 2280,
       "agility": 0.1,
       "width": 185,
       "price": 12000000,
@@ -966,7 +966,7 @@
     },
     {
       "thrust": 0.02,
-      "health": 9000,
+      "health": 18000,
       "agility": 1.0,
       "width": 400,
       "price": 12000000,
@@ -974,8 +974,8 @@
       "capacity": 50000
     },
     {
-      "thrust": 0.66,
-      "health": 5.0,
+      "thrust": 1.3,
+      "health": 3.3,
       "agility": 1.0,
       "width": 48,
       "price": 12000000,

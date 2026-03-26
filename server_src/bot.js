@@ -153,6 +153,7 @@ class Bot extends Player {
         if (b === undefined) {
             return;
         }
+        apply9SectorCall(sendAllSector, `sound`, { file: (this.ship < 9 ? `boom` : `bigboom`), sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
         const diff = 0.02 * this.experience;
         if (b.type !== `Vortex`) {
             // drop a package

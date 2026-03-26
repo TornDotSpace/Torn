@@ -60,7 +60,9 @@ class Asteroid {
                 const p = players[this.sy][this.sx][i];
                 if (squaredDist(p, this) < square(32 + ships[p.ship].width) / 10) { // on collision,
                     p.dmg(5 * Math.hypot(p.vx - this.vx, p.vy - this.vy), this); // damage proportional to impact velocity
-                    sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+
+                    apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+                    // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
                     // bounce the player off. Same formula as used for mine impulse.
                     const mult = 200 / Math.max(1, 0.001 + Math.hypot(p.x - this.x, p.y - this.y));
@@ -76,7 +78,8 @@ class Asteroid {
                 const b = bases[this.sy][this.sx][id];
                 if (b != 0 && b.baseType != DEADBASE && squaredDist(this, b) < 3686.4) { // collision with base
                     b.dmg(10 * Math.hypot(this.vx, this.vy), this);
-                    sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+                    apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+                    // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
                     this.die(b);
                 }
             }
@@ -145,6 +148,7 @@ class Asteroid {
     // Bugfix for ion beam destroying multiple times
         this.die = function () { };
 
+        apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete asts[this.sy][this.sx][this.id];
         if (b == 0) return;
 
@@ -152,7 +156,7 @@ class Asteroid {
             switch (this.metal) {
                 case 0:
                     b.owner.iron += this.maxHealth;
-                    if (b.owner.platinum + b.owner.iron + b.owner.copper + b.owner.silver > b.owner.capacity) { // TODO represent player.ores as an array to make this much less stupid
+                    if (b.owner.platinum + b.owner.iron + b.owner.copper + b.owner.silver > b.owner.capacity) { // TO-DO represent player.ores as an array to make this much less stupid
                         b.owner.iron = b.owner.capacity - (b.owner.platinum + b.owner.copper + b.owner.silver);
                         if (b.owner.strongLocal !== undefined) b.owner.strongLocal(`Cargo Bay Full`, b.owner.x, b.owner.y + 256);
                     }
@@ -186,8 +190,9 @@ class Asteroid {
         let expGained = 1;
         if (b.owner.type === `Player`) expGained = b.owner.rank < 10 ? 2 - b.owner.rank / 5 : 0;
         if (b.owner.type === `Player` || b.owner.type === `Base`) b.owner.spoils(`experience`, expGained);
-        sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
-        delete asts[this.sy][this.sx][this.id];
+
+        // sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        // delete asts[this.sy][this.sx][this.id];
     }
 
     dmg (d, origin) {

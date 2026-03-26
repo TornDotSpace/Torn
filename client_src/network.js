@@ -127,21 +127,14 @@ socket.on(`update`, (data) => {
     }
 
     if (delta.base !== undefined) {
-        for (const id in delta.bases) {
-            base_update(delta.bases[id]);
-        }
-        // base_update(delta.base);
-    }
-
-    if (delta.bases !== undefined) { // AN ADDITION
-        for (const id in delta.bases) {
-            base_update(delta.bases[id]);
+        for (let index = 0; index < delta.base.length; ++index) {
+            base_update(delta.base[index]);
         }
     }
 
-    updateBooms(); // TO-DO
-    updateNotes(); // TO-DO
-    updateBullets(); // TO-DO
+    updateBooms();
+    updateNotes();
+    updateBullets();
     updateTrails(); // TO-DO
     empTimer--;
     gyroTimer--;
@@ -323,13 +316,15 @@ function blast_update (data) {
 }
 
 function base_update (data) {
-    if (data === undefined || data.delta === undefined) return;
-    const delta = data.delta;
+    if (basesInfo !== undefined && basesInfo !== 0 && data !== undefined) {
+        const id = data.id;
+        const delta = data.delta;
 
-    if (basesInfo === 0) return;
-
-    for (const d in delta) {
-        basesInfo[d] = delta[d];
+        if (id !== undefined && basesInfo[id] !== undefined && basesInfo[id] !== 0 && delta !== undefined) {
+            for (const d in delta) {
+                basesInfo[id][d] = delta[d];
+            }
+        }
     }
 }
 
@@ -481,33 +476,29 @@ socket.on(`sound`, (data) => {
     let currSX;
     let currSY;
     if (!(Object.is(data.sx, null) || Object.is(data.sx, undefined))) {
-        // console.log("TO-DO WE HAVE SX - ", data.sx);
         extraX = obtainSXDrift(data.sx, sx);
         currSX = data.sx;
     } else currSX = sx;
     if (!(Object.is(data.sy, null) || Object.is(data.sy, undefined))) {
         extraY = obtainSYDrift(data.sy, sy);
         currSY = data.sy;
-        // console.log("TO-DO WE HAVE SY - ", data.sy);
     } else currSY = sy;
 
-    console.log(`TO-DO currSX = `, currSX, ` currSY = `, currSY);
     if (data.file.includes(`boom`)) {
         if (data.file === `bigboom`) flash = 1;
         booms[Math.random()] = { x: data.x, y: data.y, sx: currSX, sy: currSY, time: 0, shockwave: data.file === `bigboom` };
         for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: data.x, y: data.y, sx: currSX, sy: currSY, angle: Math.random() * 6.28, time: -1, dx: data.dx / 1.5, dy: data.dy / 1.5 };
     }
 
-    const dx = (px - data.x + extraX) / 1000;
-    const dy = (py - data.y + extraY) / 1000;
+    const dx = (px - data.x + extraX) / 500;
+    const dy = (py - data.y + extraY) / 500;
     const dist = Math.hypot(Math.abs(dx) + 10, Math.abs(dy) + 10);
     let vol = 0.6 / dist;
     if (data.file === `hyperspace`) {
         hyperdriveTimer = 200;
         vol = 2;
     }
-    // TO-DO if (!data.file.includes(`boom`) || (currSX === sx && currSY === sy))
-    playAudio(data.file, vol);
+    if ((vol >= 1) || dist < sectorWidth) playAudio(data.file, vol);
 });
 socket.on(`equip`, (data) => {
     scroll = data.scroll;

@@ -28,7 +28,8 @@ class Package {
 
     tick () {
         if (this.time++ > 25 * 60) { // 1 minute despawn
-            sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+            apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+            // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
             delete packs[this.sy][this.sx][this.id];
         }
         for (const i in players[this.sy][this.sx]) { // loop for collision

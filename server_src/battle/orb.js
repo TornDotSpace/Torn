@@ -144,7 +144,8 @@ class Orb {
     }
 
     die () {
-        sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
         delete orbs[this.sy][this.sx][this.id];
     }
 }

@@ -98,7 +98,7 @@ class Mine {
         this.x += this.vx;
         this.y += this.vy;
 
-        if (this.wepnID == 44) { // Campfire
+        if (this.wepnID !== undefined) { // (this.wepnID == 44) { // Campfire
             const old_sx = this.sx;
             const old_sy = this.sy;
             if (this.x > sectorWidth) { // check each edge of the 4 they could cross.
@@ -157,7 +157,8 @@ class Mine {
         }
 
         if (playerFound) {
-            sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+            apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+            // sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
             this.time += 25 * 3;
         }
     }
@@ -184,7 +185,8 @@ class Mine {
                 beams[this.sy][this.sx][r] = beam;
             }
         }
-        sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     collideWithGuns () { // Guns will make enemy mines explode and vice-versa, but it'll take a while to kill them.
@@ -296,7 +298,8 @@ class Mine {
                 p.dmg(this.dmg / 10, this); // if i'm in range of a player on explosion, damage them
             }
         }
-        sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete mines[this.sy][this.sx][this.id];
     }
 }

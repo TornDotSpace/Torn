@@ -1738,11 +1738,11 @@ global.rSelfCloaked = function () {
     ctx.stroke();
 };
 global.rBases = function () {
-    if (inTheVoid()) return; // Probably just docked
-    if (basesInfo !== undefined) { // render bases
+    // if (inTheVoid()) return; // Probably just docked
+    if (basesInfo !== undefined && basesInfo !== 0) { // render bases
         for (const id in basesInfo) {
             const aBase = basesInfo[id];
-            if (aBase === undefined || aBase === 0 || aBase == null || typeof aBase !== `object`) continue;
+            if (aBase === undefined || aBase === 0 || aBase === null || typeof aBase !== `object`) continue;
             const image = colorSelect(aBase.color, Img.rss, Img.bss, Img.gss);
             let pw = image.width;
             let ph = image.height;

@@ -423,7 +423,7 @@ function createPlanet (name, sx, sy) {
         planet.y = Math.floor(Math.random() * sectorWidth * 15 / 16 + sectorWidth / 32);
     }
     planets[sy][sx] = planet;
-    planetPack[sy][sx][randA] = planet; // TO-DO addition because it seems to be duplicated
+    planetPack[sy][sx][randA] = planet; // Addition because it seems to be duplicated
 }
 function endRaid () {
     let winners = `yellow`;
@@ -446,16 +446,16 @@ function get9SectorDict (dictionar, mysx, mysy, origX = -1, origY = -1, endX = 1
     let combinedDict = {};
     for (let asx = origX; asx <= endX; asx++) { // Sectors on X loop
         // const newX = myx - (asx * sectorWidth);
-        let x = (mysx + asx) % mapSz;
-        while (x < 0) {
-            x = (x + mapSz) % mapSz;
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
         }
         for (let asy = origY; asy <= endY; asy++) { // Sectors on Y do not loop
             const syReal = (mysy + asy);
             if (syReal < mapSz && syReal >= 0) {
                 // const newY = myy - (asy * sectorWidth);
-                if (wedebug) console.log(`STEP COORD (${syReal}, ${x} -> ${dictionar[syReal][x]} combinedDict before this: ${combinedDict} and its keys are ${Object.keys(combinedDict)}`);
-                combinedDict = Object.assign({}, combinedDict, dictionar[syReal][x]);
+                if (wedebug) console.log(`STEP COORD (${syReal}, ${sxReal} -> ${dictionar[syReal][sxReal]} combinedDict before this: ${combinedDict} and its keys are ${Object.keys(combinedDict)}`);
+                combinedDict = Object.assign({}, combinedDict, dictionar[syReal][sxReal]);
             }
         }
     }
@@ -468,7 +468,6 @@ function phase1y2update () {
             for (const i in vortPack[y][x]) {
                 if (vorts[y][x][i] === undefined) {
                     // Send delete
-                    // sendAllSector(`vort_delete`, i, x, y);
                     apply9SectorCall(sendAllSector, `vort_delete`, i, x, y, undefined, undefined, vorts);
 
                     delete vortPack[y][x][i];
@@ -480,7 +479,6 @@ function phase1y2update () {
             for (const i in playerPack[y][x]) {
                 if (players[y][x][i] === undefined) {
                     // Send delete
-                    // sendAllSector(`player_delete`, i, x, y);  //TO-DO
                     apply9SectorCall(sendAllSector, `player_delete`, i, x, y, undefined, undefined, players);
 
                     delete playerPack[y][x][i];
@@ -491,7 +489,6 @@ function phase1y2update () {
             for (const i in minePack[y][x]) {
                 if (mines[y][x][i] === undefined) {
                     // Send delete
-                    // sendAllSector(`mine_delete`, i, x, y);
                     apply9SectorCall(sendAllSector, `mine_delete`, i, x, y, undefined, undefined, mines);
 
                     delete minePack[y][x][i];
@@ -501,7 +498,6 @@ function phase1y2update () {
 
             for (const i in missilePack[y][x]) {
                 if (missiles[y][x][i] === undefined) {
-                    // sendAllSector(`missile_delete`, i, x, y);
                     apply9SectorCall(sendAllSector, `missile_delete`, i, x, y, undefined, undefined, missiles);
 
                     delete missilePack[y][x][i];
@@ -511,7 +507,6 @@ function phase1y2update () {
 
             for (const i in orbPack[y][x]) {
                 if (orbs[y][x][i] === undefined) {
-                    // sendAllSector(`orb_delete`, i, x, y);
                     apply9SectorCall(sendAllSector, `orb_delete`, i, x, y, undefined, undefined, orbs);
 
                     delete orbPack[y][x][i];
@@ -522,7 +517,6 @@ function phase1y2update () {
             for (const i in blastPack[y][x]) {
                 if (blasts[y][x][i] === undefined) {
                     // Send delete
-                    // sendAllSector(`blast_delete`, i, x, y);
                     apply9SectorCall(sendAllSector, `blast_delete`, i, x, y, undefined, undefined, blasts);
 
                     delete blastPack[y][x][i];
@@ -532,7 +526,6 @@ function phase1y2update () {
 
             for (const i in beamPack[y][x]) {
                 if (beams[y][x][i] === undefined) {
-                    // sendAllSector(`beam_delete`, i, x, y);
                     apply9SectorCall(sendAllSector, `beam_delete`, i, x, y, undefined, undefined, beams);
 
                     delete beamPack[y][x][i];
@@ -543,7 +536,6 @@ function phase1y2update () {
             for (const i in packPack[y][x]) {
                 if (packs[y][x][i] === undefined) {
                     // Send delete
-                    // sendAllSector(`pack_delete`, i, x, y);
                     apply9SectorCall(sendAllSector, `pack_delete`, i, x, y, undefined, undefined, packs);
 
                     delete packPack[y][x][i];
@@ -553,7 +545,6 @@ function phase1y2update () {
 
             for (const i in astPack[y][x]) {
                 if (asts[y][x][i] === undefined) {
-                    // sendAllSector(`asteroid_delete`, i, x, y);
                     apply9SectorCall(sendAllSector, `asteroid_delete`, i, x, y, undefined, undefined, asts);
 
                     delete astPack[y][x][i];
@@ -561,12 +552,13 @@ function phase1y2update () {
                 }
             }
 
-            if (basePack[y][x] !== undefined && bases[y][x] === 0) {
+            if (basePack[y][x] !== undefined && bases[y][x] !== 0) {
                 for (const id in basePack[y][x]) {
-                    // sendAllSector(`base_delete`, id, x, y);
-                    apply9SectorCall(sendAllSector, `base_delete`, i, x, y, undefined, undefined, bases);
+                    if (bases[y][x][id] === undefined || bases[y][x][id] === 0) {
+                        apply9SectorCall(sendAllSector, `base_delete`, i, x, y, undefined, undefined, bases);
 
-                    delete basePack[y][x][id];
+                        delete basePack[y][x][id];
+                    }
                 }
             }
         }
@@ -597,9 +589,7 @@ function phase1y2update () {
                     // Store pack for joining clients & delta calculation
                     // updateStatus: 0 means created, updateStatus: 1 finished creating, updateStatus: 2 need to update
                     pack = playerPack[y][x][i] = { disguise: player.disguise, trail: player.trail, shield: player.shield, empTimer: player.empTimer, hasPackage: player.hasPackage, id: player.id, ship: player.ship, speed: player.speed, maxHealth: player.maxHealth, color: player.color, x: player.x, y: player.y, name: player.name, health: player.health, angle: player.angle, driftAngle: player.driftAngle, sx: player.sx, sy: player.sy, updateStatus: 0, updatedDelta: undefined };
-                    // apply9SectorCall(sendAllSector, `player_delete`, pack, x, y);
-                    apply9SectorCall(sendAllSector, `player_create`, pack, x, y); // TO-DO , startX = -1, startY = -1, endX = 1, endY = 1
-                    // sendAllSector(`player_create`, pack, x, y); // TO-DO maybe affects - TO-DO maybe apply the 9 effect thing on here?
+                    apply9SectorCall(sendAllSector, `player_create`, pack, x, y);
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;
             }
             notBotCount[y][x] = notBotPlayer;
@@ -614,12 +604,11 @@ function phase1y2update () {
                     // Store pack for joining clients & delta calculation
                     pack = vortPack[y][x][i] = { x: vort.x, y: vort.y, size: vort.size, isWorm: vort.isWorm, sx: vort.sx, sy: vort.sy, updateStatus: 0, updatedDelta: undefined };
                     // Send create
-                    apply9SectorCall(sendAllSector, `vort_create`, { pack: pack, id: i }, x, y); // TO-DO
-                    // sendAllSector(`vort_create`, { pack: pack, id: i }, x, y); // TO-DO maybe affects
+                    apply9SectorCall(sendAllSector, `vort_create`, { pack: pack, id: i }, x, y);
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;
             }
 
-            for (const i in bullets[y][x]) bullets[y][x][i].tick(); // This one has no apparent extra equivalent, possible TO-DO for check the AllSector stuff
+            for (const i in bullets[y][x]) bullets[y][x][i].tick();
 
             for (const i in mines[y][x]) {
                 const mine = mines[y][x][i];
@@ -632,11 +621,10 @@ function phase1y2update () {
                     pack = minePack[y][x][i] = { wepnID: mine.wepnID, color: mine.color, x: mine.x, y: mine.y, angle: mine.angle, sx: mine.sx, sy: mine.sy, updateStatus: 0, updatedDelta: undefined };
                     // Send create
                     apply9SectorCall(sendAllSector, `mine_create`, { pack: pack, id: i }, x, y);
-                    // sendAllSector(`mine_create`, { pack: pack, id: i }, x, y); // TO-DO Maybe affects
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;
             }
 
-            planets[y][x].tick(); // This one has no apparent extra equivalent, possible TO-DO for check its tick stuff
+            planets[y][x].tick(); // This one has no apparent extra equivalent, possible TO-DO for checking its tick stuff
 
             // We only pulse these every 5 ticks
             if (tick % 5 == 0) {
@@ -651,7 +639,6 @@ function phase1y2update () {
                         pack = packPack[y][x][i] = { x: boon.x, y: boon.y, type: boon.type, sx: boon.sx, sy: boon.sy, updateStatus: 0, updatedDelta: undefined };
                         // Send create
                         apply9SectorCall(sendAllSector, `pack_create`, { pack: pack, id: i }, x, y);
-                        // sendAllSector(`pack_create`, { pack: pack, id: i }, x, y); // TO-DO Maybe affects
                     } else if (pack.updateStatus == 0) pack.updateStatus = 1;
                 }
             }
@@ -668,7 +655,6 @@ function phase1y2update () {
                     pack = beamPack[y][x][i] = { time: beam.time, wepnID: beam.wepnID, bx: beam.origin.x, by: beam.origin.y, ex: beam.enemy.x, ey: beam.enemy.y, sx: beam.sx, sy: beam.sy, updateStatus: 0, updatedDelta: undefined };
                     // Send create
                     apply9SectorCall(sendAllSector, `beam_create`, { pack: pack, id: i }, x, y);
-                    // sendAllSector(`beam_create`, { pack: pack, id: i }, x, y); // TO-DO Maybe affects
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;
             }
 
@@ -682,7 +668,6 @@ function phase1y2update () {
                 if (pack === undefined) {
                     pack = blastPack[y][x][i] = { time: blast.time, wepnID: blast.wepnID, bx: blast.bx, by: blast.by, angle: blast.angle, sx: blast.sx, sy: blast.sy, updateStatus: 0, updatedDelta: undefined };
                     apply9SectorCall(sendAllSector, `blast_create`, { pack: pack, id: i }, x, y);
-                    // sendAllSector(`blast_create`, { pack: pack, id: i }, x, y);  // TO-DO Maybe affects
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;
             }
 
@@ -698,7 +683,6 @@ function phase1y2update () {
                     if (packS === undefined || packS[id] === undefined || typeof packS[id] !== `object`) {
                         pack = basePack[y][x][id] = { id: base.id, baseType: base.baseType, maxHealth: base.maxHealth, health: base.health, color: base.color, x: base.x, y: base.y, angle: base.angle, name: base.name, sx: base.sx, sy: base.sy, updateStatus: 0, updatedDelta: undefined };
                         apply9SectorCall(sendAllSector, `base_create`, pack, x, y);
-                        // sendAllSector(`base_create`, pack, x, y);  // TO-DO Maybe affects
                     } else {
                         pack = packS[id];
                         if (pack.updateStatus == 0) pack.updateStatus = 1;
@@ -716,7 +700,6 @@ function phase1y2update () {
                 if (pack === undefined) {
                     pack = astPack[y][x][i] = { metal: ast.metal, id: i, x: ast.x, y: ast.y, angle: ast.angle, health: ast.health, maxHealth: ast.maxHealth, sx: ast.sx, sy: ast.sy, updateStatus: 0, updatedDelta: undefined };
                     apply9SectorCall(sendAllSector, `asteroid_create`, pack, x, y);
-                    // sendAllSector(`asteroid_create`, pack, x, y);  // TO-DO Maybe affects
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;
             }
             astCount[y][x] = astCt;
@@ -731,7 +714,6 @@ function phase1y2update () {
                 if (pack === undefined) {
                     pack = orbPack[y][x][j] = { wepnID: orb.wepnID, x: orb.x, y: orb.y, sx: orb.sx, sy: orb.sy, updateStatus: 0, updatedDelta: undefined };
                     apply9SectorCall(sendAllSector, `orb_create`, { pack: pack, id: j }, x, y);
-                    // sendAllSector(`orb_create`, { pack: pack, id: j }, x, y);
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;
             }
 
@@ -745,7 +727,6 @@ function phase1y2update () {
                 if (pack === undefined) {
                     pack = missilePack[y][x][j] = { wepnID: missile.wepnID, x: missile.x, y: missile.y, angle: missile.angle, sx: missile.sx, sy: missile.sy, updateStatus: 0, updatedDelta: undefined };
                     apply9SectorCall(sendAllSector, `missile_create`, { pack: pack, id: j }, x, y);
-                    // sendAllSector(`missile_create`, { pack: pack, id: j }, x, y);
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;
             }
         }
@@ -753,9 +734,9 @@ function phase1y2update () {
 }
 
 function phase3update () {
-    for (let y = 0; y < mapSz; y++) { // TO-DO MAYBE THESE CAN BE FUSED WITH ABOVE LOOP? Actually probably not since some of the ticks could affect neighboring sectors
+    for (let y = 0; y < mapSz; y++) { // While some of these could be probably be fused with above loop, some of the ticks could affect neighboring sectors
         for (let x = 0; x < mapSz; x++) {
-            for (const i in players[y][x]) { // TO-DO leave players for last also TO-DO maybe some of these can be fused with the previous for loop
+            for (const i in players[y][x]) {
                 const player = players[y][x][i];
                 let pack = playerPack[y][x][i];
                 // Check for creation
@@ -768,13 +749,13 @@ function phase3update () {
                     // Compute delta
                     for (const key in pack) { // Theoretically if player was created no update is needed
                         if (key !== `updateStatus` && key !== `updatedDelta` && pack[key] !== player[key]) {
-                            if (key === `sx` || key === `sy`) sectorUp = true; // TO-DO A TEST
+                            // if (key === `sx` || key === `sy`) sectorUp = true; // TO-DO A TEST
                             delta[key] = pack[key] = player[key];
                             need_update = true;
                         }
                     }
                     if (need_update) {
-                        if (sectorUp == true) apply9SectorCall(sendAllSector, `player_create`, pack, x, y); // TO-DO TEST
+                        // if (sectorUp == true) apply9SectorCall(sendAllSector, `player_create`, pack, x, y); // TO-DO TEST
                         pack.updateStatus = 2;
                         pack.updatedDelta = { delta: delta, id: i };
                     } else if (pack.updateStatus != 0) {
@@ -1063,7 +1044,7 @@ function phase3update () {
 function phase4update () {
     for (let y = 0; y < mapSz; y++) {
         for (let x = 0; x < mapSz; x++) {
-            if (notBotCount[y][x] > 0) { // TO-DO since bots are not allowed to cloak, and bots do not receive any update message, we can optimize this phase into effectively only as many sector-filled players
+            if (notBotCount[y][x] > 0) { // Since bots are not allowed to cloak, and bots do not receive any update message, we can optimize this phase into effectively only as many sector-filled players
                 let gameState = {
                     vorts: [],
                     players: [],
@@ -1081,7 +1062,6 @@ function phase4update () {
                 const fullplayers = get9SectorDict(players, x, y);
                 const fullplayerPacks = get9SectorDict(playerPack, x, y);
                 const fullvorts = get9SectorDict(vortPack, x, y);
-                // TO-DO MAY NEED BULLETS HERE TOO
                 const fullmines = get9SectorDict(minePack, x, y);
                 const fullplanets = get9SectorDict(planetPack, x, y);
                 const fullpackPack = get9SectorDict(packPack, x, y);
@@ -1092,7 +1072,7 @@ function phase4update () {
                 const fullorbs = get9SectorDict(orbPack, x, y);
                 const fullmissiles = get9SectorDict(missilePack, x, y);
 
-                for (const i in players[y][x]) { // TO-DO players for last
+                for (const i in players[y][x]) {
                     const player = players[y][x][i];
                     let pack = playerPack[y][x][i];
                     if (!(pack === undefined)) {
@@ -1104,10 +1084,9 @@ function phase4update () {
 
                                 // TO-DO BELOW IS A COPIED ONE WHICH WAS COPIED FROM OLD UPDATE ONE
                                 player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: x, sy: y, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: get9SectorDict(packPack, x, y), vorts: get9SectorDict(vortPack, x, y), mines: get9SectorDict(minePack, x, y), missiles: get9SectorDict(missilePack, x, y), orbs: get9SectorDict(orbPack, x, y), blasts: get9SectorDict(blastPack, x, y), beams: get9SectorDict(beamPack, x, y), planets: get9SectorDict(planetPack, x, y), asteroids: get9SectorDict(astPack, x, y), players: get9SectorDict(playerPack, x, y), bases: get9SectorDict(basePack, x, y) });
-                                // player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: get9SectorDict(packPack, player.sx, player.sy), vorts: get9SectorDict(vortPack, player.sx, player.sy), mines: get9SectorDict(minePack, player.sx, player.sy), missiles: get9SectorDict(missilePack, player.sx, player.sy), orbs: get9SectorDict(orbPack, player.sx, player.sy), blasts: get9SectorDict(blastPack, player.sx, player.sy), beams: get9SectorDict(beamPack, player.sx, player.sy), planets: get9SectorDict(planetPack, player.sx, player.sy), asteroids: get9SectorDict(astPack, player.sx, player.sy), players: get9SectorDict(playerPack, player.sx, player.sy), bases: get9SectorDict(basePack, player.sx, player.sy) });
                             }
                         }
-                        if (pack.updateStatus == 2) { // TO-DO since bots are not allowed to cloak, we can do this
+                        if (pack.updateStatus == 2) { // Since bots are not allowed to cloak, we can do this
                             let cloak = false;
                             if (!player.isBot && pack.disguise > 0) {
                                 cloak = true;
@@ -1117,7 +1096,6 @@ function phase4update () {
                     }
                 }
 
-                // if (notBotCount[y][x] > 0) { // TO-DO since bots are not allowed to cloak and no updates are actually done, we can transform this phase into effectively only as many sector-filled players
                 // Update deltas for gameState
                 for (const i in fullplayerPacks) {
                     const pack = fullplayerPacks[i];
@@ -1197,7 +1175,6 @@ function phase4update () {
 
                 for (const i in fullbases) {
                     const pack = fullbases[i];
-
                     if (pack !== undefined) {
                         const upStat = pack.updateStatus;
                         const upDelta = pack.updatedDelta;
@@ -1260,7 +1237,7 @@ function phase4update () {
     }
 }
 
-function update () { // TO-DO updateNEW,  a WIP, FOR THE MOMENT STUFF IS NOT BEING DELETED PROPERLY REGARDING ASTEROIDS AND STUFF WHEN SWITCHING SECTORS - also sometimes client arrows are pointing ar red ships outside the sector but as if they were on our sector
+function update () {
     ops++;
     if (ops < 2) setTimeout(update, tickRate);
     tick++;
@@ -1320,7 +1297,7 @@ function update () { // TO-DO updateNEW,  a WIP, FOR THE MOMENT STUFF IS NOT BEI
     ops--;
 }
 
-function updateOLD () { // TO-DO MOVE TO updateOLD
+function updateOLD () { // Old update, considering a "fog of war".
     ops++;
     if (ops < 2) setTimeout(update, tickRate);
     tick++;
@@ -1371,7 +1348,7 @@ function updateOLD () { // TO-DO MOVE TO updateOLD
             let fullplayerPacks = undefined;
             let fullbases = undefined;
             */
-            for (const i in players[y][x]) { // TO-DO All these "[y][x]" were [y][x]
+            for (const i in players[y][x]) {
                 const player = players[y][x][i];
                 let pack = playerPack[y][x][i];
 
@@ -1410,7 +1387,7 @@ function updateOLD () { // TO-DO MOVE TO updateOLD
                         // }
                         // player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: fullpackPack, vorts: fullvorts, mines: fullmines, missiles: fullmissiles, orbs: fullorbs, blasts: fullblasts, beams: fullbeams, planets: fullplanets, asteroids: fullasteroids, players: fullplayers, bases: fullbases });
                         player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: get9SectorDict(packPack, player.sx, player.sy), vorts: get9SectorDict(vortPack, player.sx, player.sy), mines: get9SectorDict(minePack, player.sx, player.sy), missiles: get9SectorDict(missilePack, player.sx, player.sy), orbs: get9SectorDict(orbPack, player.sx, player.sy), blasts: get9SectorDict(blastPack, player.sx, player.sy), beams: get9SectorDict(beamPack, player.sx, player.sy), planets: get9SectorDict(planetPack, player.sx, player.sy), asteroids: get9SectorDict(astPack, player.sx, player.sy), players: get9SectorDict(playerPack, player.sx, player.sy), bases: get9SectorDict(basePack, player.sx, player.sy) });
-                        // TO-DO original below
+                        // Original, one-sector-view-only below
                         // player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: packPack[player.sy][player.sx], vorts: vortPack[player.sy][player.sx], mines: minePack[player.sy][player.sx], missiles: missilePack[player.sy][player.sx], orbs: orbPack[player.sy][player.sx], blasts: blastPack[player.sy][player.sx], beams: beamPack[player.sy][player.sx], planets: planetPack[player.sy][player.sx], asteroids: astPack[player.sy][player.sx], players: playerPack[player.sy][player.sx], bases: basePack[player.sy][player.sx] });
                     }
                     continue;
@@ -1426,7 +1403,7 @@ function updateOLD () { // TO-DO MOVE TO updateOLD
                 }
 
                 // Compute delta
-                for (const key in pack) { // TO-DO MAYBE IF HERE WE PLACE fullplayers...
+                for (const key in pack) {
                     if (pack[key] !== player[key]) {
                         delta[key] = pack[key] = player[key];
                         need_update = true;
@@ -1440,7 +1417,7 @@ function updateOLD () { // TO-DO MOVE TO updateOLD
                 }
 
                 if (!need_update) continue;
-                gameState.players.push({ delta: delta, id: i }); // TO-DO ALL OF THESE deltas need an update to consider the 9-sector effect thing now
+                gameState.players.push({ delta: delta, id: i });
             }
 
             for (const i in vorts[y][x]) {
@@ -1654,7 +1631,7 @@ function updateOLD () { // TO-DO MOVE TO updateOLD
                     }
 
                     if (need_updaterune) {
-                        // gameState.base = { delta: deltarune }; // TO-DO ORIGINAL
+                        // gameState.base = { delta: deltarune }; // original
                         gameState.base.push = { delta: deltarune, id: id };
                     }
                 }

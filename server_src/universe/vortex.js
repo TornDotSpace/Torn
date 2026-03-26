@@ -56,8 +56,8 @@ class Vortex {
             const p = players[this.sy][this.sx][i];
 
             // compute distance and angle to players
-            const dist = Math.pow(squaredDist(this, p), 0.25); // Math.pow(squaredGlobalDist(this, p, sectorWidth, mapSz), 0.25); // Math.pow(squaredDist(this, p), 0.25); TO-DO
-            const a = angleBetween(p, this); // angleGlobalBetween(p, this, sectorWidth, mapSz); // angleBetween(p, this);
+            const dist = Math.pow(squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz), 0.25); // Math.pow(squaredDist(this, p), 0.25); TO-DO
+            const a = angleGlobalBetween(p, this, sectorWidth, sectorWidth, mapSz); // angleBetween(p, this); TO-DO
             // then move them.
             let guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
             if (p.ship == 21 && !this.isWorm) guestMult = 0.45 * (-1 + (35 / dist)); // R21 ship gets pushed from a BH if too far, BUT IT'S STILL PULLED WITH FORCE IF TOO CLOSE. Reason this isn't an increment is because someone could get a GUEST at level 21, buy the ship, and then the old *=0.5 would actually be more OP than the old code.
@@ -80,8 +80,8 @@ class Vortex {
             for (const i in asts[this.sy][this.sx]) {
                 // const dist = Math.pow(squaredGlobalDist(this, i, sectorWidth, mapSz), 0.25);
                 const a = asts[this.sy][this.sx][i];
-                const d2 = squaredDist(this, a); // squaredGlobalDist(this, a, sectorWidth, mapSz); // squaredDist(this, a);
-                const ang = angleBetween(this, a); // angleGlobalBetween(this, a, sectorWidth, mapSz); // angleBetween(this, a);
+                const d2 = squaredGlobalDist(this, a, sectorWidth, sectorWidth, mapSz); // squaredDist(this, a); // TO-DO
+                const ang = angleGlobalBetween(this, a, sectorWidth, sectorWidth, mapSz); // angleBetween(this, a);
                 const vel = 0.005 * this.size / Math.log(d2);
                 a.vx += Math.cos(ang) * vel;
                 a.vy += Math.sin(ang) * vel;
@@ -145,7 +145,8 @@ class Vortex {
     }
 
     die () {
-        sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete vorts[this.sy][this.sx][this.id];
     }
 

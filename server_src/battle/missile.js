@@ -45,7 +45,7 @@ class Missile {
         this.move();
         this.timer++; // time needs to flow.
         if (this.distTravelled >= 10 * wepns[this.wepnID].range) this.die(); // out of range -> die
-        if (this.wepnID == 14) { // If torpedo... yeah we need a reason to make torpedo needed at such a high level with so little damage, ammo and recharge.
+        if (this.wepnID !== undefined) { // (this.wepnID == 14) { // If torpedo... yeah we need a reason to make torpedo needed at such a high level with so little damage, ammo and recharge.
             const old_sx = this.sx;
             const old_sy = this.sy;
             if (this.x > sectorWidth) { // check each edge of the 4 they could cross.
@@ -208,7 +208,8 @@ class Missile {
     }
 
     die () {
-        sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
         delete missiles[this.sy][this.sx][this.id];
     }
 }
