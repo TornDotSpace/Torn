@@ -166,12 +166,14 @@ global.sendTeam = function (color, out, data) { // send a socket.io message to a
     }
 };
 
-global.note = function (msg, x, y, sx, sy) { // a popup note in game that everone in the sector can see.
-    sendAllSector(`note`, { msg: msg, x: x, y: y, local: false }, sx, sy);
+global.note = function (msg, x, y, sx, sy, spread = true) { // a popup note in game that everyone in the sector can see. TO-DO REVISE STUFF
+    if (!spread) sendAllSector(`note`, { msg: msg, x: x, y: y, local: false, sx: sx, sy: sy }, sx, sy);
+    else apply9SectorCall(sendAllSector, `note`, { msg: msg, x: x, y: y, local: false, sx: sx, sy: sy }, sx, sy);
 };
 
-global.strong = function (msg, x, y, sx, sy) { // a bigger note
-    sendAllSector(`strong`, { msg: msg, x: x, y: y, local: false }, sx, sy);
+global.strong = function (msg, x, y, sx, sy, spread = false) { // a bigger note
+    if (!spread) sendAllSector(`strong`, { msg: msg, x: x, y: y, sx: sx, sy: sy, local: false }, sx, sy);
+    else apply9SectorCall(sendAllSector, `strong`, { msg: msg, x: x, y: y, sx: sx, sy: sy, local: false }, sx, sy);
 };
 
 global.parseBoolean = (s) => (s === `true`);

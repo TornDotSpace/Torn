@@ -82,10 +82,12 @@ class Missile {
         if (tick % 5 == 0 && this.locked == 0) {
             let closest = Number.MAX_SAFE_INTEGER;
             // search players
-            for (const i in players[this.sy][this.sx]) {
-                const player = players[this.sy][this.sx][i];
-                if (player.disguise > 0) continue;
-                const dist = squaredDist(player, this);
+
+            const fullplayers = get9SectorDict(players, this.sx, this.sy);
+            for (const i in fullplayers) {
+                const player = fullplayers[i];
+                if (player === undefined || player.disguise > 0) continue;
+                const dist = squaredGlobalDist(player, this, sectorWidth, sectorWidth, mapSz);
                 if ((player.color != this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked == 0 || dist < closest)) {
                     this.locked = player.id;
                     closest = dist;
@@ -94,20 +96,26 @@ class Missile {
             if (this.locked != 0) return;
 
             // check base
-            if (bases[this.sy][this.sx] != 0) {
-                for (const id in bases[this.sy][this.sx]) {
-                    if (bases[this.sy][this.sx][id].color !== this.color && bases[this.sy][this.sx][id].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx][id], this) < square(wepns[this.wepnID].range * 10)) {
-                        this.locked = bases[this.sy][this.sx][id].id;
-                        return;
+            const fullbases = get9SectorDict(bases, this.sx, this.sy);
+            const range2 = square(wepns[this.wepnID].range * 10);
+            for (const id in fullbases) {
+                const b = fullbases[id];
+                if (b !== undefined) {
+                    const dist = squaredGlobalDist(b, this, sectorWidth, sectorWidth, mapSz);
+                    if (b.color !== this.color && b.baseType != DEADBASE && dist < range2 && (this.locked == 0 || dist < closest)) {
+                        this.locked = b.id;
+                        closest = dist;
                     }
                 }
             }
+            if (this.locked != 0) return;
 
             // search asteroids
-            for (const i in asts[this.sy][this.sx]) {
-                const ast = asts[this.sy][this.sx][i];
+            const fullasts = get9SectorDict(asts, this.sx, this.sy);
+            for (const i in fullasts) {
+                const ast = fullasts[i];
                 const dist = squaredDist(ast, this);
-                if (dist < square(wepns[this.wepnID].range * 10) && (this.locked == 0 || dist < closest)) {
+                if (dist < range2 && dist < range2 && (this.locked == 0 || dist < closest)) {
                     this.locked = ast.id;
                     closest = dist;
                 }
@@ -119,17 +127,28 @@ class Missile {
         if (this.locked != 0) {
             if (this.lockedTimer++ > missileLockTimeout) this.die();
 
-            let target = players[this.sy][this.sx][this.locked]; // try 2 find the target object
-            if ((typeof target === `undefined` || target == 0) && bases[this.sy][this.sx] != 0) {
-                for (const id in bases[this.sy][this.sx]) {
-                    const base = bases[this.sy][this.sx][id];
-                    if (base.color != this.color && base.baseType != DEADBASE && squaredDist(base, this) < square(wepns[this.wepnID].range * 10)) {
-                        target = base;
-                        break;
+            const fullplayers = get9SectorDict(players, this.sx, this.sy);
+            const fullbases = get9SectorDict(bases, this.sx, this.sy);
+            let target = fullplayers[this.locked]; // try 2 find the target object
+            const range2 = square(wepns[this.wepnID].range * 10);
+
+            if ((typeof target === `undefined` || target == 0) && fullbases != 0) {
+                let closest = Number.MAX_SAFE_INTEGER;
+                for (const id in fullbases) {
+                    const base = fullbases[id];
+                    if (base !== undefined && base.color != this.color && base.baseType != DEADBASE) {
+                        const dist = squaredGlobalDist(base, this, sectorWidth, sectorWidth, mapSz);
+                        if (dist < range2 && dist < closest) {
+                            target = base;
+                            closest = dist;
+                        }
                     }
                 }
             }
-            if (target == 0) target = asts[this.sy][this.sx][this.locked];
+            if (typeof target === `undefined` || target == 0) {
+                const fullasts = get9SectorDict(asts, this.sx, this.sy);
+                target = fullasts[this.locked];
+            }
             if (typeof target === `undefined`) this.locked = 0;
 
             else { // if we found it, then...
@@ -144,7 +163,7 @@ class Missile {
                 }
 
                 if (this.wepnID != 38) { // 38: proximity fuze
-                    if (this.timer == 1 || tick % 4 == 0) this.goalAngle = angleBetween(target, this);
+                    if (this.timer == 1 || tick % 4 == 0) this.goalAngle = angleGlobalBetween(target, this, sectorWidth, sectorWidth, mapSz);
                     this.angle = findBisector(findBisector(this.goalAngle, this.angle), this.angle);// turn towards goal
                 }
                 this.vx = Math.cos(this.angle) * wepns[this.wepnID].speed; // update velocity
@@ -169,11 +188,13 @@ class Missile {
     }
 
     missileSwarmExplode () {
-        for (const i in players[this.sy][this.sx]) { // spawn 1 missile for each enemy ship in sector
-            const player = players[this.sy][this.sx][i];
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const i in fullplayers) { // spawn 1 missile for each enemy ship in the neighboring sectors
+            const player = fullplayers[i];
+            if (player === undefined) continue;
             const r = Math.random();
             const bAngle = this.angle + r * 2 - 1;
-            const dist = squaredDist(player, this);
+            const dist = squaredGlobalDist(player, this, sectorWidth, sectorWidth, mapSz);
             if ((player.color != this.color && player.disguise <= 0) && (dist < square(wepns[this.wepnID].range * 10))) {
                 const r = Math.random();
                 const bAngle = this.angle + r * 2 - 1;
@@ -186,20 +207,23 @@ class Missile {
                 missiles[this.sy][this.sx][r] = missile;
             }
         }
-        if (bases[this.sy][this.sx] != 0) {
-            for (const id in bases[this.sy][this.sx]) {
-                const base = bases[this.sy][this.sx][id];
-                if (base.color !== this.color && base.baseType != DEADBASE && squaredDist(base, this) < square(wepns[this.wepnID].range * 10)) {
+        const fullbases = get9SectorDict(bases, this.sx, this.sy);
+        const range2 = square(wepns[this.wepnID].range * 10);
+        for (const id in fullbases) {
+            const base = fullbases[id];
+            if (base !== undefined && base.color !== this.color && base.baseType != DEADBASE) {
+                const dist = squaredGlobalDist(base, this, sectorWidth, sectorWidth, mapSz);
+                if (dist < range2) {
                     const r = Math.random();
                     const bAngle = this.angle + r * 2 - 1;
                     let wepid = 10; // Normal Missile
-                    if (squaredDist(base, this) < square(wepns[11].range * 10)) wepid = 11; // Heavy Missile
+                    if (dist < square(wepns[11].range * 10)) wepid = 11; // Heavy Missile
                     const missile = new Missile(this.owner, r, wepid, bAngle);
                     missile.x = this.x;
                     missile.y = this.y;
                     missile.sx = this.sx; // this is crucial, otherwise rings of fire happen
                     missile.sy = this.sy; // because owner is not necessarily in the same sector as parent missile
-                    missile.locked = bases[this.sy][this.sx][id].id;
+                    missile.locked = id;
                     missiles[this.sy][this.sx][r] = missile;
                 }
             }
@@ -209,7 +233,6 @@ class Missile {
 
     die () {
         apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
         delete missiles[this.sy][this.sx][this.id];
     }
 }

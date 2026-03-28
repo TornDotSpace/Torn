@@ -73,7 +73,7 @@ class Player {
         this.speed = 0;
         this.driftAngle = 0;
 
-        this.money = 12000; // 9999999999999; //TO-DO 8000;
+        this.money = 12000; // 9999999999999; //TO-DO 12000;
         this.kills = 0;
         this.killStreakTimer = -1;
         this.killStreak = 0;
@@ -146,6 +146,8 @@ class Player {
         this.points = 0;
 
         this.equipped = 0;
+
+        this.planetCooldown = 0; // made to prevent restock abuse on planets
     }
 
     tick () {
@@ -155,6 +157,7 @@ class Player {
         if (this.superchargerTimer >= 0) this.superchargerTimer--;
         if (this.empTimer >= 0) this.empTimer--;
         if (this.disguise >= 0) this.disguise--;
+        if (this.planetCooldown > 0) this.planetCooldown--;
 
         const amDrifting = this.e || this.gyroTimer > 0;
         this.shield = (this.s && this.empTimer <= 5 && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
@@ -278,7 +281,7 @@ class Player {
         }
     }
 
-    apply9SectorEffect (functionToCall, wep, extras = false, that = false, extraParam1 = false, returnSomething = false, startX = -1, startY = -1, endX = 1, endY = 1) {
+    apply9SectorEffect (functionToCall, wep, extras = false, that = false, extraParam1 = false, returnSomething = false, startX = globalOriginSX, startY = globalOriginSY, endX = globalEndSX, endY = globalEndSY) { // TO-DO ALL FUNCTIONS THAT DEPEND ON THIS ONE MAY REQUIRE A REFINEMENT
         const myx = this.x;
         const myy = this.y;
         const mysx = this.sx;
@@ -603,10 +606,11 @@ class Player {
         this.checkMineCollision();
     }
 
-    checkMineCollisionSector (that, wep, newy, newx, lsy, lsx) {
-        for (const i in mines[lsy][lsx]) {
-            const m = mines[lsy][lsx][i];
-            if (m.color != that.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
+    checkMineCollisionSector (that, newy, newx, lsy, lsx) {
+        const fullmines = get9SectorDict(mines, lsx, lsy);
+        for (const i in fullmines) {
+            const m = fullmines[i];
+            if (m !== undefined && m.color != that.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
                 if (m.wepnID != 16 && squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(16 + ships[that.ship].width)) {
                     that.dmg(m.dmg, m); // damage me
                     if (m.wepnID === 17) that.EMP(70); // emp mine
@@ -616,15 +620,16 @@ class Player {
                     const r = Math.random(); // Laser Mine
                     const beam = new Beam(m.owner, r, m.wepnID, that, m); // m.owner is the owner, m is the origin location
                     beams[lsy][lsx][r] = beam;
-                    sendAllSector(`sound`, { file: `beam`, x: newx, y: newy }, lsx, lsy);
+                    apply9SectorCall(sendAllSector, `sound`, { file: `beam`, x: newx, y: newy }, lsx, lsy);
                     m.die();
                 }
             }
         }
     }
 
-    checkMineCollision () {
-        this.apply9SectorEffect(this.checkMineCollisionSector, null);
+    checkMineCollision (origin = undefined) {
+        if (origin === undefined) origin = this;
+        this.checkMineCollisionSector(origin, origin.y, origin.x, origin.sy, origin.sx);
     }
 
     testSectorChange () {
@@ -689,7 +694,7 @@ class Player {
         }
         if (giveBounce) this.checkRandomAchievements(true, true, false);
 
-        if (this.hyperdriveTimer <= 0 && this.borderJumpTimer > 100) { // damage for running away from fights, hyperdrive won't automatically trigger it
+        if (globalOriginSX == 0 && globalEndSX == 0 && globalOriginSY == 0 && globalEndSY == 0 && this.hyperdriveTimer <= 0 && this.borderJumpTimer > 100) { // damage for running away from fights, hyperdrive won't automatically trigger it. If sector modes are set so people can fire and see through sectors, then this won't apply, either.
             this.health = (this.health - 1) * 0.9 + 1;
             this.borderJumpTimer = 50;
         }
@@ -813,16 +818,23 @@ class Player {
             }
         }
 
-        if (p.color === this.color || cool > 0) return;
+        if (cool > 0) return;
         if (p.color === `yellow`) {
             chatAll(`Planet ${p.name} colonized by ${this.nameWithColor()}!`); // Colonizing planets. Since this will happen once per planet it will not be spammy
         }
         // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy when people fight over a planet
-        this.refillAllAmmo();
+        if (p.color !== this.color || this.planetCooldown <= 0) {
+            this.refillAllAmmo();
+            this.planetCooldown = 200;
+        }
         p.color = this.color; // claim
         p.owner = this.name;
 
-        for (const i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();// send them new planet data
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
+            if (p !== undefined) p.getAllPlanets(); // send them new planet data
+        }
 
         this.emit(`planetMap`, { x: p.x, y: p.y, sx: p.sx, sy: p.sy });
 
@@ -910,8 +922,10 @@ class Player {
         this.shootMineSpecific(this.weapons[this.equipped]);
     }
 
-    shootLeechBeam () { // TO-DO All beams and blasts may need a tweak to allow them to fire between sectors.
-        const ox = this.x; const oy = this.y; // Current emitter coordinates
+    shootLeechBeam (origin = undefined, restricted = false) { // TO-DO All beams and blasts may need a tweak to allow them to fire between sectors.
+        if (origin === undefined) origin = this;
+        const ox = origin.x; const oy = origin.y; // Current emitter coordinates
+
         let nearBEnemy = 0; // enemy turret target, which we will compute
         let nearBFriendly = 0; // friendly turret target, which we will compute
         let nearPFriendly = 0; // friendly ship target, which we will compute
@@ -920,39 +934,56 @@ class Player {
         const range2 = square(100 * 10); // Range 100
 
         // base
-        const bS = bases[this.sy][this.sx];
-        if (bS != 0) {
-            for (const id in bases[this.sy][this.sx]) {
-                const b = bases[this.sy][this.sx][id];
-                if ((b != 0) && b.baseType != DEADBASE && b.color !== this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBEnemy = b;
-                if ((b != 0) && b.baseType != DEADBASE && b.color === this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBFriendly = b;
+        const fullbases = get9SectorDict(bases, origin.sx, origin.sy);
+        let closestFBaseD = -1;
+        let closestEBaseD = -1;
+        for (const id in fullbases) {
+            const b = fullbases[id];
+            if (b !== undefined && b !== 0 && b.baseType !== DEADBASE) {
+                const dist2 = squaredGlobalDist(origin, b, sectorWidth, sectorWidth, mapSz);
+                if (dist2 < range2) {
+                    if (b.color !== origin.color && (nearBEnemy = 0 || dist2 < closestEBaseD)) {
+                        nearBEnemy = b;
+                        closestEBaseD = dist2;
+                    } else if (b.color === origin.color && (nearBFriendly = 0 || dist2 < closestFBaseD)) {
+                        nearBFriendly = b;
+                        closestFBaseD = dist2;
+                    }
+                }
             }
         }
 
         // search players
-        for (const i in players[this.sy][this.sx]) {
-            const p = players[this.sy][this.sx][i];
-            if (!(p.disguise > 0 || this.id == p.id)) { // You can only heal decloaked teammates.
-                const dx = p.x - ox; const dy = p.y - oy;
-                const dist2 = dx * dx + dy * dy;
-
+        const fullplayers = get9SectorDict(players, origin.sx, origin.sy);
+        let closestFshipD = -1;
+        let closestEshipD = -1;
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
+            if (p !== undefined && (!(p.disguise > 0 || this.id == p.id))) { // You can only heal decloaked teammates.
+                const dist2 = squaredGlobalDist(origin, p, sectorWidth, sectorWidth, mapSz);
                 if (dist2 < range2) {
-                    if (p.color == this.color) {
-                        if (nearPFriendly == 0 || dist2 < square(nearPFriendly.x - ox) + square(nearPFriendly.y - oy)) nearPFriendly = p;
-                    } else {
-                        if (nearPEnemy == 0 || dist2 < square(nearPEnemy.x - ox) + square(nearPEnemy.y - oy)) nearPEnemy = p;
+                    if (p.color !== origin.color && (nearPEnemy = 0 || dist2 < closestEshipD)) {
+                        nearBEnemy = p;
+                        closestEshipD = dist2;
+                    } else if (p.color === origin.color && (nearPFriendly = 0 || dist2 < closestFshipD)) {
+                        nearBFriendly = p;
+                        closestFshipD = dist2;
                     }
                 }
             }
         }
 
         // search asteroids
-        for (const i in asts[this.sy][this.sx]) {
-            const a = asts[this.sy][this.sx][i];
-            if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
-            const dx = a.x - ox; const dy = a.y - oy;
-            const dist2 = dx * dx + dy * dy;
-            if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
+        const fullasts = get9SectorDict(asts, origin.sx, origin.sy);
+        let closestDis = -1;
+        for (const i in fullasts) {
+            const a = fullasts[i];
+            if (a === undefined || a.hit) continue;
+            const dist2 = squaredGlobalDist(origin, a, sectorWidth, sectorWidth, mapSz);
+            if (dist2 < range2 && (nearA == 0 || dist2 < closestDis)) {
+                nearA = a;
+                closestDis = dist2;
+            }
         }
 
         if (nearA != 0) {
@@ -1009,7 +1040,6 @@ class Player {
                     beams[this.sy][this.sx][reB] = beameB2;
                     this.dmg(-73, this);
                     apply9SectorCall(sendAllSector, `sound`, { file: `assimilation`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
-                    // sendAllSector(`sound`, { file: `assimilation`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
                 }
             }
         }
@@ -1020,23 +1050,24 @@ class Player {
             nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
         }
         apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
     }
 
-    findBeamTarget (that, wep, newy, newx, lsy, lsx, origin, restricted, oldNearP) {
-        // const ox = origin.x; const oy = origin.y;
+    findBeamTarget (that, wep, origin, restricted, oldNearP) { // TO-DO REQUIRES REFINEMENT, USE the 9sectordIct function and 9 sectorcall
+        const ox = origin.x; const oy = origin.y;
+        const osx = origin.sx; const osy = origin.sy;
 
         let nearP = oldNearP; // target, which we will compute (initially 0)
         let nearPdOld = -1; // Unachievable
-        if ((nearP != 0) && nearPdOld == -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+        if ((nearP !== 0) && nearPdOld === -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
         const range2 = square(wepns[wep].range * 10);
 
         // base
         if (!restricted) {
-            if ((wep == 7 || wep == 8 || wep == 9 || wep == 45) && bases[lsy][lsx] != 0 && bases[lsy][lsx] != undefined) {
-                for (const id in bases[lsy][lsx]) {
-                    const b = bases[lsy][lsx][id];
-                    if (b != 0 && ((b.color == that.color) == (wep == 45)) && !(wep == 45 && b.health > b.maxHealth * 0.9995) && b.baseType != DEADBASE) {
+            if ((wep == 7 || wep == 8 || wep == 9 || wep == 45)) {
+                const fullbases = get9SectorDict(bases, origin.sx, origin.sy);
+                for (const id in fullbases) {
+                    const b = fullbases[id];
+                    if (b !== undefined && b !== 0 && ((b.color == that.color) == (wep == 45)) && !(wep == 45 && b.health > b.maxHealth * 0.9995) && b.baseType != DEADBASE) {
                         const dist2 = squaredGlobalDist(origin, b, sectorWidth, sectorWidth, mapSz);
                         if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
                             nearP = b;
@@ -1045,14 +1076,13 @@ class Player {
                     }
                 }
             }
-        }
 
-        // search players
-        if (!restricted) {
-            for (const i in players[lsy][lsx]) {
-                const p = players[lsy][lsx][i];
-                if (p.ship != 17 && (wep == 26 || wep == 30)) continue; // elite quarrier is affected
-                if (((p.color == that.color) != (wep == 45)) || p.disguise > 0 || that.id == p.id) continue;
+            // search players
+            const fullplayers = get9SectorDict(players, origin.sx, origin.sy);
+            for (const i in fullplayers) {
+                const p = fullplayers[i];
+                if (p === undefined || (p.ship != 17 && (wep == 26 || wep == 30))) continue; // elite quarrier is affected
+                if (((p.color === that.color) != (wep == 45)) || p.disguise > 0 || that.id == p.id) continue;
                 if (wep == 45 && p.health > p.maxHealth * 0.9995) continue;
                 const dist2 = squaredGlobalDist(origin, p, sectorWidth, sectorWidth, mapSz);
                 if (((nearP != 0)) && nearPdOld == -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
@@ -1065,12 +1095,14 @@ class Player {
 
         // search asteroids
         if (nearP == 0 && wep != 35 && wep != 31 && wep != 45) {
-            for (const i in asts[lsy][lsx]) {
-                const a = asts[lsy][lsx][i];
-                // if (a.sx != that.sx || a.sy != that.sy || a.hit) continue;
-                if (a.hit) continue;
+            const fullasts = get9SectorDict(asts, origin.sx, origin.sy);
+            for (const i in fullasts) {
+                const a = fullasts[i];
+                if (a === undefined || a.hit) continue;
                 const dist2 = squaredGlobalDist(origin, a, sectorWidth, sectorWidth, mapSz);
-                if (((nearP != 0)) && nearPdOld == -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+                if (((nearP != 0)) && nearPdOld == -1) {
+                    nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+                }
                 if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
                     nearP = a;
                     nearPdOld = dist2;
@@ -1082,9 +1114,11 @@ class Player {
 
     shootBeam (origin, restricted) { // restricted is for recursive calls from quarriers
         const ox = origin.x; const oy = origin.y;
+        const osx = origin.sx; const osy = origin.sy;
 
         let wep = this.weapons[this.equipped];
-        let nearP = this.apply9SectorEffect(this.findBeamTarget, wep, true, origin, restricted, true); // target, which we will compute
+
+        let nearP = this.findBeamTarget(this, wep, origin, restricted, 0); // target, which we will compute
         if (nearP == 0) return;
 
         let nearPdOld = -1; // Unachievable
@@ -1093,13 +1127,14 @@ class Player {
         const range2 = square(wepns[wep].range * 10);
 
         // gyrodynamite
-        if (this.weapons[this.equipped] == 31 && nearP.sx == this.sx && nearP.sy == this.sy && nearP.color != this.color) {
+        // if (this.weapons[this.equipped] == 31 && nearP.sx == this.sx && nearP.sy == this.sy && nearP.color != this.color) {
+        if (this.weapons[this.equipped] == 31 && nearP.color != this.color) {
             nearP.gyroTimer = 250;
             nearP.emit(`gyro`, { t: 250 });
         }
 
         // elite quarrier
-        if (this.ship == 17 && nearP != 0 && nearP.type === `Asteroid`) {
+        if (this.ship == 17 && nearP !== 0 && nearP.type === `Asteroid`) {
             nearP.hit = true;
             for (let i = 0; i < 3; i++) this.shootBeam(nearP, true);
         }
@@ -1107,8 +1142,7 @@ class Player {
         const r = Math.random();
         const beam = new Beam(this, r, this.weapons[this.equipped], nearP, origin);
         beams[this.sy][this.sx][r] = beam;
-        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: osx, sy: osy, x: ox, y: oy }, this.sx, this.sy);
     }
 
     shootBlast (currWep) {
@@ -1116,7 +1150,6 @@ class Player {
         const blast = new Blast(this, r, currWep);
         blasts[this.sy][this.sx][r] = blast;
         apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     async die (b) {
@@ -1234,7 +1267,7 @@ class Player {
         }
         if (!ammoHasChanged) return;
         sendWeapons(this);
-        this.strongLocal(`Ammo Replenished!`, this.x, this.y + 256);
+        this.strongLocal(`Ammo Replenished!`, this.x, this.y + 256, this.sx, this.sy);
     }
 
     testAfk () {
@@ -1257,8 +1290,8 @@ class Player {
         return `${chatColor(this.color)}${this.name}${chatColor(`yellow`)}`;
     }
 
-    noteLocal (msg, x, y) {}
-    strongLocal (msg, x, y) {}
+    noteLocal (msg, x, y, sx = undefined, sy = undefined, spread = false) {}
+    strongLocal (msg, x, y, sx = undefined, sy = undefined, spread = false) {}
 
     botPlay () {}
     emit (a, b) {}

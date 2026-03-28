@@ -42,13 +42,45 @@ class Bullet {
         if (this.time++ == 0) { // if this was just spawned
             // TO-DO NEW
             apply9SectorCall(sendAllSector, `newBullet`, { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color, tick: this.time }, this.sx, this.sy);
+            /*
+            if (this.sy !== undefined && this.sx !== undefined) {
+                const packN = bulletPack[this.sy][this.sx][this.id] = { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color, tick: this.time }
+                apply9SectorCall(sendAllSector, `newBullet`, packN, this.sx, this.sy); // TO-DO TESTING, OLD CODE BELOW
+                //apply9SectorCall(sendAllSector, `newBullet`, { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color, tick: this.time }, this.sx, this.sy);
+            }
             // TO-DO OLD
             // sendAllSector(`newBullet`, { x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color }, this.sx, this.sy);
             // this.x -= this.vx; //These were here before Alex's refactor. Not sure if they should exist.
             // this.y -= this.vy;
+            */
         }
         this.move();
         this.dist += wepns[this.wepnID].speed / 10;
+        /*
+        if (this.sy !== undefined && this.sx !== undefined && bulletPack[this.sy][this.sx][this.id] !== undefined) {
+
+            let pack = bulletPack[this.sy][this.sx][this.id];
+            const bulle = this;
+            const delta = { };
+            let need_update = false;
+            // Compute delta
+            for (const key in pack) { // Theoretically if pack was created no update is needed
+                if (key !== `updateStatus` && key !== `updatedDelta` && pack[key] !== bulle[key]) {
+                    delta[key] = pack[key] = bulle[key];
+                    need_update = true;
+                }
+            }
+
+            // bullets are being done in a different way... we only need to keep a dictionary updated for when a ship switches between sectors
+            //if (need_update) {
+            //    pack.updateStatus = 2;
+            //    pack.updatedDelta = { delta: delta, id: i };
+            //} else if (pack.updateStatus != 0) {
+            //    pack.updateStatus = 1;
+            //    pack.updatedDelta = undefined;
+            //}
+        }
+        */
         if (this.wepnID == 28 && this.time > 25 * 3) { // gravity bomb has 3 seconds to explode
             for (const id in bases[this.sy][this.sx]) {
                 const base = bases[this.sy][this.sx][id];
@@ -101,9 +133,6 @@ class Bullet {
 
             if (idied) this.die();
             else if (SXtoEast || SXtoWest || SYtoNorth || SYtoSouth) {
-                // TO-DO OLD
-                // this.die(); // TO-DO SWITCH SO IT FIRES BEYOND THE SECTORS
-                /* TO-DO WIP */
                 const old_sx = this.sx;
                 const old_sy = this.sy;
                 delete bullets[this.sy][this.sx][this.id];
@@ -161,7 +190,6 @@ class Bullet {
                 apply9SectorCall(sendAllSector, `bullet_update`, { delta: delta, id: this.id }, this.sx, this.sy, undefined, undefined, undefined, UstartX, UstartY, UendX, UendY);
                 // Then we create entries for the front sectors
                 apply9SectorCall(sendAllSector, `newBullet`, { sx: this.sx, sy: this.sy, x: this.x, y: this.y, vx: this.vx, vy: this.vy, id: this.id, angle: this.angle, wepnID: this.wepnID, color: this.color, tick: this.time }, this.sx, this.sy, undefined, undefined, undefined, CstartX, CstartY, CendX, CendY);
-                /**/
             }
         }
         for (const id in bases[this.sy][this.sx]) {

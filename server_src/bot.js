@@ -79,7 +79,9 @@ class Bot extends Player {
     }
 
     flee (target) {
-        const turn = -(this.angle - Math.atan2(target.y - this.y, target.x - this.x) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
+        const extraX = obtainSXDrift(this.sx, target.sx);
+        const extraY = obtainSYDrift(this.sy, target.sy);
+        const turn = -(this.angle - Math.atan2(target.y - this.y + extraY, target.x - this.x + extraX) + Math.PI * 21) % (2 * Math.PI) + Math.PI;
         this.a = turn > this.cva * this.cva * 10;
         this.d = turn < -this.cva * this.cva * 10;
         this.w = this.s = true;
@@ -89,7 +91,9 @@ class Bot extends Player {
         const isBase = target.type === `Base`;
         const range = square(wepns[this.equipped].range * 10);
         this.space = this.e = close < range * 1.2 || isBase;
-        const intercept = calculateInterceptionAngle(target.x, target.y, isBase ? 0 : target.vx, isBase ? 0 : target.vy, this.x, this.y, wepns[this.equipped].speed);
+        const extraX = obtainSXDrift(this.sx, target.sx);
+        const extraY = obtainSYDrift(this.sy, target.sy);
+        const intercept = calculateInterceptionAngle(target.x + extraX, target.y + extraY, isBase ? 0 : target.vx, isBase ? 0 : target.vy, this.x, this.y, wepns[this.equipped].speed);
         const turn = -(this.angle - intercept + Math.PI * 21) % (2 * Math.PI) + Math.PI;
         this.d = turn > this.cva * this.cva * 10;
         this.a = turn < -this.cva * this.cva * 10;
@@ -115,14 +119,15 @@ class Bot extends Player {
         // Find closest enemy and any friendly in the sector
         let target = 0; let close = 100000000;
         let friendlies = 0; let enemies = 0; // keep track of the player counts in the sector
-        for (const p in players[this.sy][this.sx]) {
-            const player = players[this.sy][this.sx][p];
-            if (this.id == player.id || player.disguise > 0) continue;
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const p in fullplayers) {
+            const player = fullplayers[p];
+            if (player === undefined || this.id == player.id || player.disguise > 0) continue;
             if (player.color === this.color) {
                 friendlies++; continue;
             }
             enemies++;
-            const dist2 = hypot2(player.x, this.x, player.y, this.y);
+            const dist2 = squaredGlobalDist(this, player, sectorWidth, sectorWidth, mapSz);
             if (dist2 < close) {
                 target = player; close = dist2;
             }
@@ -135,10 +140,20 @@ class Bot extends Player {
         if (this.temporary < 0) this.temporary--;
         if ((enemies == 0 && Math.random() < myDespawnRate) || (this.temporary < -1000)) this.die();
 
-        for (const id in bases[this.sy][this.sx]) {
-            const base = bases[this.sy][this.sx][id];
-            if (base != 0 && hypot2(base.x, this.x, base.y, this.y) < close * 3 + square(150) && base.color != this.color) {
-                target = base; enemies++;
+        const fullbases = get9SectorDict(bases, this.sx, this.sy);
+        let closestEBase = 0;
+        let closestEBDis = -1;
+        for (const id in fullbases) {
+            const base = fullbases[id];
+            if (base !== undefined && base != 0) {
+                const dist = squaredGlobalDist(base, this, sectorWidth, sectorWidth, mapSz);
+                if (dist < (close * 3 + square(150)) && base.color != this.color) {
+                    enemies++;
+                    if (closestEBase === 0 || dist < closestEBDis) {
+                        target = closestEBase = base;
+                        closestEBDis = dist;
+                    }
+                }
             }
         }
 
@@ -230,18 +245,19 @@ class NeuralNetBot extends Bot {
 
         // Find the closest friend and enemy
         let target = 0; let friend = 0; let closeE = 100000000; let closeF = 100000000;
-        for (const p in players[this.sy][this.sx]) {
-            const player = players[this.sy][this.sx][p];
-            if (this.id == player.id || player.disguise > 0) continue;
+
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const p in fullplayers) {
+            const player = fullplayers[p];
+            if (player === undefined || this.id == player.id || player.disguise > 0) continue;
+            const dist2 = squaredGlobalDist(player, this, sectorWidth, sectorWidth, mapSz);
             if (player.color === this.color) {
                 totalFriends++;
-                const dist2 = squaredDist(player, this);
                 if (dist2 < closeF) {
                     friend = player; closeF = dist2;
                 }
             } else {
                 totalEnemies++;
-                const dist2 = squaredDist(player, this);
                 if (dist2 < closeE) {
                     target = player; closeE = dist2;
                 }
@@ -251,6 +267,12 @@ class NeuralNetBot extends Bot {
         // same as in botPlay
         if (totalEnemies == 0 && Math.random() < 0.005) this.refillAllAmmo();
         if (totalEnemies == 0 && Math.random() < botDespawnRate) this.die();
+
+        const extraXf = obtainSXDrift(this.sx, target.sx);
+        const extraYf = obtainSYDrift(this.sy, target.sy);
+
+        const extraXt = obtainSXDrift(this.sx, friend.sx);
+        const extraYt = obtainSYDrift(this.sy, friend.sy);
 
         // make input array (into neural net). Normalize the variables to prevent overflow
         const input = {};
@@ -263,11 +285,11 @@ class NeuralNetBot extends Bot {
         input[6] = this.cva;
 
         input[7] = target == 0 ? 0 : 1;
-        input[8] = target == 0 ? 0 : Math.atan2(target.y - this.y, target.x - this.x) - this.angle;
+        input[8] = target == 0 ? 0 : Math.atan2(target.y - this.y + extraYt, target.x - this.x + extraXt) - this.angle;
         input[9] = Math.sqrt(closeE) / 100;
 
         input[10] = friend == 0 ? 0 : 1;
-        input[11] = friend == 0 ? 0 : Math.atan2(friend.y - this.y, friend.x - this.x) - this.angle;
+        input[11] = friend == 0 ? 0 : Math.atan2(friend.y - this.y + extraYf, friend.x - this.x + extraXf) - this.angle;
         input[12] = Math.sqrt(closeF) / 100;
 
         input[13] = target == 0 ? 0 : target.angle;

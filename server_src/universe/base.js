@@ -118,19 +118,22 @@ class Base {
     fire () {
         let c = 0; // nearest player
         let cDist2 = 1000000000; // min dist to player
-        for (const i in players[this.sy][this.sx]) {
-            const player = players[this.sy][this.sx][i];
-            if (player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
-            const dist2 = squaredDist(player, this);
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const i in fullplayers) {
+            const player = fullplayers[i];
+            if (player === undefined || player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
+            const dist2 = squaredGlobalDist(player, this, sectorWidth, sectorWidth, mapSz);
             if (dist2 < cDist2) {
                 c = player; cDist2 = dist2;
             } // update nearest player
         }
 
-        if (c == 0) return;
+        if (c == 0 || c === undefined) return;
 
         const shouldMuon = this.reload < 0 && Math.random() < 0.015;
-        const newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, shouldMuon ? 10000 : wepns[3].speed);
+        const extraX = obtainSXDrift(this.sx, c.sx);
+        const extraY = obtainSYDrift(this.sy, c.sy);
+        const newAngle = calculateInterceptionAngle(c.x + extraX, c.y + extraY, c.vx, c.vy, this.x, this.y, shouldMuon ? 10000 : wepns[3].speed);
         this.angle = (this.angle + newAngle * 2) / 3;
 
         if (this.reload < 0) {
@@ -148,8 +151,9 @@ class Base {
     fireMini () {
         let c = 0; // nearest player
         let cDist2 = 1000000000; // min dist to player
-        for (const i in players[this.sy][this.sx]) {
-            const player = players[this.sy][this.sx][i];
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const i in fullplayers) {
+            const player = fullplayers[i];
             if (player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
             const dist2 = squaredDist(player, this);
             if (dist2 < cDist2) {
@@ -159,7 +163,9 @@ class Base {
 
         if (c == 0) return;
 
-        const newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, wepns[5].speed);
+        const extraX = obtainSXDrift(this.sx, c.sx);
+        const extraY = obtainSYDrift(this.sy, c.sy);
+        const newAngle = calculateInterceptionAngle(c.x + extraX, c.y + extraY, c.vx, c.vy, this.x, this.y, wepns[5].speed);
         this.angle = (this.angle + newAngle * 2) / 3;
 
         if (this.reload < 0) {
@@ -173,7 +179,6 @@ class Base {
         const missile = new Missile(this, r, 12, this.angle);
         missiles[this.sy][this.sx][r] = missile;
         apply9SectorCall(sendAllSector, `sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootOrb () {
@@ -182,7 +187,6 @@ class Base {
         const orb = new Orb(this, r, 37);
         orbs[this.sy][this.sx][r] = orb;
         apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMuon () {
@@ -191,7 +195,6 @@ class Base {
         const blast = new Blast(this, r, 34);
         blasts[this.sy][this.sx][r] = blast;
         apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootRifle () {
@@ -200,7 +203,6 @@ class Base {
         const bullet = new Bullet(this, r, 3, this.angle, 0);
         bullets[this.sy][this.sx][r] = bullet;
         apply9SectorCall(sendAllSector, `sound`, { file: `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMachineGun () {
@@ -210,7 +212,6 @@ class Base {
         const bullet = new Bullet(this, r, 5, this.angle, 0);
         bullets[this.sy][this.sx][r] = bullet;
         apply9SectorCall(sendAllSector, `sound`, { file: `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
         if (this.shots > 5000) { this.die(0); }
     }
 
@@ -221,7 +222,6 @@ class Base {
         const missile = new Missile(this, r, 14, bAngle);
         missiles[this.sy][this.sx][r] = missile;
         apply9SectorCall(sendAllSector, `sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootLaser (nearP) { // TODO merge this into Beam object, along with player.shootBeam()
@@ -230,7 +230,6 @@ class Base {
         const beam = new Beam(this, r, 8, nearP, this); // Laser
         beams[this.sy][this.sx][r] = beam;
         apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
         this.reload = wepns[8].charge / 2;
     }
 
@@ -241,7 +240,6 @@ class Base {
 
         this.health = this.maxHealth;
         apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
-        // sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
         if (this.baseType != LIVEBASE) {
             if (bases[this.sy][this.sx][this.id] !== undefined || bases[this.sy][this.sx][this.id] !== null) delete bases[this.sy][this.sx][this.id];
@@ -270,14 +268,20 @@ class Base {
             b.owner.baseKilled();
             let multiplier = this.isMini ? 1 : 2;
             let numInRange = 0;
-            for (const i in players[this.sy][this.sx]) { // Count all players in range
-                const p = players[this.sy][this.sx][i];
-                if (squaredDist(p, this) < square(baseClaimRange) && p.color === b.owner.color) numInRange++;
+            const fullplayers = get9SectorDict(players, this.sx, this.sy);
+            let playerIDs = [];
+            for (const i in fullplayers) {
+                const p = fullplayers[i];
+                if (p.color === b.owner.color && squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz) < square(baseClaimRange)) {
+                    numInRange++;
+                    playerIDs.push(i);
+                }
             }
             multiplier /= numInRange;
-            for (const i in players[this.sy][this.sx]) { // Reward appropriately
-                const p = players[this.sy][this.sx][i];
-                if (squaredDist(p, this) < square(baseClaimRange) && p.color === b.owner.color) {
+
+            for (let index = 0; index < playerIDs.length; ++index) {
+                const p = fullplayers[playerIDs[index]];
+                if (p !== undefined) {
                     p.spoils(`experience`, baseKillExp * multiplier); // reward them
                     p.spoils(`money`, baseKillMoney * multiplier);
                     p.killStreak++; // Bases count for kill streaks
@@ -288,9 +292,9 @@ class Base {
             if (raidTimer < 15000 && !this.isMini) { // during a raid
                 b.owner.points++; // give a point to the killer
 
-                for (const i in players[this.sy][this.sx]) { // as well as all other players in that sector
+                for (const i in fullplayers) { // as well as all other players in that sector
                     const p = players[this.sy][this.sx][i];
-                    if (p.color !== this.color) p.points += 2;
+                    if (p !== undefined && p.color !== this.color && squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz) < square(sectorWidth)) p.points += 2;
                 }
             }
         }
@@ -331,7 +335,6 @@ class Base {
         if (d == 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
         if (d < 0) note(`+${Math.floor(Math.abs(d))}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
 
-        // note("-" + d, this.x, this.y - 64, this.sx, this.sy);
         return this.health < 0;
     }
 

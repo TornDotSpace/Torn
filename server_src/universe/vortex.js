@@ -52,14 +52,17 @@ class Vortex {
             this.moveWormhole();
         }
 
-        for (const i in players[this.sy][this.sx]) {
-            const p = players[this.sy][this.sx][i];
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
 
             // compute distance and angle to players
-            const dist = Math.pow(squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz), 0.25); // Math.pow(squaredDist(this, p), 0.25); TO-DO
-            const a = angleGlobalBetween(p, this, sectorWidth, sectorWidth, mapSz); // angleBetween(p, this); TO-DO
+            const dist = Math.pow(squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz), 0.25);
+            const rangewh = Math.pow(2 * ((sectorWidth * 0.99) + this.size), 0.5);
+            if (dist > rangewh) continue;
+            const a = angleGlobalBetween(p, this, sectorWidth, sectorWidth, mapSz);
             // then move them.
-            let guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
+            let guestMult = (p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
             if (p.ship == 21 && !this.isWorm) guestMult = 0.45 * (-1 + (35 / dist)); // R21 ship gets pushed from a BH if too far, BUT IT'S STILL PULLED WITH FORCE IF TOO CLOSE. Reason this isn't an increment is because someone could get a GUEST at level 21, buy the ship, and then the old *=0.5 would actually be more OP than the old code.
             p.x -= guestMult * 0.40 * this.size / dist * Math.cos(a);
             p.y -= guestMult * 0.40 * this.size / dist * Math.sin(a);
@@ -69,7 +72,7 @@ class Vortex {
                     this.size += p.ship; // Eating the ship will make the gravity bomb BH grow. The bigger the ship, the more it will grow.
                 }
                 p.die(this);
-            } else if (dist < 15 && this.isWorm && !p.guest) { // collision with wormhole
+            } else if (dist < 15 && this.isWorm) { // collision with wormhole
                 p.y = this.yo;
                 p.x = this.xo; // teleport them to the output node
 
@@ -77,10 +80,11 @@ class Vortex {
             }
         }
         if (Math.random() < 0.2) { // limited for lag
-            for (const i in asts[this.sy][this.sx]) {
-                // const dist = Math.pow(squaredGlobalDist(this, i, sectorWidth, mapSz), 0.25);
-                const a = asts[this.sy][this.sx][i];
-                const d2 = squaredGlobalDist(this, a, sectorWidth, sectorWidth, mapSz); // squaredDist(this, a); // TO-DO
+            const fullasts = get9SectorDict(asts, this.sx, this.sy);
+            for (const i in fullasts) {
+                const a = fullasts[i];
+                const d2 = squaredGlobalDist(this, a, sectorWidth, sectorWidth, mapSz); // squaredDist(this, a);
+                if ((d2 > sectorWidth * 1.4)) continue;
                 const ang = angleGlobalBetween(this, a, sectorWidth, sectorWidth, mapSz); // angleBetween(this, a);
                 const vel = 0.005 * this.size / Math.log(d2);
                 a.vx += Math.cos(ang) * vel;

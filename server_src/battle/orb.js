@@ -71,14 +71,16 @@ class Orb {
         }
 
         // Find next target
-        let closest = -1;
+        let closest = Number.MAX_SAFE_INTEGER;
+        const range2a = square(wepns[this.wepnID].range * 10);
         if (tick % 5 == 0 && this.locked == 0) {
             // search players
-            for (const i in players[this.sy][this.sx]) {
-                const player = players[this.sy][this.sx][i];
-                if (player.disguise > 0 && this.wepnID != 42) continue;
-                const dist = squaredDist(player, this);
-                if ((player.color != this.color && dist < square(wepns[this.wepnID].range * 10)) && (this.locked == 0 || dist < closest)) {
+            const fullplayers = get9SectorDict(players, this.sx, this.sy);
+            for (const i in fullplayers) {
+                const player = fullplayers[i];
+                if (player === undefined || player.color === this.color || (player.disguise > 0 && this.wepnID != 42)) continue;
+                const dist = squaredGlobalDist(player, this, sectorWidth, sectorWidth, mapSz);
+                if ((dist < range2a) && (this.locked == 0 || dist < closest)) {
                     this.locked = player.id;
                     closest = dist;
                 }
@@ -86,20 +88,26 @@ class Orb {
             if (this.locked != 0) return;
 
             // check base
-            if (bases[this.sy][this.sx] != 0) {
-                for (const id in bases[this.sy][this.sx]) {
-                    if (bases[this.sy][this.sx][id].color !== this.color && bases[this.sy][this.sx][id].baseType != DEADBASE && squaredDist(bases[this.sy][this.sx][id], this) < square(wepns[this.wepnID].range * 10)) {
-                        this.locked = bases[this.sy][this.sx][id].id;
-                        return;
+            const fullbases = get9SectorDict(bases, this.sx, this.sy);
+            for (const id in fullbases) {
+                const b = fullbases[id];
+                if (b !== undefined && b.color !== this.color && b.baseType != DEADBASE) {
+                    const dist = squaredGlobalDist(b, this, sectorWidth, sectorWidth, mapSz);
+                    if ((dist < range2a) && (this.locked == 0 || dist < closest)) {
+                        this.locked = b.id;
+                        closest = dist;
                     }
                 }
             }
+            if (this.locked != 0) return;
 
             // search asteroids
-            for (const i in asts[this.sy][this.sx]) {
-                const ast = asts[this.sy][this.sx][i];
-                const dist = squaredDist(ast, this);
-                if (dist < square(wepns[this.wepnID].range * 10) && (this.locked == 0 || dist < closest)) {
+            const fullasts = get9SectorDict(asts, this.sx, this.sy);
+            for (const i in fullasts) {
+                const ast = fullasts[i];
+                if (ast === undefined) continue;
+                const dist = squaredGlobalDist(ast, this, sectorWidth, sectorWidth, mapSz);
+                if ((dist < range2a) && (this.locked == 0 || dist < closest)) {
                     this.locked = ast.id;
                     closest = dist;
                 }
@@ -108,43 +116,54 @@ class Orb {
     }
 
     move () {
-        if (this.locked != 0) {
+        if (this.locked !== undefined && this.locked !== 0) {
             if (this.lockedTimer++ > secs(2.5)) this.die(); // after 2.5 seconds of being locked on -> delete this
 
-            let target = players[this.sy][this.sx][this.locked];
-            if ((typeof target === `undefined` || target == 0) && bases[this.sy][this.sx] != 0) {
-                for (const id in bases[this.sy][this.sx]) {
-                    const base = bases[this.sy][this.sx][id];
-                    if (base.color != this.color && base.baseType != DEADBASE && squaredDist(base, this) < square(wepns[this.wepnID].range * 10)) {
-                        target = base;
-                        break;
+            const range2a = square(wepns[this.wepnID].range * 10);
+            const fullplayers = get9SectorDict(players, this.sx, this.sy);
+            // let target = players[this.sy][this.sx][this.locked];
+            let target = fullplayers[this.locked]; // try 2 find the target object
+            let closest = Number.MAX_SAFE_INTEGER;
+            if (typeof target === `undefined` || target === 0) {
+                const fullbases = get9SectorDict(bases, this.sx, this.sy);
+                for (const id in fullbases) {
+                    const base = fullbases[id];
+                    if (base !== undefined && base.color != this.color && base.baseType !== DEADBASE) {
+                        const dist = squaredGlobalDist(base, this, sectorWidth, sectorWidth, mapSz);
+                        if ((dist < range2a) && (dist < closest)) {
+                            target = base;
+                            closest = dist;
+                        }
                     }
                 }
             }
-            if (target == 0) target = asts[this.sy][this.sx][this.locked];
-            if (typeof target === `undefined`) this.locked = 0;
+            if (typeof target === `undefined` || target === 0) {
+                const fullasts = get9SectorDict(asts, this.sx, this.sy);
+                target = fullasts[this.locked];
+            }
+            if (typeof target === `undefined` || target === 0) this.locked = 0;
             else { // if we are locked onto something
                 if (target.type === `Player`) target.isLocked = true; // tell the player they're locked on so they will get an alert message
-                const dist = Math.hypot(target.x - this.x, target.y - this.y);
+                const extraX = obtainSXDrift(this.sx, target.sx);
+                const extraY = obtainSYDrift(this.sy, target.sy);
+                const dist = Math.hypot(target.x - this.x + extraX, target.y - this.y + extraY);
                 if (dist < 64 && (target.baseType != DEADBASE) !== false) { // if it's a base we can't attack when it's dead. !== false works in case of non-bases
                     target.dmg(this.dmg, this);
                     this.die();
                     return;
                 }
-                this.vx += wepns[this.wepnID].speed * (target.x - this.x) / dist; // accelerate towards target
-                this.vy += wepns[this.wepnID].speed * (target.y - this.y) / dist;
+                this.vx += wepns[this.wepnID].speed * (target.x - this.x + extraX) / dist; // accelerate towards target
+                this.vy += wepns[this.wepnID].speed * (target.y - this.y + extraY) / dist;
                 this.vx *= 0.9; // air resistance
                 this.vy *= 0.9;
             }
-        }
-        if (this.locked == 0) this.lockedTimer = 0;
+        } else this.locked = 0;
+        if (this.locked === 0) this.lockedTimer = 0;
         this.x += this.vx;
         this.y += this.vy; // move
-    //    if (this.x > sectorWidth || this.x < 0 || this.y > sectorWidth || this.y < 0) this.die(); // if out of bounds
     }
 
     die () {
-        // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
         apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
         delete orbs[this.sy][this.sx][this.id];
     }

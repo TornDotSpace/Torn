@@ -26,6 +26,12 @@ global.colorCircumfix = `\`c`;
 global.weaponCircumfix = `\`w`;
 global.translateCircumfix = `\`t`;
 
+// some global sector handling mechanics
+global.globalOriginSX = -1; // We calculate stuff from 1 sector West of ours...
+global.globalEndSX = 1; // ... to 1 sector East of us.
+global.globalOriginSY = -1; // We calculate stuff from 1 sector North of ours...
+global.globalEndSY = 1; // ... to 1 sector South of us.
+
 // some global FINAL game mechanics
 global.eloVolatility = 30;
 global.bulletWidth = 16; // collision radius

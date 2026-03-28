@@ -429,12 +429,12 @@ class PlayerMP extends Player {
         this.emit(`achievementsMisc`, { note: note, achs: this.randomAchievements });
     }
 
-    noteLocal (msg, x, y) {
-        this.emit(`note`, { msg: msg, x: x, y: y, local: true });
+    noteLocal (msg, x, y, sx = undefined, sy = undefined, spread = false) {
+        this.emit(`note`, { msg: msg, x: x, y: y, local: true, sx: sx, sy: sy, spread: spread });
     }
 
-    strongLocal (msg, x, y) {
-        this.emit(`strong`, { msg: msg, x: x, y: y, local: true });
+    strongLocal (msg, x, y, sx = undefined, sy = undefined, spread = false) {
+        this.emit(`strong`, { msg: msg, x: x, y: y, local: true, sx: sx, sy: sy, spread: spread });
     }
 
     baseKilled () {

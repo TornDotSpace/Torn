@@ -602,10 +602,15 @@ global.rNotes = function () {
     ctx.fillStyle = `pink`;
     for (const i in notes) {
         const note = notes[i];
+        let extraX = 0;
+        let extraY = 0;
+        if (!(Object.is(note.sx, null) || Object.is(note.sx, undefined))) extraX = obtainSXDrift(sx, note.sx);
+        if (!(Object.is(note.sy, null) || Object.is(note.sy, undefined))) extraY = obtainSYDrift(sy, note.sy);
+
         ctx.font = `${note.strong ? 40 : 20}px ShareTech`;
         ctx.globalAlpha = (39 - note.time) / 39;
-        const x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + (note.local ? px : 0));
-        const y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + (note.local ? py : 0));
+        const x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + extraX + (note.local ? px : 0));
+        const y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + extraY + (note.local ? py : 0));
         write(ctx, note.msg, x, y);
     }
     ctx.globalAlpha = 1;
@@ -1437,8 +1442,8 @@ global.rBeams = function () {
         else ctx.strokeStyle = `red`;
         const bx = selfo.bx + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
         const by = selfo.by + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
-        const ex = selfo.ex + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
-        const ey = selfo.ey + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
+        const ex = selfo.ex + obtainSXDrift(sx, selfo.esx) - px + w / 2 + scrx;
+        const ey = selfo.ey + obtainSYDrift(sy, selfo.esy) - py + h / 2 + scry;
         ctx.beginPath();
         ctx.moveTo(bx, by);
         ctx.lineTo(ex, ey);
@@ -1506,15 +1511,15 @@ global.rAsteroids = function () {
 
             if (nearA == 0) {
                 nearA = selfo;
-                extraXn = dDistPX;
-                extraYn = dDistPY;
+                extraXn = extraX;
+                extraYn = extraY;
             } else {
                 const dDistAX = nearA.x - px + obtainSXDrift(selfsx, nearA.sx); // TO-DO extraXn
                 const dDistAY = nearA.y - py + obtainSYDrift(selfsy, nearA.sy); // TO-DO extraYn
                 if ((square(dDistPX) + square(dDistPY)) < (square(dDistAX) + square(dDistAY))) {
                     nearA = selfo;
-                    extraXn = dDistPX;
-                    extraYn = dDistPY;
+                    extraXn = extraX;
+                    extraYn = extraY;
                 }
             }
         }

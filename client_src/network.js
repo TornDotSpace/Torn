@@ -80,7 +80,7 @@ socket.on(`posUp`, (data) => {
         playAudio(`sector`, 1);
         r3DMap();
     }
-    clearBullets();
+    clearBullets(data);
 });
 
 socket.on(`update`, (data) => {
@@ -257,8 +257,56 @@ socket.on(`missile_delete`, (data) => {
     delete missilesInfo[data];
 });
 
-function clearBullets () {
-    bullets = { };
+global.get9SectorDict = function (dictionar, mysx, mysy, origX = globalOriginSX, origY = globalOriginSY, endX = globalEndSX, endY = globalEndSY, wedebug = false) {
+    let combinedDict = {};
+    for (let asx = origX; asx <= endX; asx++) { // Sectors on X loop
+        // const newX = myx - (asx * sectorWidth);
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
+        }
+        for (let asy = origY; asy <= endY; asy++) { // Sectors on Y do not loop
+            const syReal = (mysy + asy);
+            if (syReal < mapSz && syReal >= 0) {
+                // const newY = myy - (asy * sectorWidth);
+                if (wedebug) console.log(`STEP COORD (${syReal}, ${sxReal} -> ${dictionar[syReal][sxReal]} combinedDict before this: ${combinedDict} and its keys are ${Object.keys(combinedDict)}`);
+                combinedDict = Object.assign({}, combinedDict, dictionar[syReal][sxReal]);
+            }
+        }
+    }
+    return combinedDict;
+};
+
+global.get9cSectorDict = function (dictionar, mysx, mysy, origX = globalOriginSX, origY = globalOriginSY, endX = globalEndSX, endY = globalEndSY, wedebug = false) {
+    let auxDict = {};
+    let combinedDict = {};
+    for (let asx = origX; asx <= endX; asx++) { // Sectors on X loop
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
+        }
+        auxDict[sxReal] = {};
+        for (let asy = origY; asy <= endY; asy++) { // Sectors on Y do not loop
+            const syReal = (mysy + asy);
+            if (syReal < mapSz && syReal >= 0) {
+                auxDict[sxReal][syReal] = 1;
+            }
+        }
+    }
+    for (i in dictionar) {
+        const elem = dictionar[i];
+        if (auxDict[elem.sx] !== undefined && auxDict[elem.sx][elem.sy] !== undefined && auxDict[elem.sx][elem.sy] === 1) combinedDict = Object.assign({}, combinedDict, elem);
+    }
+    return combinedDict;
+};
+
+function clearBullets (data, fullClear = true) {
+    /*
+    if (data === undefined || data === null || data.bullets === undefined) {
+        if (fullClear) bullets = { };
+        else bullets = get9cSectorDict(data.bullets, sx, sy);
+    } else bullets = data.bullets;
+    */
 }
 
 function vort_update (data) {
@@ -368,7 +416,7 @@ socket.on(`delBullet`, (data) => {
     delete bullets[data.id];
 });
 
-socket.on(`bullet_update`, (data) => {
+function bullet_update (data) {
     if (bullets[data.id] === undefined) return;
 
     const delta = data.delta;
@@ -376,6 +424,10 @@ socket.on(`bullet_update`, (data) => {
     for (const d in delta) {
         bullets[data.id][d] = delta[d];
     }
+}
+
+socket.on(`bullet_update`, (data) => {
+    bullet_update(data);
 });
 
 socket.on(`invalidCredentials`, (data) => {
@@ -505,10 +557,18 @@ socket.on(`equip`, (data) => {
     weaponTimer = 100;
 });
 socket.on(`note`, (data) => {
-    notes[Math.random()] = { msg: data.msg, x: data.x - 16 + (data.local ? -px : Math.random() * 32), y: data.y - 16 + (data.local ? -py : Math.random() * 32), time: 0, strong: false, local: data.local };
+    let elSX = sx;
+    let elSY = sy;
+    if (data.sx !== undefined) elSX = data.sx;
+    if (data.sy !== undefined) elSY = data.sy;
+    notes[Math.random()] = { msg: data.msg, x: data.x - 16 + (data.local ? -px : Math.random() * 32), y: data.y - 16 + (data.local ? -py : Math.random() * 32), time: 0, strong: false, local: data.local, sx: elSX, sy: elSY };
 });
 socket.on(`strong`, (data) => {
-    notes[Math.random()] = { msg: data.msg, x: data.x + (data.local ? -px : 0), y: data.y - 128 + (data.local ? -py : 0), time: 0, strong: true, local: data.local };
+    let elSX = sx;
+    let elSY = sy;
+    if (data.sx !== undefined) elSX = data.sx;
+    if (data.sy !== undefined) elSY = data.sy;
+    notes[Math.random()] = { msg: data.msg, x: data.x + (data.local ? -px : 0), y: data.y - 128 + (data.local ? -py : 0), time: 0, strong: true, local: data.local, sx: elSX, sy: elSY };
 });
 socket.on(`spoils`, (data) => {
     data.amt = Math.round(data.amt);

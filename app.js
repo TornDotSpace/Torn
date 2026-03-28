@@ -268,8 +268,9 @@ const packPack = new Array(mapSz);
 const basePack = new Array(mapSz);
 const astPack = new Array(mapSz);
 const vortPack = new Array(mapSz);
-
 const notBotCount = new Array(mapSz);
+
+// global.bulletPack = new Array(mapSz);
 
 for (let i = 0; i < mapSz; i++) {
     playerPack[i] = new Array(mapSz);
@@ -282,6 +283,7 @@ for (let i = 0; i < mapSz; i++) {
     packPack[i] = new Array(mapSz);
     astPack[i] = new Array(mapSz);
     vortPack[i] = new Array(mapSz);
+    // bulletPack[i] = new Array(mapSz);
     basePack[i] = { };
 
     notBotCount[i] = new Array(mapSz);
@@ -297,6 +299,7 @@ for (let i = 0; i < mapSz; i++) {
         planetPack[i][j] = { };
         astPack[i][j] = { };
         vortPack[i][j] = { };
+        // bulletPack[i][j] = { };
         basePack[i][j] = { };
 
         notBotCount[i][j] = 0;
@@ -442,7 +445,7 @@ function endRaid () {
     if (winners !== `yellow`) chatAll(`${chatColor(winners)}${winners}${chatColor(`yellow`)} team won the raid, and made $${winnerPoints * moneyPerRaidPoint}!`);
 }
 
-function get9SectorDict (dictionar, mysx, mysy, origX = -1, origY = -1, endX = 1, endY = 1, wedebug = false) {
+global.get9SectorDict = function (dictionar, mysx, mysy, origX = globalOriginSX, origY = globalOriginSY, endX = globalEndSX, endY = globalEndSY, wedebug = false) {
     let combinedDict = {};
     for (let asx = origX; asx <= endX; asx++) { // Sectors on X loop
         // const newX = myx - (asx * sectorWidth);
@@ -460,7 +463,7 @@ function get9SectorDict (dictionar, mysx, mysy, origX = -1, origY = -1, endX = 1
         }
     }
     return combinedDict;
-}
+};
 
 function phase1y2update () {
     for (let y = 0; y < mapSz; y++) {
@@ -561,6 +564,15 @@ function phase1y2update () {
                     }
                 }
             }
+
+            /* for (const i in bulletPack[y][x]) {
+                if (bullets[y][x][i] === undefined) {
+                    //apply9SectorCall(sendAllSector, `delBullet`, { id: this.id }, this.sx, this.sy);
+
+                    delete bulletPack[y][x][i];
+                    continue;
+                }
+            } */
         }
     }
 
@@ -652,7 +664,7 @@ function phase1y2update () {
                 // Check for creation
                 if (pack == undefined) {
                     // Store pack for joining clients & delta calculation
-                    pack = beamPack[y][x][i] = { time: beam.time, wepnID: beam.wepnID, bx: beam.origin.x, by: beam.origin.y, ex: beam.enemy.x, ey: beam.enemy.y, sx: beam.sx, sy: beam.sy, updateStatus: 0, updatedDelta: undefined };
+                    pack = beamPack[y][x][i] = { time: beam.time, wepnID: beam.wepnID, bx: beam.origin.x, by: beam.origin.y, ex: beam.enemy.x, ey: beam.enemy.y, sx: beam.sx, sy: beam.sy, esx: beam.esx, esy: beam.esy, updateStatus: 0, updatedDelta: undefined };
                     // Send create
                     apply9SectorCall(sendAllSector, `beam_create`, { pack: pack, id: i }, x, y);
                 } else if (pack.updateStatus == 0) pack.updateStatus = 1;
@@ -874,6 +886,14 @@ function phase3update () {
                             beam_key = beam.enemy.y;
                         }
 
+                        if (key === `esx`) {
+                            beam_key = beam.enemy.sx;
+                        }
+
+                        if (key === `esy`) {
+                            beam_key = beam.enemy.sy;
+                        }
+
                         if (beam_key === undefined) {
                             beam_key = beam[key];
                         }
@@ -1083,7 +1103,7 @@ function phase4update () {
                                 // player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: player.sx, sy: player.sy, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: fullpackPack, vorts: fullvorts, mines: fullmines, missiles: fullmissiles, orbs: fullorbs, blasts: fullblasts, beams: fullbeams, planets: fullplanets, asteroids: fullasteroids, players: fullplayers, bases: fullbases });
 
                                 // TO-DO BELOW IS A COPIED ONE WHICH WAS COPIED FROM OLD UPDATE ONE
-                                player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: x, sy: y, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: get9SectorDict(packPack, x, y), vorts: get9SectorDict(vortPack, x, y), mines: get9SectorDict(minePack, x, y), missiles: get9SectorDict(missilePack, x, y), orbs: get9SectorDict(orbPack, x, y), blasts: get9SectorDict(blastPack, x, y), beams: get9SectorDict(beamPack, x, y), planets: get9SectorDict(planetPack, x, y), asteroids: get9SectorDict(astPack, x, y), players: get9SectorDict(playerPack, x, y), bases: get9SectorDict(basePack, x, y) });
+                                player.socket.emit(`posUp`, { disguise: player.disguise, trail: player.trail, isLocked: player.isLocked, health: player.health, shield: player.shield, planetTimer: player.planetTimer, energy: player.energy, sx: x, sy: y, charge: player.charge, x: player.x, y: player.y, angle: player.angle, speed: player.speed, packs: get9SectorDict(packPack, x, y), vorts: get9SectorDict(vortPack, x, y), mines: get9SectorDict(minePack, x, y), missiles: get9SectorDict(missilePack, x, y), orbs: get9SectorDict(orbPack, x, y), blasts: get9SectorDict(blastPack, x, y), beams: get9SectorDict(beamPack, x, y), planets: get9SectorDict(planetPack, x, y), asteroids: get9SectorDict(astPack, x, y), players: get9SectorDict(playerPack, x, y), bases: get9SectorDict(basePack, x, y) }); //, bullets: get9SectorDict(bulletPack, x, y)
                             }
                         }
                         if (pack.updateStatus == 2) { // Since bots are not allowed to cloak, we can do this

@@ -37,7 +37,7 @@ global.rEdgePointer = function () {
     else if (angle == 3) text = py;
     else if (angle == 2) text = px;
     else if (angle == 1) text = sectorWidth - py;
-    rPointerArrow(Img.yellowHollowArrow, angle * Math.PI / 2, text, `yellow`);
+    rPointerArrow(Img.yellowHollowArrow, angle * Math.PI / 2, text, `yellow`, 1.0, false, 0);
 };
 global.rBasePointer = function (nearB, extraX = 0, extraY = 0) {
     const text = Math.hypot(nearB.x - px + extraX, nearB.y - py + extraY);
@@ -45,7 +45,7 @@ global.rBasePointer = function (nearB, extraX = 0, extraY = 0) {
     let colorBase = `lightgray`;
     if (typeof nearB.color !== `undefined`) colorBase = colorSelect(nearB.color, `red`, `cyan`, `lime`, `lightgray`);
 
-    rPointerArrow(Img.whiteArrow, angle, text, colorBase, 1.0, true);
+    rPointerArrow(Img.whiteArrow, angle, text, colorBase, 1.0, true, 2);
 };
 global.rTeamPointers = function (pointers, extraX = undefined, extraY = undefined) {
     const lenW = pointers.length;
@@ -59,31 +59,31 @@ global.rTeamPointers = function (pointers, extraX = undefined, extraY = undefine
         if (pointers[i] === 0) continue;
         const text = Math.hypot(pointers[i].x - px + extraX[i], pointers[i].y - py + extraY[i]);
         const angle = Math.atan2(pointers[i].y - py + extraY[i], pointers[i].x - px + extraX[i]);
-        rPointerArrow(colorSelect(teamColors[i], Img.redArrow, Img.blueArrow, Img.greenArrow, Img.yellowArrow), angle, text, colorSelect(teamColors[i], `red`, `cyan`, `lime`, `yellow`));
+        rPointerArrow(colorSelect(teamColors[i], Img.redArrow, Img.blueArrow, Img.greenArrow, Img.yellowArrow), angle, text, colorSelect(teamColors[i], `red`, `cyan`, `lime`, `yellow`), 1.0, false, 1);
     }
 };
 global.rAstPointer = function (nearE, extraX = 0, extraY = 0) {
     const text = Math.hypot(nearE.x - px + extraX, nearE.y - py + extraY);
     const angle = Math.atan2(nearE.y - py + extraY, nearE.x - px + extraX);
-    rPointerArrow(Img.orangeArrow, angle, text, `orange`);
+    rPointerArrow(Img.orangeArrow, angle, text, `orange`, 1.0, false, 0);
 };
 global.rBlackHoleWarning = function (x, y, extraX = 0, extraY = 0, defaultImg = Img.blackArrow) {
     const dx = x - px + extraX;
     const dy = y - py + extraY;
     const angle = Math.atan2(dy, dx);
-    rPointerArrow(defaultImg, angle, Math.hypot(dx, dy), `white`, 3.0);
+    rPointerArrow(defaultImg, angle, Math.hypot(dx, dy), `white`, 3.0, false, 1);
 };
-global.rPointerArrow = function (img, angle, dist, textColor, factorChange = 1.0, tooBig = false) {
+global.rPointerArrow = function (img, angle, dist, textColor, factorChange = 1.0, tooBig = false, levelMult = 0) {
     if (tooBig == true || (textColor !== `lightgray` && textColor !== `orange`)) {
         if (dist < 100 || (tooBig == false && dist > (va2 * 3840 - 1280) * factorChange)) return;
     }
     dist = Math.floor(dist / 10);
     ctx.fillStyle = textColor;
     const pw = ships[ship].width;
-    const rendX = w / 2 + pw * 1 * cosLow(angle) + scrx;
-    const rendY = h / 2 + pw * 1 * sinLow(angle) + scry;
-    const rendXt = w / 2 + pw * 1.3 * cosLow(angle) + scrx;
-    const rendYt = h / 2 + pw * 1.3 * sinLow(angle) + scry;
+    const rendX = w / 2 + pw * (1 + (0.5 * levelMult)) * cosLow(angle) + scrx;
+    const rendY = h / 2 + pw * (1 + (0.5 * levelMult)) * sinLow(angle) + scry;
+    const rendXt = w / 2 + pw * (1.3 + (0.5 * levelMult)) * cosLow(angle) + scrx;
+    const rendYt = h / 2 + pw * (1.3 + (0.5 * levelMult)) * sinLow(angle) + scry;
     const hw = img.width / 2;
     ctx.save();
     ctx.translate(rendX, rendY);
