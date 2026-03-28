@@ -301,6 +301,7 @@ global.get9cSectorDict = function (dictionar, mysx, mysy, origX = globalOriginSX
 };
 
 function clearBullets (data, fullClear = true) {
+    if (fullClear && globalOriginSX === 0 && globalOriginSY === 0 && globalEndSX === 0 && globalEndSY === 0) bullets = { };
     /*
     if (data === undefined || data === null || data.bullets === undefined) {
         if (fullClear) bullets = { };
