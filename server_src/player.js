@@ -825,7 +825,7 @@ class Player {
         // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy when people fight over a planet
         if (p.color !== this.color || this.planetCooldown <= 0) {
             this.refillAllAmmo();
-            this.planetCooldown = 200;
+            this.planetCooldown = 300;
         }
         p.color = this.color; // claim
         p.owner = this.name;

@@ -237,6 +237,7 @@ global.equipped = 0; global.ammos = {};
 global.redShips = [];
 global.blueShips = [];
 global.greenShips = [];
+global.yellowShips = [];
 global.planetImgs = [];
 global.Img = {};
 global.Img_prgs = [0 /* Count of loaded images */, 0];

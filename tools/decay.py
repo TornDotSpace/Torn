@@ -46,8 +46,11 @@ for player in players.find():
     if player["tag"] == "V" or player["tag"] == "B":
         continue
 
-    # If they played in the last week, don't decay them
-    if ms - player["lastLogin"] < 604800000:
+    ## If they played in the last week, don't decay them
+    #if ms - player["lastLogin"] < 604800000:
+    #    continue
+    # If they played in the last 2 years, don't decay them
+    if ((ms - player["lastLogin"]) / (52 * 2)) < 604800000:
         continue
 
     experience = player["experience"] * 0.99

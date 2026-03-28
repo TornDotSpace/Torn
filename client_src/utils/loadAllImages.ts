@@ -78,6 +78,7 @@ const loadAllImages = () => {
     loadImage(`astUnderlayBlue`, `/img/space/astUnderlayBlue.png`);
     loadImage(`astUnderlayRed`, `/img/space/astUnderlayRed.png`);
     loadImage(`astUnderlayGreen`, `/img/space/astUnderlayGreen.png`);
+    loadImage(`astUnderlayYellow`, `/img/space/astUnderlayYellow.png`);
 
     // Planets.
     loadImage(`planetO`, `/img/space/planetOverlay.png`);
@@ -91,6 +92,7 @@ const loadAllImages = () => {
     loadImage(`redbullet`, `/img/weapons/rb.png`);
     loadImage(`bluebullet`, `/img/weapons/bb.png`);
     loadImage(`greenbullet`, `/img/weapons/gb.png`);
+    loadImage(`yellowbullet`, `/img/weapons/yb.png`);
 
     loadImage(`energyDisk`, `/img/weapons/energyDisk.png`);
     loadImage(`photonOrb`, `/img/weapons/photonOrb.png`);
@@ -144,11 +146,12 @@ const loadAllImages = () => {
         loadShipImage(`blue`, i);
         loadShipImage(`red`, i);
         loadShipImage(`green`, i);
+        loadShipImage(`yellow`, i);
     }
 
     loadImageEnd();
 
-    for (let i = 1; i < 6; i++) {
+    for (let i = 1; i < 12; i++) {
         planetImgs[i] = new Image();
         planetImgs[i].src = `/img/space/planets/pt${i}.jpg`;
     }

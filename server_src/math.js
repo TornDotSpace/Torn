@@ -77,11 +77,11 @@ global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { 
         return 0;
     }
 
-    let sectorDiffX = bsx - asx; // 0 - 6 = -6
+    let sectorDiffX = bsx - asx; // 0 - 6 = -6 // 6 - 0 = 6
     // console.log(`TO-DO sector X Difference 1 is = `, sectorDiffX);
-    let sectorDiffXab = Math.abs(sectorDiffX); // Sectors on X loop
-    let sectorDiffXa = Math.min(sectorDiffXab, (numSec - sectorDiffXab));
-    if (sectorDiffX > 0 && sectorDiffXa == sectorDiffX) {
+    let sectorDiffXab = Math.abs(sectorDiffX); // Sectors on X loop // -6 -> 6 // 6 -> 6
+    let sectorDiffXa = Math.min(sectorDiffXab, (numSec - sectorDiffXab)); // Math.min(sectorDiffXab, (numSec - sectorDiffXab));  // min(6, 7 - 6) = 1 // min(6, 7 - 6) = 1
+    if (((sectorDiffXa + asx) % numSec) == bsx) { // (1 + 6) % 7 = 0 === 0 // (1 + 0) % 7 = 1 !== 6
         sectorDiffX = sectorDiffXa;
     } else {
         sectorDiffX = -sectorDiffXa; // 1 -> -1

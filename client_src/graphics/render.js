@@ -365,11 +365,11 @@ global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { 
         return 0;
     }
 
-    let sectorDiffX = bsx - asx; // 0 - 6 = -6
+    let sectorDiffX = bsx - asx; // 0 - 6 = -6 // 6 - 0 = 6
     // console.log(`TO-DO sector X Difference 1 is = `, sectorDiffX);
-    let sectorDiffXab = Math.abs(sectorDiffX); // Sectors on X loop // -6 -> 6
-    let sectorDiffXa = Math.min(sectorDiffXab, (numSec - sectorDiffXab)); // min(6, 7 - 6) = 1
-    if (sectorDiffX > 0 && sectorDiffXa == sectorDiffX) {
+    let sectorDiffXab = Math.abs(sectorDiffX); // Sectors on X loop // -6 -> 6 // 6 -> 6
+    let sectorDiffXa = Math.min(sectorDiffXab, (numSec - sectorDiffXab)); // Math.min(sectorDiffXab, (numSec - sectorDiffXab));  // min(6, 7 - 6) = 1 // min(6, 7 - 6) = 1
+    if (((sectorDiffXa + asx) % numSec) == bsx) { // (1 + 6) % 7 = 0 === 0 // (1 + 0) % 7 = 1 !== 6
         sectorDiffX = sectorDiffXa;
     } else {
         sectorDiffX = -sectorDiffXa; // 1 -> -1
@@ -733,8 +733,8 @@ global.rBasicText = function () {
     ctx.font = `10px ShareTech`;
     ctx.textAlign = `right`;
     ctx.fillStyle = `white`;
-    const lbShift = guest ? 8 : 266;
-    if (!guest) {
+    const lbShift = 266; // guest ? 8 : 266;
+    if (!guest || guest) {
         info[0] = translate(`Experience: #`, [numToLS(Math.round(experience))]);
         info[1] = translate(`Money: #`, [numToLS(Math.floor(money))]);
         info[2] = translate(`Kills: #`, [numToLS(kills)]);
@@ -751,7 +751,7 @@ global.rLagStats = function (lag, arr) {
     ctx.fillStyle = `yellow`;
 
     let lagWarn = {};
-    const lbShift = guest ? 8 : 266;
+    const lbShift = 266; // guest ? 8 : 266;
 
     lagWarn[0] = lagWarn[1] = ``;
     if (lag > 50) {
@@ -766,7 +766,7 @@ global.rLagStats = function (lag, arr) {
     }
 
     for (let i = 0; i < 2; i++) {
-        write(ctx, lagWarn[i], w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
+        write(ctx, lagWarn[i], w - lbShift, 16 * 5 * (1) + i * 16); //         write(ctx, lagWarn[i], w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
     }
 
     if (!dev || arr === 0) {
@@ -789,7 +789,8 @@ global.rLagStats = function (lag, arr) {
 
     const il = 7; // 1 + max index of info
     for (let i = 2; i < il + lagNames.length; i++) {
-        write(ctx, i < il ? info[i] : (`${lagNames[i - il]}: ${parseFloat(Math.round(arr[i - il] * 100) / 100).toFixed(2)}`), w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
+        write(ctx, i < il ? info[i] : (`${lagNames[i - il]}: ${parseFloat(Math.round(arr[i - il] * 100) / 100).toFixed(2)}`), w - lbShift, 16 * 5 * (1) + i * 16);
+        // write(ctx, i < il ? info[i] : (`${lagNames[i - il]}: ${parseFloat(Math.round(arr[i - il] * 100) / 100).toFixed(2)}`), w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
     }
     ctx.textAlign = `left`;
 };
@@ -811,7 +812,7 @@ global.renderBG = function (more) {
     ctx.globalAlpha = 1;
 };
 global.rCargo = function () {
-    if (guest) return;
+    // if (guest) return;
     if (quest.type === `Mining`) {
         let metalWeHave = 0;
         for (let i = 0; i < 4; i++) {
@@ -993,6 +994,22 @@ global.rRadar = function () {
                     ctx.fill();
                     ctx.closePath();
                 }
+            }
+        }
+        for (const id in vortsInfo) {
+            const vortex = vortsInfo[id];
+            if (vortex === undefined) continue;
+            const dx = vortex.x - px + obtainSXDrift(sx, vortex.sx);
+            const dy = vortex.y - py + obtainSYDrift(sy, vortex.sy);
+            if (square(dx) + square(dy) < r2z2) {
+                ctx.strokeStyle = ctx.fillStyle = brighten(`yellow`);
+
+                const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+                const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+                ctx.beginPath();
+                ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
             }
         }
     }
@@ -1198,7 +1215,8 @@ global.infoBox = function (context, x, y, width, height, fill, stroke) {
     context.restore();
 };
 global.rRaid = function () {
-    if (guest || rank < 6) return;
+    // if (guest || rank < 6) return;
+    if (rank < 6) return;
     ctx.save();
     ctx.fillStyle = `yellow`;
     ctx.textAlign = `center`;
@@ -1323,6 +1341,7 @@ global.rBullets = function () {
         }
         if (selfo.color == `blue`) img = Img.bluebullet;
         if (selfo.color == `green`) img = Img.greenbullet;
+        if (selfo.color == `yellow`) img = Img.yellowbullet;
         if (selfo.wepnID == 1 || selfo.wepnID == 23) img = Img.bigBullet;
         const pw = img.width;
         const ph = img.height;
@@ -1626,7 +1645,7 @@ global.rPlayers = function () {
         if (selfo.disguise > 0) continue;
 
         ctx.strokeStyle = `grey`;
-        const img = colorSelect(selfo.color, redShips, blueShips, greenShips)[selfo.ship];
+        const img = colorSelect(selfo.color, redShips, blueShips, greenShips, yellowShips)[selfo.ship];
 
         const pw = img.width;
         const ph = img.height;
@@ -1636,7 +1655,7 @@ global.rPlayers = function () {
         ctx.save();
         ctx.translate(rendX, rendY);
         ctx.globalAlpha = 0.8;
-        ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -pw, -ph, pw * 2, ph * 2);
+        ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -pw, -ph, pw * 2, ph * 2);
         ctx.globalAlpha = 1;
         ctx.rotate(selfo.angle + Math.PI / 2);
         const fireWidth = 32 * 1.2 * Math.sqrt(pw / 64); const fireHeight = selfo.speed * 1.4 * pw / 64 + Math.random() * pw / 25;
