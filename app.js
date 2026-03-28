@@ -904,7 +904,7 @@ function phase3update () {
                         }
                     }
 
-                    if (beam.sy != y || beam.sx != x) { // TO-DO THIS MAY CHANGE
+                    if (beam.sy != y || beam.sx != x) { // TO-DO THIS MAY CHANGE, SINCE NOW BEAMS CAN EFFECTIVELY DO THIS STUFF
                         beam.sy = y;
                         beam.sx = x;
                     }

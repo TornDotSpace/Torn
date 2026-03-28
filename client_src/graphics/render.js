@@ -607,11 +607,13 @@ global.rNotes = function () {
         if (!(Object.is(note.sx, null) || Object.is(note.sx, undefined))) extraX = obtainSXDrift(sx, note.sx);
         if (!(Object.is(note.sy, null) || Object.is(note.sy, undefined))) extraY = obtainSYDrift(sy, note.sy);
 
-        ctx.font = `${note.strong ? 40 : 20}px ShareTech`;
-        ctx.globalAlpha = (39 - note.time) / 39;
         const x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + extraX + (note.local ? px : 0));
         const y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + extraY + (note.local ? py : 0));
-        write(ctx, note.msg, x, y);
+        if (!(x < -(2 * (w) + 220) || x > (2 * (w) + 220) || y < -(2 * (h) + 220) || y > (2 * (h) + 220))) {
+            ctx.font = `${note.strong ? 40 : 20}px ShareTech`;
+            ctx.globalAlpha = (39 - note.time) / 39;
+            write(ctx, note.msg, x, y);
+        }
     }
     ctx.globalAlpha = 1;
     ctx.textAlign = `left`;
@@ -671,7 +673,7 @@ global.rBooms = function () {
 
         const rendX = selfo.x + extraX - px + (w / 2);
         const rendY = selfo.y + extraY - py + (h / 2);
-        if (rendX < -(sectorWidth + w) || rendX > (w + 150 + sectorWidth) || rendY < -(150 + sectorWidth) || rendY > (h + 220 + sectorWidth)) continue;
+        if (rendX < -(sectorWidth / 2 + w) || rendX > (w + 150 + sectorWidth / 2) || rendY < -(150 + sectorWidth / 2) || rendY > (h + 220 + sectorWidth / 2)) continue;
 
         ctx.beginPath();
         ctx.strokeStyle = `gray`;
@@ -700,8 +702,13 @@ global.rTrails = function () {
 
         ctx.globalAlpha = (7 - selfo.time) / 7;
         ctx.strokeStyle = ctx.fillStyle = `#${selfo.color}`;
-        if (!selfo.vip) ctx.fillRect(selfo.x + extraX - 1 - px + w / 2 + scrx, selfo.y + extraY - 1 - py + scry + h / 2, 3, 3);
-        else drawStar(selfo.x + extraX - px + w / 2 + scrx, selfo.y + extraY - py + scry + h / 2, 5, 3, 8);
+
+        const rendX = selfo.x + extraX - px + w / 2 + scrx - 1;
+        const rendY = selfo.y + extraY - py + scry + h / 2 - 1;
+        if (!(rendX < -(2 * (w) + 220) || rendX > (2 * (w) + 220) || rendY < -(2 * (h) + 220) || rendY > (2 * (h) + 220))) {
+            if (!selfo.vip) ctx.fillRect(rendX - 1, rendY - 1, 3, 3);
+            else drawStar(rendX, rendY, 5, 3, 8);
+        }
     }
     ctx.globalAlpha = 1;
 };
@@ -1330,10 +1337,14 @@ global.rBullets = function () {
                 const uTick = Math.min(selfo.tick, 75);
                 const hypot = 4 + square(Math.random() * uTick / 10);
                 const hypotCenter = Math.random() * hypot;
-                ctx.beginPath();
-                ctx.arc(rendX + Math.cos(angle) * hypotCenter, rendY + Math.sin(angle) * hypotCenter, hypot, 0, 2 * Math.PI, false);
-                ctx.closePath();
-                ctx.fill();
+                const bulx = rendX + Math.cos(angle) * hypotCenter;
+                const buly = rendY + Math.sin(angle) * hypotCenter;
+                if (!(bulx < -(2 * (w) + 220) || bulx > (2 * (w) + 220) || buly < -(2 * (h) + 220) || buly > (2 * (h) + 220))) {
+                    ctx.beginPath();
+                    ctx.arc(bulx, buly, hypot, 0, 2 * Math.PI, false);
+                    ctx.closePath();
+                    ctx.fill();
+                }
             }
             ctx.restore();
             if (selfo.tick > 750) delete bullets[i];
@@ -1345,11 +1356,13 @@ global.rBullets = function () {
         if (selfo.wepnID == 1 || selfo.wepnID == 23) img = Img.bigBullet;
         const pw = img.width;
         const ph = img.height;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.rotate(selfo.angle + Math.PI / 2);
-        ctx.drawImage(img, -pw / 2, -ph / 2);
-        ctx.restore();
+        if (!(rendX < -(2 * (w + pw) + 220) || rendX > (2 * (w + pw) + 220) || rendY < -(2 * (h + ph) + 220) || rendY > (2 * (h + ph) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.drawImage(img, -pw / 2, -ph / 2);
+            ctx.restore();
+        }
     }
 };
 global.rMissiles = function () {
@@ -1374,11 +1387,13 @@ global.rMissiles = function () {
         const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
         const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
 
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.rotate(selfo.angle + Math.PI / 2);
-        ctx.drawImage(img, -pw / 2, -ph / 2);
-        ctx.restore();
+        if (!(rendX < -(2 * (w + pw) + 220) || rendX > (2 * (w + pw) + 220) || rendY < -(2 * (h + ph) + 220) || rendY > (2 * (h + ph) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.drawImage(img, -pw / 2, -ph / 2);
+            ctx.restore();
+        }
     }
 };
 global.rOrbs = function () {
@@ -1392,11 +1407,13 @@ global.rOrbs = function () {
         const ph = img.height;
         const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
         const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.rotate(getTimeAngle() + Math.PI / 2);
-        ctx.drawImage(img, -pw / 2, -ph / 2);
-        ctx.restore();
+        if (!(rendX < -(2 * (w + pw) + 220) || rendX > (2 * (w + pw) + 220) || rendY < -(2 * (h + ph) + 220) || rendY > (2 * (h + ph) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(getTimeAngle() + Math.PI / 2);
+            ctx.drawImage(img, -pw / 2, -ph / 2);
+            ctx.restore();
+        }
     }
 };
 global.rMines = function () {
@@ -1517,12 +1534,15 @@ global.rAsteroids = function () {
         const stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
         const tsx = (stime % 8) * 128;
         const tsy = Math.floor((stime / 8) % 4 + 4 * (Math.floor(selfo.metal) % 2)) * 128;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.drawImage(Img.astUnderlayBlue, -128, -128);
-        ctx.rotate(selfo.angle + Math.PI / 2);
-        ctx.drawImage(img, tsx, tsy, 128, 128, -64 * healthDec, -64 * healthDec, 128 * healthDec, 128 * healthDec);
-        ctx.restore();
+
+        if (!(rendX < -(2 * (w + healthDec) + 220) || rendX > (2 * (w + healthDec) + 220) || rendY < -(2 * (h + healthDec) + 220) || rendY > (2 * (h + healthDec) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.drawImage(Img.astUnderlayBlue, -128, -128);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.drawImage(img, tsx, tsy, 128, 128, -64 * healthDec, -64 * healthDec, 128 * healthDec, 128 * healthDec);
+            ctx.restore();
+        }
 
         if (selfo.color != pc) { // update nearest enemy for pointer
             const dDistPX = selfo.x - px + extraX;
@@ -1601,12 +1621,14 @@ global.rPacks = function () {
         const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
         const d = new Date();
         const stime = (d.getMilliseconds() / 1000 + d.getSeconds()) / 3;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.scale(2, 2);
-        ctx.rotate(stime * Math.PI);
-        ctx.drawImage(img, -img.width / 2, -img.height / 2);
-        ctx.restore();
+        if (!(rendX < -(2 * (w) + 220) || rendX > (2 * (w) + 220) || rendY < -(2 * (h) + 220) || rendY > (2 * (h) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.scale(2, 2);
+            ctx.rotate(stime * Math.PI);
+            ctx.drawImage(img, -img.width / 2, -img.height / 2);
+            ctx.restore();
+        }
     }
 };
 global.rVorts = function () {
@@ -1623,13 +1645,15 @@ global.rVorts = function () {
         const extraY = obtainSYDrift(sy, selfo.sy);
         const rendX = selfo.x + extraX - px + w / 2 + scrx;
         const rendY = selfo.y + extraY - py + h / 2 + scry;
-        ctx.translate(rendX, rendY);
-        ctx.rotate(angleT % (Math.PI * 2));
-        ctx.drawImage(img, -size / 2, -size / 2, size, size);
-        ctx.globalAlpha = 0.3;
-        ctx.rotate(-0.5 * angleT % (Math.PI * 2));
-        ctx.drawImage(img, -size * 3 / 4, -size * 3 / 4, 1.5 * size, 1.5 * size);
-        ctx.restore();
+        if (!(rendX < -(2 * (w + size) + 220) || rendX > (2 * (w + size) + 220) || rendY < -(2 * (h + size) + 220) || rendY > (2 * (h + size) + 220))) {
+            ctx.translate(rendX, rendY);
+            ctx.rotate(angleT % (Math.PI * 2));
+            ctx.drawImage(img, -size / 2, -size / 2, size, size);
+            ctx.globalAlpha = 0.3;
+            ctx.rotate(-0.5 * angleT % (Math.PI * 2));
+            ctx.drawImage(img, -size * 3 / 4, -size * 3 / 4, 1.5 * size, 1.5 * size);
+            ctx.restore();
+        }
         if (selfo.isWorm) currAlert = translate(`Wormhole Nearby!`);
         else bigAlert = translate(`Black Hole Nearby!`);
         rBlackHoleWarning(selfo.x, selfo.y, extraX, extraY, imgArrow);
@@ -1652,25 +1676,30 @@ global.rPlayers = function () {
         if (pw == 0 || ph == 0) return;
         const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
         const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.globalAlpha = 0.8;
-        ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -pw, -ph, pw * 2, ph * 2);
-        ctx.globalAlpha = 1;
-        ctx.rotate(selfo.angle + Math.PI / 2);
+        const outOfBounds = (rendX < -(2 * (w + pw) + 220) || rendX > (2 * (w + pw) + 220) || rendY < -(2 * (h + ph) + 220) || rendY > (2 * (h + ph) + 220));
+        if (!outOfBounds) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.globalAlpha = 0.8;
+            ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -pw, -ph, pw * 2, ph * 2);
+            ctx.globalAlpha = 1;
+            ctx.rotate(selfo.angle + Math.PI / 2);
+        }
         const fireWidth = 32 * 1.2 * Math.sqrt(pw / 64); const fireHeight = selfo.speed * 1.4 * pw / 64 + Math.random() * pw / 25;
-        if (selfo.speed > 0) ctx.drawImage(Img.fire, 0, tick % 8 * 64, 64, 64, -fireWidth / 2, 0, fireWidth, fireHeight);
-        ctx.restore();
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.rotate(selfo.angle + Math.PI / 2);
-        ctx.drawImage(img, -pw / 2, -ph / 2);
-        ctx.restore();
+        if (!outOfBounds) {
+            if (selfo.speed > 0) ctx.drawImage(Img.fire, 0, tick % 8 * 64, 64, 64, -fireWidth / 2, 0, fireWidth, fireHeight);
+            ctx.restore();
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.drawImage(img, -pw / 2, -ph / 2);
+            ctx.restore();
 
-        ctx.fillStyle = brighten(selfo.color);
-        ctx.textAlign = `center`;
-        write(ctx, selfo.name, rendX, rendY - ships[selfo.ship].width * 0.5);
-        ctx.textAlign = `left`;
+            ctx.fillStyle = brighten(selfo.color);
+            ctx.textAlign = `center`;
+            write(ctx, selfo.name, rendX, rendY - ships[selfo.ship].width * 0.5);
+            ctx.textAlign = `left`;
+        }
 
         if (selfo.name === myName) {
             if (selfo.health < selfo.maxHealth * 0.3) currAlert = translate(`Low Health!`);
@@ -1700,24 +1729,25 @@ global.rPlayers = function () {
                 }
             }
         }
-
-        if (selfo.hasPackage) rBackPack(selfo);
-        ctx.lineWidth = 6;
-        if (selfo.shield) {
-            ctx.strokeStyle = `lightblue`;
+        if (!outOfBounds) {
+            if (selfo.hasPackage) rBackPack(selfo);
+            ctx.lineWidth = 6;
+            if (selfo.shield) {
+                ctx.strokeStyle = `lightblue`;
+                ctx.beginPath();
+                ctx.arc(rendX, rendY, pw / 1.5 - 8, 0, 2 * Math.PI, false);
+                ctx.stroke();
+            }
+            if (selfo.health / selfo.maxHealth >= 1) continue;
+            ctx.lineWidth = 4;
+            const r = Math.floor((1 - selfo.health / selfo.maxHealth) * 255);
+            const g = Math.floor(255 * selfo.health / selfo.maxHealth);
+            const b = Math.floor(64 * selfo.health / selfo.maxHealth);
+            ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
             ctx.beginPath();
-            ctx.arc(rendX, rendY, pw / 1.5 - 8, 0, 2 * Math.PI, false);
+            ctx.arc(rendX, rendY, pw / 1.5, (2.5 - selfo.health / selfo.maxHealth * 0.99) * Math.PI, (0.501 + selfo.health / selfo.maxHealth) * Math.PI, false);
             ctx.stroke();
         }
-        if (selfo.health / selfo.maxHealth >= 1) continue;
-        ctx.lineWidth = 4;
-        const r = Math.floor((1 - selfo.health / selfo.maxHealth) * 255);
-        const g = Math.floor(255 * selfo.health / selfo.maxHealth);
-        const b = Math.floor(64 * selfo.health / selfo.maxHealth);
-        ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
-        ctx.beginPath();
-        ctx.arc(rendX, rendY, pw / 1.5, (2.5 - selfo.health / selfo.maxHealth * 0.99) * Math.PI, (0.501 + selfo.health / selfo.maxHealth) * Math.PI, false);
-        ctx.stroke();
     }
 
     rTeamPointers(pointers, extraX, extraY);
@@ -1773,17 +1803,20 @@ global.rBases = function () {
             // console.log("TO-DO Calling rBases 1, aBase = " + aBase + " and its parameters are " + Object.keys(aBase));
             const rendX = aBase.x + obtainSXDrift(sx, aBase.sx) - px + w / 2 + scrx;
             const rendY = aBase.y + obtainSYDrift(sy, aBase.sy) - py + h / 2 + scry;
+            let outOfBounds = (rendX < -(2 * (w + pw) + 500) || rendX > (2 * (w + pw) + 500) || rendY < -(2 * (h + ph) + 500) || rendY > (2 * (h + ph) + 500));
             let tooClose = false;
             let warningRange = TURRET_DETECT_RANGE;
             if (aBase.baseType == DEADBASE || aBase.baseType == LIVEBASE) {
-                ctx.save();
-                ctx.translate(rendX, rendY);
-                ctx.rotate(tick / 1000 + Math.PI / 2);
-                ctx.drawImage(colorSelect(aBase.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -512, -512, 1024, 1024);
-                ctx.drawImage(image, -384, -384, 768, 768);
-                ctx.restore();
-                ctx.textAlign = `center`;
-                ctx.fillStyle = `lime`;
+                if (!outOfBounds) {
+                    ctx.save();
+                    ctx.translate(rendX, rendY);
+                    ctx.rotate(tick / 1000 + Math.PI / 2);
+                    ctx.drawImage(colorSelect(aBase.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -512, -512, 1024, 1024);
+                    ctx.drawImage(image, -384, -384, 768, 768);
+                    ctx.restore();
+                    ctx.textAlign = `center`;
+                    ctx.fillStyle = `lime`;
+                }
                 const dDistAX = aBase.x - px + obtainSXDrift(sx, aBase.sx);
                 const dDistAY = aBase.y - py + obtainSYDrift(sy, aBase.sy);
                 const moduSqDis = square(dDistAX) + square(dDistAY);
@@ -1792,17 +1825,21 @@ global.rBases = function () {
                 if (tooClose && aBase.baseType == DEADBASE) {
                     if (aBase.color !== pc) currAlert = translate(`Enemy Base Nearby!`);
                 }
-                if (experience < 64 && aBase.color == pc && moduSqDis < square(512)) {
-                    ctx.font = `${2.5 * sinLow(tick / 8) + 15}px ShareTech`;
-                    write(ctx, translate(`X TO DOCK WITH BASE`), rendX, rendY - 96);
-                    ctx.font = `14px ShareTech`;
+                if (!outOfBounds) {
+                    if (experience < 64 && aBase.color == pc && moduSqDis < square(512)) {
+                        ctx.font = `${2.5 * sinLow(tick / 8) + 15}px ShareTech`;
+                        write(ctx, translate(`X TO DOCK WITH BASE`), rendX, rendY - 96);
+                        ctx.font = `14px ShareTech`;
+                    }
+                    ctx.textAlign = `left`;
                 }
-                ctx.textAlign = `left`;
             } else { // write name
-                ctx.textAlign = `center`;
-                ctx.fillStyle = `white`;
-                ctx.font = `14px ShareTech`;
-                write(ctx, aBase.name, rendX, rendY - 64);
+                if (!outOfBounds) {
+                    ctx.textAlign = `center`;
+                    ctx.fillStyle = `white`;
+                    ctx.font = `14px ShareTech`;
+                    write(ctx, aBase.name, rendX, rendY - 64);
+                }
             }
 
             if (aBase.baseType != DEADBASE) {
@@ -1827,20 +1864,23 @@ global.rBases = function () {
 
                 pw = timage.width; // render turrets
                 ph = timage.height;
-                ctx.save();
-                ctx.translate(rendX, rendY);
-                ctx.rotate(aBase.angle + Math.PI / 2);
-                ctx.drawImage(timage, -pw / 2, -ph / 2);
-                ctx.restore();
-                if (aBase.health / aBase.maxHealth < 1) {
-                    ctx.lineWidth = 4;
-                    const r = Math.floor((1 - aBase.health / aBase.maxHealth) * 255);
-                    const g = Math.floor(255 * aBase.health / aBase.maxHealth);
-                    const b = Math.floor(64 * aBase.health / aBase.maxHealth);
-                    ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
-                    ctx.beginPath();
-                    ctx.arc(rendX, rendY, pw / 1.5, (2.5 - 0.99 * aBase.health / aBase.maxHealth) * Math.PI, (0.501 + aBase.health / aBase.maxHealth) * Math.PI, false);
-                    ctx.stroke();
+                outOfBounds = (rendX < -(2 * (w + pw) + 500) || rendX > (2 * (w + pw) + 500) || rendY < -(2 * (h + ph) + 500) || rendY > (2 * (h + ph) + 500));
+                if (!outOfBounds) {
+                    ctx.save();
+                    ctx.translate(rendX, rendY);
+                    ctx.rotate(aBase.angle + Math.PI / 2);
+                    ctx.drawImage(timage, -pw / 2, -ph / 2);
+                    ctx.restore();
+                    if (aBase.health / aBase.maxHealth < 1) {
+                        ctx.lineWidth = 4;
+                        const r = Math.floor((1 - aBase.health / aBase.maxHealth) * 255);
+                        const g = Math.floor(255 * aBase.health / aBase.maxHealth);
+                        const b = Math.floor(64 * aBase.health / aBase.maxHealth);
+                        ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+                        ctx.beginPath();
+                        ctx.arc(rendX, rendY, pw / 1.5, (2.5 - 0.99 * aBase.health / aBase.maxHealth) * Math.PI, (0.501 + aBase.health / aBase.maxHealth) * Math.PI, false);
+                        ctx.stroke();
+                    }
                 }
             }
             rBasePointer(aBase, obtainSXDrift(sx, aBase.sx), obtainSYDrift(sy, aBase.sy));
