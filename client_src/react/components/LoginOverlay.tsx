@@ -117,23 +117,23 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
             ? ((this.state.seed < 0.33)
                 ? (
                     <div className="text-center">
-                        <button id="registerR" onClick={this.registerR}>Join Alien Team!</button>
-                        <button id="registerB" onClick={this.registerB}>Join Human Team!</button>
-                        <button id="registerG" onClick={this.registerG}>Join Cyborg Team!</button>
+                        <button id="registerR" onClick={this.registerR}><div className="text-center"><img src="img/red/r1.png" alt="red 0" width="64"/></div>Join Alien Team!</button>
+                        <button id="registerB" onClick={this.registerB}><div className="text-center"><img src="img/blue/b1.png" alt="blue 0" width="64"/></div>Join Human Team!</button>
+                        <button id="registerG" onClick={this.registerG}><div className="text-center"><img src="img/green/g1.png" alt="green 0" width="64"/></div>Join Cyborg Team!</button>
                     </div>
                 )
                 : (
                     <div className="text-center">
-                        <button id="registerG" onClick={this.registerG}>Join Cyborg Team!</button>
-                        <button id="registerR" onClick={this.registerR}>Join Alien Team!</button>
-                        <button id="registerB" onClick={this.registerB}>Join Human Team!</button>
+                        <button id="registerG" onClick={this.registerG}><div className="text-center"><img src="img/green/g1.png" alt="green 0" width="64"/></div>Join Cyborg Team!</button>
+                        <button id="registerR" onClick={this.registerR}><div className="text-center"><img src="img/red/r1.png" alt="red 0" width="64"/></div>Join Alien Team!</button>
+                        <button id="registerB" onClick={this.registerB}><div className="text-center"><img src="img/blue/b1.png" alt="blue 0" width="64"/></div>Join Human Team!</button><div className="text-center"><img src="img/blue/b1.png" alt="blue 0" width="64"/></div>
                     </div>
                 ))
             : (
                 <div className="text-center">
-                    <button id="registerB" onClick={this.registerB}>Join Human Team!</button>
-                    <button id="registerG" onClick={this.registerG}>Join Cyborg Team!</button>
-                    <button id="registerR" onClick={this.registerR}>Join Alien Team!</button>
+                    <button id="registerB" onClick={this.registerB}><div className="text-center"><img src="img/blue/b1.png" alt="blue 0" width="64"/></div>Join Human Team!</button>
+                    <button id="registerG" onClick={this.registerG}><div className="text-center"><img src="img/green/g1.png" alt="green 0" width="64"/></div>Join Cyborg Team!</button>
+                    <button id="registerR" onClick={this.registerR}><div className="text-center"><img src="img/red/r1.png" alt="red 0" width="64"/></div>Join Alien Team!</button>
                 </div>
             );
 
