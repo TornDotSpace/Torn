@@ -140,11 +140,11 @@ class Base {
             if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {
                 this.shootMuon(); return;
             }
-            if (Math.random() < 0.01) this.shootEMPMissile();
-            if (cDist2 < square(wepns[8].range * 10)) this.shootLaser(c);// range:60
-            else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb();// range:125
-            else if (cDist2 < square(175 * 10)) this.shootMissile();// range:175
-            else if (cDist2 < 10 + square(wepns[3].range * 10)) this.shootRifle();// range:750 plus some extra distance rifle can travel. Basically this makes the turret slightly smarter.
+            if (Math.random() < 0.01 && cDist2 < square(wepns[12].range * 10)) this.shootEMPMissile();
+            if (cDist2 < square(wepns[8].range * 10)) this.shootLaser(c); // range:60
+            else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb(); // range:125
+            else if (cDist2 < square(wepns[14].range * 10)) this.shootMissile(); // range:175
+            else if (cDist2 < 10 + square(wepns[3].range * 10)) this.shootRifle(); // range:750 plus some extra distance rifle can travel. Basically this makes the turret slightly smarter.
         }
     }
 

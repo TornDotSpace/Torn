@@ -145,9 +145,9 @@ class Bot extends Player {
         let closestEBDis = -1;
         for (const id in fullbases) {
             const base = fullbases[id];
-            if (base !== undefined && base != 0) {
+            if (base !== undefined && base != 0 && base.color != this.color && base.baseType != DEADBASE) {
                 const dist = squaredGlobalDist(base, this, sectorWidth, sectorWidth, mapSz);
-                if (dist < (close * 3 + square(150)) && base.color != this.color) {
+                if (dist < (close * 3 + square(150))) {
                     enemies++;
                     if (closestEBase === 0 || dist < closestEBDis) {
                         target = closestEBase = base;
