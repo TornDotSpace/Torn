@@ -50,7 +50,7 @@ class Mine {
             this.collideWithBases();
         }
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
-        if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
+        if (this.time++ > mineLifetime) this.die(0.1); // all mines die after 3 minutes
         if (this.wepnID === 50) { // Nailoth mine
             if (this.time === 25) {
                 if (this.child == 0) {
@@ -132,7 +132,7 @@ class Mine {
     }
 
     doPulse () {
-        if (this.time > 25 * 40) this.die(); // pulse has a shorter lifespan
+        if (this.time > 25 * 40) this.die(0.1); // pulse has a shorter lifespan
         let playerFound = false;
         const range2 = square(this.range * 10);
         const fullplayers = get9SectorDict(players, this.sx, this.sy);
@@ -173,7 +173,7 @@ class Mine {
     }
 
     doHeal () {
-        if (this.time > 25 * 20) this.die(); // campfire has a shorter lifespan
+        if (this.time > 25 * 20) this.die(0.1); // campfire has a shorter lifespan
         let playerFound = 0;
         const range2 = square(this.range * 10);
         // check there's 2 people
@@ -290,8 +290,8 @@ class Mine {
         blasts[this.sy][this.sx][r] = blast;
     }
 
-    die () {
-        this.die = function () { }; // Purpose unclear, please comment
+    die (volumeMult = 1) {
+        this.die = function (volumeMult = 1) { }; // Purpose unclear, please comment
         let power = 0; // how strongly this mine pushes people away on explosion
         if (this.wepnID == 15 || this.wepnID == 33) power = 400; // mine, grenade
         else if (this.wepnID == 32) power = 2000;
@@ -323,7 +323,7 @@ class Mine {
                 }
             }
         }
-        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0, soundStrength: volumeMult }, this.sx, this.sy);
         delete mines[this.sy][this.sx][this.id];
     }
 }

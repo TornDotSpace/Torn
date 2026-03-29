@@ -87,7 +87,7 @@ class Bullet {
                 if (squaredDist(base, this) < square(5000)) return; // don't spawn too close to a base, just keep moving if too close to base and explode when 500 units away
                 this.dieAndMakeVortex(); // collapse into black hole
             }
-        } else if (this.dist > wepns[this.wepnID].range) this.die(); // out of range
+        } else if (this.dist > wepns[this.wepnID].range) this.die(0.1); // out of range
     }
 
     move () {
@@ -196,7 +196,7 @@ class Bullet {
             const b = bases[this.sy][this.sx][id];
             if (b != 0 && b.baseType != DEADBASE && b.color != this.color && squaredDist(b, this) < square(16 + 32)) {
                 b.dmg(this.dmg, this);
-                this.die();
+                this.die(1);
             }
         }
 
@@ -207,7 +207,7 @@ class Bullet {
                 if (this.wepnID === 28) return;
 
                 p.dmg(this.dmg, this); // damage the enemy
-                this.die();// despawn this bullet
+                this.die(1); // despawn this bullet
                 break;
             }
         }
@@ -219,21 +219,21 @@ class Bullet {
                     a.vx += this.vx / 256; // push the asteroid
                     a.vy += this.vy / 256;
                     a.owner = this.owner;
-                    this.die(); // delete this bullet
+                    this.die(1); // delete this bullet
                     break;
                 }
             }
         }
     }
 
-    die () {
+    die (volumeMult = 1) {
         // TO-DO NEW
         apply9SectorCall(sendAllSector, `delBullet`, { id: this.id }, this.sx, this.sy);
         // TO-DO OLD
         // sendAllSector(`delBullet`, { id: this.id }, this.sx, this.sy);
         const reverse = this.wepnID == 2 ? -1 : 1; // for reverse gun, particles should shoot the other way
         // TO-DO NEW
-        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy, soundStrength: volumeMult }, this.sx, this.sy);
         // TO-DO OLD
         // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: reverse * this.vx, dy: reverse * this.vy }, this.sx, this.sy);
         delete bullets[this.sy][this.sx][this.id];
@@ -243,7 +243,7 @@ class Bullet {
         const r = Math.random();
         const vort = new Vortex(r, this.x, this.y, this.sx, this.sy, 3000, this.owner, false); // 3000 is the size of a grav bomb vortex
         vorts[this.sy][this.sx][r] = vort;
-        this.die();
+        this.die(0.8);
     }
 }
 

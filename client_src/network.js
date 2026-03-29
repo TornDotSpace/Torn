@@ -546,7 +546,9 @@ socket.on(`sound`, (data) => {
     const dx = (px - data.x + extraX) / 500;
     const dy = (py - data.y + extraY) / 500;
     const dist = Math.hypot(Math.abs(dx) + 10, Math.abs(dy) + 10);
-    let vol = 0.6 / dist;
+    let vol = 0.6;
+    if (data.soundStrength !== undefined) vol = vol * data.soundStrength;
+    vol = vol / dist;
     if (data.file === `hyperspace`) {
         hyperdriveTimer = 200;
         vol = 2;

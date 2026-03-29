@@ -36,7 +36,7 @@ class Orb {
     }
 
     tick () {
-        if (this.timer++ > 3 * wepns[this.wepnID].range / wepns[this.wepnID].speed) this.die();
+        if (this.timer++ > 3 * wepns[this.wepnID].range / wepns[this.wepnID].speed) this.die(0.1);
         this.move();
 
         // Crossing through sectors
@@ -117,7 +117,7 @@ class Orb {
 
     move () {
         if (this.locked !== undefined && this.locked !== 0) {
-            if (this.lockedTimer++ > secs(2.5)) this.die(); // after 2.5 seconds of being locked on -> delete this
+            if (this.lockedTimer++ > secs(2.5)) this.die(0.1); // after 2.5 seconds of being locked on -> delete this
 
             const range2a = square(wepns[this.wepnID].range * 10);
             const fullplayers = get9SectorDict(players, this.sx, this.sy);
@@ -163,8 +163,8 @@ class Orb {
         this.y += this.vy; // move
     }
 
-    die () {
-        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy }, this.sx, this.sy);
+    die (volumeMult = 1) {
+        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: this.vx, dy: this.vy, soundStrength: volumeMult }, this.sx, this.sy);
         delete orbs[this.sy][this.sx][this.id];
     }
 }
