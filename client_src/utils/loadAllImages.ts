@@ -56,18 +56,22 @@ const loadAllImages = () => {
     loadImage(`rss`, `/img/red/rss.png`);
     loadImage(`bss`, `/img/blue/bss.png`);
     loadImage(`gss`, `/img/green/gss.png`);
+    loadImage(`yss`, `/img/yellow/yss.png`);
 
     loadImage(`mrss`, `/img/red/mrss.png`);
     loadImage(`mbss`, `/img/blue/mbss.png`);
     loadImage(`mgss`, `/img/green/mgss.png`);
+    loadImage(`myss`, `/img/yellow/myss.png`);
 
     loadImage(`rt`, `/img/red/rt.png`);
     loadImage(`bt`, `/img/blue/bt.png`);
     loadImage(`gt`, `/img/green/gt.png`);
+    loadImage(`yt`, `/img/yellow/yt.png`);
 
     loadImage(`rsentry`, `/img/red/rsentry.png`);
     loadImage(`bsentry`, `/img/blue/bsentry.png`);
     loadImage(`gsentry`, `/img/green/gsentry.png`);
+    loadImage(`ysentry`, `/img/yellow/ysentry.png`);
 
     // Asteroids.
     loadImage(`iron`, `/img/space/iron.png`);

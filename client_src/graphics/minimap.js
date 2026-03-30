@@ -308,7 +308,7 @@ global.r3DMap = function () {
             // else minictx.stroke(); <-- Renders borders around the sectors
 
             if (baseMap2D[i][j] !== 0) {
-                const img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss);
+                const img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss, Img.myss);
                 minictx.drawImage(img, cWidthCen + cx - 7, cHeightCen + cy - 7, 15, 15);
             }
 

@@ -494,7 +494,7 @@ global.updateBooms = function () {
 global.rLore = function () {
     ctx.fillStyle = brighten(pc);
     ctx.font = `22px ShareTech`;
-    wrapText(ctx, jsn.lore[colorSelect(pc, 0, 1, 2)], 48, h / 2 - 22 * 5 - 10000 / (loreTimer + 1), w - 96, 40);
+    wrapText(ctx, jsn.lore[colorSelect(pc, 0, 1, 2, 3)], 48, h / 2 - 22 * 5 - 10000 / (loreTimer + 1), w - 96, 40);
     ctx.textAlign = `center`;
     ctx.fillStyle = `yellow`;
     const t = (new Date()).getTime() / 6000;
@@ -1817,7 +1817,7 @@ global.rBases = function () {
         for (const id in basesInfo) {
             const aBase = basesInfo[id];
             if (aBase === undefined || aBase === 0 || aBase === null || typeof aBase !== `object`) continue;
-            const image = colorSelect(aBase.color, Img.rss, Img.bss, Img.gss);
+            const image = colorSelect(aBase.color, Img.rss, Img.bss, Img.gss, Img.yss);
             let pw = image.width;
             let ph = image.height;
             // console.log("TO-DO Calling rBases 1, aBase = " + aBase + " and its parameters are " + Object.keys(aBase));
@@ -1831,7 +1831,7 @@ global.rBases = function () {
                     ctx.save();
                     ctx.translate(rendX, rendY);
                     ctx.rotate(tick / 1000 + Math.PI / 2);
-                    ctx.drawImage(colorSelect(aBase.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -512, -512, 1024, 1024);
+                    ctx.drawImage(colorSelect(aBase.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -512, -512, 1024, 1024);
                     ctx.drawImage(image, -384, -384, 768, 768);
                     ctx.restore();
                     ctx.textAlign = `center`;
@@ -1869,7 +1869,7 @@ global.rBases = function () {
             if (aBase.baseType != DEADBASE) {
                 let timage = 0;
                 if (aBase.baseType == SENTRY) {
-                    timage = colorSelect(aBase.color, Img.rsentry, Img.bsentry, Img.gsentry);
+                    timage = colorSelect(aBase.color, Img.rsentry, Img.bsentry, Img.gsentry, Img.ysentry);
                     if (tooClose) {
                         if (aBase.color !== pc && warningLevel <= 2) {
                             if (warningLevel < 2) currAlert = translate(`Enemy Sentry Nearby!`);
@@ -1878,7 +1878,7 @@ global.rBases = function () {
                         }
                     }
                 } else {
-                    timage = colorSelect(aBase.color, Img.rt, Img.bt, Img.gt);
+                    timage = colorSelect(aBase.color, Img.rt, Img.bt, Img.gt, Img.yt);
                     if (aBase.baseType == TURRET) {
                         if (tooClose) {
                             if (aBase.color !== pc && warningLevel <= 3) {
