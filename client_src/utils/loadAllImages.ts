@@ -151,7 +151,7 @@ const loadAllImages = () => {
 
     loadImageEnd();
 
-    for (let i = 1; i < 12; i++) {
+    for (let i = 1; i < 15; i++) {
         planetImgs[i] = new Image();
         planetImgs[i].src = `/img/space/planets/pt${i}.jpg`;
     }

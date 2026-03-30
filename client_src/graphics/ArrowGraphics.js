@@ -71,7 +71,7 @@ global.rBlackHoleWarning = function (x, y, extraX = 0, extraY = 0, defaultImg = 
     const dx = x - px + extraX;
     const dy = y - py + extraY;
     const angle = Math.atan2(dy, dx);
-    rPointerArrow(defaultImg, angle, Math.hypot(dx, dy), `white`, 3.0, false, 1);
+    rPointerArrow(defaultImg, angle, Math.hypot(dx, dy), `white`, 15.0, false, 1);
 };
 global.rPointerArrow = function (img, angle, dist, textColor, factorChange = 1.0, tooBig = false, levelMult = 0) {
     if (tooBig == true || (textColor !== `lightgray` && textColor !== `orange`)) {

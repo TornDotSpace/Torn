@@ -345,10 +345,10 @@ module.exports = initNetcode = () => {
                 // Cleanup
                 // Kill socket
                 socket.disconnect();
-                delete dockers[player.id];
-                delete deads[player.id];
-                delete sockets[socket.id];
-                delete players[player.sy][player.sx][player.id];
+                if (dockers[player.id] !== undefined) delete dockers[player.id];
+                if (deads[player.id] !== undefined) delete deads[player.id];
+                if (sockets[socket.id] !== undefined) delete sockets[socket.id];
+                if (players[player.sy][player.sx][player.id] !== undefined) delete players[player.sy][player.sx][player.id];
             }, 6000);
         });
 

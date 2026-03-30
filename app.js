@@ -359,10 +359,14 @@ function init () { // start the server!
     let v = new Vortex(id, Math.random() * sectorWidth, Math.random() * sectorWidth, Math.floor(Math.random() * mapSz), Math.floor(Math.random() * mapSz), 0.5, 0, true);
     global.wormhole = vorts[v.sy][v.sx][id] = v;
 
-    // 3 Black Holes
-    id = Math.random();
-    v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, Math.floor(mapSz / 2), Math.floor(mapSz / 2), 0.15, 0, false);
-    vorts[v.sy][v.sx][id] = v;
+    // multiple Black Holes on the galactic center
+    // Since now the 3D map considers the galactic center as the middle of the entire y row, we need to add black holes to all of them.
+    for (let i = 0; i < mapSz; i += 3) {
+        id = Math.random();
+        // v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, Math.floor(mapSz / 2), Math.floor(mapSz / 2), 0.15, 0, false);
+        v = new Vortex(id, sectorWidth / 2, sectorWidth / 2, i, Math.floor(mapSz / 2), 0.5, 0, false);
+        vorts[v.sy][v.sx][id] = v;
+    }
 
     setTimeout(update, tickRate);
     broadcastInfo();

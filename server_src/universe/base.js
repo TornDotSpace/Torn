@@ -119,9 +119,11 @@ class Base {
         let c = 0; // nearest player
         let cDist2 = 1000000000; // min dist to player
         const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        let numEnemies = 0;
         for (const i in fullplayers) {
             const player = fullplayers[i];
             if (player === undefined || player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
+            numEnemies++;
             const dist2 = squaredGlobalDist(player, this, sectorWidth, sectorWidth, mapSz);
             if (dist2 < cDist2) {
                 c = player; cDist2 = dist2;
@@ -137,14 +139,18 @@ class Base {
         this.angle = (this.angle + newAngle * 2) / 3;
 
         if (this.reload < 0) {
-            if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {
-                this.shootMuon(); return;
-            }
-            if (Math.random() < 0.01 && cDist2 < square(wepns[12].range * 10)) this.shootEMPMissile();
             if (cDist2 < square(wepns[8].range * 10)) this.shootLaser(c); // range:60
             else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb(); // range:125
-            else if (cDist2 < square(wepns[14].range * 10)) this.shootMissile(); // range:175
             else if (cDist2 < 10 + square(wepns[3].range * 10)) this.shootRifle(); // range:750 plus some extra distance rifle can travel. Basically this makes the turret slightly smarter.
+            else if (cDist2 < square(wepns[14].range * 10)) this.shootMissile(14); // range: actually way than rifle more since these are torpedoes
+
+            if (Math.random() < 0.01 && cDist2 < square(wepns[12].range * 10)) this.shootEMPMissile();
+
+            if (this.baseType === LIVEBASE && numEnemies > 12 && cDist2 < square(wepns[13].range * 10)) this.shootMissile(13); // Anti-crowd measures, Missile Swarm!
+
+            if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {
+                this.shootMuon();
+            }
         }
     }
 
@@ -215,11 +221,11 @@ class Base {
         if (this.shots > 5000) { this.die(0); }
     }
 
-    shootMissile () { // this is a torpedo
-        this.reload = wepns[14].charge / 2;
+    shootMissile (wepID = 14) { // this is a torpedo, unless told otherwise
+        this.reload = wepns[wepID].charge / 2;
         const r = Math.random();
         const bAngle = this.angle;
-        const missile = new Missile(this, r, 14, bAngle);
+        const missile = new Missile(this, r, wepID, bAngle);
         missiles[this.sy][this.sx][r] = missile;
         apply9SectorCall(sendAllSector, `sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }

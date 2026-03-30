@@ -42,8 +42,8 @@ global.baseKillExp = 5000; // Exp reward for killing a base
 global.baseKillMoney = 250000; // ditto but money
 global.baseRegenSpeed = 3; // How many times faster bases regenerate health than players
 global.baseClaimRange = 1000; // How far you must be from a base (times ten) to get rewards
-global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
-global.sectorWidth = 14336; // must be divisible by 2048.
+global.mapSz = 15; // How many sectors across the server is. If changed, see planetsClaimed
+global.sectorWidth = 14336 * 2; // must be divisible by 2048. If changed, remember to change the client's index.jsx ones too
 global.moneyPerRaidPoint = 300000;
 global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
 global.playerKillMoney = 2500;
@@ -104,7 +104,39 @@ global.ships = jsn.ships;
 global.planetNames = jsn.planets;
 
 // bases
-global.basesPerTeam = 4;
+global.basesPerTeam = 7;
+
+global.baseMap = {
+    red: [ // x, y
+        2, 0,
+        10, 0,
+        6, 1,
+        9, 3,
+        1, 4,
+        4, 4,
+        5, 7
+    ],
+    blue: [
+        13, 2,
+        11, 5,
+        8, 6,
+        14, 8,
+        10, 9,
+        12, 12,
+        9, 13
+    ],
+    green: [
+        2, 7,
+        6, 9,
+        3, 10,
+        0, 11,
+        4, 13,
+        1, 14,
+        7, 14
+    ]
+};
+
+/*
 global.baseMap = {
     red: [ // x, y
         1, 0,
@@ -125,6 +157,7 @@ global.baseMap = {
         3, 4
     ]
 };
+*/
 
 for (let i = 0; i < mapSz; i++) { // it's 2d
     players[i] = new Array(mapSz);

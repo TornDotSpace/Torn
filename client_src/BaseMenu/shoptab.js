@@ -54,8 +54,23 @@ global.rBuyShipWindow = function () {
     baseMenuCtx.translate(rendX, rendY);
     baseMenuCtx.rotate(-3 * t);
     if (shipView > rank) img = Img.q;
-    baseMenuCtx.drawImage(colorSelect(pc, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -img.width / 2, -img.height / 2, img.width, img.height);
-    baseMenuCtx.drawImage(img, -img.width / 2, -img.height / 2);
+
+    let sizeW = img.width;
+    let sizeH = img.height;
+    let widthF = 1.0;
+    let heightF = 1.0;
+    if (sizeW > 256) {
+        widthF *= (256 / sizeW);
+        sizeW = 256;
+        sizeH *= widthF;
+    }
+    if (sizeH > 256) {
+        heightF *= (256 / sizeH);
+        sizeH = 256;
+        sizeW *= heightF;
+    }
+    baseMenuCtx.drawImage(colorSelect(pc, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -sizeW / 2, -sizeH / 2, sizeW, sizeH);
+    baseMenuCtx.drawImage(img, -sizeW / 2, -sizeH / 2, sizeW, sizeH);
     baseMenuCtx.restore();
 
     baseMenuCtx.textAlign = `center`;

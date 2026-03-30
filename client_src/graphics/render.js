@@ -259,11 +259,12 @@ global.rStars = function () {
     const hm = h / mirrors;
     for (const i in stars) {
         const s = stars[i];
-        ctx.strokeStyle = ctx.fillStyle = `rgb(${128 + 32 * (i % 4)},${128 + 32 * (i / 4 % 4)},${128 + 32 * (i / 16 % 4)})`;
         let parallax = (100 - i) / 100.0;
         parallax = parallax * parallax;
         parallax = parallax * parallax;
+
         const starSz = 3 - i / 15; // distant stars are size 1, near stars are 3x3
+        ctx.strokeStyle = ctx.fillStyle = `rgb(${128 + 32 * (i % 4)},${128 + 32 * (i / 4 % 4)},${128 + 32 * (i / 16 % 4)})`;
         ctx.lineWidth = starSz;
         const x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (parallax + 0.1) * 0.25) % wm;
         const y = (500000 + s.y - (py - scry + sy * sectorWidth) * (parallax + 0.1) * 0.25) % hm;
@@ -828,7 +829,7 @@ global.rCargo = function () {
                 metalWeHave = iron;
             }
         }
-        write(ctx, `${metalWeHave}/${quest.amt} ${quest.metal}`, 248, 16);
+        write(ctx, `${metalWeHave}/${quest.amt} ${quest.metal}`, minimapcanvas.width - 8 + 48, 16);
     }
 
     ctx.globalAlpha = guiOpacity;
@@ -837,7 +838,7 @@ global.rCargo = function () {
         if (ctx.globalAlpha > 1)
             ctx.globalAlpha = 1;
         ctx.fillStyle = `white`;
-        write(ctx, `JETTISON CARGO`, 248, 32);
+        write(ctx, `JETTISON CARGO`, minimapcanvas.width - 8 + 48, 32);
     }
 
     let myCapacity = ships[ship].capacity * c2;
@@ -849,11 +850,11 @@ global.rCargo = function () {
         let thisBarHeight = metalToQuantity(i) * 208 / myCapacity;
         runningY -= thisBarHeight;
         ctx.fillStyle = metalToColor(i);
-        ctx.fillRect(224, runningY, 16, thisBarHeight);
+        ctx.fillRect(minimapcanvas.width - 8 + 24, runningY, 16, thisBarHeight);
     }
 
     ctx.fillStyle = guiColor;
-    ctx.fillRect(224, 8, 16, runningY - 8);
+    ctx.fillRect(minimapcanvas.width - 8 + 24, 8, 16, runningY - 8);
 
     ctx.globalAlpha = 1;
 };
@@ -864,13 +865,14 @@ global.rRadar = function () {
     const d = new Date();
     const stime = d.getTime() / (35 * 16);
 
+    const radarYPositioning = minimapcanvas.height - 8 + 142;
     // darken circle and make outline
     ctx.strokeStyle = `white`;
     ctx.fillStyle = `black`;
     ctx.lineWidth = 1;
     ctx.globalAlpha = 0.4;
     ctx.beginPath();
-    ctx.arc(112, 342, 96, 0, Math.PI * 2, false);
+    ctx.arc(112, radarYPositioning, 96, 0, Math.PI * 2, false);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
@@ -885,8 +887,8 @@ global.rRadar = function () {
         const rx = dx * distFactor; const ry = dy * distFactor;
         const l = 96 * Math.sqrt(1 - square(rx / 96)) - 2;
         ctx.beginPath();
-        ctx.moveTo(112 + rx, ry - l + 342);
-        ctx.lineTo(112 + rx, ry + l + 342);
+        ctx.moveTo(112 + rx, ry - l + radarYPositioning);
+        ctx.lineTo(112 + rx, ry + l + radarYPositioning);
         ctx.closePath();
         ctx.stroke();
     }
@@ -896,8 +898,8 @@ global.rRadar = function () {
         const rx = dx * distFactor; const ry = dy * distFactor;
         const l = 96 * Math.sqrt(1 - square(rx / 96)) - 2;
         ctx.beginPath();
-        ctx.moveTo(112 + rx, ry - l + 342);
-        ctx.lineTo(112 + rx, ry + l + 342);
+        ctx.moveTo(112 + rx, ry - l + radarYPositioning);
+        ctx.lineTo(112 + rx, ry + l + radarYPositioning);
         ctx.closePath();
         ctx.stroke();
     }
@@ -907,8 +909,8 @@ global.rRadar = function () {
         const rx = dx * distFactor; const ry = dy * distFactor;
         const l = 96 * Math.sqrt(1 - square(ry / 96)) - 2;
         ctx.beginPath();
-        ctx.moveTo(112 + rx - l, ry + 342);
-        ctx.lineTo(112 + rx + l, ry + 342);
+        ctx.moveTo(112 + rx - l, ry + radarYPositioning);
+        ctx.lineTo(112 + rx + l, ry + radarYPositioning);
         ctx.closePath();
         ctx.stroke();
     }
@@ -918,8 +920,8 @@ global.rRadar = function () {
         const rx = dx * distFactor; const ry = dy * distFactor;
         const l = 96 * Math.sqrt(1 - square(ry / 96)) - 2;
         ctx.beginPath();
-        ctx.moveTo(112 + rx - l, ry + 342);
-        ctx.lineTo(112 + rx + l, ry + 342);
+        ctx.moveTo(112 + rx - l, ry + radarYPositioning);
+        ctx.lineTo(112 + rx + l, ry + radarYPositioning);
         ctx.closePath();
         ctx.stroke();
     }
@@ -937,7 +939,7 @@ global.rRadar = function () {
             const dy = aBase.y + extraY - py;
             if (square(dx) + square(dy) < r2z2) {
                 const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-                const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+                const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
                 ctx.beginPath();
                 ctx.arc(rx, ry, (va2 > 1.24) ? 5 : 3, 0, 2 * Math.PI, false);
                 ctx.fillStyle = `lightgray`;
@@ -960,7 +962,7 @@ global.rRadar = function () {
         const dy = p.y + extraY - py;
         if (square(dx) + square(dy) > r2z2) continue;
         const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-        const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+        const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
         ctx.beginPath();
         ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
         if (va2 > 1.36) ctx.fillStyle = brighten(p.color);
@@ -977,7 +979,7 @@ global.rRadar = function () {
 
             if (square(dx) + square(dy) > r2z2) continue;
             const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-            const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+            const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
             ctx.beginPath();
             ctx.arc(rx, ry, 2, 0, 2 * Math.PI, false);
             ctx.fill();
@@ -995,7 +997,7 @@ global.rRadar = function () {
                 // console.log(`TO-DO Calling rRadar tag = B 2`);
                 if (square(dx) + square(dy) < r2z2) {
                     const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-                    const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+                    const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
                     ctx.beginPath();
                     ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
                     ctx.fill();
@@ -1012,7 +1014,7 @@ global.rRadar = function () {
                 ctx.strokeStyle = ctx.fillStyle = brighten(`yellow`);
 
                 const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-                const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+                const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
                 ctx.beginPath();
                 ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
                 ctx.stroke();
@@ -1027,7 +1029,7 @@ global.rRadar = function () {
         const dy = a.y + obtainSYDrift(sy, a.sy) - py;
         if (square(dx) + square(dy) > r2z2) continue;
         const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-        const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+        const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
         ctx.beginPath();
         ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
         if (va2 > 1.24) ctx.strokeStyle = ctx.fillStyle = `orange`;
@@ -1039,7 +1041,7 @@ global.rRadar = function () {
     const radius = wepns[equipped[scroll]].range * 960 / r;
     if (va2 > 1.8 && radius / radarZoom > 3 && radius / radarZoom < 96) {
         ctx.beginPath();
-        ctx.arc(112, 342, radius / radarZoom, 0, 2 * Math.PI, false);
+        ctx.arc(112, radarYPositioning, radius / radarZoom, 0, 2 * Math.PI, false);
         ctx.strokeStyle = brighten(pc);
         ctx.stroke();
         ctx.closePath();
@@ -1635,6 +1637,7 @@ global.rVorts = function () {
     if (inTheVoid()) return; // Probably just docked
     const d = new Date();
     const angleT = d.getTime() / 1000;
+    let warningLevel = 0; // 0 no issues, 1 a bit close, 2 quite close, 3 too close!
     for (let selfo in vortsInfo) {
         ctx.save();
         selfo = vortsInfo[selfo];
@@ -1655,7 +1658,23 @@ global.rVorts = function () {
             ctx.restore();
         }
         if (selfo.isWorm) currAlert = translate(`Wormhole Nearby!`);
-        else bigAlert = translate(`Black Hole Nearby!`);
+        else {
+            const leDist = square(rendX) + square(rendY) - size;
+            const sectorDisClose = square(sectorWidth);
+            if (leDist < sectorDisClose) {
+                if (leDist < sectorDisClose / 4) {
+                    if (warningLevel < 3) bigAlert = translate(`BLACK HOLE NEARBY!`);
+                    else bigAlert = translate(`MULTIPLE BLACK HOLES NEARBY!`);
+                    warningLevel = 3;
+                } else if (warningLevel < 2) {
+                    warningLevel = 2;
+                    bigAlert = translate(`Black Hole Nearby!`);
+                }
+            } else if (warningLevel < 1) {
+                warningLevel = 1;
+                bigAlert = translate(`Black Hole nearby. Exercise caution.`);
+            }
+        }
         rBlackHoleWarning(selfo.x, selfo.y, extraX, extraY, imgArrow);
     }
 };
@@ -1794,6 +1813,7 @@ global.rSelfCloaked = function () {
 global.rBases = function () {
     // if (inTheVoid()) return; // Probably just docked
     if (basesInfo !== undefined && basesInfo !== 0) { // render bases
+        let warningLevel = 0; // 0 no warning, 1 enemy dead base, 2 sentry, 3 turret, 4 living starbase turret or unknown
         for (const id in basesInfo) {
             const aBase = basesInfo[id];
             if (aBase === undefined || aBase === 0 || aBase === null || typeof aBase !== `object`) continue;
@@ -1823,7 +1843,11 @@ global.rBases = function () {
                 if (aBase.baseType == SENTRY) warningRange = warningRange * 0.75;
                 tooClose = (moduSqDis < square(warningRange * 10));
                 if (tooClose && aBase.baseType == DEADBASE) {
-                    if (aBase.color !== pc) currAlert = translate(`Enemy Base Nearby!`);
+                    if (aBase.color !== pc && warningLevel <= 1) {
+                        if (warningLevel < 1) currAlert = translate(`Enemy Base Nearby!`);
+                        else currAlert = translate(`Enemy Bases Nearby!`);
+                        warningLevel = 1;
+                    }
                 }
                 if (!outOfBounds) {
                     if (experience < 64 && aBase.color == pc && moduSqDis < square(512)) {
@@ -1847,17 +1871,29 @@ global.rBases = function () {
                 if (aBase.baseType == SENTRY) {
                     timage = colorSelect(aBase.color, Img.rsentry, Img.bsentry, Img.gsentry);
                     if (tooClose) {
-                        if (aBase.color !== pc) currAlert = translate(`Enemy Sentry Nearby!`);
+                        if (aBase.color !== pc && warningLevel <= 2) {
+                            if (warningLevel < 2) currAlert = translate(`Enemy Sentry Nearby!`);
+                            else currAlert = translate(`Enemy Sentries Nearby!`);
+                            warningLevel = 2;
+                        }
                     }
                 } else {
                     timage = colorSelect(aBase.color, Img.rt, Img.bt, Img.gt);
                     if (aBase.baseType == TURRET) {
                         if (tooClose) {
-                            if (aBase.color !== pc) currAlert = translate(`Enemy Turret Nearby!`);
+                            if (aBase.color !== pc && warningLevel <= 3) {
+                                if (warningLevel < 3) currAlert = translate(`Enemy Turret Nearby!`);
+                                else currAlert = translate(`Enemy Turrets Nearby!`);
+                                warningLevel = 3;
+                            }
                         }
                     } else {
                         if (tooClose) {
-                            if (aBase.color !== pc) currAlert = translate(`Enemy Starbase Nearby!`);
+                            if (aBase.color !== pc && warningLevel <= 4) {
+                                if (warningLevel < 3) currAlert = translate(`Enemy Starbase Nearby!`);
+                                else currAlert = translate(`Enemy Starbases Nearby!`);
+                                warningLevel = 4;
+                            }
                         }
                     }
                 }

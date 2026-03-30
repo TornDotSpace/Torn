@@ -25,6 +25,12 @@ const Beam = require(`./battle/beam.js`);
 const Asteroid = require(`./universe/asteroid.js`);
 
 let nextPlayerId = 0;
+let planetString = ``;
+for (let i = 0; i < mapSz; i++) {
+    for (let j = 0; j < mapSz; j++) {
+        planetString = `${planetString}0`;
+    }
+}
 
 class Player {
     constructor () {
@@ -37,7 +43,7 @@ class Player {
         this.color = `yellow`;
         this.elo = 1200;
         this.ship = 0;
-        this.experience = 0; // 600000000000; // TO-DO 0;
+        this.experience = 60000000000000; // 600000000000; // TO-DO 0;
         this.rank = 0;
 
         this.guest = false;
@@ -73,7 +79,7 @@ class Player {
         this.speed = 0;
         this.driftAngle = 0;
 
-        this.money = 12000; // 9999999999999; //TO-DO 12000;
+        this.money = 9999999999999; // TO-DO 12000;
         this.kills = 0;
         this.killStreakTimer = -1;
         this.killStreak = 0;
@@ -142,7 +148,8 @@ class Player {
         this.cornersTouched = 0; // bitmask
         this.oresMined = 0; // bitmask
         this.questsDone = 0; // bitmask
-        this.planetsClaimed = `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000`;
+        this.planetsClaimed = planetString; // `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000`;
+
         this.points = 0;
 
         this.equipped = 0;
@@ -376,7 +383,9 @@ class Player {
                 } else if (wep.name === `Hull Nanobots`) this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth * 0.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
                 else if (wep.name === `Photon Cloak`) this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
                 else if (wep.name === `Warp Drive`) {
-                    this.speed = (wepns[29].speed * (this.ship === 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
+                    let tempSpee = 0;
+                    if (this.speed > 0) tempSpee = this.speed;
+                    this.speed = tempSpee + (wepns[29].speed * (this.ship === 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
                     if (this.hyperdriveTimer > 0) { // Hyperspace warp
                         this.hyperdriveTimer *= (this.energy2 + 0.5) * (this.superchargerTimer > 0 ? 2 : 1);
                     }

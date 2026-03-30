@@ -53,21 +53,24 @@ class Vortex {
         }
 
         const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        const rangewh = Math.pow(2, 0.5) * ((sectorWidth * 0.99) + this.size);
         for (const i in fullplayers) {
             const p = fullplayers[i];
 
             // compute distance and angle to players
             const dist = Math.pow(squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz), 0.25);
-            const rangewh = Math.pow(2 * ((sectorWidth * 0.99) + this.size), 0.5);
             if (dist > rangewh) continue;
             const a = angleGlobalBetween(p, this, sectorWidth, sectorWidth, mapSz);
             // then move them.
-            let guestMult = (p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
-            if (p.ship == 21 && !this.isWorm) guestMult = 0.45 * (-1 + (35 / dist)); // R21 ship gets pushed from a BH if too far, BUT IT'S STILL PULLED WITH FORCE IF TOO CLOSE. Reason this isn't an increment is because someone could get a GUEST at level 21, buy the ship, and then the old *=0.5 would actually be more OP than the old code.
-            p.x -= guestMult * 0.40 * this.size / dist * Math.cos(a);
-            p.y -= guestMult * 0.40 * this.size / dist * Math.sin(a);
+            let guestMult = (p.isNNBot) ? -0.8 : 0.8;
+            if (!this.isWorm) {
+                if (p.ship == 21) guestMult = 0.27 * (-1 + (35 / dist)); // R21 ship gets pushed from a BH if too far, BUT IT'S STILL PULLED WITH FORCE IF TOO CLOSE. Reason this isn't an increment is because someone could get a GUEST at level 21, buy the ship, and then the old *=0.5 would actually be more OP than the old code.
+                if (p.ship == 24) guestMult *= 0.1; // Black holes exert less pull on this ship.
+            }
+            p.x -= guestMult * this.size / dist * Math.cos(a); // guestMult * 0.40 * this.size / dist * Math.cos(a);
+            p.y -= guestMult * this.size / dist * Math.sin(a); // guestMult * 0.40 * this.size / dist * Math.sin(a);
 
-            if (dist < 15 && !this.isWorm) { // collision with black hole
+            if (dist < (15) && !this.isWorm) { // collision with black hole
                 if (this.owner != 0) { // if I'm a gravity bomb
                     this.size += p.ship; // Eating the ship will make the gravity bomb BH grow. The bigger the ship, the more it will grow.
                 }
@@ -84,12 +87,12 @@ class Vortex {
             for (const i in fullasts) {
                 const a = fullasts[i];
                 const d2 = squaredGlobalDist(this, a, sectorWidth, sectorWidth, mapSz); // squaredDist(this, a);
-                if ((d2 > sectorWidth * 1.4)) continue;
+                if (d2 > Math.pow(rangewh, 2)) continue;
                 const ang = angleGlobalBetween(this, a, sectorWidth, sectorWidth, mapSz); // angleBetween(this, a);
-                const vel = 0.005 * this.size / Math.log(d2);
+                const vel = ((this.isWorm) ? 0.01 : 0.1) * this.size / Math.log(Math.pow(d2, 0.5)); // 0.005 * this.size / Math.log(Math.pow(d2, 0.5));
                 a.vx += Math.cos(ang) * vel;
                 a.vy += Math.sin(ang) * vel;
-                if (d2 < 100) {
+                if (d2 < (225)) { // 225 = 15 * 15
                     if (!this.isWorm) { // collision with black hole
                         a.die(this);
                         if (this.owner != 0) { // if I'm a gravity bomb

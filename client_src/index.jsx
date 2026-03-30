@@ -80,7 +80,7 @@ global.expToRank = [0];
 global.guiColor = `#333333`;
 global.guiOpacity = 0.5;
 global.teamColors = [`red`, `blue`, `green`, `yellow`];
-global.sectorWidth = 14336;
+global.sectorWidth = 14336 * 2;
 global.mx = 0; global.my = 0; global.mb = 0;
 global.tick = 0;
 global.scrx = 0; global.scry = 0;

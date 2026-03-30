@@ -172,7 +172,7 @@ document.addEventListener(`mousemove`, (evt) => {
         roll(myn / 4);
         spin(mxn / 4);
         r3DMap();
-    } else if (mx > 224 && mx < 240 && my < 216 && my > 8) {
+    } else if (mx > (minimapcanvas.width - 8 + 24) && mx < (minimapcanvas.width - 8 + 40) && my < 216 && my > 8) {
         // Cargo
         seller = 900;
     } else if (mx < 640 && mx > 512 && my > h - 64) {
