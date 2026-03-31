@@ -497,7 +497,7 @@ global.spawnBossBot = function (sx, sy, x, y) {
     bot.name = Config.getValue(`want_bot_names`, false) ? `BEHEMOTH ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `BEHEMOTH`;
     bot.thrust2 = bot.capacity2 = 1;
     bot.maxHealth2 = 20;
-    bot.agility2 = 0.15;
+    bot.agility2 = 0.15 * 4;
     bot.energy2 = 5;
     bot.va = ships[bot.ship].agility * 0.08 * bot.agility2;
     bot.thrust = ships[bot.ship].thrust * bot.thrust2;
