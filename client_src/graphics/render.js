@@ -823,10 +823,20 @@ global.rCargo = function () {
     // if (guest) return;
     if (quest.type === `Mining`) {
         let metalWeHave = 0;
+        write(ctx, `►`, minimapcanvas.width - 8 + 48, 16 * 2);
         for (let i = 0; i < 4; i++) {
-            if (quest.metal === `iron`) {
-                ctx.fillStyle = `#d44`;
+            if (quest.metal === `iron`) { // TO-DO when we have this
+                ctx.fillStyle = metalToColor(i);
                 metalWeHave = iron;
+            } else if (quest.metal === `silver`) {
+                ctx.fillStyle = metalToColor(i);
+                metalWeHave = silver;
+            } else if (quest.metal === `copper`) {
+                ctx.fillStyle = metalToColor(i);
+                metalWeHave = copper;
+            } else if (quest.metal === `platinum`) {
+                ctx.fillStyle = metalToColor(i);
+                metalWeHave = platinum;
             }
         }
         write(ctx, `${metalWeHave}/${quest.amt} ${quest.metal}`, minimapcanvas.width - 8 + 48, 16);
@@ -838,7 +848,7 @@ global.rCargo = function () {
         if (ctx.globalAlpha > 1)
             ctx.globalAlpha = 1;
         ctx.fillStyle = `white`;
-        write(ctx, `JETTISON CARGO`, minimapcanvas.width - 8 + 48, 32);
+        write(ctx, `JETTISON CARGO`, minimapcanvas.width - 8 + 48, 16 * 3);
     }
 
     let myCapacity = ships[ship].capacity * c2;

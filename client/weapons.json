@@ -387,7 +387,7 @@
       "ammo": 30,
       "level": 7,
       "type": "Misc",
-      "bot": false,
+      "bot": true,
       "enabled": true
     },
     "30": {
@@ -413,7 +413,7 @@
       "ammo": -1,
       "level": 6,
       "type": "Beam",
-      "bot": false,
+      "bot": true,
       "enabled": true
     },
     "32": {

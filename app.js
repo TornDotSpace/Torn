@@ -213,8 +213,8 @@ connectToDB();
 require(`./server_src/bot.js`);
 require(`./server_src/universe/asteroid.js`);
 
-const { GPU } = require(`gpu.js`); // TO-DO TESTING GPU
-const gpu = new GPU(); // TO-DO TESTING GPU
+// const { GPU } = require(`gpu.js`); // TO-DO TESTING GPU
+// const gpu = new GPU(); // TO-DO TESTING GPU
 
 let broadcastMsg = 0;
 let lag = 0; let ops = 0; // ticks elapsed since boot, lag, count of number of instances of update() running at once
@@ -260,7 +260,8 @@ function updateQuests () {
 
 // packs are how we send data to the client
 
-const playerIDcopy = new Array(mapSz);
+// const playerIDcopy = new Array(mapSz); // TO-DO
+let playerIDcopy = new Array(mapSz);
 const playerPack = new Array(mapSz);
 
 const missileIDcopy = new Array(mapSz);
@@ -518,16 +519,6 @@ global.get9SectorDict = function (dictionar, mysx, mysy, origX = globalOriginSX,
     return combinedDict;
 };
 
-/*
-const multiplyMatrix = gpu.createKernel(function(a, b) { // TO-DO
-    let sum = 0;
-    for (let i = 0; i < 512; i++) {
-        sum += a[this.thread.y][i] * b[i][this.thread.x];
-    }
-    return sum;
-}).setOutput([512, 512]);
-*/
-
 function phase1y2update () {
     for (let y = 0; y < mapSz; y++) {
         for (let x = 0; x < mapSz; x++) { // PHASE 0: We ensure there's no "drift" so-to-speak if something decides to switch sectors.
@@ -565,7 +556,7 @@ function phase1y2update () {
         }
     }
 
-    // TO-DO New idea - first, all ticks, then deletes, then create/upgrades, and then apply upgrades
+    // First, all ticks, then deletes, then create/upgrades, and then apply upgrades
     for (let y = 0; y < mapSz; y++) {
         for (let x = 0; x < mapSz; x++) { // NEOPHASE 1: TICK EVERYTHING
             for (const i in playerIDcopy[y][x]) {
@@ -2430,9 +2421,9 @@ function update () {
     // re-spawn asteroids if we've fallen below the sector avg (8)
     // let sumAsts = 0;
     // for (const i in astCount) for (const j in astCount[i]) sumAsts += astCount[i][j];
-    if (sumAsts < 8 * mapSz * mapSz) spawnAsteroid();
+    if (tick % 30 == 17 && (sumAsts < minSectorAsteroidCount * mapSz * mapSz)) spawnAsteroid();
 
-    if (tick % 12 == 0) {
+    if (tick % 12 == 6) {
         // LAG CONTROL
         for (const i in deads) {
             const player = deads[i];

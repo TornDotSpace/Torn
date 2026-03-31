@@ -388,8 +388,8 @@ global.shopOnClick = function (buttonID) {
         let item = ``;
         if (buttonID == 5) item = `iron`;
         else if (buttonID == 6) item = `silver`;
-        else if (buttonID == 7) item = `platinum`;
-        else if (buttonID == 8) item = `copper`;
+        else if (buttonID == 7) item = `copper`;
+        else if (buttonID == 8) item = `platinum`;
         socket.emit(`sell`, { item: item });
         return;
     }

@@ -102,18 +102,22 @@ class Bot extends Player {
     }
 
     botPlay () {
-        if ((this.color === `yellow`) && (tick % 60 == 0) && (this.health < this.maxHealth * 0.25)) {
-            for (let i = 0; i < this.ship * 0.5; i++) {
-                spawnPortanavesBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
-                if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
+        if ((this.color === `yellow`) && (tick % 60 == 0) && (this.health < this.maxHealth * 0.25) && this.ship > 10) {
+            const howMany = playerCount + botCount + guestCount;
+            const shallWeForce = (this.ship > 14 && howMany <= playerLimit + 6);
+            const shipRatio = (this.ship > 14) ? 0.5 : 0.25;
+            for (let i = 0; i < this.ship * shipRatio; i++) {
+                spawnPortanavesBot(this.sx, this.sy, this.x, this.y, this.color, shallWeForce, 3);
+                if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, shallWeForce, 2);
             }
         }
         if (tick % 8 != Math.floor(this.rng * 8)) return; // Lag prevention, also makes the bots a bit easier
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
         this.equipped = 0;
-        while (this.ammos[this.equipped] == 0) this.equipped++; // select the first available weapon with ammo
-
+        while (this.ammos[this.equipped] == 0 && this.equipped < this.ammos.length) this.equipped++; // select the first available weapon with ammo
+        if (this.equipped >= this.ammos.length) this.equipped = 0;
+        if (this.weapons[this.equipped] == `29` && this.ammos[this.equipped] > 2) this.ammos[this.equipped] == 2; // We let bots Warp-drive once or twice
         this.w = this.e = this.s = this.c = this.space = false; // release all keys
 
         // Find closest enemy and any friendly in the sector
@@ -470,7 +474,7 @@ global.spawnPortanavesBot = function (sx, sy, x, y, col, force, ship) {
 global.spawnBossBot = function (sx, sy, x, y) {
     if (!Config.getValue(`want-bots`, true)) return;
 
-    if (playerCount + botCount + guestCount > playerLimit && (botCount > 2 * playerLimit)) return;
+    if (playerCount + botCount + guestCount > playerLimit || (playerCount + guestCount < 1)) return;
 
     if (sx < 0 || sy < 0 || sx >= mapSz || sy >= mapSz) return;
 
