@@ -27,9 +27,11 @@ defaultTime = 60
 if len(sys.argv) > 1 and sys.argv[1] > 5:
     defaultTime = sys.argv[1]
 
+
 def __init__(seconds=60):
     while True:
         update_leaderboard.__init__()
         asyncio.run(asyncio.sleep(seconds))
+
 
 __init__(defaultTime)
