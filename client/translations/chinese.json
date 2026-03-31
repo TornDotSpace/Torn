@@ -174,7 +174,7 @@
 	},
 	{
 		"name":"Hyperdrive",
-		"desc":"Single-use long range speed boost. Thanks to partially travelling to another dimension, you'll not suffer sector cross damage."
+		"desc":"Single-use long range speed boost, works by partially phasing into another dimension."
 	},
 	{
 		"name":"Pulse Wave",

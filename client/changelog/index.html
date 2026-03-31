@@ -5,6 +5,16 @@
 	<body>
 		<link rel="stylesheet" href="/assets/css/index.css" />
 		<h1 style="text-align: center;"><span style="color: #7fff7f;">Changelog!</span></h1>
+		2026/03/30-2026/03/31
+                (<span style="color: #ff777f;">torn-rank23aka24-f88e2f8de8c888e9ec9b62076b8dcaa2b130dc61</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Fixed issue with yellow pirate bots going too overboard.</li>
+			<li>Fixed cargo bay mismatch (now platinium is purple again and copper is coppery) and fixed mining quest not considering properly cargo stuff.</li>
+			<li>Now there's a small triangle next to the cargo bay bar during mining missions - it tells you the color of the nearest ore (or nearest enemy if the enemy is on radar!)</li>
+			<li>Updated app.js code to avoid doing two calls twice (for example when a ship crossed sector, sometimes it executed .tick() twice, even on original Torn - it is what lead to some strange behaviorus back then).</li>
+			<li>Now the project has gpu.js in case other devs want to join and refactor stuff with paralelism later on.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
 		2026/03/28-2026/03/30
                 (<span style="color: #ff777f;">torn-rank23aka24-85b95165d1902d5dbff689ea8bef502fe3eeac0f</span>)
 		<ul><span style="color: #7fff7f;">

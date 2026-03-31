@@ -11,11 +11,22 @@ echo Calling npm...
 #npm install gpu.js --save
 
 npm ci
+
 npm run dev:serve&
+
+# NONE of the options below seem to do the trick, so I've been forced to edit webpack.dev.js
+#npm config set liveReload=false
+#npm config set hot=false
+#npm webpack serve --port=false --live-reload=false
+#( npm run dev:serve --no-live-reload ---no-hot )&
+#(npm run webpack serve --config ./deploy/webpack.devnorefresh.js)&
+
 cp client/index.html.template client/index.html
 
 echo Starting shard-1 on port 
 node --use_strict app.js 7300 dev&
+echo "updating leaderboard, will be called periodically -> winpty python ./tools/update_leaderboard_sched.py&"
+winpty python ./tools/update_leaderboard_sched.py&
 echo Done. Browse to http://localhost:7301 to access the Torn dev server!
 echo Press any key to kill all instances
 read -r -p "Press any key to continue..." key

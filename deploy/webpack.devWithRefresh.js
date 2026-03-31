@@ -36,20 +36,10 @@ module.exports = merge(common, {
     devServer: {
         static: path.join(__dirname, `../client`),
         compress: true,
-        port: 7301,
-        hot: false,
-        liveReload: false
+        port: 7301
     }
 });
 /*
-
-# NONE of the options below seem to do the trick when trying to call a dev server with liveReload disabled, so I've been forced to edit webpack.dev.js
-#npm config set liveReload=false
-#npm config set hot=false
-#npm webpack serve --port=false --live-reload=false
-#( npm run dev:serve --no-live-reload ---no-hot )&
-#(npm run webpack serve --config ./deploy/webpack.devnorefresh.js)&
-
     devServer: {
         static: path.join(__dirname, `../client`),
         compress: true,

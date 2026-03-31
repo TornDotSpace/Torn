@@ -825,17 +825,17 @@ global.rCargo = function () {
         let metalWeHave = 0;
         write(ctx, `►`, minimapcanvas.width - 8 + 48, 16 * 2);
         for (let i = 0; i < 4; i++) {
-            if (quest.metal === `iron`) { // TO-DO when we have this
-                ctx.fillStyle = metalToColor(i);
+            if (quest.metal === `iron`) {
+                ctx.fillStyle = metalToColor(0);
                 metalWeHave = iron;
             } else if (quest.metal === `silver`) {
-                ctx.fillStyle = metalToColor(i);
+                ctx.fillStyle = metalToColor(1);
                 metalWeHave = silver;
             } else if (quest.metal === `copper`) {
-                ctx.fillStyle = metalToColor(i);
+                ctx.fillStyle = metalToColor(2);
                 metalWeHave = copper;
             } else if (quest.metal === `platinum`) {
-                ctx.fillStyle = metalToColor(i);
+                ctx.fillStyle = metalToColor(3);
                 metalWeHave = platinum;
             }
         }
