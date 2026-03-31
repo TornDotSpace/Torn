@@ -1,0 +1,19 @@
+# If, when trying to launch the API Server, it keeps failing, you may want to create and activate a virtual python ENV environment and call that command on a separate tab.
+PS # C:\Users\andro\Torn> python3 -m venv venv
+PS C:\Users\andro\Torn> .\venv\Scripts\Activate
+
+(venv) PS C:\Users\andro\Torn> pip3 install aiohttp
+(venv) PS C:\Users\andro\Torn> pip3 install aiohttp_cors
+(venv) PS C:\Users\andro\Torn> pip3 install aiosmtplib
+(venv) PS C:\Users\andro\Torn> pip3 install asyncio
+(venv) PS C:\Users\andro\Torn> pip3 install bcrypt
+(venv) PS C:\Users\andro\Torn> pip3 install discord_webhook
+(venv) PS C:\Users\andro\Torn> pip3 install motor
+
+(venv) PS C:\Users\andro\Torn> python ./account/account_server.py
+
+# You may need to generate keys (with openssl for example)
+openssl genrsa -out PEM/localhost.key 2048
+openssl req -new -key PEM/localhost.key -out PEM/petitionlocalhost.csr
+openssl req -new -x509 -extensions v3_ca -keyout PEM/localhostCAprivateKey.pem -out PEM/localhostCA.pem -days 3650
+openssl x509 -req -days 3650 -in PEM/petitionlocalhost.csr -CA PEM/localhostCA.pem -CAkey PEM/localhostCAprivateKey.pem -set_serial 2026033101 -out PEM/localhost.crt

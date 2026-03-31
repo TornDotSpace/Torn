@@ -5,8 +5,7 @@ winpty mongod --port 27017 --dbpath ./db --bind_ip localhost&
 echo Building client
 echo Starting Account Server
 
-#winpty python -m aiohttp.web -H localhost -P 8080 ./account/account_server.py&
-# You may want to throw the following command on a separate tab if you have weird errors like me, then launch that on a virtual python ENV environment 
+# You may want to throw the following command on a separate tab if you have weird errors like me, then launch that on a virtual python ENV environment
 winpty python ./account/account_server.py&
 echo Calling npm...
 npm ci
