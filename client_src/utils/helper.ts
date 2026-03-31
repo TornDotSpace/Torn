@@ -84,7 +84,7 @@ const getRainbowColor = () => {
  * @returns RGB color string.
  */
 const metalToColor = (i: number) => {
-    const colorArray = [`#d44`, `#eef`, `#90f`, `#960`];
+    const colorArray = [`#d44`, `#eef`, `#960`, `#90f`];
     return colorArray[i];
 };
 
@@ -93,7 +93,7 @@ const metalToColor = (i: number) => {
  * @returns Uncapitalized english metal name.
  */
 const metalToName = (i: number) => {
-    const nameArray = [`iron`, `silver`, `platinum`, `copper`];
+    const nameArray = [`iron`, `silver`, `copper`, `platinum`];
     return nameArray[i];
 };
 
@@ -102,7 +102,7 @@ const metalToName = (i: number) => {
  * @returns Number.
  */
 const metalToQuantity = (i: number) => {
-    const nameArray = [iron, silver, platinum, copper];
+    const nameArray = [iron, silver, copper, platinum];
     return nameArray[i];
 };
 

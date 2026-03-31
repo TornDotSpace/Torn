@@ -8,6 +8,8 @@ echo Starting Account Server
 # You may want to throw the following command on a separate tab if you have weird errors like me, then launch that on a virtual python ENV environment
 winpty python ./account/account_server.py&
 echo Calling npm...
+#npm install gpu.js --save
+
 npm ci
 npm run dev:serve&
 cp client/index.html.template client/index.html
