@@ -45,23 +45,23 @@ class ReactRoot extends React.Component<{}, { display: string, register: string 
     toggleDisplay = () => {
         if (this.state.display === `display`) this.turnOffDisplay();
         else this.turnOnDisplay();
-    }
+    };
 
     turnOnDisplay = () => {
         this.setState({ display: `LoginOverlay` });
-    }
+    };
 
     turnOffDisplay = () => {
         this.setState({ display: `none` });
-    }
+    };
 
     turnOnRegister = () => {
         this.setState({ register: `Register` });
-    }
+    };
 
     turnOffRegister = () => {
         this.setState({ register: `none` });
-    }
+    };
 
     componentDidMount = () => {
         // Pass internal states to the exportable object.
@@ -74,7 +74,7 @@ class ReactRoot extends React.Component<{}, { display: string, register: string 
             turnOnRegister: () => this.turnOnRegister(),
             turnOffRegister: () => this.turnOffRegister()
         };
-    }
+    };
 
     render = () => (
         <span>
@@ -90,7 +90,7 @@ class ReactRoot extends React.Component<{}, { display: string, register: string 
 
             <canvas id="ctx"></canvas>
         </span>
-    )
+    );
 }
 
 export {

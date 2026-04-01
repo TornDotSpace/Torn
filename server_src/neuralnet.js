@@ -32,7 +32,7 @@ class NeuralNet {
 
     randomWeights = () => {
         for (let i = 0; i < 300; i++) this.genes[i] = mutate();
-    }
+    };
 
     passThrough = (input) => {
         // Biases.
@@ -56,7 +56,7 @@ class NeuralNet {
         for (let i = 0; i < out.length; i++) out[i] = out[i] > 0;
 
         return out;
-    }
+    };
 
     save = (k) => {
         const source = path.resolve(__dirname, `../server/neuralnets/${k}.bot`);
@@ -66,7 +66,7 @@ class NeuralNet {
         for (let i = 0; i < 300; i++) str += `${this.genes[i]}\n`;
 
         fs.writeFileSync(source, str, { encoding: `utf8` });
-    }
+    };
 
     load = () => {
         this.id = Math.floor(Math.random() * neuralFiles);
@@ -80,7 +80,7 @@ class NeuralNet {
                 for (let i = 0; i < 300; i++) this.genes[i] += parseFloat(fileData[i]) / parentCount;
             }
         }
-    }
+    };
 }
 
 module.exports = NeuralNet;

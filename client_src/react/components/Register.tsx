@@ -32,25 +32,25 @@ class Register extends React.Component<{ display: boolean }, { user: string, pas
 
     turnOn = () => {
         this.setState({ on: true });
-    }
+    };
 
     turnOff = () => {
         this.setState({ on: false });
-    }
+    };
 
     changeUsername = (event) => {
         this.setState({
             user: event.target.value,
             pass: this.state.pass
         });
-    }
+    };
 
     changePassword = (event) => {
         this.setState({
             user: this.state.user,
             pass: event.target.value
         });
-    }
+    };
 
     register = () => {
         const user = this.state.user;
@@ -60,7 +60,7 @@ class Register extends React.Component<{ display: boolean }, { user: string, pas
             user,
             pass
         });
-    }
+    };
 
     render = () => (
         this.props.display

@@ -39,48 +39,48 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
 
     langEng = () => {
         loadLang(`eng`);
-    }
+    };
 
     langEsp = () => {
         loadLang(`esp`);
-    }
+    };
 
     langTki = () => {
         loadLang(`tki`);
-    }
+    };
 
     langChn = () => {
         loadLang(`chn`);
-    }
+    };
 
     changeUsername = (event) => {
         this.setState({
             user: event.target.value,
             pass: this.state.pass
         });
-    }
+    };
 
     changePassword = (event) => {
         this.setState({
             user: this.state.user,
             pass: event.target.value
         });
-    }
+    };
 
     registerR = () => {
         socket.open();
         socket?.emit(`lore`, { team: `red` });
-    }
+    };
 
     registerB = () => {
         socket.open();
         socket?.emit(`lore`, { team: `blue` });
-    }
+    };
 
     registerG = () => {
         socket.open();
         socket?.emit(`lore`, { team: `green` });
-    }
+    };
 
     login = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -110,7 +110,7 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
 
         console.log(`:TornNetRepository: Got PlayCookie: ${playCookieData}`);
         socket?.emit(`login`, { cookie: playCookieData, version: VERSION });
-    }
+    };
 
     render = () => {
         const buttonOrder = (this.state.seed < 0.66)
@@ -179,7 +179,7 @@ class LoginOverlay extends React.Component<{ display: boolean }, { user: string,
                     </div>
                 </div>
             );
-    }
+    };
 }
 
 export default LoginOverlay;
