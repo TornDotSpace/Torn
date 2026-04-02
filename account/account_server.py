@@ -60,7 +60,7 @@ def __init__():
         app,
         defaults={
             "*": aiohttp_cors.ResourceOptions(
-                allow_origin="*", // TO-DO A TEST LINE
+                allow_origin="*", # TO-DO A TEST LINE
                 allow_credentials=True,
                 expose_headers="*",
                 allow_headers="*",

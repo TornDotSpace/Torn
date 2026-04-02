@@ -3,9 +3,30 @@ default_bits = 2048
 prompt = no
 distinguished_name = dn
 req_extensions = v3_req
+x509_extensions = v3_req
 
 [dn]
+C  = ES
+ST = Madrid
+L  = Madrid
+O  = torn.space
 CN = 2a0c:5a82:9205:2b01::7fb4
+emailAddress = andromedavirgoa@gmail.com
 
 [v3_req]
-subjectAltName = IP:2a0c:5a82:9205:2b01::7fb4, DNS:torn.space
+subjectKeyIdentifier        = hash
+authorityKeyIdentifier      = keyid,issuer
+
+basicConstraints            = CA:FALSE
+keyUsage                    = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage            = serverAuth
+subjectAltName              = @alt_names
+nsComment                   = "OpenSSL Generated Certificate"
+
+[ alt_names ]
+IP.1 = 2a0c:5a82:9205:2b01::7fb4,
+IP.2 = 2a0c:5a82:9205:2b01::3043,
+
+DNS.1 = *.space
+DNS.2 = torn.space
+DNS.3 = *.torn.space
