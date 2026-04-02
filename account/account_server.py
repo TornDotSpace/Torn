@@ -74,7 +74,7 @@ def __init__():
                 expose_headers="*",
                 allow_headers="*",
                 allow_methods=["POST", "PUT", "OPTIONS"],
-            )
+            ),
         },
     )
 
