@@ -73,6 +73,9 @@ module.exports = initNetcode = () => {
     const protocol = Config.getValue(`want-tls`, false) ? https : http;
     const key = Config.getValue(`tls-key-path`, null);
     const cert = Config.getValue(`tls-cert-path`, null);
+    const disable_cors = Config.getValue(`disable-cors`, false);
+    // const server_api_url = TO-DO WE MAY NEED MORE STUFF HERE
+    // const server_
 
     const options = (protocol === https)
         ? {
@@ -87,7 +90,9 @@ module.exports = initNetcode = () => {
 
     if (Config.getValue(`want-unix-sockets`, false)) {
     // Open a unix socket on current dir
-        server.listen(`torn.socket`);
+        // server.listen(`torn.socket`);
+        const path = require(`path`);
+        server.listen(path.join(`\\\\?\\pipe`, process.cwd(), `torn.socket`));
     } else {
         console.log(`=== STARTING SERVER ON PORT ${port} ===`);
         server.listen(parseInt(port));
@@ -107,13 +112,27 @@ module.exports = initNetcode = () => {
 
     const socketIO = require(`socket.io`);
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js
-    global.io = socketIO(server, {
-        serveClient: false,
-        // parser: msgpack,
-        cors: {
-            origin: `*`
-        }
-    });
+    if (disable_cors) { // TO-DO On Node v4, you can't set withCredentials to true with origin: *, you need to use a specific origin
+        console.log(`Disabling CORS`);
+        global.io = socketIO(server, {
+            serveClient: false,
+            // parser: msgpack,
+            cors: {
+                origin: `*`,
+                origins: `*:*`
+            }
+        });
+    } else {
+        console.log(`CORS are enabled`);
+        global.io = socketIO(server, {
+            serveClient: false,
+            // parser: msgpack,
+            cors: {
+                origin: `*`,
+                origins: `*:*`
+            }
+        });
+    }
 
     io.sockets.on(`connection`, (socket) => {
         if (!serverInitialized) {

@@ -32,10 +32,10 @@ module.exports = merge(common, {
     plugins: [
         new Webpack.DefinePlugin({
             // TORN_GAMESERVER_URL: `"http://localhost:7300"`, //works interface-local
-            // TORN_API_URL: `"http://localhost:8080"`, works //interface-local
+            // TORN_API_URL: `"http://localhost:8080"`, //works interface-local
             // Below a test with local IPv4, it works TO-DO Fix this so it works, re-do the entire certificates from the ground-up if necessary!
-            TORN_GAMESERVER_URL: `"http://192.168.1.130:7300"`, // A test, works on the same private LAN
-            TORN_API_URL: `"http://192.168.1.130:8080"` // A test, works on the same private LAN
+            // TORN_GAMESERVER_URL: `"http://192.168.1.130:7300"`, // A test, works on the same private LAN
+            // TORN_API_URL: `"http://192.168.1.130:8080"`  // A test, works on the same private LAN
             // TO-DO random test with private Ipv4 LAN because I lost my IPv6 nice certificates );
             // TORN_GAMESERVER_URL: `"https://192.168.1.130:7300"`, // A test, works on the same private LAN
             // TORN_API_URL: `"https://192.168.1.130:8080"`  // A test, works on the same private LAN
@@ -45,6 +45,12 @@ module.exports = merge(common, {
             // Now IPv6 + https... it gets blocked by CORS TO-DO
             // TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01::7fb4]:7300"`,
             // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01::7fb4]:8080"`
+            // Now with CORS disabled, this one works
+            TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:7300"`,
+            // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:8080"`
+            // TO-DO this one doesn't work -> TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:8080"`
+            TORN_API_URL: `"http://localhost:8080"`
+
             // This also gets blocked by CORS - wth where are my certificates which made this work????
             // TORN_GAMESERVER_URL: `"https://torn.space:7300"`,
             // TORN_API_URL: `"https://torn.space:8080"`
@@ -61,7 +67,7 @@ module.exports = merge(common, {
             }
         },
         compress: true,
-        host: `local-ip`, // "torn.space", //<- does work on https but TORN_API_URL AND TORN_GAMESERVER_URL STILL DON'T WORK... //"2a0c:5a82:9205:2b01::7fb4", //"::", <- doesn't work on IPv6 outside the local machine //'local-ip', <- works locally //"0.0.0.0",
+        host: `2a0c:5a82:9205:2b01:0000:0000:0000:7fb4`, // "torn.space", //<- does work on https but TORN_API_URL AND TORN_GAMESERVER_URL STILL DON'T WORK... //"2a0c:5a82:9205:2b01::7fb4", //"::", <- doesn't work on IPv6 outside the local machine //'local-ip', <- works locally //"0.0.0.0",
         port: 7301,
         bonjour: true,
         allowedHosts: [`all`],
@@ -72,9 +78,9 @@ module.exports = merge(common, {
         //        secure: false
         //      },
         //      {
-        //        context: ["/rpc"],
-        //        target: "http://localhost:7300",
-        //        secure: false
+        //        context: [":7300"],
+        //        target: "https://[2a0c:5a82:9205:2b01::7fb4]:7300",
+        //        secure: true
         //      }//,
         //      {
         //        context: ["/Torn"],
@@ -83,17 +89,17 @@ module.exports = merge(common, {
         //      },
         // ],
         hot: false,
-        liveReload: false//,
-        // server: {
-        //    type: 'https',
-        //    options: {
-        //        // Certificates currently for torn.space (but mostly the IPv6 version, [2a0c:5a82:9205:2b01::3043])
-        //        // Also another certificate for [2a0c:5a82:9205:2b01::7fb4], but that one is on an encypted zip
-        //        key: fs.readFileSync("test-ssl/localhost.key"),
-        //        cert: fs.readFileSync("test-ssl/localhost.crt"),
-        //        ca: fs.readFileSync("test-ssl/localhostCA.pem") // TO-DO MAYBE IT'S THIS PARAMETER
-        //    }
-        // }//,
+        liveReload: false,
+        server: {
+            type: `https`,
+            options: {
+                // Certificates currently for torn.space (but mostly the IPv6 version, [2a0c:5a82:9205:2b01::3043])
+                // Also another certificate for [2a0c:5a82:9205:2b01::7fb4], but that one is on an encypted zip
+                key: fs.readFileSync(`test-ssl/localhost.key`),
+                cert: fs.readFileSync(`test-ssl/localhost.crt`),
+                ca: fs.readFileSync(`test-ssl/localhostCA.pem`) // TO-DO MAYBE IT'S THIS PARAMETER
+            }
+        }//,
         // client: {
         //    //webSocketTransport: "wss",
         //    webSocketURL: {
@@ -107,6 +113,6 @@ module.exports = merge(common, {
         // webSocketServer: "wss",
         // headers: {
         //   "Access-Control-Allow-Origin": "*" //, TO-DO MAYBE CHECK CORS?
-        // }//,
+        // }//,*/
     }
 });

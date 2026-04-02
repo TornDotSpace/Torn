@@ -12,7 +12,7 @@
     "ci:lint": "eslint . --ext .ts,.tsx,.js,.jsx && stylelint \"**/*.css\"",
     "dev:serve": "webpack serve --config ./deploy/webpack.dev.js",
     "devmix": "webpack serve --config ./deploy/webpack.devmix.js",
-    "devmixhttps": "webpack-dev-server --config ./deploy/webpack.devmixhttps.js",
+    "devmixhttps": "webpack serve --config ./deploy/webpack.devmixhttps.js",
     "lint-staged": "lint-staged"
   },
   "repository": {
