@@ -49,7 +49,7 @@ module.exports = merge(common, {
             TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:7300"`,
             // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:8080"`
             // TO-DO this one doesn't work -> TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:8080"`
-            TORN_API_URL: `"http://localhost:8080"`
+            TORN_API_URL: `"http://localhost:8080"` // TO-DO YES, I KNOW, THIS MAKES IT ONLY VISIBLE TO THE SERVER ITSELF... BUT AT THE MOMENT CORS IS NOT BEING VERY COOPERATIVE TO-DO FIX THAT
 
             // This also gets blocked by CORS - wth where are my certificates which made this work????
             // TORN_GAMESERVER_URL: `"https://torn.space:7300"`,
