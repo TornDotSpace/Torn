@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 echo Starting mongod from WSL to Windows with journaling NOT disabled on port 27017&
 mkdir db
-winpty mongod --port 27017 --dbpath ./db --bind_ip localhost&
+winpty mongod --ipv6 true --port 27017 --dbpath ./db --bind_ip localhost,2a0c:5a82:9205:2b01::7fb4&
 echo Building client
 echo Starting Account Server
 
@@ -12,7 +12,7 @@ echo Calling npm...
 
 npm ci
 
-npm run dev:serve&
+npm run devmixhttps&
 
 # NONE of the options below seem to do the trick, so I've been forced to edit webpack.dev.js
 #npm config set liveReload=false

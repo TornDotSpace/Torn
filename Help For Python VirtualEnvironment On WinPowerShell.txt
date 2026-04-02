@@ -14,6 +14,22 @@ PS C:\Users\andro\Torn> .\venv\Scripts\Activate
 
 # You may need to generate keys (with openssl for example)
 openssl genrsa -out PEM/localhost.key 2048
+#cat > localhost.cnf << 'EOF'
+#[req]
+#default_bits = 2048
+#prompt = no
+#distinguished_name = dn
+#req_extensions = v3_req
+#
+#[dn]
+#CN = 2001:db8::10
+#
+#[v3_req]
+#subjectAltName = IP:2001:db8::10, DNS:ipv6server.example.com
+#EOF
+#openssl req -new -key PEM/localhost.key -out PEM/petitionlocalhost.csr -config PEM/localhost.cnf
 openssl req -new -key PEM/localhost.key -out PEM/petitionlocalhost.csr
 openssl req -new -x509 -extensions v3_ca -keyout PEM/localhostCAprivateKey.pem -out PEM/localhostCA.pem -days 3650
-openssl x509 -req -days 3650 -in PEM/petitionlocalhost.csr -CA PEM/localhostCA.pem -CAkey PEM/localhostCAprivateKey.pem -set_serial 2026033101 -out PEM/localhost.crt
+openssl x509 -req -in PEM/petitionlocalhost.csr -CA PEM/localhostCA.pem -CAkey PEM/localhostCAprivateKey.pem -days 3650 -set_serial 2026033101 -out PEM/localhost.crt
+
+#openssl x509 -req -in PEM/petitionlocalhost.csr -CA PEM/localhostCA.pem -CAkey PEM/localhostCAprivateKey.pem -days 3650 -set_serial 2026040102 -out PEM/localhost.crt  -extensions v3_req -extfile PEM/localhost.cnf
