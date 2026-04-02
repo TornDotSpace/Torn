@@ -71,8 +71,8 @@ def __init__():
         defaults={
             "*": aiohttp_cors.ResourceOptions(
                 origins="*:*",
-                #allow_origins="*:*",  # TO-DO A TEST LINE
-                #allow_origin="*:*",  # TO-DO A TEST LINE
+                allow_origins="*:*",  # TO-DO A TEST LINE
+                allow_origin="*:*",  # TO-DO A TEST LINE
                 allow_credentials=True,
                 expose_headers="*",
                 allow_headers="*",
@@ -80,8 +80,8 @@ def __init__():
             ),
             "*:*": aiohttp_cors.ResourceOptions(
                 origins="*:*",
-                #allow_origins="*:*",  # TO-DO A TEST LINE
-                #allow_origin="*:*",  # TO-DO A TEST LINE
+                allow_origins="*:*",  # TO-DO A TEST LINE
+                allow_origin="*:*",  # TO-DO A TEST LINE
                 allow_credentials=True,
                 expose_headers="*",
                 allow_headers="*",
