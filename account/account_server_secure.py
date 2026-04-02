@@ -25,15 +25,16 @@ import aiohttp_cors
 from aiohttp import web
 
 import ssl
-import aiohttp    
+import aiohttp
 
-ssl_ctx = ssl.create_default_context(cafile='localhostCA.pem')
-ssl_ctx.load_cert_chain('localhost.crt', 'localhost.key')
+ssl_ctx = ssl.create_default_context(cafile="localhostCA.pem")
+ssl_ctx.load_cert_chain("localhost.crt", "localhost.key")
 
 conn = aiohttp.TCPConnector(ssl_context=ssl_ctx)
 session = aiohttp.ClientSession(connector=conn)
 
 # session will now send client certificates..
+
 
 async def do_expire_task(cache):
     while True:
