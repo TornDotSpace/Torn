@@ -4,7 +4,6 @@ requests.exceptions
 
 This module contains the set of Requests' exceptions.
 """
-
 from urllib3.exceptions import HTTPError as BaseHTTPError
 
 from .compat import JSONDecodeError as CompatJSONDecodeError

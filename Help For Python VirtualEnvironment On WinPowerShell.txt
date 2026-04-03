@@ -9,5 +9,6 @@ PS C:\Users\andro\Torn> .\venv\Scripts\Activate
 (venv) PS C:\Users\andro\Torn> pip3 install bcrypt
 (venv) PS C:\Users\andro\Torn> pip3 install discord_webhook
 (venv) PS C:\Users\andro\Torn> pip3 install motor
+(venv) PS C:\Users\andro\Torn> pip3 install pymongo
 
 (venv) PS C:\Users\andro\Torn> python ./account/account_server.py

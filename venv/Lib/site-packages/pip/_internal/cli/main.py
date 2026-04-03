@@ -42,7 +42,8 @@ logger = logging.getLogger(__name__)
 # main, this should not be an issue in practice.
 
 
-def main(args: Optional[List[str]] = None) -> int:
+def main(args=None):
+    # type: (Optional[List[str]]) -> int
     if args is None:
         args = sys.argv[1:]
 

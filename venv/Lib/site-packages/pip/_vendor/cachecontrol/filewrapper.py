@@ -1,9 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
-#
-# SPDX-License-Identifier: Apache-2.0
-
-from tempfile import NamedTemporaryFile
-import mmap
+from io import BytesIO
 
 
 class CallbackFileWrapper(object):
@@ -16,17 +11,10 @@ class CallbackFileWrapper(object):
 
     This class uses members with a double underscore (__) leading prefix so as
     not to accidentally shadow an attribute.
-
-    The data is stored in a temporary file until it is all available.  As long
-    as the temporary files directory is disk-based (sometimes it's a
-    memory-backed-``tmpfs`` on Linux), data will be unloaded to disk if memory
-    pressure is high.  For small files the disk usually won't be used at all,
-    it'll all be in the filesystem memory cache, so there should be no
-    performance impact.
     """
 
     def __init__(self, fp, callback):
-        self.__buf = NamedTemporaryFile("rb+", delete=True)
+        self.__buf = BytesIO()
         self.__fp = fp
         self.__callback = callback
 
@@ -61,19 +49,7 @@ class CallbackFileWrapper(object):
 
     def _close(self):
         if self.__callback:
-            if self.__buf.tell() == 0:
-                # Empty file:
-                result = b""
-            else:
-                # Return the data without actually loading it into memory,
-                # relying on Python's buffer API and mmap(). mmap() just gives
-                # a view directly into the filesystem's memory cache, so it
-                # doesn't result in duplicate memory use.
-                self.__buf.seek(0, 0)
-                result = memoryview(
-                    mmap.mmap(self.__buf.fileno(), 0, access=mmap.ACCESS_READ)
-                )
-            self.__callback(result)
+            self.__callback(self.__buf.getvalue())
 
         # We assign this to None here, because otherwise we can get into
         # really tricky problems where the CPython interpreter dead locks
@@ -82,16 +58,9 @@ class CallbackFileWrapper(object):
         # and allows the garbage collector to do it's thing normally.
         self.__callback = None
 
-        # Closing the temporary file releases memory and frees disk space.
-        # Important when caching big files.
-        self.__buf.close()
-
     def read(self, amt=None):
         data = self.__fp.read(amt)
-        if data:
-            # We may be dealing with b'', a sign that things are over:
-            # it's passed e.g. after we've already closed self.__buf.
-            self.__buf.write(data)
+        self.__buf.write(data)
         if self.__is_fp_closed():
             self._close()
 

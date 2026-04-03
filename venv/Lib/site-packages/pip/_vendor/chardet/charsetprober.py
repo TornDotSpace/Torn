@@ -28,62 +28,54 @@
 
 import logging
 import re
-from typing import Optional, Union
 
-from .enums import LanguageFilter, ProbingState
-
-INTERNATIONAL_WORDS_PATTERN = re.compile(
-    b"[a-zA-Z]*[\x80-\xFF]+[a-zA-Z]*[^a-zA-Z\x80-\xFF]?"
-)
+from .enums import ProbingState
 
 
-class CharSetProber:
+class CharSetProber(object):
 
     SHORTCUT_THRESHOLD = 0.95
 
-    def __init__(self, lang_filter: LanguageFilter = LanguageFilter.NONE) -> None:
-        self._state = ProbingState.DETECTING
-        self.active = True
+    def __init__(self, lang_filter=None):
+        self._state = None
         self.lang_filter = lang_filter
         self.logger = logging.getLogger(__name__)
 
-    def reset(self) -> None:
+    def reset(self):
         self._state = ProbingState.DETECTING
 
     @property
-    def charset_name(self) -> Optional[str]:
+    def charset_name(self):
         return None
 
-    @property
-    def language(self) -> Optional[str]:
-        raise NotImplementedError
-
-    def feed(self, byte_str: Union[bytes, bytearray]) -> ProbingState:
-        raise NotImplementedError
+    def feed(self, buf):
+        pass
 
     @property
-    def state(self) -> ProbingState:
+    def state(self):
         return self._state
 
-    def get_confidence(self) -> float:
+    def get_confidence(self):
         return 0.0
 
     @staticmethod
-    def filter_high_byte_only(buf: Union[bytes, bytearray]) -> bytes:
-        buf = re.sub(b"([\x00-\x7F])+", b" ", buf)
+    def filter_high_byte_only(buf):
+        buf = re.sub(b'([\x00-\x7F])+', b' ', buf)
         return buf
 
     @staticmethod
-    def filter_international_words(buf: Union[bytes, bytearray]) -> bytearray:
+    def filter_international_words(buf):
         """
         We define three types of bytes:
         alphabet: english alphabets [a-zA-Z]
         international: international characters [\x80-\xFF]
         marker: everything else [^a-zA-Z\x80-\xFF]
+
         The input buffer can be thought to contain a series of words delimited
         by markers. This function works to filter all words that contain at
         least one international character. All contiguous sequences of markers
         are replaced by a single space ascii character.
+
         This filter applies to all scripts which do not use English characters.
         """
         filtered = bytearray()
@@ -91,7 +83,8 @@ class CharSetProber:
         # This regex expression filters out only words that have at-least one
         # international character. The word may include one marker character at
         # the end.
-        words = INTERNATIONAL_WORDS_PATTERN.findall(buf)
+        words = re.findall(b'[a-zA-Z]*[\x80-\xFF]+[a-zA-Z]*[^a-zA-Z\x80-\xFF]?',
+                           buf)
 
         for word in words:
             filtered.extend(word[:-1])
@@ -101,17 +94,20 @@ class CharSetProber:
             # similarly across all languages and may thus have similar
             # frequencies).
             last_char = word[-1:]
-            if not last_char.isalpha() and last_char < b"\x80":
-                last_char = b" "
+            if not last_char.isalpha() and last_char < b'\x80':
+                last_char = b' '
             filtered.extend(last_char)
 
         return filtered
 
     @staticmethod
-    def remove_xml_tags(buf: Union[bytes, bytearray]) -> bytes:
+    def filter_with_english_letters(buf):
         """
         Returns a copy of ``buf`` that retains only the sequences of English
         alphabet and high byte characters that are not between <> characters.
+        Also retains English alphabet and high byte characters immediately
+        before occurrences of >.
+
         This filter can be applied to all scripts which contain both English
         characters and extended ASCII characters, but is currently only used by
         ``Latin1Prober``.
@@ -119,24 +115,26 @@ class CharSetProber:
         filtered = bytearray()
         in_tag = False
         prev = 0
-        buf = memoryview(buf).cast("c")
 
-        for curr, buf_char in enumerate(buf):
-            # Check if we're coming out of or entering an XML tag
-
-            # https://github.com/python/typeshed/issues/8182
-            if buf_char == b">":  # type: ignore[comparison-overlap]
-                prev = curr + 1
+        for curr in range(len(buf)):
+            # Slice here to get bytes instead of an int with Python 3
+            buf_char = buf[curr:curr + 1]
+            # Check if we're coming out of or entering an HTML tag
+            if buf_char == b'>':
                 in_tag = False
-            # https://github.com/python/typeshed/issues/8182
-            elif buf_char == b"<":  # type: ignore[comparison-overlap]
+            elif buf_char == b'<':
+                in_tag = True
+
+            # If current character is not extended-ASCII and not alphabetic...
+            if buf_char < b'\x80' and not buf_char.isalpha():
+                # ...and we're not in a tag
                 if curr > prev and not in_tag:
                     # Keep everything after last non-extended-ASCII,
                     # non-alphabetic character
                     filtered.extend(buf[prev:curr])
                     # Output a space to delimit stretch we kept
-                    filtered.extend(b" ")
-                in_tag = True
+                    filtered.extend(b' ')
+                prev = curr + 1
 
         # If we're not in a tag...
         if not in_tag:

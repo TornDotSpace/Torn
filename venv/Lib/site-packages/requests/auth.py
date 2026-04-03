@@ -35,9 +35,9 @@ def _basic_auth_str(username, password):
     if not isinstance(username, basestring):
         warnings.warn(
             "Non-string usernames will no longer be supported in Requests "
-            f"3.0.0. Please convert the object you've passed in ({username!r}) to "
+            "3.0.0. Please convert the object you've passed in ({!r}) to "
             "a string or bytes object in the near future to avoid "
-            "problems.",
+            "problems.".format(username),
             category=DeprecationWarning,
         )
         username = str(username)
@@ -45,9 +45,9 @@ def _basic_auth_str(username, password):
     if not isinstance(password, basestring):
         warnings.warn(
             "Non-string passwords will no longer be supported in Requests "
-            f"3.0.0. Please convert the object you've passed in ({type(password)!r}) to "
+            "3.0.0. Please convert the object you've passed in ({!r}) to "
             "a string or bytes object in the near future to avoid "
-            "problems.",
+            "problems.".format(type(password)),
             category=DeprecationWarning,
         )
         password = str(password)

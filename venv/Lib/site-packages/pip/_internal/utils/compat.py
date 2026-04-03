@@ -11,7 +11,8 @@ __all__ = ["get_path_uid", "stdlib_pkgs", "WINDOWS"]
 logger = logging.getLogger(__name__)
 
 
-def has_tls() -> bool:
+def has_tls():
+    # type: () -> bool
     try:
         import _ssl  # noqa: F401  # ignore unused
 
@@ -24,7 +25,8 @@ def has_tls() -> bool:
     return IS_PYOPENSSL
 
 
-def get_path_uid(path: str) -> int:
+def get_path_uid(path):
+    # type: (str) -> int
     """
     Return path's uid.
 

@@ -15,7 +15,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// TO-DO THIS IS A WORK IN PROGRESS - I HAD MANAGED TO MAKE IT WORK ONCE AND THEN IT BROKE :(
 const Webpack = require(`webpack`);
 
 const { merge } = require(`webpack-merge`);
@@ -40,22 +39,22 @@ module.exports = merge(common, {
             // TORN_API_URL: `"http://192.168.1.130:8080"`  // A test, works on the same private LAN
 
             // Below a test with http over IPv6 - works on the local machine but regular machines cannot seem to find it
-            // TORN_GAMESERVER_URL: `"http://[2a0c:5a82:9205:2b01::7fb4]:7300"`,
-            // TORN_API_URL: `"http://[2a0c:5a82:9205:2b01::7fb4]:8080"`
+            // TORN_GAMESERVER_URL: `"http://[2a0c:5a82:9205:2b01:0000:0000:0000:3abb]:7300"`,
+            // TORN_API_URL: `"http://[2a0c:5a82:9205:2b01:0000:0000:0000:3abb]:8080"`
 
             // Now IPv6 + https without DNS... it will get blocked by CORS unless apropiatedly handled
-            // TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01::7fb4]:7300"`,
-            // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01::7fb4]:8080"`
+            // TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:3abb]:7300"`,
+            // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:3abb]:8080"`
 
             // TO-DO If you need to create a new domain or change the IPs, re-do the entire certificates from the ground-up if necessary!
             // I provided a certificate for torn.space CA, it is self-signed so you'll need to install it on the browser
             // *** Now this one works ***
-            TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:7300"`,
+            TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:3abb]:7300"`,
             // *** Now this one below works if we perform some devServer's proxying ***
-            TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:7301"`
+            TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:3abb]:7301"`
 
             // This one doesn't work at the moment because of CORS over https + inner handling of that database ->
-            // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:8080"`
+            // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:3abb]:8080"`
 
             // These may also get blocked by CORS if you don't have the proper certificate. TORN_API_URL with a different port than the devServer's will definetely get CORS-red-flagged over https without DNS because of inner account configuration
             // TORN_GAMESERVER_URL: `"https://torn.space:7300"`,
@@ -74,7 +73,7 @@ module.exports = merge(common, {
             }
         },
         compress: true,
-        host: `2a0c:5a82:9205:2b01:0000:0000:0000:7fb4`, // "torn.space", //<- does work on https but TORN_API_URL AND TORN_GAMESERVER_URL STILL DON'T WORK... //"2a0c:5a82:9205:2b01::7fb4", //"::", <- doesn't work on IPv6 outside the local machine //'local-ip', <- works locally //"0.0.0.0",
+        host: `2a0c:5a82:9205:2b01:0000:0000:0000:3abb`, // "torn.space", //<- does work on https but TORN_API_URL AND TORN_GAMESERVER_URL STILL DON'T WORK... //"2a0c:5a82:9205:2b01:0000:0000:0000:3abb", //"::", <- doesn't work on IPv6 outside the local machine //'local-ip', <- works locally //"0.0.0.0",
         port: 7301,
         bonjour: true,
         allowedHosts: [`all`],
@@ -102,6 +101,7 @@ module.exports = merge(common, {
             options: {
                 // Certificates currently for torn.space (but mostly the IPv6 version, [2a0c:5a82:9205:2b01::3043])
                 // Also another certificate for [2a0c:5a82:9205:2b01::7fb4], but that one is on an encrypted zip
+                // Also another certificate for [2a0c:5a82:9205:2b01:0000:0000:0000:3abb], on an encrypted zip
                 key: fs.readFileSync(`test-ssl/localhost.key`),
                 cert: fs.readFileSync(`test-ssl/localhost.crt`),
                 ca: fs.readFileSync(`test-ssl/localhostCA.pem`)
