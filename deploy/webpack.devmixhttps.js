@@ -31,30 +31,37 @@ module.exports = merge(common, {
     },
     plugins: [
         new Webpack.DefinePlugin({
-            // TORN_GAMESERVER_URL: `"http://localhost:7300"`, //works interface-local
-            // TORN_API_URL: `"http://localhost:8080"`, //works interface-local
-            // Below a test with local IPv4, it works TO-DO Fix this so it works, re-do the entire certificates from the ground-up if necessary!
+            // works interface-local, remember these will only work for the server itself!
+            // TORN_GAMESERVER_URL: `"http://localhost:7300"`,
+            // TORN_API_URL: `"http://localhost:8080"`,
+
+            // Below a test with local IPv4 with http only, it works
             // TORN_GAMESERVER_URL: `"http://192.168.1.130:7300"`, // A test, works on the same private LAN
             // TORN_API_URL: `"http://192.168.1.130:8080"`  // A test, works on the same private LAN
-            // TO-DO random test with private Ipv4 LAN because I lost my IPv6 nice certificates );
-            // TORN_GAMESERVER_URL: `"https://192.168.1.130:7300"`, // A test, works on the same private LAN
-            // TORN_API_URL: `"https://192.168.1.130:8080"`  // A test, works on the same private LAN
-            // Below a test with IPv6 - works on the local machine but regular machines cannot seem to find it
+
+            // Below a test with http over IPv6 - works on the local machine but regular machines cannot seem to find it
             // TORN_GAMESERVER_URL: `"http://[2a0c:5a82:9205:2b01::7fb4]:7300"`,
             // TORN_API_URL: `"http://[2a0c:5a82:9205:2b01::7fb4]:8080"`
-            // Now IPv6 + https... it gets blocked by CORS TO-DO
+
+            // Now IPv6 + https without DNS... it will get blocked by CORS unless apropiatedly handled
             // TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01::7fb4]:7300"`,
             // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01::7fb4]:8080"`
-            // Now with CORS disabled, this one works
-            TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:7300"`,
-            // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:8080"`
-            // TO-DO this one doesn't work -> TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:8080"`
-            TORN_API_URL: `"http://localhost:8080"` // TO-DO YES, I KNOW, THIS MAKES IT ONLY VISIBLE TO THE SERVER ITSELF... BUT AT THE MOMENT CORS IS NOT BEING VERY COOPERATIVE TO-DO FIX THAT
 
-            // This also gets blocked by CORS - wth where are my certificates which made this work????
+            // TO-DO If you need to create a new domain or change the IPs, re-do the entire certificates from the ground-up if necessary!
+            // I provided a certificate for torn.space CA, it is self-signed so you'll need to install it on the browser
+            // *** Now this one works ***
+            TORN_GAMESERVER_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:7300"`,
+            // *** Now this one below works if we perform some devServer's proxying ***
+            TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:7301"`
+
+            // This one doesn't work at the moment because of CORS over https + inner handling of that database ->
+            // TORN_API_URL: `"https://[2a0c:5a82:9205:2b01:0000:0000:0000:7fb4]:8080"`
+
+            // These may also get blocked by CORS if you don't have the proper certificate. TORN_API_URL with a different port than the devServer's will definetely get CORS-red-flagged over https without DNS because of inner account configuration
             // TORN_GAMESERVER_URL: `"https://torn.space:7300"`,
             // TORN_API_URL: `"https://torn.space:8080"`
-            // Now testing with production-build style... still gets blocked
+
+            // Now testing with production-build style... TORN_API_URL will still get blocked unless you proxy it properly.
             // TORN_GAMESERVER_URL: `"https://torn.space"`,
             // TORN_API_URL: `"https://torn.space"`
         })
@@ -71,33 +78,33 @@ module.exports = merge(common, {
         port: 7301,
         bonjour: true,
         allowedHosts: [`all`],
-        // proxy: [ // TO-DO CHECK
-        //      {
-        //        context: ["/api"],
-        //        target: "http://localhost:8080",
-        //        secure: false
-        //      },
-        //      {
-        //        context: [":7300"],
-        //        target: "https://[2a0c:5a82:9205:2b01::7fb4]:7300",
-        //        secure: true
-        //      }//,
+        proxy: [
+            {
+                context: [`/api`],
+                target: `http://localhost:8080`,
+                secure: false
+            },
+            {
+                context: [`/rpc`],
+                target: `http://localhost:8080`,
+                secure: true
+            }//,
         //      {
         //        context: ["/Torn"],
         //        target: "http://localhost:27017",
         //        secure: false
         //      },
-        // ],
+        ],
         hot: false,
         liveReload: false,
         server: {
             type: `https`,
             options: {
                 // Certificates currently for torn.space (but mostly the IPv6 version, [2a0c:5a82:9205:2b01::3043])
-                // Also another certificate for [2a0c:5a82:9205:2b01::7fb4], but that one is on an encypted zip
+                // Also another certificate for [2a0c:5a82:9205:2b01::7fb4], but that one is on an encrypted zip
                 key: fs.readFileSync(`test-ssl/localhost.key`),
                 cert: fs.readFileSync(`test-ssl/localhost.crt`),
-                ca: fs.readFileSync(`test-ssl/localhostCA.pem`) // TO-DO MAYBE IT'S THIS PARAMETER
+                ca: fs.readFileSync(`test-ssl/localhostCA.pem`)
             }
         }//,
         // client: {
