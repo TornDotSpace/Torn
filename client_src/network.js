@@ -91,41 +91,52 @@ socket.on(`update`, (data) => {
 
     const delta = data.state;
     if (!delta) return;
-    for (let index = 0; index < delta.players.length; ++index) {
-        player_update(delta.players[index]);
+    if (delta.players !== undefined) {
+        for (let index = 0; index < delta.players.length; ++index) {
+            player_update(delta.players[index]);
+        }
+    }
+    if (delta.vorts !== undefined) {
+        for (let index = 0; index < delta.vorts.length; ++index) {
+            vort_update(delta.vorts[index]);
+        }
     }
 
-    for (let index = 0; index < delta.vorts.length; ++index) {
-        vort_update(delta.vorts[index]);
+    if (delta.mines !== undefined) {
+        for (let index = 0; index < delta.mines.length; ++index) {
+            mine_update(delta.mines[index]);
+        }
     }
-
-    for (let index = 0; index < delta.mines.length; ++index) {
-        mine_update(delta.mines[index]);
+    if (delta.beams !== undefined) {
+        for (let index = 0; index < delta.beams.length; ++index) {
+            beam_update(delta.beams[index]);
+        }
     }
-
-    for (let index = 0; index < delta.beams.length; ++index) {
-        beam_update(delta.beams[index]);
+    if (delta.blasts !== undefined) {
+        for (let index = 0; index < delta.blasts.length; ++index) {
+            blast_update(delta.blasts[index]);
+        }
     }
-
-    for (let index = 0; index < delta.blasts.length; ++index) {
-        blast_update(delta.blasts[index]);
+    if (delta.asteroids !== undefined) {
+        for (let index = 0; index < delta.asteroids.length; ++index) {
+            asteroid_update(delta.asteroids[index]);
+        }
     }
-    for (let index = 0; index < delta.asteroids.length; ++index) {
-        asteroid_update(delta.asteroids[index]);
+    if (delta.missiles !== undefined) {
+        for (let index = 0; index < delta.missiles.length; ++index) {
+            missile_update(delta.missiles[index]);
+        }
     }
-
-    for (let index = 0; index < delta.missiles.length; ++index) {
-        missile_update(delta.missiles[index]);
+    if (delta.packs !== undefined) {
+        for (let index = 0; index < delta.packs.length; ++index) {
+            pack_update(delta.packs[index]);
+        }
     }
-
-    for (let index = 0; index < delta.packs.length; ++index) {
-        pack_update(delta.packs[index]);
+    if (delta.orbs !== undefined) {
+        for (let index = 0; index < delta.orbs.length; ++index) {
+            orb_update(delta.orbs[index]);
+        }
     }
-
-    for (let index = 0; index < delta.orbs.length; ++index) {
-        orb_update(delta.orbs[index]);
-    }
-
     if (delta.base !== undefined) {
         for (let index = 0; index < delta.base.length; ++index) {
             base_update(delta.base[index]);
