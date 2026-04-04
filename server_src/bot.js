@@ -115,7 +115,7 @@ class Bot extends Player {
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
         this.equipped = 0;
-        while (this.ammos[this.equipped] == 0 && this.equipped < this.ammos.length) this.equipped++; // select the first available weapon with ammo
+        while (this.ammos[this.equipped] == 0 && this.equipped < 11) this.equipped++; // select the first available weapon with ammo
         if (this.equipped >= this.ammos.length) this.equipped = 0;
         if (this.weapons[this.equipped] == `29` && this.ammos[this.equipped] > 2) this.ammos[this.equipped] == 2; // We let bots Warp-drive once or twice
         this.w = this.e = this.s = this.c = this.space = false; // release all keys

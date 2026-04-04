@@ -101,6 +101,8 @@ global.saveTurret = function (turret) {
         experience: turret.experience,
         money: turret.money,
         color: turret.color,
+        trueColor: turret.trueColor,
+        assimilatedCol: turret.assimilatedCol,
         owner: turret.owner,
         x: turret.x,
         y: turret.y,

@@ -413,6 +413,7 @@ class Player {
                 const b = new Base(r, TURRET, this.sx, this.sy, this.color, this.x, this.y);
                 b.owner = this.name;
                 bases[this.sy][this.sx][b.id] = b;
+                b.save();
                 this.emit(`chat`, { msg: chatColor(`lime`) + chatTranslate(`You placed a turret! Name it with "/nameturret <name>".`) });
             } else if (wep.name === `Sentry`) {
                 if (bases[this.sy][this.sx] != 0) {
@@ -428,6 +429,7 @@ class Player {
                 const b = new Base(r, SENTRY, this.sx, this.sy, this.color, this.x, this.y);
                 b.owner = this.name;
                 bases[this.sy][this.sx][b.id] = b;
+                b.save();
                 this.emit(`chat`, { msg: chatColor(`lime`) + chatTranslate(`You placed a turret! Name it with "/nameturret <name>".`) });
             } else if (wep.name === `Turbo`) {
                 const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);

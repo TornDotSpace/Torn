@@ -161,7 +161,7 @@ class Base {
         for (const i in fullplayers) {
             const player = fullplayers[i];
             if (player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
-            const dist2 = squaredDist(player, this);
+            const dist2 = squaredGlobalDist(player, this, sectorWidth, sectorWidth, mapSz);
             if (dist2 < cDist2) {
                 c = player; cDist2 = dist2;
             } // update nearest player

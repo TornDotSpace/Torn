@@ -134,6 +134,10 @@ cmds.nameturret = new Command(`/nameturret <name>`, REGISTERED, (commandExecuter
         const base = bases[commandExecuter.sy][commandExecuter.sx][id]; // TO-DO maybe update regarding range?
         if (base != 0 && base.owner == commandExecuter.name) {
             base.name = msg.substring(12); num++;
+            base.color = commandExecuter.color;
+            base.trueColor = base.color;
+            base.assimilatedCol = base.color;
+            base.save();
         }
     }
     commandExecuter.socket.emit(`chat`, { msg: `${num} turret(s) renamed.` });
