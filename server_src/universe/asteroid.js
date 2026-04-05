@@ -151,14 +151,18 @@ class Asteroid {
     // Bugfix for ion beam destroying multiple times
         this.die = function () {
             if (asts[this.sy][this.sx][this.id] !== undefined) delete asts[this.sy][this.sx][this.id];
-            else if (b.sx !== undefined && b.sy !== undefined && asts[b.sy][b.sx][this.id] !== undefined) delete asts[b.sy][b.sx][this.id];
-            else if (b.sxo !== undefined && b.syo !== undefined && asts[b.syo][b.sxo][this.id] !== undefined) delete asts[b.syo][b.sxo][this.id];
+            else if (b !== undefined && b !== 0) {
+                if (b.sx !== undefined && b.sy !== undefined && asts[b.sy][b.sx][this.id] !== undefined) delete asts[b.sy][b.sx][this.id];
+                if (b.sxo !== undefined && b.syo !== undefined && asts[b.syo][b.sxo][this.id] !== undefined) delete asts[b.syo][b.sxo][this.id];
+            }
         };
 
         apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         if (asts[this.sy][this.sx][this.id] !== undefined) delete asts[this.sy][this.sx][this.id];
-        else if (b.sx !== undefined && b.sy !== undefined && asts[b.sy][b.sx][this.id] !== undefined) delete asts[b.sy][b.sx][this.id];
-        else if (b.sxo !== undefined && b.syo !== undefined && asts[b.syo][b.sxo][this.id] !== undefined) delete asts[b.syo][b.sxo][this.id];
+        if (b !== undefined && b !== 0) {
+            if (b.sx !== undefined && b.sy !== undefined && asts[b.sy][b.sx][this.id] !== undefined) delete asts[b.sy][b.sx][this.id];
+            if (b.sxo !== undefined && b.syo !== undefined && asts[b.syo][b.sxo][this.id] !== undefined) delete asts[b.syo][b.sxo][this.id];
+        }
         // delete asts[this.sy][this.sx][this.id];
         if (b == 0) return;
 
