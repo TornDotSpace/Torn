@@ -52,8 +52,8 @@ class Asteroid {
 
     tick () {
         const asteroidsHere = astCount[this.sy][this.sx];
-        this.health -= Math.max(asteroidsHere * asteroidsHere / 2000, 0); // decay asteroids so they don't get too bunched up in any one area
         if (this.health < 0) this.die(0);
+        else this.health -= Math.max(asteroidsHere * asteroidsHere / 2000, 0); // decay asteroids so they don't get too bunched up in any one area
         this.move();
         if (Math.abs(this.vx) + Math.abs(this.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players. TO-DO Maybe these could require a 9-sector refactoring... but it's barely noticeable unless you have a giant asteroid.
             for (const i in players[this.sy][this.sx]) {
@@ -149,10 +149,17 @@ class Asteroid {
 
     die (b) {
     // Bugfix for ion beam destroying multiple times
-        this.die = function () { };
+        this.die = function () {
+            if (asts[this.sy][this.sx][this.id] !== undefined) delete asts[this.sy][this.sx][this.id];
+            else if (b.sx !== undefined && b.sy !== undefined && asts[b.sy][b.sx][this.id] !== undefined) delete asts[b.sy][b.sx][this.id];
+            else if (b.sxo !== undefined && b.syo !== undefined && asts[b.syo][b.sxo][this.id] !== undefined) delete asts[b.syo][b.sxo][this.id];
+        };
 
         apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
-        delete asts[this.sy][this.sx][this.id];
+        if (asts[this.sy][this.sx][this.id] !== undefined) delete asts[this.sy][this.sx][this.id];
+        else if (b.sx !== undefined && b.sy !== undefined && asts[b.sy][b.sx][this.id] !== undefined) delete asts[b.sy][b.sx][this.id];
+        else if (b.sxo !== undefined && b.syo !== undefined && asts[b.syo][b.sxo][this.id] !== undefined) delete asts[b.syo][b.sxo][this.id];
+        // delete asts[this.sy][this.sx][this.id];
         if (b == 0) return;
 
         if (b.owner.type == `Player`) {
