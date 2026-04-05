@@ -118,22 +118,26 @@ class Asteroid {
 
         const old_sx = this.sx;
         const old_sy = this.sy;
+        let idied = false;
         if (this.x > sectorWidth) { // check each edge of the 4 they could cross.
             this.x = 1;
             this.sx = (this.sx + 1 + mapSz) % mapSz;
-        } else if (this.y > sectorWidth) {
+        } else if (this.x < 0) {
+            this.x = (sectorWidth - 1);
+            this.sx = (this.sx - 1 + mapSz) % mapSz;
+        }
+        if (this.y > sectorWidth) {
             if (this.sy >= mapSz - 1) {
                 delete asts[old_sy][old_sx][this.id];
+                idied = true;
             } else {
                 this.y = 1;
                 this.sy++;
             }
-        } else if (this.x < 0) {
-            this.x = (sectorWidth - 1);
-            this.sx = (this.sx - 1 + mapSz) % mapSz;
         } else if (this.y < 0) {
             if (this.sy == 0) {
                 delete asts[old_sy][old_sx][this.id];
+                idied = true;
             } else {
                 this.y = (sectorWidth - 1);
                 this.sy--;
@@ -141,8 +145,8 @@ class Asteroid {
         }
 
         if (old_sx !== this.sx || old_sy !== this.sy) {
-            delete asts[old_sy][old_sx][this.id];
-            asts[this.sy][this.sx][this.id] = this;
+            if (asts[old_sy][old_sx][this.id] !== undefined) delete asts[old_sy][old_sx][this.id];
+            if (!idied) asts[this.sy][this.sx][this.id] = this;
             if (this.health < 0) this.die(0);
         }
     }

@@ -99,16 +99,18 @@ class Vortex {
                             this.size += 10; // Eating asteroids will make the gravity bomb BH grow.
                         }
                     } else { // collision with wormhole
-                        const differentSectors = (this.sx !== this.sxo || this.sy !== this.syo || a.sx !== this.sxo || a.sy !== this.syo);
-                        if (differentSectors) {
-                            delete asts[a.sy][a.sx][a.id];
-                            a.sx = this.sxo;
-                            a.sy = this.syo;
+                        if (a.health <= 0) a.die(this);
+                        else {
+                            const differentSectors = (this.sx !== this.sxo || this.sy !== this.syo || a.sx !== this.sxo || a.sy !== this.syo);
+                            if (differentSectors) {
+                                delete asts[a.sy][a.sx][a.id];
+                                a.sx = this.sxo;
+                                a.sy = this.syo;
+                            }
+                            a.y = this.yo;
+                            a.x = this.xo; // teleport them to the output node
+                            if (differentSectors) asts[a.sy][a.sx][a.id] = a;
                         }
-                        a.y = this.yo;
-                        a.x = this.xo; // teleport them to the output node
-                        if (differentSectors) asts[a.sy][a.sx][a.id] = a;
-                        if (a.health < 0) a.die(this);
                     }
                 }
             }
