@@ -10,12 +10,16 @@ C  = ES
 ST = Madrid
 L  = Madrid
 O  = torn.space
-CN = 2a0c:5a82:9205:2b01:0000:0000:0000:3abb
+CN = tornspace.duckdns.org
 emailAddress = andromedavirgoa@gmail.com
 
 [v3_req]
 basicConstraints            = CA:FALSE
 keyUsage                    = nonRepudiation, digitalSignature, keyEncipherment
 extendedKeyUsage            = serverAuth
-subjectAltName              = IP:2a0c:5a82:9205:2b01:0000:0000:0000:3abb, DNS:*.space
+subjectAltName              = @alt_names
 nsComment                   = "OpenSSL Generated Certificate"
+
+[alt_names]
+DNS.1 = tornspace.duckdns.org
+DNS.2 = *.tornspace.duckdns.org
