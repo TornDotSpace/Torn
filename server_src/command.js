@@ -401,6 +401,10 @@ cmds.ipmute = new Command(`/ipmute <player> <minutesToMute> - Mutes the specifie
 
 // ADMINSTRATOR COMMANDS
 // These commands are accessible to adminstrators in the game
+cmds.shutdownAux = new Command(`/shutdown - Schedules a shut down of the shard with 120 second countdown`, ADMINPLUS, initShutdown);
+
+cmds.fastshutdownAux = new Command(`/fastreboot - Schedules a shut down of the shard, with 10 second countdown instead of 120`, ADMINPLUS, initFastShutdown);
+
 cmds.reboot = new Command(`/reboot - Schedules a restart of the shard with 120 second countdown`, ADMINPLUS, initReboot);
 
 cmds.fastreboot = new Command(`/fastreboot - Schedules a restart of the shard, with 10 second countdown instead of 120`, ADMINPLUS, initFastReboot);

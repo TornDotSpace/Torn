@@ -17,6 +17,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // The Torn.Space Server Entry Point
 require(`./server_src/resources/torn_globals.js`);
 
+global.initShutdown = function () {
+    console.log(`\nInitializing server shutdown...\n`);
+    chatAll(`${chatColor(`red`)}Server shutting down in 120 seconds. Save your progress!`);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 90 seconds. Save your progress!`);
+    }, 30 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 60 seconds. Save your progress!`);
+    }, 60 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 30 seconds. Save your progress!`);
+    }, 90 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 10 seconds. Save your progress!`);
+    }, 110 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 5...`);
+    }, 115 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 4...`);
+    }, 116 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 3...`);
+    }, 117 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 2...`);
+    }, 118 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 1...`);
+    }, 119 * 1000);
+    setTimeout(shutdown, 120 * 1000);
+};
+
+global.initFastShutdown = function () {
+    console.log(`\nInitializing fast server shutdown...\n`);
+    chatAll(`${chatColor(`red`)}Server shutting down in 10 seconds. Save your progress!`);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 5...`);
+    }, 5 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 4...`);
+    }, 6 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 3...`);
+    }, 7 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 2...`);
+    }, 8 * 1000);
+    setTimeout(() => {
+        chatAll(`${chatColor(`red`)}Server shutting down in 1...`);
+    }, 9 * 1000);
+    setTimeout(shutdown, 10 * 1000);
+};
+
 global.initReboot = function () {
     console.log(`\nInitializing server reboot...\n`);
     chatAll(`${chatColor(`red`)}Server restarting in 120 seconds. Save your progress!`);
@@ -47,7 +101,7 @@ global.initReboot = function () {
     setTimeout(() => {
         chatAll(`${chatColor(`red`)}Server restarting in 1...`);
     }, 119 * 1000);
-    setTimeout(shutdown, 120 * 1000);
+    setTimeout(shutdownReboot, 120 * 1000);
 };
 
 global.initFastReboot = function () {
@@ -68,7 +122,7 @@ global.initFastReboot = function () {
     setTimeout(() => {
         chatAll(`${chatColor(`red`)}Server restarting in 1...`);
     }, 9 * 1000);
-    setTimeout(shutdown, 10 * 1000);
+    setTimeout(shutdownReboot, 10 * 1000);
 };
 
 global.saveTurrets = function () {
@@ -215,6 +269,8 @@ require(`./server_src/universe/asteroid.js`);
 
 // const { GPU } = require(`gpu.js`); // TO-DO TESTING GPU
 // const gpu = new GPU(); // TO-DO TESTING GPU
+
+const { spawn } = require(`child_process`); // TO-DO TEST
 
 let broadcastMsg = 0;
 let lag = 0; let ops = 0; // ticks elapsed since boot, lag, count of number of instances of update() running at once
@@ -3120,6 +3176,29 @@ function idleSocketCheck () {
     // Let clients refresh their lag
     sendAll(`torn-ping`, Date.now());
     setTimeout(idleSocketCheck, timeout);
+}
+
+function shutdownReboot () {
+    writeGuildList();
+    saveTurrets();
+
+    try {
+        // Spawn a new instance of the current script
+        const newProcess = spawn(`node`, process.argv.slice(1), {
+            cwd: process.cwd(),
+            detached: true, // Allow the new process to run independently
+            stdio: `inherit` // Inherit stdin/stdout/stderr for logging
+        });
+
+        // Unref the new process to prevent the parent from waiting for it
+        newProcess.unref();
+
+        console.log(`New process spawned (PID: ${newProcess.pid}). Exiting current process (PID: ${process.pid}).`);
+        process.exit(0); // Exit current process
+    } catch (error) {
+        console.error(`Failed to spawn new process:`, error);
+        process.exit(1); // Exit with error if spawn fails
+    }
 }
 
 function shutdown () {

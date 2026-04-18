@@ -23,8 +23,8 @@ npm run devmixhttps&
 
 cp client/index.html.template client/index.html
 
-echo Starting shard-1 on port 
-node --use_strict app.js 7300 dev&
+echo "Starting shard-1 on port 7300 - to kill this process after a reboot, you will need to call netstat -ano | find \"7300\" , then you'll have to call taskkill /F /PID <insert_process_pid_here>"
+node --use_strict app.js 7300 devmixhttps&
 echo "updating leaderboard, will be called periodically -> winpty python ./tools/update_leaderboard_sched.py& . If it doesn't execute properly, execute 'python ./tools/update_leaderboard_sched.py' on PowerShell at Torn's directory level"
 winpty python ./tools/update_leaderboard_sched.py&
 echo Done. Browse to http://localhost:7301 to access the Torn dev server!

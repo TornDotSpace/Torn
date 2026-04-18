@@ -33,9 +33,9 @@ npm i -g npm
 * Navigate to `http://localhost:7301` in your browser, and you should be able to play.
 ## rank23aka24 branch setup IMPORTANT NOTES
 * This branch has a newer version of start_dev_server.sh for newer mongodb > 6.1 since one of the parameters got deprecated and removed.
-* This branch is focused on making a dev-style serviceable server. Particularly it attempts to use https over IPv6, config/torn.cfg had to be modified because of certificate and CORS issues and not being able to read the configurations right - thus backups were created for torn.cfg if you want to test any of the http-only versions (every other .sh except start_giba_win_devmix_server_mdb_6.1-HTTPS.sh, start_unix_devmix_server_mdb_6.1-HTTPS.sh, production_build.sh and test_build.sh).
+* This branch is focused on making a dev-style serviceable server. Particularly it attempts to use https over IPv6, config/torn.cfg had to be modified because of certificate and CORS issues - while now they do not need torn.cfg backups if you want to test any of the http-only versions (every other .sh except start_giba_win_devmix_server_mdb_6.1-HTTPS.sh, start_unix_devmix_server_mdb_6.1-HTTPS.sh, production_build.sh and test_build.sh), that backup is still stored.
 * If you want to make your dev server visible through your local net, you will need to at least add the host parameter on the deploy/webpack.*.js that you are calling through the sh scripts (NOT on webpack.common.js)
-* For https you may need to generate keys that cover the domain (ideally) and IP (test-only), with openssl for example (possible example below)
+* For https you may need to generate keys that cover the domain (ideally) and IP (test-only), with openssl for example (possible example below) - albeit the best optin is to get those legally certified by an official Certificate Authority!
 ```sh
 openssl genrsa -out PEM/localhost.key 2048
 #cat > localhost.cnf << 'EOF'
