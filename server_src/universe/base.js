@@ -242,13 +242,13 @@ class Base {
     die (b) {
         if (this.baseType == DEADBASE) return;
 
-        deleteTurret(this);
-
-        this.health = this.maxHealth;
         apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
         if (this.baseType != LIVEBASE) {
-            if (bases[this.sy][this.sx][this.id] !== undefined || bases[this.sy][this.sx][this.id] !== null) delete bases[this.sy][this.sx][this.id];
+            if (bases[this.sy][this.sx][this.id] !== undefined && bases[this.sy][this.sx][this.id] !== null) {
+                delete bases[this.sy][this.sx][this.id];
+                // apply9SectorCall(sendAllSector, `base_delete`, this.id, this.sx, this.sy, undefined, undefined, bases);
+            }
             // bases[this.sy][this.sx][this.id] = 0;
             this.die = function () { };
         } else {
@@ -257,6 +257,10 @@ class Base {
             this.baseType = DEADBASE;
             this.deathTimer = raidTimer < 15000 ? 75 * 60 : (25 * 125);
         }
+
+        deleteTurret(this);
+
+        this.health = this.maxHealth;
 
         if (b === 0) {
             return;
