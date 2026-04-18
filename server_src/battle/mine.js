@@ -52,6 +52,7 @@ class Mine {
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
         if (this.time++ > mineLifetime) this.die(0.1); // all mines die after 3 minutes
         if (this.wepnID === 50) { // Nailoth mine
+            if (this.time > 25 * 25) this.die(0.1);
             if (this.time === 25) {
                 if (this.child == 0) {
                     this.shootMineSpecificSpeed(this.wepnID, this.angle + 3.1415 / 2, this.child + 2, wepns[this.wepnID].speed);
