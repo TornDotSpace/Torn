@@ -32,7 +32,7 @@ class Blast {
         this.bx = owner.x;
         this.by = owner.y;
 
-        this.weaponID = weaponID;
+        this.wepnID = weaponID;
         this.time = 0; // Time since weapon spawn.
     }
 
@@ -87,7 +87,7 @@ class Blast {
                 if (Math.hypot(fx - this.bx, fy - this.by) < 64 * 2 / 3 && ((m.wepnID != 50) || (m.wepnID == 50 && m.color == !this.owner.color))) m.die(); // hits the mine.
             }
 
-            if (this.weaponID !== 25) {
+            if (this.wepnID !== 25) {
                 const fullasts = get9SectorDict(asts, this.sx, this.sy);
                 for (const i in fullasts) {
                     const ast = fullasts[i];
@@ -121,9 +121,9 @@ class Blast {
     }
 
     hit (b) {
-        if (this.weaponID === 25 && this.owner.color !== b.color) b.EMP(126); // emp blast
-        else if ((this.weaponID === 34 || this.weaponID === 47) && this.owner.color !== b.color) b.dmg(this.dmg, this); // muon and lepton
-        else if (this.weaponID === 41) b.brainwashedBy = this.owner.id; // brainwashing laser
+        if (this.wepnID === 25 && this.owner.color !== b.color) b.EMP(126); // emp blast
+        else if ((this.wepnID === 34 || this.wepnID === 47) && this.owner.color !== b.color) b.dmg(this.dmg, this); // muon and lepton
+        else if (this.wepnID === 41) b.brainwashedBy = this.owner.id; // brainwashing laser
     }
 }
 

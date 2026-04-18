@@ -328,7 +328,7 @@
     "25": {
       "name": "EMP Blast",
       "range": 100000,
-      "damage": -1,
+      "damage": 1,
       "speed": -1,
       "charge": 50,
       "price": 50000,
