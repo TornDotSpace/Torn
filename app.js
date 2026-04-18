@@ -794,7 +794,7 @@ function phase1y2update () {
             if (basePack[y][x] !== undefined && bases[y][x] !== 0) {
                 for (const id in basePack[y][x]) {
                     if (bases[y][x][id] === undefined || bases[y][x][id] === 0) {
-                        apply9SectorCall(sendAllSector, `base_delete`, i, x, y, undefined, undefined, bases);
+                        apply9SectorCall(sendAllSector, `base_delete`, id, x, y, undefined, undefined, bases);
 
                         delete basePack[y][x][id];
                     }
@@ -1613,7 +1613,7 @@ function phase1y2updateOLD () {
             if (basePack[y][x] !== undefined && bases[y][x] !== 0) {
                 for (const id in basePack[y][x]) {
                     if (bases[y][x][id] === undefined || bases[y][x][id] === 0) {
-                        apply9SectorCall(sendAllSector, `base_delete`, i, x, y, undefined, undefined, bases);
+                        apply9SectorCall(sendAllSector, `base_delete`, id, x, y, undefined, undefined, bases);
 
                         delete basePack[y][x][id];
                     }
@@ -1743,7 +1743,7 @@ function phase1y2updateOLD () {
             if (basePack[y][x] !== undefined && bases[y][x] !== 0) {
                 for (const id in basePack[y][x]) {
                     if (bases[y][x][id] === undefined || bases[y][x][id] === 0) {
-                        apply9SectorCall(sendAllSector, `base_delete`, i, x, y, undefined, undefined, bases);
+                        apply9SectorCall(sendAllSector, `base_delete`, id, x, y, undefined, undefined, bases);
 
                         delete basePack[y][x][id];
                     }
