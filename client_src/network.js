@@ -237,7 +237,7 @@ socket.on(`base_create`, (data) => {
 });
 
 socket.on(`base_delete`, (data) => {
-    basesInfo[data.id] = undefined;
+    delete basesInfo[data];
 });
 
 socket.on(`asteroid_create`, (data) => {

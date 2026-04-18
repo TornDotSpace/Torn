@@ -109,6 +109,9 @@ global.saveTurret = function (turret) {
         sx: turret.sx,
         sy: turret.sy,
         baseType: turret.baseType,
+        isMini: turret.isMini,
+        health: turret.health,
+        maxHealth: turret.maxHealth,
         name: turret.name
     };
     if (!(Object.is(TURRET_DATABASE, null) || Object.is(TURRET_DATABASE, undefined))) TURRET_DATABASE.replaceOne({ _id: turret.id }, record, { upsert: true });

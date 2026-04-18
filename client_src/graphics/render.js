@@ -940,7 +940,9 @@ global.rRadar = function () {
     if (basesInfo !== undefined) {
         for (let id in basesInfo) {
             const aBase = basesInfo[id];
-
+            if (aBase === undefined || aBase === 0) {
+                continue;
+            }
             let extraX = 0;
             let extraY = 0;
             if (!(Object.is(aBase.sx, null) || Object.is(aBase.sx, undefined))) extraX = obtainSXDrift(sx, aBase.sx);
