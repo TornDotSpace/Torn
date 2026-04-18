@@ -35,22 +35,27 @@ global.globalEndSY = 1; // ... to 1 sector South of us.
 // some global FINAL game mechanics
 global.eloVolatility = 30;
 global.bulletWidth = 16; // collision radius
-global.mineLifetime = 3 * tickRate * 60; // mines despawn after this many minutes (3)
+global.mineLifetime = 8 * tickRate * 60; // mines despawn after this many minutes (3)
 global.botDespawnRate = 0.0009; // Probability a bot with no nearby enemies despawns each tick
 global.baseHealth = 3000; // max base health
 global.baseKillExp = 5000; // Exp reward for killing a base
-global.baseKillMoney = 250000; // ditto but money
+global.baseKillMoney = 2500000; // ditto but money
 global.baseRegenSpeed = 3; // How many times faster bases regenerate health than players
 global.baseClaimRange = 1000; // How far you must be from a base (times ten) to get rewards
 global.mapSz = 15; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336 * 2; // must be divisible by 2048. If changed, remember to change the client's index.jsx ones too
-global.moneyPerRaidPoint = 300000;
+global.moneyPerRaidPoint = 900000;
 global.playerLimit = 120; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
 global.playerKillMoney = 2500;
 global.playerKillExpFraction = 0.04; // The amount of xp you steal from someone you kill
 global.playerKillMoneyFraction = 0.01; // The amount of money you steal from someone you kill
 global.minSectorAsteroidCount = 8;
-global.missileLockTimeout = 7 * tickRate; // if locked for >7s, die
+global.missileLockTimeout = 8 * tickRate; // if locked for >7s, die
+
+global.questMiningMoney = 65000; // money reward from Mining Quest
+global.questDeliveryMoney = 40000; // money reward from Mining Quest
+global.questBaseMoney = 5000000; // money reward from Mining Quest
+global.questSecretMoney = 16500000; // money reward from Mining Quest
 
 // achievements
 global.killAchievementsAmount = 10;

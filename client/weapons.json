@@ -119,8 +119,8 @@
     },
     "9": {
       "name": "Hadron Beam",
-      "range": 400,
-      "damage": 95,
+      "range": 600,
+      "damage": 115,
       "speed": -1,
       "charge": 50,
       "price": 30000,
@@ -172,7 +172,7 @@
     "13": {
       "name": "Missile Swarm",
       "range": 800,
-      "damage": -1,
+      "damage": 30,
       "speed": 45,
       "charge": 18,
       "price": 60000,

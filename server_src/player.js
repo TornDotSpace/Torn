@@ -745,17 +745,27 @@ class Player {
             else if (this.sy == mapSz - 1 && (this.cornersTouched & 8) != 8) this.cornersTouched += 8;
         }
 
-        if ((this.sx % 3 == 2 && this.sy == 4) && this.quest.type === `Secret3`) {
-            this.spoils(`money`, this.quest.exp); // reward the player
-            this.spoils(`experience`, Math.floor(this.quest.exp / 4000));
+        if (this.quest != 0 && this.quest.type === `Secret3`) {
+            let doneQuest = false;
+            const leQuestMoney = this.quest.exp;
+            const leQuestXP = Math.floor(this.quest.exp / 4000);
+            for (const i in vorts[this.sy][this.sx]) {
+                const vort = vorts[this.sy][this.sx];
+                if (vort !== undefined && (vort.isWorm !== true) && (vort.owner === undefined || vort.owner === 0)) {
+                    doneQuest = true;
+                    this.spoils(`money`, leQuestMoney); // reward the player
+                    this.spoils(`experience`, Math.floor(leQuestXP));
+                }
+            }
+            if (doneQuest) {
+                this.hasPackage = false;
+                if ((this.questsDone & 8) == 0) this.questsDone += 8;
 
-            this.hasPackage = false;
-            if ((this.questsDone & 8) == 0) this.questsDone += 8;
+                this.quest = 0; // reset quest and tell the client
+                this.emit(`quest`, { quest: this.quest, complete: true });
 
-            this.quest = 0; // reset quest and tell the client
-            this.emit(`quest`, { quest: this.quest, complete: true });
-
-            this.checkKillAchievements(true, false, false);
+                this.checkKillAchievements(true, false, false);
+            }
         }
 
         if (this.quest != 0 && this.quest.type === `Secret` && this.sx == this.quest.sx && this.sy == this.quest.sy) { // advance in secret quest to phase 2

@@ -305,10 +305,10 @@ function updateQuests () {
                 const dsxv = Math.floor(r2 * 100 % 1 * mapSz); const dsyv = Math.floor(r2 * 1000 % 1 * mapSz);
                 const sxv = Math.floor(r2 * mapSz); const syv = Math.floor(r2 * 10 % 1 * mapSz);
                 if (dsxv == sxv && dsyv == syv) return;
-                nm = { type: `Delivery`, metal: metals[Math.floor(r * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * 20000, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
-            } else if (i < 7) nm = { type: `Mining`, metal: metals[Math.floor(r * 4)], exp: 65000, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * basesPerTeam) * 2], sy: thisMap[Math.floor(r2 * basesPerTeam) * 2 + 1] };
-            else if (i < 9) nm = { type: `Base`, exp: 500000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
-            else nm = { type: `Secret`, exp: 1000000, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
+                nm = { type: `Delivery`, metal: metals[Math.floor(r * 4)], exp: Math.floor(1 + Math.sqrt(square(sxv - dsxv) + square(syv - dsyv))) * questDeliveryMoney, sx: sxv, sy: syv, dsx: dsxv, dsy: dsyv };
+            } else if (i < 7) nm = { type: `Mining`, metal: metals[Math.floor(r * 4)], exp: questMiningMoney, amt: Math.floor(1200 + r * 400), sx: thisMap[Math.floor(r2 * basesPerTeam) * 2], sy: thisMap[Math.floor(r2 * basesPerTeam) * 2 + 1] };
+            else if (i < 9) nm = { type: `Base`, exp: questBaseMoney, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
+            else nm = { type: `Secret`, exp: questSecretMoney, sx: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2], sy: baseMap[whatTeam][Math.floor(r2 * basesPerTeam) * 2 + 1] };
             teamQuests[teamColor][i] = nm;
         }
     }
