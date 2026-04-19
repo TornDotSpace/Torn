@@ -187,6 +187,9 @@ class Player {
         let chargeVal = (this.energy2 + 1) / 1.8; // charge speed scales with energy tech
         this.navigationalShieldCount();
 
+        this.generatorCount();
+
+        for (let i = 0; i < this.generators; i++) chargeVal *= 1.08;
         for (let i = 0; i < this.navigationalShield; i++) chargeVal /= 1.08; // For each navigational shield you carry, you lose the equivalent of two generators, the one that really is in your slots, and the potential one you could have placed instead of the item. 1.08/1.08 = 1
         if ((this.charge < 0 || this.space || this.c) && !(this.ship === 25 && this.equipped === 9)) this.charge += chargeVal;
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
@@ -1299,6 +1302,16 @@ class Player {
 
     testAfk () {
         return false;
+    }
+
+    generatorCount () { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
+        let generatorNum = 0;
+        if (this.ship >= wepns[20].level) { // gotta have sufficiently high ship
+            let maxSlots = 10;
+            for (let slot = 0; slot < maxSlots; slot++) if (this.weapons[slot] == 20) generatorNum++;
+        }
+
+        this.generators = generatorNum;
     }
 
     navigationalShieldCount () { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
