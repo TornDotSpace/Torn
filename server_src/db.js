@@ -76,9 +76,24 @@ global.loadPlayerData = async function (player) {
         player[key] = record[key];
     }
 
-    if (player.sx >= mapSz || player.sy >= mapSz || bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx] === {} || bases[player.sy][player.sx].color != player.color) {
-        player.sx = baseMap[player.color][0];
-        player.sy = baseMap[player.color][1];
+    let properFound = false;
+    if (player.sx < mapSz && player.sy < mapSz && (bases[player.sy][player.sx] != undefined && bases[player.sy][player.sx] != 0)) {
+        for (const id in bases[player.sy][player.sx]) {
+            const base = bases[player.sy][player.sx][id];
+            if (base !== undefined && base.color === player.color) properFound = true;
+        }
+    }
+
+    if (!properFound) {
+        if (baseMap[player.color] !== undefined) {
+            player.sx = baseMap[player.color][0];
+            player.sy = baseMap[player.color][1];
+        } else {
+            player.sx = wormhole.sxo;
+            player.sy = wormhole.syo;
+            player.x = wormhole.xo;
+            player.y = wormhole.yo;
+        }
     }
 
     if (!(player.guild in guildPlayers)) player.guild = ``; // This accounts for players with old/undefined guilds
@@ -178,7 +193,9 @@ global.savePlayerData = function (player) {
         lives: player.lives,
         guild: player.guild,
         sx: player.sx,
-        sy: player.sy
+        sy: player.sy,
+        x: player.x,
+        y: player.y
     };
     if (!(Object.is(PLAYER_DATABASE, null) || Object.is(PLAYER_DATABASE, undefined))) PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: record }, { upsert: true });
 };

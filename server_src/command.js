@@ -107,7 +107,7 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) 
             commandExecuter.socket.emit(`chat`, { msg: `You don't have enough experience!` });
             return;
         }
-        if (split[1] !== `green` && split[1] !== `blue` && split[1] !== `red`) {
+        if (split[1] !== `green` && split[1] !== `blue` && split[1] !== `red` && split[1] !== `yellow`) {
             commandExecuter.socket.emit(`chat`, { msg: `Invalid team to switch to!` });
             return;
         }
@@ -115,14 +115,23 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) 
             commandExecuter.socket.emit(`chat`, { msg: `That's your current team!` });
             return;
         }
-        teamDict = { red: 0, blue: 1, green: 2 };
+
+        teamDict = { red: 0, blue: 1, green: 2, yellow: 3 };
         const oldColor = commandExecuter.color;
+
         commandExecuter.color = split[1];
         const lossConstant = commandExecuter.tag === `B` ? 0.95 : 0.9; // MVPs lose less when switching teams
         commandExecuter.money *= lossConstant;
         commandExecuter.experience *= lossConstant;
-        commandExecuter.sx = baseMap[commandExecuter.color][0];
-        commandExecuter.sy = baseMap[commandExecuter.color][1];
+        if (commandExecuter.color !== `yellow`) {
+            commandExecuter.sx = baseMap[commandExecuter.color][0];
+            commandExecuter.sy = baseMap[commandExecuter.color][1];
+        } else {
+            commandExecuter.sx = wormhole.sxo;
+            commandExecuter.sy = wormhole.syo;
+            commandExecuter.x = wormhole.xo;
+            commandExecuter.y = wormhole.yo;
+        }
         commandExecuter.changeSectors(commandExecuter.sy, commandExecuter.sx);
         commandExecuter.save();
     }

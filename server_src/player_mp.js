@@ -265,9 +265,16 @@ class PlayerMP extends Player {
         await handlePlayerDeath(this, this.elo);
 
         this.x = this.y = sectorWidth / 2;
-        const whereToRespawn = Math.floor(Math.random() * basesPerTeam) * 2;
-        this.sx = baseMap[this.color][whereToRespawn];
-        this.sy = baseMap[this.color][whereToRespawn + 1];
+        if (this.color === `yellow`) {
+            this.sx = wormhole.sxo;
+            this.sy = wormhole.syo;
+            this.x = wormhole.xo;
+            this.y = wormhole.yo;
+        } else {
+            const whereToRespawn = Math.floor(Math.random() * basesPerTeam) * 2;
+            this.sx = baseMap[this.color][whereToRespawn];
+            this.sy = baseMap[this.color][whereToRespawn + 1];
+        }
 
         this.lives--;
         this.save();
@@ -307,7 +314,7 @@ class PlayerMP extends Player {
         this.save();
     }
 
-    dock () {
+    dock (forced = false) {
         if (typeof this.aluminium === `undefined`) this.aluminium = 0;
         if (typeof this.copper === `undefined`) this.copper = 0;
         this.copper += this.aluminium;
@@ -319,24 +326,42 @@ class PlayerMP extends Player {
             players[this.sy][this.sx][this.id] = this;
             delete dockers[this.id];
             this.leaveBaseShield = 25;
-            this.health = this.maxHealth;
+            if (this.color !== `yellow`) { // No healing for pirates
+                this.health = this.maxHealth;
+            }
             return;
         }
 
         let base = 0;
+        let numBases = 0;
+        let closeBases = 0;
         if (bases[this.sy][this.sx] != 0) {
             for (const id in bases[this.sy][this.sx]) {
                 const b = bases[this.sy][this.sx][id];
-                if ((b.baseType == LIVEBASE || b.baseType == DEADBASE) && b.color == this.color && squaredDist(this, b) < square(512)) {
-                    base = b; // try to find a base on our team that's in range and isn't just a turret
-                    break;
+                if (b.baseType == LIVEBASE || b.baseType == DEADBASE) {
+                    numBases++;
+                    if (squaredDist(this, b) < square(512)) {
+                        closeBases++;
+                        if ((b.color == this.color || (this.color === `yellow` && b.baseType == DEADBASE))) {
+                            base = b; // try to find a base on our team that's in range and isn't just a turret
+                            break;
+                        }
+                    }
                 }
             }
         }
 
-        if (base == 0) return;
+        if (base == 0) {
+            if (closeBases > 0 && numBases > 0) {
+                if (this.color === `yellow`) this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`Pirates cannot forcefully dock into a starbase unless the turret is down!`) });
+                else this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`You cannot dock with an enemy starbase!`) });
+            }
+            return;
+        }
 
-        this.refillAllAmmo();
+        if (this.color !== `yellow` || base.color == this.color) {
+            this.refillAllAmmo();
+        }
         this.x = this.y = sectorWidth / 2;
         this.save();
         this.docked = true;

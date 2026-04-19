@@ -177,7 +177,10 @@ class Player {
         }
 
         this.move();
-        if (this.health < this.maxHealth && !this.shield) this.health += playerHeal;
+        if (this.health < this.maxHealth) {
+            if (!this.shield) this.health += playerHeal;
+            else if (this.ship > 14) this.health += (playerHeal / 100);
+        }
 
         this.fire();
 
@@ -447,7 +450,7 @@ class Player {
             // If we run out of ammo on a one-use weapon, delete that weapon.
             if (this.ammos[this.equipped] == -2) {
                 this.weapons[this.equipped] = -1;
-                this.save(); // And save, to prevent people from shooting then logging out if they don't succeed with it.
+                if (!this.isBot) this.save(); // And save, to prevent people from shooting then logging out if they don't succeed with it.
             }
 
             sendWeapons(this);
@@ -456,7 +459,7 @@ class Player {
     }
 
     shootEliteWeapon () {
-        if (this.rank < this.ship) return;
+        if (!this.isBot && this.rank < this.ship) return;
         if (this.ship === 16) { // Elite Raider turbo
             // This effectively just shoots turbo.
             const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.015 : 1.01);
@@ -480,7 +483,7 @@ class Player {
             if (this.health < this.maxHealth) this.health++;
         } else if (this.ship === 20 || (this.ship === 25 && this.equipped === 4)) { // r20 Built-in hypno ray
             this.shootBlast(41);
-            this.save();
+            if (!this.isBot) this.save();
         } else if ((this.ship === 22 || (this.ship === 25 && this.equipped === 5)) && tick % 10 === 0) { // r22 healing/leech/assimilator beam
             this.shootLeechBeam();
         } else if ((this.ship === 23 || (this.ship === 25 && this.equipped === 6)) && tick % 30 === 0) { // r23 super-minefield
@@ -840,13 +843,16 @@ class Player {
         }
 
         if (cool > 0) return;
-        if (p.color === `yellow`) {
+        if (p.color === `yellow` && this.color !== `yellow`) {
             chatAll(`Planet ${p.name} colonized by ${this.nameWithColor()}!`); // Colonizing planets. Since this will happen once per planet it will not be spammy
+        } else if (p.color !== `yellow` && this.color === `yellow`) {
+            chatAll(`Planet ${p.name} evacuated by ${this.nameWithColor()} presence!`); // Colonizing planets. Since this will happen once per planet it will not be spammy except if you have pirates fighting
         }
         // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy when people fight over a planet
         if (p.color !== this.color || this.planetCooldown <= 0) {
             this.refillAllAmmo();
             this.planetCooldown = 300;
+            if (this.color === `yellow` && !this.isBot) this.save();
         }
         p.color = this.color; // claim
         p.owner = this.name;
@@ -1055,7 +1061,7 @@ class Player {
                 const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
                 beams[this.sy][this.sx][reB] = beameB;
 
-                if (this.color === `green` && tick % 750 == 0) { // Assimilation beam
+                if (((this.color === `green` || (this.color === `yellow` && !this.isBot)) && tick % 750 == 0) || (this.color === `yellow` && this.isBot && (tick % (5 * tickRate)) == 0)) { // Assimilation beam
                     nearBEnemy.assimilate(1000, this);
                     const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
                     beams[this.sy][this.sx][reB] = beameB2;

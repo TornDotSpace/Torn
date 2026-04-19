@@ -1785,7 +1785,7 @@ global.rPlayers = function () {
 };
 global.rSelfCloaked = function () {
     ctx.strokeStyle = `grey`;
-    const img = (pc === `red` ? redShips : (pc === `blue` ? blueShips : greenShips))[ship];
+    const img = (pc === `red` ? redShips : (pc === `blue` ? blueShips : (pc === `green` ? greenShips : yellowShips)))[ship];
 
     const pw = img.width;
     const ph = img.height;

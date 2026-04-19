@@ -102,7 +102,7 @@ class Bot extends Player {
     }
 
     botPlay () {
-        if ((this.color === `yellow`) && (tick % 60 == 0) && (this.health < this.maxHealth * 0.25) && this.ship > 10) {
+        if ((this.color === `yellow`) && (tick % 64 == 0) && (this.health < this.maxHealth * 0.25) && this.ship > 10) {
             const howMany = playerCount + botCount + guestCount;
             const shallWeForce = (this.ship > 14 && howMany <= playerLimit + 6);
             const shipRatio = (this.ship > 14) ? 0.5 : 0.25;
@@ -111,14 +111,15 @@ class Bot extends Player {
                 if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, shallWeForce, 2);
             }
         }
+
         if (tick % 8 != Math.floor(this.rng * 8)) return; // Lag prevention, also makes the bots a bit easier
+        this.w = this.a = this.s = this.d = this.e = this.q = this.space = false; // release all keys
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
         this.equipped = 0;
         while (this.ammos[this.equipped] == 0 && this.equipped < 11) this.equipped++; // select the first available weapon with ammo
         if (this.equipped >= this.ammos.length) this.equipped = 0;
         if (this.weapons[this.equipped] == `29` && this.ammos[this.equipped] > 2) this.ammos[this.equipped] == 2; // We let bots Warp-drive once or twice
-        this.w = this.e = this.s = this.c = this.space = false; // release all keys
 
         // Find closest enemy and any friendly in the sector
         let target = 0; let close = 100000000;
@@ -160,6 +161,9 @@ class Bot extends Player {
                 }
             }
         }
+
+        if (target !== 0 && this.ship > 15) this.c = true;
+        else this.c = false;
 
         if (this.brainwashedBy !== 0 && (!(this.brainwashedBy in players[this.sy][this.sx]) || target == 0)) this.goToOwner();
         else if (target == 0) this.flock();
@@ -490,11 +494,13 @@ global.spawnBossBot = function (sx, sy, x, y) {
     const rand = 4 * Math.random();
     bot.experience = 100000;
     bot.updateRank();
-    bot.ship = 15;
+    bot.ship = 13 + Math.floor(Math.random() * 11 + 0.1);
     bot.x = x;
     bot.y = y;
     bot.color = `yellow`;
-    bot.name = Config.getValue(`want_bot_names`, false) ? `BEHEMOTH ${botNames[Math.floor(Math.random() * (botNames.length))]}` : `BEHEMOTH`;
+
+    const auxName = (bot.ship == 24) ? `PIRATE STARBASE` : (bot.ship == 13 || bot.ship == 14 || bot.ship == 19 || bot.ship == 22) ? `SIMURGH` : `BEHEMOTH`;
+    bot.name = Config.getValue(`want_bot_names`, false) ? `${auxName} ${botNames[Math.floor(Math.random() * (botNames.length))]}` : auxName;
     bot.thrust2 = bot.capacity2 = 1;
     bot.maxHealth2 = 20;
     bot.agility2 = 0.15 * 16;

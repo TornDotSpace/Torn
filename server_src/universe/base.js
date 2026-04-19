@@ -365,7 +365,8 @@ class Base {
         if (this.assimilatedTimer >= 4600) { // If the base gets overwhelmed, it temporarily changes teams. 4600 is high enough this happening would be very rare
             this.assimilatedCol = assimilator.color;
             this.color = assimilator.color;
-            note(`WE ARE THE CYBORG. RESISTANCE IS FUTILE`, this.x, this.y - 64, this.sx, this.sy);
+            const teamMotto = (assimilator.color == `green`) ? `CYBORG. RESISTANCE IS FUTILE` : `PIRATES, NICE BASE!`;
+            note(`WE ARE THE {$teamMotto}`, this.x, this.y - 64, this.sx, this.sy);
             this.EMP(10);
         }
     }
