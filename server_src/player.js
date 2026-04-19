@@ -627,7 +627,7 @@ class Player {
             if (m !== undefined && m.color != that.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
                 if (m.wepnID != 16 && squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(16 + ships[that.ship].width)) {
                     that.dmg(m.dmg, m); // damage me
-                    if (m.wepnID === 17) that.EMP(70); // emp mine
+                    if (m.wepnID === 17) that.EMP(70 * 2); // emp mine
                     m.die();
                     break;
                 } else if (m.wepnID == 16 && squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(wepns[m.wepnID].range + ships[that.ship].width)) {
@@ -1251,7 +1251,7 @@ class Player {
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
                 if (p.color !== this.color) {
-                    p.EMP(100);
+                    p.EMP(111);
                 }
             }
             if (bases[this.sy][this.sx] != 0) {

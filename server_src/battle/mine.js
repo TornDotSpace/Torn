@@ -254,7 +254,7 @@ class Mine {
         for (const id in fullbases) {
             const b = fullbases[id];
             if (b !== undefined && b !== 0 && b.baseType != DEADBASE && b.color !== this.color && squaredGlobalDist(b, this, sectorWidth, sectorWidth, mapSz) < range2) {
-                if (this.wepnID == 17) b.EMP(25);
+                if (this.wepnID == 17) b.EMP(25 * 4);
                 b.dmg(this.dmg, this);
                 this.die();
             }

@@ -276,7 +276,8 @@ class Base {
         if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
             this.sendDeathMsg(`${b.owner.nameWithColor()}'s ${chatWeapon(b.wepnID)}`);
             b.owner.baseKilled();
-            let multiplier = this.isMini ? 1 : 2;
+            let multiplier = this.isMini ? 0.1 : 1;
+            if (!(this.baseType == DEADBASE || this.baseType == LIVEBASE)) multiplier *= 0.25; // Anti-self-feed feature, to an extent.
             let numInRange = 0;
             const fullplayers = get9SectorDict(players, this.sx, this.sy);
             let playerIDs = [];
@@ -304,7 +305,7 @@ class Base {
 
                 for (const i in fullplayers) { // as well as all other players in that sector
                     const p = players[this.sy][this.sx][i];
-                    if (p !== undefined && p.color !== this.color && squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz) < square(sectorWidth)) p.points += 2;
+                    if (p !== undefined && p.color !== this.color && (!p.isBot) && squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz) < square(sectorWidth)) p.points += 2;
                 }
             }
         }
