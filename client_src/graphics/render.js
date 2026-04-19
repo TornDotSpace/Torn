@@ -964,7 +964,7 @@ global.rRadar = function () {
     ctx.fillStyle = `white`;
     for (const p_pack in playersInfo) {
         const p = playersInfo[p_pack];
-
+        if (p === undefined || (p.disguise > 0 && p.color !== pc)) continue;
         let extraX = 0;
         let extraY = 0;
         if (!(Object.is(p.sx, null) || Object.is(p.sx, undefined))) extraX = obtainSXDrift(sx, p.sx);
