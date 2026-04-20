@@ -77,7 +77,8 @@ class Base {
         this.move(); // aim and fire
 
         this.empTimer--;
-        this.reload--;
+
+        if (this.reload >= 0) this.reload--;
 
         if (this.assimilatedTimer <= 0) {
             if (this.assimilatedCol !== this.trueColor) this.unassimilate();

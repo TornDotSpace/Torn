@@ -42,7 +42,10 @@ class Beam {
                 this.enemy.dmg(this.dmg / divideBy, this);
 
                 if (this.enemy.type === `Asteroid`) this.enemy.hit = false; // Note that the asteroid is hit for elite quarrier branching
-                else if (this.wepnID == 35) this.enemy.charge = -70; // Jammer.
+                else if (this.wepnID == 35) {
+                    if (this.enemy.type === `Base`) this.enemy.reload = 35; // Jammer.
+                    else this.enemy.charge = -70; // Jammer.
+                }
             }
         }
 

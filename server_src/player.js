@@ -1093,7 +1093,7 @@ class Player {
 
         // base
         if (!restricted) {
-            if ((wep == 7 || wep == 8 || wep == 9 || wep == 45)) {
+            if ((wep == 7 || wep == 8 || wep == 9 || wep == 35 || wep == 45)) {
                 const fullbases = get9SectorDict(bases, origin.sx, origin.sy);
                 for (const id in fullbases) {
                     const b = fullbases[id];
