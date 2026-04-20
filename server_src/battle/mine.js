@@ -204,7 +204,8 @@ class Mine {
 
     collideWithGuns () { // Guns will make enemy mines explode and vice-versa, but it'll take a while to kill them.
         const fullbullets = get9SectorDict(bullets, this.sx, this.sy);
-        const rangeMe = square(this.range);
+        const range = (this.range <= 0) ? 5 : this.range;
+        const rangeMe = square(range);
 
         for (const i in fullbullets) {
             const b = fullbullets[i];
@@ -220,7 +221,9 @@ class Mine {
 
     collideWithMissiles () { // Missiles will make enemy mines explode and vice-versa
         const fullmissiles = get9SectorDict(missiles, this.sx, this.sy);
-        const rangeMe = square(this.range);
+
+        const range = (this.range <= 0) ? 4 : this.range;
+        const rangeMe = square(range);
 
         for (const i in fullmissiles) {
             const missile = fullmissiles[i];
