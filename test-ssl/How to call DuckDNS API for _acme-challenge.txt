@@ -1,0 +1,3 @@
+https://www.duckdns.org/update?domains=tornspace&token={INSERT_YOUR_TOKEN_HERE}&txt={INSERT_ACME_TOKEN_HERE}&verbose=true
+
+Add "&clear=true" at the end to cleat the txt

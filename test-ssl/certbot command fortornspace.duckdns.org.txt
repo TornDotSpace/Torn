@@ -1,0 +1,28 @@
+# It requires certbot: https://certbot.eff.org/instructions?ws=other&os=pip
+# It requires this: https://pypi.org/project/certbot-dns-duckdns/
+#
+sudo python3 -m venv /opt/certbot/
+sudo /opt/certbot/bin/pip install --upgrade pip
+sudo /opt/certbot/bin/pip install certbot
+sudo ln -s /opt/certbot/bin/certbot /usr/local/bin/certbot
+sudo /opt/certbot/bin/pip install certbot_dns_duckdns
+sudo /opt/certbot/bin/pip install certbot_dns_duckdns -U
+sudo /opt/certbot/bin/certbot --version
+sudo /opt/certbot/bin/certbot certonly \
+  --non-interactive \
+  --agree-tos \
+  --email andromedavirgoa@gmail.com \
+  --preferred-challenges dns \
+  --authenticator dns-duckdns \
+  --dns-duckdns-token <INSERT_YOUR_DUCKDNS_TOKEN_HERE> \
+  --dns-duckdns-propagation-seconds 60 \
+  -d "tornspace.duckdns.org"
+
+
+
+#Certificate is saved at: /etc/letsencrypt/live/tornspace.duckdns.org/fullchain.pem (actually /etc/letsencrypt/archive/torn.space.duckdns.org/fullchain<VERIFY SOFT LINK>.pem)
+#Key is saved at:         /etc/letsencrypt/live/tornspace.duckdns.org/privkey.pem (actually /etc/letsencrypt/archive/torn.space.duckdns.org/privkey<VERIFY SOFT LINK>.pem)
+#This certificate expires on 2026-07-19.
+#These files will be updated when the certificate renews.
+#Certbot has set up a scheduled task to automatically renew this certificate in the background.
+
