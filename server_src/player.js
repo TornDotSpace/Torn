@@ -754,7 +754,7 @@ class Player {
         if (this.quest != 0 && this.quest.type === `Secret3`) {
             let doneQuest = false;
             const leQuestMoney = this.quest.exp;
-            const leQuestXP = Math.floor(this.quest.exp / 4000);
+            const leQuestXP = Math.floor(this.quest.exp / (4000 * 4));
             for (const i in vorts[this.sy][this.sx]) {
                 const vort = vorts[this.sy][this.sx];
                 if (vort !== undefined && (vort.isWorm !== true) && (vort.owner === undefined || vort.owner === 0)) {

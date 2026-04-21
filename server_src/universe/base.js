@@ -274,12 +274,14 @@ class Base {
         }
 
         // Or a player...
+        const antiSelfFeed = (!(this.baseType == DEADBASE || this.baseType == LIVEBASE)) ? 0.25 : 1;
+
         if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
             this.sendDeathMsg(`${b.owner.nameWithColor()}'s ${chatWeapon(b.wepnID)}`);
             b.owner.baseKilled();
-            let multiplier = this.isMini ? 0.1 : 1;
-            if (!(this.baseType == DEADBASE || this.baseType == LIVEBASE)) multiplier *= 0.25; // Anti-self-feed feature, to an extent.
             let numInRange = 0;
+            let multiplier = this.isMini ? 0.1 : 1;
+            multiplier *= antiSelfFeed; // Anti-self-feed feature, to an extent.
             const fullplayers = get9SectorDict(players, this.sx, this.sy);
             let playerIDs = [];
             for (const i in fullplayers) {
@@ -294,7 +296,8 @@ class Base {
             for (let index = 0; index < playerIDs.length; ++index) {
                 const p = fullplayers[playerIDs[index]];
                 if (p !== undefined) {
-                    p.spoils(`experience`, baseKillExp * multiplier); // reward them
+                    let consideration = (p.ship <= 18) ? 1 : (0.2 / antiSelfFeed);
+                    p.spoils(`experience`, baseKillExp * multiplier * consideration); // reward them
                     p.spoils(`money`, baseKillMoney * multiplier);
                     p.killStreak++; // Bases count for kill streaks
                     p.killStreakTimer = 1000; // 40s

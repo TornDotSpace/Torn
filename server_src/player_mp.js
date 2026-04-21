@@ -470,7 +470,7 @@ class PlayerMP extends Player {
             if (this.sx == this.quest.sx && this.sy == this.quest.sy) {
                 // reward player
                 this.spoils(`money`, this.quest.exp);
-                this.spoils(`experience`, Math.floor(this.quest.exp / 4000));
+                this.spoils(`experience`, Math.floor(this.quest.exp / (4000 * 4)));
 
                 this.quest = 0; // tell client it's done
                 this.emit(`quest`, { quest: this.quest, complete: true });
