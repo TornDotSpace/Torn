@@ -1,4 +1,4 @@
-(taken from https://github.com/TornSpace/torn.space/blob/master/COMMIT_FORMAT.md with permission from https://github.com/DamienVesper)
+<!-- (taken from https://github.com/TornSpace/torn.space/blob/master/COMMIT_FORMAT.md with permission from https://github.com/DamienVesper) -->
 # Commit Message Format
 Commit messages should follow a format that includes a `type`, `scope`, `file`, and `subject`.
 
