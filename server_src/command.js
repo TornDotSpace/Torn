@@ -48,11 +48,15 @@ global.cmds = {};
 // GUEST COMMANDS
 // All players including guests have access to these
 cmds.help = new Command(`/help - Displays commands & usages`, EVERYONE, (commandExecuter, msg) => {
+    let cmdsGiven = {};
     for (const p in commandExecuter.permissionLevels) {
         const lvl = commandExecuter.permissionLevels[p];
         for (let x = 0; x < HELP_TABLE[lvl].length; ++x) {
             const cmd = HELP_TABLE[lvl][x];
-            commandExecuter.socket.emit(`chat`, { msg: chatColor(`orange`) + cmd.usage, gc: commandExecuter.globalChat });
+            if (cmdsGiven[cmd.usage] === undefined || cmdsGiven[cmd.usage] === null) {
+                cmdsGiven[cmd.usage] = cmd.usage;
+                commandExecuter.socket.emit(`chat`, { msg: chatColor(`orange`) + cmd.usage, gc: commandExecuter.globalChat });
+            }
         }
     }
 });
@@ -454,9 +458,9 @@ cmds.settag = new Command(`/settag <player> <tag> - Sets a player's tag. tag sho
     commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`violet`)}Tag set.` });
 });
 
-cmds.deltag = new Command(`/deltag <player> <tag> - Removes a player's tag.`, ADMINPLUS, (commandExecuter, msg) => {
+cmds.deltag = new Command(`/deltag <player> - Removes a player's tag.`, ADMINPLUS, (commandExecuter, msg) => {
     if (msg.split(` `).length != 2) {
-        commandExecuter.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/settag playername'` }); return;
+        commandExecuter.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/deltag playername'` }); return;
     }
     const name = msg.split(` `)[1];
     const recipient = getPlayerFromName(name);
