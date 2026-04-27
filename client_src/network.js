@@ -79,6 +79,13 @@ socket.on(`posUp`, (data) => {
         sy = data.sy;
         playAudio(`sector`, 1);
         r3DMap();
+
+        if (quest != undefined && quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
+            for (const id in planets) {
+                const aPlanet = planets[id];
+                if (aPlanet !== undefined && aPlanet.sx === quest.sx && aPlanet.sy == quest.sy) secret2PlanetName = planets[id].name;
+            }
+        }
     }
     clearBullets(data);
 });
@@ -631,6 +638,12 @@ socket.on(`rank`, (data) => {
 socket.on(`quest`, (data) => {
     quest = data.quest;
     console.log(`Received quest status update`);
+    if (quest != undefined && quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
+        for (const id in planets) {
+            const aPlanet = planets[id];
+            if (aPlanet !== undefined && aPlanet.sx === quest.sx && aPlanet.sy == quest.sy) secret2PlanetName = planets[id].name;
+        }
+    }
     if (data.complete) addBigNote([256, `Quest Complete!`, ``, ``]);
 });
 socket.on(`achievementsKill`, (data) => {
@@ -682,8 +695,11 @@ socket.on(`status`, (data) => {
 socket.on(`planets`, (data) => {
     if (planets == 0 || planets == undefined || planets == null) planets = {};
     planets[data.id] = data.pack;
-    if (quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
-        secret2PlanetName = planets[data.id].name;
+    if (quest != undefined && quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
+        for (const id in planets) {
+            const aPlanet = planets[id];
+            if (aPlanet !== undefined && aPlanet.sx === quest.sx && aPlanet.sy == quest.sy) secret2PlanetName = planets[id].name;
+        }
     }
 });
 socket.on(`planetMap`, (data) => {
