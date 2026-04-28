@@ -167,6 +167,10 @@ class Vortex {
 
     spoils (type, amt) {
     }
+
+    isWormHole () {
+        return this.isWorm;
+    }
 }
 
 module.exports = Vortex;

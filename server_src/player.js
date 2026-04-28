@@ -756,8 +756,8 @@ class Player {
             const leQuestMoney = this.quest.exp;
             const leQuestXP = Math.floor(this.quest.exp / (4000 * 4));
             for (const i in vorts[this.sy][this.sx]) {
-                const vort = vorts[this.sy][this.sx];
-                if (vort !== undefined && (vort.isWorm !== true) && (vort.owner === undefined || vort.owner === 0)) {
+                const vort = vorts[this.sy][this.sx][i];
+                if (vort !== undefined && (!vort.isWormHole()) && (vort.owner === undefined || vort.owner === 0)) {
                     doneQuest = true;
                     this.spoils(`money`, leQuestMoney); // reward the player
                     this.spoils(`experience`, Math.floor(leQuestXP));
