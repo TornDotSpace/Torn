@@ -175,7 +175,7 @@ global.badWeapon = 0;
 global.mouseDown = false;
 global.flash = 0;
 global.hyperdriveTimer = 0;
-global.didW = false; global.didSteer = false; global.currTut = 0;
+global.didW = false; global.didSteer = false; global.didJuke = false; global.didS = false; global.didSShield = false; global.isPShifting = false; global.didShift = false; global.didFire = false; global.spammyLowHealth = 0; global.oldOre = 0; global.oldMoney = 0; global.currTut = 0;
 
 global.sectorPoints = 0;
 

@@ -1109,32 +1109,99 @@ global.rFlash = function () {
 global.rTut = function () {
     const ore = iron + silver + platinum + copper;
     let text = ``;
+    let lineA1 = ``;
     let line2 = ``;
     ctx.save();
     ctx.textAlign = `center`;
     ctx.fillStyle = `yellow`;
     if (guest) {
-        if (money != 8000 && currTut > 3) {
-            text = translate(`Go to the Base and make an account!`); if (currTut < 5) {
-                currTut = 5; addBigNote([256, text, ``, ``]);
+        const pmaxHealth = ships[ship].health * mh2;
+        if (phealth !== undefined && pmaxHealth !== undefined && pmaxHealth > 0 && phealth > 0 && (phealth < (pmaxHealth * 0.5))) {
+            text = translate(`Your health is low! Retreat and dock (X) at a friendly base!`);
+            line2 = translate(`Docking usually repairs and restocks your ship.`);
+            if (spammyLowHealth == 0) {
+                spammyLowHealth = 30; addBigNote([256, text, line2, ``]);
             }
-        } else if (!didW) {
-            text = translate(`Press W to move forward!`); if (currTut < 1) {
-                currTut = 1; addBigNote([256, text, ``, ``]);
-            }
-        } else if (!didSteer) {
-            text = translate(`Press A and D to steer!`); if (currTut < 2) {
-                currTut = 2; addBigNote([256, text, ``, ``]);
-            }
-        } else if (ship == 0 && ore == 0) {
-            text = translate(`Follow the orange arrow!`);
-            line2 = translate(`Shoot asteroids with spacebar!`);
-            if (currTut < 3) {
-                currTut = 3; addBigNote([256, text, line2, ``]);
-            }
-        } else if (ship == 0) {
-            text = docked ? translate(`Sell your ore in the Base Shop!`) : translate(`Follow the white arrow and press X to Dock!`); if (currTut < 4) {
-                currTut = 4; addBigNote([256, text, ``, ``]);
+        } else {
+            if (spammyLowHealth > 0) spammyLowHealth--;
+            if (currTut <= 1 && !didW) {
+                didSteer = false;
+                didJuke = false;
+                didS = false;
+                didShift = false;
+                didFire = false;
+                text = translate(`We welcome you to the Cadet Training Programme.`);
+                line2 = translate(`Press W/↑ (W or ↑) to move forward!`);
+                if (currTut < 1) {
+                    currTut = 1; addBigNote([256, text, line2, ``]);
+                }
+            } else if (currTut <= 2 && !didSteer) {
+                didJuke = false;
+                didS = false;
+                didShift = false;
+                didFire = false;
+
+                text = translate(`Good! But you also need to know how to change course.`);
+                line2 = translate(`Press A/← and D/→ to steer!`);
+                if (currTut < 2) {
+                    currTut = 2; addBigNote([256, text, line2, ``]);
+                }
+            } else if (currTut <= 3 && !didJuke) {
+                didS = false;
+                didShift = false;
+                didFire = false;
+
+                text = translate(`When your health (HP) < 0, your ship is destroyed. Over time you passively heal some HP.`);
+                line2 = translate(`Dodging attacks can help. Press Q and E to juke left and right!`);
+                if (currTut < 3) {
+                    currTut = 3; addBigNote([256, text, line2, ``]);
+                }
+            } else if (currTut <= 4 && (didSShield == false)) {
+                didShift = false;
+                didFire = false;
+                const shieldsWorkin = ((!(disguise > 0)) && didS && (!isPShifting));
+                text = translate(`Press S/↓ to keep shields raised!`);
+                line2 = translate(`While shields are up, HP damage and regen are reduced & some weapons cannot be fired.`);
+                if (currTut < 4) {
+                    currTut = 4; addBigNote([256, text, line2, ``]);
+                }
+                if (shieldsWorkin) didSShield = true;
+                else didS = false;
+            } else if (currTut <= 5 && !didShift) {
+                didFire = false;
+
+                text = translate(`Press Shift to drift!`);
+                line2 = translate(`While drifting, S/↓ moves you backwards.`);
+                if (currTut < 5) {
+                    currTut = 5; addBigNote([256, text, line2, ``]);
+                }
+            } else if (currTut <= 6 && !didFire) {
+                text = translate(`Press spacebar/LMB to fire your selected weapon. It may need to charge first!`);
+                line2 = translate(`You can have up to 10 weapon slots (numbers 1-10/scroll with mouse wheel).`);
+                if (currTut < 6) {
+                    currTut = 6; addBigNote([256, text, line2, ``]);
+                    oldMoney = money;
+                }
+            } else {
+                if (money > oldMoney && currTut >= 7 && ore < oldOre) {
+                    text = docked ? translate(`Dock on the Base again and make an account!`) : translate(`Dock on the Base again and make an account!`);
+                    line2 = docked ? translate(`This saves your progress, and Achievements from the 'Achievements' window.`) : translate(`You can toggle autopilot to lock your controls (press P).`);
+                    if (currTut < 8) {
+                        currTut = 8; addBigNote([256, text, line2, ``]);
+                    }
+                } else {
+                    if (ore == 0) {
+                        text = translate(`Follow the orange arrow! It is the nearest asteroid around. Shoot at asteroids to mine some ore!`);
+                        line2 = translate(`If you cannot find one, wander around or wait for an asteroid to spawn.`);
+                    } else {
+                        text = docked ? translate(`Sell your ore in the Base 'Shop', where you buy/sell items!`) : translate(`Follow the white arrow with ${pc} numbers and dock (press X) on a friendly starbase!`);
+                        line2 = docked ? translate(`'Quests' is for accepting and completing bounties`) : translate(`Filled Arrows = ships/turrets/asteroids. Hollow arrows = environment.`);
+                    }
+                    if (currTut < 7 || (currTut == 7 && oldOre != ore)) {
+                        oldOre = ore;
+                        currTut = 7; addBigNote([256, text, line2, ``]);
+                    }
+                }
             }
         }
     }
@@ -1733,7 +1800,11 @@ global.rPlayers = function () {
         }
 
         if (selfo.name === myName) {
-            if (selfo.health < selfo.maxHealth * 0.3) currAlert = translate(`Low Health!`);
+            if (selfo.health < selfo.maxHealth * 0.3) {
+                if (guest) {
+                    currAlert = translate(`Low Health! Retreat!`);
+                } else currAlert = translate(`Low Health!`);
+            }
         } else {
             for (let i = 0; i < pointers.length; i++) {
                 if (selfo.color === teamColors[i]) {

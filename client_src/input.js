@@ -41,6 +41,8 @@ document.onkeydown = function (event) {
     if (event.keyCode === 16) {
         if (keys[0] != true) socket.emit(`key`, { inputId: `shift`, state: true });
         keys[0] = true;
+        didShift = true;
+        isPShifting = true;
         return;
     }
     if (typing) {
@@ -81,6 +83,7 @@ document.onkeydown = function (event) {
     } else if (event.keyCode === 83 || event.keyCode === 40) { // s
         if (keys[1] != true) socket.emit(`key`, { inputId: `s`, state: true });
         keys[1] = true;
+        didS = true;
     } else if (event.keyCode === 192) { // `
         dev = !dev;
     } else if (event.keyCode === 77) { // m
@@ -89,6 +92,7 @@ document.onkeydown = function (event) {
     } else if (event.keyCode === 69) { // e
         if (keys[2] != true) socket.emit(`key`, { inputId: `e`, state: true });
         keys[2] = true;
+        didJuke = true;
     } else if (event.keyCode === 87 || event.keyCode === 38) { // w
         if (keys[3] != true) socket.emit(`key`, { inputId: `w`, state: true });
         keys[3] = true;
@@ -104,10 +108,12 @@ document.onkeydown = function (event) {
     } else if (event.keyCode === 32) { // space
         if (keys[6] != true) socket.emit(`key`, { inputId: ` `, state: true });
         keys[6] = true;
+        didFire = true;
         if (equipped[scroll] < 0) badWeapon = 20;
     } else if (event.keyCode === 81) { // q
         if (keys[7] != true) socket.emit(`key`, { inputId: `q`, state: true });
         keys[7] = true;
+        didJuke = true;
     } else if (event.keyCode === 88 || event.keyCode === 27) { // x
         if (dead) return;
         if (keys[8] != true) socket.emit(`key`, { inputId: `x`, state: true });
@@ -151,6 +157,7 @@ document.onkeyup = function (event) {
         keys[9] = false;
     } else if (event.keyCode === 16) {
         keys[0] = false;
+        isPShifting = false;
         socket.emit(`key`, { inputId: `shift`, state: false });
     }
 };
@@ -211,6 +218,7 @@ document.addEventListener(`mousedown`, (evt) => {
         if ((mx < w - 32 - 20 - 128 - 16 || my < h - 92) && (mx > 512 + 32 || my < h - 216) && !(mx < 256 && my < 450)) { // not in vol section or chat section or map
             socket.emit(`key`, { inputId: ` `, state: true });
         }
+        didFire = true;
         if (equipped[scroll] < 0) badWeapon = 20;
     }
     /* if(i == 350)
