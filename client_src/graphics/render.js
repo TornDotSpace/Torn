@@ -1109,14 +1109,15 @@ global.rFlash = function () {
 global.rTut = function () {
     const ore = iron + silver + platinum + copper;
     let text = ``;
-    let lineA1 = ``;
     let line2 = ``;
+    let line3 = ``;
+    let line4 = ``;
     ctx.save();
     ctx.textAlign = `center`;
     ctx.fillStyle = `yellow`;
     if (guest) {
         const pmaxHealth = ships[ship].health * mh2;
-        if (phealth !== undefined && pmaxHealth !== undefined && pmaxHealth > 0 && phealth > 0 && (phealth < (pmaxHealth * 0.5))) {
+        if (!docked && phealth !== undefined && pmaxHealth !== undefined && pmaxHealth > 0 && phealth > 0 && (phealth < (pmaxHealth * 0.5))) {
             text = translate(`Your health is low! Retreat and dock (X) at a friendly base!`);
             line2 = translate(`Docking usually repairs and restocks your ship.`);
             if (spammyLowHealth == 0) {
@@ -1142,65 +1143,78 @@ global.rTut = function () {
                 didFire = false;
 
                 text = translate(`Good! But you also need to know how to change course.`);
-                line2 = translate(`Press A/← and D/→ to steer!`);
+                line2 = translate(`Steering can help you avoid getting hit, too.`);
+                line3 = translate(`Press A/← and D/→ to steer!`);
                 if (currTut < 2) {
-                    currTut = 2; addBigNote([256, text, line2, ``]);
+                    currTut = 2; // addBigNote([256, text, line2, ``]);
                 }
             } else if (currTut <= 3 && !didJuke) {
                 didS = false;
                 didShift = false;
                 didFire = false;
 
-                text = translate(`When your health (HP) < 0, your ship is destroyed. Over time you passively heal some HP.`);
-                line2 = translate(`Dodging attacks can help. Press Q and E to juke left and right!`);
+                text = translate(`Hits damage your health (HP).`);
+                line2 = translate(`Over time you passively heal some HP (HP regen).`);
+                line3 = translate(`If your HP < 0, your ship is destroyed, and you lose 1 'live'.`);
+                line4 = translate(`Dodging hits may save you. Press Q and E to juke left and right!`);
                 if (currTut < 3) {
-                    currTut = 3; addBigNote([256, text, line2, ``]);
+                    currTut = 3; // addBigNote([256, text, line2, ``]);
                 }
             } else if (currTut <= 4 && (didSShield == false)) {
                 didShift = false;
                 didFire = false;
                 const shieldsWorkin = ((!(disguise > 0)) && didS && (!isPShifting));
-                text = translate(`Press S/↓ to keep shields raised!`);
-                line2 = translate(`While shields are up, HP damage and regen are reduced & some weapons cannot be fired.`);
+
+                text = translate(`While shields are up, HP damage is reduced.`);
+                line2 = translate(`However, so is HP regen & some weapons cannot be fired.`);
+                line3 = translate(`Hold S/↓ to keep shields raised!`);
                 if (currTut < 4) {
-                    currTut = 4; addBigNote([256, text, line2, ``]);
+                    currTut = 4; // addBigNote([256, text, line2, ``]);
                 }
                 if (shieldsWorkin) didSShield = true;
                 else didS = false;
             } else if (currTut <= 5 && !didShift) {
                 didFire = false;
 
-                text = translate(`Press Shift to drift!`);
+                text = translate(`Drifting makes steering faster but harder to control.`);
                 line2 = translate(`While drifting, S/↓ moves you backwards.`);
+                line3 = translate(`Hold Shift to drift!`);
                 if (currTut < 5) {
-                    currTut = 5; addBigNote([256, text, line2, ``]);
+                    currTut = 5; // addBigNote([256, text, line2, ``]);
                 }
             } else if (currTut <= 6 && !didFire) {
-                text = translate(`Press spacebar/LMB to fire your selected weapon. It may need to charge first!`);
-                line2 = translate(`You can have up to 10 weapon slots (numbers 1-10/scroll with mouse wheel).`);
+                text = translate(`Hold spacebar/LMB to fire your selected weapon!`);
+                line2 = translate(`Some weapons need ammo and time to charge.`);
+                line3 = translate(`You can have up to 10 weapon slots (numbers 1-10/scroll with mouse wheel).`);
+                line4 = translate(`Some ships can also fire an additional weapon with C/V.`);
                 if (currTut < 6) {
-                    currTut = 6; addBigNote([256, text, line2, ``]);
-                    oldMoney = money;
+                    currTut = 6; // addBigNote([256, text, line2, ``]);
                 }
+                if (!docked) oldMoney = money;
             } else {
-                if (money > oldMoney && currTut >= 7 && ore < oldOre) {
-                    text = docked ? translate(`Dock on the Base again and make an account!`) : translate(`Dock on the Base again and make an account!`);
+                if ((currTut == 8) || (money != oldMoney && currTut >= 7 && ore < oldOre)) {
+                    text = docked ? translate(`Dock on the Base again and make an account!`) : translate(`Dock on the Base and make an account!`);
                     line2 = docked ? translate(`This saves your progress, and Achievements from the 'Achievements' window.`) : translate(`You can toggle autopilot to lock your controls (press P).`);
                     if (currTut < 8) {
                         currTut = 8; addBigNote([256, text, line2, ``]);
                     }
-                } else {
+                } else if (currTut <= 7) {
                     if (ore == 0) {
                         text = translate(`Follow the orange arrow! It is the nearest asteroid around. Shoot at asteroids to mine some ore!`);
                         line2 = translate(`If you cannot find one, wander around or wait for an asteroid to spawn.`);
+                        line3 = docked ? `` : translate(`If you travel far enough, you will see a yellow hollow arrow. That is the sector edge.`);
+                        line4 = docked ? `` : translate(`Crossing the sector edge lets you travel between sectors, ${mapSz * mapSz} in total.`);
                     } else {
                         text = docked ? translate(`Sell your ore in the Base 'Shop', where you buy/sell items!`) : translate(`Follow the white arrow with ${pc} numbers and dock (press X) on a friendly starbase!`);
-                        line2 = docked ? translate(`'Quests' is for accepting and completing bounties`) : translate(`Filled Arrows = ships/turrets/asteroids. Hollow arrows = environment.`);
+                        line2 = docked ? translate(`'Quests' is for accepting missions (clicking over them).`) : translate(`Filled Arrows = ships/turrets/asteroids. Hollow arrows = environment.`);
+                        line3 = docked ? `` : translate(`Caution: filled arrows whose numbers`);
+                        line4 = docked ? `` : translate(`are not your team's color are likely enemies.`);
                     }
                     if (currTut < 7 || (currTut == 7 && oldOre != ore)) {
                         oldOre = ore;
-                        currTut = 7; addBigNote([256, text, line2, ``]);
+                        currTut = 7; // addBigNote([256, text, line2, ``]);
                     }
+                    if (!docked) oldMoney = money;
                 }
             }
         }
@@ -1209,7 +1223,9 @@ global.rTut = function () {
     const ms = date.getTime();
     ctx.font = `${5 * sinLow(ms / 180) + 25}px ShareTech`;
     write(ctx, text, w / 2, 40);
-    write(ctx, line2, w / 2, 88);
+    write(ctx, line2, w / 2, 40 + 48);
+    write(ctx, line3, w / 2, 40 + (48 * 2));
+    write(ctx, line4, w / 2, 40 + (48 * 3));
     ctx.restore();
 };
 global.rDmg = function (r) {
