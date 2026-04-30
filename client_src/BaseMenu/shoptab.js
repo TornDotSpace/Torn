@@ -49,7 +49,7 @@ global.rBuyShipWindow = function () {
     const t = d.getMilliseconds() * 2 * Math.PI / 50000 + d.getSeconds() * 2 * Math.PI / 50 + d.getMinutes() * 2 * 60 * Math.PI / 50;
     const rendX = 128 + 16;
     const rendY = 128 * 3 - 16;
-    let img = colorSelect(pc, redShips, blueShips, greenShips)[shipView];
+    let img = colorSelect(pc, redShips, blueShips, greenShips, yellowShips)[shipView];
     baseMenuCtx.save();
     baseMenuCtx.translate(rendX, rendY);
     baseMenuCtx.rotate(-3 * t);
@@ -69,7 +69,7 @@ global.rBuyShipWindow = function () {
         sizeH = 256;
         sizeW *= heightF;
     }
-    baseMenuCtx.drawImage(colorSelect(pc, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -sizeW / 2, -sizeH / 2, sizeW, sizeH);
+    baseMenuCtx.drawImage(colorSelect(pc, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -sizeW / 2, -sizeH / 2, sizeW, sizeH);
     baseMenuCtx.drawImage(img, -sizeW / 2, -sizeH / 2, sizeW, sizeH);
     baseMenuCtx.restore();
 
@@ -79,7 +79,7 @@ global.rBuyShipWindow = function () {
     write(baseMenuCtx, translate(`Upgrade Ship`), 128 + 16, 256 + 16);
     baseMenuCtx.font = `14px ShareTech`;
     write(baseMenuCtx, `${translate(`Rank`)} ${shipView}`, 128 + 16, 256 + 56);
-    write(baseMenuCtx, colorSelect(pc, ships[shipView].nameA, ships[shipView].nameH, ships[shipView].nameC), 128 + 16, 256 + 40);
+    write(baseMenuCtx, colorSelect(pc, ships[shipView].nameA, ships[shipView].nameH, ships[shipView].nameC, ships[shipView].nameP), 128 + 16, 256 + 40);
     baseMenuCtx.fillStyle = `yellow`;
     if (shipView > rank) baseMenuCtx.fillStyle = `red`;
     else if (ships[shipView].price > money + worth) baseMenuCtx.fillStyle = `orange`;

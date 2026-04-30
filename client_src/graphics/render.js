@@ -1792,12 +1792,23 @@ global.rPlayers = function () {
         const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
         const outOfBounds = (rendX < -(2 * (w + pw) + 220) || rendX > (2 * (w + pw) + 220) || rendY < -(2 * (h + ph) + 220) || rendY > (2 * (h + ph) + 220));
         if (!outOfBounds) {
+            // ctx.restore();
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.globalAlpha = 0.8;
+            ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -pw, -ph, pw * 2, ph * 2);
+            ctx.globalAlpha = 1;
+            ctx.drawImage(img, -pw / 2, -ph / 2);
+
+            /*
             ctx.save();
             ctx.translate(rendX, rendY);
             ctx.globalAlpha = 0.8;
             ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -pw, -ph, pw * 2, ph * 2);
             ctx.globalAlpha = 1;
             ctx.rotate(selfo.angle + Math.PI / 2);
+            */
         }
         const fireWidth = 32 * 1.2 * Math.sqrt(pw / 64); const fireHeight = selfo.speed * 1.4 * pw / 64 + Math.random() * pw / 25;
         if (!outOfBounds) {
@@ -1826,7 +1837,6 @@ global.rPlayers = function () {
                 if (selfo.color === teamColors[i]) {
                     const diffSX = obtainSXDrift(sx, selfo.sx);
                     const diffSY = obtainSYDrift(sy, selfo.sy);
-                    // console.log("TO-DO Sectors for origin (SX:," + sx +", SY: " + sy + ") TARGET (SX : " + selfo.sx + ", SY: " + selfo.sy + ") with extra SX: " + diffSX + " and extra SY: " + diffSY)
                     if (pointers[i] === 0) {
                         pointers[i] = selfo;
                         extraX[i] = diffSX;
@@ -1856,7 +1866,7 @@ global.rPlayers = function () {
                 ctx.arc(rendX, rendY, pw / 1.5 - 8, 0, 2 * Math.PI, false);
                 ctx.stroke();
             }
-            if (selfo.health / selfo.maxHealth >= 1) continue;
+            if (selfo.health / selfo.maxHealth >= 1 * ((selfo.ship == 25) ? 2 : 1)) continue;
             ctx.lineWidth = 4;
             const r = Math.floor((1 - selfo.health / selfo.maxHealth) * 255);
             const g = Math.floor(255 * selfo.health / selfo.maxHealth);

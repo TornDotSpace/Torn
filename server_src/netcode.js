@@ -694,11 +694,29 @@ module.exports = initNetcode = () => {
             if (typeof data === `undefined` || player == 0 || !player.docked || player.quest != 0 || typeof data.quest !== `number` || data.quest < 0 || data.quest > 9) return;
 
             const qid = Math.floor(data.quest); // Find the correct quest.
-            const quest = teamQuests[player.color][qid];
+
+            let tempTeam = `red`;
+            let numTurrets = 0;
+            if (player.color === `yellow`) {
+                if (bases[player.sy][player.sx] != 0) {
+                    for (const id in bases[player.sy][player.sx]) {
+                        const piratedBase = bases[player.sy][player.sx][id];
+                        if (piratedBase !== undefined && piratedBase.color !== undefined && (piratedBase.baseType === LIVEBASE || piratedBase.baseType === DEADBASE) && piratedBase.color !== `yellow`) {
+                            tempTeam = piratedBase.color;
+                            numTurrets++;
+                            break;
+                        }
+                    }
+                }
+                if (numTurrets <= 0) {
+                    tempTeam = `red`;
+                }
+            } else tempTeam = player.color;
+
+            const quest = teamQuests[tempTeam][qid];
 
             // You need to have unlocked this quest type.
             if (quest == 0 || (quest.type === `Base` && player.rank < 7) || (quest.type === `Secret` && player.rank <= 14)) return;
-
             let hasBH = false;
             if (typeof quest.dsyv === `number`) {
                 for (let bh in vorts[quest.dsyv][quest.dsxv]) {
@@ -710,8 +728,7 @@ module.exports = initNetcode = () => {
                     hasBH = hasBH || !bh.isWorm;
                 }
             }
-
-            teamQuests[player.color][qid] = 0;
+            teamQuests[tempTeam][qid] = 0;
             player.quest = quest; // give them the quest and tell the client.
             socket.emit(`quest`, { quest: quest });
         });

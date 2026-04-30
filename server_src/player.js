@@ -43,7 +43,7 @@ class Player {
         this.color = `yellow`;
         this.elo = 1200;
         this.ship = 0;
-        this.experience = 0; // 60000000000000; // 600000000000; // TO-DO 0;
+        this.experience = 0; // 60000000000000;
         this.rank = 0;
 
         this.guest = false;
@@ -79,7 +79,7 @@ class Player {
         this.speed = 0;
         this.driftAngle = 0;
 
-        this.money = 12000; // 9999999999999; // TO-DO 12000;
+        this.money = 12000; // 9999999999999;
         this.kills = 0;
         this.killStreakTimer = -1;
         this.killStreak = 0;
@@ -92,6 +92,10 @@ class Player {
         this.lives = 20;
         this.quest = 0;
         this.health = 1;
+
+        this.currDeflectorPower = -1;
+        this.maxDeflectorPower = 0;
+        this.firstDeflector = -1;
 
         this.iron = 0;
         this.silver = 0;
@@ -167,7 +171,7 @@ class Player {
         if (this.planetCooldown > 0) this.planetCooldown--;
 
         const amDrifting = this.e || this.gyroTimer > 0;
-        this.shield = (this.s && this.empTimer <= 5 && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
+        this.shield = (this.s && this.empTimer <= 5 && (!amDrifting || (this.ship == 25)) && this.gyroTimer < 1) || this.leaveBaseShield > 0;
         if ((this.disguise > 0 && this.weapons[this.equipped] != 18 && this.weapons[this.equipped] != 19 && this.weapons[this.equipped] != 21 && this.weapons[this.equipped] != 22 && this.weapons[this.equipped] != 29 && this.weapons[this.equipped] != 36) || (this.shield && this.weapons[this.equipped] > 0 && wepns[this.weapons[this.equipped]].type !== `Misc` && wepns[this.weapons[this.equipped]].type !== `Mine` && this.space)) this.charge = Math.min(this.charge, 0);
         this.leaveBaseShield--;
 
@@ -178,8 +182,18 @@ class Player {
 
         this.move();
         if (this.health < this.maxHealth) {
-            if (!this.shield) this.health += playerHeal;
-            else if (this.ship > 14) this.health += (playerHeal / 100);
+            if (!this.shield) {
+                if (this.ship == 25) this.health += (playerHeal / 100);
+                else this.health += playerHeal;
+            } else if (this.ship > 14) {
+                this.health += (playerHeal / 100);
+            }
+
+            const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+            const extra = (stolenAthena) ? 2 : 1;
+            if (this.health > (extra * this.maxHealth)) {
+                this.health = (extra * this.maxHealth);
+            }
         }
 
         this.fire();
@@ -294,7 +308,7 @@ class Player {
         }
     }
 
-    apply9SectorEffect (functionToCall, wep, extras = false, that = false, extraParam1 = false, returnSomething = false, startX = globalOriginSX, startY = globalOriginSY, endX = globalEndSX, endY = globalEndSY) { // TO-DO ALL FUNCTIONS THAT DEPEND ON THIS ONE MAY REQUIRE A REFINEMENT
+    apply9SectorEffect (functionToCall, wep, extras = false, that = false, extraParam1 = false, returnSomething = false, startX = globalOriginSX, startY = globalOriginSY, endX = globalEndSX, endY = globalEndSY) {
         const myx = this.x;
         const myy = this.y;
         const mysx = this.sx;
@@ -483,7 +497,12 @@ class Player {
             this.shootBullet(39);
         } else if (this.ship === 19 || (this.ship == 25 && this.equipped === 3)) { // r19 healing
             // if (this.disguise > 0) return;
-            if (this.health < this.maxHealth) this.health++;
+            const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+            const extra = (stolenAthena) ? 2 : 1;
+            const healPerc = (stolenAthena) ? 0.01 : 1;
+            if ((this.health + healPerc) < (extra * this.maxHealth)) {
+                this.health = this.health + healPerc;
+            } else this.health = (extra * this.maxHealth);
         } else if (this.ship === 20 || (this.ship === 25 && this.equipped === 4)) { // r20 Built-in hypno ray
             this.shootBlast(41);
             if (!this.isBot) this.save();
@@ -507,10 +526,18 @@ class Player {
                         if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
                     }
                 }
-            } else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 25);
+            } else {
+                if (this.color === `yellow`) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
+                else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 25);
+            }
         } else if (this.ship === 25) { // r25 improved slots
             if (this.equipped === 0) this.hyperdriveTimer = 15; // Improved r16 "turbo", it's actually a max speed nerf, but an acceleration buff.
-            if (this.equipped === 8) this.disguise = 5; // r25 active disguise
+            if (this.equipped === 8) {
+                if (this.color === `yellow` && this.firstDeflector > -1 && this.shield) { // Athena shield recharge
+                    this.disguise = 0;
+                    this.rechargeDeflectorShield();
+                } else this.disguise = 5; // r25 active disguise
+            }
         }
         this.reload(true, 0);
     }
@@ -551,7 +578,8 @@ class Player {
         const ore = this.iron + this.silver + this.platinum + this.copper;
 
         // In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
-        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer < 0 ? 1 : 0.3);
+        const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+        const newThrust = this.thrust * ((stolenAthena) ? 0.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer < 0 ? 1 : 0.3);
 
         // Reusable Trig
         const ssa = Math.sin(this.angle); const ssd = Math.sin(this.driftAngle); const csa = Math.cos(this.angle); const csd = Math.cos(this.driftAngle);
@@ -602,6 +630,7 @@ class Player {
         if (this.d) angAccel += (this.va - this.cva / (amDrifting ? 1.5 : 1)) / 3; // ternary reduces angular air resistance while drifting
 
         if (this.superchargerTimer > 0) angAccel *= 2;
+        if (stolenAthena) angAccel *= 0.4;
         this.cva += angAccel; // Update angular velocity from thrust.
 
         if (!this.d && !this.a && !amDrifting) this.cva /= 2; // When not drifting, apply air resistance to angular velocity.
@@ -816,8 +845,6 @@ class Player {
 
         this.checkQuestStatus(true); // lots of quests are planet based
 
-        // if (this.guest) return; // TO-DO You must create an account in the base before you can claim planets!
-
         if (typeof this.quest !== `undefined` && this.quest != 0 && this.quest.type === `Secret2` && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
             // compute whether there are any unkilled enemies in this sector
             let cleared = true;
@@ -952,7 +979,7 @@ class Player {
         this.shootMineSpecific(this.weapons[this.equipped]);
     }
 
-    shootLeechBeam (origin = undefined, restricted = false) { // TO-DO All beams and blasts may need a tweak to allow them to fire between sectors.
+    shootLeechBeam (origin = undefined, restricted = false) {
         if (origin === undefined) origin = this;
         const ox = origin.x; const oy = origin.y; // Current emitter coordinates
 
@@ -1082,7 +1109,7 @@ class Player {
         apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
     }
 
-    findBeamTarget (that, wep, origin, restricted, oldNearP) { // TO-DO REQUIRES REFINEMENT, USE the 9sectordIct function and 9 sectorcall
+    findBeamTarget (that, wep, origin, restricted, oldNearP) {
         const ox = origin.x; const oy = origin.y;
         const osx = origin.sx; const osy = origin.sy;
 
@@ -1195,10 +1222,17 @@ class Player {
             this.health -= 10000;
         }
 
-        if (this.ship === 25 && this.equipped === 9) {
-            this.shield = true;
-            d = 0;
-            this.charge = 0;
+        let deflectorFactorMult = 1;
+        let deflectDown = true;
+        if (this.ship === 25) {
+            if (this.equipped === 9 && this.color !== `yellow`) {
+                this.shield = true;
+                d = 0;
+                this.charge = 0;
+            } else if (this.color === `yellow`) {
+                deflectorFactorMult = 10;
+                deflectDown = this.isDeflectorDown();
+            }
         }
 
         // If player is not EMP'd, has navigational shield, and they are hit either by an asteroid or laser beam. then activate navigational shield perks.
@@ -1212,8 +1246,20 @@ class Player {
         d *= (this.superchargerTimer > 1 ? 2 : 1); // supercharger inflicts double damage
         if ((this.ship >= 19) && d < 1.5 && d > 0) d = 0; // Too weak attacks won't strain the hull of the ship.
 
-        this.health -= d;
-        if (this.health > this.maxHealth) this.health = this.maxHealth;
+        if (deflectorFactorMult != 1) d /= (deflectorFactorMult * deflectorFactorMult);
+        if (deflectDown) this.health -= d;
+        else {
+            this.rechargeDeflectorShield(-d * deflectorFactorMult * deflectorFactorMult * deflectorFactorMult);
+            deflectDown = this.isDeflectorDown();
+            if (deflectDown) this.health -= d;
+        }
+
+        const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+        const extra = (stolenAthena) ? 2 : 1;
+        if (this.health > (extra * this.maxHealth)) {
+            this.health = (extra * this.maxHealth);
+        }
+
         if (this.health < 0) {
             if (this.ship === 24) { // r24 beehive swarm
                 spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
@@ -1223,9 +1269,11 @@ class Player {
             this.die(origin);
         }
 
-        if (d > 0) note(`-${Math.floor(d)}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-        if (d === 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
-        if (d < 0) note(`+${Math.floor(Math.abs(d))}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
+        const shieldHoldInfo = (deflectDown) ? `` : `(${this.currDeflectorPower / deflectorFactorMult}/${this.maxDeflectorPower / deflectorFactorMult})`;
+
+        if (d > 0) note(`-${Math.floor(d)}${shieldHoldInfo}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+        if (d === 0) note(`No dmg${shieldHoldInfo}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
+        if (d < 0) note(`+${Math.floor(Math.abs(d))}${shieldHoldInfo}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
         this.emit(`dmg`, {});
         return this.health < 0;
     }
@@ -1285,7 +1333,10 @@ class Player {
     }
 
     refillAmmo (i) {
-        if (typeof wepns[this.weapons[i]] !== `undefined`) this.ammos[i] = wepns[this.weapons[i]].ammo;
+        if (this.firstDeflector > -1 && i == this.firstDeflector) {
+            this.currDeflectorPower = this.maxDeflectorPower;
+            this.ammos[this.firstDeflector] = this.currDeflectorPower;
+        } else if (typeof wepns[this.weapons[i]] !== `undefined`) this.ammos[i] = wepns[this.weapons[i]].ammo;
     }
 
     refillAllAmmo () {
@@ -1314,14 +1365,55 @@ class Player {
         this.generators = generatorNum;
     }
 
-    navigationalShieldCount () { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
+    navigationalShieldCount (deflector = false) { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
         let navShield = 0;
+        let maxDeflectorPower = 0;
+        let doneCheck = -1;
         if (this.ship >= wepns[49].level) { // gotta have sufficiently high ship
             let maxSlots = 10;
-            for (let slot = 0; slot < maxSlots; slot++) if (this.weapons[slot] == 49) navShield++;
+            for (let slot = 0; slot < maxSlots; slot++) {
+                if (this.weapons[slot] == 49) {
+                    navShield++;
+                    const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+                    if (stolenAthena && (doneCheck <= -1)) {
+                        doneCheck = slot;
+                    }
+                }
+            }
         }
 
         this.navigationalShield = navShield;
+
+        this.firstDeflector = doneCheck;
+
+        if (this.firstDeflector > -1) {
+            this.maxDeflectorPower = Math.floor(navShield * this.maxHealth * 2500 * (this.energy2 + 1));
+            if (this.currDeflectorPower < 0) {
+                this.currDeflectorPower = this.maxDeflectorPower;
+                this.ammos[this.firstDeflector] = this.currDeflectorPower;
+            }
+            sendWeapons(this);
+        } else this.maxDeflectorPower = 0;
+    }
+
+    rechargeDeflectorShield (setPower = undefined) {
+        if (this.firstDeflector > -1 && this.ammos[this.firstDeflector] !== undefined) {
+            if (this.ammos[this.firstDeflector] < 0) {
+                this.ammos[this.firstDeflector] = this.maxDeflectorPower;
+            }
+            if (this.ammos[this.firstDeflector] > -2) {
+                let shielStr = this.currDeflectorPower + ((setPower === undefined) ? Math.floor(this.energy2) : Math.floor(setPower));
+                if (shielStr > this.maxDeflectorPower) shielStr = this.maxDeflectorPower;
+                if (shielStr < 0) shielStr = 0;
+                this.currDeflectorPower = shielStr;
+                this.ammos[this.firstDeflector] = shielStr;
+            }
+            sendWeapons(this);
+        }
+    }
+
+    isDeflectorDown () {
+        return !(this.firstDeflector > -1 && this.currDeflectorPower > 0);
     }
 
     spoils (type, amt) { /* gives you something. Called wenever you earn money / exp / w/e */ }
