@@ -400,8 +400,10 @@ class Player {
                 if (wep.name === `Supercharger`) {
                     if (this.superchargerTimer <= 0) this.superchargerTimer = 1500 * (this.ship == 21 ? 2 : 1); // 1 min, more if rank 21
                     else this.superchargerTimer += 1500 * (this.ship === 21 ? 2 : 1); // Stackable
-                } else if (wep.name === `Hull Nanobots`) this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth * 0.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
-                else if (wep.name === `Photon Cloak`) this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
+                } else if (wep.name === `Hull Nanobots`) {
+                    const stolenAthenaS = (this.ship == 25 && this.color === `yellow`) ? 0.01 : 1;
+                    this.health += Math.min(Math.max(-(wepns[18].damage * stolenAthenaS), this.maxHealth * 0.25), ((this.maxHealth - this.health) * stolenAthenaS)); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
+                } else if (wep.name === `Photon Cloak`) this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
                 else if (wep.name === `Warp Drive`) {
                     let tempSpee = 0;
                     if (this.speed > 0) tempSpee = this.speed;
@@ -1246,12 +1248,13 @@ class Player {
         d *= (this.superchargerTimer > 1 ? 2 : 1); // supercharger inflicts double damage
         if ((this.ship >= 19) && d < 1.5 && d > 0) d = 0; // Too weak attacks won't strain the hull of the ship.
 
-        if (deflectorFactorMult != 1) d /= (deflectorFactorMult * deflectorFactorMult);
-        if (deflectDown) this.health -= d;
+        let appDmg = d;
+        if (deflectorFactorMult != 1) appDmg /= (deflectorFactorMult * deflectorFactorMult);
+        if (deflectDown) this.health -= appDmg;
         else {
-            this.rechargeDeflectorShield(-d * deflectorFactorMult * deflectorFactorMult * deflectorFactorMult);
+            this.rechargeDeflectorShield(-appDmg * deflectorFactorMult * deflectorFactorMult * deflectorFactorMult);
             deflectDown = this.isDeflectorDown();
-            if (deflectDown) this.health -= d;
+            if (deflectDown) this.health -= appDmg;
         }
 
         const stolenAthena = (this.ship == 25 && this.color === `yellow`);
