@@ -1337,8 +1337,7 @@ class Player {
 
     refillAmmo (i) {
         if (this.firstDeflector > -1 && i == this.firstDeflector) {
-            this.currDeflectorPower = this.maxDeflectorPower;
-            this.ammos[this.firstDeflector] = this.currDeflectorPower;
+            this.rechargeDeflectorShield(this.maxDeflectorPower / 20);
         } else if (typeof wepns[this.weapons[i]] !== `undefined`) this.ammos[i] = wepns[this.weapons[i]].ammo;
     }
 
