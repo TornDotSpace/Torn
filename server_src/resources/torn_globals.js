@@ -69,7 +69,7 @@ global.neuralFiles = 1500; // how many files should be in competition
 
 // administrative-y variables
 global.botFrequency = trainingMode ? 0.0014 : 0.003;// higher: more bots spawn.
-global.playerHeal = 0.2; // player healing speed
+global.playerHeal = 0.2 * 0.5; // player healing speed
 global.baseHeal = 1; // base healing speed
 global.guestsCantChat = !Config.getValue(`want_guest_chat`, true);
 global.ranks = [0, 5, 12, 25, 50, 100, 150, 250, 400, 800, 1200, 1800, 2500, 4000, 6000, 9000, 12000, 15000, 20000, 30000, 50000, 80000, 100000, 150000, 200000, 300000, 500000, 800000, 1200000, 1600000, 3200000, 6400000, 10000000, 20000000, 40000000, 100000000]; // exp to rank conversion.
