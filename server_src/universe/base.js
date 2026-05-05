@@ -85,6 +85,7 @@ class Base {
         } else this.assimilatedTimer--;
 
         if (this.health < this.maxHealth) this.health += baseRegenSpeed;
+        if (this.health > this.maxHealth) this.health = this.maxHealth;
         if (tick % 50 == 0 && (this.baseType == SENTRY || this.baseType == TURRET)) this.tryGiveToOwner();
     }
 

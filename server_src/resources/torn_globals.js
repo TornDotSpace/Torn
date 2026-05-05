@@ -40,7 +40,6 @@ global.botDespawnRate = 0.0009; // Probability a bot with no nearby enemies desp
 global.baseHealth = 3000; // max base health
 global.baseKillExp = 5000; // Exp reward for killing a base - a starbase, the ones that are LIVEBASE and DEADBASE - internally the base.js file cuts this for regular turrets and sentries - make sure than if you adjust a sentry or turret shop price this gets readjusted to avoid turret feeding.
 global.baseKillMoney = 2500000; // ditto but money
-global.baseRegenSpeed = 3; // How many times faster bases regenerate health than players
 global.baseClaimRange = 1000; // How far you must be from a base (times ten) to get rewards
 global.mapSz = 15; // How many sectors across the server is. If changed, see planetsClaimed
 global.sectorWidth = 14336 * 2; // must be divisible by 2048. If changed, remember to change the client's index.jsx ones too
@@ -70,7 +69,8 @@ global.neuralFiles = 1500; // how many files should be in competition
 // administrative-y variables
 global.botFrequency = trainingMode ? 0.0014 : 0.003;// higher: more bots spawn.
 global.playerHeal = 0.2 * 0.5; // player healing speed
-global.baseHeal = 1; // base healing speed
+global.baseHeal = 3; // Turret/Base healing speed
+global.baseRegenSpeed = baseHeal; // Turret/Base healing speed
 global.guestsCantChat = !Config.getValue(`want_guest_chat`, true);
 global.ranks = [0, 5, 12, 25, 50, 100, 150, 250, 400, 800, 1200, 1800, 2500, 4000, 6000, 9000, 12000, 15000, 20000, 30000, 50000, 80000, 100000, 150000, 200000, 300000, 500000, 800000, 1200000, 1600000, 3200000, 6400000, 10000000, 20000000, 40000000, 100000000]; // exp to rank conversion.
 global.afkTimerConst = 15 * tickRate * 60; // 15 minutes till we kick players for being afk
