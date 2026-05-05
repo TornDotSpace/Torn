@@ -192,7 +192,7 @@ class Bot extends Player {
         // give the killer stuff
         if ((b.owner != 0) && (typeof b.owner !== `undefined`) && (b.owner.type === `Player` || b.owner.type === `Base`)) {
             let objective = b;
-            if ((b.owner.type === `Player` && b.owner.isBot && b.owner.brainwashedBy !== 0)) { // Hypnoed bots give their master the spoils of killing other bots
+            if ((b.owner.type === `Player` && b.owner.isBot && b.owner.brainwashedBy !== undefined && b.owner.brainwashedBy !== 0)) { // Hypnoed bots give their master the spoils of killing other bots
                 let master = 0;
                 for (let sy = 0; sy < mapSz; sy++) {
                     for (let sx = 0; sx < mapSz; sx++) {
@@ -202,7 +202,7 @@ class Bot extends Player {
                         }
                     }
                 }
-                if (!(typeof master === `undefined` || master === 0)) objective = master;
+                if (!(typeof master === `undefined` || master === 0 || master.docked)) objective = master;
             }
 
             if (objective === undefined || objective.owner === undefined || !Object.hasOwn(objective.owner, `color`)) return;
