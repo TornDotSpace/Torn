@@ -204,6 +204,8 @@ class Bot extends Player {
                 }
                 if (!(typeof master === `undefined` || master === 0)) objective = master;
             }
+
+            if (objective === undefined || objective.owner === undefined || !Object.hasOwn(objective.owner, `color`)) return;
             objective.owner.onKill(this, this.temporary);
             objective.owner.spoils(`experience`, (10 + diff * (this.color === b.owner.color ? -1 : 1)));
             // Prevent farming and disincentivize targetting guests

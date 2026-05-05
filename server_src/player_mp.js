@@ -328,6 +328,9 @@ class PlayerMP extends Player {
             this.leaveBaseShield = 25;
             if (this.color !== `yellow`) { // No healing for pirates
                 this.health = this.maxHealth;
+            } else {
+                this.navigationalShieldCount();
+                this.refillAllAmmo(false);
             }
             return;
         }

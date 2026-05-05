@@ -537,7 +537,14 @@ module.exports = initNetcode = () => {
 
             player.money -= wepns[data.weapon].price; // take their money
             player.weapons[data.slot] = data.weapon; // give them the weapon
-            player.refillAllAmmo(); // give them ammo
+
+            if (player.color !== `yellow`) { // give them ammo. No ammo refuel for pirates
+                player.refillAllAmmo();
+            } else {
+                player.navigationalShieldCount();
+                player.refillAllAmmo(false);
+            }
+
             sendWeapons(player); // tell the client what they've been given
             player.save();
         });

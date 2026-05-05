@@ -71,12 +71,12 @@ class Base {
             }
         }
 
-        this.deathTimer--;
+        if (this.deathTimer >= 0) this.deathTimer--;
         if (this.baseType == DEADBASE && this.deathTimer <= 0) this.baseType = LIVEBASE; // revive.
 
         this.move(); // aim and fire
 
-        this.empTimer--;
+        if (this.empTimer >= 0) this.empTimer--;
 
         if (this.reload >= 0) this.reload--;
 

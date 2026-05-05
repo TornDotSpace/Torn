@@ -1001,10 +1001,10 @@ class Player {
             if (b !== undefined && b !== 0 && b.baseType !== DEADBASE) {
                 const dist2 = squaredGlobalDist(origin, b, sectorWidth, sectorWidth, mapSz);
                 if (dist2 < range2) {
-                    if (b.color !== origin.color && (nearBEnemy = 0 || dist2 < closestEBaseD)) {
+                    if (b.color !== origin.color && (nearBEnemy == 0 || dist2 < closestEBaseD)) {
                         nearBEnemy = b;
                         closestEBaseD = dist2;
-                    } else if (b.color === origin.color && (nearBFriendly = 0 || dist2 < closestFBaseD)) {
+                    } else if (b.color === origin.color && (nearBFriendly == 0 || dist2 < closestFBaseD)) {
                         nearBFriendly = b;
                         closestFBaseD = dist2;
                     }
@@ -1021,11 +1021,11 @@ class Player {
             if (p !== undefined && (!(p.disguise > 0 || this.id == p.id))) { // You can only heal decloaked teammates.
                 const dist2 = squaredGlobalDist(origin, p, sectorWidth, sectorWidth, mapSz);
                 if (dist2 < range2) {
-                    if (p.color !== origin.color && (nearPEnemy = 0 || dist2 < closestEshipD)) {
-                        nearBEnemy = p;
+                    if (p.color !== origin.color && (nearPEnemy == 0 || dist2 < closestEshipD)) {
+                        nearPEnemy = p;
                         closestEshipD = dist2;
-                    } else if (p.color === origin.color && (nearPFriendly = 0 || dist2 < closestFshipD)) {
-                        nearBFriendly = p;
+                    } else if (p.color === origin.color && (nearPFriendly == 0 || dist2 < closestFshipD)) {
+                        nearPFriendly = p;
                         closestFshipD = dist2;
                     }
                 }
@@ -1335,17 +1335,19 @@ class Player {
         this.speed = Math.sqrt(square(this.vy) + square(this.vx));
     }
 
-    refillAmmo (i) {
+    refillAmmo (i, aRefill = true) {
         if (this.firstDeflector > -1 && i == this.firstDeflector) {
-            this.rechargeDeflectorShield(this.maxDeflectorPower / 20);
-        } else if (typeof wepns[this.weapons[i]] !== `undefined`) this.ammos[i] = wepns[this.weapons[i]].ammo;
+            this.rechargeDeflectorShield(((aRefill) ? (this.maxDeflectorPower / 20) : 0));
+        } else if (typeof wepns[this.weapons[i]] !== `undefined`) {
+            if (aRefill || (wepns[this.weapons[i]].ammo < 0 && this.ammos[i])) this.ammos[i] = wepns[this.weapons[i]].ammo;
+        }
     }
 
-    refillAllAmmo () {
+    refillAllAmmo (aRefill = true) {
         let ammoHasChanged = false;
         for (let i = 0; i < 10; i++) {
             const beforeAmmo = this.ammos[i];
-            this.refillAmmo(i);
+            this.refillAmmo(i, aRefill);
             if (beforeAmmo != this.ammos[i]) ammoHasChanged = true;
         }
         if (!ammoHasChanged) return;
