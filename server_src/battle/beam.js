@@ -34,15 +34,17 @@ class Beam {
     }
 
     tick () {
-        if (this.enemy !== undefined && this.enemy !== null) {
+        const thereisTarget = (this.enemy !== undefined && this.enemy !== null && this.enemy !== 0 && this.enemy.sx !== undefined);
+        const thereIsOrigin = (this.origin !== undefined && this.origin !== null && this.origin !== 0 && this.origin.sx !== undefined);
+        if (thereisTarget) {
             if (this.enemy.sx !== undefined && this.esx !== this.enemy.sx) this.esx = this.enemy.sx;
             if (this.enemy.sy !== undefined && this.esy !== this.enemy.sy) this.esy = this.enemy.sy;
-            if (this.origin !== undefined && this.origin !== null) {
-                if (this.origin.sx !== undefined && this.sx !== this.origin.sx) this.sx = this.origin.sx;
-                if (this.origin.sy !== undefined && this.sy !== this.origin.sy) this.sy = this.origin.sy;
-            }
+            // if (thereIsOrigin) {
+            //    if (this.origin.sx !== undefined && this.sx !== this.origin.sx) this.sx = this.origin.sx;
+            //    if (this.origin.sy !== undefined && this.sy !== this.origin.sy) this.sy = this.origin.sy;
+            // }
             if (this.time == 0 && this.wepnID != 44) { // don't do this for Campfire beams
-                const divideBy = this.enemy.ship == 17 && (this.wepnID == 30 || this.wepnID == 26) ? 2 : 1; // i think this is about mining lasers shooting elite quarrier?
+                const divideBy = ((this.enemy.ship == 17) && (this.wepnID == 30 || this.wepnID == 26)) ? 2 : 1; // i think this is about mining lasers shooting elite quarrier?
                 this.enemy.dmg(this.dmg / divideBy, this);
 
                 if (this.enemy.type === `Asteroid`) this.enemy.hit = false; // Note that the asteroid is hit for elite quarrier branching
@@ -52,10 +54,11 @@ class Beam {
                 }
             }
         }
-        if (this.time++ > 10) {
+        this.time++;
+        if (this.time > 10 || !thereisTarget || !thereIsOrigin) {
             if (beams[this.sy][this.sx][this.id] !== undefined) delete beams[this.sy][this.sx][this.id];
             if (beams[this.esy][this.esx][this.id] !== undefined) delete beams[this.esy][this.esx][this.id];
-            if (this.origin !== 0 && this.origin.sx !== undefined && this.origin.sy !== undefined && beams[this.origin.sy][this.origin.sx][this.id] !== undefined) delete beams[this.origin.sy][this.origin.sx][this.id];
+            if (thereIsOrigin && beams[this.origin.sy][this.origin.sx][this.id] !== undefined) delete beams[this.origin.sy][this.origin.sx][this.id];
         }
     }
 }

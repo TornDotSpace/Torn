@@ -1567,6 +1567,7 @@ global.rBeams = function () {
     ctx.lineWidth = 6;
     for (const i in beamsInfo) {
         const selfo = beamsInfo[i];
+        if (selfo === undefined || selfo === 0 || selfo.time > 11) continue;
         if (selfo.wepnID == 7) ctx.strokeStyle = `mediumpurple`;
         else if (selfo.wepnID == 9) ctx.strokeStyle = `lime`;
         else if (selfo.wepnID == 24) ctx.strokeStyle = `yellow`;
