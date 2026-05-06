@@ -27,6 +27,8 @@ class Bot extends Player {
         this.rng = Math.random();
         this.temporary = 0;
         this.owner = this;
+        this.ownersx = undefined;
+        this.ownersy = undefined;
     }
 
     flock () {
@@ -36,6 +38,7 @@ class Bot extends Player {
     }
 
     goToOwner () {
+        let returnValue = 0;
         let owner = 0;
         for (let sy = 0; sy < mapSz; sy++) {
             for (let sx = 0; sx < mapSz; sx++) {
@@ -45,20 +48,30 @@ class Bot extends Player {
                 }
             }
         }
-        if (typeof owner === `undefined` || owner === 0) {
+        if (typeof owner === `undefined` || owner === 0 || owner.sx === undefined) {
             this.isBrainwashedBy = 0;
-            return;
+            this.w = true;
+            return 1;
         }
+        if ((owner.color !== this.color) || owner.docked) {
+            returnValue = 2;
+        }
+        if (returnValue == 0) {
+            this.ownersx = owner.sx;
+            this.ownersy = owner.sy;
+        }
+        if (this.ownersx === undefined || this.ownersy === undefined) return 2;
+
         const myX = this.x + this.sx * sectorWidth; // Universal coordinates of this bot
         const myY = this.y + this.sy * sectorWidth;
-        const theirX1 = owner.x + owner.sx * sectorWidth; // Coords of owner
-        const theirY1 = owner.y + owner.sy * sectorWidth;
+        const theirX1 = owner.x + this.ownersx * sectorWidth; // Coords of owner
+        const theirY1 = owner.y + this.ownersy * sectorWidth;
         const dist1 = hypot2(myX, theirX1, myY, theirY1);
-        const theirX2 = owner.x + owner.sx - mapSz * sectorWidth; // Coords of owner, wrapped backwards one to handle left/right universe wrapping
-        const theirY2 = owner.y + owner.sy - mapSz * sectorWidth;
+        const theirX2 = owner.x + this.ownersx - mapSz * sectorWidth; // Coords of owner, wrapped backwards one to handle left/right universe wrapping
+        const theirY2 = owner.y + this.ownersy - mapSz * sectorWidth;
         const dist2 = hypot2(myX, theirX2, myY, theirY2);
-        const theirX3 = owner.x + owner.sx + mapSz * sectorWidth; // Coords of owner, wrapped forwards one
-        const theirY3 = owner.y + owner.sy + mapSz * sectorWidth;
+        const theirX3 = owner.x + this.ownersx + mapSz * sectorWidth; // Coords of owner, wrapped forwards one
+        const theirY3 = owner.y + this.ownersy + mapSz * sectorWidth;
         const dist3 = hypot2(myX, theirX3, myY, theirY3);
 
         // Determine which way to wrap is fastest
@@ -76,6 +89,7 @@ class Bot extends Player {
         this.d = turn > this.cva * this.cva * 10;
         this.a = turn < -this.cva * this.cva * 10;
         this.w = true;
+        return 0;
     }
 
     flee (target) {
@@ -112,7 +126,7 @@ class Bot extends Player {
             }
         }
 
-        if (tick % 8 != Math.floor(this.rng * 8)) return; // Lag prevention, also makes the bots a bit easier
+        if (tick % 8 != Math.floor(this.rng * 7.5)) return; // Lag prevention, also makes the bots a bit easier
         this.w = this.a = this.s = this.d = this.e = this.q = this.space = false; // release all keys
         if (this.empTimer > 0) return; // cant move if i'm emp'd
 
@@ -165,10 +179,13 @@ class Bot extends Player {
         if (target !== 0 && this.ship > 15) this.c = true;
         else this.c = false;
 
-        if (this.brainwashedBy !== 0 && (!(this.brainwashedBy in players[this.sy][this.sx]) || target == 0)) this.goToOwner();
-        else if (target == 0) this.flock();
-        else if (this.health < this.maxHealth / 5.5 && this.brainwashedBy === 0) this.flee(target);
-        else this.fight(target, close);
+        let goonFollow = -1;
+        if (this.brainwashedBy !== 0 && (!(this.brainwashedBy in players[this.sy][this.sx]) || target == 0)) goonFollow = this.goToOwner();
+        if (goonFollow !== 0) {
+            if (target == 0) this.flock();
+            else if (this.health < this.maxHealth / 5.5 && this.brainwashedBy === 0) this.flee(target);
+            else this.fight(target, close);
+        }
     }
 
     async die (b) {

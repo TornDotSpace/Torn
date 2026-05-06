@@ -27,6 +27,8 @@ class Mine {
         this.dmg = wepns[weaponID].damage;
         this.range = wepns[weaponID].range;
 
+        this.isDead = false;
+
         this.x = ownr.x;
         this.y = ownr.y;
         this.angle = ownr.angle;
@@ -36,6 +38,8 @@ class Mine {
         this.sy = ownr.sy;
 
         this.owner = ownr;
+        this.ownerShip = 26;
+        if (ownr !== undefined && ownr !== 0 && ownr.ship !== undefined) this.ownerShip = ownr.ship;
         this.wepnID = weaponID;
         this.child = 0;
     }
@@ -50,7 +54,9 @@ class Mine {
             this.collideWithBases();
         }
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
-        if (this.time++ > mineLifetime) this.die(0.1); // all mines die after 3 minutes
+        else if (this.time++ > mineLifetime) this.die(0.1); // all mines die after 3 minutes
+        if (this.isDead) return;
+
         if (this.wepnID === 50) { // Nailoth mine
             if (this.time > 25 * 25) this.die(0.1);
             if (this.time === 25) {
@@ -75,6 +81,11 @@ class Mine {
         } else this.move(); // not only grenade, anything EM'ed
         if (this.wepnID == 43 && this.time % 8 == 0) this.doPulse(); // pulse
         if (this.wepnID == 44 && this.time % 25 == 0) this.doHeal(); // campfire
+        if (this.wepnID == 16) {
+            if ((this.time % (wepns[7].charge) == 0) && this.ownerShip < wepns[7].level) this.shootLaser(7, 8);
+            if ((this.time % (wepns[8].charge) == 0) && this.ownerShip >= wepns[8].level) this.shootLaser(8, 8);
+            if ((this.time % (wepns[9].charge) == 0) && this.ownerShip >= (wepns[9].level * 2)) this.shootLaser(9, 8, 2);
+        }
     }
 
     move () {
@@ -85,6 +96,19 @@ class Mine {
             for (const i in fullplayers) {
                 const p = fullplayers[i];
                 if (p !== undefined && p.color !== this.color) { // only enemies
+                    // compute distance and angle to players
+                    const distance = squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
+                    if (distance > square(10 * this.range)) continue;
+                    const a = angleGlobalBetween(p, this, sectorWidth, sectorWidth, mapSz);
+                    const vel = 4.5 / Math.log(distance);
+                    magvx += Math.cos(a) * vel;
+                    magvy += Math.sin(a) * vel;
+                }
+            }
+            const fullbases = get9SectorDict(bases, this.sx, this.sy);
+            for (const i in fullbases) {
+                const p = fullbases[i];
+                if (p !== undefined && p.color !== this.color && p.baseType !== DEADBASE) { // only enemies
                     // compute distance and angle to players
                     const distance = squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
                     if (distance > square(10 * this.range)) continue;
@@ -171,6 +195,72 @@ class Mine {
             apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
             this.time += 25 * 3;
         }
+    }
+
+    shootLaser (weaponID = 8, weaponRID = 8, rangeMod = 1) {
+        let playerFound = 0;
+        let dmg = 0;
+        if (weaponID !== undefined) {
+            if (weaponID >= 0) dmg = wepns[weaponID].damage;
+            else dmg = this.dmg;
+        } else dmg = this.dmg;
+        let range2 = 0;
+        if (weaponRID !== undefined) {
+            if (weaponRID >= 0) range2 = square(wepns[weaponRID].range * 10);
+            else range2 = square(this.range * 10);
+        } else range2 = square(this.range * 10);
+
+        range2 *= rangeMod;
+
+        if (weaponID === undefined) weaponID = this.wepnID;
+        if (weaponRID === undefined) weaponRID = this.wepnID;
+
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        let thoseIHeal = [];
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
+            if (p !== undefined && p.color !== this.color && squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz) < range2) {
+                playerFound++;
+                thoseIHeal.push(i);
+            }
+        }
+        const fullbases = get9SectorDict(bases, this.sx, this.sy);
+        let thoseBIHeal = [];
+        for (const i in fullbases) {
+            const b = fullbases[i];
+            if (b !== undefined && b.baseType !== DEADBASE && b.color !== this.color && squaredGlobalDist(b, this, sectorWidth, sectorWidth, mapSz) < range2) {
+                playerFound++;
+                thoseBIHeal.push(i);
+            }
+        }
+        if (playerFound < 1) return;
+
+        const leOwner = (this.owner !== undefined && this.owner !== 0) ? this.owner : this;
+        // damage them
+        for (let index = 0; index < thoseIHeal.length; ++index) {
+            const p = fullplayers[thoseIHeal[index]];
+            if (p !== undefined) {
+                // p.health = Math.min(p.health - dmg, p.health); // damage them
+                const r = Math.random(); // Laser Mine
+                const beam = new Beam(leOwner, r, this.wepnID, p, this);
+                beam.dmg = dmg;
+                beams[this.sy][this.sx][r] = beam;
+            }
+        }
+        for (let index = 0; index < thoseBIHeal.length; ++index) {
+            const p = fullbases[thoseBIHeal[index]];
+            if (p !== undefined) {
+                // p.health = Math.min(p.health - dmg, p.health); // damage them
+                const r = Math.random(); // Laser Mine
+                const beam = new Beam(leOwner, r, this.wepnID, p, this);
+                // beam.wepnID = this.wepnID;
+                beam.dmg = dmg;
+                beams[this.sy][this.sx][r] = beam;
+            }
+        }
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+
+        this.time += Math.floor(playerFound * dmg * 25);
     }
 
     doHeal () {
@@ -296,6 +386,7 @@ class Mine {
 
     die (volumeMult = 1) {
         this.die = function (volumeMult = 1) { }; // Purpose unclear, please comment
+        this.isDead = true;
         let power = 0; // how strongly this mine pushes people away on explosion
         if (this.wepnID == 15 || this.wepnID == 33) power = 400; // mine, grenade
         else if (this.wepnID == 32) power = 2000;

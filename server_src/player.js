@@ -402,7 +402,7 @@ class Player {
                     else this.superchargerTimer += 1500 * (this.ship === 21 ? 2 : 1); // Stackable
                 } else if (wep.name === `Hull Nanobots`) {
                     const stolenAthenaS = (this.ship == 25 && this.color === `yellow`) ? 0.01 : 1;
-                    this.health += Math.min(Math.max(-(wepns[18].damage * stolenAthenaS), this.maxHealth * 0.25), ((this.maxHealth - this.health) * stolenAthenaS)); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
+                    this.health += Math.min(Math.max(-(wepns[18].damage * stolenAthenaS), this.maxHealth * 0.25), ((this.maxHealth - this.health))); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
                 } else if (wep.name === `Photon Cloak`) this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
                 else if (wep.name === `Warp Drive`) {
                     let tempSpee = 0;
@@ -1339,7 +1339,7 @@ class Player {
         if (this.firstDeflector > -1 && i == this.firstDeflector) {
             this.rechargeDeflectorShield(((aRefill) ? (this.maxDeflectorPower / 20) : 0));
         } else if (typeof wepns[this.weapons[i]] !== `undefined`) {
-            if (aRefill || (wepns[this.weapons[i]].ammo < 0 && this.ammos[i])) this.ammos[i] = wepns[this.weapons[i]].ammo;
+            if (aRefill || (wepns[this.weapons[i]].ammo < 0 && this.ammos[i] >= 0) || (wepns[this.weapons[i]].ammo >= 0 && this.ammos[i] < 0) || (wepns[this.weapons[i]].ammo < this.ammos[i])) this.ammos[i] = wepns[this.weapons[i]].ammo;
         }
     }
 

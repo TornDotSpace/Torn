@@ -133,7 +133,7 @@
     "10": {
       "name": "Missile",
       "range": 800,
-      "damage": 20,
+      "damage": 15,
       "speed": 100,
       "charge": 12,
       "price": 4000,
@@ -185,7 +185,7 @@
     "14": {
       "name": "Torpedo",
       "range": 8000,
-      "damage": 40,
+      "damage": 25,
       "speed": 192,
       "charge": 25,
       "price": 18000,
@@ -198,7 +198,7 @@
     "15": {
       "name": "Mine",
       "range": 80,
-      "damage": 160,
+      "damage": 100,
       "speed": 0,
       "charge": 15,
       "price": 1000,
@@ -210,7 +210,7 @@
     },
     "16": {
       "name": "Laser Mine",
-      "range": 192,
+      "range": 85,
       "damage": 200,
       "speed": 0,
       "charge": 75,
@@ -224,7 +224,7 @@
     "17": {
       "name": "EMP Mine",
       "range": 96,
-      "damage": 100,
+      "damage": 72,
       "speed": 0,
       "charge": 25,
       "price": 10000,
@@ -436,7 +436,7 @@
       "speed": 25,
       "charge": 25,
       "price": 8000,
-      "ammo": 400,
+      "ammo": 100,
       "level": 3,
       "type": "Mine",
       "bot": false,
@@ -484,7 +484,7 @@
     "37": {
       "name": "Energy Disk",
       "range": 150,
-      "damage": 35,
+      "damage": 30,
       "speed": 8,
       "charge": 25,
       "price": 5000,
@@ -497,11 +497,11 @@
     "38": {
       "name": "Proximity Fuze",
       "range": 1100,
-      "damage": 110,
+      "damage": 90,
       "speed": 75,
       "charge": 25,
       "price": 5000,
-      "ammo": 100,
+      "ammo": 90,
       "level": 5,
       "type": "Missile",
       "bot": true,
@@ -549,8 +549,8 @@
     "42": {
       "name": "Photon Orb",
       "range": 140,
-      "damage": 20,
-      "speed": 8,
+      "damage": 18,
+      "speed": 10,
       "charge": 12,
       "price": 10000,
       "ammo": -1,
@@ -627,7 +627,7 @@
     "48": {
       "name": "Magnetic Mine",
       "range": 50,
-      "damage": 366,
+      "damage": 321,
       "speed": 0,
       "charge": 45,
       "price": 10000,
@@ -653,7 +653,7 @@
     "50": {
       "name": "Nailoth Web",
       "range": 0,
-      "damage": 1,
+      "damage": 5,
       "speed": 25,
       "charge": 450,
       "price": 150000,

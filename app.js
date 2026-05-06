@@ -1000,10 +1000,10 @@ function phase3update () {
                         }
                     }
 
-                    // if (beam.sy != y || beam.sx != x) { // TO-DO THIS MAY CHANGE, SINCE NOW BEAMS CAN EFFECTIVELY DO THIS STUFF
-                    //    beam.sy = y;
-                    //    beam.sx = x;
-                    // }
+                    if (beam.sy != y || beam.sx != x) { // TO-DO THIS MAY CHANGE, SINCE NOW BEAMS CAN EFFECTIVELY DO THIS STUFF
+                        beam.sy = y;
+                        beam.sx = x;
+                    }
 
                     if (need_update) {
                         pack.updateStatus = 2;
