@@ -547,7 +547,20 @@ class Player {
     reload (elite, wepId) {
         if (elite) {
             if (this.ship == 20) this.charge = -wepns[41].charge * 0.95;
-            if (this.ship == 18) this.charge = -wepns[39].charge * 0.95;
+            if (this.ship == 18) {
+                let firingAlone = true;
+                if (this.space) {
+                    const wepId2 = this.weapons[this.equipped];
+                    const wep = wepns[wepId2];
+                    if (!(!wep || !wep.enabled || (this.ammos[this.equipped] == 0))) {
+                        const charge = wep.charge;
+                        const type = wep.type;
+                        const wep18Chrg = wepns[39].charge;
+                        if (type === `Gun` && wep18Chrg <= charge) firingAlone = false;
+                    }
+                }
+                if (firingAlone) this.charge = -wepns[39].charge * 0.95;
+            }
             if (this.ship == 19 && this.charge > -200) this.charge -= 10 / this.energy2;
             if (this.ship == 17) this.charge = -140;
             return;
