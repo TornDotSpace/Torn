@@ -325,7 +325,7 @@ const loop = () => {
         }
 
         let img = redShips[14];
-        let pw = ships[14].width;
+        let pw = img.width; // ships[14].width;
         let rendX = w / 2 + scrx;
         let rendY = h / 2 + scry;
         ctx.save();
