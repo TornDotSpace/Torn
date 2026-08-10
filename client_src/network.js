@@ -712,16 +712,13 @@ socket.on(`baseMap`, (data) => {
     const baseMap = data.baseMap;
     for (let i = 0; i < mapSz; i++) {
         baseMap2D[i] = {};
-        for (let j = 0; j < mapSz; j++) {
-            baseMap2D[i][j] = 0;
-        }
-    }
-    for (let i = 0; i < mapSz; i++) {
         planetMap2D[i] = {};
         for (let j = 0; j < mapSz; j++) {
+            baseMap2D[i][j] = 0;
             planetMap2D[i][j] = 0;
         }
     }
+
     for (const teamColor in baseMap) {
         const thisMap = baseMap[teamColor];
         for (let i = 0; i < thisMap.length; i += 2) {
