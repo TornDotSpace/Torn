@@ -197,3 +197,32 @@ global.send_rpc = async (endpoint, data) => await fetch(`${Config.getValue(`rpc_
     body: data,
     headers: { "Content-Type": `x-www-form-urlencoded` }
 });
+
+global.getMinimapSBCurrentBaseInfo = function (baseMa) { // pick base turrets' most current color state
+    let minimapState = { starbaseList: [] };
+
+    for (const teamColor in baseMa) {
+        const thisMap = baseMap[teamColor];
+        for (let i = 0; i < thisMap.length; i += 2) {
+            if (bases[thisMap[i]] !== undefined && bases[thisMap[i + 1]][thisMap[i]] !== undefined) {
+                const turretsInSector = bases[thisMap[i + 1]][thisMap[i]];
+                if (turretsInSector !== 0) {
+                    let abase = 0;
+                    for (const id in turretsInSector) {
+                        abase = turretsInSector[id];
+                        if (abase !== undefined && abase !== 0 && abase !== 0 && (abase.baseType == DEADBASE || abase.baseType == LIVEBASE)) break;
+                        else abase = 0;
+                    }
+                    if (abase !== 0 && abase.color !== undefined) {
+                        const aSBColor = abase.color;
+                        if (aSBColor !== undefined && aSBColor !== teamColor) {
+                            const upDelta = { id: abase.id, sx: abase.sx, sy: abase.sy, color: abase.color };
+                            minimapState.starbaseList.push(upDelta);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return minimapState;
+};

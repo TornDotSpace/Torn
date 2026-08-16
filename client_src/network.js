@@ -395,6 +395,32 @@ function base_update (data) {
     }
 }
 
+function base_minimap_update (data) { // Very rare event
+    if (baseMap2D !== undefined && baseMap2D !== 0) {
+        const minimapUpdate = data.miniMup;
+        if (minimapUpdate !== undefined) {
+            const starbaseList = minimapUpdate.starbaseList;
+            if (starbaseList !== undefined) {
+                for (let index = 0; index < starbaseList.length; ++index) {
+                    const starbase = starbaseList[index];
+                    if (starbase !== undefined && starbase !== 0) {
+                        const aStarbasesx = starbase.sx;
+                        const aStarbasesy = starbase.sy;
+                        const aStarbasesC = starbase.color;
+                        if (aStarbasesx !== undefined && aStarbasesy !== undefined && aStarbasesC !== undefined && baseMap2D[aStarbasesx] !== undefined && baseMap2D[aStarbasesx][aStarbasesy] !== undefined) {
+                            baseMap2D[aStarbasesx][aStarbasesy] = aStarbasesC;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+socket.on(`baseMapUpdate`, (data) => {
+    base_minimap_update(data);
+});
+
 function asteroid_update (data) {
     const id = data.id;
     if (astsInfo[id] === undefined) return;
@@ -725,6 +751,8 @@ socket.on(`baseMap`, (data) => {
             baseMap2D[thisMap[i]][thisMap[i + 1]] = teamColor;
         }
     }
+
+    base_minimap_update(data);
 
     console.log(`Loading minimap`);
     sectorPoints = {};

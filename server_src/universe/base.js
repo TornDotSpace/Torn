@@ -374,6 +374,7 @@ class Base {
             const teamMotto = (assimilator.color == `green`) ? `CYBORG. RESISTANCE IS FUTILE` : `PIRATES, NICE BASE!`;
             note(`WE ARE THE {$teamMotto}`, this.x, this.y - 64, this.sx, this.sy);
             this.EMP(10);
+            this.notifyMyMinimapChange();
         }
     }
 
@@ -382,6 +383,17 @@ class Base {
         this.assimilatedTimer = 0;
         this.assimilatedCol = this.trueColor;
         this.color = this.trueColor;
+        this.notifyMyMinimapChange();
+    }
+
+    notifyMyMinimapChange () {
+        if (this.baseType == DEADBASE || this.baseType == LIVEBASE) {
+            let minimapState = { starbaseList: [] };
+            const upDelta = { id: this.id, sx: this.sx, sy: this.sy, color: this.color };
+            minimapState.starbaseList.push(upDelta);
+            console.log(`STARBASE ASSIMILATION/UNASSIMILATION: `, minimapState.starbaseList);
+            sendAll(`baseMapUpdate`, { miniMup: minimapState });
+        }
     }
 }
 
