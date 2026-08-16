@@ -391,7 +391,6 @@ class Base {
             let minimapState = { starbaseList: [] };
             const upDelta = { id: this.id, sx: this.sx, sy: this.sy, color: this.color };
             minimapState.starbaseList.push(upDelta);
-            console.log(`STARBASE ASSIMILATION/UNASSIMILATION: `, minimapState.starbaseList);
             sendAll(`baseMapUpdate`, { miniMup: minimapState });
         }
     }
