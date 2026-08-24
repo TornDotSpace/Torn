@@ -304,7 +304,7 @@ module.exports = initNetcode = () => {
             let wait_time = 0;
             for (const p in sockets) {
                 const curr_socket = sockets[p];
-                if (curr_socket.player !== undefined && curr_socket.player.name == name && curr_socket != socket) {
+                if (curr_socket.player !== undefined && curr_socket.player.name == name && (curr_socket != socket || curr_socket.player.id != player.id)) {
                     curr_socket.player.kickMsg = `A user has logged into this account from another location.`;
                     curr_socket.player.socket.disconnect();
                     wait_time = 6000;
@@ -334,6 +334,15 @@ module.exports = initNetcode = () => {
                 console.log(`${ip} logged in as ${name}! (last save: ${new Date(player.lastLogin)})`);
                 const text = `${player.nameWithColor()} logged in!`;
                 chatAll(text);
+
+                for (const p in sockets) {
+                    const curr_socket = sockets[p];
+                    if (curr_socket.player !== undefined && curr_socket.player.name == name && (curr_socket != socket || curr_socket.player.id != player.id)) {
+                        curr_socket.player.kickMsg = `A user has logged into this account from another location.`;
+                        curr_socket.player.socket.disconnect();
+                        // wait_time = 6000;
+                    }
+                }
 
                 // Update last login
                 player.lastLogin = Date.now();
