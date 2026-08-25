@@ -23,17 +23,22 @@ leaderboardcanvas.width = 260;
 leaderboardcanvas.height = (21 + 4) * 16 + 2;
 const lbctx = leaderboardcanvas.getContext(`2d`, { alpha: true });
 
-global.renderLeaderboard = function () {
+global.maxElementsOnLeaderboard = 20; // We render at most this people from the leaderboard + you if you were not there
+global.renderLeaderboard = function (yourPos, maxLeaderboard = 15) {
     // if (guest) return;
 
     leaderboardcanvas.width = leaderboardcanvas.width;
 
     lbctx.fillStyle = guiColor;
     lbctx.globalAlpha = guiOpacity;
-    roundRect(lbctx, 0, -8, leaderboardcanvas.width + 8, (lb.length + 4) * 16 + 2 + 8, 16, true, false);
+    const youiLeader = Math.min(youi, maxLeaderboard);
+    const youiOut = (yourPos >= maxLeaderboard) ? 1 : 0;
+    const leaderEntries = Math.min(lb.length, maxLeaderboard + youiOut);
+
+    roundRect(lbctx, 0, -8, leaderboardcanvas.width + 8, (leaderEntries + 4) * 16 + 2 + 8, 16, true, false);
 
     lbctx.fillStyle = pc;
-    roundRect(lbctx, 39, Math.min(youi, 16) * 16 + 52, myName.length * 8 + 7, 16, 7, true, false);
+    roundRect(lbctx, 39, youiLeader * 16 + 52, myName.length * 8 + 7, 16, 7, true, false);
     lbctx.globalAlpha = 1;
 
     lbctx.fillStyle = `yellow`;
@@ -45,8 +50,9 @@ global.renderLeaderboard = function () {
     lbctx.textAlign = `right`;
     write(lbctx, translate(`Exp`), 196, 48);
     write(lbctx, translate(`Rank`), 244, 48);
-    for (let i = 0; i < lb.length; i++) {
-        const place = 1 + ((i != 20) ? i : parseInt(lb[i].id));
+
+    for (let i = 0; (i < leaderEntries); i++) {
+        const place = 1 + ((i < (maxLeaderboard)) ? i : parseInt(lb[i].id));
         lbctx.textAlign = `left`;
         lbctx.fillStyle = brighten(lb[i].color);
         if (lb[i].tag === `V` || lb[i].tag === `B`) {

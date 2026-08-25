@@ -778,10 +778,10 @@ socket.on(`heatmap`, (data) => {
     raidGreen = data.raidGreen;
     youi = parseInt(data.youi);
     constructMyGuild(data.myGuild);
-    if (data.youi > 15) {
-        lb[16] = { id: data.youi, name: myName, exp: experience, color: pc, rank: rank };
+    if (data.youi >= maxElementsOnLeaderboard) {
+        lb[maxElementsOnLeaderboard] = { id: data.youi, name: myName, exp: experience, color: pc, rank: rank };
     }
-    renderLeaderboard();
+    renderLeaderboard(youi, maxElementsOnLeaderboard);
     r3DMap();
 });
 function constructMyGuild (data) {
