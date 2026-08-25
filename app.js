@@ -3140,7 +3140,7 @@ function updateHeatmap () {
         j++;
     }
 
-    // lb = mergeSortC(lb);
+    const lbOrd = mergeSortC(lb); // TO-DO
     // TO-DO customMergeSort (lb)
     for (let i = 0; i < lb.length - 1; i++) {
         // sort it TO-DO USE A BETTER SORT SYSTEM THAN BUBBLE SORT!!!!
@@ -3154,7 +3154,8 @@ function updateHeatmap () {
     }
 
     const lbSend = [];
-    for (let i = 0; i < Math.min(20, j); i++) lbSend[i] = { name: lb[i].name, tag: lb[i].tag, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank };
+    // TO-DO for (let i = 0; i < Math.min(20, j); i++) lbSend[i] = { name: lb[i].name, tag: lb[i].tag, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank };
+    for (let i = 0; i < Math.min(20, j); i++) lbSend[i] = { name: lbOrd[i].name, tag: lbOrd[i].tag, exp: Math.round(lbOrd[i].experience), color: lbOrd[i].color, rank: lbOrd[i].rank };
 
     // Normalize colors as though they are vectors to length 255
     for (let i = 0; i < mapSz; i++) {
@@ -3172,22 +3173,32 @@ function updateHeatmap () {
         }
     }
 
-    for (const i in lb) {
-        const myGuild = guildPlayers[lb[i].guild];
-        lb[i].socket.emit(`heatmap`, { myGuild: myGuild, hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen, raidYellow: raidYellow });
+    for (const i in lbOrd) {
+        const myGuild = guildPlayers[lbOrd[i].guild];
+        lbOrd[i].socket.emit(`heatmap`, { myGuild: myGuild, hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen, raidYellow: raidYellow });
     }
+    // TO-DO for (const i in lb) {
+    //    const myGuild = guildPlayers[lb[i].guild];
+    //    lb[i].socket.emit(`heatmap`, { myGuild: myGuild, hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen, raidYellow: raidYellow });
+    // }
 }
 
-// TO-DO ###################################
-/*
-function mergeC(left, right) {
-    let resultArray = [],
-        leftIndex = 0,
-        rightIndex = 0;
+function mergeC (left, right) {
+    // let leftIndex = left.length -1;
+    // let rightIndex = right.length -1;
+    /// /Primero veamos casos simples en los que no tengamos que usar un auxiliar. Hacerlos no solo supone gastar menos memoria, pero son un poco más rápidos (aunque todavía dentro del mismo orden de magnitud) y siempre suceden al menos una vez durante todo el procedimiento, normalmente muchas veces. Note this optimization only works if we have the actual global indexes and could use that to know stuff
+    // if (right[rightIndex].experience < left[0].experience) { //Si el mayor de dcha es menor que el menor de izq, volvemos, ya lo tenemos ordenado
+    //    return left.concat(right);
+    // } else if (right[rightIndex].experience > left[0].experience) { // Los tenemos ordenados pero A es mayor a todos los de B. Basta intercambiar las posiciones de los demás.
+    //    return right.concat(left);
+    // } else {
+    let resultArray = [];
+    let leftIndex = 0;
+    let rightIndex = 0;
 
     // Loop through both arrays, comparing elements and adding the smaller one to the resultArray
     while (leftIndex < left.length && rightIndex < right.length) {
-        if (left[leftIndex].experience < right[rightIndex].experience) {
+        if (left[leftIndex].experience > right[rightIndex].experience) {
             resultArray.push(left[leftIndex]);
             leftIndex++; // Move to the next element in the `left` array
         } else {
@@ -3200,147 +3211,50 @@ function mergeC(left, right) {
     return resultArray
         .concat(left.slice(leftIndex))
         .concat(right.slice(rightIndex));
+    // }
 }
 
-function mergeSortC(array) {
+function mergeSortC (array) {
     // Base case: If the array has only one element, return it (already sorted)
-    if (array.length === 1) {
+    if (array.length <= 1) {
         return array;
     }
-
-    // Divide the array into two halves
-    const middle = Math.floor(array.length / 2); // Find the middle index
-    const left = array.slice(0, middle); // Split the array into left half
-    const right = array.slice(middle); // Split the array into right half
-
-    // Recursively call mergeSort on the left and right halves
-    return mergeC(
-        mergeSortC(left), // Recursively sort the left half
-        mergeSortC(right) // Recursively sort the right half
-    );
-}
-
-function customMergeSort (vector) {
     let ordenadoAlreves = true;
     let cont = 0;
-    let iN = vector.length - 1;
+    let iN = array.length - 1;
     while (ordenadoAlreves && cont < iN) { // Compruebo que no esté ordenado al revés
-        if (vector[cont].experience < vector[cont + 1].experience) ordenadoAlreves = false;
+        if (array[cont].experience > array[cont + 1].experience) ordenadoAlreves = false;
         else cont++;
     }
     if (ordenadoAlreves) { // Ordenamos el array invirtiendo los términos
         let aux;
         if (iN % 2 == 0) {
-            for (let i = 0; i < iN / 2; i++) {
-                aux = vector[i];
-                vector[i] = vector[iN - i];
-                vector[iN - i] = aux;
+            for (let i = 0; i < Math.trunc(iN / 2); i++) {
+                aux = array[i];
+                array[i] = array[iN - i];
+                array[iN - i] = aux;
             }
         } else {
-            for (let i = 0; i <= iN / 2; i++) {
-                aux = vector[i];
-                vector[i] = vector[iN - i];
-                vector[iN - i] = aux;
+            for (let i = 0; i <= Math.trunc(iN / 2); i++) {
+                aux = array[i];
+                array[i] = array[iN - i];
+                array[iN - i] = aux;
             }
         }
-    } else vector = mergeSortAux(vector, 0, iN);
-    return vector;
-}
+        return array;
+    } else {
+        // Divide the array into two halves
+        const middle = Math.floor(array.length / 2); // Find the middle index
+        const left = array.slice(0, middle); // Split the array into left half
+        const right = array.slice(middle); // Split the array into right half
 
-function mergeSortAux (vector, i0, iN) {
-    if (i0 == iN) return vector;
-    else {
-        let p = (i0 + iN) / 2;
-        let vectorMin = mergeSortAux(vector, i0, p);
-        let vectorMax = mergeSortAux(vector, p + 1, iN);
-        //custMerge(vector, i0, p, iN);
-        return combinar3(vector, i0, p, iN); // Algo más eficiente, ordeno por bloques en vez de uno a uno
+        // Recursively call mergeSort on the left and right halves
+        return mergeC(
+            mergeSortC(left), // Recursively sort the left half
+            mergeSortC(right) // Recursively sort the right half
+        );
     }
-    //return vector;
 }
-
-function custMerge (vector, i0, k, iN) {
-    let i = i0;
-    let d = k + 1;
-    let aux = []; //new int[iN - i0 + 1];
-    let f = 0;
-    while (i <= k && d <= iN) {
-        if (vector[i].experience <= vector[d].experience) {
-            aux[f] = vector[i];
-            i++;
-            f++;
-        } else {
-            aux[f] = vector[d];
-            d++;
-            f++;
-        }
-    }
-    for (let a = i; a <= k; a++) {
-        aux[f] = vector[a];
-        f++;
-    }
-    for (let a = d; a <= iN; a++) {
-        aux[f] = vector[a];
-        f++;
-    }
-    for (let a = 0; a < aux.length; a++) {
-        vector[i0 + a] = aux[a];
-    }
-    return vector;
-}
-
-function combinar3 (v, i0, p, iN) {
-    //Primero veamos casos simples en los que no tengamos que usar un auxiliar. Hacerlos no solo supone gastar menos memoria, pero son un poco más rápidos (aunque todavía dentro del mismo orden de magnitud) y siempre suceden al menos una vez durante todo el procedimiento, normalmente muchas veces.
-    if (v[p].experience < v[p + 1].experience) { //Si el mayor de izq es menor que el menor de dcha, volvemos, ya lo tenemos ordenado
-    } else if (v[iN].experience <= v[i0].experience) { // Los tenemos ordenados pero A es mayor a todos los de B. Basta intercambiar las posiciones de los demás.
-        let aux2;
-        if (p - i0 == iN - p) { // Número impar de elementos
-            let aux3 = v[p]; // El mayor de la izquierda
-            v[p] = v[i0];
-            for (let i = i0; i < p; i++) {
-                v[i] = v[i + p - i0 + 1]; // v de p+1 reemplaza a v de i0
-                v[i + p - i0 + 1] = v[i + 1];
-            }
-            v[iN] = aux3; // El antiguo valor del pivote lo ponemos en iN
-
-        } else { // Número par de elementos
-            for (let i = i0; i <= p; i++) {
-                aux2 = v[i];
-                v[i] = v[i + p - i0 + 1];
-                v[i + p - i0 + 1] = aux2;
-            }
-        }
-    } else { // Usamos el método tradicional de usar el auxiliar
-        let i = i0;
-        let d = p + 1;
-        let aux = []; //new int[iN - i0 + 1];
-        let f = 0;
-        while (i <= p && d <= iN) {
-            if (v[i] <= v[d]) {
-                aux[f] = v[i];
-                i++;
-            } else {
-                aux[f] = v[d];
-                d++;
-            }
-            f++;
-        }
-        for (let a = i; a <= p; a++) {
-            aux[f] = v[a];
-            f++;
-        }
-        for (let a = d; a <= iN; a++) {
-            aux[f] = v[a];
-            f++;
-        }
-        for (let a = 0; a < aux.length; a++) {
-            v[i0 + a] = aux[a];
-        }
-    }
-    return v;
-}
-*/
-// TO-DO above ###################################
 
 function idleSocketCheck () {
     const time = Date.now();
