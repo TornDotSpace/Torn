@@ -3154,7 +3154,6 @@ function updateHeatmap () {
     }
 
     const lbSend = [];
-    // TO-DO for (let i = 0; i < Math.min(20, j); i++) lbSend[i] = { name: lb[i].name, tag: lb[i].tag, exp: Math.round(lb[i].experience), color: lb[i].color, rank: lb[i].rank };
     for (let i = 0; i < Math.min(20, j); i++) lbSend[i] = { name: lbOrd[i].name, tag: lbOrd[i].tag, exp: Math.round(lbOrd[i].experience), color: lbOrd[i].color, rank: lbOrd[i].rank };
 
     // Normalize colors as though they are vectors to length 255
@@ -3177,16 +3176,13 @@ function updateHeatmap () {
         const myGuild = guildPlayers[lbOrd[i].guild];
         lbOrd[i].socket.emit(`heatmap`, { myGuild: myGuild, hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen, raidYellow: raidYellow });
     }
-    // TO-DO for (const i in lb) {
-    //    const myGuild = guildPlayers[lb[i].guild];
-    //    lb[i].socket.emit(`heatmap`, { myGuild: myGuild, hmap: hmap, lb: lbSend, youi: i, raidBlue: raidBlue, raidRed: raidRed, raidGreen: raidGreen, raidYellow: raidYellow });
-    // }
 }
 
 function mergeC (left, right) {
+    // Note thess optimizations only work if we have the actual global indexes and could use that to know stuff
     // let leftIndex = left.length -1;
     // let rightIndex = right.length -1;
-    /// /Primero veamos casos simples en los que no tengamos que usar un auxiliar. Hacerlos no solo supone gastar menos memoria, pero son un poco más rápidos (aunque todavía dentro del mismo orden de magnitud) y siempre suceden al menos una vez durante todo el procedimiento, normalmente muchas veces. Note this optimization only works if we have the actual global indexes and could use that to know stuff
+    /// /Primero veamos casos simples en los que no tengamos que usar un auxiliar. Hacerlos no solo supone gastar menos memoria, pero son un poco más rápidos (aunque todavía dentro del mismo orden de magnitud) y siempre suceden al menos una vez durante todo el procedimiento, normalmente muchas veces.
     // if (right[rightIndex].experience < left[0].experience) { //Si el mayor de dcha es menor que el menor de izq, volvemos, ya lo tenemos ordenado
     //    return left.concat(right);
     // } else if (right[rightIndex].experience > left[0].experience) { // Los tenemos ordenados pero A es mayor a todos los de B. Basta intercambiar las posiciones de los demás.
