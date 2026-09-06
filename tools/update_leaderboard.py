@@ -46,10 +46,22 @@ def updateLB(uri, output):
     players = client.torn.players
     playerData = []
 
+    #players.find({ "_id": ObjectId("stbcaccount") })
+    #players.delete_one({ "_id": ObjectId("stbcaccount")})
     i = 1
     for player in players.find().sort("experience", pymongo.DESCENDING):
         if i > 2000:
             break
+
+        #if not "tag" in player or not "money" in player: #player.has_key("tag"):
+        #    #print("Warning, player without special tags", player["_id"])
+        #    #players.remove({ _id: player["_id"]})
+        #    continue
+
+        #if player["_id"] == "mrnigger":
+        #    print("ATTENTION, DETECTED DESIRED ACCOUNT TO REMOVE ", player["_id"])
+        #    players.delete_one({ "_id": player["_id"]})
+        #    continue
 
         tag = player["tag"]
         if "O" in tag:
