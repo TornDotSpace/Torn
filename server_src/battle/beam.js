@@ -27,18 +27,39 @@ class Beam {
         this.enemy = enemy; // person we're hitting
         this.wepnID = weaponID;
         this.time = 0; // since spawn
+        if (enemy.sx !== undefined) this.esx = enemy.sx;
+        else this.esx = this.sx;
+        if (enemy.sy !== undefined) this.esy = enemy.sy;
+        else this.esy = this.sy;
     }
 
     tick () {
-        if (this.time == 0 && this.wepnID != 44) { // don't do this for Campfire beams
-            const divideBy = this.enemy.ship == 17 && (this.wepnID == 30 || this.wepnID == 26) ? 2 : 1; // i think this is about mining lasers shooting elite quarrier?
-            this.enemy.dmg(this.dmg / divideBy, this);
+        const thereisTarget = (this.enemy !== undefined && this.enemy !== null && this.enemy !== 0 && this.enemy.sx !== undefined);
+        const thereIsOrigin = (this.origin !== undefined && this.origin !== null && this.origin !== 0 && this.origin.sx !== undefined);
+        if (thereisTarget) {
+            if (this.enemy.sx !== undefined && this.esx !== this.enemy.sx) this.esx = this.enemy.sx;
+            if (this.enemy.sy !== undefined && this.esy !== this.enemy.sy) this.esy = this.enemy.sy;
+            // if (thereIsOrigin) {
+            //    if (this.origin.sx !== undefined && this.sx !== this.origin.sx) this.sx = this.origin.sx;
+            //    if (this.origin.sy !== undefined && this.sy !== this.origin.sy) this.sy = this.origin.sy;
+            // }
+            if (this.time == 0 && this.wepnID != 44) { // don't do this for Campfire beams
+                const divideBy = ((this.enemy.ship == 17) && (this.wepnID == 30 || this.wepnID == 26)) ? 2 : 1; // i think this is about mining lasers shooting elite quarrier?
+                this.enemy.dmg(this.dmg / divideBy, this);
 
-            if (this.enemy.type === `Asteroid`) this.enemy.hit = false; // Note that the asteroid is hit for elite quarrier branching
-            else if (this.wepnID == 35) this.enemy.charge = -70; // Jammer.
+                if (this.enemy.type === `Asteroid`) this.enemy.hit = false; // Note that the asteroid is hit for elite quarrier branching
+                else if (this.wepnID == 35) {
+                    if (this.enemy.type === `Base`) this.enemy.reload = 15; // Jammer.
+                    else this.enemy.charge = -70; // Jammer.
+                }
+            }
         }
-
-        if (this.time++ > 10) delete beams[this.sy][this.sx][this.id];
+        this.time++;
+        if (this.time > 10 || !thereisTarget || !thereIsOrigin) {
+            if (beams[this.sy][this.sx][this.id] !== undefined) delete beams[this.sy][this.sx][this.id];
+            if (beams[this.esy][this.esx][this.id] !== undefined) delete beams[this.esy][this.esx][this.id];
+            if (thereIsOrigin && beams[this.origin.sy][this.origin.sx][this.id] !== undefined) delete beams[this.origin.sy][this.origin.sx][this.id];
+        }
     }
 }
 

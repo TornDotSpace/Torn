@@ -54,8 +54,8 @@ class Base {
 
         this.shots = 0;
         this.reload = 0; // timer for shooting
-        this.health = (type == SENTRY ? 0.15 : 1) * baseHealth;
-        this.maxHealth = (type == SENTRY ? 0.15 : 1) * baseHealth;
+        this.health = (type == SENTRY ? 0.15 : (type == LIVEBASE ? 5 : 1)) * baseHealth;
+        this.maxHealth = (type == SENTRY ? 0.15 : (type == LIVEBASE ? 5 : 1)) * baseHealth;
         this.empTimer = -1;
         this.speed = 0; // vs unused but there for bullets,
         this.assimilatedTimer = 0;
@@ -71,19 +71,21 @@ class Base {
             }
         }
 
-        this.deathTimer--;
+        if (this.deathTimer >= 0) this.deathTimer--;
         if (this.baseType == DEADBASE && this.deathTimer <= 0) this.baseType = LIVEBASE; // revive.
 
         this.move(); // aim and fire
 
-        this.empTimer--;
-        this.reload--;
+        if (this.empTimer >= 0) this.empTimer--;
+
+        if (this.reload >= 0) this.reload--;
 
         if (this.assimilatedTimer <= 0) {
             if (this.assimilatedCol !== this.trueColor) this.unassimilate();
         } else this.assimilatedTimer--;
 
         if (this.health < this.maxHealth) this.health += baseRegenSpeed;
+        if (this.health > this.maxHealth) this.health = this.maxHealth;
         if (tick % 50 == 0 && (this.baseType == SENTRY || this.baseType == TURRET)) this.tryGiveToOwner();
     }
 
@@ -118,40 +120,50 @@ class Base {
     fire () {
         let c = 0; // nearest player
         let cDist2 = 1000000000; // min dist to player
-        for (const i in players[this.sy][this.sx]) {
-            const player = players[this.sy][this.sx][i];
-            if (player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
-            const dist2 = squaredDist(player, this);
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        let numEnemies = 0;
+        for (const i in fullplayers) {
+            const player = fullplayers[i];
+            if (player === undefined || player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
+            numEnemies++;
+            const dist2 = squaredGlobalDist(player, this, sectorWidth, sectorWidth, mapSz);
             if (dist2 < cDist2) {
                 c = player; cDist2 = dist2;
             } // update nearest player
         }
 
-        if (c == 0) return;
+        if (c == 0 || c === undefined) return;
 
         const shouldMuon = this.reload < 0 && Math.random() < 0.015;
-        const newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, shouldMuon ? 10000 : wepns[3].speed);
+        const extraX = obtainSXDrift(this.sx, c.sx);
+        const extraY = obtainSYDrift(this.sy, c.sy);
+        const newAngle = calculateInterceptionAngle(c.x + extraX, c.y + extraY, c.vx, c.vy, this.x, this.y, shouldMuon ? 10000 : wepns[3].speed);
         this.angle = (this.angle + newAngle * 2) / 3;
 
         if (this.reload < 0) {
+            if (cDist2 < square(wepns[8].range * 10)) this.shootLaser(c); // range:60
+            else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb(); // range:125
+            else if (cDist2 < 10 + square(wepns[3].range * 10)) this.shootRifle(); // range:750 plus some extra distance rifle can travel. Basically this makes the turret slightly smarter.
+            else if (cDist2 < square(wepns[14].range * 10)) this.shootMissile(14); // range: actually way than rifle more since these are torpedoes
+
+            if (Math.random() < 0.01 && cDist2 < square(wepns[12].range * 10)) this.shootEMPMissile();
+
+            if (this.baseType === LIVEBASE && numEnemies > 12 && cDist2 < square(wepns[13].range * 10)) this.shootMissile(13); // Anti-crowd measures, Missile Swarm!
+
             if (cDist2 < square(wepns[3].range * 10) && shouldMuon) {
-                this.shootMuon(); return;
+                this.shootMuon();
             }
-            if (Math.random() < 0.01) this.shootEMPMissile();
-            if (cDist2 < square(wepns[8].range * 10)) this.shootLaser(c);// range:60
-            else if (cDist2 < square(wepns[37].range * 10)) this.shootOrb();// range:125
-            else if (cDist2 < square(175 * 10)) this.shootMissile();// range:175
-            else if (cDist2 < 10 + square(wepns[3].range * 10)) this.shootRifle();// range:750 plus some extra distance rifle can travel. Basically this makes the turret slightly smarter.
         }
     }
 
     fireMini () {
         let c = 0; // nearest player
         let cDist2 = 1000000000; // min dist to player
-        for (const i in players[this.sy][this.sx]) {
-            const player = players[this.sy][this.sx][i];
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const i in fullplayers) {
+            const player = fullplayers[i];
             if (player.color == this.assimilatedCol || player.disguise > 0) continue; // don't shoot at friendlies
-            const dist2 = squaredDist(player, this);
+            const dist2 = squaredGlobalDist(player, this, sectorWidth, sectorWidth, mapSz);
             if (dist2 < cDist2) {
                 c = player; cDist2 = dist2;
             } // update nearest player
@@ -159,7 +171,9 @@ class Base {
 
         if (c == 0) return;
 
-        const newAngle = calculateInterceptionAngle(c.x, c.y, c.vx, c.vy, this.x, this.y, wepns[5].speed);
+        const extraX = obtainSXDrift(this.sx, c.sx);
+        const extraY = obtainSYDrift(this.sy, c.sy);
+        const newAngle = calculateInterceptionAngle(c.x + extraX, c.y + extraY, c.vx, c.vy, this.x, this.y, wepns[5].speed);
         this.angle = (this.angle + newAngle * 2) / 3;
 
         if (this.reload < 0) {
@@ -172,7 +186,7 @@ class Base {
         const r = Math.random();
         const missile = new Missile(this, r, 12, this.angle);
         missiles[this.sy][this.sx][r] = missile;
-        sendAllSector(`sound`, { file: `missile`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootOrb () {
@@ -180,7 +194,7 @@ class Base {
         const r = Math.random();
         const orb = new Orb(this, r, 37);
         orbs[this.sy][this.sx][r] = orb;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMuon () {
@@ -188,7 +202,7 @@ class Base {
         const r = Math.random();
         const blast = new Blast(this, r, 34);
         blasts[this.sy][this.sx][r] = blast;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootRifle () {
@@ -196,7 +210,7 @@ class Base {
         const r = Math.random();
         const bullet = new Bullet(this, r, 3, this.angle, 0);
         bullets[this.sy][this.sx][r] = bullet;
-        sendAllSector(`sound`, { file: `shot`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMachineGun () {
@@ -205,17 +219,17 @@ class Base {
         const r = Math.random();
         const bullet = new Bullet(this, r, 5, this.angle, 0);
         bullets[this.sy][this.sx][r] = bullet;
-        sendAllSector(`sound`, { file: `shot`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
         if (this.shots > 5000) { this.die(0); }
     }
 
-    shootMissile () { // this is a torpedo
-        this.reload = wepns[14].charge / 2;
+    shootMissile (wepID = 14) { // this is a torpedo, unless told otherwise
+        this.reload = wepns[wepID].charge / 2;
         const r = Math.random();
         const bAngle = this.angle;
-        const missile = new Missile(this, r, 14, bAngle);
+        const missile = new Missile(this, r, wepID, bAngle);
         missiles[this.sy][this.sx][r] = missile;
-        sendAllSector(`sound`, { file: `missile`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootLaser (nearP) { // TODO merge this into Beam object, along with player.shootBeam()
@@ -223,20 +237,21 @@ class Base {
         const r = Math.random();
         const beam = new Beam(this, r, 8, nearP, this); // Laser
         beams[this.sy][this.sx][r] = beam;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
         this.reload = wepns[8].charge / 2;
     }
 
     die (b) {
         if (this.baseType == DEADBASE) return;
 
-        deleteTurret(this);
-
-        this.health = this.maxHealth;
-        sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
         if (this.baseType != LIVEBASE) {
-            bases[this.sy][this.sx] = 0;
+            if (bases[this.sy][this.sx][this.id] !== undefined && bases[this.sy][this.sx][this.id] !== null) {
+                delete bases[this.sy][this.sx][this.id];
+                // apply9SectorCall(sendAllSector, `base_delete`, this.id, this.sx, this.sy, undefined, undefined, bases);
+            }
+            // bases[this.sy][this.sx][this.id] = 0;
             this.die = function () { };
         } else {
             const numBotsToSpawn = 2 + 4 * Math.random() * Math.random();
@@ -244,6 +259,10 @@ class Base {
             this.baseType = DEADBASE;
             this.deathTimer = raidTimer < 15000 ? 75 * 60 : (25 * 125);
         }
+
+        deleteTurret(this);
+
+        this.health = this.maxHealth;
 
         if (b === 0) {
             return;
@@ -256,20 +275,30 @@ class Base {
         }
 
         // Or a player...
+        const antiSelfFeed = (!(this.baseType == DEADBASE || this.baseType == LIVEBASE)) ? 0.25 : 1;
+
         if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
             this.sendDeathMsg(`${b.owner.nameWithColor()}'s ${chatWeapon(b.wepnID)}`);
             b.owner.baseKilled();
-            let multiplier = this.isMini ? 1 : 2;
             let numInRange = 0;
-            for (const i in players[this.sy][this.sx]) { // Count all players in range
-                const p = players[this.sy][this.sx][i];
-                if (squaredDist(p, this) < square(baseClaimRange) && p.color === b.owner.color) numInRange++;
+            let multiplier = this.isMini ? 0.1 : 1;
+            multiplier *= antiSelfFeed; // Anti-self-feed feature, to an extent.
+            const fullplayers = get9SectorDict(players, this.sx, this.sy);
+            let playerIDs = [];
+            for (const i in fullplayers) {
+                const p = fullplayers[i];
+                if (p.color === b.owner.color && squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz) < square(baseClaimRange)) {
+                    numInRange++;
+                    playerIDs.push(i);
+                }
             }
             multiplier /= numInRange;
-            for (const i in players[this.sy][this.sx]) { // Reward appropriately
-                const p = players[this.sy][this.sx][i];
-                if (squaredDist(p, this) < square(baseClaimRange) && p.color === b.owner.color) {
-                    p.spoils(`experience`, baseKillExp * multiplier); // reward them
+
+            for (let index = 0; index < playerIDs.length; ++index) {
+                const p = fullplayers[playerIDs[index]];
+                if (p !== undefined) {
+                    let consideration = (p.ship <= 18) ? 1 : (0.2 / antiSelfFeed);
+                    p.spoils(`experience`, baseKillExp * multiplier * consideration); // reward them
                     p.spoils(`money`, baseKillMoney * multiplier);
                     p.killStreak++; // Bases count for kill streaks
                     p.killStreakTimer = 1000; // 40s
@@ -279,9 +308,9 @@ class Base {
             if (raidTimer < 15000 && !this.isMini) { // during a raid
                 b.owner.points++; // give a point to the killer
 
-                for (const i in players[this.sy][this.sx]) { // as well as all other players in that sector
+                for (const i in fullplayers) { // as well as all other players in that sector
                     const p = players[this.sy][this.sx][i];
-                    if (p.color !== this.color) p.points += 2;
+                    if (p !== undefined && p.color !== this.color && (!p.isBot) && squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz) < square(sectorWidth)) p.points += 2;
                 }
             }
         }
@@ -310,7 +339,7 @@ class Base {
         this.empTimer = t;
     }
 
-    onKill () {
+    onKill (p = undefined, temporary = 0) {
         this.kills++;
     }
 
@@ -322,7 +351,6 @@ class Base {
         if (d == 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
         if (d < 0) note(`+${Math.floor(Math.abs(d))}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
 
-        // note("-" + d, this.x, this.y - 64, this.sx, this.sy);
         return this.health < 0;
     }
 
@@ -343,8 +371,10 @@ class Base {
         if (this.assimilatedTimer >= 4600) { // If the base gets overwhelmed, it temporarily changes teams. 4600 is high enough this happening would be very rare
             this.assimilatedCol = assimilator.color;
             this.color = assimilator.color;
-            note(`WE ARE THE CYBORG. RESISTANCE IS FUTILE`, this.x, this.y - 64, this.sx, this.sy);
+            const teamMotto = (assimilator.color == `green`) ? `CYBORG. RESISTANCE IS FUTILE` : `PIRATES, NICE BASE!`;
+            note(`WE ARE THE {$teamMotto}`, this.x, this.y - 64, this.sx, this.sy);
             this.EMP(10);
+            this.notifyMyMinimapChange();
         }
     }
 
@@ -353,6 +383,16 @@ class Base {
         this.assimilatedTimer = 0;
         this.assimilatedCol = this.trueColor;
         this.color = this.trueColor;
+        this.notifyMyMinimapChange();
+    }
+
+    notifyMyMinimapChange () {
+        if (this.baseType == DEADBASE || this.baseType == LIVEBASE) {
+            let minimapState = { starbaseList: [] };
+            const upDelta = { id: this.id, sx: this.sx, sy: this.sy, color: this.color };
+            minimapState.starbaseList.push(upDelta);
+            sendAll(`baseMapUpdate`, { miniMup: minimapState });
+        }
     }
 }
 

@@ -21,6 +21,7 @@ declare let Img_prgs: number[];
 declare let redShips: any;
 declare let blueShips: any;
 declare let greenShips: any;
+declare let yellowShips: any;
 
 /**
  * Load an image.
@@ -56,9 +57,12 @@ const loadShipImage = (color: string, rank: number) => {
     } else if (color === `blue`) {
         img.src = `/img/blue/b${rank + 1}.png`;
         blueShips[rank] = img;
-    } else {
+    } else if (color === `green`) {
         img.src = `/img/green/g${rank + 1}.png`;
         greenShips[rank] = img;
+    } else {
+        img.src = `/img/yellow/y${rank + 1}.png`;
+        yellowShips[rank] = img;
     }
 };
 

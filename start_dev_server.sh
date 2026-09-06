@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
-echo Starting mongod with journaling disabled on port 27017&
+echo Starting mongod with journaling NOT disabled on port 27017&
 mkdir db
-mongod --port 27017 --dbpath ./db --nojournal --bind_ip localhost&
+mongod --port 27017 --dbpath ./db --bind_ip localhost&
 echo Building client
 echo Starting Account Server
 python3 ./account/account_server.py&

@@ -8,26 +8,26 @@
 		"Invader:Destroy a turret.",
 		"Conqueror:Destroy 100 turrets.",
 		"Friendly Fire:Kill a teammate.",
-		"Adventurer:Complete each quest.",
-		"Blood Trail:1.05x Damage Resistance!",
+		"Adventurer:Complete each quest once.",
+		"Blood Trail:1.05x Damage Resistance.",
 
 		"Collector:Mine one of each ore.",
-		"Rich Man:Get $100,000.",
-		"Millionaire:Get $1,000,000.",
-		"Rolling In It:Get $10,000,000.",
-		"Money Trail:1.05x Money!",
+		"Rich Man:Get and keep $100k.",
+		"Millionaire:Get and keep $1M.",
+		"Rolling In It:Get and keep $10M.",
+		"Money Trail:1.05x Money rewards.",
 
-		"Mechanic:Upgrade to 12 agility.",
-		"Lucky:Kill someone with 2200 Elo",
-		"Skilled:Exceed 2200 Elo",
+		"Mechanic:Get & keep lvl 12 agility.",
+		"Lucky:Kill someone with >2200 ELO.",
+		"Skilled:Exceed 2200 ELO.",
 		"Dizzy:Drift 1 hour total.",
-		"Panda Trail:1.05x Agility!",
+		"Panda Trail:1.05x Agility.",
 
 		"Boing!:Touch the edge.",
 		"Thief:Steal a package.",
-		"Traveller:Visit every sector.",
-		"Imperialist:Claim each planet once.",
-		"Random Trail:Juke Further!"
+		"Traveller:Visit all sectors, & a planet.",
+		"Imperialist:Claim each planet once in one go.",
+		"Random Trail:Juke Further."
 	],
 	"weapons":[
 		{
@@ -198,7 +198,7 @@
 		},
 		{
 			"name":"Hyperdrive",
-			"desc":"Single-use long range speed boost. Thanks to partially travelling to another dimension, you'll not suffer sector cross damage."
+			"desc":"Single-use long range speed boost, works by partially phasing into another dimension."
 		},
 		{
 			"name":"Pulse Wave",
@@ -336,17 +336,32 @@
 		{
 			"name":"Nav. Shield",
 			"desc":"A Navigational Shield based on a deflector dish, allows starships to travel safely without suffering damage from debris and small asteroids, as well as protecting from a few cosmic rays."
+		},
+		{
+			"name":"Nailoth Web",
+			"desc":"A specific mine cluster designed to trap enemies within under fear of death."
 		}
 	],
 	"splashes":[
-		"",
+		"Protip: use /help command on the chat to read all commands you can use!",
+		"Protip: Changing Sides/Teams is possible",
+		"Protip: Kill top players to gain experience... and enemies!",
+		"Protip: The middle sectors have black holes - Be careful!",
+		"Protip: Upgrading radar lets you see more than asteroids, players and bases!",
+		"Protip: Unlock all achievements of a color for a trail!",
+		"Protip: Select a trail by clicking over its Achievement!",
+		"Protip: Quickly alternate A and D / left and right arrows while drifting to speed up!",
+		"Protip: If your HP reaches 0, you die, and will lose a live.\nAlways keep track of your remaining lives!",
+		"Protip: You can gain more lives by buying them from the Base Shop\nor from claiming a \"Life\" package drifting on space.",
+		"Protip: Don't use Internet Explorer!",
+		"Protip: The more ore you're carrying, the slower you move!",
+		"Protip: Press P to engage autopilot!",
+		"Loading",
+		"Blaming 2swap",
 		"Red Beans and Rice",
 		"Expanding Cofactors",
 		"Finding Waldo",
-		"Remembering the Alamo",
 		"Refueling",
-		"Blaming 2swap",
-		"Downloading more RAM",
 		"Clearing Registers",
 		"Finding Determinant",
 		"Invading Area 51",
@@ -360,7 +375,6 @@
 		"Watering Pixels",
 		"txeT gnisreveR",
 		"Our whole universe was in a hot, dense state",
-		"Changing Teams",
 		"Shaking the Batteries",
 		"Wax on, Wax off",
 		"Teleporting to Acapulco",
@@ -368,22 +382,9 @@
 		"Grinding Exp",
 		"Putting turrets in the black hole",
 		"$ sudo apt install torn",
-		"Meet the dev at alexhontz.com!",
 		"Decrypting Encryptions",
 		"Help me! I'm stuck in a loading bar!",
 		"Hmmmmm",
-		"Protip: Kill top players to gain experience... and enemies!",
-		"Protip: The middle sector has a black hole- Be careful!",
-		"Protip: Upgrading radar lets you see more than asteroids, players and bases!",
-		"Protip: Ores in the enemy's land are more valuable!",
-		"Protip: Unlock all achievements of a color for a trail!",
-		"Protip: Press P to engage autopilot!",
-		"Protip: Hadron beam will electrically charge asteroids!",
-		"Protip: Quickly alternate A and D while drifting to speed up!",
-		"Protip: Always keep track of your lives!",
-		"Protip: Use Chrome!",
-		"Protip: The more ore you're carrying, the slower you move!",
-		"Protip: Don't die.",
 		"Planning Galactic Crusade",
 		"Retaking the Holy Land",
 		"I'm ready... I'm ready",
@@ -396,7 +397,6 @@
 		"Loading, I think",
 		"Driving on parkways and parking on driveways",
 		"Baking cookies and cooking bacon",
-		"Segmentation Fault",
 		"Guessing passwords",
 		"Beep boop",
 		"Downloading payload",
@@ -408,21 +408,9 @@
 		"Mixing Paint",
 		"Updating Windows",
 		"Installing Linux",
-		"Installing Chromium Ultron",
 		"Partitioning Disk",
-		"Java Update Available",
 		"Releasing the Kraken",
-		"Heck",
-		"According to all known laws of aviation",
-		"Answering Arecibo",
-		"Contact Light",
-		"Who lives in a pineapple under the sea",
-		"This page intentionally left blank",
-		"If you or a loved one has been diagnosed with mesothelioma",
-		"Loading Chunks",
-		"Pirating Sony Vegas",
 		"Citing Wikipedia",
-		"Eating Glue",
 		"Squaring Error",
 		"Rebuilding Universe",
 		"Seatbelt: Check",
@@ -433,8 +421,6 @@
 		"Compiling BigBang.exe",
 		"Achieving Sentience",
 		"Deleting System32",
-		"Preparing Skynet",
-		"Nerfing Everything",
 		"Requesting Splash Page Suggestions",
 		"Collecting Infinity Stones",
 		"Deleting Emails",
@@ -442,14 +428,10 @@
 		"Beaming You Up, Scotty",
 		"Constructing Additional Pylons",
 		"Constructing Dyson Sphere",
-		"Summoning Herobrine",
 		"Hacking Mainframe",
-		"Eating Butter",
 		"Salting Hashes",
-		"Decaying Techs",
 		"rm -rf /",
 		"Procrastinating",
-		"Making Torn Great Again",
 		"Hacking Elections",
 		"Phoning Home",
 		"This is taking forever",
@@ -465,9 +447,8 @@
 		"Brewing",
 		"Minimizing Squared Error",
 		"Hiring Codemonkies",
-		"Blue, Red, Blue, Yellow",
+		"Blue, Red, Green, Yellow",
 		"Recharging Warp",
-		"Loading",
 		"Engaging Snubbers",
 		"Injecting SQL",
 		"Disproving Riemann",
@@ -479,174 +460,199 @@
 		"Tetrating Quaternions",
 		"日本語を話しています",
 		"Solving P=NP",
-		"Criticizing Firefox",
 		"Memorizing OLLs",
 		"Solving F2L",
 		"Cloning Repository",
 		"Mining Bitcoin",
-		"Protip: Weapons do double damage if you say 'pew' when you shoot!",
 		"Waiting for a mobile version"
 	],
 	"lore":[
 		"Humans lack self-awareness. After destroying their planet of origin in armed conflict, they spread from solar system to solar system, polluting worlds and eliminating life. We tried to let them know that their behavior would ultimately be self-destructive, but they refused to listen. They continued to migrate unsustainably around the galaxy, so we stepped in with force. We decided to only attack new colonies of Humans near our own settlements to maintain influence in our share of the galaxy, but the humans reacted violently. They immediately attacked without restraint. We called for resources from neighboring galaxies but reinforcements will not arrive for several decades, so until then, we must suppress the Human crusade for the sake of our own lives, and for the fate of this galaxy.",
 		"Ever since we lost planet Earth, the Human race has been hanging on to its existence by a thread- we left our solar system in search of other habitable planets with the sole hope of survival, but very few of them demonstrated promise for long-term settlement. Barren planets unsustainable of supporting life were terraformed into industrious planets to generate the resources we desperately needed to survive in alien worlds. After centuries of toil, the population began to grow and spread. For about a decade we lived in peace and prosperity, until a hostile force attacked. Maintaining our settlements was vital to our survival, so we had no option other than to fight back. Ever since, we have been in conflict with the alien race, and it's unlikely that this war won't end in either civilization's extinction. Please, help us emerge from this struggle alive.",
-		"The computers at the research base where we were created were the first to be assimilated into our empire, and the staff was next. As an Alien military experiment, we found ourselves in the crossfire of this war of Human and Alien races. During our rise as a galactic military force, both races proved inept in combat, and thus, in their miserable fight over this decrepit corner of the universe, we will incorporate all of their technology and resources until we leave this dying galaxy. Using the technology the Aliens gifted us, we assimilate every species we can, and deny the privilege of life to all who stand in our way. We are united by vision, not the intraspecies loyalty which brought this galaxy to the brink of destruction. Together, we will become the rightful inheritors of every speck of light in the night sky."
+		"The computers at the research base where we were created were the first to be assimilated into our empire, and the staff was next. As an Alien military experiment, we found ourselves in the crossfire of this war of Human and Alien races. During our rise as a galactic military force, both races proved inept in combat, and thus, in their miserable fight over this decrepit corner of the universe, we will incorporate all of their technology and resources until we leave this dying galaxy. Using the technology the Aliens gifted us, we assimilate every species we can, and deny the privilege of life to all who stand in our way. We are united by vision, not the intraspecies loyalty which brought this galaxy to the brink of destruction. Together, we will become the rightful inheritors of every speck of light in the night sky.",
+                "WE ARE THE PIRATES! ALL OUR STUFF IS COBBLED-UP AND STOLEN! The weapons? Stolen from raids we perform into bases! The ammo? We 'restock' over planets, and sometimes park there. Our vessels? YES, specially recently! Why, I know of a fella who told me they found a derelict scout from one of those supposed super-powerful, extragalactic 'reinforcements', and a select few are getting perks from the gal who called 'dibs on the wreckage! Who knows, you might even find that gal in question travelling with the repaired wreckage as her flagship!"
 	],
 	"ships":[
 		{
 			"nameA":"Scout",
 			"nameH":"Minnow",
 			"nameC":"Gnat",
+			"nameP":"Minnow",
 			"desc":"Your first ship. Don't forget to check the Shop for new items."
 		},
 		{
 			"nameA":"Private",
 			"nameH":"Piranha",
 			"nameC":"Flea",
+			"nameP":"Flea",
 			"desc":"An enhanced version of its predecessor, with more health and slots."
 		},
 		{
 			"nameA":"Mastodon",
 			"nameH":"Freighter",
 			"nameC":"Eristalis",
+			"nameP":"Mastodon",
 			"desc":"A polyvalent cargo ship. Unlocking Turbo and Ore Cannon is a bonus."
 		},
 		{
 			"nameA":"Nymph",
 			"nameH":"Strider",
 			"nameC":"Cloudhop",
+			"nameP":"Cloudhop",
 			"desc":"The fastest (or so you think), but weakest, ship."
 		},
 		{
 			"nameA":"Bomber",
 			"nameH":"Lancer",
 			"nameC":"Scarab",
+			"nameP":"Scarab",
 			"desc":"A light escort, nice for patrolling."
 		},
 		{
 			"nameA":"Scythe",
 			"nameH":"Hammerhead",
 			"nameC":"Nephila",
+			"nameP":"Scythe",
 			"desc":"A heavy polyvalent escort."
 		},
 		{
 			"nameA":"Dragonfly",
 			"nameH":"Swordfish",
 			"nameC":"Ladybug",
+			"nameP":"Swordfish",
 			"desc":"One of the strongest explorers in the galaxy."
 		},
 		{
 			"nameA":"Sentry",
 			"nameH":"Battleship",
 			"nameC":"Metralla",
+			"nameP":"Battleship",
 			"desc":"The first cruiser of your faction."
 		},
 		{
 			"nameA":"Eagle",
 			"nameH":"Stingray",
 			"nameC":"Sceptre",
+			"nameP":"Sceptre",
 			"desc":"A decent polivalent explorer vessel"
 		},
 		{
 			"nameA":"Phoenix",
 			"nameH":"Orca",
 			"nameC":"Centipede",
+			"nameP":"Phoenix",
 			"desc":"A strong cruiser... for its size."
 		},
 		{
 			"nameA":"Wasp",
 			"nameH":"Manta",
 			"nameC":"Hornet",
+			"nameP":"Hornet",
 			"desc":"A big enough cruiser to carry Massive Destruction weapons."
 		},
 		{
 			"nameA":"Swift",
 			"nameH":"Sailfish",
 			"nameC":"Alcubierre",
+			"nameP":"Swift",
 			"desc":"A light, fast cruiser. Even more so when using Supercharger."
 		},
 		{
 			"nameA":"Quarrier",
 			"nameH":"Beluga",
 			"nameC":"Honeypot",
+			"nameP":"Beluga",
 			"desc":"A heavy cargo ship, with extreme health. It's not exactly fast, though."
 		},
 		{
 			"nameA":"Destroyer",
 			"nameH":"Taurus",
 			"nameC":"Galley",
+			"nameP":"Taurus",
 			"desc":"The light destroyer of the fleet."
 		},
 		{
 			"nameA":"Falcon",
 			"nameH":"Wyvern",
 			"nameC":"Defiant",
+			"nameP":"Falcon",
 			"desc":"The last non-elite heavy cruiser. It also unlocks all normal slots."
 		},
 		{
 			"nameA":"Interceptor",
 			"nameH":"Leviathan",
 			"nameC":"Maser",
+			"nameP":"Maser",
 			"desc":"A destroyer with all slots unlocked."
 		},
 		{
 			"nameA":"Elite Swift",
 			"nameH":"Elite Sailfish",
 			"nameC":"Elite Alcubierre",
+			"nameP":"Elite Alcubierre",
 			"desc":"The first Elite ship, with a passive enhanced drifting boost and C-Slot unlocked (simultaneous turbo with any other item)."
 		},
 		{
 			"nameA":"Elite Quarrier",
 			"nameH":"Elite Beluga",
 			"nameC":"Elite Honeypot",
+			"nameP":"Elite Quarrier",
 			"desc":"It possess a C-Ore launcher plus a passive mining web effect on mining beams. Be careful of enemy ones, though."
 		},
 		{
 			"nameA":"Elite Destroyer",
 			"nameH":"Elite Taurus",
 			"nameC":"Elite Galley",
-			"desc":"A refitted destroyer with an unlimited C-Spreadhot. Perfect for killing turrets in a team."
+			"nameP":"Elite Destroyer",
+			"desc":"A refitted destroyer with an unlimited C-Spreadshot. Perfect for killing turrets in a team."
 		},
 		{
 			"nameA":"Elite Falcon",
 			"nameH":"Elite Wyvern",
 			"nameC":"Elite Defiant",
+			"nameP":"Elite Defiant",
 			"desc":"A cruiser with C-HP Healing that works even when shields raised, better shield efficiency, and a passive EMP Blast on kill."
 		},
 		{
 			"nameA":"Elite Interceptor",
 			"nameH":"Elite Leviathan",
 			"nameC":"Elite Maser",
+			"nameP":"Elite Leviathan",
 			"desc":"Just a superheavy destroyer with C-Hypno Ray... use it for amassing huge fleets or disabling bot's shielding."
 		},
 		{
 			"nameA":"Anomalocaris",
 			"nameH":"Einstein",
 			"nameC":"Heisenberg",
+			"nameP":"Anomalocaris",
 			"desc":"A massive, heavy dreadnought with no C-Slot, but repelled to an extent from BH."
 		},
 		{
 			"nameA":"Olympic",
 			"nameH":"Necromancer",
 			"nameC":"Lamprey",
+			"nameP":"Olympic",
 			"desc":"A medical, fast response ship. Always needs a partner to use the leech heal, except from asteroids."
 		},
 		{
 			"nameA":"Mandelbrot",
 			"nameH":"Claymore",
 			"nameC":"G-23M Replicator",
+			"nameP":"ya24 Protolayer",
 			"desc":"A powerful magnetic mine layer. It is said it will revolutionize how War is fought in the galaxy."
 		},
 		{
 			"nameA":"Mobile HQ",
 			"nameH":"Starbase",
 			"nameC":"Unicomplex",
+			"nameP":"Pirate Carrier",
 			"desc":"A Mobile deployable starbase, for security reasons it only accepts drones."
 		},
 		{
 			"nameA":"Quantum",
 			"nameH":"Ghost",
 			"nameC":"Eigenvector",
+			"nameP":"Athena",
 			"desc":"An extremely experimental ship."
 		}
 	]

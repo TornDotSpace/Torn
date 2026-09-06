@@ -194,8 +194,8 @@ class PlayerMP extends Player {
         this.killStreak = 0;
         this.leaveBaseShield = 25;
         this.refillAllAmmo();
-
-        sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: (this.ship < 9 ? `boom` : `bigboom`), sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
 
         // clear quest
         this.quest = 0;
@@ -265,9 +265,16 @@ class PlayerMP extends Player {
         await handlePlayerDeath(this, this.elo);
 
         this.x = this.y = sectorWidth / 2;
-        const whereToRespawn = Math.floor(Math.random() * basesPerTeam) * 2;
-        this.sx = baseMap[this.color][whereToRespawn];
-        this.sy = baseMap[this.color][whereToRespawn + 1];
+        if (this.color === `yellow`) {
+            this.sx = wormhole.sxo;
+            this.sy = wormhole.syo;
+            this.x = wormhole.xo;
+            this.y = wormhole.yo;
+        } else {
+            const whereToRespawn = Math.floor(Math.random() * basesPerTeam) * 2;
+            this.sx = baseMap[this.color][whereToRespawn];
+            this.sy = baseMap[this.color][whereToRespawn + 1];
+        }
 
         this.lives--;
         this.save();
@@ -307,7 +314,7 @@ class PlayerMP extends Player {
         this.save();
     }
 
-    dock () {
+    dock (forced = false) {
         if (typeof this.aluminium === `undefined`) this.aluminium = 0;
         if (typeof this.copper === `undefined`) this.copper = 0;
         this.copper += this.aluminium;
@@ -319,16 +326,45 @@ class PlayerMP extends Player {
             players[this.sy][this.sx][this.id] = this;
             delete dockers[this.id];
             this.leaveBaseShield = 25;
-            this.health = this.maxHealth;
+            if (this.color !== `yellow`) { // No healing for pirates
+                this.health = this.maxHealth;
+            } else {
+                this.navigationalShieldCount();
+                this.refillAllAmmo(false);
+            }
             return;
         }
 
         let base = 0;
-        const b = bases[this.sy][this.sx];
-        if ((b.baseType == LIVEBASE || b.baseType == DEADBASE) && b.color == this.color && squaredDist(this, b) < square(512)) base = b; // try to find a base on our team that's in range and isn't just a turret
-        if (base == 0) return;
+        let numBases = 0;
+        let closeBases = 0;
+        if (bases[this.sy][this.sx] != 0) {
+            for (const id in bases[this.sy][this.sx]) {
+                const b = bases[this.sy][this.sx][id];
+                if (b.baseType == LIVEBASE || b.baseType == DEADBASE) {
+                    numBases++;
+                    if (squaredDist(this, b) < square(512)) {
+                        closeBases++;
+                        if ((b.color == this.color || (this.color === `yellow` && b.baseType == DEADBASE))) {
+                            base = b; // try to find a base on our team that's in range and isn't just a turret
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
-        this.refillAllAmmo();
+        if (base == 0) {
+            if (closeBases > 0 && numBases > 0) {
+                if (this.color === `yellow`) this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`Pirates cannot forcefully dock into a starbase unless the turret is down!`) });
+                else this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`You cannot dock with an enemy starbase!`) });
+            }
+            return;
+        }
+
+        if (this.color !== `yellow` || base.color == this.color) {
+            this.refillAllAmmo();
+        }
         this.x = this.y = sectorWidth / 2;
         this.save();
         this.docked = true;
@@ -421,12 +457,12 @@ class PlayerMP extends Player {
         this.emit(`achievementsMisc`, { note: note, achs: this.randomAchievements });
     }
 
-    noteLocal (msg, x, y) {
-        this.emit(`note`, { msg: msg, x: x, y: y, local: true });
+    noteLocal (msg, x, y, sx = undefined, sy = undefined, spread = false) {
+        this.emit(`note`, { msg: msg, x: x, y: y, local: true, sx: sx, sy: sy, spread: spread });
     }
 
-    strongLocal (msg, x, y) {
-        this.emit(`strong`, { msg: msg, x: x, y: y, local: true });
+    strongLocal (msg, x, y, sx = undefined, sy = undefined, spread = false) {
+        this.emit(`strong`, { msg: msg, x: x, y: y, local: true, sx: sx, sy: sy, spread: spread });
     }
 
     baseKilled () {
@@ -437,7 +473,7 @@ class PlayerMP extends Player {
             if (this.sx == this.quest.sx && this.sy == this.quest.sy) {
                 // reward player
                 this.spoils(`money`, this.quest.exp);
-                this.spoils(`experience`, Math.floor(this.quest.exp / 4000));
+                this.spoils(`experience`, Math.floor(this.quest.exp / (4000 * 4)));
 
                 this.quest = 0; // tell client it's done
                 this.emit(`quest`, { quest: this.quest, complete: true });
@@ -498,12 +534,12 @@ class PlayerMP extends Player {
     getAllPlanets () {
         let packHere = 0;
         const planet = planets[this.sy][this.sx];
-        packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color };
-        this.emit(`planets`, { pack: packHere });
+        packHere = { id: planet.id, name: planet.name, x: planet.x, y: planet.y, color: planet.color, sx: planet.sx, sy: planet.sy };
+        this.emit(`planets`, { pack: packHere, id: planet.id });
     }
 
-    onKill (p) {
-        super.onKill(p);
+    onKill (p, temporary = 0) {
+        super.onKill(p, temporary);
 
         // achievementy stuff
         const suicide = p.name === this.name;

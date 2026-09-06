@@ -36,6 +36,8 @@ module.exports = merge(common, {
     devServer: {
         static: path.join(__dirname, `../client`),
         compress: true,
-        port: 7301
+        port: 7301//,
+        // hot: false,
+        // liveReload: false
     }
 });

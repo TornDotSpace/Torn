@@ -32,10 +32,11 @@ global.chatWeapon = (w) => weaponCircumfix + w + weaponCircumfix;
 global.chatColor = (c) => colorCircumfix + c + colorCircumfix;
 global.chatTranslate = (t) => translateCircumfix + t + translateCircumfix;
 
-global.colorSelect = function (col, red, blue, green) {
+global.colorSelect = function (col, red, blue, green, yellow = undefined) {
     if (col === `red`) return red;
     if (col === `blue`) return blue;
-    return green;
+    if (col === `green` || yellow === undefined) return green;
+    return yellow;
 };
 
 global.updateElo = function (winner, loser) {
@@ -68,6 +69,37 @@ global.atan = function (y, x) { // arctangent, but fast
     if (x < 0) r = 3.14159274 - r;
     if (y < 0) r = -r;
     return r;
+};
+
+global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { // obtainSXDrift(player, other)
+    if (Object.is(asx, null) || Object.is(asx, undefined) || Object.is(bsx, null) || Object.is(bsx, undefined)) {
+        console.warn(`asx is ${asx} , bsx is ${bsx} , gsx is ${gsx} and numSec = ${numSec}`);
+        return 0;
+    }
+
+    let sectorDiffX = bsx - asx; // 0 - 6 = -6 // 6 - 0 = 6
+    // console.log(`TO-DO sector X Difference 1 is = `, sectorDiffX);
+    let sectorDiffXab = Math.abs(sectorDiffX); // Sectors on X loop // -6 -> 6 // 6 -> 6
+    let sectorDiffXa = Math.min(sectorDiffXab, (numSec - sectorDiffXab)); // Math.min(sectorDiffXab, (numSec - sectorDiffXab));  // min(6, 7 - 6) = 1 // min(6, 7 - 6) = 1
+    if (((sectorDiffXa + asx) % numSec) == bsx) { // (1 + 6) % 7 = 0 === 0 // (1 + 0) % 7 = 1 !== 6
+        sectorDiffX = sectorDiffXa;
+    } else {
+        sectorDiffX = -sectorDiffXa; // 1 -> -1
+    }
+    // console.log(`TO-DO sector X Difference 2...  sectorDiffXab = `, sectorDiffXab, ` sectorDiffXa = `, sectorDiffXa, `, sectorDiffX = `, sectorDiffX);
+    sectorDiffX = sectorDiffX * gsx;
+    return sectorDiffX;
+};
+
+global.obtainSYDrift = function (asy, bsy, gsy = sectorWidth, numSec = mapSz) {
+    if (Object.is(asy, null) || Object.is(asy, undefined) || Object.is(bsy, null) || Object.is(bsy, undefined)) {
+        console.warn(`asy is ${asy} , bsy is ${bsy} , gsy is ${gsy} and numSec = ${numSec}`);
+        return 0;
+    }
+    let sectorDiffY = bsy - asy; // Sectors on Y do not loop
+    // console.log("TO-DO sector Y Difference is = ", sectorDiffY, " and we return ", sectorDiffY * gsy)
+    sectorDiffY = sectorDiffY * gsy;
+    return sectorDiffY;
 };
 
 global.calculateInterceptionAngle = function (ax, ay, vx, vy, bx, by, s) { // for finding where to shoot at a moving object
@@ -104,8 +136,57 @@ global.calculateInterceptionAngle = function (ax, ay, vx, vy, bx, by, s) { // fo
 
 global.angleBetween = (a, b) => // delimited to [-pi,pi]
     Math.atan2(a.y - b.y, a.x - b.x);
+
+global.angleGlobalBetween = function (a, b, gsy, gsx, numSec) { // considers different sectors. Delimited to [-pi,pi]
+    /*
+    let sectorDiffX = a.sx - b.sx;
+    let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
+    sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
+
+    if (sectorDiffX > 0 && sectorDiffXa == sectorDiffX) {
+        sectorDiffX = sectorDiffXa;
+    } else {
+        sectorDiffX = -sectorDiffXa;
+    }
+    sectorDiffX = sectorDiffX * gsx;
+
+    let sectorDiffY = a.sy - b.sy; // Sectors on Y do not loop
+    sectorDiffY = sectorDiffY * gsy;
+    */
+
+    const sectorDiffX = obtainSXDrift(b.sx, a.sx, gsx, numSec);
+    const sectorDiffY = obtainSYDrift(b.sy, a.sy, gsy, numSec);
+
+    return Math.atan2(a.y - b.y + sectorDiffY, a.x - b.x + sectorDiffX);
+};
+
 global.squaredDist = (a, b) => // distance between two points squared. i.e. c^2
     square(a.y - b.y) + square(a.x - b.x);
+
+global.squaredGlobalDist = function (a, b, gsy, gsx, numSec) { // distance between two points squared, taking into account sector configuration. i.e. c^2
+    /*
+    let sectorDiffX = a.sx - b.sx;
+    let sectorDiffXab = Math.abs(sectorDiffX); // Sectors on X loop
+    let sectorDiffXa = Math.min(sectorDiffXab, (numSec - sectorDiffXab));
+
+    sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
+
+    if (sectorDiffX > 0 && sectorDiffXa == sectorDiffX) {
+        sectorDiffX = sectorDiffXa;
+    } else {
+        sectorDiffX = -sectorDiffXa;
+    }
+    sectorDiffX = sectorDiffX * gsx;
+
+    let sectorDiffY = (a.sy - b.sy) * gsy; // Sectors on Y do not loop
+    */
+
+    const sectorDiffX = obtainSXDrift(b.sx, a.sx, gsx, numSec);
+    const sectorDiffY = obtainSYDrift(b.sy, a.sy, gsy, numSec);
+
+    return square(a.y - b.y + sectorDiffY) + square(a.x - b.x + sectorDiffX);
+};
+
 global.hypot2 = (a, b, c, d) => square(a - b) + square(c - d);
 global.expToLife = (exp, guest) => Math.floor(guest ? 0 : 800000 * Math.atan(exp / 600000.0)) + 500;
 global.mod = function (n, m) { // used in findBisector

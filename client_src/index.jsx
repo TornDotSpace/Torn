@@ -79,8 +79,8 @@ global.ctx = canvas.getContext(`2d`, { alpha: false });
 global.expToRank = [0];
 global.guiColor = `#333333`;
 global.guiOpacity = 0.5;
-global.teamColors = [`red`, `blue`, `green`];
-global.sectorWidth = 14336;
+global.teamColors = [`red`, `blue`, `green`, `yellow`];
+global.sectorWidth = 14336 * 2;
 global.mx = 0; global.my = 0; global.mb = 0;
 global.tick = 0;
 global.scrx = 0; global.scry = 0;
@@ -110,6 +110,12 @@ global.afk = false;
 global.colorCircumfix = `\`c`;
 global.weaponCircumfix = `\`w`;
 global.translateCircumfix = `\`t`;
+
+// some global sector handling mechanics
+global.globalOriginSX = -1; // We calculate stuff from 1 sector West of ours...
+global.globalEndSX = 1; // ... to 1 sector East of us.
+global.globalOriginSY = -1; // We calculate stuff from 1 sector North of ours...
+global.globalEndSY = 1; // ... to 1 sector South of us.
 
 global.baseMap2D = {};
 global.planetMap2D = {};
@@ -169,7 +175,7 @@ global.badWeapon = 0;
 global.mouseDown = false;
 global.flash = 0;
 global.hyperdriveTimer = 0;
-global.didW = false; global.didSteer = false; global.currTut = 0;
+global.didW = false; global.didSteer = false; global.didJuke = false; global.didS = false; global.didSShield = false; global.isPShifting = false; global.didShift = false; global.didFire = false; global.spammyLowHealth = 0; global.oldOre = 0; global.oldMoney = 0; global.currTut = 0;
 
 global.sectorPoints = 0;
 
@@ -194,9 +200,9 @@ global.maxShipAgility = -1000;
 for (const i in ships) {
     const ship = ships[i];
     if (ship.thrust > maxShipThrust) maxShipThrust = ship.thrust;
-    if (ship.capacity > maxShipCapacity && i != 17) maxShipCapacity = ship.capacity;
+    if (ship.capacity > maxShipCapacity && (ship.capacity < 80000)) maxShipCapacity = ship.capacity;
     if (ship.agility > maxShipAgility) maxShipAgility = ship.agility;
-    if (ship.health > maxShipHealth) maxShipHealth = ship.health;
+    if (ship.health > maxShipHealth && (ship.health < 10000)) maxShipHealth = ship.health;
 }
 
 for (const j in wepns) {
@@ -231,6 +237,7 @@ global.equipped = 0; global.ammos = {};
 global.redShips = [];
 global.blueShips = [];
 global.greenShips = [];
+global.yellowShips = [];
 global.planetImgs = [];
 global.Img = {};
 global.Img_prgs = [0 /* Count of loaded images */, 0];
@@ -318,7 +325,7 @@ const loop = () => {
         }
 
         let img = redShips[14];
-        let pw = ships[14].width;
+        let pw = img.width; // ships[14].width;
         let rendX = w / 2 + scrx;
         let rendY = h / 2 + scry;
         ctx.save();

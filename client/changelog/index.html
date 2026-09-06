@@ -5,15 +5,291 @@
 	<body>
 		<link rel="stylesheet" href="/assets/css/index.css" />
 		<h1 style="text-align: center;"><span style="color: #7fff7f;">Changelog!</span></h1>
+
+		2026/08/24-2026/08/25
+                (<span style="color: #ff777f;">torn-rank23aka24-1bafbfb455c616143ef0356e195d422fa62d6688</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Thanks to loma, detected and fixed a leaderboard issue that was present on original Torn.</li>
+			<li>Upgraded app.js code for leaderboard sorting from BubbleSort to MergeSort.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/08/16-2026/08/24
+                (<span style="color: #ff777f;">torn-rank23aka24-ec2d16f28bbf9f9ea5f4eb80990f48d7df4e74f2</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Thanks to deathwish, fixed the multi-logging bug (window-spam-log variant) definetely.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/08/10-2026/08/16
+                (<span style="color: #ff777f;">torn-rank23aka24-cb9ecc59edd6a5c1494fe034697bf7db2051b8b7</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Made assimilated/pirated starbase allegiance visible on minimap.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+ 
+		2026/08/01-2026/08/10
+                (<span style="color: #ff777f;">torn-rank23aka24-c4f7b3f8228be5055de6db9330372da65f6fbb16</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Made client baseMap2D and planetMap2D network preparation a bit more efficient ( O(N) vs O(2N) ).</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+
+		2026/05/09-2026/08/01
+                (<span style="color: #ff777f;">torn-rank23aka24-ed1503df526e0a465cf8c3de6d447762a8cfaf4e</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Updated certificates, valid until 2026/10/31.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/05/06-2026/05/09
+                (<span style="color: #ff777f;">torn-rank23aka24-e862dc5ce5cfe5ddadf66509b352cae7472154d4</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Updated localizer.js so pirate ships have their own names expressed correctly on the Shop Menu.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/05/05-2026/05/06
+                (<span style="color: #ff777f;">torn-rank23aka24-13ff9ddb3d2b9193bdd04b00434fb163ca30ae2f</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Reverted some of the changes of last day's update, mostly concerning damage buffs on missiles, except heavy missile.</li>
+			<li>Magnetic mines and laser mines affect turrets now, too.</li>
+			<li>Laser mines now can attack more than once and more than 1 target with their lasers, albeit that will shorten their lifespan considerably. Also laser quality will depend on the ship that spawned it.</li>
+			<li>Made hypnoed bots less "dumb" when their master has docked or left.</li>
+			<li>Rank 18's C-Slot can now fire alongside other guns, as long as those guns charge slower or as fast as spreadshot.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/05/05-2026/05/05
+                (<span style="color: #ff777f;">torn-rank23aka24-0bf59195d862c94649ca37d283308d8fae01e0f1</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Increased ammo, damage and charge of several weapons, to attempt to appease the testers saying stuff takes too much ammo or has too much health. If changes are rejected by the community, these will be rolled back.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+
+		2026/05/04-2026/05/05
+                (<span style="color: #ff777f;">torn-rank23aka24-fdeb14e4d1fcb7f24e81476417f53cb7b6d52454</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Fixed a bug with rank 22's leech beam.</li>
+			<li>Fixed a bug with ammo not being checked when swapped for pirates - hey, it is not our fault if the guys at starbase are sleazeballs!</li>
+			<li>Hopefully fixed a bug regarding hypnoed bots.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/05/01-2026/05/04
+                (<span style="color: #ff777f;">torn-rank23aka24-ee08aeeaf2ea4d4b80880827912e63b7aa664286</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Shortened english.json and tokipona.json's mechanic descriptions to prevent them from getting outside the menu.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/04/29-2026/05/01
+                (<span style="color: #ff777f;">torn-rank23aka24-ca8919c03b83b7f917ec79cecf810f8815037ee7</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Fixed a bug with docking/missions as a pirate.</li>
+			<li>Updated english.json, chinese.json, spanish.json and tokipona.json with pirate ship names and lore.</li>
+			<li>Added more differences between the rank 26s, including sprites.</li>
+			<li>Fixed a bug that was not letting a ship's glow rotate.</li>
+			<li>Added pirate css style colors to the leaderboard.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/04/27-2026/04/29
+                (<span style="color: #ff777f;">torn-rank23aka24-126baa68bd4255e580e4333d00be5353374b5039</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Enhanced tutorial from "W -> A/D -> destroy asteroid -> sell ore -> make account"; to "testing moving forwards, steering, juking, shields, drifting, firing -> looking for asteroids, mining the asteroid, selling the ore while navigating through the base menu, autopilot and account making"; alongside some extra information.</li>
+			<li>Clarified that for mechanic and the money achievements, you need to mantain that level - you are not a rich man if you lost your money, after all!.</li>
+			<li>Clarified Traveler achievement requirements further.</li>
+			<li>Updated English and Spanish ProTips to be more up-to-date and more meaningful.</li>
+			<li>Fixed a bug that was causing Secret Quests to consider all sectors with vortex as viable black holes.</li>
+			<li>Fixed a bug with other languages breaking upon reaching the chat root.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/04/26-2026/04/27
+                (<span style="color: #ff777f;">torn-rank23aka24-57367679ef0462b76709e69b98bdcd79044e7aa0</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Fixed Secret Quest mentioning wrong or no planets.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/04/20-2026/04/26
+                (<span style="color: #ff777f;">torn-rank23aka24-b4a380219742462a0f8547e3377f942052e47418</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Added a fix for /help command returning repeated cmd descriptions - now these will be omitted.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/04/19-2026/04/20
+                (<span style="color: #ff777f;">torn-rank23aka24-f5976e8ec440760e9a260c9b4f63c30a6aef64cc</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Updated certificates thanks to certbot and Let's Encrypt, valid until 2026-07-19, in theory.</li>
+			<li>Mines with radius 0 can now be hit by bullets and missiles correctly.</li>
+			<li>Jammer now works against turrets.</li>
+			<li>Increased Muon Ray ammo slightly.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/04/18-2026/04/19
+                (<span style="color: #ff777f;">torn-rank23aka24-ec5e4c0baa88c9a043259c925db33b062ccae523</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Reordered bases on torn globals to ensure new players are safer from black holes and attacks.</li>
+			<li>Ships above rank 15 now heal when shielded... at 100th the regular unshielded rate.</li>
+			<li>Fixed players always spawning on the primary base of each team.</li>
+			<li>Buffed EMP length on mines and blasts.</li>
+			<li>Restored generator functionality fully.</li>
+			<li>Tweaked turret gains to prevent turret feeding being sustainable (starbase killing is still extremely profitable).</li>
+			<li>Radar now does not display enemy cloaked ships.</li>
+			<li>Bots may now use C-Slots.</li>
+			<li>Yellow Boss bots can be more varied.</li>
+			<li>Command /changeteam now supports changing to pirate team.</li>
+			<li>Playing as a pirate is meant to be a "hard" difficulty and thus not automatically available for new players joining as GUESTs.</li>
+			<li>Provided better coverage for pirate (yellow) team regarding cloak</li>
+			<li>Pirate players cannot dock except on friendly/converted pirate starbases or when an enemy starbase's turret has been destroyed.</li>
+			<li>Pirate players cannot heal from docking, the resources from friendly starbases and the policy from enemy starbases do not allow that.</li>
+			<li>Pirate players have an alternate way to save, just in case, by flying over planets.</li>
+			<li>A group of pirate rank 22 can assault a starbase to convert it temporarily onto a converted pirate starbase.</li>
+			<li>Players whose teams do not have a permanent friendly starbase spawn at the wormhole exit.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2026/04/17-2026/04/18
+                (<span style="color: #ff777f;">torn-rank23aka24-e75749ffb9641f4b8571fa6d88f060ba0f1c1344</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Increased Delivery, Base and Secret Quests rewards.</li>
+			<li>Fixed a bug that made Secret missions unable to deliver a package on a permanent black hole sector.</li>
+			<li>Fixed a bug that prevented properly deleting a turret client-side.</li>
+			<li>Fixed a bug that made saved sentries as strong as regular turrets.</li>
+			<li>Increased ammo for several guns, mines, missiles and orbs.</li>
+			<li>Increased hadron beam range.</li>
+			<li>Increased heavy missile damage and speed.</li>
+			<li>Increased proximity fuze range and damage.</li>
+			<li>Increased Mine, Laser Mine and Magnetic Mine damage.</li>
+			<li>Increased damage and ammo of Muon Ray and Lepton Pulse.</li>
+			<li>Nerfed Nailoth Web ammo, charge and duration significantly.</li>
+			<li>Generators, Gravity Bomb, Grenades and Reverse Gun have been re-enabled.</li>
+			<li>Tweaked reboot and fastReboot commands to apply for inner implementation of server reboot. Old reboot and fastReboot commands are now called shutdown and fastShutdown.</li>
+			<li>Game now runs at a slightly faster pace (30 ticks per second vs 27 ticks per second).</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+		2026/04/05-2026/04/17
+                (<span style="color: #ff777f;">torn-rank23aka24-0aa1839ad586f37740be606f4b3197cec153b331</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Now the game is placed at https://tornspace.duckdns.org:7301/ - please don't hesitate to contact us on the Torn Discord server if issues happen!</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+		2026/04/04-2026/04/05
+                (<span style="color: #ff777f;">torn-rank23aka24-2f07708ea40718b1d82f9ddfb96135364427b805</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Music file 'music1' loops now!</li>
+			<li>Tried making asteroid logic a bit more robust in case vortex or something flung an asteroid and caused "giant" asteroids.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+		2026/04/01-2026/04/04
+                (<span style="color: #ff777f;">torn-rank23aka24-bec3c19f5629381b0021c4fe81b02453ffd0e903</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Made adjustments so now the server is on a public IPv6 working over HTTPs - you'll need to have IPv6 support on your end device and ISP and the proper torn.space CA imported on your browser to access.</li>
+			<li>Turrets now save properly, and the /renameturret command allows people to unassimilate or change a turret's side if the player owner changed sides.</li>
+			<li>Made BEHEMOTH bot a bit more maneuverable.</li>
+			<li>Fixed update issue with photon cloak.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+		2026/03/30-2026/04/01
+                (<span style="color: #ff777f;">torn-rank23aka24-b9b070f8c5d1c096024fd35365a27ab9fcc31de1</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Fixed issue with yellow pirate bots going too overboard.</li>
+			<li>Fixed cargo bay mismatch (now platinum is purple again and copper is coppery) and fixed mining quest not considering properly cargo stuff.</li>
+			<li>Now there's a small triangle next to the cargo bay bar during mining missions - it tells you the color of the nearest ore (or nearest enemy if the enemy is on radar!)</li>
+			<li>Updated app.js code to avoid doing two calls twice (for example when a ship crossed sector, sometimes it executed .tick() twice, even on original Torn - it is what lead to some strange behaviorus back then).</li>
+			<li>Now the project has gpu.js in case other devs want to join and refactor stuff with paralelism later on.</li>
+			<li>Repurposed dev:serve webpack so it does not perform hot nor liveUpdates (you'll need to refresh manually with F5 to have the new changes applied), because every time the out-game leaderboard was getting updated, it forced a full refresh on the client.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+		2026/03/28-2026/03/30
+                (<span style="color: #ff777f;">torn-rank23aka24-85b95165d1902d5dbff689ea8bef502fe3eeac0f</span>)
+		<ul><span style="color: #7fff7f;">
+			<li>Increased Map sector size to 15x15</li>
+			<li>Increased faction starbases to 7, and reorganized them a bit.</li>
+			<li>Increased sector size by 100% (now each sector is twice as long and wide as before).</li>
+			<li>Following the 3D map aesthethic, now there are multiple black holes on the "galactic center" (8th row, instead of just the central 2D sector), made it so every 3 galactic center sectors, there's 1 black hole, making it a more perilous travel.</li>
+			<li>Increased attraction power of black holes to wards asteroids and ships, considering that now vessels are faster.</li>
+			<li>Buffed warp drive ammo to 30, reduced charge and reqorked speed formula a bit to compensate for greater speeds and distances.</li>
+			<li>Buffed hyperdrive speed by 100% to compensate for more, longer sectors.</li>
+			<li>Buffed hadron beam range slightly.</li>
+			<li>Buffed Rifle range by 100%.</li>
+			<li>Improved Sentry/Turret priority fire (torpedo fire range is greater than rifle).</li>
+			<li>Starbase Turrets are now equipped with anit-crowd weaponry (Missile Swarm) and will fire it if they are too overwhelmed (at least 15 enemy ships nearby and 1 on missile swarm range).</li>
+			<li>If a ship's sprite is too big for the ship shop menu, now it will resize to fit inside.</li>
+			<li>Full client support for yellow team (sentries, bases and turrets), just in case.</li>
+			<li>Picked different textures for green rank 23 and red rank 24.</li>
+			<li>BEHEMOTH Miniboss turn speed tweaked a tiny bit.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+
+		2022/01/01-2026/03/28
+                (<span style="color: #ff777f;">torn-rank23aka24-edce0daca9ad147543e3e8b344749183c206d054</span>)
+		<ul><span style="color: #7fff7f;">
+			<li><span style="color: #ff0000;">Original Torn closed.</span> Now tardisfromtornspace is trying to revive it in some fashion.</li>
+			<li>Now the game loads stuff per 9-sector groups instead of 1 sector only, allowing battle objects (beams, blasts, bullets, mines, missiles, orbs) and other objects (bots, players, asteroids, bases, packages, planets and vortexes) to be seen and interact between sectors.</li>
+			<li>Updated clientside scripts to provide better rendering of battle objects (beams, blasts, bullets, mines, missiles, orbs) and other objects (bots, players, asteroids, bases, packages, planets and vortexes) according to this new 9-sector-scan, and improved arrow readability. Radar and planets also follow this. Planets are once again visible on radar without needing to be a "B" role. Also added support for yellow heatmap and "team" arrows, black hole and wormhole arrows will point for longer ranges.</li>
+			<li>While the 9-sector setting is online, player-sector-cross-penalty is disabled (since now with the 9-sector setting onlinr. Pretty much all weapons, turrets, sentries and bots can and WILL keep targeting you regardless).</li>
+			<li>To make bots smarter and mitigate LAG issues, regular bots will stop cluttering sectors with spawn bases if its turret is dead.</li>
+			<li>Bases will consider its weapons's range before firing, at leasst for EMP.</li>
+			<li>Tweaked Warp Drive to give it more ammo and faster cooldown. Now the base distance jump is represented on radar as well.</li>
+			<li>Tweaked Hadron Beam to give it more range.</li>
+			<li>Buffed Torpedo charge, ammo and damage.</li>
+			<li>Buffed overall vessel's speed, and increased hull integrity on bigger vessels.</li>
+			<li>Guests are once again allowed to cross sectors, colonize/claim panets and interact normally with wormholes and black holes.</li>
+			<li>Players now can once again replenish ammo on same-team planets, but now have a separate planet ammo replenish independent from the actual planet reclaim cooldowns, so someone cannot just rapidly spam ammo replenishments over a planet.</li>
+			<li>Money and experience decay will only happen if you have not played for the past 52 * 2 (104) weeks.</li>
+			<li>Fixed several bugs with Orb and Missile tracking, and undetected bugs from last updates.</li>
+			<li>Bullets, mines, missiles and orbs now emmit a more muted sound when they despawn from natural lifespan end.</li>
+			<li>BEHEMOTH miniboss refined slightly.</li>
+			<li>Login now displays the starter team's ship on the buttons.</li>
+			<li>Changelog dates from now on will use the YYYY/MM/DD format, to ensure all developers involved do not get confused over changelog date system.</li>
+			<li>Updated changelog.</li>
+		</span></ul>
+		10/31/2021-2/13/2021
+                (torn-master-c73416c647658db5118c9871fdcfe02f6129e144)
+		<ul>
+			<li>Tweaked rank 24 and 25 C-Slots. Now rank 24 works a bit differently for humans.</li>
+			<li>Tweaked Warp Drive so it can help hyperdrive.</li>
+			<li>New temporary rank 25 blue, red and green sprites.</li>
+			<li>Player-spawned bots will no longer count for kill streak, nor drop coins when killed</li>
+			<li>New weapon: Nailoth Web.</li>
+			<li>Photon Orbs are back</li>
+			<li>...a miniboss?</li>
+			<li>Updated changelog.</li>
+		</ul>
+		3/12/2021-10/31/2021
+                (torn-master-fd287d6efa1d3143f0e910d6a50dbea066598b2f)
+		<ul>
+			<li>Reduced xp and money inflation.</li>
+			<li>Tweaked XP-to-level list.</li>
+			<li>Halved old ships' HP.</li>
+			<li>Exp and Money decay are back, weekly (do not worry tech decay isn't here).</li>
+			<li>Now planets only restock ammo when you colonize or conquer them.</li>
+			<li>Reduced map size again to 7 x 7 sectors, in a East-West loop map.</li>
+			<li>Disabled Grav Bomb, Grenades and Photon Orb for players; and Generators (code tasked to make gens work has been removed).</li>
+			<li>Added Navigational Shield: reduces damage done by asteroids and Laser Beam.</li>
+			<li>Destroying a turret/sentry now counts for the Kill Streak.</li>
+			<li>Tweaked EMP so it reduces speed considerably for everyone, fixed bug that made EMP harsher on laggier connections.</li>
+			<li>Tweaked rank 22 C-Slot.</li>
+			<li>Added ranks 23, 24 and 25 + rank 23, 24 and 25 abilities and C-Slots.</li>
+			<li>Several other performance and balance updates.</li>
+			<li>Updated changelog.</li>
+		</ul>
 		
-		13/5/2019-12/3/2021
+		5/13/2019-12/3/2021
                 (torn-prod-cad7baca565ea06a843f79545710af65456ce773)
 		<ul>
 			<li>Torn.space has gone open source.</li>
 			<li>Added neat 3D Minimap with the option to switch to 2D one, in both you can observe planets you claimed or colonized</li>
 			<li>Increased map size to 9 x 9 sectors, in a East-West loop map</li>
 			<li>Added Cyborg Team (Green Team)</li>
-			<li>Added ranks 21 and 22 ships + Rank 22 abilities and rank 23 C-Slot </li>
+			<li>Added ranks 21 and 22 ships + Rank 21 abilities and rank 22 C-Slot </li>
 			<li>Added Magnetic Mines</li>
 			<li>Asteroids, torpedoes and orbs can cross sectors</li>
 			<li>Asteroids are now affected by wormhole and blackhole's gravitational pull</li>

@@ -25,6 +25,12 @@ const Beam = require(`./battle/beam.js`);
 const Asteroid = require(`./universe/asteroid.js`);
 
 let nextPlayerId = 0;
+let planetString = ``;
+for (let i = 0; i < mapSz; i++) {
+    for (let j = 0; j < mapSz; j++) {
+        planetString = `${planetString}0`;
+    }
+}
 
 class Player {
     constructor () {
@@ -37,7 +43,7 @@ class Player {
         this.color = `yellow`;
         this.elo = 1200;
         this.ship = 0;
-        this.experience = 0;
+        this.experience = 0; // 60000000000000;
         this.rank = 0;
 
         this.guest = false;
@@ -73,7 +79,7 @@ class Player {
         this.speed = 0;
         this.driftAngle = 0;
 
-        this.money = 8000;
+        this.money = 12000; // 9999999999999;
         this.kills = 0;
         this.killStreakTimer = -1;
         this.killStreak = 0;
@@ -86,6 +92,10 @@ class Player {
         this.lives = 20;
         this.quest = 0;
         this.health = 1;
+
+        this.currDeflectorPower = -1;
+        this.maxDeflectorPower = 0;
+        this.firstDeflector = -1;
 
         this.iron = 0;
         this.silver = 0;
@@ -142,10 +152,13 @@ class Player {
         this.cornersTouched = 0; // bitmask
         this.oresMined = 0; // bitmask
         this.questsDone = 0; // bitmask
-        this.planetsClaimed = `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000`;
+        this.planetsClaimed = planetString; // `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000` + `0000000`;
+
         this.points = 0;
 
         this.equipped = 0;
+
+        this.planetCooldown = 0; // made to prevent restock abuse on planets
     }
 
     tick () {
@@ -155,9 +168,10 @@ class Player {
         if (this.superchargerTimer >= 0) this.superchargerTimer--;
         if (this.empTimer >= 0) this.empTimer--;
         if (this.disguise >= 0) this.disguise--;
+        if (this.planetCooldown > 0) this.planetCooldown--;
 
         const amDrifting = this.e || this.gyroTimer > 0;
-        this.shield = (this.s && this.empTimer <= 5 && !amDrifting && this.gyroTimer < 1) || this.leaveBaseShield > 0;
+        this.shield = (this.s && this.empTimer <= 5 && (!amDrifting || (this.ship == 25)) && this.gyroTimer < 1) || this.leaveBaseShield > 0;
         if ((this.disguise > 0 && this.weapons[this.equipped] != 18 && this.weapons[this.equipped] != 19 && this.weapons[this.equipped] != 21 && this.weapons[this.equipped] != 22 && this.weapons[this.equipped] != 29 && this.weapons[this.equipped] != 36) || (this.shield && this.weapons[this.equipped] > 0 && wepns[this.weapons[this.equipped]].type !== `Misc` && wepns[this.weapons[this.equipped]].type !== `Mine` && this.space)) this.charge = Math.min(this.charge, 0);
         this.leaveBaseShield--;
 
@@ -167,16 +181,168 @@ class Player {
         }
 
         this.move();
-        if (this.health < this.maxHealth && !this.shield) this.health += playerHeal;
+        if (this.health < this.maxHealth) {
+            if (!this.shield) {
+                if (this.ship == 25) this.health += (playerHeal / 100);
+                else this.health += playerHeal;
+            } else if (this.ship > 14) {
+                this.health += (playerHeal / 100);
+            }
+
+            const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+            const extra = (stolenAthena) ? 2 : 1;
+            if (this.health > (extra * this.maxHealth)) {
+                this.health = (extra * this.maxHealth);
+            }
+        }
 
         this.fire();
 
         let chargeVal = (this.energy2 + 1) / 1.8; // charge speed scales with energy tech
         this.navigationalShieldCount();
 
+        this.generatorCount();
+
+        for (let i = 0; i < this.generators; i++) chargeVal *= 1.08;
         for (let i = 0; i < this.navigationalShield; i++) chargeVal /= 1.08; // For each navigational shield you carry, you lose the equivalent of two generators, the one that really is in your slots, and the potential one you could have placed instead of the item. 1.08/1.08 = 1
         if ((this.charge < 0 || this.space || this.c) && !(this.ship === 25 && this.equipped === 9)) this.charge += chargeVal;
         else if (this.charge > 0 && !this.space && !this.c) this.charge = 0;
+    }
+
+    pulseWaveEffectSector (that, wep, newy, newx, lsy, lsx) { // TO-DO Pulse wave and electromagnet effect can be fused in one function
+        sendAllSector(`sound`, { file: `bigboom`, sx: that.sx, sy: that.sy, x: newx, y: newy, dx: Math.cos(that.angle) * that.speed, dy: Math.sin(that.angle) * that.speed }, lsx, lsy);
+        for (const i in players[lsy][lsx]) {
+            const p = players[lsy][lsx][i];
+            if (p.color !== that.color) { // only enemies
+                const d2 = squaredGlobalDist(that, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
+                if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
+                const ang = angleGlobalBetween(that, p, sectorWidth, sectorWidth, mapSz); // angle from the horizontal
+                const vel = -6000 / Math.log(d2); // compute how fast to accelerate by
+                p.vx += Math.cos(ang) * vel; // actually accelerate them
+                p.vy += Math.sin(ang) * vel;
+                p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
+                p.updatePolars(); // We changed their rectangular velocity.
+            }
+            for (const i in asts[lsy][lsx]) {
+                const a = asts[lsy][lsx][i];
+                const d2 = squaredGlobalDist(that, a, sectorWidth, sectorWidth, mapSz);
+                if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
+                const ang = angleGlobalBetween(that, a, sectorWidth, sectorWidth, mapSz);
+                const vel = -200000 / Math.max(d2, 200000);
+                a.vx += Math.cos(ang) * vel;
+                a.vy += Math.sin(ang) * vel;
+            }
+            for (const i in missiles[lsy][lsx]) {
+                const m = missiles[lsy][lsx][i];
+                const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
+                if (d2 > square(10 * wep.range)) continue;
+                const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
+                const vel = -100000000 / Math.max(d2, 2000000);
+                m.emvx += Math.cos(ang) * vel;
+                m.emvy += Math.sin(ang) * vel;
+                if (squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(20 + ships[that.ship].width)) m.die();
+            }
+            for (const i in mines[lsy][lsx]) {
+                const m = mines[lsy][lsx][i];
+                const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
+                if (d2 > square(10 * wep.range)) continue;
+                const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
+                const vel = -10000 / Math.max(d2, 2000000);
+                m.vx += Math.cos(ang) * vel;
+                m.vy += Math.sin(ang) * vel;
+                if (squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(200 + ships[that.ship].width)) m.die();
+            }
+        }
+    }
+
+    electromagnetEffectSector (that, wep, newy, newx, lsy, lsx) {
+        for (const i in players[lsy][lsx]) {
+            const p = players[lsy][lsx][i];
+            if (p.color !== that.color) { // only enemies
+                const d2 = squaredGlobalDist(that, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
+                if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
+                const ang = angleGlobalBetween(that, p, sectorWidth, sectorWidth, mapSz); // angle from the horizontal
+                const vel = -0.0000001; // that is just symbolic, to jam warp drive
+                p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but that jams Warp Drive
+                p.vy += Math.sin(ang) * vel;
+                p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
+                p.updatePolars(); // We changed their rectangular velocity.
+            }
+        }
+        for (const i in asts[lsy][lsx]) {
+            const a = asts[lsy][lsx][i];
+            const d2 = squaredGlobalDist(that, a, sectorWidth, sectorWidth, mapSz);
+            if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
+            const ang = angleGlobalBetween(that, a, sectorWidth, sectorWidth, mapSz);
+            const vel = -1000000 / Math.max(d2, 200000);
+            a.vx += Math.cos(ang) * vel;
+            a.vy += Math.sin(ang) * vel;
+            a.owner = that;
+        }
+        for (const i in missiles[lsy][lsx]) {
+            const m = missiles[lsy][lsx][i];
+            const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
+            if (d2 > square(10 * wep.range)) continue;
+            const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
+            const vel = -10000000 / Math.max(d2, 2000000);
+            m.emvx += Math.cos(ang) * vel;
+            m.emvy += Math.sin(ang) * vel;
+        }
+        for (const i in orbs[lsy][lsx]) {
+            const o = orbs[lsy][lsx][i];
+            const d2 = squaredGlobalDist(that, o, sectorWidth, sectorWidth, mapSz);
+            if (d2 > square(10 * wep.range)) continue;
+            const ang = angleGlobalBetween(that, o, sectorWidth, sectorWidth, mapSz);
+            const vel = -25000000 / Math.max(d2, 2000000);
+            o.vx += Math.cos(ang) * vel;
+            o.vy += Math.sin(ang) * vel;
+        }
+        for (const i in mines[lsy][lsx]) {
+            const m = mines[lsy][lsx][i];
+            const d2 = squaredGlobalDist(that, m, sectorWidth, sectorWidth, mapSz);
+            if (d2 > square(10 * wep.range)) continue;
+            const ang = angleGlobalBetween(that, m, sectorWidth, sectorWidth, mapSz);
+            const vel = -5000000 / Math.max(d2, 2000000);
+            m.vx += Math.cos(ang) * vel;
+            m.vy += Math.sin(ang) * vel;
+        }
+    }
+
+    apply9SectorEffect (functionToCall, wep, extras = false, that = false, extraParam1 = false, returnSomething = false, startX = globalOriginSX, startY = globalOriginSY, endX = globalEndSX, endY = globalEndSY) {
+        const myx = this.x;
+        const myy = this.y;
+        const mysx = this.sx;
+        const mysy = this.sy;
+        let somethingReturn = 0;
+        for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
+            const newX = myx - (asx * sectorWidth);
+            let sxReal = (mysx + asx) % mapSz;
+            while (sxReal < 0) {
+                sxReal = (sxReal + mapSz) % mapSz;
+            }
+            for (let asy = startY; asy <= endY; asy++) { // Sectors on Y do not loop
+                const syReal = (mysy + asy);
+                if (syReal < mapSz && syReal >= 0) {
+                    const newY = myy - (asy * sectorWidth);
+                    if (extras == false) {
+                        functionToCall(this, wep, newY, newX, syReal, sxReal);
+                    } else {
+                        somethingReturn = functionToCall(this, wep, newY, newX, syReal, sxReal, that, extraParam1, somethingReturn);
+                    }
+                }
+            }
+        }
+        if (returnSomething != false) return somethingReturn;
+    }
+
+    pulseWaveEffect (wep) {
+        this.apply9SectorEffect(this.pulseWaveEffectSector, wep);
+    }
+
+    electromagnetEffect (wep) {
+        if (global.tick % 2 == 0) {
+            this.apply9SectorEffect(this.electromagnetEffectSector, wep);
+        }
     }
 
     fire () {
@@ -224,7 +390,7 @@ class Player {
             // Traditional missiles
             else if (wepId <= 14 || wep.name === `Proximity Fuze`) this.shootMissileSpecific(wepId);
             // <= 17: Traditional Mines
-            else if (wepId <= 17 || wep.name === `Impulse Mine` || wep.name === `Grenades` || wep.name === `Pulse Mine` || wep.name === `Campfire` || wep.name === `Magnetic Mine`) this.shootMine();
+            else if (wepId <= 17 || wep.name === `Impulse Mine` || wep.name === `Grenades` || wep.name === `Pulse Mine` || wep.name === `Campfire` || wep.name === `Magnetic Mine` || wep.name === `Nailoth Web`) this.shootMine();
             else if (wep.name === `Energy Disk` || wep.name === `Photon Orb`) this.shootOrb();
             else if (wep.name === `Muon Ray` || wep.name === `EMP Blast` || wep.name === `Hypno Ray` || wep.name === `Lepton Pulse`) this.shootBlast(wepId);
 
@@ -234,134 +400,58 @@ class Player {
                 if (wep.name === `Supercharger`) {
                     if (this.superchargerTimer <= 0) this.superchargerTimer = 1500 * (this.ship == 21 ? 2 : 1); // 1 min, more if rank 21
                     else this.superchargerTimer += 1500 * (this.ship === 21 ? 2 : 1); // Stackable
-                } else if (wep.name === `Hull Nanobots`) this.health += Math.min(Math.max(-wepns[18].damage, this.maxHealth * 0.25), this.maxHealth - this.health); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
-                else if (wep.name === `Photon Cloak`) this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
+                } else if (wep.name === `Hull Nanobots`) {
+                    const stolenAthenaS = (this.ship == 25 && this.color === `yellow`) ? 0.01 : 1;
+                    this.health += Math.min(Math.max(-(wepns[18].damage * stolenAthenaS), this.maxHealth * 0.25), ((this.maxHealth - this.health))); // min prevents overflow, the max ensures that small ships can still use it with some noticeable effect (and using the otherwise unused damage from the weapons.json)
+                } else if (wep.name === `Photon Cloak`) this.disguise += (333 + 110 * (this.energy2 - 1) + 10 * (this.ship - wepns[19].level)) * (this.superchargerTimer > 0 ? 2 : 1); // 10s + extra time for energy  + extra time for rank above minimum + extra time if using supercharger
                 else if (wep.name === `Warp Drive`) {
-                    this.speed = (wepns[29].speed * (this.ship === 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
-                }
-            } else if (wep.name === `Pulse Wave`) { // Velocity-Altering WWeapons
-                sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
-                for (const i in players[this.sy][this.sx]) {
-                    const p = players[this.sy][this.sx][i];
-                    if (p.color !== this.color) { // only enemies
-                        const d2 = squaredDist(this, p); // distance squared between me and them
-                        if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
-                        const ang = angleBetween(this, p); // angle from the horizontal
-                        const vel = -6000 / Math.log(d2); // compute how fast to accelerate by
-                        p.vx += Math.cos(ang) * vel; // actually accelerate them
-                        p.vy += Math.sin(ang) * vel;
-                        p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
-                        p.updatePolars(); // We changed their rectangular velocity.
-                    }
-                    for (const i in asts[this.sy][this.sx]) {
-                        const a = asts[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, a);
-                        if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
-                        const ang = angleBetween(this, a);
-                        const vel = -200000 / Math.max(d2, 200000);
-                        a.vx += Math.cos(ang) * vel;
-                        a.vy += Math.sin(ang) * vel;
-                    }
-                    for (const i in missiles[this.sy][this.sx]) {
-                        const m = missiles[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, m);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, m);
-                        const vel = -100000000 / Math.max(d2, 2000000);
-                        m.emvx += Math.cos(ang) * vel;
-                        m.emvy += Math.sin(ang) * vel;
-                        if (squaredDist(m, this) < square(20 + ships[this.ship].width)) m.die();
-                    }
-                    for (const i in mines[this.sy][this.sx]) {
-                        const m = mines[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, m);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, m);
-                        const vel = -10000 / Math.max(d2, 2000000);
-                        m.vx += Math.cos(ang) * vel;
-                        m.vy += Math.sin(ang) * vel;
-                        if (squaredDist(m, this) < square(200 + ships[this.ship].width)) m.die();
+                    let tempSpee = 0;
+                    if (this.speed > 0) tempSpee = this.speed;
+                    this.speed = tempSpee + (wepns[29].speed * (this.ship === 16 ? 1.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) + 150 * (this.energy2 - 1) * (this.superchargerTimer > 0 ? 2 : 1)) * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.25 : 1); // R16 gets a 50% extra boost from it. The more energy tech, the more powerful warp field. Since it only works with the energy2 stat (only the tech), generators don't help with this, it's almost impossible to normally get any substantial boost from it, and supercharger boost is temporary.
+                    if (this.hyperdriveTimer > 0) { // Hyperspace warp
+                        this.hyperdriveTimer *= (this.energy2 + 0.5) * (this.superchargerTimer > 0 ? 2 : 1);
                     }
                 }
-            } else if (wep.name === `Electromagnet`) { // identical structurally to pulse wave, see above for comments.
-                if (global.tick % 2 == 0) {
-                    for (const i in players[this.sy][this.sx]) {
-                        const p = players[this.sy][this.sx][i];
-                        if (p.color !== this.color) { // only enemies
-                            const d2 = squaredDist(this, p); // distance squared between me and them
-                            if (d2 > square(10 * wep.range)) continue; // if out of range, then don't bother.
-                            const ang = angleBetween(this, p); // angle from the horizontal
-                            const vel = -0.0000001; // this is just symbolic, to jam warp drive
-                            p.vx += Math.cos(ang) * vel; // actually accelerate them nothing, but this jams Warp Drive
-                            p.vy += Math.sin(ang) * vel;
-                            p.gyroTimer = 25; // Make sure the player is drifting or else physics go wonk
-                            p.updatePolars(); // We changed their rectangular velocity.
-                        }
-                    }
-                    for (const i in asts[this.sy][this.sx]) {
-                        const a = asts[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, a);
-                        if (d2 > square(10 * wep.range)) continue; // These 10* are because the user sees 1 pixel as .1 distance whereas server sees it as 1 distance... or something like that
-                        const ang = angleBetween(this, a);
-                        const vel = -1000000 / Math.max(d2, 200000);
-                        a.vx += Math.cos(ang) * vel;
-                        a.vy += Math.sin(ang) * vel;
-                        a.owner = this;
-                    }
-                    for (const i in missiles[this.sy][this.sx]) {
-                        const m = missiles[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, m);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, m);
-                        const vel = -10000000 / Math.max(d2, 2000000);
-                        m.emvx += Math.cos(ang) * vel;
-                        m.emvy += Math.sin(ang) * vel;
-                    }
-                    for (const i in orbs[this.sy][this.sx]) {
-                        const o = orbs[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, o);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, o);
-                        const vel = -25000000 / Math.max(d2, 2000000);
-                        o.vx += Math.cos(ang) * vel;
-                        o.vy += Math.sin(ang) * vel;
-                    }
-                    for (const i in mines[this.sy][this.sx]) {
-                        const m = mines[this.sy][this.sx][i];
-                        const d2 = squaredDist(this, m);
-                        if (d2 > square(10 * wep.range)) continue;
-                        const ang = angleBetween(this, m);
-                        const vel = -5000000 / Math.max(d2, 2000000);
-                        m.vx += Math.cos(ang) * vel;
-                        m.vy += Math.sin(ang) * vel;
-                    }
-                }
+            } else if (wep.name === `Pulse Wave`) { // Velocity-Altering Weapons
+                this.pulseWaveEffect(wep);
+            } else if (wep.name === `Electromagnet`) { // identical structurally to Pulse Wave.
+                this.electromagnetEffect(wep);
             } else if (wep.name === `Turret`) { // Misc Weapons
-                if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
-                    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`Your turret must be closer to the center of the sector!`) });
-                    this.space = false;
-                    return;
-                }
+                // if (this.x < sectorWidth / 4 || this.x > 3 * sectorWidth / 4 || this.y < sectorWidth / 4 || this.y > 3 * sectorWidth / 4) {
+                //    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`Your turret must be closer to the center of the sector!`) });
+                //    this.space = false;
+                //    return;
+                // }
                 if (bases[this.sy][this.sx] != 0) {
-                    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
-                    this.space = false;
-                    return;
+                    let numTurrets = 0;
+                    for (const id in bases[this.sy][this.sx]) numTurrets++;
+                    if (numTurrets > 0) {
+                        this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
+                        this.space = false;
+                        return;
+                    }
                 }
                 const r = Math.random();
                 const b = new Base(r, TURRET, this.sx, this.sy, this.color, this.x, this.y);
                 b.owner = this.name;
-                bases[this.sy][this.sx] = b;
+                bases[this.sy][this.sx][b.id] = b;
+                b.save();
                 this.emit(`chat`, { msg: chatColor(`lime`) + chatTranslate(`You placed a turret! Name it with "/nameturret <name>".`) });
             } else if (wep.name === `Sentry`) {
                 if (bases[this.sy][this.sx] != 0) {
-                    this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
-                    this.space = false;
-                    return;
+                    let numTurrets = 0;
+                    for (const id in bases[this.sy][this.sx]) numTurrets++;
+                    if (numTurrets > 0) {
+                        this.emit(`chat`, { msg: chatColor(`red`) + chatTranslate(`There can only be one turret or sentry in any sector!`) });
+                        this.space = false;
+                        return;
+                    }
                 }
                 const r = Math.random();
                 const b = new Base(r, SENTRY, this.sx, this.sy, this.color, this.x, this.y);
                 b.owner = this.name;
-                bases[this.sy][this.sx] = b;
+                bases[this.sy][this.sx][b.id] = b;
+                b.save();
                 this.emit(`chat`, { msg: chatColor(`lime`) + chatTranslate(`You placed a turret! Name it with "/nameturret <name>".`) });
             } else if (wep.name === `Turbo`) {
                 const isDrifting = (this.e || this.gyroTimer > 0) && (this.a != this.d);
@@ -379,7 +469,7 @@ class Player {
             // If we run out of ammo on a one-use weapon, delete that weapon.
             if (this.ammos[this.equipped] == -2) {
                 this.weapons[this.equipped] = -1;
-                this.save(); // And save, to prevent people from shooting then logging out if they don't succeed with it.
+                if (!this.isBot) this.save(); // And save, to prevent people from shooting then logging out if they don't succeed with it.
             }
 
             sendWeapons(this);
@@ -388,8 +478,8 @@ class Player {
     }
 
     shootEliteWeapon () {
-        if (this.rank < this.ship) return;
-        if (this.ship === 16 || (this.ship == 25 && this.equipped === 0)) { // Elite Raider turbo
+        if (!this.isBot && this.rank < this.ship) return;
+        if (this.ship === 16) { // Elite Raider turbo
             // This effectively just shoots turbo.
             const mult = wepns[21].speed * (((this.e || this.gyroTimer > 0) && this.w && (this.a != this.d)) ? 1.015 : 1.01);
             this.speed *= mult;
@@ -409,10 +499,15 @@ class Player {
             this.shootBullet(39);
         } else if (this.ship === 19 || (this.ship == 25 && this.equipped === 3)) { // r19 healing
             // if (this.disguise > 0) return;
-            if (this.health < this.maxHealth) this.health++;
+            const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+            const extra = (stolenAthena) ? 2 : 1;
+            const healPerc = (stolenAthena) ? 0.01 : 1;
+            if ((this.health + healPerc) < (extra * this.maxHealth)) {
+                this.health = this.health + healPerc;
+            } else this.health = (extra * this.maxHealth);
         } else if (this.ship === 20 || (this.ship === 25 && this.equipped === 4)) { // r20 Built-in hypno ray
             this.shootBlast(41);
-            this.save();
+            if (!this.isBot) this.save();
         } else if ((this.ship === 22 || (this.ship === 25 && this.equipped === 5)) && tick % 10 === 0) { // r22 healing/leech/assimilator beam
             this.shootLeechBeam();
         } else if ((this.ship === 23 || (this.ship === 25 && this.equipped === 6)) && tick % 30 === 0) { // r23 super-minefield
@@ -423,10 +518,28 @@ class Player {
                 this.shootMineSpecific(44);
             }
         } else if ((this.ship === 24 || (this.ship === 25 && this.equipped === 7)) && tick % 60 === 0) { // r24 beehive swarm
-            if (this.ship === 24) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped);
-            else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
-        } else if (this.ship === 25 && this.equipped === 8) { // r25 disguise
-            this.disguise = 5;
+            if (this.ship === 24) {
+                if (this.color === `red` || this.color === `green`) {
+                    spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 1);
+                    if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, this.equipped + 10);
+                } else {
+                    for (let i = 0; i < this.ship * 0.5; i++) {
+                        spawnPortanavesBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+                        if (this.health < 0.25 * this.maxHealth) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 3);
+                    }
+                }
+            } else {
+                if (this.color === `yellow`) spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
+                else spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 25);
+            }
+        } else if (this.ship === 25) { // r25 improved slots
+            if (this.equipped === 0) this.hyperdriveTimer = 15; // Improved r16 "turbo", it's actually a max speed nerf, but an acceleration buff.
+            if (this.equipped === 8) {
+                if (this.color === `yellow` && this.firstDeflector > -1 && this.shield) { // Athena shield recharge
+                    this.disguise = 0;
+                    this.rechargeDeflectorShield();
+                } else this.disguise = 5; // r25 active disguise
+            }
         }
         this.reload(true, 0);
     }
@@ -434,7 +547,20 @@ class Player {
     reload (elite, wepId) {
         if (elite) {
             if (this.ship == 20) this.charge = -wepns[41].charge * 0.95;
-            if (this.ship == 18) this.charge = -wepns[39].charge * 0.95;
+            if (this.ship == 18) {
+                let firingAlone = true;
+                if (this.space) {
+                    const wepId2 = this.weapons[this.equipped];
+                    const wep = wepns[wepId2];
+                    if (!(!wep || !wep.enabled || (this.ammos[this.equipped] == 0))) {
+                        const charge = wep.charge;
+                        const type = wep.type;
+                        const wep18Chrg = wepns[39].charge;
+                        if (type === `Gun` && wep18Chrg <= charge) firingAlone = false;
+                    }
+                }
+                if (firingAlone) this.charge = -wepns[39].charge * 0.95;
+            }
             if (this.ship == 19 && this.charge > -200) this.charge -= 10 / this.energy2;
             if (this.ship == 17) this.charge = -140;
             return;
@@ -467,15 +593,18 @@ class Player {
         const ore = this.iron + this.silver + this.platinum + this.copper;
 
         // In english, your thrust is (this.thrust = your ship's thrust * thrust upgrade). Multiply by 1.8. Double if using supercharger. Reduce if carrying lots of ore. If drifting, *=1.6 if elite raider, *=1.45 if not.
-        const newThrust = this.thrust * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer < 0 ? 1 : 0.2);
+        const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+        const newThrust = this.thrust * ((stolenAthena) ? 0.5 : 1) * (this.superchargerTimer > 0 ? 2 : 1) * 1.8 / ((ore / this.capacity + 3) / 3.5) * ((amDrifting && this.w && (this.a != this.d)) ? (this.ship == 16 ? 1.6 : 1.45) : 1) * (this.empTimer < 0 ? 1 : 0.3);
 
         // Reusable Trig
         const ssa = Math.sin(this.angle); const ssd = Math.sin(this.driftAngle); const csa = Math.cos(this.angle); const csd = Math.cos(this.driftAngle);
 
         this.vx = csd * this.speed; // convert polars to rectangulars
         this.vy = ssd * this.speed;
-        this.vx *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88;
-        this.vy *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88; // Air resistance
+        if (this.hyperdriveTimer <= 0) { // Air resistance doesn't make sense in hyperspace since between one tick and another we set the speed ignoring all of this
+            this.vx *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88;
+            this.vy *= this.empTimer < 0 ? ((amDrifting && this.w && (Math.abs(this.cva) > this.va * 0.999)) ? 0.94 : 0.92) : 0.88; // Air resistance
+        }
 
         if (this.w) { // Accelerate!
             this.vx += csa * newThrust;
@@ -486,7 +615,7 @@ class Player {
             this.vy -= ssa * newThrust / 2;
         }
 
-        this.updatePolars();// convert back to polars
+        this.updatePolars(); // convert back to polars
 
         if (!amDrifting) { // Terraced angular decelerationy stuff to continuously match driftAngle (angle of motion) to the actual angle the ship is pointing
             this.noDrift++;
@@ -516,6 +645,7 @@ class Player {
         if (this.d) angAccel += (this.va - this.cva / (amDrifting ? 1.5 : 1)) / 3; // ternary reduces angular air resistance while drifting
 
         if (this.superchargerTimer > 0) angAccel *= 2;
+        if (stolenAthena) angAccel *= 0.4;
         this.cva += angAccel; // Update angular velocity from thrust.
 
         if (!this.d && !this.a && !amDrifting) this.cva /= 2; // When not drifting, apply air resistance to angular velocity.
@@ -537,24 +667,30 @@ class Player {
         this.checkMineCollision();
     }
 
-    checkMineCollision () {
-        for (const i in mines[this.sy][this.sx]) {
-            const m = mines[this.sy][this.sx][i];
-            if (m.color != this.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
-                if (m.wepnID != 16 && squaredDist(m, this) < square(16 + ships[this.ship].width)) {
-                    this.dmg(m.dmg, m); // damage me
-                    if (m.wepnID === 17) this.EMP(70); // emp mine
+    checkMineCollisionSector (that, newy, newx, lsy, lsx) {
+        const fullmines = get9SectorDict(mines, lsx, lsy);
+        for (const i in fullmines) {
+            const m = fullmines[i];
+            if (m !== undefined && m.color != that.color && m.wepnID != 32 && m.wepnID != 44) { // enemy mine and not either impulse or campfire
+                if (m.wepnID != 16 && squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(16 + ships[that.ship].width)) {
+                    that.dmg(m.dmg, m); // damage me
+                    if (m.wepnID === 17) that.EMP(70 * 2); // emp mine
                     m.die();
                     break;
-                } else if (m.wepnID == 16 && squaredDist(m, this) < square(wepns[m.wepnID].range + ships[this.ship].width)) { // TODO range * 10?
+                } else if (m.wepnID == 16 && squaredGlobalDist(m, that, sectorWidth, sectorWidth, mapSz) < square(wepns[m.wepnID].range + ships[that.ship].width)) {
                     const r = Math.random(); // Laser Mine
-                    const beam = new Beam(m.owner, r, m.wepnID, this, m); // m.owner is the owner, m is the origin location
-                    beams[this.sy][this.sx][r] = beam;
-                    sendAllSector(`sound`, { file: `beam`, x: m.x, y: m.y }, m.sx, m.sy);
+                    const beam = new Beam(m.owner, r, m.wepnID, that, m); // m.owner is the owner, m is the origin location
+                    beams[lsy][lsx][r] = beam;
+                    apply9SectorCall(sendAllSector, `sound`, { file: `beam`, x: newx, y: newy }, lsx, lsy);
                     m.die();
                 }
             }
         }
+    }
+
+    checkMineCollision (origin = undefined) {
+        if (origin === undefined) origin = this;
+        this.checkMineCollisionSector(origin, origin.y, origin.x, origin.sy, origin.sx);
     }
 
     testSectorChange () {
@@ -564,7 +700,8 @@ class Player {
 
         if (this.x > sectorWidth) { // check each edge of the 4 they could bounce on
             this.x = 1;
-            if (this.guest || (trainingMode && this.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
+            // if (this.guest || (trainingMode && this.isNNBot)) { // guests cant cross borders, nobody can go outside the galaxy
+            if ((trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.x = (sectorWidth - 5);
                 this.driftAngle = this.angle = 3.1415 - this.angle;
@@ -575,7 +712,8 @@ class Player {
             }
         } else if (this.y > sectorWidth) {
             this.y = 1;
-            if ((this.sy == mapSz - 1 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
+            // if ((this.sy == mapSz - 1 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
+            if ((this.sy == mapSz - 1 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || (trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.y = (sectorWidth - 5);
                 this.driftAngle = this.angle = -this.angle;
@@ -589,7 +727,8 @@ class Player {
             }
         } else if (this.x < 0) {
             this.x = (sectorWidth - 1);
-            if (this.guest || (trainingMode && this.isNNBot)) {
+            // if (this.guest || (trainingMode && this.isNNBot)) {
+            if ((trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.x = 5;
                 this.driftAngle = this.angle = 3.1415 - this.angle;
@@ -600,7 +739,8 @@ class Player {
             }
         } else if (this.y < 0) {
             this.y = (sectorWidth - 1);
-            if ((this.sy == 0 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
+            // if ((this.sy == 0 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || this.guest || (trainingMode && this.isNNBot)) {
+            if ((this.sy == 0 && !(this.tag === `B` && this.health > this.maxHealth - 1)) || (trainingMode && this.isNNBot)) {
                 giveBounce = true;
                 this.y = 5;
                 this.driftAngle = this.angle = -this.angle;
@@ -615,7 +755,7 @@ class Player {
         }
         if (giveBounce) this.checkRandomAchievements(true, true, false);
 
-        if (this.hyperdriveTimer <= 0 && this.borderJumpTimer > 100) { // damage for running away from fights, hyperdrive won't automatically trigger it
+        if (globalOriginSX == 0 && globalEndSX == 0 && globalOriginSY == 0 && globalEndSY == 0 && this.hyperdriveTimer <= 0 && this.borderJumpTimer > 100) { // damage for running away from fights, hyperdrive won't automatically trigger it. If sector modes are set so people can fire and see through sectors, then this won't apply, either.
             this.health = (this.health - 1) * 0.9 + 1;
             this.borderJumpTimer = 50;
         }
@@ -655,17 +795,27 @@ class Player {
             else if (this.sy == mapSz - 1 && (this.cornersTouched & 8) != 8) this.cornersTouched += 8;
         }
 
-        if ((this.sx % 3 == 2 && this.sy == 4) && this.quest.type === `Secret3`) {
-            this.spoils(`money`, this.quest.exp); // reward the player
-            this.spoils(`experience`, Math.floor(this.quest.exp / 4000));
+        if (this.quest != 0 && this.quest.type === `Secret3`) {
+            let doneQuest = false;
+            const leQuestMoney = this.quest.exp;
+            const leQuestXP = Math.floor(this.quest.exp / (4000 * 4));
+            for (const i in vorts[this.sy][this.sx]) {
+                const vort = vorts[this.sy][this.sx][i];
+                if (vort !== undefined && (!vort.isWormHole()) && (vort.owner === undefined || vort.owner === 0)) {
+                    doneQuest = true;
+                    this.spoils(`money`, leQuestMoney); // reward the player
+                    this.spoils(`experience`, Math.floor(leQuestXP));
+                }
+            }
+            if (doneQuest) {
+                this.hasPackage = false;
+                if ((this.questsDone & 8) == 0) this.questsDone += 8;
 
-            this.hasPackage = false;
-            if ((this.questsDone & 8) == 0) this.questsDone += 8;
+                this.quest = 0; // reset quest and tell the client
+                this.emit(`quest`, { quest: this.quest, complete: true });
 
-            this.quest = 0; // reset quest and tell the client
-            this.emit(`quest`, { quest: this.quest, complete: true });
-
-            this.checkKillAchievements(true, false, false);
+                this.checkKillAchievements(true, false, false);
+            }
         }
 
         if (this.quest != 0 && this.quest.type === `Secret` && this.sx == this.quest.sx && this.sy == this.quest.sy) { // advance in secret quest to phase 2
@@ -710,8 +860,6 @@ class Player {
 
         this.checkQuestStatus(true); // lots of quests are planet based
 
-        if (this.guest) return; // You must create an account in the base before you can claim planets!
-
         if (typeof this.quest !== `undefined` && this.quest != 0 && this.quest.type === `Secret2` && this.quest.sx == this.sx && this.quest.sy == this.sy) { // move on to last secret stage
             // compute whether there are any unkilled enemies in this sector
             let cleared = true;
@@ -722,7 +870,15 @@ class Player {
                     break;
                 }
             }
-            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].baseType != DEADBASE) cleared = false;// also check base is dead
+            if (bases[this.sy][this.sx] != 0) {
+                for (const id in bases[this.sy][this.sx]) {
+                    const base = bases[this.sy][this.sx][id];
+                    if (base.baseType != DEADBASE) { // also check base is dead
+                        cleared = false;
+                        break;
+                    }
+                }
+            }
 
             if (cleared) { // 2 ifs needed, don't merge this one with the last one
                 this.hasPackage = true;
@@ -731,16 +887,26 @@ class Player {
             }
         }
 
-        if (p.color === this.color || cool > 0) return;
-        if (p.color === `yellow`) {
+        if (cool > 0) return;
+        if (p.color === `yellow` && this.color !== `yellow`) {
             chatAll(`Planet ${p.name} colonized by ${this.nameWithColor()}!`); // Colonizing planets. Since this will happen once per planet it will not be spammy
+        } else if (p.color !== `yellow` && this.color === `yellow`) {
+            chatAll(`Planet ${p.name} evacuated by ${this.nameWithColor()} presence!`); // Colonizing planets. Since this will happen once per planet it will not be spammy except if you have pirates fighting
         }
         // else chatAll('Planet ' + p.name + ' claimed by ' + this.nameWithColor() + "!"); This gets bothersome and spammy when people fight over a planet
-        this.refillAllAmmo();
+        if (p.color !== this.color || this.planetCooldown <= 0) {
+            this.refillAllAmmo();
+            this.planetCooldown = 300;
+            if (this.color === `yellow` && !this.isBot) this.save();
+        }
         p.color = this.color; // claim
         p.owner = this.name;
 
-        for (const i in players[this.sy][this.sx]) players[this.sy][this.sx][i].getAllPlanets();// send them new planet data
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
+            if (p !== undefined) p.getAllPlanets(); // send them new planet data
+        }
 
         this.emit(`planetMap`, { x: p.x, y: p.y, sx: p.sx, sy: p.sy });
 
@@ -780,7 +946,8 @@ class Player {
 
             const bullet = new Bullet(this, r, currWep, bAngle, i * 2 - 1);
             bullets[this.sy][this.sx][r] = bullet;
-            sendAllSector(`sound`, { file: (currWep == 5 || currWep == 6 || currWep == 39) ? `minigun` : `shot`, x: this.x, y: this.y }, this.sx, this.sy);
+            apply9SectorCall(sendAllSector, `sound`, { file: (currWep == 5 || currWep == 6 || currWep == 39) ? `minigun` : `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+            // sendAllSector(`sound`, { file: (currWep == 5 || currWep == 6 || currWep == 39) ? `minigun` : `shot`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
         }
     }
 
@@ -789,7 +956,8 @@ class Player {
         const bAngle = this.angle;
         const missile = new Missile(this, r, aWeapon, bAngle);
         missiles[this.sy][this.sx][r] = missile;
-        sendAllSector(`sound`, { file: `missile`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `missile`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMissile () {
@@ -800,14 +968,16 @@ class Player {
         const r = Math.random();
         const orb = new Orb(this, r, this.weapons[this.equipped]);
         orbs[this.sy][this.sx][r] = orb;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMineSpecific (aWeapon) {
         const r = Math.random();
         const mine = new Mine(this, r, aWeapon);
         mines[this.sy][this.sx][r] = mine;
-        sendAllSector(`mine`, { x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `mine`, { x: this.x, y: this.y }, this.sx, this.sy);
+        // sendAllSector(`mine`, { x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     shootMine () {
@@ -824,8 +994,10 @@ class Player {
         this.shootMineSpecific(this.weapons[this.equipped]);
     }
 
-    shootLeechBeam () {
-        const ox = this.x; const oy = this.y; // Current emitter coordinates
+    shootLeechBeam (origin = undefined, restricted = false) {
+        if (origin === undefined) origin = this;
+        const ox = origin.x; const oy = origin.y; // Current emitter coordinates
+
         let nearBEnemy = 0; // enemy turret target, which we will compute
         let nearBFriendly = 0; // friendly turret target, which we will compute
         let nearPFriendly = 0; // friendly ship target, which we will compute
@@ -834,34 +1006,56 @@ class Player {
         const range2 = square(100 * 10); // Range 100
 
         // base
-        const b = bases[this.sy][this.sx];
-        if ((b != 0) && b.baseType != DEADBASE && b.color !== this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBEnemy = b;
-        if ((b != 0) && b.baseType != DEADBASE && b.color === this.color && (hypot2(b.x, ox, b.y, oy) < range2)) nearBFriendly = b;
+        const fullbases = get9SectorDict(bases, origin.sx, origin.sy);
+        let closestFBaseD = -1;
+        let closestEBaseD = -1;
+        for (const id in fullbases) {
+            const b = fullbases[id];
+            if (b !== undefined && b !== 0 && b.baseType !== DEADBASE) {
+                const dist2 = squaredGlobalDist(origin, b, sectorWidth, sectorWidth, mapSz);
+                if (dist2 < range2) {
+                    if (b.color !== origin.color && (nearBEnemy == 0 || dist2 < closestEBaseD)) {
+                        nearBEnemy = b;
+                        closestEBaseD = dist2;
+                    } else if (b.color === origin.color && (nearBFriendly == 0 || dist2 < closestFBaseD)) {
+                        nearBFriendly = b;
+                        closestFBaseD = dist2;
+                    }
+                }
+            }
+        }
 
         // search players
-        for (const i in players[this.sy][this.sx]) {
-            const p = players[this.sy][this.sx][i];
-            if (!(p.disguise > 0 || this.id == p.id)) { // You can only heal decloaked teammates.
-                const dx = p.x - ox; const dy = p.y - oy;
-                const dist2 = dx * dx + dy * dy;
-
+        const fullplayers = get9SectorDict(players, origin.sx, origin.sy);
+        let closestFshipD = -1;
+        let closestEshipD = -1;
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
+            if (p !== undefined && (!(p.disguise > 0 || this.id == p.id))) { // You can only heal decloaked teammates.
+                const dist2 = squaredGlobalDist(origin, p, sectorWidth, sectorWidth, mapSz);
                 if (dist2 < range2) {
-                    if (p.color == this.color) {
-                        if (nearPFriendly == 0 || dist2 < square(nearPFriendly.x - ox) + square(nearPFriendly.y - oy)) nearPFriendly = p;
-                    } else {
-                        if (nearPEnemy == 0 || dist2 < square(nearPEnemy.x - ox) + square(nearPEnemy.y - oy)) nearPEnemy = p;
+                    if (p.color !== origin.color && (nearPEnemy == 0 || dist2 < closestEshipD)) {
+                        nearPEnemy = p;
+                        closestEshipD = dist2;
+                    } else if (p.color === origin.color && (nearPFriendly == 0 || dist2 < closestFshipD)) {
+                        nearPFriendly = p;
+                        closestFshipD = dist2;
                     }
                 }
             }
         }
 
         // search asteroids
-        for (const i in asts[this.sy][this.sx]) {
-            const a = asts[this.sy][this.sx][i];
-            if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
-            const dx = a.x - ox; const dy = a.y - oy;
-            const dist2 = dx * dx + dy * dy;
-            if (dist2 < range2 && (nearA == 0 || dist2 < square(nearA.x - ox) + square(nearA.y - oy))) nearA = a;
+        const fullasts = get9SectorDict(asts, origin.sx, origin.sy);
+        let closestDis = -1;
+        for (const i in fullasts) {
+            const a = fullasts[i];
+            if (a === undefined || a.hit) continue;
+            const dist2 = squaredGlobalDist(origin, a, sectorWidth, sectorWidth, mapSz);
+            if (dist2 < range2 && (nearA == 0 || dist2 < closestDis)) {
+                nearA = a;
+                closestDis = dist2;
+            }
         }
 
         if (nearA != 0) {
@@ -912,12 +1106,12 @@ class Player {
                 const beameB = new Beam(this, reB, 8, nearBEnemy, this); // Laser beam
                 beams[this.sy][this.sx][reB] = beameB;
 
-                if (this.color === `green` && tick % 750 == 0) { // Assimilation beam
+                if (((this.color === `green` || (this.color === `yellow` && !this.isBot)) && tick % 750 == 0) || (this.color === `yellow` && this.isBot && (tick % (5 * tickRate)) == 0)) { // Assimilation beam
                     nearBEnemy.assimilate(1000, this);
                     const beameB2 = new Beam(this, reB, 35, nearBEnemy, this); // Jammer...
                     beams[this.sy][this.sx][reB] = beameB2;
                     this.dmg(-73, this);
-                    sendAllSector(`sound`, { file: `assimilation`, x: ox, y: oy }, this.sx, this.sy);
+                    apply9SectorCall(sendAllSector, `sound`, { file: `assimilation`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
                 }
             }
         }
@@ -927,57 +1121,92 @@ class Player {
             nearBFriendly.unassimilate(); // Quickly cures the assimilation
             nearBFriendly.EMP(60); // Rebooting the systems after the boarding attempt.
         }
-
-        sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: ox, y: oy }, this.sx, this.sy);
     }
 
-    shootBeam (origin, restricted) { // restricted is for recursive calls from quarriers
+    findBeamTarget (that, wep, origin, restricted, oldNearP) {
         const ox = origin.x; const oy = origin.y;
-        let nearP = 0; // target, which we will compute
-        const range2 = square(wepns[this.weapons[this.equipped]].range * 10);
+        const osx = origin.sx; const osy = origin.sy;
+
+        let nearP = oldNearP; // target, which we will compute (initially 0)
+        let nearPdOld = -1; // Unachievable
+        if ((nearP !== 0) && nearPdOld === -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+        const range2 = square(wepns[wep].range * 10);
 
         // base
         if (!restricted) {
-            if (this.weapons[this.equipped] == 7 || this.weapons[this.equipped] == 8 || this.weapons[this.equipped] == 9 || this.weapons[this.equipped] == 45) {
-                const b = bases[this.sy][this.sx];
-                if (b != 0 && ((b.color == this.color) == (this.weapons[this.equipped] == 45)) && !(this.weapons[this.equipped] == 45 && b.health > b.maxHealth * 0.9995) && b.baseType != DEADBASE && hypot2(b.x, ox, b.y, oy) < range2) nearP = b;
+            if ((wep == 7 || wep == 8 || wep == 9 || wep == 35 || wep == 45)) {
+                const fullbases = get9SectorDict(bases, origin.sx, origin.sy);
+                for (const id in fullbases) {
+                    const b = fullbases[id];
+                    if (b !== undefined && b !== 0 && ((b.color == that.color) == (wep == 45)) && !(wep == 45 && b.health > b.maxHealth * 0.9995) && b.baseType != DEADBASE) {
+                        const dist2 = squaredGlobalDist(origin, b, sectorWidth, sectorWidth, mapSz);
+                        if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
+                            nearP = b;
+                            nearPdOld = dist2;
+                        }
+                    }
+                }
             }
-        }
 
-        // search players
-        if (!restricted) {
-            for (const i in players[this.sy][this.sx]) {
-                const p = players[this.sy][this.sx][i];
-                if (p.ship != 17 && (this.weapons[this.equipped] == 26 || this.weapons[this.equipped] == 30)) continue; // elite quarrier is affected
-                if (((p.color == this.color) != (this.weapons[this.equipped] == 45)) || p.disguise > 0 || this.id == p.id) continue;
-                if (this.weapons[this.equipped] == 45 && p.health > p.maxHealth * 0.9995) continue;
-                const dx = p.x - ox; const dy = p.y - oy;
-                const dist2 = dx * dx + dy * dy;
-                if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = p;
+            // search players
+            const fullplayers = get9SectorDict(players, origin.sx, origin.sy);
+            for (const i in fullplayers) {
+                const p = fullplayers[i];
+                if (p === undefined || (p.ship != 17 && (wep == 26 || wep == 30))) continue; // elite quarrier is affected
+                if (((p.color === that.color) != (wep == 45)) || p.disguise > 0 || that.id == p.id) continue;
+                if (wep == 45 && p.health > p.maxHealth * 0.9995) continue;
+                const dist2 = squaredGlobalDist(origin, p, sectorWidth, sectorWidth, mapSz);
+                if (((nearP != 0)) && nearPdOld == -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+                if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
+                    nearP = p;
+                    nearPdOld = dist2;
+                }
             }
         }
 
         // search asteroids
-        if (nearP == 0 && this.weapons[this.equipped] != 35 && this.weapons[this.equipped] != 31 && this.weapons[this.equipped] != 45) {
-            for (const i in asts[this.sy][this.sx]) {
-                const a = asts[this.sy][this.sx][i];
-                if (a.sx != this.sx || a.sy != this.sy || a.hit) continue;
-                const dx = a.x - ox; const dy = a.y - oy;
-                const dist2 = dx * dx + dy * dy;
-                if (dist2 < range2 && (nearP == 0 || dist2 < square(nearP.x - ox) + square(nearP.y - oy))) nearP = a;
+        if (nearP == 0 && wep != 35 && wep != 31 && wep != 45) {
+            const fullasts = get9SectorDict(asts, origin.sx, origin.sy);
+            for (const i in fullasts) {
+                const a = fullasts[i];
+                if (a === undefined || a.hit) continue;
+                const dist2 = squaredGlobalDist(origin, a, sectorWidth, sectorWidth, mapSz);
+                if (((nearP != 0)) && nearPdOld == -1) {
+                    nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+                }
+                if (dist2 < range2 && (nearP == 0 || dist2 < nearPdOld)) {
+                    nearP = a;
+                    nearPdOld = dist2;
+                }
             }
         }
+        return nearP;
+    }
 
+    shootBeam (origin, restricted) { // restricted is for recursive calls from quarriers
+        const ox = origin.x; const oy = origin.y;
+        const osx = origin.sx; const osy = origin.sy;
+
+        let wep = this.weapons[this.equipped];
+
+        let nearP = this.findBeamTarget(this, wep, origin, restricted, 0); // target, which we will compute
         if (nearP == 0) return;
 
+        let nearPdOld = -1; // Unachievable
+        if (((nearP != 0)) && nearPdOld == -1) nearPdOld = squaredGlobalDist(origin, nearP, sectorWidth, sectorWidth, mapSz);
+
+        const range2 = square(wepns[wep].range * 10);
+
         // gyrodynamite
-        if (this.weapons[this.equipped] == 31 && nearP.sx == this.sx && nearP.sy == this.sy && nearP.color != this.color) {
+        // if (this.weapons[this.equipped] == 31 && nearP.sx == this.sx && nearP.sy == this.sy && nearP.color != this.color) {
+        if (this.weapons[this.equipped] == 31 && nearP.color != this.color) {
             nearP.gyroTimer = 250;
             nearP.emit(`gyro`, { t: 250 });
         }
 
         // elite quarrier
-        if (this.ship == 17 && nearP != 0 && nearP.type === `Asteroid`) {
+        if (this.ship == 17 && nearP !== 0 && nearP.type === `Asteroid`) {
             nearP.hit = true;
             for (let i = 0; i < 3; i++) this.shootBeam(nearP, true);
         }
@@ -985,17 +1214,18 @@ class Player {
         const r = Math.random();
         const beam = new Beam(this, r, this.weapons[this.equipped], nearP, origin);
         beams[this.sy][this.sx][r] = beam;
-        sendAllSector(`sound`, { file: `beam`, x: ox, y: oy }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: osx, sy: osy, x: ox, y: oy }, this.sx, this.sy);
     }
 
     shootBlast (currWep) {
         const r = Math.random();
         const blast = new Blast(this, r, currWep);
         blasts[this.sy][this.sx][r] = blast;
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     async die (b) {
+        apply9SectorCall(sendAllSector, `sound`, { file: (this.ship < 9 ? `boom` : `bigboom`), sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: Math.cos(this.angle) * this.speed, dy: Math.sin(this.angle) * this.speed }, this.sx, this.sy);
     }
 
     dmg (d, origin) {
@@ -1007,10 +1237,17 @@ class Player {
             this.health -= 10000;
         }
 
-        if (this.ship === 25 && this.equipped === 9) {
-            this.shield = true;
-            d = 0;
-            this.charge = 0;
+        let deflectorFactorMult = 1;
+        let deflectDown = true;
+        if (this.ship === 25) {
+            if (this.equipped === 9 && this.color !== `yellow`) {
+                this.shield = true;
+                d = 0;
+                this.charge = 0;
+            } else if (this.color === `yellow`) {
+                deflectorFactorMult = 10;
+                deflectDown = this.isDeflectorDown();
+            }
         }
 
         // If player is not EMP'd, has navigational shield, and they are hit either by an asteroid or laser beam. then activate navigational shield perks.
@@ -1024,13 +1261,35 @@ class Player {
         d *= (this.superchargerTimer > 1 ? 2 : 1); // supercharger inflicts double damage
         if ((this.ship >= 19) && d < 1.5 && d > 0) d = 0; // Too weak attacks won't strain the hull of the ship.
 
-        this.health -= d;
-        if (this.health > this.maxHealth) this.health = this.maxHealth;
-        if (this.health < 0) this.die(origin);
+        let appDmg = d;
+        if (deflectorFactorMult != 1) appDmg /= (deflectorFactorMult * deflectorFactorMult);
+        if (deflectDown) this.health -= appDmg;
+        else {
+            this.rechargeDeflectorShield(-appDmg * deflectorFactorMult * deflectorFactorMult * deflectorFactorMult);
+            deflectDown = this.isDeflectorDown();
+            if (deflectDown) this.health -= appDmg;
+        }
 
-        if (d > 0) note(`-${Math.floor(d)}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
-        if (d === 0) note(`No dmg`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
-        if (d < 0) note(`+${Math.floor(Math.abs(d))}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
+        const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+        const extra = (stolenAthena) ? 2 : 1;
+        if (this.health > (extra * this.maxHealth)) {
+            this.health = (extra * this.maxHealth);
+        }
+
+        if (this.health < 0) {
+            if (this.ship === 24) { // r24 beehive swarm
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 2);
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 12);
+                spawnPlayerBot(this.sx, this.sy, this.x, this.y, this.color, true, 22);
+            }
+            this.die(origin);
+        }
+
+        const shieldHoldInfo = (deflectDown) ? `` : `(${this.currDeflectorPower / deflectorFactorMult}/${this.maxDeflectorPower / deflectorFactorMult})`;
+
+        if (d > 0) note(`-${Math.floor(d)}${shieldHoldInfo}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "-8" pops up on screen to mark 8 hp was lost (for all players)
+        if (d === 0) note(`No dmg${shieldHoldInfo}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "No dmg" pops up on screen to mark the attack didn't do damage (for all players)
+        if (d < 0) note(`+${Math.floor(Math.abs(d))}${shieldHoldInfo}`, this.x, this.y - 64, this.sx, this.sy); // e.g. "+8" pops up on screen to mark 8 hp were healed (for all players)
         this.emit(`dmg`, {});
         return this.health < 0;
     }
@@ -1047,10 +1306,10 @@ class Player {
 
     save () {}
 
-    onKill (p) {
+    onKill (p, temporary = 0) {
     // kill streaks
     // Don't award for guest kills
-        if (!p.guest && p.color !== this.color) {
+        if (!p.guest && p.color !== this.color && temporary >= 0) {
             this.killStreak++;
             this.killStreakTimer = 750;// 30s
         }
@@ -1059,13 +1318,14 @@ class Player {
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
                 if (p.color !== this.color) {
-                    if (p.isBot) p.EMP(100); // Original 70
-                    else p.EMP(40); // Temporary measure until this EMP nonsense if fixed
+                    p.EMP(111);
                 }
             }
-            if (bases[this.sy][this.sx] != 0 && bases[this.sy][this.sx].color !== this.color && bases[this.sy][this.sx].baseType != DEADBASE) {
-                const b = bases[this.sy][this.sx];
-                b.EMP(150);
+            if (bases[this.sy][this.sx] != 0) {
+                for (const id in bases[this.sy][this.sx]) {
+                    const b = bases[this.sy][this.sx][id];
+                    if (b.color !== this.color && b.baseType != DEADBASE) b.EMP(150);
+                }
             }
             this.health += Math.min(Math.max(5, this.maxHealth * 0.03), this.maxHealth - this.health);
         }
@@ -1088,34 +1348,89 @@ class Player {
         this.speed = Math.sqrt(square(this.vy) + square(this.vx));
     }
 
-    refillAmmo (i) {
-        if (typeof wepns[this.weapons[i]] !== `undefined`) this.ammos[i] = wepns[this.weapons[i]].ammo;
+    refillAmmo (i, aRefill = true) {
+        if (this.firstDeflector > -1 && i == this.firstDeflector) {
+            this.rechargeDeflectorShield(((aRefill) ? (this.maxDeflectorPower / 20) : 0));
+        } else if (typeof wepns[this.weapons[i]] !== `undefined`) {
+            if (aRefill || (wepns[this.weapons[i]].ammo < 0 && this.ammos[i] >= 0) || (wepns[this.weapons[i]].ammo >= 0 && this.ammos[i] < 0) || (wepns[this.weapons[i]].ammo < this.ammos[i])) this.ammos[i] = wepns[this.weapons[i]].ammo;
+        }
     }
 
-    refillAllAmmo () {
+    refillAllAmmo (aRefill = true) {
         let ammoHasChanged = false;
         for (let i = 0; i < 10; i++) {
             const beforeAmmo = this.ammos[i];
-            this.refillAmmo(i);
+            this.refillAmmo(i, aRefill);
             if (beforeAmmo != this.ammos[i]) ammoHasChanged = true;
         }
         if (!ammoHasChanged) return;
         sendWeapons(this);
-        this.strongLocal(`Ammo Replenished!`, this.x, this.y + 256);
+        this.strongLocal(`Ammo Replenished!`, this.x, this.y + 256, this.sx, this.sy);
     }
 
     testAfk () {
         return false;
     }
 
-    navigationalShieldCount () { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
+    generatorCount () { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
+        let generatorNum = 0;
+        if (this.ship >= wepns[20].level) { // gotta have sufficiently high ship
+            let maxSlots = 10;
+            for (let slot = 0; slot < maxSlots; slot++) if (this.weapons[slot] == 20) generatorNum++;
+        }
+
+        this.generators = generatorNum;
+    }
+
+    navigationalShieldCount (deflector = false) { // Checks if the player has a navigational shield. This item does not stack positive effects, but is left like this in case we want to
         let navShield = 0;
+        let maxDeflectorPower = 0;
+        let doneCheck = -1;
         if (this.ship >= wepns[49].level) { // gotta have sufficiently high ship
             let maxSlots = 10;
-            for (let slot = 0; slot < maxSlots; slot++) if (this.weapons[slot] == 49) navShield++;
+            for (let slot = 0; slot < maxSlots; slot++) {
+                if (this.weapons[slot] == 49) {
+                    navShield++;
+                    const stolenAthena = (this.ship == 25 && this.color === `yellow`);
+                    if (stolenAthena && (doneCheck <= -1)) {
+                        doneCheck = slot;
+                    }
+                }
+            }
         }
 
         this.navigationalShield = navShield;
+
+        this.firstDeflector = doneCheck;
+
+        if (this.firstDeflector > -1) {
+            this.maxDeflectorPower = Math.floor(navShield * this.maxHealth * 2500 * (this.energy2 + 1));
+            if (this.currDeflectorPower < 0) {
+                this.currDeflectorPower = this.maxDeflectorPower;
+                this.ammos[this.firstDeflector] = this.currDeflectorPower;
+            }
+            sendWeapons(this);
+        } else this.maxDeflectorPower = 0;
+    }
+
+    rechargeDeflectorShield (setPower = undefined) {
+        if (this.firstDeflector > -1 && this.ammos[this.firstDeflector] !== undefined) {
+            if (this.ammos[this.firstDeflector] < 0) {
+                this.ammos[this.firstDeflector] = this.maxDeflectorPower;
+            }
+            if (this.ammos[this.firstDeflector] > -2) {
+                let shielStr = this.currDeflectorPower + ((setPower === undefined) ? Math.floor(this.energy2) : Math.floor(setPower));
+                if (shielStr > this.maxDeflectorPower) shielStr = this.maxDeflectorPower;
+                if (shielStr < 0) shielStr = 0;
+                this.currDeflectorPower = shielStr;
+                this.ammos[this.firstDeflector] = shielStr;
+            }
+            sendWeapons(this);
+        }
+    }
+
+    isDeflectorDown () {
+        return !(this.firstDeflector > -1 && this.currDeflectorPower > 0);
     }
 
     spoils (type, amt) { /* gives you something. Called wenever you earn money / exp / w/e */ }
@@ -1124,8 +1439,8 @@ class Player {
         return `${chatColor(this.color)}${this.name}${chatColor(`yellow`)}`;
     }
 
-    noteLocal (msg, x, y) {}
-    strongLocal (msg, x, y) {}
+    noteLocal (msg, x, y, sx = undefined, sy = undefined, spread = false) {}
+    strongLocal (msg, x, y, sx = undefined, sy = undefined, spread = false) {}
 
     botPlay () {}
     emit (a, b) {}

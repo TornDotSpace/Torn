@@ -55,23 +55,37 @@ def __init__():
     )
 
     # Configure default CORS settings.
+
     cors = aiohttp_cors.setup(
         app,
         defaults={
             "*": aiohttp_cors.ResourceOptions(
+                # allow_origins="*:*",  # TO-DO A TEST LINE
+                # allow_origin="*:*",  # TO-DO A TEST LINE
                 allow_credentials=True,
                 expose_headers="*",
                 allow_headers="*",
-            )
+                # allow_methods=["POST", "PUT", "OPTIONS"],
+            ),
+            "*:*": aiohttp_cors.ResourceOptions(
+                # allow_origins="*:*",  # TO-DO A TEST LINE
+                # allow_origin="*:*",  # TO-DO A TEST LINE
+                allow_credentials=True,
+                expose_headers="*",
+                allow_headers="*",
+                # allow_methods=["POST", "PUT", "OPTIONS"],
+            ),
         },
     )
 
     for route in list(app.router.routes()):
         cors.add(route)
+
     print("*** Initialization Done ***")
-    asyncio.get_event_loop().create_task(do_expire_task(cache))
-    asyncio.get_event_loop().run_until_complete(web.run_app(app))
-    asyncio.get_event_loop().run_forever()
+    loopyThing = asyncio.get_event_loop()
+    loopyThing.create_task(do_expire_task(cache))
+    loopyThing.run_until_complete(web.run_app(app))
+    loopyThing.run_forever()
 
 
 __init__()

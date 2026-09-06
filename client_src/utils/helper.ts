@@ -84,7 +84,7 @@ const getRainbowColor = () => {
  * @returns RGB color string.
  */
 const metalToColor = (i: number) => {
-    const colorArray = [`#d44`, `#eef`, `#90f`, `#960`];
+    const colorArray = [`#d44`, `#eef`, `#960`, `#90f`];
     return colorArray[i];
 };
 
@@ -93,7 +93,7 @@ const metalToColor = (i: number) => {
  * @returns Uncapitalized english metal name.
  */
 const metalToName = (i: number) => {
-    const nameArray = [`iron`, `silver`, `platinum`, `copper`];
+    const nameArray = [`iron`, `silver`, `copper`, `platinum`];
     return nameArray[i];
 };
 
@@ -102,7 +102,7 @@ const metalToName = (i: number) => {
  * @returns Number.
  */
 const metalToQuantity = (i: number) => {
-    const nameArray = [iron, silver, platinum, copper];
+    const nameArray = [iron, silver, copper, platinum];
     return nameArray[i];
 };
 
@@ -176,9 +176,10 @@ const cosLow = (x: number) => sinLow((Math.PI / 2) + x);
  * @param green The value of green in the RGB string.
  * @returns A numerical representation of that value.
  */
-const colorSelect = (col: string, red: number, blue: number, green: number) => {
+const colorSelect = (col: string, red: number, blue: number, green: number, yellow?: number) => {
     if (col === `red`) return red;
     else if (col === `blue`) return blue;
+    else if (col === `yellow` && yellow !== undefined) return yellow;
     else return green;
 };
 

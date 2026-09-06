@@ -26,25 +26,35 @@ global.colorCircumfix = `\`c`;
 global.weaponCircumfix = `\`w`;
 global.translateCircumfix = `\`t`;
 
+// some global sector handling mechanics
+global.globalOriginSX = -1; // We calculate stuff from 1 sector West of ours...
+global.globalEndSX = 1; // ... to 1 sector East of us.
+global.globalOriginSY = -1; // We calculate stuff from 1 sector North of ours...
+global.globalEndSY = 1; // ... to 1 sector South of us.
+
 // some global FINAL game mechanics
 global.eloVolatility = 30;
 global.bulletWidth = 16; // collision radius
-global.mineLifetime = 3 * tickRate * 60; // mines despawn after this many minutes (3)
-global.botDespawnRate = 0.0005; // Probability a bot with no nearby enemies despawns each tick
+global.mineLifetime = 8 * tickRate * 60; // mines despawn after this many minutes (3)
+global.botDespawnRate = 0.0009; // Probability a bot with no nearby enemies despawns each tick
 global.baseHealth = 3000; // max base health
-global.baseKillExp = 5000; // Exp reward for killing a base
-global.baseKillMoney = 250000; // ditto but money
-global.baseRegenSpeed = 3; // How many times faster bases regenerate health than players
+global.baseKillExp = 5000; // Exp reward for killing a base - a starbase, the ones that are LIVEBASE and DEADBASE - internally the base.js file cuts this for regular turrets and sentries - make sure than if you adjust a sentry or turret shop price this gets readjusted to avoid turret feeding.
+global.baseKillMoney = 2500000; // ditto but money
 global.baseClaimRange = 1000; // How far you must be from a base (times ten) to get rewards
-global.mapSz = 7; // How many sectors across the server is. If changed, see planetsClaimed
-global.sectorWidth = 14336; // must be divisible by 2048.
-global.moneyPerRaidPoint = 300000;
-global.playerLimit = 130; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
+global.mapSz = 15; // How many sectors across the server is. If changed, see planetsClaimed
+global.sectorWidth = 14336 * 2; // must be divisible by 2048. If changed, remember to change the client's index.jsx ones too
+global.moneyPerRaidPoint = 900000;
+global.playerLimit = 120; // A soft limit on the max number of players+bots+guests online. When reached, bots do not spawn as much
 global.playerKillMoney = 2500;
 global.playerKillExpFraction = 0.04; // The amount of xp you steal from someone you kill
 global.playerKillMoneyFraction = 0.01; // The amount of money you steal from someone you kill
 global.minSectorAsteroidCount = 8;
-global.missileLockTimeout = 7 * tickRate; // if locked for >7s, die
+global.missileLockTimeout = 8 * tickRate; // if locked for >7s, die
+
+global.questMiningMoney = 65000; // money reward from Mining Quest
+global.questDeliveryMoney = 40000; // money reward from Mining Quest
+global.questBaseMoney = 5000000; // money reward from Mining Quest
+global.questSecretMoney = 16500000; // money reward from Mining Quest
 
 // achievements
 global.killAchievementsAmount = 10;
@@ -58,8 +68,9 @@ global.neuralFiles = 1500; // how many files should be in competition
 
 // administrative-y variables
 global.botFrequency = trainingMode ? 0.0014 : 0.003;// higher: more bots spawn.
-global.playerHeal = 0.2; // player healing speed
-global.baseHeal = 1; // base healing speed
+global.playerHeal = 0.2 * 0.5; // player healing speed
+global.baseHeal = 3; // Turret/Base healing speed
+global.baseRegenSpeed = baseHeal; // Turret/Base healing speed
 global.guestsCantChat = !Config.getValue(`want_guest_chat`, true);
 global.ranks = [0, 5, 12, 25, 50, 100, 150, 250, 400, 800, 1200, 1800, 2500, 4000, 6000, 9000, 12000, 15000, 20000, 30000, 50000, 80000, 100000, 150000, 200000, 300000, 500000, 800000, 1200000, 1600000, 3200000, 6400000, 10000000, 20000000, 40000000, 100000000]; // exp to rank conversion.
 global.afkTimerConst = 15 * tickRate * 60; // 15 minutes till we kick players for being afk
@@ -69,7 +80,7 @@ global.playerCount = 0;
 global.botCount = 0;
 global.guestCount = 0; // blue/red players/guests/bots
 global.raidTimer = 50000;
-global.teamQuests = { blue: [], red: [], green: [] };// A list of the 10 available quests for humans and aliens
+global.teamQuests = { blue: [], red: [], green: [], yellow: [] };// A list of the 10 available quests for humans and aliens
 
 // Object lists. All of them are in Y-MAJOR ORDER.
 global.guildPlayers = {};
@@ -98,7 +109,39 @@ global.ships = jsn.ships;
 global.planetNames = jsn.planets;
 
 // bases
-global.basesPerTeam = 4;
+global.basesPerTeam = 7;
+
+global.baseMap = {
+    red: [ // x, y
+        6, 1,
+        2, 0,
+        10, 0,
+        9, 3,
+        1, 4,
+        4, 4,
+        5, 7
+    ],
+    blue: [
+        12, 12,
+        13, 2,
+        11, 5,
+        8, 6,
+        14, 8,
+        10, 9,
+        9, 13
+    ],
+    green: [
+        3, 10,
+        2, 7,
+        6, 9,
+        0, 11,
+        4, 13,
+        1, 14,
+        7, 14
+    ]
+};
+
+/*
 global.baseMap = {
     red: [ // x, y
         1, 0,
@@ -113,12 +156,13 @@ global.baseMap = {
         4, 6
     ],
     green: [
-        1, 3,
         0, 5,
         2, 6,
+        1, 3,
         3, 4
     ]
 };
+*/
 
 for (let i = 0; i < mapSz; i++) { // it's 2d
     players[i] = new Array(mapSz);
@@ -145,7 +189,7 @@ for (let i = 0; i < mapSz; i++) { // it's 2d
         beams[i][j] = {};
         blasts[i][j] = {};
 
-        bases[i][j] = 0; // only one base per sector
+        bases[i][j] = {}; // 0; // TO-DO only one base per sector
         packs[i][j] = {};
         vorts[i][j] = {};
         asts[i][j] = {};

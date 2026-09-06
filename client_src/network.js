@@ -66,6 +66,7 @@ socket.on(`posUp`, (data) => {
     packsInfo = data.packs;
     playersInfo = data.players;
     basesInfo = data.bases;
+    planets = data.planets;
     astsInfo = data.asteroids;
     beamsInfo = data.beams;
     blastsInfo = data.blasts;
@@ -78,8 +79,15 @@ socket.on(`posUp`, (data) => {
         sy = data.sy;
         playAudio(`sector`, 1);
         r3DMap();
+
+        if (quest != undefined && quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
+            for (const id in planets) {
+                const aPlanet = planets[id];
+                if (aPlanet !== undefined && aPlanet.sx === quest.sx && aPlanet.sy == quest.sy) secret2PlanetName = planets[id].name;
+            }
+        }
     }
-    clearBullets();
+    clearBullets(data);
 });
 
 socket.on(`update`, (data) => {
@@ -90,51 +98,62 @@ socket.on(`update`, (data) => {
 
     const delta = data.state;
     if (!delta) return;
-
-    for (let index = 0; index < delta.players.length; ++index) {
-        player_update(delta.players[index]);
+    if (delta.players !== undefined) {
+        for (let index = 0; index < delta.players.length; ++index) {
+            player_update(delta.players[index]);
+        }
+    }
+    if (delta.vorts !== undefined) {
+        for (let index = 0; index < delta.vorts.length; ++index) {
+            vort_update(delta.vorts[index]);
+        }
     }
 
-    for (let index = 0; index < delta.vorts.length; ++index) {
-        vort_update(delta.vorts[index]);
+    if (delta.mines !== undefined) {
+        for (let index = 0; index < delta.mines.length; ++index) {
+            mine_update(delta.mines[index]);
+        }
     }
-
-    for (let index = 0; index < delta.mines.length; ++index) {
-        mine_update(delta.mines[index]);
+    if (delta.beams !== undefined) {
+        for (let index = 0; index < delta.beams.length; ++index) {
+            beam_update(delta.beams[index]);
+        }
     }
-
-    for (let index = 0; index < delta.beams.length; ++index) {
-        beam_update(delta.beams[index]);
+    if (delta.blasts !== undefined) {
+        for (let index = 0; index < delta.blasts.length; ++index) {
+            blast_update(delta.blasts[index]);
+        }
     }
-
-    for (let index = 0; index < delta.blasts.length; ++index) {
-        blast_update(delta.blasts[index]);
+    if (delta.asteroids !== undefined) {
+        for (let index = 0; index < delta.asteroids.length; ++index) {
+            asteroid_update(delta.asteroids[index]);
+        }
     }
-
-    for (let index = 0; index < delta.asteroids.length; ++index) {
-        asteroid_update(delta.asteroids[index]);
+    if (delta.missiles !== undefined) {
+        for (let index = 0; index < delta.missiles.length; ++index) {
+            missile_update(delta.missiles[index]);
+        }
     }
-
-    for (let index = 0; index < delta.missiles.length; ++index) {
-        missile_update(delta.missiles[index]);
+    if (delta.packs !== undefined) {
+        for (let index = 0; index < delta.packs.length; ++index) {
+            pack_update(delta.packs[index]);
+        }
     }
-
-    for (let index = 0; index < delta.packs.length; ++index) {
-        pack_update(delta.packs[index]);
+    if (delta.orbs !== undefined) {
+        for (let index = 0; index < delta.orbs.length; ++index) {
+            orb_update(delta.orbs[index]);
+        }
     }
-
-    for (let index = 0; index < delta.orbs.length; ++index) {
-        orb_update(delta.orbs[index]);
-    }
-
     if (delta.base !== undefined) {
-        base_update(delta.base);
+        for (let index = 0; index < delta.base.length; ++index) {
+            base_update(delta.base[index]);
+        }
     }
 
     updateBooms();
     updateNotes();
     updateBullets();
-    updateTrails();
+    updateTrails(); // TO-DO
     empTimer--;
     gyroTimer--;
     killStreakTimer--;
@@ -148,7 +167,7 @@ function player_update (data) {
     const id = data.id;
     const delta = data.delta;
     // We just changed sectors or are just loading in
-    if (playersInfo[id] === undefined) return;
+    if (playersInfo[id] === undefined || delta === undefined) return;
 
     for (const d in delta) {
         playersInfo[id][d] = delta[d];
@@ -166,6 +185,13 @@ function player_update (data) {
         scrx = -cosLow(pangle) * playersInfo[id].speed;
         scry = -sinLow(pangle) * playersInfo[id].speed;
         disguise = delta.disguise;
+        if (delta.sx !== undefined) {
+            playersInfo[id].sx = sx = delta.sx;
+        } else playersInfo[id].sx = sx;
+
+        if (delta.sy !== undefined) {
+            playersInfo[id].sy = sy = delta.sy;
+        } else playersInfo[id].sy = sy;
     }
 }
 
@@ -214,11 +240,11 @@ socket.on(`blast_delete`, (data) => {
 });
 
 socket.on(`base_create`, (data) => {
-    basesInfo = data;
+    basesInfo[data.id] = data;
 });
 
 socket.on(`base_delete`, (data) => {
-    basesInfo = undefined;
+    delete basesInfo[data];
 });
 
 socket.on(`asteroid_create`, (data) => {
@@ -249,8 +275,57 @@ socket.on(`missile_delete`, (data) => {
     delete missilesInfo[data];
 });
 
-function clearBullets () {
-    bullets = { };
+global.get9SectorDict = function (dictionar, mysx, mysy, origX = globalOriginSX, origY = globalOriginSY, endX = globalEndSX, endY = globalEndSY, wedebug = false) {
+    let combinedDict = {};
+    for (let asx = origX; asx <= endX; asx++) { // Sectors on X loop
+        // const newX = myx - (asx * sectorWidth);
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
+        }
+        for (let asy = origY; asy <= endY; asy++) { // Sectors on Y do not loop
+            const syReal = (mysy + asy);
+            if (syReal < mapSz && syReal >= 0) {
+                // const newY = myy - (asy * sectorWidth);
+                if (wedebug) console.log(`STEP COORD (${syReal}, ${sxReal} -> ${dictionar[syReal][sxReal]} combinedDict before this: ${combinedDict} and its keys are ${Object.keys(combinedDict)}`);
+                combinedDict = Object.assign({}, combinedDict, dictionar[syReal][sxReal]);
+            }
+        }
+    }
+    return combinedDict;
+};
+
+global.get9cSectorDict = function (dictionar, mysx, mysy, origX = globalOriginSX, origY = globalOriginSY, endX = globalEndSX, endY = globalEndSY, wedebug = false) {
+    let auxDict = {};
+    let combinedDict = {};
+    for (let asx = origX; asx <= endX; asx++) { // Sectors on X loop
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
+        }
+        auxDict[sxReal] = {};
+        for (let asy = origY; asy <= endY; asy++) { // Sectors on Y do not loop
+            const syReal = (mysy + asy);
+            if (syReal < mapSz && syReal >= 0) {
+                auxDict[sxReal][syReal] = 1;
+            }
+        }
+    }
+    for (i in dictionar) {
+        const elem = dictionar[i];
+        if (auxDict[elem.sx] !== undefined && auxDict[elem.sx][elem.sy] !== undefined && auxDict[elem.sx][elem.sy] === 1) combinedDict = Object.assign({}, combinedDict, elem);
+    }
+    return combinedDict;
+};
+
+function clearBullets (data, fullClear = true) {
+    if (fullClear && globalOriginSX === 0 && globalOriginSY === 0 && globalEndSX === 0 && globalEndSY === 0) bullets = { };
+    /*
+    if (data === undefined || data === null || data.bullets === undefined) {
+        if (fullClear) bullets = { };
+        else bullets = get9cSectorDict(data.bullets, sx, sy);
+    } else bullets = data.bullets;
+    */
 }
 
 function vort_update (data) {
@@ -308,19 +383,46 @@ function blast_update (data) {
 }
 
 function base_update (data) {
-    if (data === undefined || data.delta === undefined) return;
-    const delta = data.delta;
+    if (basesInfo !== undefined && basesInfo !== 0 && data !== undefined) {
+        const id = data.id;
+        const delta = data.delta;
 
-    if (basesInfo === 0) return;
-
-    for (const d in delta) {
-        basesInfo[d] = delta[d];
+        if (id !== undefined && basesInfo[id] !== undefined && basesInfo[id] !== 0 && delta !== undefined) {
+            for (const d in delta) {
+                basesInfo[id][d] = delta[d];
+            }
+        }
     }
 }
 
+function base_minimap_update (data) { // Very rare event
+    if (baseMap2D !== undefined && baseMap2D !== 0) {
+        const minimapUpdate = data.miniMup;
+        if (minimapUpdate !== undefined) {
+            const starbaseList = minimapUpdate.starbaseList;
+            if (starbaseList !== undefined) {
+                for (let index = 0; index < starbaseList.length; ++index) {
+                    const starbase = starbaseList[index];
+                    if (starbase !== undefined && starbase !== 0) {
+                        const aStarbasesx = starbase.sx;
+                        const aStarbasesy = starbase.sy;
+                        const aStarbasesC = starbase.color;
+                        if (aStarbasesx !== undefined && aStarbasesy !== undefined && aStarbasesC !== undefined && baseMap2D[aStarbasesx] !== undefined && baseMap2D[aStarbasesx][aStarbasesy] !== undefined) {
+                            baseMap2D[aStarbasesx][aStarbasesy] = aStarbasesC;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+socket.on(`baseMapUpdate`, (data) => {
+    base_minimap_update(data);
+});
+
 function asteroid_update (data) {
     const id = data.id;
-
     if (astsInfo[id] === undefined) return;
     const delta = data.delta;
 
@@ -352,10 +454,25 @@ function missile_update (data) {
 
 socket.on(`newBullet`, (data) => {
     bullets[data.id] = data;
-    bullets[data.id].tick = 0;
+    if (bullets[data.id].tick === undefined) bullets[data.id].tick = 0;
 });
+
 socket.on(`delBullet`, (data) => {
     delete bullets[data.id];
+});
+
+function bullet_update (data) {
+    if (bullets[data.id] === undefined) return;
+
+    const delta = data.delta;
+
+    for (const d in delta) {
+        bullets[data.id][d] = delta[d];
+    }
+}
+
+socket.on(`bullet_update`, (data) => {
+    bullet_update(data);
 });
 
 socket.on(`invalidCredentials`, (data) => {
@@ -451,30 +568,54 @@ socket.on(`weapons`, (data) => {
     }
 });
 socket.on(`sound`, (data) => {
+    let extraX = 0;
+    let extraY = 0;
+    let currSX;
+    let currSY;
+    if (!(Object.is(data.sx, null) || Object.is(data.sx, undefined))) {
+        extraX = obtainSXDrift(data.sx, sx);
+        currSX = data.sx;
+    } else currSX = sx;
+    if (!(Object.is(data.sy, null) || Object.is(data.sy, undefined))) {
+        extraY = obtainSYDrift(data.sy, sy);
+        currSY = data.sy;
+    } else currSY = sy;
+
     if (data.file.includes(`boom`)) {
         if (data.file === `bigboom`) flash = 1;
-        booms[Math.random()] = { x: data.x, y: data.y, time: 0, shockwave: data.file === `bigboom` };
-        for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: data.x, y: data.y, angle: Math.random() * 6.28, time: -1, dx: data.dx / 1.5, dy: data.dy / 1.5 };
+        booms[Math.random()] = { x: data.x, y: data.y, sx: currSX, sy: currSY, time: 0, shockwave: data.file === `bigboom` };
+        for (let i = 0; i < 5; i++) boomParticles[Math.random()] = { x: data.x, y: data.y, sx: currSX, sy: currSY, angle: Math.random() * 6.28, time: -1, dx: data.dx / 1.5, dy: data.dy / 1.5 };
     }
-    const dx = (px - data.x) / 1000;
-    const dy = (py - data.y) / 1000;
+
+    const dx = (px - data.x + extraX) / 500;
+    const dy = (py - data.y + extraY) / 500;
     const dist = Math.hypot(Math.abs(dx) + 10, Math.abs(dy) + 10);
-    let vol = 0.6 / dist;
+    let vol = 0.6;
+    if (data.soundStrength !== undefined) vol = vol * data.soundStrength;
+    vol = vol / dist;
     if (data.file === `hyperspace`) {
         hyperdriveTimer = 200;
         vol = 2;
     }
-    playAudio(data.file, vol);
+    if ((vol >= 1) || dist < sectorWidth) playAudio(data.file, vol);
 });
 socket.on(`equip`, (data) => {
     scroll = data.scroll;
     weaponTimer = 100;
 });
 socket.on(`note`, (data) => {
-    notes[Math.random()] = { msg: data.msg, x: data.x - 16 + (data.local ? -px : Math.random() * 32), y: data.y - 16 + (data.local ? -py : Math.random() * 32), time: 0, strong: false, local: data.local };
+    let elSX = sx;
+    let elSY = sy;
+    if (data.sx !== undefined) elSX = data.sx;
+    if (data.sy !== undefined) elSY = data.sy;
+    notes[Math.random()] = { msg: data.msg, x: data.x - 16 + (data.local ? -px : Math.random() * 32), y: data.y - 16 + (data.local ? -py : Math.random() * 32), time: 0, strong: false, local: data.local, sx: elSX, sy: elSY };
 });
 socket.on(`strong`, (data) => {
-    notes[Math.random()] = { msg: data.msg, x: data.x + (data.local ? -px : 0), y: data.y - 128 + (data.local ? -py : 0), time: 0, strong: true, local: data.local };
+    let elSX = sx;
+    let elSY = sy;
+    if (data.sx !== undefined) elSX = data.sx;
+    if (data.sy !== undefined) elSY = data.sy;
+    notes[Math.random()] = { msg: data.msg, x: data.x + (data.local ? -px : 0), y: data.y - 128 + (data.local ? -py : 0), time: 0, strong: true, local: data.local, sx: elSX, sy: elSY };
 });
 socket.on(`spoils`, (data) => {
     data.amt = Math.round(data.amt);
@@ -523,6 +664,12 @@ socket.on(`rank`, (data) => {
 socket.on(`quest`, (data) => {
     quest = data.quest;
     console.log(`Received quest status update`);
+    if (quest != undefined && quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
+        for (const id in planets) {
+            const aPlanet = planets[id];
+            if (aPlanet !== undefined && aPlanet.sx === quest.sx && aPlanet.sy == quest.sy) secret2PlanetName = planets[id].name;
+        }
+    }
     if (data.complete) addBigNote([256, `Quest Complete!`, ``, ``]);
 });
 socket.on(`achievementsKill`, (data) => {
@@ -572,9 +719,13 @@ socket.on(`status`, (data) => {
     lives = data.lives;
 });
 socket.on(`planets`, (data) => {
-    planets = data.pack;
-    if (quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
-        secret2PlanetName = planets.name;
+    if (planets == 0 || planets == undefined || planets == null) planets = {};
+    planets[data.id] = data.pack;
+    if (quest != undefined && quest != 0 && quest.type === `Secret2` && sx == quest.sx && sy == quest.sy) {
+        for (const id in planets) {
+            const aPlanet = planets[id];
+            if (aPlanet !== undefined && aPlanet.sx === quest.sx && aPlanet.sy == quest.sy) secret2PlanetName = planets[id].name;
+        }
     }
 });
 socket.on(`planetMap`, (data) => {
@@ -587,22 +738,21 @@ socket.on(`baseMap`, (data) => {
     const baseMap = data.baseMap;
     for (let i = 0; i < mapSz; i++) {
         baseMap2D[i] = {};
-        for (let j = 0; j < mapSz; j++) {
-            baseMap2D[i][j] = 0;
-        }
-    }
-    for (let i = 0; i < mapSz; i++) {
         planetMap2D[i] = {};
         for (let j = 0; j < mapSz; j++) {
+            baseMap2D[i][j] = 0;
             planetMap2D[i][j] = 0;
         }
     }
+
     for (const teamColor in baseMap) {
         const thisMap = baseMap[teamColor];
         for (let i = 0; i < thisMap.length; i += 2) {
             baseMap2D[thisMap[i]][thisMap[i + 1]] = teamColor;
         }
     }
+
+    base_minimap_update(data);
 
     console.log(`Loading minimap`);
     sectorPoints = {};
@@ -628,10 +778,10 @@ socket.on(`heatmap`, (data) => {
     raidGreen = data.raidGreen;
     youi = parseInt(data.youi);
     constructMyGuild(data.myGuild);
-    if (data.youi > 15) {
-        lb[16] = { id: data.youi, name: myName, exp: experience, color: pc, rank: rank };
+    if (data.youi >= maxElementsOnLeaderboard) {
+        lb[maxElementsOnLeaderboard] = { id: data.youi, name: myName, exp: experience, color: pc, rank: rank };
     }
-    renderLeaderboard();
+    renderLeaderboard(youi, maxElementsOnLeaderboard);
     r3DMap();
 });
 function constructMyGuild (data) {

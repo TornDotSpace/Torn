@@ -1,53 +1,34 @@
 {
 	"achNames":[
-		"Primera sangre:Destruye 1 nave",
-		"De seguidilla:Mata a 10 jugadores",
-		"Sed de Sangre:Mata a 100 jugadores",
-		"General:Mata a 1,000 jugadores",
-		"Señor de la Guerra:Mata a 4,000 jugadores",
-		"Segador:Mata a 10,000 jugadores",
-		"Envidioso:Mata una nave con rastro personalizado",
-		"Invasor:Destruye una torreta",
-		"Conquistador:Destruye 100 torretas",
-		"Fuego Amigo:Mata a un jugador de tu equipo",
-		"Ir Postal:Mata a un repartidor",
-		"Emo:Suicídate con GravBomb",
-		"Rastro de Sangre:Resistencia x1.05 a armas",
-		"Minero:Destruye un asteroide",
-		"Colector:Mina uno de cada mineral",
-		"Cantero:Obtén 3,000 Minerales",
-		"Veta Madre:Obtén 15,000 Minerales",
-		"Hombre Rico:Obtén 10,000 créditos",
-		"Hombre Aún Más Rico:Obtén 100,000 créditos",
-		"Millonario:Obtén 1 millÓn de créditos",
-		"Continuando en ello:Obtén 10 millones de créditos",
-		"Ladrón:Roba un paquete",
-		"Misionero:Servicios a la comunidad",
-		"Aventurero:Completa cada tipo de misión una vez",
-		"Rastro del Dinero:x1.05 a recompensas",
-		"Shift para derrapar:¡Derrapa!",
-		"Derrapador:Derrapa 1 minuto en total",
-		"Trampero:Derrapa 10 minutos en total",
-		"Mareado:Derrapa 1 hora en total",
-		"Giro Dios:Derrapa 10 horas en total",
-		"Takumi:Inducción Forzada por turbo",
-		"Bunta:Hyper-derrapado",
-		"Reversa:¿¡Puedo ir marcha atrás!?",
-		"Derrape por Inercia:Derrapa en un Agujero Negro",
-		"Peligroso:Mata mientras derrapas",
-		"Stickshift:TurboDerrapado reverso",
-		"Rastro Panda:x1.05 a agilidad",
-		"Aquí para quedarme:Crea una cuenta",
-		"¡Au!:Muere",
-		"Trabajo Peligroso:Acepta una misión en sector con agujero negro",
-		"Demasiado Lento:Cae en un agujero de gusano",
-		"Ups...:Cae en un agujero negro",
-		"¡Boing!:toca el borde",
-		"Viajero:Visita cada sector",
-		"Esquizoide:Visita las cuatro esquinas",
-		"Astronauta:Toma un planeta",
-		"Imperialista:Conquista todos los planetas una vez",
-		"Rastro Azaroso:Zigzaguea más lejos!"
+		"Primera sangre:Destruye 1 jugador.",
+		"Teniente:Mata a 10 jugadores.",
+		"Coronel:Mata a 100 jugadores.",
+		"General:Mata a 1k jugadores.",
+		"Envidia:Mata 1 nave con rastro personalizado.",
+		"Invasor:Destruye una torreta.",
+		"Conquistador:Destruye 100 torretas.",
+		"Fuego Amigo:Mata a un jugador de tu equipo.",
+		"Aventurero:Completa cada tipo de misión.",
+		"Rastro de Sangre: x1.05 de resistencia al daño.",
+
+		"Colector:Mina uno de cada mineral.",
+		"Hombre Rico:Obtén y mantén 100 K$.",
+		"Millonario:Obtén y mantén 1 M$.",
+		"Nadando en dinero:Obtén y mantén 10 M$.",
+		"Rastro del Dinero:x1.05 a recompensas.",
+
+		"Mecánico:Obtén y mantén 12 de agilidad.",
+		"Suertudo:Mata a alguien con >2200 ELO.",
+		"Habilidoso:Excede 2200 ELO.",
+		"Mareado:Derrapa 1h en total.",
+		"Rastro Panda:x1.05 a agilidad.",
+
+
+		"¡Boing!:Toca el borde.",
+		"Ladrón:Roba un paquete.",
+		"Viajero:Visita cada sector, y 1 planeta.",
+		"Imperialista:Reclama todos los planetas en una sesión.",
+		"Rastro Azaroso:Zigzaguea más lejos."
 	],
 	"weapons":[
 		{
@@ -218,7 +199,7 @@
 		},
 		{
 			"name":"Motor Hiperespacial",
-			"desc":"Herramienta de un solo uso que proporciona un incremento de velocidad de largo alcance. Gracias a que te desplaza parcialmente a otra dimensión, no sufrirás daño de cruce de sector."
+			"desc":"Herramienta de un solo uso que proporciona un incremento de velocidad de largo alcance, gracias a que te desplaza parcialmente a otra dimensión."
 		},
 		{
 			"name":"Onda Repulsora",
@@ -356,10 +337,28 @@
 		{
 			"name":"Escudo de nav.",
 			"desc":"Un escudo de navegación basado en una antena deflectora, permite a naves espaciales viajar con seguridad de no sufir daños de escombros y pequeños asteroides, al igual que de algunos rayos cósmicos."
+		},
+		{
+			"name":"Red Nailoth",
+			"desc":"Un cluster de minas diseñado para atrapar enemigos bajo miedo a morir."
 		}
 	],
 	"splashes":[
-		"",
+		"Consejo: Utiliza el comando /help en el chat para leer todos los comandos que puedes utilizar.",
+		"Consejo: Es posible cambia de bando/equipo",
+		"Consejo: Matar a un jugador de alto nivel te hará ganar mucha experiencia, al igual que enemigos",
+		"Consejo: Los sectores centrales contienen agujeros negros. Ten cuidado",
+		"Consejo: Mejorar tu radar proporciona más que ver asteroides, jugadores y bases",
+		"Consejo: ¡Desbloquea todos los logros de un mismo tipo para desbloquear un rastro de color!",
+		"Consejo: ¡Elige un rastro de color clicando sobre su logro!",
+		"Consejo: Alterna rápidamente A y D / flechas izquierda y derecha al derrapar para ir más rápido",
+		"Consejo: Si tus puntos de vida llegan a 0, mueres y pierdes 1 vida\n¡Vigila siempre tus vidas restantes!",
+		"Consejo: Puedes ganar más vidas comprándolas en el menú de la base\no reclamando un paquete de vida a la deriva en el espacio.",
+		"Consejo: ¡No uses Internet Explorer!",
+		"Consejo: Cuanto más llena esté tu compartimento de carga más lento irás",
+		"Consejo: ¡Presiona P para activar el Piloto Automático!",
+		"Cargando",
+		"Culpando a 2swap",
 		"Expandiendo Cofactores",
 		"Demostrando que el LAG es un mito",
 		"Recogiendo exp",
@@ -367,23 +366,8 @@
 		"Poniendo torretas en el agujero negro",
 		"$ sudo apt install torn","Prueba alexhontz.com/fun!",
 		"Instalando MEMZ.exe","Verificando SSL",
-		"Ayúdamae por favor! Estoy atascado en una barra de carga!",
-		"Decayendo nombres",
-		"502 Bad Gateway",
+		"¡Ayúdame por favor! ¡Estoy atascado en una barra de carga!",
 		"Hmmmmm",
-		"Consejo: matar a un judagor de alto nivel te hará ganar mucha experiencia, al igual que enemigos",
-		"Consejo: los sectores centrales contienen un Agujero Negro Supermasivo. Ten cuidado",
-		"Consejo: Mejorar tu radar proporciona más que ver asteroides, jugadores y bases",
-		"Consejo: ¡Los minerales más abundantes en terreno enemigo son más valiosos!",
-		"Consejo: ¡Desbloquea todos los logros de un mismo tipo para desbloquear un rastro de color!",
-		"Consejo: ¡Presiona P para activar el Piloto Automático!",
-		"Consejo: ¡El Rayo de Hadrones carga eléctricamente los asteroides!",
-		"Consejo: Alterna rápidamaente A y D / flechas izquierda y derecha al derrapar para ir más rápido",
-		"Consejo: ¡Vim > Emacs!",
-		"Consejo: ¡Vigila siempre tus vidas restantes!",
-		"Consejo: Se recomienda usar Google Chrome",
-		"Consejo: cuanto más llena esté tu carga más lento irás",
-		"Consejo: no mueras",
 		"Planeando Cruzada Galáctica",
 		"Retomando la Tierra Sagrada",
 		"Estoy listo... Estoy listo",
@@ -398,7 +382,6 @@
 		"Conduciendo en Aparcamientos",
 		"Aparcando en Puentes",
 		"Culpa de la Segmentacion",
-		"Error: KeyLogger.log(char) está indefinido para los argumentos dados",
 		"Averiguando contraseñas",
 		"bup","Bip bup",
 		"Fresado de la cebolla",
@@ -411,34 +394,22 @@
 		"Mezclando Pintura",
 		"Actualizando Windows. Por Favor, espere",
 		"Instalando Linux",
-		"Instalando Chromium Ultron",
-		"Ralizando Partición de Disco",
-		"¡Actualización de JAVA disponible!",
+		"Particionando el Disco",
 		"Liberando al Kraken",
-		"Mierda",
-		"Acuerdo con todas las leyes de aviación",
-		"Respondiendo a Arecibo","Contactar la Luz",
-		"¿Quien vive en la piña debajo del mar?",
-		"Esta página está intencionalmente en blanco",
-		"Si tú o uno de tus seres queridos es diagnosticado de mesotelioma",
-		"Liberando a Bobby Shmurda",
-		"Cargando Pedazos",
-		"Pirateando Sony Vegas",
+		"Cargando Trozos",
 		"Demostrando el Teorema de Stokes",
-		"Citando a la Wikipedia",
+		"Citando la Wikipedia",
 		"Comiendo pegamento",
 		"Mi espalda pica",
 		"Contratando diseñadores Gráficos",
 		"Borrando Torretas",
-		"¿Es ésto Perdidos?",
-		"Gary Johnson 2016",
+		"¿Es esto Perdidos?",
 		"Buscando mis audífonos",
 		"Cuadrando un error",
 		"Preparando la Muerte Caliente",
 		"Reconstruyendo el Universo",
 		"¿Cinturón de Seguridad?: comprobado.",
 		"Tachando ideas",
-		"Añadiendo caracteristica de Amigos",
 		"Podando Ramas Degenerativas",
 		"Instalando Tensorflow",
 		"Editando Changelog",
@@ -449,7 +420,6 @@
 		"¿Has intentado reiniciarlo?",
 		"Renderizando Earth-chan",
 		"Compilando BigBang.exe",
-		"¿Por qué mis generadores no funcionan?",
 		"Velocidad de curvatura Sr. Sulu",
 		"Ya no estás en Kansas",
 		"Logrando Conciencia",
@@ -459,7 +429,6 @@
 		"Haciendo algo, supongo",
 		"Debilitando Todo",
 		"Pidiendo más mensajes de la Pantalla de mensajes",
-		"Descargando por Torrent Sony Vegas",
 		"Obteniendo las Gemas del Infinito",
 		"Borrando Emails",
 		"Acelarar esos Fryers",
@@ -475,11 +444,9 @@
 		"Archivando la Bancarrota",
 		"Salteando el guiso",
 		"Añadiendo Sal",
-		"Decayendo Tecnologías",
 		"rm -rf /",
 		"Procrastinando",
-		"Haciendo Torn Grande de Nuevo",
-		"Hackeando las  Elecciones",
+		"Hackeando las Elecciones",
 		"Llamando a casa",
 		"Ésto es Eterno",
 		"Construyendo Estrella de la Muerte",
@@ -495,7 +462,7 @@
 		"Destilando",
 		"Minimizando el Error del Cuadrado",
 		"Contratando Simios Informáticos",
-		"Azul, Rojo, Azul, Amarillo.",
+		"Azul, Rojo, Verde, Amarillo",
 		"Recargando Warp",
 		"Cargando",
 		"Atacando a los Snubbers",
@@ -525,163 +492,192 @@
 	"lore":[
 		"Los humanos carecen de autoconsciencia. Tras destruir su mundo natal en un conflicto armado, se extendieron de un sistema a otro como una plaga, contaminando mundos y extinguiendo la vida. Al principio les avisamos de su conducta autodestructiva, pero se negaron a escuchar. Continuaron migrando de manera insostenible en la Galaxia, así que nos los enfrentamos por la fuerza. Decidimos atacar colonias recientes cercanas a nuestra frontera para mantener nuestra influencia en nuestro sector de la Galaxia, pero los humanos reaccionaron violentamente, atacando inmediatamente sin misericordia. Hemos pedido recursos de las galaxias cercanas pero sus refuerzos no llegarán hasta dentro de muchas décadas, así que hasta entonces debemos suprimir la Cruzada Galáctica por nuestra propia supervivencia y por el destino de esta Galaxia.",
 		"Desde que la raza humana perdió el Planeta Tierra, hemos decidido dejar nuestro Sistema en busca de otros mundos habitables con la única esperanza de sobrevivir, pero muy pocos han prometido ser bases permanentes. Planetas totalmente desérticos fueron terraformados en planetas industriales para generar recursos desesperadamente necesarios para nuestra vida en mundos alienígenas. Tras siglos de equilibrio demográfico, nuestra población comenzó finalmente a crecer y extenderse. Por una década vivimos en paz y prosperidad, hasta que una fuerza hostil nos atacó. Mantener nuestros planetas era vital para nuestra supervivencia, así que no tuvimos otra opción que contraatacar. Desde entonces, hemos estado en conflicto con esta raza alienígena, y es improbable que esta guerra no termine con la extinción de ambos. Por favor, ayúdanos a salir de este conflicto vivos.",
-		"Las computadoras en la base de investigación donde fuimos creados fueron las primeras en ser asimiladas en nuestro Imperio, y los tripulantes fueron los siguientes. Como un experimento militar alinígena, nos encontramos en el fuego cruzado de esta guerra entre razas humanas y aliens. Durante nuestro alzamiento como potencia militar galáctica, ambas probaron ser ineptas en combate, y por ello, en su miserable lucha de este decrépito sector del universo, incorporaremos toda su tecnología y recursos hasta abandonar la galaxia. Usando la tecnología que la que nos proveyeron los Aliens, asimilamos a toda especie que podamos, y negamos el privilegio de la vida a aquellas que estén en nuestro camino. Estamos unidos por visión, no la lealtad intraespecie que traj esta galaxia al borde de la destrucción. Juntos, nos volveremos los auténticos herederos de cada punto de luz en la bóveda nocturna."
+		"Las computadoras en la base de investigación donde fuimos creados fueron las primeras en ser asimiladas en nuestro Imperio, y los tripulantes fueron los siguientes. Como un experimento militar alinígena, nos encontramos en el fuego cruzado de esta guerra entre razas humanas y aliens. Durante nuestro alzamiento como potencia militar galáctica, ambas probaron ser ineptas en combate, y por ello, en su miserable lucha de este decrépito sector del universo, incorporaremos toda su tecnología y recursos hasta abandonar la galaxia. Usando la tecnología que la que nos proveyeron los Aliens, asimilamos a toda especie que podamos, y negamos el privilegio de la vida a aquellas que estén en nuestro camino. Estamos unidos por visión, no la lealtad intraespecie que traj esta galaxia al borde de la destrucción. Juntos, nos volveremos los auténticos herederos de cada punto de luz en la bóveda celeste.",
+                "¡SOMOS LOS PIRATAS! TODAS LAS COSAS QUE TENEMOS SON... COSAS ROBADAS! ¿Armamento? ¡Robado de asaltos a bases! ¿Munición? 'Obtenida' de planetas, en los que a veces aparcamos. ¿Nuestras naves? ¡SÍ, recientemente en particular! Vaya, si conozco un tío que me ha dicho que encontraron una nave abandonada de esos supuestos 'refuerzos' extragalácticos superpoderosos que iban a ayudar a los aliens, y ahora algunos están recibiendo 'ventajillas' de la tía que reclamó 'para mí primero' el naufragio. Quien sabe, quizá un día puedas verla navegar con el naufragio restaurado como su nave insignia!"
+
+
 	],
 	"ships":[
 		{
 			"nameA":"Explorador",
 			"nameH":"Pececillo",
 			"nameC":"Piojo",
+			"nameP":"Pececillo",
 			"desc":"Tu primera nave. No olvide comprobar la tienda para nuevos items."
 		},
 		{
 			"nameA":"Caza",
 			"nameH":"Piraña",
 			"nameC":"Pulga",
+			"nameP":"Pulga",
 			"desc":"Una actualización mejorada de su predecesora, con más salud y ranuras."
 		},
 		{
 			"nameA":"Mastodonte",
 			"nameH":"Carguero",
 			"nameC":"Eristalis",
+			"nameP":"Mastodonte",
 			"desc":"Una nave polivalente. Desbloqueando turbo y cañon iónico minero es un bonus."
 		},
 		{
 			"nameA":"Ninfa",
 			"nameH":"Montaraz",
-			"nameC":"Cloudhop",
+			"nameC":"Saltanubes",
+			"nameP":"Saltanubes",
 			"desc":"La nave más rápida (o eso crees), y la más débil."
 		},
 		{
 			"nameA":"Bombardero",
 			"nameH":"Lancero",
 			"nameC":"Scarab",
+			"nameP":"Scarab",
 			"desc":"Un escolta ligero, bueno para patrullar."
 		},
 		{
-			"nameA":"Sicario",
+			"nameA":"Guadaña",
 			"nameH":"Cabezamartillo",
 			"nameC":"Nephila",
+			"nameP":"Guadaña",
 			"desc":"Un escolta pesado polivalente."
 		},
 		{
 			"nameA":"Libélula",
-			"nameH":"Pez Espada",
+			"nameH":"Pez Emperador",
 			"nameC":"Mariquita",
+			"nameP":"Pez Espada",
 			"desc":"Uno de los exploradores galácticos más fuertes."
 		},
 		{
 			"nameA":"Centinela",
 			"nameH":"Acorazado",
-			"nameC":"Shrapnel",
+			"nameC":"Metralla",
+			"nameP":"Acorazado",
 			"desc":"El primer crucero de tu facción."
 		},
 		{
 			"nameA":"Águila",
 			"nameH":"Mantarraya",
 			"nameC":"Cetro",
+			"nameP":"Cetro",
 			"desc":"Un decente navío explorador polivalente"
 		},
 		{
 			"nameA":"Fénix",
 			"nameH":"Orca",
 			"nameC":"Ciempiés",
+			"nameP":"Fénix",
 			"desc":"Un crucero fuerte... para su tamaño."
 		},
 		{
 			"nameA":"Avispa",
 			"nameH":"Manta",
 			"nameC":"Avispón",
+			"nameP":"Avispón",
 			"desc":"Un crucero tan grande que puede llevar armas de destrucción masiva."
 		},
 		{
 			"nameA":"Invasor",
 			"nameH":"Pez Vela",
 			"nameC":"Alcubierre",
+			"nameP":"Invasor",
 			"desc":"Un crucero ligero y rápido. Incluso más con supercargador."
 		},
 		{
 			"nameA":"Cantero",
 			"nameH":"Beluga",
 			"nameC":"Hormiga melosa",
+			"nameP":"Beluga",
 			"desc":"Un carguero pesado, con mucha salud. No es rápido que digamos."
 		},
 		{
 			"nameA":"Destructor",
-			"nameH":"Atlas",
+			"nameH":"Tauro",
 			"nameC":"Galera",
+			"nameP":"Tauro",
 			"desc":"El destructor ligero de la flota."
 		},
 		{
-			"nameA":"Hidra",
+			"nameA":"Halcón",
 			"nameH":"Wyvern",
 			"nameC":"Defiant",
+			"nameP":"Halcón",
 			"desc":"El último crucero no pesado que no es de élite. También desbloquea todas las ranuras."
 		},
 		{
-			"nameA":"Conquistador",
+			"nameA":"Interceptor",
 			"nameH":"Leviatán",
-			"nameC":"Maser",
+			"nameC":"Máser",
+			"nameP":"Máser",
 			"desc":"Un destructor con todas las ranuras desbloqueadas."
 		},
 		{
-			"nameA":"Invasor de élite",
-			"nameH":"Pez Vela de élite",
+			"nameA":"Invasor de Élite",
+			"nameH":"Pez Vela de Élite",
 			"nameC":"Alcubierre de Élite",
+			"nameP":"Alcubierre de Élite",
 			"desc":"La primera nave de élite, con un aumento pasivo de velocidad y una ranura-C de turbo simultáneo con otro item."
 		},
 		{
-			"nameA":"Cantero de élite",
-			"nameH":"Beluga de élite",
+			"nameA":"Cantero de Élite",
+			"nameH":"Beluga de Élite",
 			"nameC":"Hormiga melosa de Élite",
+			"nameP":"Cantero de Élite",
 			"desc":"Posee un C-lanzameteoros más un efecto telaraña en rayos mineros. Pero cuidado con los rayos enemigos."
 		},
 		{
-			"nameA":"Destructor de élite",
-			"nameH":"Atlas de élite",
+			"nameA":"Destructor de Élite",
+			"nameH":"Tauro de Élite",
 			"nameC":"Galera de Élite",
+			"nameP":"Tauro de Élite",
 			"desc":"Un destructor reformado con un C-Spreadhsot ilimitado. Perfecto para destruir torretas con un equipo."
 		},
 		{
-			"nameA":"Hydra de élite",
-			"nameH":"Wyvern de élite",
+			"nameA":"Halcón de Élite",
+			"nameH":"Wyvern de Élite",
 			"nameC":"Defiant de Élite",
+			"nameP":"Defiant de Élite",
 			"desc":"Crucero con C-Sanación que funciona incluso con escudos (además más eficientes) alzados, y un PEM al matar."
 		},
 		{
-			"nameA":"Conquistador de élite",
-			"nameH":"Leviatán de élite",
+			"nameA":"Interceptor de Élite",
+			"nameH":"Leviatán de Élite",
 			"nameC":"Maser de Élite",
+			"nameP":"Leviatán de Élite",
 			"desc":"Un destructor superpesado con un C-Rayo hipnótico, úsalo para crear flotas de drones o desactivar sus escudos"
 		},
 		{
 			"nameA":"Anomalocaris",
 			"nameH":"Einstein",
 			"nameC":"Heisenberg",
+			"nameP":"Anomalocaris",
 			"desc":"Un masivo acorazado, sin ranura-C, pero repelido de los agujeros negros."
 		},
 		{
 			"nameA":"Olímpico",
 			"nameH":"Nigromante",
 			"nameC":"Lamprea",
+			"nameP":"Olímpico",
 			"desc":"Ambulancia de respuesta rápida, siempre necesita de un compañero para usar su rayo curativo, salvo asteroides."
 		},
 		{
 			"nameA":"Mandelbrot",
 			"nameH":"Claymore",
 			"nameC":"G-23M Replicador",
+			"nameP":"ya24 Protominador",
 			"desc":"Un poderoso lanzaminas. Se dice que revolucionará la Guerra Galáctica."
 		},
 		{
 			"nameA":"CG Móvil",
 			"nameH":"Base Estelar",
 			"nameC":"Unicomplejo",
+			"nameP":"Portanaves pirata",
 			"desc":"Una base estelar móvil, por razones de seguridad solo acepta drones."
 		},
 		{
 			"nameA":"Cuanto",
 			"nameH":"Fantasma",
 			"nameC":"Eigenvector",
+			"nameC":"Atenea",
 			"desc":"Una nave extremadamente experimental."
 		}
 	]
