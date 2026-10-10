@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+    <title>Torn</title>
+    <meta name="description" content="Complete and upgrade your warship in the ongoing space war!">
+    <meta name="keywords" content="Torn, space, mmo, io, flash, fighting, flying, alex hontz, johnnyapol, torn.space, 2swap">
+
+    <!-- OpenGraph Metadata -->
+    <meta property="og:title" content="Torn">
+    <meta property="og:description" content="Complete and upgrade your warship in the ongoing space war!">
+    <meta property="og:image" content="/img/red/r1.png">
+
+    <!-- Icon --> 
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/assets/css/pages/home.css">
+
+    <!-- Google Analytics -->
+    <script src="https://www.googletagmanager.com/gtag/js?id=UA-81486045-1"></script>
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag () {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-81486045-1');
+    </script>
+
+    <!-- AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" data-ad-client="ca-pub-7362501745456542"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="client.min.js?v={GIT_HASH}"></script>
+</body>
+</html>

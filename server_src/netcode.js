@@ -73,6 +73,9 @@ module.exports = initNetcode = () => {
     const protocol = Config.getValue(`want-tls`, false) ? https : http;
     const key = Config.getValue(`tls-key-path`, null);
     const cert = Config.getValue(`tls-cert-path`, null);
+    const disable_cors = Config.getValue(`disable-cors`, false);
+    // const server_api_url = TO-DO WE MAY NEED MORE STUFF HERE
+    // const server_
 
     const options = (protocol === https)
         ? {
@@ -87,7 +90,9 @@ module.exports = initNetcode = () => {
 
     if (Config.getValue(`want-unix-sockets`, false)) {
     // Open a unix socket on current dir
-        server.listen(`torn.socket`);
+        // server.listen(`torn.socket`);
+        const path = require(`path`);
+        server.listen(path.join(`\\\\?\\pipe`, process.cwd(), `torn.socket`));
     } else {
         console.log(`=== STARTING SERVER ON PORT ${port} ===`);
         server.listen(parseInt(port));
@@ -107,13 +112,27 @@ module.exports = initNetcode = () => {
 
     const socketIO = require(`socket.io`);
     // https://github.com/socketio/engine.io/blob/c1448951334c7cfc5f1d1fff83c35117b6cf729f/lib/server.js
-    global.io = socketIO(server, {
-        serveClient: false,
-        // parser: msgpack,
-        cors: {
-            origin: `*`
-        }
-    });
+    if (disable_cors) { // TO-DO On Node v4, you can't set withCredentials to true with origin: *, you need to use a specific origin
+        console.log(`Disabling CORS`);
+        global.io = socketIO(server, {
+            serveClient: false,
+            // parser: msgpack,
+            cors: {
+                origin: `*`,
+                origins: `*:*`
+            }
+        });
+    } else {
+        console.log(`CORS are enabled`);
+        global.io = socketIO(server, {
+            serveClient: false,
+            // parser: msgpack,
+            cors: {
+                origin: `*`,
+                origins: `*:*`
+            }
+        });
+    }
 
     io.sockets.on(`connection`, (socket) => {
         if (!serverInitialized) {
@@ -192,12 +211,13 @@ module.exports = initNetcode = () => {
 
             players[player.sy][player.sx][player.id] = player;
             player.va = ships[player.ship].agility * 0.08 * player.agility2;
-            player.thrust = ships[player.ship].thrust * player.thrust2;
+            player.thrust = ships[player.ship].thrust * ((player.ship == 24 && player.color == `blue`) ? 5 : 1) * player.thrust2;
             player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
-            player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
+            player.maxHealth = player.health = Math.round(ships[player.ship].health * ((player.ship == 24 && player.color == `blue`) ? 0.5 : 1) * player.maxHealth2);
             sendWeapons(player);
             socket.emit(`raid`, { raidTimer: raidTimer });
-            socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz, expToRank: ranks });
+            updateSBMiniMap = getMinimapSBCurrentBaseInfo(baseMap);
+            socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz, expToRank: ranks, miniMup: updateSBMiniMap });
 
             chatAll(`Welcome ${player.nameWithColor()} to the universe!`);
         });
@@ -284,7 +304,7 @@ module.exports = initNetcode = () => {
             let wait_time = 0;
             for (const p in sockets) {
                 const curr_socket = sockets[p];
-                if (curr_socket.player !== undefined && curr_socket.player.name == name && curr_socket != socket) {
+                if (curr_socket.player !== undefined && curr_socket.player.name == name && (curr_socket != socket || curr_socket.player.id != player.id)) {
                     curr_socket.player.kickMsg = `A user has logged into this account from another location.`;
                     curr_socket.player.socket.disconnect();
                     wait_time = 6000;
@@ -315,14 +335,25 @@ module.exports = initNetcode = () => {
                 const text = `${player.nameWithColor()} logged in!`;
                 chatAll(text);
 
+                for (const p in sockets) {
+                    const curr_socket = sockets[p];
+                    if (curr_socket.player !== undefined && curr_socket.player.name == name && (curr_socket != socket || curr_socket.player.id != player.id)) {
+                        curr_socket.player.kickMsg = `A user has logged into this account from another location.`;
+                        curr_socket.player.socket.disconnect();
+                        // wait_time = 6000;
+                    }
+                }
+
                 // Update last login
                 player.lastLogin = Date.now();
                 player.va = ships[player.ship].agility * 0.08 * player.agility2;
-                player.thrust = ships[player.ship].thrust * player.thrust2;
+                player.thrust = ships[player.ship].thrust * ((player.ship == 24 && player.color == `blue`) ? 5 : 1) * player.thrust2;
                 player.capacity = Math.round(ships[player.ship].capacity * player.capacity2);
-                player.maxHealth = player.health = Math.round(ships[player.ship].health * player.maxHealth2);
+                player.maxHealth = player.health = Math.round(ships[player.ship].health * ((player.ship == 24 && player.color == `blue`) ? 0.5 : 1) * player.maxHealth2);
                 sendWeapons(player);
-                socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz, expToRank: ranks });
+
+                updateSBMiniMap = getMinimapSBCurrentBaseInfo(baseMap);
+                socket.emit(`baseMap`, { baseMap: baseMap, mapSz: mapSz, expToRank: ranks, miniMup: updateSBMiniMap });
                 socket.emit(`you`, { trail: player.trail, killStreak: player.killStreak, killStreakTimer: player.killStreakTimer, name: player.name, t2: player.thrust2, va2: player.radar2, ag2: player.agility2, c2: player.capacity2, e2: player.energy2, mh2: player.maxHealth2, experience: player.experience, rank: player.rank, ship: player.ship, charge: player.charge, sx: player.sx, sy: player.sy, docked: player.docked, color: player.color, baseKills: player.baseKills, x: player.x, y: player.y, money: player.money, kills: player.kills, iron: player.iron, silver: player.silver, platinum: player.platinum, copper: player.copper });
             }, wait_time);
         });
@@ -345,10 +376,10 @@ module.exports = initNetcode = () => {
                 // Cleanup
                 // Kill socket
                 socket.disconnect();
-                delete dockers[player.id];
-                delete deads[player.id];
-                delete sockets[socket.id];
-                delete players[player.sy][player.sx][player.id];
+                if (dockers[player.id] !== undefined) delete dockers[player.id];
+                if (deads[player.id] !== undefined) delete deads[player.id];
+                if (sockets[socket.id] !== undefined) delete sockets[socket.id];
+                if (players[player.sy][player.sx][player.id] !== undefined) delete players[player.sy][player.sx][player.id];
             }, 6000);
         });
 
@@ -492,8 +523,8 @@ module.exports = initNetcode = () => {
             player.ship = data.ship; // Give them the new ship
 
             player.va = ships[data.ship].agility * 0.08 * player.agility2; // TODO this is going to be redone
-            player.thrust = ships[data.ship].thrust * player.thrust2;
-            player.maxHealth = Math.round(player.health = ships[data.ship].health * player.maxHealth2);
+            player.thrust = ships[data.ship].thrust * ((player.ship == 24 && player.color == `blue`) ? 5 : 1) * player.thrust2;
+            player.maxHealth = Math.round(player.health = ships[data.ship].health * ((player.ship == 24 && player.color == `blue`) ? 0.5 : 1) * player.maxHealth2);
             player.capacity = Math.round(ships[data.ship].capacity * player.capacity2);
 
             player.equipped = 0; // set them as being equipped on their first weapon
@@ -518,7 +549,14 @@ module.exports = initNetcode = () => {
 
             player.money -= wepns[data.weapon].price; // take their money
             player.weapons[data.slot] = data.weapon; // give them the weapon
-            player.refillAllAmmo(); // give them ammo
+
+            if (player.color !== `yellow`) { // give them ammo. No ammo refuel for pirates
+                player.refillAllAmmo();
+            } else {
+                player.navigationalShieldCount();
+                player.refillAllAmmo(false);
+            }
+
             sendWeapons(player); // tell the client what they've been given
             player.save();
         });
@@ -560,7 +598,7 @@ module.exports = initNetcode = () => {
                     if (player.money >= price) {
                         player.money -= price;
                         player.maxHealth2 = nextTechLevel(player.maxHealth2);
-                        player.maxHealth = Math.round(ships[player.ship].health * player.maxHealth2);
+                        player.maxHealth = Math.round(ships[player.ship].health * ((player.ship == 24 && player.color == `blue`) ? 0.5 : 1) * player.maxHealth2);
                     }
                     break;
                 }
@@ -587,7 +625,7 @@ module.exports = initNetcode = () => {
                     if (player.money >= price) {
                         player.money -= price;
                         player.thrust2 = nextTechLevel(player.thrust2);
-                        player.thrust = ships[player.ship].thrust * player.thrust2;
+                        player.thrust = ships[player.ship].thrust * ((player.ship == 24 && player.color == `blue`) ? 5 : 1) * player.thrust2;
                     }
                     break;
                 }
@@ -624,7 +662,7 @@ module.exports = initNetcode = () => {
                     if (player.money >= price) {
                         player.money -= price;
                         player.maxHealth2 = lastTechLevel(player.maxHealth2);
-                        player.maxHealth = Math.round(ships[player.ship].health * player.maxHealth2);
+                        player.maxHealth = Math.round(ships[player.ship].health * ((player.ship == 24 && player.color == `blue`) ? 0.5 : 1) * player.maxHealth2);
                     }
                     break;
                 }
@@ -653,7 +691,7 @@ module.exports = initNetcode = () => {
                     if (player.money >= price) {
                         player.money -= price;
                         player.thrust2 = lastTechLevel(player.thrust2);
-                        player.thrust = ships[player.ship].thrust * player.thrust2;
+                        player.thrust = ships[player.ship].thrust * ((player.ship == 24 && player.color == `blue`) ? 5 : 1) * player.thrust2;
                     }
                     break;
                 }
@@ -675,11 +713,29 @@ module.exports = initNetcode = () => {
             if (typeof data === `undefined` || player == 0 || !player.docked || player.quest != 0 || typeof data.quest !== `number` || data.quest < 0 || data.quest > 9) return;
 
             const qid = Math.floor(data.quest); // Find the correct quest.
-            const quest = teamQuests[player.color][qid];
+
+            let tempTeam = `red`;
+            let numTurrets = 0;
+            if (player.color === `yellow`) {
+                if (bases[player.sy][player.sx] != 0) {
+                    for (const id in bases[player.sy][player.sx]) {
+                        const piratedBase = bases[player.sy][player.sx][id];
+                        if (piratedBase !== undefined && piratedBase.color !== undefined && (piratedBase.baseType === LIVEBASE || piratedBase.baseType === DEADBASE) && piratedBase.color !== `yellow`) {
+                            tempTeam = piratedBase.color;
+                            numTurrets++;
+                            break;
+                        }
+                    }
+                }
+                if (numTurrets <= 0) {
+                    tempTeam = `red`;
+                }
+            } else tempTeam = player.color;
+
+            const quest = teamQuests[tempTeam][qid];
 
             // You need to have unlocked this quest type.
             if (quest == 0 || (quest.type === `Base` && player.rank < 7) || (quest.type === `Secret` && player.rank <= 14)) return;
-
             let hasBH = false;
             if (typeof quest.dsyv === `number`) {
                 for (let bh in vorts[quest.dsyv][quest.dsxv]) {
@@ -691,8 +747,7 @@ module.exports = initNetcode = () => {
                     hasBH = hasBH || !bh.isWorm;
                 }
             }
-
-            teamQuests[player.color][qid] = 0;
+            teamQuests[tempTeam][qid] = 0;
             player.quest = quest; // give them the quest and tell the client.
             socket.emit(`quest`, { quest: quest });
         });

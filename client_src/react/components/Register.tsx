@@ -68,7 +68,8 @@ class Register extends React.Component<{ display: boolean }, { user: string, pas
                 <div className="register-menu">
                     <div className="text-center">
                         <h3>New Players</h3>
-
+                        <p>Check the &apos;More&apos; menu if you need more advanced tutorials.</p>
+                        <p>You can use /help command on the chat to read all commands available.</p>
                         <br />
 
                         <input className="register-input" type="text" onChange={this.changeUsername} placeholder="Username" maxLength={16} style={{ margin: 8 }} />
@@ -81,7 +82,7 @@ class Register extends React.Component<{ display: boolean }, { user: string, pas
                         <br />
 
                         <br />
-                        <p>By registering, you agree to follow our terms of service and abide by our privacy policy.</p>
+                        <p>By registering, you agree to follow our Terms of Service and abide by our privacy policy.</p>
 
                         <div className="legal-info">
                             <a href="/legal/privacy_policy.pdf">Privacy Policy</a>

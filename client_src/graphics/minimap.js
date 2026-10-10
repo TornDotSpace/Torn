@@ -28,8 +28,11 @@ import {
     brighten
 } from '../utils/helper';
 
-const minimapcanvas = document.createElement(`canvas`);
-minimapcanvas.width = minimapcanvas.height = 208;
+global.minimapcanvas = document.createElement(`canvas`);
+minimapcanvas.width = minimapcanvas.height = 315; // 208;
+let cWidthCen = minimapcanvas.width / 2;
+let cHeightCen = minimapcanvas.height / 2;
+
 const minictx = minimapcanvas.getContext(`2d`, { alpha: true });
 
 global.useOldMap = true;
@@ -170,10 +173,15 @@ global.center3D = function (xxp, yyp, zzp) {
     }
 };
 global.r3DMap = function () {
-    if (sectorPoints == 0 || guest) return;
+    // if (sectorPoints == 0 || guest) return;
+    if (sectorPoints == 0) return;
 
     minimapcanvas.width = minimapcanvas.width;
     minictx.lineWidth = 2;
+
+    const minimapAdjust = minimapcanvas.width - 16; // TO-DO 208 - 16  = 192
+    let cWidthCen = minimapcanvas.width / 2;
+    let cHeightCen = minimapcanvas.height / 2;
 
     minictx.globalAlpha = guiOpacity;
     minictx.fillStyle = guiColor;
@@ -223,10 +231,10 @@ global.r3DMap = function () {
             let dot3 = sectorPoints[i + 1][j];
             let dot4 = sectorPoints[i + 1][j + 1];
             if (useOldMap) { // Override if the user is using the square map
-                dot1 = { x: (i - mapSz / 2) * 192 / mapSz, y: (j - mapSz / 2) * 192 / mapSz, z: 0 };
-                dot2 = { x: (i - mapSz / 2) * 192 / mapSz, y: (j + 1 - mapSz / 2) * 192 / mapSz, z: 0 };
-                dot3 = { x: (i + 1 - mapSz / 2) * 192 / mapSz, y: (j - mapSz / 2) * 192 / mapSz, z: 0 };
-                dot4 = { x: (i + 1 - mapSz / 2) * 192 / mapSz, y: (j + 1 - mapSz / 2) * 192 / mapSz, z: 0 };
+                dot1 = { x: (i - mapSz / 2) * minimapAdjust / mapSz, y: (j - mapSz / 2) * minimapAdjust / mapSz, z: 0 }; // TO-DO it was 192
+                dot2 = { x: (i - mapSz / 2) * minimapAdjust / mapSz, y: (j + 1 - mapSz / 2) * minimapAdjust / mapSz, z: 0 };
+                dot3 = { x: (i + 1 - mapSz / 2) * minimapAdjust / mapSz, y: (j - mapSz / 2) * minimapAdjust / mapSz, z: 0 };
+                dot4 = { x: (i + 1 - mapSz / 2) * minimapAdjust / mapSz, y: (j + 1 - mapSz / 2) * minimapAdjust / mapSz, z: 0 };
             }
 
             const cz = (dot1.z + dot4.z) / 2;
@@ -251,11 +259,12 @@ global.r3DMap = function () {
             const xx4 = dot4.x / appliedZoom;
             const yy4 = dot4.y / appliedZoom;
             minictx.beginPath();
-            minictx.moveTo(104 + xx3, 104 + yy3);
-            minictx.lineTo(104 + xx1, 104 + yy1);
-            minictx.lineTo(104 + xx2, 104 + yy2);
-            minictx.lineTo(104 + xx4, 104 + yy4);
-            minictx.lineTo(104 + xx3, 104 + yy3);
+            minictx.moveTo(cWidthCen + xx3, cHeightCen + yy3); const cWidthCen = minimapcanvas.width / 2;
+            const cHeightCen = minimapcanvas.height / 2;
+            minictx.lineTo(cWidthCen + xx1, cHeightCen + yy1);
+            minictx.lineTo(cWidthCen + xx2, cHeightCen + yy2);
+            minictx.lineTo(cWidthCen + xx4, cHeightCen + yy4);
+            minictx.lineTo(cWidthCen + xx3, cHeightCen + yy3);
             minictx.closePath();
 
             // render sector labels
@@ -263,7 +272,7 @@ global.r3DMap = function () {
             if (ga > 0.3 && fontsz > 5 && baseMap2D[i][j] === 0 && !(useOldMap && i * j != 0)) {
                 minictx.font = `${fontsz}px ShareTech`;
                 minictx.fillStyle = `white`;
-                write(minictx, getSectorName(i, j), (xx2 + xx3) / 2 + 104, (yy2 + yy3 + fontsz * 0.65) / 2 + 104);
+                write(minictx, getSectorName(i, j), (xx2 + xx3) / 2 + cWidthCen, (yy2 + yy3 + fontsz * 0.65) / 2 + cHeightCen);
             }
 
             const cx = (xx1 + xx4) / 2;
@@ -299,8 +308,8 @@ global.r3DMap = function () {
             // else minictx.stroke(); <-- Renders borders around the sectors
 
             if (baseMap2D[i][j] !== 0) {
-                const img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss);
-                minictx.drawImage(img, 104 + cx - 7, 104 + cy - 7, 15, 15);
+                const img = colorSelect(baseMap2D[i][j], Img.mrss, Img.mbss, Img.mgss, Img.myss);
+                minictx.drawImage(img, cWidthCen + cx - 7, cHeightCen + cy - 7, 15, 15);
             }
 
             if (planetMap2D[i][j] !== 0) {
@@ -311,7 +320,7 @@ global.r3DMap = function () {
                 const xxp2 = lerp(xx3, xx2, (-planX + 1 + planY) / 2) - cx;
                 const yyp2 = lerp(yy3, yy2, (-planX + 1 + planY) / 2) - cy;
                 minictx.fillStyle = `white`;
-                minictx.fillRect(104 + cx + xxp1 + xxp2 - 2, 104 + cy + yyp1 + yyp2 - 2, 4, 4);
+                minictx.fillRect(cWidthCen + cx + xxp1 + xxp2 - 2, cHeightCen + cy + yyp1 + yyp2 - 2, 4, 4);
             }
 
             for (const m in myGuild[j][i]) {
@@ -323,7 +332,7 @@ global.r3DMap = function () {
                 const xxp2 = lerp(xx3, xx2, (-planX + 1 + planY) / 2) - cx;
                 const yyp2 = lerp(yy3, yy2, (-planX + 1 + planY) / 2) - cy;
                 minictx.fillStyle = brighten(pc);
-                minictx.fillRect(104 + cx + xxp1 + xxp2 - 2, 104 + cy + yyp1 + yyp2 - 2, 4, 4);
+                minictx.fillRect(cWidthCen + cx + xxp1 + xxp2 - 2, cHeightCen + cy + yyp1 + yyp2 - 2, 4, 4);
             }
 
             if (va2 > 1.9) {
@@ -338,7 +347,7 @@ global.r3DMap = function () {
                     const yyp2 = lerp(yy3, yy2, (-bxin + 1 + byin) / 2) - cy;
                     c3dx = cx + xxp1 + xxp2;
                     c3dy = cy + yyp1 + yyp2;
-                    minictx.arc(104 + c3dx, 104 + c3dy, 4, 0, 2 * Math.PI, false);
+                    minictx.arc(cWidthCen + c3dx, cHeightCen + c3dy, 4, 0, 2 * Math.PI, false);
                     minictx.fill();
                     minictx.stroke();
                     minictx.closePath();
@@ -353,7 +362,7 @@ global.r3DMap = function () {
                     const yyp2 = lerp(yy3, yy2, (-bxin + 1 + byin) / 2) - cy;
                     c3dx = cx + xxp1 + xxp2;
                     c3dy = cy + yyp1 + yyp2;
-                    minictx.arc(104 + c3dx, 104 + c3dy, 4, 0, 2 * Math.PI, false);
+                    minictx.arc(cWidthCen + c3dx, cHeightCen + c3dy, 4, 0, 2 * Math.PI, false);
                     minictx.fill();
                     minictx.closePath();
                 }
@@ -377,8 +386,8 @@ global.r3DMap = function () {
     if (!useOldMap) {
         for (const i in dots) {
             const dot = dots[i];
-            const xx = 104 + dot.x / mapZoom;
-            const yy = 104 + dot.y / mapZoom;
+            const xx = cWidthCen + dot.x / mapZoom;
+            const yy = cHeightCen + dot.y / mapZoom;
             const sz = i / 500 + 0.5;
             minictx.fillStyle = `#${(((128 + Math.floor(Math.abs(coherentNoise(i)) * 128)) << 16) + (Math.floor(64 + Math.abs(coherentNoise(17 * i + 79)) * 128) << 8) + Math.floor(Math.abs(coherentNoise(7 * i + 107)) * 128)).toString(16)}`;
             minictx.globalAlpha = Math.min(1, 48 * square(square(square(-dot.z / 400 + 0.5))));
@@ -388,7 +397,7 @@ global.r3DMap = function () {
         minictx.fillStyle = `black`;
         minictx.strokeStyle = `white`;
         minictx.beginPath();
-        minictx.arc(104 + dots[0].x / mapZoom, 104 + dots[0].y / mapZoom, 10, 0, Math.PI * 2, false);
+        minictx.arc(cWidthCen + dots[0].x / mapZoom, cHeightCen + dots[0].y / mapZoom, 10, 0, Math.PI * 2, false);
         minictx.fill();
         minictx.stroke();
         minictx.closePath();
@@ -397,7 +406,8 @@ global.r3DMap = function () {
     minictx.globalAlpha = 1;
 };
 global.paste3DMap = function (xp, yp) {
-    if (sectorPoints == 0 || guest) return;
+    // if (sectorPoints == 0 || guest) return;
+    if (sectorPoints == 0) return;
     /* let d = new Date();
   let t = d.getMilliseconds() + d.getSeconds() * 1000 + d.getMinutes() * 6000 + d.getHours() * 36000;
   t/=1000;
@@ -407,10 +417,10 @@ global.paste3DMap = function (xp, yp) {
   for (let i in quasar) {
     let dot = quasar[i];
     let dt = t*Math.sqrt(square(dot.z-bhz)+square(dot.y-bhy)+square(dot.x-bhx))%100/10;
-    let x1 = xp+104 + ((dot.x-bhx)*dt+bhx) / mapZoom;
-    let y1 = yp+104 + ((dot.y-bhy)*dt+bhy) / mapZoom;
-    let x2 = xp+104 + ((dot.x-bhx)*dt*2+bhx) / mapZoom;
-    let y2 = yp+104 + ((dot.y-bhy)*dt*2+bhy) / mapZoom;
+    let x1 = xp+cWidthCen + ((dot.x-bhx)*dt+bhx) / mapZoom;
+    let y1 = yp+cHeightCen + ((dot.y-bhy)*dt+bhy) / mapZoom;
+    let x2 = xp+cWidthCen + ((dot.x-bhx)*dt*2+bhx) / mapZoom;
+    let y2 = yp+cHeightCen + ((dot.y-bhy)*dt*2+bhy) / mapZoom;
     let sz = i/500+.5
     ctx.strokeStyle = "#"+(((0 + Math.floor(Math.abs(coherentNoise(i)) * 128)) << 16) + (Math.floor(64+Math.abs(coherentNoise(17*i+79)) * 128) << 8) + Math.floor(128+Math.abs(coherentNoise(7*i+107)) * 128)).toString(16);
     ctx.beginPath();
@@ -426,9 +436,9 @@ global.paste3DMap = function (xp, yp) {
     const yyp2 = lerp(myyy3, myyy2, (-px / sectorWidth + 1 + py / sectorWidth) / 2) - pscy;
     ctx.fillStyle = brighten(pc);
     ctx.globalAlpha = psga;
-    ctx.fillRect(xp + 104 + pscx + xxp1 + xxp2 - 3, yp + 104 + pscy + yyp1 + yyp2 - 3, 6, 6);
+    ctx.fillRect(xp + cWidthCen + pscx + xxp1 + xxp2 - 3, yp + cHeightCen + pscy + yyp1 + yyp2 - 3, 6, 6);
     ctx.fillStyle = `yellow`;
     ctx.globalAlpha = 1;
     ctx.font = `12px ShareTech`;
-    write(ctx, translate(`Press M to use the ${useOldMap ? `3D` : `flat`} map`), 8, 232); // outside of the minimap canvas, gotta use ctx
+    write(ctx, translate(`Press M to use the ${useOldMap ? `3D` : `flat`} map`), 8, minimapcanvas.height - 8 + 32); // outside of the minimap canvas, gotta use ctx
 };

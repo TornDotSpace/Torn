@@ -46,19 +46,20 @@ for player in players.find():
     if player["tag"] == "V" or player["tag"] == "B":
         continue
 
-    # If they played in the last week, don't decay them
-    if ms - player["lastLogin"] < 604800000:
-        continue
+    ## If they played in the last week, don't decay them
+    # if ms - player["lastLogin"] < 604800000:
+    #    continue
+    # If they played in the last 2 years, don't decay them
+    if ((ms - player["lastLogin"]) / (52 * 2)) >= 604800000:
+        experience = player["experience"] * 0.99
+        money = player["money"] * 0.99
 
-    experience = player["experience"] * 0.99
-    money = player["money"] * 0.99
+        # Remove name field and set the tag
+        players.update_one(
+            {"_id": player["_id"]},
+            {"$set": {"experience": experience}, "$set": {"money": money}},
+        )
 
-    # Remove name field and set the tag
-    players.update_one(
-        {"_id": player["_id"]},
-        {"$set": {"experience": experience}, "$set": {"money": money}},
-    )
-
-    print(f"    Decayed {player['_id']}")
-    decayed += 1
+        print(f"    Decayed {player['_id']}")
+        decayed += 1
 print(f"decayed {decayed}/{total}")

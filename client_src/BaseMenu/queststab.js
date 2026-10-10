@@ -43,7 +43,7 @@ global.renderQuests = function () {
             desc = getQuestDescription(questi);
             write(baseMenuCtx, translate(questi.type), xv + 16, 72 + i % 5 * 80);
             baseMenuCtx.fillStyle = i == seller - 300 ? `green` : `gold`;
-            write(baseMenuCtx, translate(`Reward: $# and # exp.`, [numToLS(mult * questi.exp), numToLS(Math.floor(questi.exp / ((questi.type === `Mining` || questi.type === `Delivery`) ? 1500 : 4000)))]), xv + 16 + 16, 72 + i % 5 * 80 + 16);
+            write(baseMenuCtx, translate(`Reward: $# and # exp.`, [numToLS(mult * questi.exp), numToLS(Math.floor(questi.exp / ((questi.type === `Mining` || questi.type === `Delivery`) ? 1500 : (4000 * 4))))]), xv + 16 + 16, 72 + i % 5 * 80 + 16);
             baseMenuCtx.fillStyle = i == seller - 300 ? `lime` : `yellow`;
             wrapText(baseMenuCtx, translate(`Description: `) + desc, xv + 16 + 16, 72 + i % 5 * 80 + 32, 128 * 3 - 48, 16);
         }

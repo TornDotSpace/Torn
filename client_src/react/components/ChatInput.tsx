@@ -45,11 +45,11 @@ class ChatInput extends React.Component<{}, { value: string, activated: boolean 
     };
 
     focusChat = () => {
-        this.chat.current.focus();
+        if (this.chat !== undefined && this.chat !== null && this.chat.current !== undefined && this.chat.current !== null) this.chat.current.focus();
     };
 
     unfocusChat = () => {
-        this.chat.current.blur();
+        if (this.chat !== undefined && this.chat !== null && this.chat.current !== undefined && this.chat.current !== null) this.chat.current.blur();
     };
 
     keypress = (event) => {

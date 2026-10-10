@@ -68,6 +68,82 @@ global.sendAllSector = function (out, data, sx, sy) {
     }
 };
 
+global.getNeighborSectorsAffected = function (mysx, mysy, myx = undefined, myy = undefined, startX = -1, startY = -1, endX = 1, endY = 1) {
+    let sectors = {};
+    for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
+        let newX;
+        if (myx !== undefined) newX = myx - (asx * sectorWidth);
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
+        }
+        sectors[sxReal] = {};
+        for (let asy = startY; asy <= endY; asy++) { // Sectors on Y do not loop
+            const syReal = (mysy + asy);
+            if (syReal < mapSz && syReal >= 0) {
+                let newY;
+                if (myy !== undefined) newY = myy - (asy * sectorWidth);
+                sectors[sxReal][syReal] = true;
+            }
+        }
+    }
+    return sectors;
+};
+
+global.apply9SectorCall = function (functionToCall, command, stuff, mysx, mysy, myx = undefined, myy = undefined, extras = undefined, startX = -1, startY = -1, endX = 1, endY = 1, returnSomething = false) {
+    let somethingReturn = 0;
+    let foundSX;
+    let foundSY;
+    let notAffectSectors;
+    if (extras !== undefined) { // - We first need to find the exception TO-DO may need to make it more robust
+        for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
+            let sxReal = (mysx + asx) % mapSz;
+            while (sxReal < 0) {
+                sxReal = (sxReal + mapSz) % mapSz;
+            }
+            for (let asy = startY; asy <= endY; asy++) { // Sectors on Y do not loop
+                const syReal = (mysy + asy);
+                if (syReal < mapSz && syReal >= 0) {
+                    if (extras[syReal][sxReal][stuff] !== undefined && extras[syReal][sxReal][stuff] !== 0) {
+                        const item = extras[syReal][sxReal][stuff];
+                        if ((item.dead === undefined) || (item.dead === false)) { // If it's an alive player, or if it is not a player (then they seem to handle deletion on their own) we have to include these exceptions
+                            foundSX = sxReal;
+                            foundSY = syReal;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (foundSX !== undefined && foundSY !== undefined) break;
+        }
+    }
+    if (foundSX !== undefined && foundSY !== undefined) notAffectSectors = getNeighborSectorsAffected(foundSX, foundSY);
+
+    for (let asx = startX; asx <= endX; asx++) { // Sectors on X loop
+        let newX;
+        if (myx !== undefined) newX = myx - (asx * sectorWidth);
+        let sxReal = (mysx + asx) % mapSz;
+        while (sxReal < 0) {
+            sxReal = (sxReal + mapSz) % mapSz;
+        }
+        for (let asy = startY; asy <= endY; asy++) { // Sectors on Y do not loop
+            const syReal = (mysy + asy);
+            if (syReal < mapSz && syReal >= 0) {
+                let newY;
+                if (myy !== undefined) newY = myy - (asy * sectorWidth);
+                if (extras === undefined || extras == false) {
+                    functionToCall(command, stuff, sxReal, syReal);
+                } else { // Potential TO-DO if we need more paremeters we will edit this
+                    const shallDo = ((notAffectSectors === undefined) || notAffectSectors[sxReal] === undefined || notAffectSectors[sxReal][syReal] === undefined || notAffectSectors[sxReal][syReal] !== true);
+                    if (shallDo && (((foundSX !== sxReal) && (foundSY !== syReal)) || (extras[syReal] !== undefined && extras[syReal][sxReal] !== undefined && (extras[syReal][sxReal][stuff] === undefined || extras[syReal][sxReal][stuff] === 0)))) functionToCall(command, stuff, sxReal, syReal);
+                    // somethingReturn = functionToCall(command, stuff, sxReal, syReal, extras);
+                }
+            }
+        }
+    }
+    if (returnSomething != false) return somethingReturn;
+};
+
 global.sendAllGlobal = function (out, data) {
     for (const i in sockets) {
         const p = sockets[i].player;
@@ -90,12 +166,14 @@ global.sendTeam = function (color, out, data) { // send a socket.io message to a
     }
 };
 
-global.note = function (msg, x, y, sx, sy) { // a popup note in game that everone in the sector can see.
-    sendAllSector(`note`, { msg: msg, x: x, y: y, local: false }, sx, sy);
+global.note = function (msg, x, y, sx, sy, spread = true) { // a popup note in game that everyone in the sector can see. TO-DO REVISE STUFF
+    if (!spread) sendAllSector(`note`, { msg: msg, x: x, y: y, local: false, sx: sx, sy: sy }, sx, sy);
+    else apply9SectorCall(sendAllSector, `note`, { msg: msg, x: x, y: y, local: false, sx: sx, sy: sy }, sx, sy);
 };
 
-global.strong = function (msg, x, y, sx, sy) { // a bigger note
-    sendAllSector(`strong`, { msg: msg, x: x, y: y, local: false }, sx, sy);
+global.strong = function (msg, x, y, sx, sy, spread = false) { // a bigger note
+    if (!spread) sendAllSector(`strong`, { msg: msg, x: x, y: y, sx: sx, sy: sy, local: false }, sx, sy);
+    else apply9SectorCall(sendAllSector, `strong`, { msg: msg, x: x, y: y, sx: sx, sy: sy, local: false }, sx, sy);
 };
 
 global.parseBoolean = (s) => (s === `true`);
@@ -119,3 +197,32 @@ global.send_rpc = async (endpoint, data) => await fetch(`${Config.getValue(`rpc_
     body: data,
     headers: { "Content-Type": `x-www-form-urlencoded` }
 });
+
+global.getMinimapSBCurrentBaseInfo = function (baseMa) { // pick base turrets' most current color state
+    let minimapState = { starbaseList: [] };
+
+    for (const teamColor in baseMa) {
+        const thisMap = baseMap[teamColor];
+        for (let i = 0; i < thisMap.length; i += 2) {
+            if (bases[thisMap[i]] !== undefined && bases[thisMap[i + 1]][thisMap[i]] !== undefined) {
+                const turretsInSector = bases[thisMap[i + 1]][thisMap[i]];
+                if (turretsInSector !== 0) {
+                    let abase = 0;
+                    for (const id in turretsInSector) {
+                        abase = turretsInSector[id];
+                        if (abase !== undefined && abase !== 0 && abase !== 0 && (abase.baseType == DEADBASE || abase.baseType == LIVEBASE)) break;
+                        else abase = 0;
+                    }
+                    if (abase !== 0 && abase.color !== undefined) {
+                        const aSBColor = abase.color;
+                        if (aSBColor !== undefined && aSBColor !== teamColor) {
+                            const upDelta = { id: abase.id, sx: abase.sx, sy: abase.sy, color: abase.color };
+                            minimapState.starbaseList.push(upDelta);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return minimapState;
+};

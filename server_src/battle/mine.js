@@ -16,6 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 const Beam = require(`./beam.js`);
+const Blast = require(`./blast.js`);
 
 class Mine {
     constructor (ownr, i, weaponID) {
@@ -26,15 +27,21 @@ class Mine {
         this.dmg = wepns[weaponID].damage;
         this.range = wepns[weaponID].range;
 
+        this.isDead = false;
+
         this.x = ownr.x;
         this.y = ownr.y;
+        this.angle = ownr.angle;
         this.vx = Math.cos(ownr.angle) * wepns[weaponID].speed; // grenades are the only mines that move on its own
         this.vy = Math.sin(ownr.angle) * wepns[weaponID].speed;
         this.sx = ownr.sx;
         this.sy = ownr.sy;
 
         this.owner = ownr;
+        this.ownerShip = 26;
+        if (ownr !== undefined && ownr !== 0 && ownr.ship !== undefined) this.ownerShip = ownr.ship;
         this.wepnID = weaponID;
+        this.child = 0;
     }
 
     tick () {
@@ -47,24 +54,65 @@ class Mine {
             this.collideWithBases();
         }
         if ((this.wepnID == 33 || this.wepnID == 32) && this.time++ > 25) this.die(); // grenade and impulse mine blow up after 1 second
-        if (this.time++ > mineLifetime) this.die(); // all mines die after 3 minutes
+        else if (this.time++ > mineLifetime) this.die(0.1); // all mines die after 3 minutes
+        if (this.isDead) return;
 
-        this.move(); // not only grenade, anything EM'ed
+        if (this.wepnID === 50) { // Nailoth mine
+            if (this.time > 25 * 25) this.die(0.1);
+            if (this.time === 25) {
+                if (this.child == 0) {
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle + 3.1415 / 2, this.child + 2, wepns[this.wepnID].speed);
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle + 3.1415 / 2, this.child + 1, -wepns[this.wepnID].speed);
+                    this.die();
+                } else if (this.child == 1 || this.child == 2) {
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle - 3.1415 / 2, this.child + 2, 1.5 * wepns[this.wepnID].speed);
+                    this.shootMineSpecificSpeed(this.wepnID, this.angle - 3.1415 / 2 * (this.child - 1), this.child + 4, 0);
+                    this.die();
+                } else if (this.child == 3 || this.child == 4) {
+                    this.angle += (3.1415 / 2 * (this.child - 1));
+                }
+            } else if (this.time > 25 && this.time % 5 == 0) {
+                this.vx = 0;
+                this.vy = 0;
+                this.shootBlast(34, 0);
+                if (this.time % 500 == 0 && Math.random() < 0.1) this.shootBlast(25, -3.1415 / 4);
+                this.shootBlast(47, -3.1415 / 2);
+            } else this.move();
+        } else this.move(); // not only grenade, anything EM'ed
         if (this.wepnID == 43 && this.time % 8 == 0) this.doPulse(); // pulse
         if (this.wepnID == 44 && this.time % 25 == 0) this.doHeal(); // campfire
+        if (this.wepnID == 16) {
+            if ((this.time % (wepns[7].charge) == 0) && this.ownerShip < wepns[7].level) this.shootLaser(7, 8);
+            if ((this.time % (wepns[8].charge) == 0) && this.ownerShip >= wepns[8].level) this.shootLaser(8, 8);
+            if ((this.time % (wepns[9].charge) == 0) && this.ownerShip >= (wepns[9].level * 2)) this.shootLaser(9, 8, 2);
+        }
     }
 
     move () {
         if (this.wepnID == 48) { // Magnetic Mine
             let magvx = 0;
             let magvy = 0;
-            for (const i in players[this.sy][this.sx]) {
-                const p = players[this.sy][this.sx][i];
-                if (p.color !== this.color) { // only enemies
+            const fullplayers = get9SectorDict(players, this.sx, this.sy);
+            for (const i in fullplayers) {
+                const p = fullplayers[i];
+                if (p !== undefined && p.color !== this.color) { // only enemies
                     // compute distance and angle to players
-                    const distance = squaredDist(this, p); // distance squared between me and them
-                    if (distance > square(10 * this.range)) continue;// wepns[48].range
-                    const a = angleBetween(p, this);
+                    const distance = squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
+                    if (distance > square(10 * this.range)) continue;
+                    const a = angleGlobalBetween(p, this, sectorWidth, sectorWidth, mapSz);
+                    const vel = 4.5 / Math.log(distance);
+                    magvx += Math.cos(a) * vel;
+                    magvy += Math.sin(a) * vel;
+                }
+            }
+            const fullbases = get9SectorDict(bases, this.sx, this.sy);
+            for (const i in fullbases) {
+                const p = fullbases[i];
+                if (p !== undefined && p.color !== this.color && p.baseType !== DEADBASE) { // only enemies
+                    // compute distance and angle to players
+                    const distance = squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz); // distance squared between me and them
+                    if (distance > square(10 * this.range)) continue;
+                    const a = angleGlobalBetween(p, this, sectorWidth, sectorWidth, mapSz);
                     const vel = 4.5 / Math.log(distance);
                     magvx += Math.cos(a) * vel;
                     magvy += Math.sin(a) * vel;
@@ -76,7 +124,7 @@ class Mine {
         this.x += this.vx;
         this.y += this.vy;
 
-        if (this.wepnID == 44) { // Campfire
+        if (this.wepnID !== undefined) { // (this.wepnID == 44) { // Campfire
             const old_sx = this.sx;
             const old_sy = this.sy;
             if (this.x > sectorWidth) { // check each edge of the 4 they could cross.
@@ -109,66 +157,149 @@ class Mine {
     }
 
     doPulse () {
-        if (this.time > 25 * 40) this.die(); // pulse has a shorter lifespan
+        if (this.time > 25 * 40) this.die(0.1); // pulse has a shorter lifespan
         let playerFound = false;
-        for (const i in players[this.sy][this.sx]) {
-            const p = players[this.sy][this.sx][i];
-            if (p.color !== this.color && squaredDist(p, this) < square(this.range * 10)) {
-                const mult = 400 / Math.max(10, 0.001 + Math.hypot(p.x - this.x, p.y - this.y)); // not sure what's going on here but it works
-                p.vx = mult * (Math.cbrt(p.x - this.x));
-                p.vy = mult * (Math.cbrt(p.y - this.y)); // push the player
-                p.updatePolars();// we edited rectangulars
-                p.angle = p.driftAngle; // turn them away from the mine
-                p.dmg(this.dmg, this);
-                playerFound = true;
+        const range2 = square(this.range * 10);
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
+            if (p !== undefined && p.color !== this.color) {
+                const distance2 = squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz);
+                if (distance2 < range2) {
+                    const extraX = obtainSXDrift(this.sx, p.sx);
+                    const extraY = obtainSYDrift(this.sy, p.sy);
+                    const mult = 400 / Math.max(10, 0.001 + Math.sqrt(distance2)); // not sure what's going on here but it works
+                    p.vx = mult * (Math.cbrt(p.x - this.x + extraX));
+                    p.vy = mult * (Math.cbrt(p.y - this.y + extraY)); // push the player
+                    p.updatePolars();// we edited rectangulars
+                    p.angle = p.driftAngle; // turn them away from the mine
+                    p.dmg(this.dmg, this);
+                    playerFound = true;
+                }
             }
         }
 
-        for (const i in missiles[this.sy][this.sx]) {
-            const m = missiles[this.sy][this.sx][i];
-            const d2 = squaredDist(this, m);
-            if (d2 > square(10 * this.range)) continue;
-            const ang = angleBetween(this, m);
+        const fullmissiles = get9SectorDict(missiles, this.sx, this.sy);
+        for (const i in fullmissiles) {
+            const m = fullmissiles[i];
+            if (m === undefined) continue;
+            const d2 = squaredGlobalDist(this, m, sectorWidth, sectorWidth, mapSz);
+            if (d2 > range2) continue;
+            const ang = angleGlobalBetween(this, m, sectorWidth, sectorWidth, mapSz);
             const vel = -100000000 / Math.max(d2, 2000000);
             m.emvx += Math.cos(ang) * vel;
             m.emvy += Math.sin(ang) * vel;
         }
 
         if (playerFound) {
-            sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+            apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
             this.time += 25 * 3;
         }
     }
 
-    doHeal () {
-        if (this.time > 25 * 20) this.die(); // campfire has a shorter lifespan
+    shootLaser (weaponID = 8, weaponRID = 8, rangeMod = 1) {
         let playerFound = 0;
+        let dmg = 0;
+        if (weaponID !== undefined) {
+            if (weaponID >= 0) dmg = wepns[weaponID].damage;
+            else dmg = this.dmg;
+        } else dmg = this.dmg;
+        let range2 = 0;
+        if (weaponRID !== undefined) {
+            if (weaponRID >= 0) range2 = square(wepns[weaponRID].range * 10);
+            else range2 = square(this.range * 10);
+        } else range2 = square(this.range * 10);
 
+        range2 *= rangeMod;
+
+        if (weaponID === undefined) weaponID = this.wepnID;
+        if (weaponRID === undefined) weaponRID = this.wepnID;
+
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        let thoseIHeal = [];
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
+            if (p !== undefined && p.color !== this.color && squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz) < range2) {
+                playerFound++;
+                thoseIHeal.push(i);
+            }
+        }
+        const fullbases = get9SectorDict(bases, this.sx, this.sy);
+        let thoseBIHeal = [];
+        for (const i in fullbases) {
+            const b = fullbases[i];
+            if (b !== undefined && b.baseType !== DEADBASE && b.color !== this.color && squaredGlobalDist(b, this, sectorWidth, sectorWidth, mapSz) < range2) {
+                playerFound++;
+                thoseBIHeal.push(i);
+            }
+        }
+        if (playerFound < 1) return;
+
+        const leOwner = (this.owner !== undefined && this.owner !== 0) ? this.owner : this;
+        // damage them
+        for (let index = 0; index < thoseIHeal.length; ++index) {
+            const p = fullplayers[thoseIHeal[index]];
+            if (p !== undefined) {
+                // p.health = Math.min(p.health - dmg, p.health); // damage them
+                const r = Math.random(); // Laser Mine
+                const beam = new Beam(leOwner, r, this.wepnID, p, this);
+                beam.dmg = dmg;
+                beams[this.sy][this.sx][r] = beam;
+            }
+        }
+        for (let index = 0; index < thoseBIHeal.length; ++index) {
+            const p = fullbases[thoseBIHeal[index]];
+            if (p !== undefined) {
+                // p.health = Math.min(p.health - dmg, p.health); // damage them
+                const r = Math.random(); // Laser Mine
+                const beam = new Beam(leOwner, r, this.wepnID, p, this);
+                // beam.wepnID = this.wepnID;
+                beam.dmg = dmg;
+                beams[this.sy][this.sx][r] = beam;
+            }
+        }
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
+
+        this.time += Math.floor(playerFound * dmg * 25);
+    }
+
+    doHeal () {
+        if (this.time > 25 * 20) this.die(0.1); // campfire has a shorter lifespan
+        let playerFound = 0;
+        const range2 = square(this.range * 10);
         // check there's 2 people
-        for (const i in players[this.sy][this.sx]) {
-            const p = players[this.sy][this.sx][i];
-            if (p.color == this.color && squaredDist(p, this) < square(this.range * 10)) playerFound++;
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        let thoseIHeal = [];
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
+            if (p !== undefined && p.color == this.color && squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz) < range2) {
+                playerFound++;
+                thoseIHeal.push(i);
+            }
         }
         if (playerFound < 2) return;
 
         // heal them
-        for (const i in players[this.sy][this.sx]) {
-            const p = players[this.sy][this.sx][i];
-            if (p.color == this.color && squaredDist(p, this) < square(this.range * 10)) {
+        for (let index = 0; index < thoseIHeal.length; ++index) {
+            const p = fullplayers[thoseIHeal[index]];
+            if (p !== undefined) {
                 p.health = Math.min(p.health - this.dmg, p.maxHealth); // heal them
-
                 const r = Math.random(); // Laser Mine
                 const beam = new Beam(this, r, this.wepnID, p, this); // m.owner is the owner, m is the origin location
                 beams[this.sy][this.sx][r] = beam;
             }
         }
-        sendAllSector(`sound`, { file: `beam`, x: this.x, y: this.y }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `beam`, sx: this.sx, sy: this.sy, x: this.x, y: this.y }, this.sx, this.sy);
     }
 
     collideWithGuns () { // Guns will make enemy mines explode and vice-versa, but it'll take a while to kill them.
-        for (const i in bullets[this.sy][this.sx]) {
-            const b = bullets[this.sy][this.sx][i];
-            if (b.color !== this.color && squaredDist(b, this) < square(this.range)) {
+        const fullbullets = get9SectorDict(bullets, this.sx, this.sy);
+        const range = (this.range <= 0) ? 5 : this.range;
+        const rangeMe = square(range);
+
+        for (const i in fullbullets) {
+            const b = fullbullets[i];
+            if (b.color !== this.color && squaredGlobalDist(b, this, sectorWidth, sectorWidth, mapSz) < rangeMe) {
                 b.die(); // destroy the bullet
                 if (this.time >= mineLifetime) { // Old mines die faster
                     this.die(); // the mine dies too
@@ -179,9 +310,14 @@ class Mine {
     }
 
     collideWithMissiles () { // Missiles will make enemy mines explode and vice-versa
-        for (const i in missiles[this.sy][this.sx]) {
-            const missile = missiles[this.sy][this.sx][i];
-            if (missile.color !== this.color && squaredDist(missile, this) < square(this.range)) {
+        const fullmissiles = get9SectorDict(missiles, this.sx, this.sy);
+
+        const range = (this.range <= 0) ? 4 : this.range;
+        const rangeMe = square(range);
+
+        for (const i in fullmissiles) {
+            const missile = fullmissiles[i];
+            if (missile !== undefined && missile.color !== this.color && squaredGlobalDist(missile, this, sectorWidth, sectorWidth, mapSz) < rangeMe) {
                 missile.die(); // destroy the missile
                 if (this.time >= mineLifetime) { // Old mines die faster
                     this.die(); // the mine dies too
@@ -192,10 +328,12 @@ class Mine {
     }
 
     collideWithMines () { // When the mine is created, make sure it isn't placed on top of any other mines.
-        for (const m in mines[this.sy][this.sx]) {
-            const mine = mines[this.sy][this.sx][m];
-            if (mine.id == this.id) continue; // ofc the mine is on top of itthis
-            if (squaredDist(mine, this) < square(wepns[this.wepnID].range)) { // if that mine is in this mine's "attack range"
+        const fullmines = get9SectorDict(mines, this.sx, this.sy);
+        const rangeMeID = square(wepns[this.wepnID].range);
+        for (const m in fullmines) {
+            const mine = fullmines[m];
+            if (mine === undefined || mine.id == this.id) continue; // ofc the mine is on top of itself
+            if (squaredGlobalDist(mine, this, sectorWidth, sectorWidth, mapSz) < rangeMeID) { // if that mine is in this mine's "attack range"
                 mine.die(); // destroy both
                 this.die();
                 break;
@@ -204,45 +342,83 @@ class Mine {
     }
 
     collideWithBases () {
-        const b = bases[this.sy][this.sx];
-        if (b != 0 && b.baseType != DEADBASE && b.color !== this.color && squaredDist(b, this) < square(16 + 32)) {
-            if (this.wepnID == 17) b.EMP(25);
-            b.dmg(this.dmg, this);
-            this.die();
+        const fullbases = get9SectorDict(bases, this.sx, this.sy);
+        const range2 = square(16 + 32);
+        for (const id in fullbases) {
+            const b = fullbases[id];
+            if (b !== undefined && b !== 0 && b.baseType != DEADBASE && b.color !== this.color && squaredGlobalDist(b, this, sectorWidth, sectorWidth, mapSz) < range2) {
+                if (this.wepnID == 17) b.EMP(25 * 4);
+                b.dmg(this.dmg, this);
+                this.die();
+            }
         }
     }
 
-    die () {
-        this.die = function () { }; // Purpose unclear, please comment
+    shootMineSpecific (aWeapon, angle, gen) {
+        shootMineSpecificSpeed(aWeapon, angle, gen, wepns[aWeapon].speed);
+    }
+
+    shootMineSpecificSpeed (aWeapon, angle, gen, speed) {
+        const r = Math.random();
+        const mine = new Mine(this.owner, r, aWeapon);
+        mine.x = this.x;
+        mine.y = this.y;
+        mine.sx = this.sx;
+        mine.sy = this.sy;
+        mine.angle = angle;
+        mine.vx = Math.cos(angle) * speed; // grenades are the only mines that move on its own
+        mine.vy = Math.sin(angle) * speed;
+        mine.child = gen;
+        mines[this.sy][this.sx][r] = mine;
+    }
+
+    shootBlast (aWeapon, angle) {
+        const r = Math.random();
+        const blast = new Blast(this.owner, r, aWeapon);
+        blast.bx = this.x;
+        blast.by = this.y;
+        blast.sx = this.sx;
+        blast.sy = this.sy;
+        blast.angle = this.angle + angle;
+        blast.webMult = 1000;
+        blasts[this.sy][this.sx][r] = blast;
+    }
+
+    die (volumeMult = 1) {
+        this.die = function (volumeMult = 1) { }; // Purpose unclear, please comment
+        this.isDead = true;
         let power = 0; // how strongly this mine pushes people away on explosion
         if (this.wepnID == 15 || this.wepnID == 33) power = 400; // mine, grenade
         else if (this.wepnID == 32) power = 2000;
-        if (power != 0) {
-            for (const i in players[this.sy][this.sx]) {
-                const p = players[this.sy][this.sx][i];
-                if (squaredDist(p, this) < square(1024)) {
-                    const mult = power / Math.max(10, 0.001 + Math.hypot(p.x - this.x, p.y - this.y)); // not sure what's going on here but it works
-                    p.vx = mult * (Math.cbrt(p.x - this.x));
-                    p.vy = mult * (Math.cbrt(p.y - this.y)); // push the player
+
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        const range2a = square(1024);
+        const range2b = square(this.range * 40);
+        const range2c = square(80);
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
+            if (p !== undefined) {
+                const dist2 = squaredGlobalDist(p, this, sectorWidth, sectorWidth, mapSz);
+                if (power != 0 && dist2 < range2a) {
+                    const extraX = obtainSXDrift(this.sx, p.sx);
+                    const extraY = obtainSYDrift(this.sy, p.sy);
+                    const mult = power / Math.max(10, 0.001 + Math.sqrt(dist2)); // not sure what's going on here but it works
+                    p.vx = mult * (Math.cbrt(p.x - this.x + extraX));
+                    p.vy = mult * (Math.cbrt(p.y - this.y + extraY)); // push the player
                     p.updatePolars();// we edited rectangulars
                     p.angle = p.driftAngle; // turn them away from the mine
                 }
+                const condit1 = (this.wepnID == 33 && dist2 < range2b);
+                const condit2 = (dist2 < range2c);
+                if (condit1 || condit2) {
+                    let finalDmg = 0;
+                    if (condit1) finalDmg += this.dmg;
+                    if (condit2) finalDmg += (this.dmg / 10);
+                    p.dmg(finalDmg, this); // if i'm in range of a player on explosion, damage them
+                }
             }
         }
-        if (this.wepnID == 33) {
-            // if i'm a grenade
-            for (const i in players[this.sy][this.sx]) {
-                const p = players[this.sy][this.sx][i];
-                if (!p.guest && squaredDist(p, this) < square(this.range * 40)) p.dmg(this.dmg, this); // if i'm in range of a player on explosion, damage them
-            }
-        }
-        for (const i in players[this.sy][this.sx]) {
-            const p = players[this.sy][this.sx][i];
-            if (squaredDist(p, this) < square(80)) {
-                p.dmg(this.dmg / 10, this); // if i'm in range of a player on explosion, damage them
-            }
-        }
-        sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0, soundStrength: volumeMult }, this.sx, this.sy);
         delete mines[this.sy][this.sx][this.id];
     }
 }

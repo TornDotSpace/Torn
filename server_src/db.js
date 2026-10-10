@@ -76,9 +76,24 @@ global.loadPlayerData = async function (player) {
         player[key] = record[key];
     }
 
-    if (player.sx >= mapSz || player.sy >= mapSz || bases[player.sy][player.sx] === 0 || bases[player.sy][player.sx].color != player.color) {
-        player.sx = baseMap[player.color][0];
-        player.sy = baseMap[player.color][1];
+    let properFound = false;
+    if (player.sx < mapSz && player.sy < mapSz && (bases[player.sy][player.sx] != undefined && bases[player.sy][player.sx] != 0)) {
+        for (const id in bases[player.sy][player.sx]) {
+            const base = bases[player.sy][player.sx][id];
+            if (base !== undefined && base.color === player.color) properFound = true;
+        }
+    }
+
+    if (!properFound) {
+        if (baseMap[player.color] !== undefined) {
+            player.sx = baseMap[player.color][0];
+            player.sy = baseMap[player.color][1];
+        } else {
+            player.sx = wormhole.sxo;
+            player.sy = wormhole.syo;
+            player.x = wormhole.xo;
+            player.y = wormhole.yo;
+        }
     }
 
     if (!(player.guild in guildPlayers)) player.guild = ``; // This accounts for players with old/undefined guilds
@@ -101,19 +116,24 @@ global.saveTurret = function (turret) {
         experience: turret.experience,
         money: turret.money,
         color: turret.color,
+        trueColor: turret.trueColor,
+        assimilatedCol: turret.assimilatedCol,
         owner: turret.owner,
         x: turret.x,
         y: turret.y,
         sx: turret.sx,
         sy: turret.sy,
         baseType: turret.baseType,
+        isMini: turret.isMini,
+        health: turret.health,
+        maxHealth: turret.maxHealth,
         name: turret.name
     };
-    TURRET_DATABASE.replaceOne({ _id: turret.id }, record, { upsert: true });
+    if (!(Object.is(TURRET_DATABASE, null) || Object.is(TURRET_DATABASE, undefined))) TURRET_DATABASE.replaceOne({ _id: turret.id }, record, { upsert: true });
 };
 
 global.deleteTurret = function (turret) {
-    TURRET_DATABASE.deleteOne({ _id: turret.id });
+    if (!(Object.is(TURRET_DATABASE, null) || Object.is(TURRET_DATABASE, undefined))) TURRET_DATABASE.deleteOne({ _id: turret.id });
 };
 
 global.loadTurretData = async function () {
@@ -128,13 +148,13 @@ global.loadTurretData = async function () {
         for (const x in i) {
             b[x] = i[x];
         }
-        bases[b.sy][b.sx] = b;
+        bases[b.sy][b.sx][b.id] = b;
         console.log(`Turret (${b.sy},${b.sx}) loaded!`);
     });
 };
 
 global.savePlayerEmail = function (player, email) {
-    PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: { email: email } }, { upsert: true });
+    if (!(Object.is(PLAYER_DATABASE, null) || Object.is(PLAYER_DATABASE, undefined))) PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: { email: email } }, { upsert: true });
 };
 global.savePlayerData = function (player) {
     const record = {
@@ -173,7 +193,9 @@ global.savePlayerData = function (player) {
         lives: player.lives,
         guild: player.guild,
         sx: player.sx,
-        sy: player.sy
+        sy: player.sy,
+        x: player.x,
+        y: player.y
     };
-    PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: record }, { upsert: true });
+    if (!(Object.is(PLAYER_DATABASE, null) || Object.is(PLAYER_DATABASE, undefined))) PLAYER_DATABASE.updateOne({ _id: player.name }, { $set: record }, { upsert: true });
 };

@@ -56,18 +56,22 @@ const loadAllImages = () => {
     loadImage(`rss`, `/img/red/rss.png`);
     loadImage(`bss`, `/img/blue/bss.png`);
     loadImage(`gss`, `/img/green/gss.png`);
+    loadImage(`yss`, `/img/yellow/yss.png`);
 
     loadImage(`mrss`, `/img/red/mrss.png`);
     loadImage(`mbss`, `/img/blue/mbss.png`);
     loadImage(`mgss`, `/img/green/mgss.png`);
+    loadImage(`myss`, `/img/yellow/myss.png`);
 
     loadImage(`rt`, `/img/red/rt.png`);
     loadImage(`bt`, `/img/blue/bt.png`);
     loadImage(`gt`, `/img/green/gt.png`);
+    loadImage(`yt`, `/img/yellow/yt.png`);
 
     loadImage(`rsentry`, `/img/red/rsentry.png`);
     loadImage(`bsentry`, `/img/blue/bsentry.png`);
     loadImage(`gsentry`, `/img/green/gsentry.png`);
+    loadImage(`ysentry`, `/img/yellow/ysentry.png`);
 
     // Asteroids.
     loadImage(`iron`, `/img/space/iron.png`);
@@ -78,6 +82,7 @@ const loadAllImages = () => {
     loadImage(`astUnderlayBlue`, `/img/space/astUnderlayBlue.png`);
     loadImage(`astUnderlayRed`, `/img/space/astUnderlayRed.png`);
     loadImage(`astUnderlayGreen`, `/img/space/astUnderlayGreen.png`);
+    loadImage(`astUnderlayYellow`, `/img/space/astUnderlayYellow.png`);
 
     // Planets.
     loadImage(`planetO`, `/img/space/planetOverlay.png`);
@@ -91,6 +96,7 @@ const loadAllImages = () => {
     loadImage(`redbullet`, `/img/weapons/rb.png`);
     loadImage(`bluebullet`, `/img/weapons/bb.png`);
     loadImage(`greenbullet`, `/img/weapons/gb.png`);
+    loadImage(`yellowbullet`, `/img/weapons/yb.png`);
 
     loadImage(`energyDisk`, `/img/weapons/energyDisk.png`);
     loadImage(`photonOrb`, `/img/weapons/photonOrb.png`);
@@ -109,6 +115,7 @@ const loadAllImages = () => {
     loadImage(`laserMine`, `/img/weapons/laserMine.png`);
     loadImage(`pulseMine`, `/img/weapons/pulseMine.png`);
     loadImage(`campfire`, `/img/weapons/campfire.png`);
+    loadImage(`nailoth`, `/img/weapons/nailothWeb.png`);
 
     loadImage(`bigBullet`, `/img/weapons/bigBullet.png`);
 
@@ -128,6 +135,7 @@ const loadAllImages = () => {
     loadImage(`life`, `/img/packs/life.png`);
 
     // Distance pointer arrows.
+    loadImage(`yellowHollowArrow`, `/img/arrows/yellowHollowArrow.png`);
     loadImage(`yellowArrow`, `/img/arrows/yellowArrow.png`);
     loadImage(`orangeArrow`, `/img/arrows/orangeArrow.png`);
     loadImage(`greenArrow`, `/img/arrows/greenArrow.png`);
@@ -135,17 +143,19 @@ const loadAllImages = () => {
     loadImage(`blueArrow`, `/img/arrows/blueArrow.png`);
     loadImage(`whiteArrow`, `/img/arrows/whiteArrow.png`);
     loadImage(`blackArrow`, `/img/arrows/blackArrow.png`);
+    loadImage(`blackPurpleTipArrow`, `/img/arrows/blackPurpleTipArrow.png`);
 
     // Ships.
     for (let i = 0; i < 26; i++) {
         loadShipImage(`blue`, i);
         loadShipImage(`red`, i);
         loadShipImage(`green`, i);
+        loadShipImage(`yellow`, i);
     }
 
     loadImageEnd();
 
-    for (let i = 1; i < 6; i++) {
+    for (let i = 1; i < 15; i++) {
         planetImgs[i] = new Image();
         planetImgs[i].src = `/img/space/planets/pt${i}.jpg`;
     }

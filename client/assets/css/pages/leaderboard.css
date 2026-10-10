@@ -67,3 +67,7 @@ thead > tr.th-sticky > th:last-child {
 .team-blue {
   color: var(--human);
 }
+
+.team-yellow {
+  color: var(--pirate);
+}

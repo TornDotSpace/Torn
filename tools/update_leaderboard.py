@@ -46,10 +46,22 @@ def updateLB(uri, output):
     players = client.torn.players
     playerData = []
 
+    #players.find({ "_id": ObjectId("stbcaccount") })
+    #players.delete_one({ "_id": ObjectId("stbcaccount")})
     i = 1
     for player in players.find().sort("experience", pymongo.DESCENDING):
         if i > 2000:
             break
+
+        #if not "tag" in player or not "money" in player: #player.has_key("tag"):
+        #    #print("Warning, player without special tags", player["_id"])
+        #    #players.remove({ _id: player["_id"]})
+        #    continue
+
+        #if player["_id"] == "mrnigger":
+        #    print("ATTENTION, DETECTED DESIRED ACCOUNT TO REMOVE ", player["_id"])
+        #    players.delete_one({ "_id": player["_id"]})
+        #    continue
 
         tag = player["tag"]
         if "O" in tag:
@@ -62,12 +74,25 @@ def updateLB(uri, output):
         else:
             money = f"{int(pMoney // 1000.5)}K"
 
+        numberOfLives = player["lives"]
+        if (numberOfLives >= 20):
+            numberOfLives = "0"
+        elif (numberOfLives > 10):
+            numberOfLives = "1"
+        elif (numberOfLives > 5):
+            numberOfLives = "2"
+        elif (numberOfLives == 1):
+            numberOfLives = "3"
+        else:
+            numberOfLives = "4"
+
         newPlayer = {
             "name": player["_id"],
             "team": player["color"],
             "spot": i,
             "xp": floor(player["experience"]),
             "kills": player["kills"],
+            "status": numberOfLives,
             "elo": floor(player["elo"]),
             "money": money,
             "rank": player["rank"],
