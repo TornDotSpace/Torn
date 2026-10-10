@@ -465,12 +465,12 @@ class PlayerMP extends Player {
         this.emit(`strong`, { msg: msg, x: x, y: y, local: true, sx: sx, sy: sy, spread: spread });
     }
 
-    baseKilled () {
+    baseKilled (basex = undefined, basey = undefined) {
         this.baseKills++;
 
         // base quest checking
         if (this.quest != 0 && this.quest.type == `Base`) {
-            if (this.sx == this.quest.sx && this.sy == this.quest.sy) {
+            if (this.sx !== undefined && this.sy !== undefined && basex !== undefined && basey !== undefined && basex == this.quest.sx && basey == this.quest.sy) {
                 // reward player
                 this.spoils(`money`, this.quest.exp);
                 this.spoils(`experience`, Math.floor(this.quest.exp / (4000 * 4)));

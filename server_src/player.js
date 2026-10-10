@@ -1340,7 +1340,7 @@ class Player {
     checkDriftAchievements (note, lucky) {}
     checkRandomAchievements (note, boing, thief) {}
     sendStatus () {}
-    baseKilled () {}
+    baseKilled (basex = undefined, basey = undefined) {}
     getAllPlanets () {}
 
     updatePolars () { // Convert my rectangular motion/position data to polar

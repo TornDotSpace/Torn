@@ -279,7 +279,8 @@ class Base {
 
         if (typeof b.owner !== `undefined` && b.owner.type === `Player`) {
             this.sendDeathMsg(`${b.owner.nameWithColor()}'s ${chatWeapon(b.wepnID)}`);
-            b.owner.baseKilled();
+            const ownerID = b.owner.id;
+            b.owner.baseKilled(this.sx, this.sy);
             let numInRange = 0;
             let multiplier = this.isMini ? 0.1 : 1;
             multiplier *= antiSelfFeed; // Anti-self-feed feature, to an extent.
@@ -302,7 +303,7 @@ class Base {
                     p.spoils(`money`, baseKillMoney * multiplier);
                     p.killStreak++; // Bases count for kill streaks
                     p.killStreakTimer = 1000; // 40s
-                    if (p.sx !== undefined && p.sy !== undefined && p.sx === this.sx && p.sy === this.sy) p.baseKilled();
+                    if (p.sx !== undefined && p.sy !== undefined && this.sx !== undefined && this.sy !== undefined && !(ownerID == p.id)) p.baseKilled(this.sx, this.sy);
                 }
             }
 
