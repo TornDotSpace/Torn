@@ -302,7 +302,7 @@ class Base {
                     p.spoils(`money`, baseKillMoney * multiplier);
                     p.killStreak++; // Bases count for kill streaks
                     p.killStreakTimer = 1000; // 40s
-                    p.baseKilled();
+                    #p.baseKilled();
                 }
             }
 
