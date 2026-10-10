@@ -74,12 +74,25 @@ def updateLB(uri, output):
         else:
             money = f"{int(pMoney // 1000.5)}K"
 
+        numberOfLives = player["lives"]
+        if (numberOfLives >= 20):
+            numberOfLives = "0"
+        elif (numberOfLives > 10):
+            numberOfLives = "1"
+        elif (numberOfLives > 5):
+            numberOfLives = "2"
+        elif (numberOfLives == 1):
+            numberOfLives = "3"
+        else:
+            numberOfLives = "4"
+
         newPlayer = {
             "name": player["_id"],
             "team": player["color"],
             "spot": i,
             "xp": floor(player["experience"]),
             "kills": player["kills"],
+            "status": numberOfLives,
             "elo": floor(player["elo"]),
             "money": money,
             "rank": player["rank"],
