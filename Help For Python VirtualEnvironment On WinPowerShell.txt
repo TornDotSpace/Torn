@@ -1,0 +1,14 @@
+# If, when trying to launch the API Server, it keeps failing, you may want to create and activate a virtual python ENV environment and call that command on a separate tab.
+PS # C:\Users\andro\Torn> python3 -m venv venv
+PS C:\Users\andro\Torn> .\venv\Scripts\Activate
+
+(venv) PS C:\Users\andro\Torn> pip3 install aiohttp
+(venv) PS C:\Users\andro\Torn> pip3 install aiohttp_cors
+(venv) PS C:\Users\andro\Torn> pip3 install aiosmtplib
+(venv) PS C:\Users\andro\Torn> pip3 install asyncio
+(venv) PS C:\Users\andro\Torn> pip3 install bcrypt
+(venv) PS C:\Users\andro\Torn> pip3 install discord_webhook
+(venv) PS C:\Users\andro\Torn> pip3 install motor
+(venv) PS C:\Users\andro\Torn> pip3 install pymongo
+
+(venv) PS C:\Users\andro\Torn> python ./account/account_server.py

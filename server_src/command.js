@@ -48,11 +48,15 @@ global.cmds = {};
 // GUEST COMMANDS
 // All players including guests have access to these
 cmds.help = new Command(`/help - Displays commands & usages`, EVERYONE, (commandExecuter, msg) => {
+    let cmdsGiven = {};
     for (const p in commandExecuter.permissionLevels) {
         const lvl = commandExecuter.permissionLevels[p];
         for (let x = 0; x < HELP_TABLE[lvl].length; ++x) {
             const cmd = HELP_TABLE[lvl][x];
-            commandExecuter.socket.emit(`chat`, { msg: chatColor(`orange`) + cmd.usage, gc: commandExecuter.globalChat });
+            if (cmdsGiven[cmd.usage] === undefined || cmdsGiven[cmd.usage] === null) {
+                cmdsGiven[cmd.usage] = cmd.usage;
+                commandExecuter.socket.emit(`chat`, { msg: chatColor(`orange`) + cmd.usage, gc: commandExecuter.globalChat });
+            }
         }
     }
 });
@@ -107,7 +111,7 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) 
             commandExecuter.socket.emit(`chat`, { msg: `You don't have enough experience!` });
             return;
         }
-        if (split[1] !== `green` && split[1] !== `blue` && split[1] !== `red`) {
+        if (split[1] !== `green` && split[1] !== `blue` && split[1] !== `red` && split[1] !== `yellow`) {
             commandExecuter.socket.emit(`chat`, { msg: `Invalid team to switch to!` });
             return;
         }
@@ -115,14 +119,23 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) 
             commandExecuter.socket.emit(`chat`, { msg: `That's your current team!` });
             return;
         }
-        teamDict = { red: 0, blue: 1, green: 2 };
+
+        teamDict = { red: 0, blue: 1, green: 2, yellow: 3 };
         const oldColor = commandExecuter.color;
+
         commandExecuter.color = split[1];
         const lossConstant = commandExecuter.tag === `B` ? 0.95 : 0.9; // MVPs lose less when switching teams
         commandExecuter.money *= lossConstant;
         commandExecuter.experience *= lossConstant;
-        commandExecuter.sx = baseMap[commandExecuter.color][0];
-        commandExecuter.sy = baseMap[commandExecuter.color][1];
+        if (commandExecuter.color !== `yellow`) {
+            commandExecuter.sx = baseMap[commandExecuter.color][0];
+            commandExecuter.sy = baseMap[commandExecuter.color][1];
+        } else {
+            commandExecuter.sx = wormhole.sxo;
+            commandExecuter.sy = wormhole.syo;
+            commandExecuter.x = wormhole.xo;
+            commandExecuter.y = wormhole.yo;
+        }
         commandExecuter.changeSectors(commandExecuter.sy, commandExecuter.sx);
         commandExecuter.save();
     }
@@ -130,9 +143,15 @@ cmds.changeteam = new Command(`/changeteam`, REGISTERED, (commandExecuter, msg) 
 
 cmds.nameturret = new Command(`/nameturret <name>`, REGISTERED, (commandExecuter, msg) => {
     let num = 0;
-    const base = bases[commandExecuter.sy][commandExecuter.sx];
-    if (base != 0 && base.owner == commandExecuter.name) {
-        base.name = msg.substring(12); num++;
+    for (const id in bases[commandExecuter.sy][commandExecuter.sx]) {
+        const base = bases[commandExecuter.sy][commandExecuter.sx][id]; // TO-DO maybe update regarding range?
+        if (base != 0 && base.owner == commandExecuter.name) {
+            base.name = msg.substring(12); num++;
+            base.color = commandExecuter.color;
+            base.trueColor = base.color;
+            base.assimilatedCol = base.color;
+            base.save();
+        }
     }
     commandExecuter.socket.emit(`chat`, { msg: `${num} turret(s) renamed.` });
 });
@@ -395,6 +414,10 @@ cmds.ipmute = new Command(`/ipmute <player> <minutesToMute> - Mutes the specifie
 
 // ADMINSTRATOR COMMANDS
 // These commands are accessible to adminstrators in the game
+cmds.shutdownAux = new Command(`/shutdown - Schedules a shut down of the shard with 120 second countdown`, ADMINPLUS, initShutdown);
+
+cmds.fastshutdownAux = new Command(`/fastreboot - Schedules a shut down of the shard, with 10 second countdown instead of 120`, ADMINPLUS, initFastShutdown);
+
 cmds.reboot = new Command(`/reboot - Schedules a restart of the shard with 120 second countdown`, ADMINPLUS, initReboot);
 
 cmds.fastreboot = new Command(`/fastreboot - Schedules a restart of the shard, with 10 second countdown instead of 120`, ADMINPLUS, initFastReboot);
@@ -435,9 +458,9 @@ cmds.settag = new Command(`/settag <player> <tag> - Sets a player's tag. tag sho
     commandExecuter.socket.emit(`chat`, { msg: `${chatColor(`violet`)}Tag set.` });
 });
 
-cmds.deltag = new Command(`/deltag <player> <tag> - Removes a player's tag.`, ADMINPLUS, (commandExecuter, msg) => {
+cmds.deltag = new Command(`/deltag <player> - Removes a player's tag.`, ADMINPLUS, (commandExecuter, msg) => {
     if (msg.split(` `).length != 2) {
-        commandExecuter.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/settag playername'` }); return;
+        commandExecuter.socket.emit(`chat`, { msg: `Bad syntax! The message should look like '/deltag playername'` }); return;
     }
     const name = msg.split(` `)[1];
     const recipient = getPlayerFromName(name);

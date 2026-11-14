@@ -1,4 +1,4 @@
-let tornUsers, xpLB, eloLB, killsLB, techLB;
+let tornUsers, xpLB, eloLB, killsLB, techLB, statusLB;
 
 /**
  * Generate a list of Torn users.
@@ -14,9 +14,25 @@ const getTornUsers = async () => await fetch(`./players.json`).then(data => data
 const updateLB = () => {
     let lbData = ``;
     for (const player of tornUsers) {
+        let numberOfLives = player.status;
+        if (numberOfLives == 0) {
+            numberOfLives = `💗`;
+        } else if (numberOfLives == 1) {
+            numberOfLives = `❤️`;
+        } else if (numberOfLives == 2) {
+            numberOfLives = `💔`;
+        } else if (numberOfLives == 3) {
+            numberOfLives = `⚠️`;
+        } else if (numberOfLives == 4) {
+            numberOfLives = `💀`;
+        } else {
+            numberOfLives = `👽`;
+        }
+
         const playerEntry = `
         <tr class="team-${player.team}">
             <td aria-label="spot">${player.spot}.</td>
+            <td aria-label="status">${numberOfLives}</td>
             <td aria-label="name">${player.name}</td>
             <td aria-label="xp">${player.xp}</td>
             <td aria-label="elo">${player.elo}</td>
@@ -57,6 +73,12 @@ const sortLB = () => {
                 techLB = [...tornUsers].sort((a, b) => b.tech - a.tech);
             }
             tornUsers = techLB;
+            break;
+        case `status`:
+            if (statusLB == undefined) {
+                statusLB = [...tornUsers].sort((a, b) => b.status < a.status);
+            }
+            tornUsers = statusLB;
             break;
         default:
             tornUsers = xpLB;

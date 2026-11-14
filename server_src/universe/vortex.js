@@ -52,24 +52,30 @@ class Vortex {
             this.moveWormhole();
         }
 
-        for (const i in players[this.sy][this.sx]) {
-            const p = players[this.sy][this.sx][i];
+        const fullplayers = get9SectorDict(players, this.sx, this.sy);
+        const rangewh = Math.pow(2, 0.5) * ((sectorWidth * 0.99) + this.size);
+        for (const i in fullplayers) {
+            const p = fullplayers[i];
 
             // compute distance and angle to players
-            const dist = Math.pow(squaredDist(this, p), 0.25);
-            const a = angleBetween(p, this);
+            const dist = Math.pow(squaredGlobalDist(this, p, sectorWidth, sectorWidth, mapSz), 0.25);
+            if (dist > rangewh) continue;
+            const a = angleGlobalBetween(p, this, sectorWidth, sectorWidth, mapSz);
             // then move them.
-            let guestMult = (p.guest || p.isNNBot) ? -1 : 1; // guests are pushed away, since they aren't allowed to leave their sector.
-            if (p.ship == 21 && !this.isWorm) guestMult = 0.45 * (-1 + (35 / dist)); // R21 ship gets pushed from a BH if too far, BUT IT'S STILL PULLED WITH FORCE IF TOO CLOSE. Reason this isn't an increment is because someone could get a GUEST at level 21, buy the ship, and then the old *=0.5 would actually be more OP than the old code.
-            p.x -= guestMult * 0.40 * this.size / dist * Math.cos(a);
-            p.y -= guestMult * 0.40 * this.size / dist * Math.sin(a);
+            let guestMult = (p.isNNBot) ? -0.8 : 0.8;
+            if (!this.isWorm) {
+                if (p.ship == 21) guestMult = 0.27 * (-1 + (35 / dist)); // R21 ship gets pushed from a BH if too far, BUT IT'S STILL PULLED WITH FORCE IF TOO CLOSE. Reason this isn't an increment is because someone could get a GUEST at level 21, buy the ship, and then the old *=0.5 would actually be more OP than the old code.
+                if (p.ship == 24) guestMult *= 0.1; // Black holes exert less pull on this ship.
+            }
+            p.x -= guestMult * this.size / dist * Math.cos(a); // guestMult * 0.40 * this.size / dist * Math.cos(a);
+            p.y -= guestMult * this.size / dist * Math.sin(a); // guestMult * 0.40 * this.size / dist * Math.sin(a);
 
-            if (dist < 15 && !this.isWorm) { // collision with black hole
+            if (dist < (15) && !this.isWorm) { // collision with black hole
                 if (this.owner != 0) { // if I'm a gravity bomb
                     this.size += p.ship; // Eating the ship will make the gravity bomb BH grow. The bigger the ship, the more it will grow.
                 }
                 p.die(this);
-            } else if (dist < 15 && this.isWorm && !p.guest) { // collision with wormhole
+            } else if (dist < 15 && this.isWorm) { // collision with wormhole
                 p.y = this.yo;
                 p.x = this.xo; // teleport them to the output node
 
@@ -77,27 +83,34 @@ class Vortex {
             }
         }
         if (Math.random() < 0.2) { // limited for lag
-            for (const i in asts[this.sy][this.sx]) {
-                const dist = Math.pow(squaredDist(this, i), 0.25);
-                const a = asts[this.sy][this.sx][i];
-                const d2 = squaredDist(this, a);
-                const ang = angleBetween(this, a);
-                const vel = 0.005 * this.size / Math.log(d2);
+            const fullasts = get9SectorDict(asts, this.sx, this.sy);
+            for (const i in fullasts) {
+                const a = fullasts[i];
+                const d2 = squaredGlobalDist(this, a, sectorWidth, sectorWidth, mapSz); // squaredDist(this, a);
+                if (d2 > Math.pow(rangewh, 2)) continue;
+                const ang = angleGlobalBetween(this, a, sectorWidth, sectorWidth, mapSz); // angleBetween(this, a);
+                const vel = ((this.isWorm) ? 0.01 : 0.1) * this.size / Math.log(Math.pow(d2, 0.5)); // 0.005 * this.size / Math.log(Math.pow(d2, 0.5));
                 a.vx += Math.cos(ang) * vel;
                 a.vy += Math.sin(ang) * vel;
-                if (d2 < 100) {
+                if (d2 < (225)) { // 225 = 15 * 15
                     if (!this.isWorm) { // collision with black hole
                         a.die(this);
                         if (this.owner != 0) { // if I'm a gravity bomb
                             this.size += 10; // Eating asteroids will make the gravity bomb BH grow.
                         }
                     } else { // collision with wormhole
-                        delete asts[a.sy][a.sx][a.id];
-                        a.sx = this.sxo;
-                        a.sy = this.syo;
-                        a.y = this.yo;
-                        a.x = this.xo; // teleport them to the output node
-                        asts[a.sy][a.sx][a.id] = a;
+                        if (a.health <= 0) a.die(this);
+                        else {
+                            const differentSectors = (this.sx !== this.sxo || this.sy !== this.syo || a.sx !== this.sxo || a.sy !== this.syo);
+                            if (differentSectors) {
+                                delete asts[a.sy][a.sx][a.id];
+                                a.sx = this.sxo;
+                                a.sy = this.syo;
+                            }
+                            a.y = this.yo;
+                            a.x = this.xo; // teleport them to the output node
+                            if (differentSectors) asts[a.sy][a.sx][a.id] = a;
+                        }
                     }
                 }
             }
@@ -140,11 +153,12 @@ class Vortex {
         this.yo = ((byo * mapSz) % 1) * sectorWidth;
 
         // every 2 seconds, tell the players where I am (for radar only, I think)
-        if (tick % 25 == 0) sendAll(`worm`, { bx: bx / (mapSz * sectorWidth), by: by / (mapSz * sectorWidth), bxo: bxo, byo: byo });
+        if (tick % 25 == 0) sendAll(`worm`, { bx: bx / (mapSz * sectorWidth), by: by / (mapSz * sectorWidth), bxo: bxo, byo: byo, sx: this.sx, sy: this.sy });
     }
 
     die () {
-        sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        // sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
         delete vorts[this.sy][this.sx][this.id];
     }
 
@@ -152,6 +166,10 @@ class Vortex {
     } // do we need these functions here? :thonk: I think we might be calling em
 
     spoils (type, amt) {
+    }
+
+    isWormHole () {
+        return this.isWorm;
     }
 }
 

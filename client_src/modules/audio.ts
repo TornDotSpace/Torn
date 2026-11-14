@@ -53,7 +53,10 @@ const toggleMusic = () => {
     musicMuted = !musicMuted;
 
     if (musicMuted && login) music.pause();
-    else if (musicAudio !== 0) music.play();
+    else if (musicAudio !== 0) {
+        music.loop = true;
+        music.play();
+    }
 
     return musicMuted;
 };
@@ -93,7 +96,7 @@ const loadAudio = (name: string, src: string) => {
     Aud.set(name, new Howl({
         src,
         autoplay: false,
-        loop: false,
+        loop: (name === `music1`),
         preload: true,
         pool: 15,
 

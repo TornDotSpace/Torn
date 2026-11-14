@@ -44,6 +44,8 @@ global.DEADBASE = 1;
 global.TURRET = 2;
 global.SENTRY = 3;
 
+global.TURRET_DETECT_RANGE = (sectorWidth / 2.0 * 1.1);
+
 global.render = function () {
     if (dead) {
         ctx.globalAlpha = 0.02;
@@ -257,11 +259,12 @@ global.rStars = function () {
     const hm = h / mirrors;
     for (const i in stars) {
         const s = stars[i];
-        ctx.strokeStyle = ctx.fillStyle = `rgb(${128 + 32 * (i % 4)},${128 + 32 * (i / 4 % 4)},${128 + 32 * (i / 16 % 4)})`;
         let parallax = (100 - i) / 100.0;
         parallax = parallax * parallax;
         parallax = parallax * parallax;
+
         const starSz = 3 - i / 15; // distant stars are size 1, near stars are 3x3
+        ctx.strokeStyle = ctx.fillStyle = `rgb(${128 + 32 * (i % 4)},${128 + 32 * (i / 4 % 4)},${128 + 32 * (i / 16 % 4)})`;
         ctx.lineWidth = starSz;
         const x = (500000 + s.x - (px - scrx + sx * sectorWidth) * (parallax + 0.1) * 0.25) % wm;
         const y = (500000 + s.y - (py - scry + sy * sectorWidth) * (parallax + 0.1) * 0.25) % hm;
@@ -338,6 +341,56 @@ global.updateNotes = function () {
         }
     }
 };
+
+global.squaredCGlobalDist = function (a, b, gsy = sectorWidth, gsx = sectorWidth, numSec = mapSz) { // distance between two points squared, taking into account sector configuration. i.e. c^2
+    let sectorDiffX = a.sx - b.sx;
+    let sectorDiffXa = Math.abs(sectorDiffX); // Sectors on X loop
+    sectorDiffXa = Math.min(sectorDiffXa, (numSec - sectorDiffXa));
+
+    if (sectorDiffX > 0) {
+        sectorDiffX = sectorDiffXa;
+    } else {
+        sectorDiffX = -sectorDiffXa;
+    }
+    sectorDiffX = sectorDiffX * gsx;
+
+    let sectorDiffY = a.sy - b.sy; // Sectors on Y do not loop
+    sectorDiffY = sectorDiffY * gsy;
+
+    return square(a.y - b.y + sectorDiffX) + square(a.x - b.x + sectorDiffY);
+};
+
+global.obtainSXDrift = function (asx, bsx, gsx = sectorWidth, numSec = mapSz) { // obtainSXDrift(player, other)
+    if (Object.is(asx, null) || Object.is(asx, undefined) || Object.is(bsx, null) || Object.is(bsx, undefined)) {
+        console.warn(`asx is ${asx} , bsx is ${bsx} , gsx is ${gsx} and numSec = ${numSec}`);
+        return 0;
+    }
+
+    let sectorDiffX = bsx - asx; // 0 - 6 = -6 // 6 - 0 = 6
+    // console.log(`TO-DO sector X Difference 1 is = `, sectorDiffX);
+    let sectorDiffXab = Math.abs(sectorDiffX); // Sectors on X loop // -6 -> 6 // 6 -> 6
+    let sectorDiffXa = Math.min(sectorDiffXab, (numSec - sectorDiffXab)); // Math.min(sectorDiffXab, (numSec - sectorDiffXab));  // min(6, 7 - 6) = 1 // min(6, 7 - 6) = 1
+    if (((sectorDiffXa + asx) % numSec) == bsx) { // (1 + 6) % 7 = 0 === 0 // (1 + 0) % 7 = 1 !== 6
+        sectorDiffX = sectorDiffXa;
+    } else {
+        sectorDiffX = -sectorDiffXa; // 1 -> -1
+    }
+    // console.log(`TO-DO sector X Difference 2...  sectorDiffXab = `, sectorDiffXab, ` sectorDiffXa = `, sectorDiffXa, `, sectorDiffX = `, sectorDiffX);
+    sectorDiffX = sectorDiffX * gsx;
+    return sectorDiffX;
+};
+
+global.obtainSYDrift = function (asy, bsy, gsy = sectorWidth, numSec = mapSz) {
+    if (Object.is(asy, null) || Object.is(asy, undefined) || Object.is(bsy, null) || Object.is(bsy, undefined)) {
+        console.warn(`asy is ${asy} , bsy is ${bsy} , gsy is ${gsy} and numSec = ${numSec}`);
+        return 0;
+    }
+    let sectorDiffY = bsy - asy; // Sectors on Y do not loop
+    // console.log("TO-DO sector Y Difference is = ", sectorDiffY, " and we return ", sectorDiffY * gsy)
+    sectorDiffY = sectorDiffY * gsy;
+    return sectorDiffY;
+};
+
 global.updateTrails = function () {
     /* trails:
     0 -> default
@@ -388,13 +441,19 @@ global.updateTrails = function () {
                     t = Math.random() * Math.PI * 60;
                     col = ((Math.floor(Math.cos(t) * 128 + 128) << 16) + (Math.floor(Math.cos(t + Math.PI * 2 / 3) * 128 + 128) << 8) + Math.floor(Math.cos(t + Math.PI * 4 / 3) * 128 + 128)).toString(16);
                 } else if (mod == 5) col = ((Math.floor(Math.cos(t) * 128 + 128) << 16) + (Math.floor(Math.cos(t + Math.PI * 2 / 3) * 128 + 128) << 8) + Math.floor(Math.cos(t + Math.PI * 4 / 3) * 128 + 128)).toString(16);
+
+                let extraX = 0;
+                let extraY = 0;
+                if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+                if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
                 while (col.length < 6) col = `0${col}`;
                 trails[Math.random()] = {
                     vip: trail > 15,
                     dx: cos * selfo.speed / 2,
                     dy: sin * selfo.speed / 2,
-                    x: selfo.x + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cosLow(selfo.driftAngle) * (rando - selfo.speed),
-                    y: selfo.y + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sinLow(selfo.driftAngle) * (rando - selfo.speed),
+                    x: selfo.x + extraX + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cosLow(selfo.driftAngle) * (rando - selfo.speed),
+                    y: selfo.y + extraY + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sinLow(selfo.driftAngle) * (rando - selfo.speed),
                     time: -1,
                     color: col
                 };
@@ -403,7 +462,13 @@ global.updateTrails = function () {
         if (selfo.health / selfo.maxHealth < 0.4) {
             for (let j = 0; j < 10; j++) {
                 const r = Math.random();
-                trails[Math.random()] = { vip: false, dx: cos * selfo.speed / 2, dy: sin * selfo.speed / 2, x: selfo.x + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cos * r * selfo.speed, y: selfo.y + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sin * r * selfo.speed, time: -1, color: ((Math.round(112 + 32 * r) << 16) + (Math.round(112 + 32 * r) << 8) + Math.round(112 + 32 * r)).toString(16) };
+
+                let extraX = 0;
+                let extraY = 0;
+                if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+                if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
+                trails[Math.random()] = { vip: false, dx: cos * selfo.speed / 2, dy: sin * selfo.speed / 2, x: selfo.x + extraX + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + cos * r * selfo.speed, y: selfo.y + extraY + (cube(Math.random() * 4 - 2) * 4 * ships[selfo.ship].width / 128) + sin * r * selfo.speed, time: -1, color: ((Math.round(112 + 32 * r) << 16) + (Math.round(112 + 32 * r) << 8) + Math.round(112 + 32 * r)).toString(16) };
             }
         }
     }
@@ -429,7 +494,7 @@ global.updateBooms = function () {
 global.rLore = function () {
     ctx.fillStyle = brighten(pc);
     ctx.font = `22px ShareTech`;
-    wrapText(ctx, jsn.lore[colorSelect(pc, 0, 1, 2)], 48, h / 2 - 22 * 5 - 10000 / (loreTimer + 1), w - 96, 40);
+    wrapText(ctx, jsn.lore[colorSelect(pc, 0, 1, 2, 3)], 48, h / 2 - 22 * 5 - 10000 / (loreTimer + 1), w - 96, 40);
     ctx.textAlign = `center`;
     ctx.fillStyle = `yellow`;
     const t = (new Date()).getTime() / 6000;
@@ -497,7 +562,7 @@ global.rVolumeBar = function () {
     ctx.restore();
 };
 global.rExpBar = function () {
-    if (guest) return;
+    // if (guest) return;
 
     ctx.lineWidth = 0.5;
     ctx.fillStyle = `black`;
@@ -538,11 +603,18 @@ global.rNotes = function () {
     ctx.fillStyle = `pink`;
     for (const i in notes) {
         const note = notes[i];
-        ctx.font = `${note.strong ? 40 : 20}px ShareTech`;
-        ctx.globalAlpha = (39 - note.time) / 39;
-        const x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + (note.local ? px : 0));
-        const y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + (note.local ? py : 0));
-        write(ctx, note.msg, x, y);
+        let extraX = 0;
+        let extraY = 0;
+        if (!(Object.is(note.sx, null) || Object.is(note.sx, undefined))) extraX = obtainSXDrift(sx, note.sx);
+        if (!(Object.is(note.sy, null) || Object.is(note.sy, undefined))) extraY = obtainSYDrift(sy, note.sy);
+
+        const x = note.spoils ? note.x : (note.x - px + w / 2 + scrx + extraX + (note.local ? px : 0));
+        const y = note.spoils ? note.y : (note.y - py + h / 2 - note.time + scry + extraY + (note.local ? py : 0));
+        if (!(x < -(2 * (w) + 220) || x > (2 * (w) + 220) || y < -(2 * (h) + 220) || y > (2 * (h) + 220))) {
+            ctx.font = `${note.strong ? 40 : 20}px ShareTech`;
+            ctx.globalAlpha = (39 - note.time) / 39;
+            write(ctx, note.msg, x, y);
+        }
     }
     ctx.globalAlpha = 1;
     ctx.textAlign = `left`;
@@ -555,39 +627,65 @@ global.rBooms = function () {
     for (const i in booms) {
         const b = booms[i];
         const pw = 128; const ph = 128;
-        let rendX = b.x - px + w / 2 - pw / 2 + scrx; let rendY = b.y - py + h / 2 - ph / 2 + scry;
 
+        let extraX = 0;
+        let extraY = 0;
+        if (!(Object.is(b.sx, null) || Object.is(b.sx, undefined))) extraX = obtainSXDrift(sx, b.sx);
+        if (!(Object.is(b.sy, null) || Object.is(b.sy, undefined))) extraY = obtainSYDrift(sy, b.sy);
+
+        let rendX = b.x + extraX - px + w / 2 - pw / 2 + scrx;
+        let rendY = b.y + extraY - py + h / 2 - ph / 2 + scry;
+        // console.log(`TO-DO rBooms BOOMS we have b.sx = `, b.sx, ` b.sy = `, b.sy, ` extraX = `, extraX, ` extraY = `, extraY, `b.x = `, b.x, `, b.y = `, b.y);
         if (b.time < 114) {
-            const img = Img.booms;
-            const sx = (b.time % 10) * 128;
-            const sy = Math.floor(b.time / 10) * 128;
+            if (!(rendX < -(5 * (w + pw) + 220) || rendX > (5 * (w + pw) + 220) || rendY < -(5 * (h + ph) + 220) || rendY > (5 * (h + ph) + 220))) {
+                const img = Img.booms;
+                const bsx = (b.time % 10) * 128;
+                const bsy = Math.floor(b.time / 10) * 128;
 
-            ctx.save();
-            ctx.drawImage(img, sx, sy, 128, 128, rendX, rendY, 128, 128);
-            ctx.restore();
+                ctx.save();
+                ctx.drawImage(img, bsx, bsy, 128, 128, rendX, rendY, 128, 128);
+                ctx.restore();
+            }
         }
 
         if (!b.shockwave) continue;
 
-        rendX = b.x - px + w / 2 + scrx;
-        rendY = b.y - py + h / 2 + scry;
+        rendX = b.x + extraX - px + w / 2 + scrx;
+        rendY = b.y + extraY - py + h / 2 + scry;
 
         const ss = Math.sqrt(b.time) * 96;
+
+        if (rendX < -(w + 150 + (sectorWidth / 4) + ss) || rendX > (w + 150 + (sectorWidth / 4) + ss) || rendY < -(h + 220 + (sectorWidth / 4) + ss) || rendY > (h + 220 + (sectorWidth / 4) + ss)) continue;
+
         ctx.globalAlpha = 0.9 - b.time / 500.0;
         ctx.drawImage(Img.shockwave, rendX - ss / 2, rendY - ss / 2, ss, ss);
         ctx.globalAlpha = 1;
     }
     for (const i in boomParticles) {
         const selfo = boomParticles[i];
+
+        let extraX = 0;
+        let extraY = 0;
+
+        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
+        // console.log(`TO-DO rBooms boomParticles we have selfo.sx = `, selfo.sx, ` selfo.sy = `, selfo.sy, ` extraX = `, extraX, ` extraY = `, extraY, `selfo.x = `, selfo.x, `, selfo.y = `, selfo.y);
+
+        const rendX = selfo.x + extraX - px + (w / 2);
+        const rendY = selfo.y + extraY - py + (h / 2);
+        if (rendX < -(sectorWidth / 2 + w) || rendX > (w + 150 + sectorWidth / 2) || rendY < -(150 + sectorWidth / 2) || rendY > (h + 220 + sectorWidth / 2)) continue;
+
         ctx.beginPath();
         ctx.strokeStyle = `gray`;
         ctx.lineWidth = 6;
         ctx.globalAlpha = (15 - selfo.time) / 15;
         ctx.fillStyle = `white`;
-        ctx.fillRect(selfo.x - 3 - px + w / 2, selfo.y - 3 - py + h / 2, 7, 7);
+        ctx.fillRect(rendX - 3, rendY - 3, 7, 7);
         ctx.globalAlpha = (15 - selfo.time) / 22;
-        ctx.moveTo(selfo.x - px + w / 2, selfo.y - py + h / 2);
-        ctx.lineTo(selfo.x - px + w / 2 - (cosLow(selfo.angle) * 25 + selfo.dx), selfo.y - py + h / 2 - (sinLow(selfo.angle) * 25 + selfo.dy));
+
+        ctx.moveTo(rendX, rendY);
+        ctx.lineTo(rendX - (cosLow(selfo.angle) * 25 + selfo.dx), rendY - (sinLow(selfo.angle) * 25 + selfo.dy));
         ctx.stroke();
         ctx.closePath();
         ctx.globalAlpha = 1;
@@ -596,10 +694,22 @@ global.rBooms = function () {
 global.rTrails = function () {
     for (const i in trails) {
         const selfo = trails[i];
+
+        let extraX = 0;
+        let extraY = 0;
+
+        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
         ctx.globalAlpha = (7 - selfo.time) / 7;
         ctx.strokeStyle = ctx.fillStyle = `#${selfo.color}`;
-        if (!selfo.vip) ctx.fillRect(selfo.x - 1 - px + w / 2 + scrx, selfo.y - 1 - py + scry + h / 2, 3, 3);
-        else drawStar(selfo.x - px + w / 2 + scrx, selfo.y - py + scry + h / 2, 5, 3, 8);
+
+        const rendX = selfo.x + extraX - px + w / 2 + scrx - 1;
+        const rendY = selfo.y + extraY - py + scry + h / 2 - 1;
+        if (!(rendX < -(2 * (w) + 220) || rendX > (2 * (w) + 220) || rendY < -(2 * (h) + 220) || rendY > (2 * (h) + 220))) {
+            if (!selfo.vip) ctx.fillRect(rendX - 1, rendY - 1, 3, 3);
+            else drawStar(rendX, rendY, 5, 3, 8);
+        }
     }
     ctx.globalAlpha = 1;
 };
@@ -631,8 +741,8 @@ global.rBasicText = function () {
     ctx.font = `10px ShareTech`;
     ctx.textAlign = `right`;
     ctx.fillStyle = `white`;
-    const lbShift = guest ? 8 : 266;
-    if (!guest) {
+    const lbShift = 266; // guest ? 8 : 266;
+    if (!guest || guest) {
         info[0] = translate(`Experience: #`, [numToLS(Math.round(experience))]);
         info[1] = translate(`Money: #`, [numToLS(Math.floor(money))]);
         info[2] = translate(`Kills: #`, [numToLS(kills)]);
@@ -649,7 +759,7 @@ global.rLagStats = function (lag, arr) {
     ctx.fillStyle = `yellow`;
 
     let lagWarn = {};
-    const lbShift = guest ? 8 : 266;
+    const lbShift = 266; // guest ? 8 : 266;
 
     lagWarn[0] = lagWarn[1] = ``;
     if (lag > 50) {
@@ -664,7 +774,7 @@ global.rLagStats = function (lag, arr) {
     }
 
     for (let i = 0; i < 2; i++) {
-        write(ctx, lagWarn[i], w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
+        write(ctx, lagWarn[i], w - lbShift, 16 * 5 * (1) + i * 16); //         write(ctx, lagWarn[i], w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
     }
 
     if (!dev || arr === 0) {
@@ -687,7 +797,8 @@ global.rLagStats = function (lag, arr) {
 
     const il = 7; // 1 + max index of info
     for (let i = 2; i < il + lagNames.length; i++) {
-        write(ctx, i < il ? info[i] : (`${lagNames[i - il]}: ${parseFloat(Math.round(arr[i - il] * 100) / 100).toFixed(2)}`), w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
+        write(ctx, i < il ? info[i] : (`${lagNames[i - il]}: ${parseFloat(Math.round(arr[i - il] * 100) / 100).toFixed(2)}`), w - lbShift, 16 * 5 * (1) + i * 16);
+        // write(ctx, i < il ? info[i] : (`${lagNames[i - il]}: ${parseFloat(Math.round(arr[i - il] * 100) / 100).toFixed(2)}`), w - lbShift, 16 * 5 * (guest ? 0.2 : 1) + i * 16);
     }
     ctx.textAlign = `left`;
 };
@@ -709,16 +820,26 @@ global.renderBG = function (more) {
     ctx.globalAlpha = 1;
 };
 global.rCargo = function () {
-    if (guest) return;
+    // if (guest) return;
     if (quest.type === `Mining`) {
         let metalWeHave = 0;
-        for (let i = 0; i < 4; i++) {
-            if (quest.metal === `iron`) {
-                ctx.fillStyle = `#d44`;
-                metalWeHave = iron;
-            }
+        write(ctx, `►`, minimapcanvas.width - 8 + 48, 16 * 2);
+        // for (let i = 0; i < 4; i++) {
+        if (quest.metal === `iron`) {
+            ctx.fillStyle = metalToColor(0);
+            metalWeHave = iron;
+        } else if (quest.metal === `silver`) {
+            ctx.fillStyle = metalToColor(1);
+            metalWeHave = silver;
+        } else if (quest.metal === `copper`) {
+            ctx.fillStyle = metalToColor(2);
+            metalWeHave = copper;
+        } else if (quest.metal === `platinum`) {
+            ctx.fillStyle = metalToColor(3);
+            metalWeHave = platinum;
         }
-        write(ctx, `${metalWeHave}/${quest.amt} ${quest.metal}`, 248, 16);
+        // }
+        write(ctx, `${metalWeHave}/${quest.amt} ${quest.metal}`, minimapcanvas.width - 8 + 48, 16);
     }
 
     ctx.globalAlpha = guiOpacity;
@@ -727,7 +848,7 @@ global.rCargo = function () {
         if (ctx.globalAlpha > 1)
             ctx.globalAlpha = 1;
         ctx.fillStyle = `white`;
-        write(ctx, `JETTISON CARGO`, 248, 32);
+        write(ctx, `JETTISON CARGO`, minimapcanvas.width - 8 + 48, 16 * 3);
     }
 
     let myCapacity = ships[ship].capacity * c2;
@@ -739,11 +860,11 @@ global.rCargo = function () {
         let thisBarHeight = metalToQuantity(i) * 208 / myCapacity;
         runningY -= thisBarHeight;
         ctx.fillStyle = metalToColor(i);
-        ctx.fillRect(224, runningY, 16, thisBarHeight);
+        ctx.fillRect(minimapcanvas.width - 8 + 24, runningY, 16, thisBarHeight);
     }
 
     ctx.fillStyle = guiColor;
-    ctx.fillRect(224, 8, 16, runningY - 8);
+    ctx.fillRect(minimapcanvas.width - 8 + 24, 8, 16, runningY - 8);
 
     ctx.globalAlpha = 1;
 };
@@ -754,13 +875,14 @@ global.rRadar = function () {
     const d = new Date();
     const stime = d.getTime() / (35 * 16);
 
+    const radarYPositioning = minimapcanvas.height - 8 + 142;
     // darken circle and make outline
     ctx.strokeStyle = `white`;
     ctx.fillStyle = `black`;
     ctx.lineWidth = 1;
     ctx.globalAlpha = 0.4;
     ctx.beginPath();
-    ctx.arc(112, 342, 96, 0, Math.PI * 2, false);
+    ctx.arc(112, radarYPositioning, 96, 0, Math.PI * 2, false);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
@@ -775,8 +897,8 @@ global.rRadar = function () {
         const rx = dx * distFactor; const ry = dy * distFactor;
         const l = 96 * Math.sqrt(1 - square(rx / 96)) - 2;
         ctx.beginPath();
-        ctx.moveTo(112 + rx, ry - l + 342);
-        ctx.lineTo(112 + rx, ry + l + 342);
+        ctx.moveTo(112 + rx, ry - l + radarYPositioning);
+        ctx.lineTo(112 + rx, ry + l + radarYPositioning);
         ctx.closePath();
         ctx.stroke();
     }
@@ -786,8 +908,8 @@ global.rRadar = function () {
         const rx = dx * distFactor; const ry = dy * distFactor;
         const l = 96 * Math.sqrt(1 - square(rx / 96)) - 2;
         ctx.beginPath();
-        ctx.moveTo(112 + rx, ry - l + 342);
-        ctx.lineTo(112 + rx, ry + l + 342);
+        ctx.moveTo(112 + rx, ry - l + radarYPositioning);
+        ctx.lineTo(112 + rx, ry + l + radarYPositioning);
         ctx.closePath();
         ctx.stroke();
     }
@@ -797,8 +919,8 @@ global.rRadar = function () {
         const rx = dx * distFactor; const ry = dy * distFactor;
         const l = 96 * Math.sqrt(1 - square(ry / 96)) - 2;
         ctx.beginPath();
-        ctx.moveTo(112 + rx - l, ry + 342);
-        ctx.lineTo(112 + rx + l, ry + 342);
+        ctx.moveTo(112 + rx - l, ry + radarYPositioning);
+        ctx.lineTo(112 + rx + l, ry + radarYPositioning);
         ctx.closePath();
         ctx.stroke();
     }
@@ -808,35 +930,51 @@ global.rRadar = function () {
         const rx = dx * distFactor; const ry = dy * distFactor;
         const l = 96 * Math.sqrt(1 - square(ry / 96)) - 2;
         ctx.beginPath();
-        ctx.moveTo(112 + rx - l, ry + 342);
-        ctx.lineTo(112 + rx + l, ry + 342);
+        ctx.moveTo(112 + rx - l, ry + radarYPositioning);
+        ctx.lineTo(112 + rx + l, ry + radarYPositioning);
         ctx.closePath();
         ctx.stroke();
     }
     ctx.lineWidth = 1;
     ctx.globalAlpha = 0.5;
     if (basesInfo !== undefined) {
-        const dx = basesInfo.x - px;
-        const dy = basesInfo.y - py;
-        if (square(dx) + square(dy) < r2z2) {
-            const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-            const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
-            ctx.beginPath();
-            ctx.arc(rx, ry, (va2 > 1.24) ? 5 : 3, 0, 2 * Math.PI, false);
-            ctx.fillStyle = `lightgray`;
-            if (va2 > 1.36) ctx.fillStyle = brighten(basesInfo.color);
-            ctx.fill();
-            ctx.closePath();
+        for (let id in basesInfo) {
+            const aBase = basesInfo[id];
+            if (aBase === undefined || aBase === 0) {
+                continue;
+            }
+            let extraX = 0;
+            let extraY = 0;
+            if (!(Object.is(aBase.sx, null) || Object.is(aBase.sx, undefined))) extraX = obtainSXDrift(sx, aBase.sx);
+            if (!(Object.is(aBase.sy, null) || Object.is(aBase.sy, undefined))) extraY = obtainSYDrift(sy, aBase.sy);
+            const dx = aBase.x + extraX - px;
+            const dy = aBase.y + extraY - py;
+            if (square(dx) + square(dy) < r2z2) {
+                const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+                const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
+                ctx.beginPath();
+                ctx.arc(rx, ry, (va2 > 1.24) ? 5 : 3, 0, 2 * Math.PI, false);
+                ctx.fillStyle = `lightgray`;
+                if (va2 > 1.36) ctx.fillStyle = brighten(aBase.color);
+                ctx.fill();
+                ctx.closePath();
+            }
         }
     }
     ctx.fillStyle = `white`;
     for (const p_pack in playersInfo) {
         const p = playersInfo[p_pack];
-        const dx = p.x - px;
-        const dy = p.y - py;
+        if (p === undefined || (p.disguise > 0 && p.color !== pc)) continue;
+        let extraX = 0;
+        let extraY = 0;
+        if (!(Object.is(p.sx, null) || Object.is(p.sx, undefined))) extraX = obtainSXDrift(sx, p.sx);
+        if (!(Object.is(p.sy, null) || Object.is(p.sy, undefined))) extraY = obtainSYDrift(sy, p.sy);
+
+        const dx = p.x + extraX - px;
+        const dy = p.y + extraY - py;
         if (square(dx) + square(dy) > r2z2) continue;
         const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-        const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+        const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
         ctx.beginPath();
         ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
         if (va2 > 1.36) ctx.fillStyle = brighten(p.color);
@@ -847,39 +985,63 @@ global.rRadar = function () {
         ctx.fillStyle = `gold`;
         for (const p_pack in packsInfo) {
             const p = packsInfo[p_pack];
-            const dx = p.x - px;
-            const dy = p.y - py;
+
+            const dx = p.x + obtainSXDrift(sx, p.sx) - px;
+            const dy = p.y + obtainSYDrift(sy, p.sy) - py;
+
             if (square(dx) + square(dy) > r2z2) continue;
             const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-            const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+            const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
             ctx.beginPath();
             ctx.arc(rx, ry, 2, 0, 2 * Math.PI, false);
             ctx.fill();
             ctx.closePath();
         }
     }
-    if (tag === `B`) {
-        ctx.fillStyle = brighten(planets.color);
-        const dx = planets.x - px;
-        const dy = planets.y - py;
-        if (square(dx) + square(dy) < r2z2) {
-            const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-            const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
-            ctx.beginPath();
-            ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
+    if (tag === `B` || va2 >= 2.6) {
+        if (!(planets == 0 || planets == undefined)) {
+            for (const id in planets) {
+                const planet = planets[id];
+                ctx.fillStyle = brighten(planet.color);
+
+                const dx = planet.x - px + obtainSXDrift(sx, planet.sx);
+                const dy = planet.y - py + obtainSYDrift(sy, planet.sy);
+                // console.log(`TO-DO Calling rRadar tag = B 2`);
+                if (square(dx) + square(dy) < r2z2) {
+                    const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+                    const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
+                    ctx.beginPath();
+                    ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+        for (const id in vortsInfo) {
+            const vortex = vortsInfo[id];
+            if (vortex === undefined) continue;
+            const dx = vortex.x - px + obtainSXDrift(sx, vortex.sx);
+            const dy = vortex.y - py + obtainSYDrift(sy, vortex.sy);
+            if (square(dx) + square(dy) < r2z2) {
+                ctx.strokeStyle = ctx.fillStyle = brighten(`yellow`);
+
+                const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
+                const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
+                ctx.beginPath();
+                ctx.arc(rx, ry, 6, 0, 2 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+            }
         }
     }
     ctx.lineWidth = 2;
     for (let a in astsInfo) {
         a = astsInfo[a];
-
-        const dx = a.x - px;
-        const dy = a.y - py;
+        const dx = a.x + obtainSXDrift(sx, a.sx) - px;
+        const dy = a.y + obtainSYDrift(sy, a.sy) - py;
         if (square(dx) + square(dy) > r2z2) continue;
         const pa = (Math.atan2(dy, dx) + 2 * Math.PI);
-        const rx = dx * distFactor + 112; const ry = dy * distFactor + 342;
+        const rx = dx * distFactor + 112; const ry = dy * distFactor + radarYPositioning;
         ctx.beginPath();
         ctx.arc(rx, ry, 3, 0, 2 * Math.PI, false);
         if (va2 > 1.24) ctx.strokeStyle = ctx.fillStyle = `orange`;
@@ -891,7 +1053,7 @@ global.rRadar = function () {
     const radius = wepns[equipped[scroll]].range * 960 / r;
     if (va2 > 1.8 && radius / radarZoom > 3 && radius / radarZoom < 96) {
         ctx.beginPath();
-        ctx.arc(112, 342, radius / radarZoom, 0, 2 * Math.PI, false);
+        ctx.arc(112, radarYPositioning, radius / radarZoom, 0, 2 * Math.PI, false);
         ctx.strokeStyle = brighten(pc);
         ctx.stroke();
         ctx.closePath();
@@ -948,31 +1110,112 @@ global.rTut = function () {
     const ore = iron + silver + platinum + copper;
     let text = ``;
     let line2 = ``;
+    let line3 = ``;
+    let line4 = ``;
     ctx.save();
     ctx.textAlign = `center`;
     ctx.fillStyle = `yellow`;
     if (guest) {
-        if (money != 8000 && currTut > 3) {
-            text = translate(`Go to the Base and make an account!`); if (currTut < 5) {
-                currTut = 5; addBigNote([256, text, ``, ``]);
+        const pmaxHealth = ships[ship].health * mh2;
+        if (!docked && phealth !== undefined && pmaxHealth !== undefined && pmaxHealth > 0 && phealth > 0 && (phealth < (pmaxHealth * 0.5))) {
+            text = translate(`Your health is low! Retreat and dock (X) at a friendly base!`);
+            line2 = translate(`Docking usually repairs and restocks your ship.`);
+            if (spammyLowHealth == 0) {
+                spammyLowHealth = 30; addBigNote([256, text, line2, ``]);
             }
-        } else if (!didW) {
-            text = translate(`Press W to move forward!`); if (currTut < 1) {
-                currTut = 1; addBigNote([256, text, ``, ``]);
-            }
-        } else if (!didSteer) {
-            text = translate(`Press A and D to steer!`); if (currTut < 2) {
-                currTut = 2; addBigNote([256, text, ``, ``]);
-            }
-        } else if (ship == 0 && ore == 0) {
-            text = translate(`Follow the orange arrow!`);
-            line2 = translate(`Shoot asteroids with spacebar!`);
-            if (currTut < 3) {
-                currTut = 3; addBigNote([256, text, line2, ``]);
-            }
-        } else if (ship == 0) {
-            text = docked ? translate(`Sell your ore in the Base Shop!`) : translate(`Follow the white arrow and press X to Dock!`); if (currTut < 4) {
-                currTut = 4; addBigNote([256, text, ``, ``]);
+        } else {
+            if (spammyLowHealth > 0) spammyLowHealth--;
+            if (currTut <= 1 && !didW) {
+                didSteer = false;
+                didJuke = false;
+                didS = false;
+                didShift = false;
+                didFire = false;
+                text = translate(`We welcome you to the Cadet Training Programme.`);
+                line2 = translate(`Press W/↑ (W or ↑) to move forward!`);
+                if (currTut < 1) {
+                    currTut = 1; addBigNote([256, text, line2, ``]);
+                }
+            } else if (currTut <= 2 && !didSteer) {
+                didJuke = false;
+                didS = false;
+                didShift = false;
+                didFire = false;
+
+                text = translate(`Good! But you also need to know how to change course.`);
+                line2 = translate(`Steering can help you avoid getting hit, too.`);
+                line3 = translate(`Press A/← and D/→ to steer!`);
+                if (currTut < 2) {
+                    currTut = 2; // addBigNote([256, text, line2, ``]);
+                }
+            } else if (currTut <= 3 && !didJuke) {
+                didS = false;
+                didShift = false;
+                didFire = false;
+
+                text = translate(`Hits damage your health (HP).`);
+                line2 = translate(`Over time you passively heal some HP (HP regen).`);
+                line3 = translate(`If your HP < 0, your ship is destroyed, and you lose 1 'live'.`);
+                line4 = translate(`Dodging hits may save you. Press Q and E to juke left and right!`);
+                if (currTut < 3) {
+                    currTut = 3; // addBigNote([256, text, line2, ``]);
+                }
+            } else if (currTut <= 4 && (didSShield == false)) {
+                didShift = false;
+                didFire = false;
+                const shieldsWorkin = ((!(disguise > 0)) && didS && (!isPShifting));
+
+                text = translate(`While shields are up, HP damage is reduced.`);
+                line2 = translate(`However, so is HP regen & some weapons cannot be fired.`);
+                line3 = translate(`Hold S/↓ to keep shields raised!`);
+                if (currTut < 4) {
+                    currTut = 4; // addBigNote([256, text, line2, ``]);
+                }
+                if (shieldsWorkin) didSShield = true;
+                else didS = false;
+            } else if (currTut <= 5 && !didShift) {
+                didFire = false;
+
+                text = translate(`Drifting makes steering faster but harder to control.`);
+                line2 = translate(`While drifting, S/↓ moves you backwards.`);
+                line3 = translate(`Hold Shift to drift!`);
+                if (currTut < 5) {
+                    currTut = 5; // addBigNote([256, text, line2, ``]);
+                }
+            } else if (currTut <= 6 && !didFire) {
+                text = translate(`Hold spacebar/LMB to fire your selected weapon!`);
+                line2 = translate(`Some weapons need ammo and time to charge.`);
+                line3 = translate(`You can have up to 10 weapon slots (numbers 1-10/scroll with mouse wheel).`);
+                line4 = translate(`Some ships can also fire an additional weapon with C/V.`);
+                if (currTut < 6) {
+                    currTut = 6; // addBigNote([256, text, line2, ``]);
+                }
+                if (!docked) oldMoney = money;
+            } else {
+                if ((currTut == 8) || (money != oldMoney && currTut >= 7 && ore < oldOre)) {
+                    text = docked ? translate(`Dock on the Base again and make an account!`) : translate(`Dock on the Base and make an account!`);
+                    line2 = docked ? translate(`This saves your progress, and Achievements from the 'Achievements' window.`) : translate(`You can toggle autopilot to lock your controls (press P).`);
+                    if (currTut < 8) {
+                        currTut = 8; addBigNote([256, text, line2, ``]);
+                    }
+                } else if (currTut <= 7) {
+                    if (ore == 0) {
+                        text = translate(`Follow the orange arrow! It is the nearest asteroid around. Shoot at asteroids to mine some ore!`);
+                        line2 = translate(`If you cannot find one, wander around or wait for an asteroid to spawn.`);
+                        line3 = docked ? `` : translate(`If you travel far enough, you will see a yellow hollow arrow. That is the sector edge.`);
+                        line4 = docked ? `` : translate(`Crossing the sector edge lets you travel between sectors, ${mapSz * mapSz} in total.`);
+                    } else {
+                        text = docked ? translate(`Sell your ore in the Base 'Shop', where you buy/sell items!`) : translate(`Follow the white arrow with ${pc} numbers and dock (press X) on a friendly starbase!`);
+                        line2 = docked ? translate(`'Quests' is for accepting missions (clicking over them).`) : translate(`Filled Arrows = ships/turrets/asteroids. Hollow arrows = environment.`);
+                        line3 = docked ? `` : translate(`Caution: filled arrows whose numbers`);
+                        line4 = docked ? `` : translate(`are not your team's color are likely enemies.`);
+                    }
+                    if (currTut < 7 || (currTut == 7 && oldOre != ore)) {
+                        oldOre = ore;
+                        currTut = 7; // addBigNote([256, text, line2, ``]);
+                    }
+                    if (!docked) oldMoney = money;
+                }
             }
         }
     }
@@ -980,7 +1223,9 @@ global.rTut = function () {
     const ms = date.getTime();
     ctx.font = `${5 * sinLow(ms / 180) + 25}px ShareTech`;
     write(ctx, text, w / 2, 40);
-    write(ctx, line2, w / 2, 88);
+    write(ctx, line2, w / 2, 40 + 48);
+    write(ctx, line3, w / 2, 40 + (48 * 2));
+    write(ctx, line4, w / 2, 40 + (48 * 3));
     ctx.restore();
 };
 global.rDmg = function (r) {
@@ -1074,7 +1319,8 @@ global.infoBox = function (context, x, y, width, height, fill, stroke) {
     context.restore();
 };
 global.rRaid = function () {
-    if (guest || rank < 6) return;
+    // if (guest || rank < 6) return;
+    if (rank < 6) return;
     ctx.save();
     ctx.fillStyle = `yellow`;
     ctx.textAlign = `center`;
@@ -1171,8 +1417,14 @@ global.rBullets = function () {
     for (const i in bullets) {
         const selfo = bullets[i];
         let img = Img.redbullet;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        let extraX = 0;
+        let extraY = 0;
+
+        if (!(Object.is(selfo.sx, null) || Object.is(selfo.sx, undefined))) extraX = obtainSXDrift(sx, selfo.sx);
+        if (!(Object.is(selfo.sy, null) || Object.is(selfo.sy, undefined))) extraY = obtainSYDrift(sy, selfo.sy);
+
+        const rendX = selfo.x + extraX - px + w / 2 + scrx;
+        const rendY = selfo.y + extraY - py + h / 2 + scry;
         if (selfo.wepnID == 28) {
             ctx.save();
             ctx.globalAlpha = 0.1;
@@ -1182,10 +1434,14 @@ global.rBullets = function () {
                 const uTick = Math.min(selfo.tick, 75);
                 const hypot = 4 + square(Math.random() * uTick / 10);
                 const hypotCenter = Math.random() * hypot;
-                ctx.beginPath();
-                ctx.arc(rendX + Math.cos(angle) * hypotCenter, rendY + Math.sin(angle) * hypotCenter, hypot, 0, 2 * Math.PI, false);
-                ctx.closePath();
-                ctx.fill();
+                const bulx = rendX + Math.cos(angle) * hypotCenter;
+                const buly = rendY + Math.sin(angle) * hypotCenter;
+                if (!(bulx < -(2 * (w) + 220) || bulx > (2 * (w) + 220) || buly < -(2 * (h) + 220) || buly > (2 * (h) + 220))) {
+                    ctx.beginPath();
+                    ctx.arc(bulx, buly, hypot, 0, 2 * Math.PI, false);
+                    ctx.closePath();
+                    ctx.fill();
+                }
             }
             ctx.restore();
             if (selfo.tick > 750) delete bullets[i];
@@ -1193,14 +1449,17 @@ global.rBullets = function () {
         }
         if (selfo.color == `blue`) img = Img.bluebullet;
         if (selfo.color == `green`) img = Img.greenbullet;
+        if (selfo.color == `yellow`) img = Img.yellowbullet;
         if (selfo.wepnID == 1 || selfo.wepnID == 23) img = Img.bigBullet;
         const pw = img.width;
         const ph = img.height;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.rotate(selfo.angle + Math.PI / 2);
-        ctx.drawImage(img, -pw / 2, -ph / 2);
-        ctx.restore();
+        if (!(rendX < -(2 * (w + pw) + 220) || rendX > (2 * (w + pw) + 220) || rendY < -(2 * (h + ph) + 220) || rendY > (2 * (h + ph) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.drawImage(img, -pw / 2, -ph / 2);
+            ctx.restore();
+        }
     }
 };
 global.rMissiles = function () {
@@ -1221,13 +1480,17 @@ global.rMissiles = function () {
         }
         const pw = img.width;
         const ph = img.height;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.rotate(selfo.angle + Math.PI / 2);
-        ctx.drawImage(img, -pw / 2, -ph / 2);
-        ctx.restore();
+
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
+
+        if (!(rendX < -(2 * (w + pw) + 220) || rendX > (2 * (w + pw) + 220) || rendY < -(2 * (h + ph) + 220) || rendY > (2 * (h + ph) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.drawImage(img, -pw / 2, -ph / 2);
+            ctx.restore();
+        }
     }
 };
 global.rOrbs = function () {
@@ -1239,13 +1502,15 @@ global.rOrbs = function () {
         }
         const pw = img.width;
         const ph = img.height;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.rotate(getTimeAngle() + Math.PI / 2);
-        ctx.drawImage(img, -pw / 2, -ph / 2);
-        ctx.restore();
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
+        if (!(rendX < -(2 * (w + pw) + 220) || rendX > (2 * (w + pw) + 220) || rendY < -(2 * (h + ph) + 220) || rendY > (2 * (h + ph) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(getTimeAngle() + Math.PI / 2);
+            ctx.drawImage(img, -pw / 2, -ph / 2);
+            ctx.restore();
+        }
     }
 };
 global.rMines = function () {
@@ -1254,8 +1519,8 @@ global.rMines = function () {
         let img = Img.mine;
         const pw = img.width;
         const ph = img.height;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
         if (selfo.wepnID == 16) {
             img = Img.laserMine;
         } else if (selfo.wepnID == 17) {
@@ -1268,6 +1533,8 @@ global.rMines = function () {
             img = Img.campfire;
         } else if (selfo.wepnID == 48) {
             img = Img.magneticMine;
+        } else if (selfo.wepnID == 50) {
+            img = Img.nailoth;
         } else if (selfo.wepnID == 32) {
             ctx.save();
             ctx.globalAlpha = 0.1;
@@ -1300,16 +1567,17 @@ global.rBeams = function () {
     ctx.lineWidth = 6;
     for (const i in beamsInfo) {
         const selfo = beamsInfo[i];
+        if (selfo === undefined || selfo === 0 || selfo.time > 11) continue;
         if (selfo.wepnID == 7) ctx.strokeStyle = `mediumpurple`;
         else if (selfo.wepnID == 9) ctx.strokeStyle = `lime`;
         else if (selfo.wepnID == 24) ctx.strokeStyle = `yellow`;
         else if (selfo.wepnID == 45) ctx.strokeStyle = `cyan`;
         else if (selfo.wepnID == 33 || selfo.wepnID == 26 || selfo.wepnID == 30) ctx.strokeStyle = `#d0c090`;
         else ctx.strokeStyle = `red`;
-        const bx = selfo.bx - px + w / 2 + scrx;
-        const by = selfo.by - py + h / 2 + scry;
-        const ex = selfo.ex - px + w / 2 + scrx;
-        const ey = selfo.ey - py + h / 2 + scry;
+        const bx = selfo.bx + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const by = selfo.by + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
+        const ex = selfo.ex + obtainSXDrift(sx, selfo.esx) - px + w / 2 + scrx;
+        const ey = selfo.ey + obtainSYDrift(sy, selfo.esy) - py + h / 2 + scry;
         ctx.beginPath();
         ctx.moveTo(bx, by);
         ctx.lineTo(ex, ey);
@@ -1327,10 +1595,10 @@ global.rBlasts = function () {
         if (selfo.wepnID == 25) {
             ctx.strokeStyle = `white`;
         }
-        const bx = selfo.bx - px + w / 2 + scrx;
-        const by = selfo.by - py + h / 2 + scry;
-        const ex = selfo.bx + Math.cos(selfo.angle) * 10000 - px + w / 2 + scrx;
-        const ey = selfo.by + Math.sin(selfo.angle) * 10000 - py + h / 2 + scry;
+        const bx = selfo.bx + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const by = selfo.by + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
+        const ex = selfo.bx + obtainSXDrift(sx, selfo.sx) + Math.cos(selfo.angle) * 10000 - px + w / 2 + scrx;
+        const ey = selfo.by + obtainSYDrift(sy, selfo.sy) + Math.sin(selfo.angle) * 10000 - py + h / 2 + scry;
         ctx.beginPath();
         ctx.moveTo(bx, by);
         ctx.lineTo(ex, ey);
@@ -1340,181 +1608,282 @@ global.rBlasts = function () {
     }
     ctx.globalAlpha = 1;
 };
+
+global.inTheVoid = function () {
+    return (sx === null || typeof sx === `undefined` || sy === null || typeof sy === `undefined`);
+};
 global.rAsteroids = function () {
     let nearA = 0;
-    for (let selfo in astsInfo) {
-        selfo = astsInfo[selfo];
+    if (inTheVoid()) return; // Probably just docked
+    const selfsx = sx;
+    const selfsy = sy;
+    let extraXn = 0;
+    let extraYn = 0;
+    for (const id in astsInfo) {
+        const selfo = astsInfo[id];
 
         const img = (selfo.metal == 0 ? Img.iron : (selfo.metal == 3 ? Img.platinum : (selfo.metal == 1 ? Img.silver : Img.copper)));
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        const extraX = obtainSXDrift(selfsx, selfo.sx);
+        const extraY = obtainSYDrift(selfsy, selfo.sy);
+        const rendX = selfo.x + extraX - px + w / 2 + scrx;
+        const rendY = selfo.y + extraY - py + h / 2 + scry;
         const d = new Date();
         const healthDec = (0.5 + selfo.health / selfo.maxHealth) / 1.5;
         const stime = Math.floor((d.getMilliseconds() / 1000 + d.getSeconds()) / 60 * 1024) % 64;
-        const sx = (stime % 8) * 128;
-        const sy = Math.floor((stime / 8) % 4 + 4 * (Math.floor(selfo.metal) % 2)) * 128;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.drawImage(Img.astUnderlayBlue, -128, -128);
-        ctx.rotate(selfo.angle + Math.PI / 2);
-        ctx.drawImage(img, sx, sy, 128, 128, -64 * healthDec, -64 * healthDec, 128 * healthDec, 128 * healthDec);
-        ctx.restore();
+        const tsx = (stime % 8) * 128;
+        const tsy = Math.floor((stime / 8) % 4 + 4 * (Math.floor(selfo.metal) % 2)) * 128;
+
+        if (!(rendX < -(2 * (w + healthDec) + 220) || rendX > (2 * (w + healthDec) + 220) || rendY < -(2 * (h + healthDec) + 220) || rendY > (2 * (h + healthDec) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.drawImage(Img.astUnderlayBlue, -128, -128);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.drawImage(img, tsx, tsy, 128, 128, -64 * healthDec, -64 * healthDec, 128 * healthDec, 128 * healthDec);
+            ctx.restore();
+        }
 
         if (selfo.color != pc) { // update nearest enemy for pointer
-            if (nearA == 0 || square(selfo.x - px) + square(selfo.y - py) < square(nearA.x - px) + square(nearA.y - py)) {
+            const dDistPX = selfo.x - px + extraX;
+            const dDistPY = selfo.y - py + extraY;
+
+            if (nearA == 0) {
                 nearA = selfo;
+                extraXn = extraX;
+                extraYn = extraY;
+            } else {
+                const dDistAX = nearA.x - px + obtainSXDrift(selfsx, nearA.sx); // TO-DO extraXn
+                const dDistAY = nearA.y - py + obtainSYDrift(selfsy, nearA.sy); // TO-DO extraYn
+                if ((square(dDistPX) + square(dDistPY)) < (square(dDistAX) + square(dDistAY))) {
+                    nearA = selfo;
+                    extraXn = extraX;
+                    extraYn = extraY;
+                }
             }
         }
     }
     if (nearA !== 0) {
-        rAstPointer(nearA);
+        rAstPointer(nearA, extraXn, extraYn);
     }
 };
 global.rPlanets = function () {
-    if (planets == 0) return;
-    const selfo = planets;
-    const rendX = (selfo.x - px + scrx) / 4 + w / 2;
-    const rendY = (selfo.y - py + scry) / 4 + h / 2;
-    if (rendX < -150 || rendX > w + 150 || rendY < -150 || rendY > h + 220) return;
+    if (planets == 0 || planets == undefined) return;
+    if (inTheVoid()) return; // Probably just docked
+    for (let id in planets) {
+        const selfo = planets[id];
+        // console.log("TO-DO rPlanets planetlist is " + planets + " and structure is " + Object.keys(planets))
+        // console.log("TO-DO rPlanets selfo, a planet, is " + selfo + " and structure is " + Object.keys(selfo))
+        const rendX = (selfo.x + obtainSXDrift(sx, selfo.sx) - px + scrx) / 4 + w / 2;
+        const rendY = (selfo.y + obtainSYDrift(sy, selfo.sy) - py + scry) / 4 + h / 2;
+        // const rendX = (selfo.x - px + scrx) / 4 + w / 2;
+        // const rendY = (selfo.y - py + scry) / 4 + h / 2;
+        if (rendX < -150 || rendX > w + 150 || rendY < -150 || rendY > h + 220) continue;
 
-    const d = new Date();
-    const stime = d.getTime() / 150000;
+        const d = new Date();
+        const stime = d.getTime() / 150000;
 
-    const imgi = (sx + sy * mapSz) % 5 + 1;
-    const img = planetImgs[imgi];
+        const imgi = (selfo.sx + selfo.sy * mapSz) % 5 + 1;
+        const img = planetImgs[imgi];
 
-    if (typeof img === `undefined`) return;
+        if (typeof img === `undefined`) continue;
 
-    const ox = (sinLow(stime * 5) / 2 + 0.5) * (img.width - 256) + 128;// error on t05 width of undefined
-    const oy = (cosLow(stime * 4) / 2 + 0.5) * (img.height - 256) + 128;
+        const ox = (sinLow(stime * 5) / 2 + 0.5) * (img.width - 256) + 128;// error on t05 width of undefined
+        const oy = (cosLow(stime * 4) / 2 + 0.5) * (img.height - 256) + 128;
 
-    ctx.save();
-    const pattern = ctx.createPattern(img, `no-repeat`);
-    ctx.fillStyle = pattern;
-    ctx.translate(rendX, rendY);
-    ctx.drawImage(selfo.color === `yellow` ? Img.planetU : colorSelect(selfo.color, Img.planetUR, Img.planetUB, Img.planetUG), -155, -155, 310, 310);
-    ctx.translate(-ox, -oy);
-    ctx.beginPath();
-    ctx.arc(ox, oy, 128, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    ctx.translate(ox, oy);
-    ctx.drawImage(Img.planetO, -128, -128);
-    ctx.restore();
-    ctx.textAlign = `center`;
-    ctx.fillStyle = brighten(selfo.color);
-    ctx.font = `30px ShareTech`;
-    write(ctx, translate(`Planet `) + selfo.name, rendX, rendY - 196);
-    ctx.textAlign = `left`;
-    ctx.font = `14px ShareTech`;
+        ctx.save();
+        const pattern = ctx.createPattern(img, `no-repeat`);
+        ctx.fillStyle = pattern;
+        ctx.translate(rendX, rendY);
+        ctx.drawImage(selfo.color === `yellow` ? Img.planetU : colorSelect(selfo.color, Img.planetUR, Img.planetUB, Img.planetUG), -155, -155, 310, 310);
+        ctx.translate(-ox, -oy);
+        ctx.beginPath();
+        ctx.arc(ox, oy, 128, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.translate(ox, oy);
+        ctx.drawImage(Img.planetO, -128, -128);
+        ctx.restore();
+        ctx.textAlign = `center`;
+        ctx.fillStyle = brighten(selfo.color);
+        ctx.font = `30px ShareTech`;
+        write(ctx, translate(`Planet `) + selfo.name, rendX, rendY - 196);
+        ctx.textAlign = `left`;
+        ctx.font = `14px ShareTech`;
+    }
 };
 global.rPacks = function () {
-    for (let selfo in packsInfo) {
-        selfo = packsInfo[selfo];
+    if (inTheVoid()) return; // Probably just docked
+    for (const id in packsInfo) {
+        const selfo = packsInfo[id];
         const img = selfo.type == 0 ? Img.pack : (selfo.type == 1 ? Img.bonus : (selfo.type == 2 ? Img.life : Img.ammo));
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
         const d = new Date();
         const stime = (d.getMilliseconds() / 1000 + d.getSeconds()) / 3;
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.scale(2, 2);
-        ctx.rotate(stime * Math.PI);
-        ctx.drawImage(img, -img.width / 2, -img.height / 2);
-        ctx.restore();
+        if (!(rendX < -(2 * (w) + 220) || rendX > (2 * (w) + 220) || rendY < -(2 * (h) + 220) || rendY > (2 * (h) + 220))) {
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.scale(2, 2);
+            ctx.rotate(stime * Math.PI);
+            ctx.drawImage(img, -img.width / 2, -img.height / 2);
+            ctx.restore();
+        }
     }
 };
 global.rVorts = function () {
+    if (inTheVoid()) return; // Probably just docked
     const d = new Date();
     const angleT = d.getTime() / 1000;
+    let warningLevel = 0; // 0 no issues, 1 a bit close, 2 quite close, 3 too close!
     for (let selfo in vortsInfo) {
         ctx.save();
         selfo = vortsInfo[selfo];
         const img = selfo.isWorm ? Img.worm : Img.vort;
+        const imgArrow = selfo.isWorm ? Img.blackArrow : Img.blackPurpleTipArrow;
         const size = 24 * selfo.size / 64;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
-        ctx.translate(rendX, rendY);
-        ctx.rotate(angleT % (Math.PI * 2));
-        ctx.drawImage(img, -size / 2, -size / 2, size, size);
-        ctx.globalAlpha = 0.3;
-        ctx.rotate(-0.5 * angleT % (Math.PI * 2));
-        ctx.drawImage(img, -size * 3 / 4, -size * 3 / 4, 1.5 * size, 1.5 * size);
-        ctx.restore();
+        const extraX = obtainSXDrift(sx, selfo.sx);
+        const extraY = obtainSYDrift(sy, selfo.sy);
+        const rendX = selfo.x + extraX - px + w / 2 + scrx;
+        const rendY = selfo.y + extraY - py + h / 2 + scry;
+        if (!(rendX < -(2 * (w + size) + 220) || rendX > (2 * (w + size) + 220) || rendY < -(2 * (h + size) + 220) || rendY > (2 * (h + size) + 220))) {
+            ctx.translate(rendX, rendY);
+            ctx.rotate(angleT % (Math.PI * 2));
+            ctx.drawImage(img, -size / 2, -size / 2, size, size);
+            ctx.globalAlpha = 0.3;
+            ctx.rotate(-0.5 * angleT % (Math.PI * 2));
+            ctx.drawImage(img, -size * 3 / 4, -size * 3 / 4, 1.5 * size, 1.5 * size);
+            ctx.restore();
+        }
         if (selfo.isWorm) currAlert = translate(`Wormhole Nearby!`);
-        else bigAlert = translate(`Black Hole Nearby!`);
-        rBlackHoleWarning(selfo.x, selfo.y);
+        else {
+            const leDist = square(rendX) + square(rendY) - size;
+            const sectorDisClose = square(sectorWidth);
+            if (leDist < sectorDisClose) {
+                if (leDist < sectorDisClose / 4) {
+                    if (warningLevel < 3) bigAlert = translate(`BLACK HOLE NEARBY!`);
+                    else bigAlert = translate(`MULTIPLE BLACK HOLES NEARBY!`);
+                    warningLevel = 3;
+                } else if (warningLevel < 2) {
+                    warningLevel = 2;
+                    bigAlert = translate(`Black Hole Nearby!`);
+                }
+            } else if (warningLevel < 1) {
+                warningLevel = 1;
+                bigAlert = translate(`Black Hole nearby. Exercise caution.`);
+            }
+        }
+        rBlackHoleWarning(selfo.x, selfo.y, extraX, extraY, imgArrow);
     }
 };
 global.rPlayers = function () {
-    const pointers = [0, 0, 0];
+    if (inTheVoid()) return; // Probably just docked
+    const pointers = [0, 0, 0, 0];
+    let extraX = [0, 0, 0, 0];
+    let extraY = [0, 0, 0, 0];
     for (let selfo in playersInfo) {
         selfo = playersInfo[selfo];
         if (selfo.disguise > 0) continue;
 
         ctx.strokeStyle = `grey`;
-        const img = colorSelect(selfo.color, redShips, blueShips, greenShips)[selfo.ship];
+        const img = colorSelect(selfo.color, redShips, blueShips, greenShips, yellowShips)[selfo.ship];
 
         const pw = img.width;
         const ph = img.height;
         if (pw == 0 || ph == 0) return;
-        const rendX = selfo.x - px + w / 2 + scrx;
-        const rendY = selfo.y - py + h / 2 + scry;
+        const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+        const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
+        const outOfBounds = (rendX < -(2 * (w + pw) + 220) || rendX > (2 * (w + pw) + 220) || rendY < -(2 * (h + ph) + 220) || rendY > (2 * (h + ph) + 220));
+        if (!outOfBounds) {
+            // ctx.restore();
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.globalAlpha = 0.8;
+            ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -pw, -ph, pw * 2, ph * 2);
+            ctx.globalAlpha = 1;
+            ctx.drawImage(img, -pw / 2, -ph / 2);
 
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.globalAlpha = 0.8;
-        ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -pw, -ph, pw * 2, ph * 2);
-        ctx.globalAlpha = 1;
-        ctx.rotate(selfo.angle + Math.PI / 2);
+            /*
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.globalAlpha = 0.8;
+            ctx.drawImage(colorSelect(selfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -pw, -ph, pw * 2, ph * 2);
+            ctx.globalAlpha = 1;
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            */
+        }
         const fireWidth = 32 * 1.2 * Math.sqrt(pw / 64); const fireHeight = selfo.speed * 1.4 * pw / 64 + Math.random() * pw / 25;
-        if (selfo.speed > 0) ctx.drawImage(Img.fire, 0, tick % 8 * 64, 64, 64, -fireWidth / 2, 0, fireWidth, fireHeight);
-        ctx.restore();
-        ctx.save();
-        ctx.translate(rendX, rendY);
-        ctx.rotate(selfo.angle + Math.PI / 2);
-        ctx.drawImage(img, -pw / 2, -ph / 2);
-        ctx.restore();
+        if (!outOfBounds) {
+            if (selfo.speed > 0) ctx.drawImage(Img.fire, 0, tick % 8 * 64, 64, 64, -fireWidth / 2, 0, fireWidth, fireHeight);
+            ctx.restore();
+            ctx.save();
+            ctx.translate(rendX, rendY);
+            ctx.rotate(selfo.angle + Math.PI / 2);
+            ctx.drawImage(img, -pw / 2, -ph / 2);
+            ctx.restore();
 
-        ctx.fillStyle = brighten(selfo.color);
-        ctx.textAlign = `center`;
-        write(ctx, selfo.name, rendX, rendY - ships[selfo.ship].width * 0.5);
-        ctx.textAlign = `left`;
+            ctx.fillStyle = brighten(selfo.color);
+            ctx.textAlign = `center`;
+            write(ctx, selfo.name, rendX, rendY - ships[selfo.ship].width * 0.5);
+            ctx.textAlign = `left`;
+        }
 
         if (selfo.name === myName) {
-            if (selfo.health < selfo.maxHealth * 0.3) currAlert = translate(`Low Health!`);
+            if (selfo.health < selfo.maxHealth * 0.3) {
+                if (guest) {
+                    currAlert = translate(`Low Health! Retreat!`);
+                } else currAlert = translate(`Low Health!`);
+            }
         } else {
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < pointers.length; i++) {
                 if (selfo.color === teamColors[i]) {
-                    if (pointers[i] === 0) pointers[i] = selfo;
-                    else if (square(selfo.x - px) + square(selfo.y - py) < square(pointers[i].x - px) + square(pointers[i].y - py)) pointers[i] = selfo;
+                    const diffSX = obtainSXDrift(sx, selfo.sx);
+                    const diffSY = obtainSYDrift(sy, selfo.sy);
+                    if (pointers[i] === 0) {
+                        pointers[i] = selfo;
+                        extraX[i] = diffSX;
+                        extraY[i] = diffSY;
+                    } else {
+                        const diffSX = obtainSXDrift(sx, selfo.sx);
+                        const diffSY = obtainSYDrift(sy, selfo.sy);
+                        const dDistPX = selfo.x - px + diffSX;
+                        const dDistPY = selfo.y - py + obtainSYDrift(sy, selfo.sy);
+                        const dDistAX = pointers[i].x - px + extraX[i]; // obtainSXDrift(sx, pointers[i].sx);
+                        const dDistAY = pointers[i].y - py + extraY[i]; // obtainSYDrift(sy, pointers[i].sy);
+                        if (square(dDistPX) + square(dDistPY) < square(dDistAX) + square(dDistAY)) {
+                            pointers[i] = selfo;
+                            extraX[i] = diffSX;
+                            extraY[i] = diffSY;
+                        }
+                    }
                 }
             }
         }
-
-        if (selfo.hasPackage) rBackPack(selfo);
-        ctx.lineWidth = 6;
-        if (selfo.shield) {
-            ctx.strokeStyle = `lightblue`;
+        if (!outOfBounds) {
+            if (selfo.hasPackage) rBackPack(selfo);
+            ctx.lineWidth = 6;
+            if (selfo.shield) {
+                ctx.strokeStyle = `lightblue`;
+                ctx.beginPath();
+                ctx.arc(rendX, rendY, pw / 1.5 - 8, 0, 2 * Math.PI, false);
+                ctx.stroke();
+            }
+            if (selfo.health / selfo.maxHealth >= 1 * ((selfo.ship == 25) ? 2 : 1)) continue;
+            ctx.lineWidth = 4;
+            const r = Math.floor((1 - selfo.health / selfo.maxHealth) * 255);
+            const g = Math.floor(255 * selfo.health / selfo.maxHealth);
+            const b = Math.floor(64 * selfo.health / selfo.maxHealth);
+            ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
             ctx.beginPath();
-            ctx.arc(rendX, rendY, pw / 1.5 - 8, 0, 2 * Math.PI, false);
+            ctx.arc(rendX, rendY, pw / 1.5, (2.5 - selfo.health / selfo.maxHealth * 0.99) * Math.PI, (0.501 + selfo.health / selfo.maxHealth) * Math.PI, false);
             ctx.stroke();
         }
-        if (selfo.health / selfo.maxHealth >= 1) continue;
-        ctx.lineWidth = 4;
-        const r = Math.floor((1 - selfo.health / selfo.maxHealth) * 255);
-        const g = Math.floor(255 * selfo.health / selfo.maxHealth);
-        const b = Math.floor(64 * selfo.health / selfo.maxHealth);
-        ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
-        ctx.beginPath();
-        ctx.arc(rendX, rendY, pw / 1.5, (2.5 - selfo.health / selfo.maxHealth * 0.99) * Math.PI, (0.501 + selfo.health / selfo.maxHealth) * Math.PI, false);
-        ctx.stroke();
     }
-    rTeamPointers(pointers);
+
+    rTeamPointers(pointers, extraX, extraY);
 };
 global.rSelfCloaked = function () {
     ctx.strokeStyle = `grey`;
-    const img = (pc === `red` ? redShips : (pc === `blue` ? blueShips : greenShips))[ship];
+    const img = (pc === `red` ? redShips : (pc === `blue` ? blueShips : (pc === `green` ? greenShips : yellowShips)))[ship];
 
     const pw = img.width;
     const ph = img.height;
@@ -1552,67 +1921,124 @@ global.rSelfCloaked = function () {
     ctx.stroke();
 };
 global.rBases = function () {
-    if (basesInfo !== undefined) { // render bases
-        const image = colorSelect(basesInfo.color, Img.rss, Img.bss, Img.gss);
-        let pw = image.width;
-        let ph = image.height;
-        const rendX = basesInfo.x - px + w / 2 + scrx;
-        const rendY = basesInfo.y - py + h / 2 + scry;
-        if (basesInfo.color !== pc) currAlert = translate(`Enemy Base Nearby!`);
-
-        if (basesInfo.baseType == DEADBASE || basesInfo.baseType == LIVEBASE) {
-            ctx.save();
-            ctx.translate(rendX, rendY);
-            ctx.rotate(tick / 1000 + Math.PI / 2);
-            ctx.drawImage(colorSelect(basesInfo.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen), -512, -512, 1024, 1024);
-            ctx.drawImage(image, -384, -384, 768, 768);
-            ctx.restore();
-            ctx.textAlign = `center`;
-            ctx.fillStyle = `lime`;
-            if (experience < 64 && basesInfo.color == pc && square(px - basesInfo.x) + square(py - basesInfo.y) < square(512)) {
-                ctx.font = `${2.5 * sinLow(tick / 8) + 15}px ShareTech`;
-                write(ctx, translate(`X TO DOCK WITH BASE`), rendX, rendY - 96);
-                ctx.font = `14px ShareTech`;
+    // if (inTheVoid()) return; // Probably just docked
+    if (basesInfo !== undefined && basesInfo !== 0) { // render bases
+        let warningLevel = 0; // 0 no warning, 1 enemy dead base, 2 sentry, 3 turret, 4 living starbase turret or unknown
+        for (const id in basesInfo) {
+            const aBase = basesInfo[id];
+            if (aBase === undefined || aBase === 0 || aBase === null || typeof aBase !== `object`) continue;
+            const image = colorSelect(aBase.color, Img.rss, Img.bss, Img.gss, Img.yss);
+            let pw = image.width;
+            let ph = image.height;
+            // console.log("TO-DO Calling rBases 1, aBase = " + aBase + " and its parameters are " + Object.keys(aBase));
+            const rendX = aBase.x + obtainSXDrift(sx, aBase.sx) - px + w / 2 + scrx;
+            const rendY = aBase.y + obtainSYDrift(sy, aBase.sy) - py + h / 2 + scry;
+            let outOfBounds = (rendX < -(2 * (w + pw) + 500) || rendX > (2 * (w + pw) + 500) || rendY < -(2 * (h + ph) + 500) || rendY > (2 * (h + ph) + 500));
+            let tooClose = false;
+            let warningRange = TURRET_DETECT_RANGE;
+            if (aBase.baseType == DEADBASE || aBase.baseType == LIVEBASE) {
+                if (!outOfBounds) {
+                    ctx.save();
+                    ctx.translate(rendX, rendY);
+                    ctx.rotate(tick / 1000 + Math.PI / 2);
+                    ctx.drawImage(colorSelect(aBase.color, Img.astUnderlayRed, Img.astUnderlayBlue, Img.astUnderlayGreen, Img.astUnderlayYellow), -512, -512, 1024, 1024);
+                    ctx.drawImage(image, -384, -384, 768, 768);
+                    ctx.restore();
+                    ctx.textAlign = `center`;
+                    ctx.fillStyle = `lime`;
+                }
+                const dDistAX = aBase.x - px + obtainSXDrift(sx, aBase.sx);
+                const dDistAY = aBase.y - py + obtainSYDrift(sy, aBase.sy);
+                const moduSqDis = square(dDistAX) + square(dDistAY);
+                if (aBase.baseType == SENTRY) warningRange = warningRange * 0.75;
+                tooClose = (moduSqDis < square(warningRange * 10));
+                if (tooClose && aBase.baseType == DEADBASE) {
+                    if (aBase.color !== pc && warningLevel <= 1) {
+                        if (warningLevel < 1) currAlert = translate(`Enemy Base Nearby!`);
+                        else currAlert = translate(`Enemy Bases Nearby!`);
+                        warningLevel = 1;
+                    }
+                }
+                if (!outOfBounds) {
+                    if (experience < 64 && aBase.color == pc && moduSqDis < square(512)) {
+                        ctx.font = `${2.5 * sinLow(tick / 8) + 15}px ShareTech`;
+                        write(ctx, translate(`X TO DOCK WITH BASE`), rendX, rendY - 96);
+                        ctx.font = `14px ShareTech`;
+                    }
+                    ctx.textAlign = `left`;
+                }
+            } else { // write name
+                if (!outOfBounds) {
+                    ctx.textAlign = `center`;
+                    ctx.fillStyle = `white`;
+                    ctx.font = `14px ShareTech`;
+                    write(ctx, aBase.name, rendX, rendY - 64);
+                }
             }
-            ctx.textAlign = `left`;
-        } else { // write name
-            ctx.textAlign = `center`;
-            ctx.fillStyle = `white`;
-            ctx.font = `14px ShareTech`;
-            write(ctx, basesInfo.name, rendX, rendY - 64);
-        }
 
-        if (basesInfo.baseType != DEADBASE) {
-            let timage = 0;
-            if (basesInfo.baseType == SENTRY) timage = colorSelect(basesInfo.color, Img.rsentry, Img.bsentry, Img.gsentry);
-            else timage = colorSelect(basesInfo.color, Img.rt, Img.bt, Img.gt);
-            pw = timage.width; // render turrets
-            ph = timage.height;
-            ctx.save();
-            ctx.translate(rendX, rendY);
-            ctx.rotate(basesInfo.angle + Math.PI / 2);
-            ctx.drawImage(timage, -pw / 2, -ph / 2);
-            ctx.restore();
+            if (aBase.baseType != DEADBASE) {
+                let timage = 0;
+                if (aBase.baseType == SENTRY) {
+                    timage = colorSelect(aBase.color, Img.rsentry, Img.bsentry, Img.gsentry, Img.ysentry);
+                    if (tooClose) {
+                        if (aBase.color !== pc && warningLevel <= 2) {
+                            if (warningLevel < 2) currAlert = translate(`Enemy Sentry Nearby!`);
+                            else currAlert = translate(`Enemy Sentries Nearby!`);
+                            warningLevel = 2;
+                        }
+                    }
+                } else {
+                    timage = colorSelect(aBase.color, Img.rt, Img.bt, Img.gt, Img.yt);
+                    if (aBase.baseType == TURRET) {
+                        if (tooClose) {
+                            if (aBase.color !== pc && warningLevel <= 3) {
+                                if (warningLevel < 3) currAlert = translate(`Enemy Turret Nearby!`);
+                                else currAlert = translate(`Enemy Turrets Nearby!`);
+                                warningLevel = 3;
+                            }
+                        }
+                    } else {
+                        if (tooClose) {
+                            if (aBase.color !== pc && warningLevel <= 4) {
+                                if (warningLevel < 3) currAlert = translate(`Enemy Starbase Nearby!`);
+                                else currAlert = translate(`Enemy Starbases Nearby!`);
+                                warningLevel = 4;
+                            }
+                        }
+                    }
+                }
 
-            if (basesInfo.health / basesInfo.maxHealth < 1) {
-                ctx.lineWidth = 4;
-                const r = Math.floor((1 - basesInfo.health / basesInfo.maxHealth) * 255);
-                const g = Math.floor(255 * basesInfo.health / basesInfo.maxHealth);
-                const b = Math.floor(64 * basesInfo.health / basesInfo.maxHealth);
-                ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
-                ctx.beginPath();
-                ctx.arc(rendX, rendY, pw / 1.5, (2.5 - 0.99 * basesInfo.health / basesInfo.maxHealth) * Math.PI, (0.501 + basesInfo.health / basesInfo.maxHealth) * Math.PI, false);
-                ctx.stroke();
+                pw = timage.width; // render turrets
+                ph = timage.height;
+                outOfBounds = (rendX < -(2 * (w + pw) + 500) || rendX > (2 * (w + pw) + 500) || rendY < -(2 * (h + ph) + 500) || rendY > (2 * (h + ph) + 500));
+                if (!outOfBounds) {
+                    ctx.save();
+                    ctx.translate(rendX, rendY);
+                    ctx.rotate(aBase.angle + Math.PI / 2);
+                    ctx.drawImage(timage, -pw / 2, -ph / 2);
+                    ctx.restore();
+                    if (aBase.health / aBase.maxHealth < 1) {
+                        ctx.lineWidth = 4;
+                        const r = Math.floor((1 - aBase.health / aBase.maxHealth) * 255);
+                        const g = Math.floor(255 * aBase.health / aBase.maxHealth);
+                        const b = Math.floor(64 * aBase.health / aBase.maxHealth);
+                        ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+                        ctx.beginPath();
+                        ctx.arc(rendX, rendY, pw / 1.5, (2.5 - 0.99 * aBase.health / aBase.maxHealth) * Math.PI, (0.501 + aBase.health / aBase.maxHealth) * Math.PI, false);
+                        ctx.stroke();
+                    }
+                }
             }
+            rBasePointer(aBase, obtainSXDrift(sx, aBase.sx), obtainSYDrift(sy, aBase.sy));
         }
-
-        rBasePointer(basesInfo);
     }
 };
+
 global.rBackPack = function (selfo) {
+    if (inTheVoid()) return; // Probably just docked
     const img = Img.pack;
-    const rendX = selfo.x - px + w / 2 + scrx;
-    const rendY = selfo.y - py + h / 2 + scry;
+    const rendX = selfo.x + obtainSXDrift(sx, selfo.sx) - px + w / 2 + scrx;
+    const rendY = selfo.y + obtainSYDrift(sy, selfo.sy) - py + h / 2 + scry;
     ctx.save();
     ctx.translate(rendX, rendY);
     ctx.drawImage(img, -16, -16, 32, 32);

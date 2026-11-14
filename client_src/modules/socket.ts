@@ -19,6 +19,7 @@ import { io, Socket } from 'socket.io-client';
 // import msgpack from 'socket.io-msgpack-parser';
 
 declare const TORN_GAMESERVER_URL: string;
+declare const TORN_GAMEWEB_URL: string;
 
 /**
  * The socket connection to the server.

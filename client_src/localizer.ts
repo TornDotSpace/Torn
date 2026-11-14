@@ -107,6 +107,7 @@ global.loadLang = (name) => {
         jsn.ships[i].nameA = languagejson.ships[i].nameA;
         jsn.ships[i].nameH = languagejson.ships[i].nameH;
         jsn.ships[i].nameC = languagejson.ships[i].nameC;
+        jsn.ships[i].nameP = languagejson.ships[i].nameP;
         jsn.ships[i].desc = languagejson.ships[i].desc;
     }
 

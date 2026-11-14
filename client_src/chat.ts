@@ -149,14 +149,21 @@ export function pasteChat () {
 }
 
 function onReceiveChat (data) {
-    while (data.msg.includes(weaponCircumfix)) {
+    let broken = false;
+    while (data.msg.includes(weaponCircumfix) && !broken) {
         const find1 = getPosition(data.msg, weaponCircumfix, 1);
         const find2 = getPosition(data.msg, weaponCircumfix, 2);
 
         if (find1 == -1 || find2 == -1) return;
 
         const num = parseFloat(data.msg.substring(find1 + 2, find2));
-        data.msg = data.msg.replace(weaponCircumfix + num.toString() + weaponCircumfix, wepns[num].name);
+        let nameAux = `UNKNOWN`;
+        if (wepns[num] === undefined) {
+            console.log(`TO-DO Something got the num :`, num);
+            nameAux = num;
+            broken = true;
+        } else nameAux = wepns[num].name;
+        if (!broken) data.msg = data.msg.replace(weaponCircumfix + num.toString() + weaponCircumfix, nameAux);
     }
 
     while (data.msg.includes(translateCircumfix)) {

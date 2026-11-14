@@ -52,15 +52,17 @@ class Asteroid {
 
     tick () {
         const asteroidsHere = astCount[this.sy][this.sx];
-        this.health -= Math.max(asteroidsHere * asteroidsHere / 2000, 0); // decay asteroids so they don't get too bunched up in any one area
-        if (this.health < -50) this.die(0);
+        if (this.health < 0) this.die(0);
+        else this.health -= Math.max(asteroidsHere * asteroidsHere / 2000, 0); // decay asteroids so they don't get too bunched up in any one area
         this.move();
-        if (Math.abs(this.vx) + Math.abs(this.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players.
+        if (Math.abs(this.vx) + Math.abs(this.vy) > 1.5) { // if we're moving sufficiently fast, check for collisions with players. TO-DO Maybe these could require a 9-sector refactoring... but it's barely noticeable unless you have a giant asteroid.
             for (const i in players[this.sy][this.sx]) {
                 const p = players[this.sy][this.sx][i];
                 if (squaredDist(p, this) < square(32 + ships[p.ship].width) / 10) { // on collision,
                     p.dmg(5 * Math.hypot(p.vx - this.vx, p.vy - this.vy), this); // damage proportional to impact velocity
-                    sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+
+                    apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+                    // sendAllSector(`sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
 
                     // bounce the player off. Same formula as used for mine impulse.
                     const mult = 200 / Math.max(1, 0.001 + Math.hypot(p.x - this.x, p.y - this.y));
@@ -72,11 +74,13 @@ class Asteroid {
                 }
             }
 
-            const b = bases[this.sy][this.sx];
-            if (b != 0 && b.baseType != DEADBASE && squaredDist(this, b) < 3686.4) { // collision with base
-                b.dmg(10 * Math.hypot(this.vx, this.vy), this);
-                sendAllSector(`sound`, { file: `boom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
-                this.die(b);
+            for (const id in bases[this.sy][this.sx]) {
+                const b = bases[this.sy][this.sx][id];
+                if (b !== undefined && b !== 0 && b.baseType != DEADBASE && squaredDist(this, b) < 3686.4) { // collision with base
+                    b.dmg(10 * Math.hypot(this.vx, this.vy), this);
+                    apply9SectorCall(sendAllSector, `sound`, { file: `boom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+                    this.die(b);
+                }
             }
         }
     }
@@ -84,48 +88,56 @@ class Asteroid {
     move () {
         this.angle += this.va;
         if (Math.abs(this.vx) + Math.abs(this.vy) < 0.5) { this.owner = 0; return; }
-        this.vx *= 0.997;
-        this.vy *= 0.997;
+        this.vx *= 0.998;
+        this.vy *= 0.998;
         // ASTEROID GRAVITY, ACTIVATE AT YOUR OWN LAGGY RISK
-        /* if(Math.random()<.2){
-      let gvx = 0;
-      let gvy = 0;
-      for (const i in asts[this.sy][this.sx]) {
-        const ast = asts[this.sy][this.sx][i];
-        if (ast.id !== this.id){ //Not going to count itself's gravity.
-          const dist = squaredDist(ast, this);
-          const ang = angleBetween(this, ast); // angle from the horizontal
-          //const density = this.metal+1; // Density of the metal.
-          const vel =  (this.health) / (100* Math.log(dist)); // compute how fast to move by
-          gvx += Math.cos(ang) * vel; // actually accelerate them. Reason I'm not using vx is to allow electromag to have a lasting effect (otherwise they don't have electromagnet inertia)
-          gvy += Math.sin(ang) * vel;
+        /*
+        if (Math.random() < 0.05){
+            let gvx = 0;
+            let gvy = 0;
+            const fullasts = get9SectorDict(asts, this.sx, this.sy);
+            for (const i in fullasts) {
+                const ast = fullasts[i];
+                if (ast !== undefined && ast.id !== this.id){ // Not going to count itself's gravity.ç
+
+                    const dist = squaredGlobalDist(this, ast, sectorWidth, sectorWidth, mapSz);
+                    const ang = angleGlobalBetween(this, ast, sectorWidth, sectorWidth, mapSz); // angle from the horizontal
+                    //const density = this.metal+1; // Density of the metal.
+                    const vel =  (this.health) / (100 * Math.log(dist)); // compute how fast to move by
+                    gvx += Math.cos(ang) * vel; // actually accelerate them. Reason I'm not using vx is to allow electromag to have a lasting effect (otherwise they don't have electromagnet inertia)
+                    gvy += Math.sin(ang) * vel;
+                }
+            }
+            this.x += + gvx;
+            this.y += + gvy;
         }
-      }
-      this.x += + gvx;
-      this.y += + gvy;
-    } */
+        */
         // OUT OF BOUNDS BEHAVIOUR ¿DIE OR CROSS?
         this.x += this.vx;
         this.y += this.vy;
 
         const old_sx = this.sx;
         const old_sy = this.sy;
+        let idied = false;
         if (this.x > sectorWidth) { // check each edge of the 4 they could cross.
             this.x = 1;
             this.sx = (this.sx + 1 + mapSz) % mapSz;
-        } else if (this.y > sectorWidth) {
+        } else if (this.x < 0) {
+            this.x = (sectorWidth - 1);
+            this.sx = (this.sx - 1 + mapSz) % mapSz;
+        }
+        if (this.y > sectorWidth) {
             if (this.sy >= mapSz - 1) {
                 delete asts[old_sy][old_sx][this.id];
+                idied = true;
             } else {
                 this.y = 1;
                 this.sy++;
             }
-        } else if (this.x < 0) {
-            this.x = (sectorWidth - 1);
-            this.sx = (this.sx - 1 + mapSz) % mapSz;
         } else if (this.y < 0) {
             if (this.sy == 0) {
                 delete asts[old_sy][old_sx][this.id];
+                idied = true;
             } else {
                 this.y = (sectorWidth - 1);
                 this.sy--;
@@ -133,23 +145,36 @@ class Asteroid {
         }
 
         if (old_sx !== this.sx || old_sy !== this.sy) {
-            delete asts[old_sy][old_sx][this.id];
-            asts[this.sy][this.sx][this.id] = this;
+            if (asts[old_sy][old_sx][this.id] !== undefined) delete asts[old_sy][old_sx][this.id];
+            if (!idied) asts[this.sy][this.sx][this.id] = this;
+            if (this.health < 0) this.die(0);
         }
     }
 
     die (b) {
     // Bugfix for ion beam destroying multiple times
-        this.die = function () { };
+        this.die = function () {
+            if (asts[this.sy][this.sx][this.id] !== undefined) delete asts[this.sy][this.sx][this.id];
+            else if (b !== undefined && b !== 0) {
+                if (b.sx !== undefined && b.sy !== undefined && asts[b.sy][b.sx][this.id] !== undefined) delete asts[b.sy][b.sx][this.id];
+                if (b.sxo !== undefined && b.syo !== undefined && asts[b.syo][b.sxo][this.id] !== undefined) delete asts[b.syo][b.sxo][this.id];
+            }
+        };
 
-        delete asts[this.sy][this.sx][this.id];
+        apply9SectorCall(sendAllSector, `sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        if (asts[this.sy][this.sx][this.id] !== undefined) delete asts[this.sy][this.sx][this.id];
+        if (b !== undefined && b !== 0) {
+            if (b.sx !== undefined && b.sy !== undefined && asts[b.sy][b.sx][this.id] !== undefined) delete asts[b.sy][b.sx][this.id];
+            if (b.sxo !== undefined && b.syo !== undefined && asts[b.syo][b.sxo][this.id] !== undefined) delete asts[b.syo][b.sxo][this.id];
+        }
+        // delete asts[this.sy][this.sx][this.id];
         if (b == 0) return;
 
         if (b.owner.type == `Player`) {
             switch (this.metal) {
                 case 0:
                     b.owner.iron += this.maxHealth;
-                    if (b.owner.platinum + b.owner.iron + b.owner.copper + b.owner.silver > b.owner.capacity) { // TODO represent player.ores as an array to make this much less stupid
+                    if (b.owner.platinum + b.owner.iron + b.owner.copper + b.owner.silver > b.owner.capacity) { // TO-DO represent player.ores as an array to make this much less stupid
                         b.owner.iron = b.owner.capacity - (b.owner.platinum + b.owner.copper + b.owner.silver);
                         if (b.owner.strongLocal !== undefined) b.owner.strongLocal(`Cargo Bay Full`, b.owner.x, b.owner.y + 256);
                     }
@@ -183,7 +208,9 @@ class Asteroid {
         let expGained = 1;
         if (b.owner.type === `Player`) expGained = b.owner.rank < 10 ? 2 - b.owner.rank / 5 : 0;
         if (b.owner.type === `Player` || b.owner.type === `Base`) b.owner.spoils(`experience`, expGained);
-        sendAllSector(`sound`, { file: `bigboom`, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+
+        // sendAllSector(`sound`, { file: `bigboom`, sx: this.sx, sy: this.sy, x: this.x, y: this.y, dx: 0, dy: 0 }, this.sx, this.sy);
+        // delete asts[this.sy][this.sx][this.id];
     }
 
     dmg (d, origin) {
