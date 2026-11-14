@@ -1,4 +1,4 @@
-let tornUsers, xpLB, eloLB, killsLB, techLB;
+let tornUsers, xpLB, eloLB, killsLB, techLB, statusLB;
 
 /**
  * Generate a list of Torn users.
@@ -75,10 +75,10 @@ const sortLB = () => {
             tornUsers = techLB;
             break;
         case `status`:
-            if (techLB == undefined) {
-                techLB = [...tornUsers].sort((a, b) => b.status < a.status);
+            if (statusLB == undefined) {
+                statusLB = [...tornUsers].sort((a, b) => b.status < a.status);
             }
-            tornUsers = techLB;
+            tornUsers = statusLB;
             break;
         default:
             tornUsers = xpLB;
